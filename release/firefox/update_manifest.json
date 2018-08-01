@@ -1,0 +1,12 @@
+{
+  "addons": {
+    "shridhar.tl@gmail.com": {
+      "updates": [
+        {
+          "version": "0.58",
+          "update_link": "https://raw.githubusercontent.com/shridhar-tl/jira-assistant/master/release/JiraAssist_20180731_0_58.xpi"
+        }
+      ]
+    }
+  }
+}
