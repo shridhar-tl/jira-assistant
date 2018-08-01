@@ -4,7 +4,11 @@
       "updates": [
         {
           "version": "0.58",
-          "update_link": "https://raw.githubusercontent.com/shridhar-tl/jira-assistant/master/release/JiraAssist_20180731_0_58.xpi"
+          "update_link": "https://github.com/shridhar-tl/jira-assistant/raw/master/release/firefox/JiraAssist_20180731_0_58.xpi"
+        },
+        {
+          "version": "0.59",
+          "update_link": "https://github.com/shridhar-tl/jira-assistant/raw/master/release/firefox/JiraAssist_20180802_0_59.xpi"
         }
       ]
     }
