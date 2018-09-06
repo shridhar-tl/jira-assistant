@@ -32,6 +32,17 @@ Also before raising a new issue do a quick search on the issues to see if one is
 
 The most popular issues and the one with proper description and scenarios are addressed first. So don't forget to provide all the necessary descriptions / screenshots which is required by the developers to resolve it.
 
+## How safe is the data handled by JiraAssistant?
+When it comes to security, first thing to clear is, Jira Assistant does not capture or store your credentials. It only captures your Jira server url provided by you and it fetches your profile information like email address, user name and timezone from Jira and store it in browsers cache. To connect to Jira server, it just uses your browsers authentication with Jira.
+
+## What information is collected by developer from users of Jira Assistant?
+We use Google analytics to capture which module of the tool is being used much by users and that too only in aggregate based on country. No other personal information like email id, company or jira server url is collected by developer. Only when you try to contact us, we get your email address just to responed you back. So all your personal informations are safe in your browser cache and is not sent anywhere outside of your browser by this tool.
+
+Note: Jira Assistant or its developer is not responsible if some other malicious software installed by you captures these details from your cache. Hence it is the responsibility of users to be safe when installing softwares.
+
+## Licence Aggrement
+Jira Assistant is a free software and anyone is free to use it for personal or commercial purpose. But you are authorized only to use this software. Any kind of changes or distribution of this software is not allowed. This software is provided as is without any warrenty and developer of this software is not responsible for any kind of loss incurred while using or mis-using this software.
+
 ## Features available in "Jira Assist"
 
 ### Dashboard
