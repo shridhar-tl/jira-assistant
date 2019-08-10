@@ -1,0 +1,105 @@
+div.scroll-table-container {
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+
+    caption {
+        caption-side: top;
+        text-align: center;
+        font-weight: 700;
+        font-size: 16px;
+        padding: 5px;
+        background-color: #ebedf0;
+    }
+
+    .scroll-table {
+        min-width: 100%;
+
+        thead {
+            tr {
+                background-color: #ebedf0;
+
+                th {
+                    padding: 4px 16px;
+                    min-width: 70px;
+                    font-weight: 400;
+                    color: #555;
+                    font-size: 1em;
+                    text-align: center;
+                    white-space: nowrap;
+
+                    &.sortable {
+                        cursor: pointer;
+
+                        i.fa {
+                            margin-left: 4px;
+                        }
+                    }
+
+                    &.w40 {
+                        width: 40px;
+                        min-width: 40px;
+                    }
+                }
+            }
+        }
+
+        tbody {
+            tr {
+                &:nth-child(even) {
+                    background-color: #fafafb;
+                }
+
+                td {
+                    padding: 5px 8px 5px 10px;
+                    white-space: nowrap;
+
+                    i.fa-ellipsis-v {
+                        cursor: pointer;
+                    }
+
+                    img {
+                        margin-right: 4px;
+                    }
+                }
+            }
+        }
+
+        tfoot {
+            background-color: #ebedf0;
+        }
+    }
+}
+
+tr.pad-min {
+    th,
+    td {
+        padding: 4px 5px !important;
+    }
+}
+
+tr.auto-wrap {
+    th,
+    td {
+        white-space: initial !important;
+    }
+}
+
+td.log-good,
+tr.log-good {
+    background-color: #90ee90 !important;
+}
+
+td.log-less,
+tr.log-less {
+    background-color: #fafad2 !important;
+}
+
+td.log-high,
+tr.log-high {
+    background-color: #ffa07a !important;
+}
+
+td.col-holiday {
+    background-color: #d3d3d3 !important;
+}

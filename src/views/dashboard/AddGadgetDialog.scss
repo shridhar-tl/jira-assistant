@@ -1,0 +1,34 @@
+.gadget-info {
+    float: left;
+    width: 100%;
+    border-bottom: 1px solid grey;
+    padding: 8px 0;
+
+    .icon {
+        float: left;
+        width: 80px;
+        text-align: center;
+
+        .fa {
+            font-size: 50px;
+        }
+    }
+
+    .details {
+        float: left;
+
+        .name {
+            font-weight: 700;
+        }
+
+        .desc {
+            display: block;
+            max-width: 400px;
+        }
+    }
+
+    .controls {
+        float: right;
+        padding-top: 10px;
+    }
+}

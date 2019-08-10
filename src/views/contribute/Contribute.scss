@@ -1,0 +1,74 @@
+.widget-cntr {
+    background-color: #fff;
+}
+
+.content-block {
+    padding: 15px;
+}
+
+.donate-block {
+    float: right;
+    margin-left: 20px;
+    padding: 10px;
+    height: calc(100vh - 44px);
+    width: 256px;
+    margin-right: 30px;
+}
+
+.seperator {
+    margin: 20px 0;
+    text-align: center;
+
+    span {
+        font-size: 18px;
+        font-weight: 700;
+    }
+}
+
+.donate-cntr {
+    border: 1px solid grey;
+    border-radius: 10%;
+    width: 100%;
+    padding: 10px;
+    margin: 8px;
+    -webkit-box-shadow: 0px 0px 9px 10px rgba(0, 0, 0, 0.27);
+    box-shadow: 0px 0px 9px 10px rgba(0, 0, 0, 0.27);
+
+    span {
+        font-size: 15px;
+        line-height: 30px;
+    }
+
+    img {
+        cursor: pointer;
+    }
+
+    img.paypal {
+        height: 83px;
+        width: 215px;
+    }
+
+    img.curr {
+        margin-top: 10px;
+        height: 60px;
+        width: 215px;
+    }
+
+    a.dbox-button {
+        background: #2d81c5 url(https://d1iczxrky3cnb2.cloudfront.net/red_logo.png) no-repeat 37px center;
+        color: #fff;
+        text-decoration: none;
+        font-family: Verdana, sans-serif;
+        display: inline-block;
+        font-size: 16px;
+        padding: 13px 38px 13px 75px;
+        -webkit-border-radius: 2px;
+        -moz-border-radius: 2px;
+        border-radius: 8px;
+        box-shadow: 0 1px 0 0 #1f5a89;
+        text-shadow: 0 1px rgba(0, 0, 0, 0.3);
+        margin-top: 12px;
+        margin-bottom: 7px;
+        width: 215px;
+    }
+}

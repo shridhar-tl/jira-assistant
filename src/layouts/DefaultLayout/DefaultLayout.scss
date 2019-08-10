@@ -1,0 +1,13 @@
+.header-fixed .app-body {
+    margin-top: 43px;
+}
+
+.sidebar-fixed .app-header + .app-body .sidebar {
+    height: calc(100vh - 43px);
+}
+
+.main {
+    .container-fluid {
+        padding: 0 0;
+    }
+}

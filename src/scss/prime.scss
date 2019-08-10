@@ -1,0 +1,64 @@
+/* #region  Prime overrides*/
+
+.p-dialog {
+    .p-dialog-content {
+        max-height: calc(100vh - 150px);
+        overflow: auto;
+    }
+
+    &.no-padding {
+        .p-dialog-content {
+            padding: 0;
+        }
+    }
+}
+
+.p-autocomplete-multiple-container {
+    width: 100%;
+}
+
+.p-dropdown {
+    width: 100%;
+    height: 30px;
+
+    .p-dropdown-trigger {
+        border-left: 1px solid #d6d6d6;
+    }
+
+    .p-dropdown-label {
+        height: 28px;
+        padding-top: 3px;
+        padding-bottom: 4px;
+    }
+}
+
+.p-dropdown-panel {
+    .p-dropdown-filter-container {
+        width: 100%;
+
+        input.p-dropdown-filter {
+            height: 25px;
+            width: 100%;
+        }
+    }
+}
+
+/* Menu related styles */
+a.p-menuitem-link {
+    text-decoration: none;
+}
+
+// TabView related styles
+.p-tabview {
+    .p-tabview-nav {
+        a[role="tab"] {
+            padding: 2px 14px !important;
+        }
+    }
+}
+
+.p-tabview-panels {
+    padding: 0 !important;
+}
+
+/* #endregion*/

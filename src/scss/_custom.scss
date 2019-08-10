@@ -1,0 +1,130 @@
+// #region Core UI Overrides
+
+.app-header {
+    color: #fff !important;
+
+    .fa-bars {
+        color: #fff !important;
+    }
+
+    .nav-item {
+        min-width: 35px;
+    }
+
+    &.navbar {
+        height: 44px !important;
+
+        .navbar-nav .nav-link,
+        .navbar-toggler-icon {
+            color: #fff !important;
+        }
+    }
+
+    i.fa {
+        font-size: 16px;
+    }
+
+    .navbar-brand {
+        width: 200px;
+
+        .navbar-brand-full {
+            color: #fff !important;
+        }
+    }
+}
+
+// #endregion
+
+/* #region Custom styles */
+
+.no-b-pad {
+    padding-bottom: 0 !important;
+}
+
+.no-t-pad {
+    padding-top: 0 !important;
+}
+
+.pad-b {
+    padding-bottom: 8px;
+}
+
+.no-margin {
+    margin: 0 !important;
+}
+
+.w-p-100 {
+    width: 100%;
+}
+
+.w-80 {
+    width: 80px;
+}
+
+.link {
+    cursor: pointer;
+}
+
+.pad-15 {
+    padding: 15px;
+}
+
+.img-x16 {
+    height: 16px;
+    width: 16px;
+}
+
+/* #endregion*/
+
+/* #region Form styles */
+
+.help-block {
+    display: block;
+    margin-top: 5px;
+    margin-bottom: 10px;
+    color: #737373;
+}
+
+.msg-error {
+    color: red;
+}
+
+/* #endregion */
+
+/* #region Badge styles*/
+
+.info-badge {
+    position: relative;
+    cursor: pointer;
+
+    .info {
+        position: absolute;
+        top: -10px;
+        right: -3px;
+        font-size: 11px;
+        font-weight: 400;
+        z-index: 9999;
+        padding: 0 4px;
+        border-radius: 3px;
+        color: #fff;
+    }
+}
+
+/* #endregion */
+
+.tags {
+    padding: 0;
+    margin-bottom: 0;
+
+    .badge {
+        font-size: 100%;
+        font-weight: 400;
+        margin: 2px auto;
+    }
+
+    li {
+        list-style: none;
+        cursor: pointer;
+        display: inline;
+    }
+}

@@ -1,0 +1,12 @@
+button.p-button {
+    height: 27px;
+    margin: 1px 2px;
+
+    &.p-button-icon-only {
+        width: 2em;
+    }
+
+    .p-button-text {
+        padding: 2.5px 15px 4px 30px !important;
+    }
+}

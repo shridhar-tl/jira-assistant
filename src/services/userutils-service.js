@@ -1,0 +1,93 @@
+export default class UserUtilsService {
+    static dependencies = ["SessionService", "UtilsService"];
+
+    constructor($session, $utils) {
+        this.$session = $session;
+        this.$utils = $utils;
+    }
+
+    getTicketUrl(ticketNo) {
+        if (!ticketNo) {
+            return;
+        }
+        return this.$session.CurrentUser.ticketViewUrl + ticketNo;
+    }
+
+    mapJiraUrl(url) {
+        if (!url || (url.startsWith('http') && url.indexOf(':') > 3)) {
+            return url;
+        }
+        if (!url.startsWith('/')) {
+            url = '/' + url;
+        }
+        return this.$session.CurrentUser.jiraUrl + url;
+    }
+
+    isHoliday(date) {
+        var weekDay = date.getDay();
+        var workingDays = this.$session.CurrentUser.workingDays;
+        //ToDo: Need to have track of holiday and need to do the checking here
+        return workingDays.indexOf(weekDay) === -1;
+    }
+
+    getProfileImgUrl(user) {
+        if (user.jiraUser) {
+            user = user.jiraUser;
+        }
+        if (user.avatarUrls) {
+            return user.avatarUrls["48x48"] || user.avatarUrls["32x32"];
+        }
+        else {
+            return this.$session.rootUrl + "/secure/useravatar?ownerId=" + user.name.toLowerCase();
+        }
+        ///Security/ProfilePic / {{userInfo.name }}
+    }
+
+    formatDateTime(value, format, utc) {
+        if (!value)
+            return value;
+        if (!format)
+            format = this.$session.CurrentUser.dateFormat + " " + this.$session.CurrentUser.timeFormat;
+        var date = this.$utils.convertDate(value);
+        if (date && date instanceof Date) {
+            if (utc === true) {
+                date = date.toUTCDate();
+            }
+            return date.format(format);
+        }
+        return date;
+    }
+
+    formatDate(value, format, utc) {
+        if (!format) {
+            format = this.$session.CurrentUser.dateFormat;
+        }
+        return this.formatDateTime(value, format, utc);
+    }
+
+    formatTime(value, format, utc) {
+        return this.formatDateTime(value, format || this.$session.CurrentUser.timeFormat, utc);
+    }
+
+    getDays(fromDate, toDate) {
+        var dateArr = this.$utils.getDateArray(fromDate, toDate);
+        var now = new Date().getTime();
+        return dateArr.map(d => {
+            return {
+                prop: d.format('yyyyMMdd'),
+                display: d.format('DDD, dd'),
+                date: d,
+                isHoliday: this.isHoliday(d),
+                isFuture: d.getTime() > now
+            };
+        });
+    }
+
+    getWorklogUrl(ticketNo, worklogId) {
+        var url = this.getTicketUrl(ticketNo);
+        if (url && worklogId) {
+        }
+        url += "?focusedWorklogId=" + worklogId + "&page=com.atlassian.jira.plugin.system.issuetabpanels%3Aworklog-tabpanel#worklog-" + worklogId;
+        return url;
+    }
+}

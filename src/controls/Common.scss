@@ -1,0 +1,43 @@
+/* Autocomplete */
+.p-autocomplete {
+    input.p-inputtext {
+        width: 100%;
+    }
+
+    .p-autocomplete-multiple-container {
+        .p-autocomplete-input-token {
+            width: 100%;
+
+            input {
+                width: 100%;
+            }
+        }
+    }
+}
+
+/* Datepicker */
+
+.p-calendar {
+    min-width: 180px;
+
+    input.p-inputtext {
+        width: 100%;
+        padding: 3px 6px;
+    }
+
+    button.p-datepicker-trigger {
+        height: 29px;
+        margin-top: 0px;
+        margin-left: 0px;
+    }
+}
+
+/* Chips */
+
+.p-chips {
+    width: 100%;
+
+    .p-inputtext {
+        width: 100%;
+    }
+}

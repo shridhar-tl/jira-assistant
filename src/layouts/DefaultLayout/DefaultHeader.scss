@@ -1,0 +1,46 @@
+a.navbar-brand {
+    span.navbar-brand-full {
+        color: #000;
+        font-size: 20px;
+    }
+}
+
+.app-header.navbar {
+    height: 43px;
+
+    .navbar-brand {
+        height: 43px;
+    }
+}
+
+strong.share-header-text {
+    font-size: 16px;
+}
+.share-items {
+    width: 200px;
+    padding: 5px;
+
+    .fa {
+        font-size: 26px;
+        margin: 8px 4px;
+    }
+    .fa-star {
+        color: #ffdd23;
+    }
+    .fa-google-plus-square {
+        color: #dc4e41;
+    }
+    .fa-linkedin-square {
+        color: #0077b5;
+    }
+    .fa-facebook-square {
+        color: #3b5998;
+    }
+    .fa-twitter-square {
+        color: #55acee;
+    }
+}
+
+.header-fixed .app-header {
+    z-index: 500;
+}
