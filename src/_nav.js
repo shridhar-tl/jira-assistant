@@ -16,7 +16,7 @@ export function getDashboardMenu(d, idx, userId) {
     };
 }
 
-var navigation = [
+export const navigation = [
     {
         title: true,
         name: 'Dashboards'

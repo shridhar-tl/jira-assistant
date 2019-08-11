@@ -1,7 +1,7 @@
 import { GadgetActionType } from './BaseGadget';
 import Calendar from './Calendar';
 import DateWiseWorklog from './DateWiseWorklog';
-import DayWiseWorklog from './DayWiseWorklog';
+import DayWiseWorklog from './DayWiseWorklog/DayWiseWorklog';
 import MyBookmarks from './MyBookmarks';
 import MyOpenTickets from './MyOpenTickets';
 import MyReports from './MyReports';

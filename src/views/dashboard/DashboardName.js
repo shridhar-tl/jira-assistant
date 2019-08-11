@@ -9,7 +9,7 @@ class DashboardName extends PureComponent {
         this.state = this.getState(props);
     }
 
-    componentWillReceiveProps(newProps) {
+    UNSAFE_componentWillReceiveProps(newProps) {
         this.setState(this.getState(newProps));
     }
 

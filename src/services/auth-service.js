@@ -17,8 +17,13 @@ export default class AuthService {
     }
 
     async getUserDetails(userId) {
-        if (!userId) {
-            userId = this.$session.getCurrentUserId();
+        try {
+            if (!userId) {
+                userId = this.$session.getCurrentUserId();
+            }
+        }
+        catch (ex) {
+            return Promise.reject({ needIntegration: true });
         }
         return await this.$user.getUserDetails(userId);
     }

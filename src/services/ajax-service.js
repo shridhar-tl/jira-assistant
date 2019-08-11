@@ -6,11 +6,9 @@ export default class AjaxService {
     constructor($session, $message) {
         this.$session = $session;
         this.$message = $message;
-        var headerObj = { 'Content-Type': 'application/json' };
-        // Jira has issue with user agent of firefox
-        if (typeof window['InstallTrigger'] !== 'undefined') {
-            headerObj['User-Agent'] = 'Chrome';
-        }
+        // Jira has issue with some user agent. Hence always customize it
+        var headerObj = { 'Content-Type': 'application/json', 'User-Agent': 'Chrome' };
+
         this.httpOptions = {
             headers: headerObj
         };

@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import "./P401.scss";
 
 class Page401 extends PureComponent {
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
         document.body.style.backgroundColor = "#667380";
     }
 

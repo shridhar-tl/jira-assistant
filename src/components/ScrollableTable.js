@@ -12,7 +12,7 @@ export class ScrollableTable extends PureComponent {
         this.state = { dataset: props.dataset };
     }
 
-    componentWillReceiveProps(newProps) {
+    UNSAFE_componentWillReceiveProps(newProps) {
         if (newProps.dataset !== this.state.dataset) {
             this.setState({ dataset: newProps.dataset });
         }

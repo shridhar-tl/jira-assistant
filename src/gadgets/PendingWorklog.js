@@ -22,7 +22,7 @@ class PendingWorklog extends BaseGadget {
         this.state = { selAllChk: true, isLoading: true };
     }
 
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
         this.refreshData();
     }
 

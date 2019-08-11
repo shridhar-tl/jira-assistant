@@ -5,7 +5,7 @@ class SprintWiseWorklog extends PureComponent {
         super(props);
     }
 
-    componentWillReceiveProps(change) {
+    UNSAFE_componentWillReceiveProps(change) {
         if (this.props.groups) {
             this.props.groups.forEach(grp => {
                 grp.include = true;

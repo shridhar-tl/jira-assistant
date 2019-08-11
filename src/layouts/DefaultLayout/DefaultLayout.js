@@ -34,7 +34,7 @@ class DefaultLayout extends PureComponent {
     this.state = { menus: this.getMenus(userId), userId };
   }
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     var { userId } = this.state;
     this.$dashboard.onChange(() => this.setState({ menus: this.getMenus(userId) }));
     this.initBody();

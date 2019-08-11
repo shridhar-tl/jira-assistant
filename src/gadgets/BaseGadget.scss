@@ -70,8 +70,16 @@ div.full-height {
     }
 }
 
-div.half-width {
-    width: calc(50% - 4px);
+@media screen and (min-width: 992px) {
+    div.half-width {
+        width: calc(50% - 4px);
+    }
+}
+
+@media screen and (max-width: 992px) {
+    div.half-width {
+        width: 100%;
+    }
 }
 
 div.half-height {

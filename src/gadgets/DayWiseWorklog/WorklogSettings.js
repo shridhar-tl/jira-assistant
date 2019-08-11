@@ -1,11 +1,13 @@
 import React from 'react';
-import BaseDialog from './BaseDialog';
-import { Button, TextBox } from '../controls';
+import BaseDialog from '../../dialogs/BaseDialog';
+import { Button, TextBox } from '../../controls';
 import { TabView, TabPanel } from 'primereact/tabview';
+import { inject } from '../../services';
 
 class WorklogSettings extends BaseDialog {
     constructor(props) {
         super(props, "Report configurations");
+        inject(this, "ConfigService");
         this.className = "no-padding";
 
         var { pageSettings } = props;
@@ -17,6 +19,7 @@ class WorklogSettings extends BaseDialog {
     }
 
     onDone = () => {
+        this.$config.saveSettings('reports_UserDayWise', this.state.pageSettings);
         this.onHide(this.state.pageSettings);
     }
 
@@ -28,28 +31,11 @@ class WorklogSettings extends BaseDialog {
     }
 
     render() {
-        var { setValue, state: { pageSettings: { groupMode, logFormat, breakupMode, timeZone, jql } } } = this;
+        var { setValue, state: { pageSettings: { logFormat, breakupMode, timeZone, jql } } } = this;
 
         return super.renderBase(
             <TabView styleclass="query-tab">
-                <TabPanel header="General" lefticon="fa-cog" selected="true">
-                    <div className="form-group row">
-                        <label className="col-md-3 col-form-label">Grouping</label>
-                        <div className="col-md-9 col-form-label">
-                            <div className="form-check">
-                                <label className="form-check-label">
-                                    <input className="form-check-input" value={groupMode} onChange={() => setValue("groupMode", "1")} type="radio" checked={groupMode === "1"} name="grouping" />
-                                    Display report grouped based on User and date
-                                </label>
-                            </div>
-                            <div className="form-check">
-                                <label className="form-check-label">
-                                    <input className="form-check-input" value={groupMode} onChange={() => setValue("groupMode", "2")} type="radio" checked={groupMode === "2"} name="grouping" />
-                                    Display report in flat structure without any grouping
-                                </label>
-                            </div>
-                        </div>
-                    </div>
+                <TabPanel header="General" leftIcon="fa fa-cog" selected="true">
                     <div className="form-group row">
                         <label className="col-md-3 col-form-label">Log hour format</label>
                         <div className="col-md-9 col-form-label">
@@ -108,7 +94,7 @@ class WorklogSettings extends BaseDialog {
                         </div>
                     </div>
                 </TabPanel>
-                <TabPanel header="JQL Filter" lefticon="fa-filter">
+                <TabPanel header="JQL Filter" leftIcon="fa fa-filter">
                     <TextBox multiline={true} value={jql} onChange={(val) => setValue("jql", val)} style={{ width: '100%', height: 323 }}
                         placeholder="Provide the additional JQL filters to be applied while fetching data." defaultValue={""} />
                     <span><strong>Note:</strong> Date range and user list filter will be added automatically.</span>

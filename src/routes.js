@@ -14,9 +14,9 @@ const EstimateActualComponent = React.lazy(() => import('./views/reports/estimat
 const UserDaywiseReportComponent = React.lazy(() => import('./views/reports/user-daywise-report/UserDaywiseReport'));
 
 /*const AdvancedReportComponent = React.lazy(() => import('./views/'));
-
-const GeneralComponent = React.lazy(() => import('./views/'));
 */
+const GeneralSettingsComponent = React.lazy(() => import('./views/settings/general/GeneralSettings'));
+
 const UserGroupsComponent = React.lazy(() => import('./components/UserGroup'));
 
 const FaqViewComponent = React.lazy(() => import('./views/faq-view/FaqView'));
@@ -70,11 +70,11 @@ var sessionBasedRoute = [
     {
         path: '/bulkimport',
         component: BulkImportComponent
-    },
+    },*/
     {
         path: '/settings/general',
-        component: GeneralComponent
-    },*/
+        component: GeneralSettingsComponent
+    },
     {
         path: '/settings/usergroups',
         component: UserGroupsComponent

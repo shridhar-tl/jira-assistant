@@ -72,7 +72,7 @@ class AddWorklog extends BaseDialog {
         return newState;
     }
 
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
         this.$suggestion.getTicketSuggestion().then(u => {
             this.allTicketList = u;
         });

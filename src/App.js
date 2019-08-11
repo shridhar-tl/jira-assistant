@@ -41,7 +41,7 @@ class App extends PureComponent {
 
   getMessanger = () => <Growl ref={(el) => this.messenger = el} />
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     this.$message.onNewMessage((message) => {
       if (this.messenger) { this.messenger.show(message); }
     });
@@ -67,7 +67,7 @@ class App extends PureComponent {
           }
         }
         else {
-          this.props.history.push("/401");
+          this.props.history.push(this.$session.needIntegration ? "/integrate" : "/401");
         }
       }, () => {
         this.props.history.push(this.$session.needIntegration ? "/integrate" : "/401");

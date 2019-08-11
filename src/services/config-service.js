@@ -19,12 +19,17 @@ export default class ConfigService {
     //}
     //getEvents() { return this.$db.events.where("createdBy").equals(this.$session.userId).toArray(); }
 
-    saveSettings(pageName) {
+    saveSettings(pageName, newSettings) {
         return this.$auth.getCurrentUser().then((usr) => {
             if (!usr.settings) {
                 usr.settings = {};
             }
-            usr.settings["page_" + pageName] = this.$session.pageSettings[pageName];
+
+            if (newSettings === undefined) {
+                newSettings = this.$session.pageSettings[pageName];
+            }
+
+            usr.settings["page_" + pageName] = newSettings;
             return this.$db.users.put(usr).then(r => r);
         });
     }

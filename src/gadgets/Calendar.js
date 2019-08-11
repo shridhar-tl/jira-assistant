@@ -44,7 +44,7 @@ class Calendar extends BaseGadget {
         //moment = (date) => toMoment(date, this.fc.calendar)
     }
 
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
         this.refreshData();
     }
 
@@ -177,12 +177,12 @@ class Calendar extends BaseGadget {
         };
     }
 
-    componentWillReceiveProps(newProps) {
+    UNSAFE_componentWillReceiveProps(newProps) {
         if (newProps.viewMode && newProps.viewMode.currentValue) {
             this.settings.viewMode = this.viewMode;
             //this.viewModeChanged();
         }
-        super.componentWillReceiveProps(newProps);
+        super.UNSAFE_componentWillReceiveProps(newProps);
     }
 
     refreshData = () => {

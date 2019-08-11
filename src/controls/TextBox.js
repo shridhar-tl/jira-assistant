@@ -9,7 +9,7 @@ class TextBox extends PureComponent {
         this.state = { value: props.value || "" };
     }
 
-    componentWillReceiveProps(newProps) {
+    UNSAFE_componentWillReceiveProps(newProps) {
         var { value } = newProps;
         if (!value) { value = ""; }
         if (value !== this.state.value) {

@@ -25,7 +25,7 @@ class DefaultHeader extends PureComponent {
     this.state = { name: displayName, login: key, profile: self, emailAddress, imageUrl: avatarUrls["24x24"] };
   }
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     this.$user.getUsersList().then(users => this.setState({ users }));
 
     this.selectedSkin = this.$cache.get('skin', true) || 'skin-blue';

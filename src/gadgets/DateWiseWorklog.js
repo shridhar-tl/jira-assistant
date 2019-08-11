@@ -15,7 +15,7 @@ class DateWiseWorklog extends BaseGadget {
         ];
     }
 
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
         this.refreshData();
     }
 

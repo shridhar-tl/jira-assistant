@@ -11,7 +11,7 @@ class MyReports extends BaseGadget {
         this.state = { isLoading: true };
     }
 
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
         this.refreshData();
     }
 

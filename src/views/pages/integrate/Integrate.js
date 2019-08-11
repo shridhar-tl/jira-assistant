@@ -12,7 +12,7 @@ class Integrate extends PureComponent {
         this.state = {};
     }
 
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
         /*
         this.$jaBrowserExtn.getAppVersion().then(v => this.version = v);
         

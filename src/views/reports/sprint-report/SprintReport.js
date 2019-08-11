@@ -11,7 +11,7 @@ class SprintReport extends PureComponent {
         this.selectedSprints = [];
     }
 
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
         this.rapidViewLoading = true;
         return this.$jira.getRapidViews().then((views) => {
             this.rapidViewLoading = false;

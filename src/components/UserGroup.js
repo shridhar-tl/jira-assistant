@@ -16,7 +16,7 @@ class UserGroup extends PureComponent {
         this.state = { groups };
     }
 
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
         if (!this.state.groups) {
             this.$usergroup.getUserGroups().then(groups => this.setState({ groups }));
         }

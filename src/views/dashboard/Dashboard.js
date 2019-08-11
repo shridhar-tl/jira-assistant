@@ -20,7 +20,7 @@ class Dashboard extends PureComponent {
         this.state = this.loadDashboard(parseInt(params['index'] || 1));
     }
 
-    componentWillReceiveProps(newProps) {
+    UNSAFE_componentWillReceiveProps(newProps) {
         var newIndex = newProps.match.params.index;
         if (newIndex !== this.state.dashboardIndex) {
             this.setState(this.loadDashboard(newIndex));

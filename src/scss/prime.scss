@@ -9,6 +9,10 @@
     &.no-padding {
         .p-dialog-content {
             padding: 0;
+
+            .p-tabview-panels {
+                padding: 0 !important;
+            }
         }
     }
 }
@@ -55,10 +59,6 @@ a.p-menuitem-link {
             padding: 2px 14px !important;
         }
     }
-}
-
-.p-tabview-panels {
-    padding: 0 !important;
 }
 
 /* #endregion*/

@@ -11,7 +11,7 @@ class Header extends PureComponent {
         this.state = this.getStateDetails(props);
     }
 
-    componentWillReceiveProps(newProps) {
+    UNSAFE_componentWillReceiveProps(newProps) {
         this.setState(this.getStateDetails(newProps));
     }
 

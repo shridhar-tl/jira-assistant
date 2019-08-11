@@ -8,7 +8,7 @@ class DatePicker extends PureComponent {
         this.state = { value: this.getDateValue(value, range) };
     }
 
-    componentWillReceiveProps(newProps) {
+    UNSAFE_componentWillReceiveProps(newProps) {
         var { value, range } = newProps;
         this.setState({ value: this.getDateValue(value, range) });
     }

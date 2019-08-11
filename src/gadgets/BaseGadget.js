@@ -63,14 +63,12 @@ export class BaseGadget extends PureComponent {
         this.setState({ fullWidth, fullHeight });
     }
 
-    componentWillReceiveProps(changes) {
-        if (changes.layout && changes.layout.currentValue) {
+    UNSAFE_componentWillReceiveProps(changes) {
+        if (changes.layout) {
             this.onResize();
         }
 
-        if (!this.settings) {
-            this.settings = {};
-        }
+        this.settings = changes.settings || {};
     }
 
     toggleFullScreen() {

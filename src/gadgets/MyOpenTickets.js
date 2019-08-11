@@ -18,7 +18,7 @@ class MyOpenTickets extends BaseGadget {
         this.state = { isLoading: true, ticketList: [] };
     }
 
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
         this.refreshData();
     }
 

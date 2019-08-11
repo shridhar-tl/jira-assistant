@@ -28,7 +28,7 @@ class MyBookmarks extends BaseGadget {
         this.setState({ bookmarksList });
     }
 
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
         this.refreshData();
     }
 
@@ -80,7 +80,7 @@ class MyBookmarks extends BaseGadget {
 
     executeEvent(action) {
         if (action.type === GadgetActionType.TicketBookmarked) {
-            this.fillBookmarksList();
+            this.refreshData();
         }
         else {
             super.executeEvent(action);
