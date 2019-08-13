@@ -25,6 +25,15 @@ Earlier addon for firefox was available in the following link: https://addons.mo
 **Rate and comment**
 If you like Jira Assistant then kindly spend a minute to rate it in web store from the above respective url's. Your rating would help this tool to reach more people and encourage the developers to provide a even better tool for you.
 
+## Would like to contribute in development and maintainence?
+You are very much welcome if you would wish to contribute in the development of Jira Assistant and keep it free and open source for ever. Your contributions would encourage me to actively enhance the features in Jira Assistant.
+
+You can contribute to Jira Assistant by donating a small sum through following a link: https://paypal.me/shridhartl
+
+( or )
+
+You can contribute by helping in development of new feature and bug fixes. To know more about contributing in development activity please refer to [contribution guidelines](docs/contribute.md).
+
 ## Want to report a bug, suggest a new feature or have a question?
 Please navigate to **"Issues"** tab and raise a new issue. If you do not have an account and not willing to create a new account in GitHub then you can use the below Url to do that which wont require any authentication. But I would suggest to use the Issues tab instead as it would be easy for you to have a track of the issue and see the status / updates on the issues.
 
@@ -35,47 +44,13 @@ The most popular issues and the one with proper description and scenarios are ad
 ## How safe is the data handled by JiraAssistant?
 When it comes to security, first thing to clear is, Jira Assistant does not capture or store your credentials. It only captures your Jira server url provided by you and it fetches your profile information like email address, user name and timezone from Jira and store it in browsers cache. To connect to Jira server, it just uses your browsers authentication with Jira.
 
-## What information is collected by developer from users of Jira Assistant?
+### What information is collected by developer from users of Jira Assistant?
 We use Google analytics to capture which module of the tool is being used much by users and that too only in aggregate based on country. No other personal information like email id, company or jira server url is collected by developer. Only when you try to contact us, we get your email address just to responed you back. So all your personal informations are safe in your browser cache and is not sent anywhere outside of your browser by this tool.
 
-Note: Jira Assistant or its developer is not responsible if some other malicious software installed by you captures these details from your cache. Hence it is the responsibility of users to be safe when installing softwares.
+**Note:** Jira Assistant or its developer is not responsible if some other malicious software installed by you captures these details from your cache. Hence it is the responsibility of users to be safe when installing softwares.
 
 ## Licence Aggrement
 Jira Assistant is a free software and anyone is free to use it for personal or commercial purpose. But you are authorized only to use this software. Any kind of changes or distribution of this software is not allowed. This software is provided as is without any warrenty and developer of this software is not responsible for any kind of loss incurred while using or mis-using this software.
 
 ## Features available in "Jira Assist"
-
-### Dashboard
-Dashboard is a page which provides you with an overview of multiple different things which you may need a glands of. This also provides you with a wide customization option to personalize your experience.
-
-Following features are available in dashboard module :
--   Create your own dashboard
--   Rename the default or custom dashboard
--   Add in-built or custom gadgets to dashboard and rearrange it just by drag and drop.
--   Export and share custom gadgets with other users.
--   Change the icon of the dashboard
--   Set dashboard as Quick view. View more about it in detail below.
--   Customize the layout of dashboard
-
-### Gadgets
-### Adding and tracking worklog
-### Worklog Report
-User daywise report is a place where you can view the worklog report for you and your team members in different formats.
-
-### Sprint Report
-This report lets you view the sprint based report including worklog for sprint and velocity chart when more than one sprint is selected. You can export it to excel once generated.
-
-### Custom Report
-If you want a custom report with simple features and build quickly, then you can use this report to generate it using JQL. This is a very simple report which enables you to quickly generate it and save it for further use. Once saved this can be used as a custom gadget as well in dashboard and can be shared with other users by exporting it.
-
-### Advanced report builder
-At times you will have to build a report which needs lots of customization which cannot be achieved using Custom report. That is where you will have to make use of Advanced report builder. You can build your own report by adding required parameters, dataset from various sources, drag and drop UI components like tables, chart, images, etc., apply custom styles, add expressions and custom functions to format your fields. This report once saved, can be used as custom gadgets in dashboard and can be shared with other users by exporting it from Saved Query gadget. This report builder would be suitable for technical users who can use their technical skills to build their own report the way they need it.
-
-### Share reports
-You can share your custom report or report built using Advanced report builder with other users. If you would like to share the report with your colleagues, you can export it and share the file with them after which they can import and use it. If you would like to share it with all users of Jira Assist, then you can contact me through mail or raise a ticket along with the exported report file. I will review it and post it for other users to download. Also any users can raise a ticket with their request for customizations in shared reports or a whole new report. Any one interested to contribute can fulfill these requests by building it and uploading the working report.
-
-### Calendar integration
-### User groups for reports
-### Customize what happens on click of JA icon
-### Personalize with different skins
-### Integrated FAQ's
+To know about the list of features available in Jira Assistant refer the [features list](docs/features.md).
