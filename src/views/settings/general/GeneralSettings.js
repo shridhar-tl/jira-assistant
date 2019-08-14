@@ -13,7 +13,7 @@ import MenuOptionsTab from './MenuOptionsTab';
 class GeneralSettings extends PureComponent {
     constructor(props) {
         super(props);
-        inject(this, "AppBrowserService", "AnalyticsService", "SessionService", "CalendarService", "MessageService", "CacheService", "ConfigService", "TicketService");
+        inject(this, "AppBrowserService", "SessionService", "MessageService", "CacheService", "ConfigService", "TicketService");
 
         this.noDonations = true;
         this.settings = {};
@@ -41,39 +41,6 @@ class GeneralSettings extends PureComponent {
     }
 
     saveSettings() {
-        var setting = { action: parseInt(this.settings.menuAction) };
-        var launchSetting = { action: setting.action };
-        this.settings.launchAction = setting;
-        switch (this.settings.menuAction) {
-            case '1':
-                launchSetting.menus = this.menus.map(menu => {
-                    if (menu.selected && !menu.isHead) {
-                        return { name: menu.name, url: menu.url };
-                    }
-                });
-                setting.selectedMenus = this.menus.map(menu => {
-                    if (menu.selected && !menu.isHead) {
-                        return menu.id;
-                    }
-                });
-                break;
-            case '2':
-                if (this.selectedLaunchPage) {
-                    var selLPage = this.menus.first(menu => menu.id === this.selectedLaunchPage);
-                    if (selLPage) {
-                        launchSetting.url = selLPage.url;
-                        setting.autoLaunch = this.selectedLaunchPage;
-                    }
-                }
-                break;
-            case '3':
-                if (this.selectedDashboard) {
-                    launchSetting.index = parseInt((this.selectedDashboard || '0').replace('D-', ''));
-                    setting.quickIndex = this.selectedDashboard;
-                }
-                break;
-            default: break;
-        }
         var validateTicket = () => {
             let tickets = (this.settings.meetingTicket || "").trim();
             if (tickets) {
@@ -84,7 +51,7 @@ class GeneralSettings extends PureComponent {
                     var list = tickets.map(t => res[t.toUpperCase()] || t);
                     var invalidTickets = list.filter(t => typeof t === "string");
                     if (invalidTickets.length > 0) {
-                        this.message.warning("Invalid default ticket number(s) specified for meetings: " + invalidTickets.join());
+                        this.$message.warning("Invalid default ticket number(s) specified for meetings: " + invalidTickets.join());
                         return false;
                     }
                     this.settings.meetingTicket = list.map(t => t.key).join();
@@ -92,7 +59,7 @@ class GeneralSettings extends PureComponent {
                 }, e => {
                     var msgs = ((e.error || {}).errorMessages || []);
                     if (msgs.some(m => m.toLowerCase().indexOf("'key' is invalid") > -1 || m.toLowerCase().indexOf("does not exist") > -1)) {
-                        this.message.warning("Invalid default ticket number specified for meetings!");
+                        this.$message.warning("Invalid default ticket number specified for meetings!");
                     }
                     return false;
                 });
@@ -138,7 +105,7 @@ class GeneralSettings extends PureComponent {
                 delete this.settings.startOfWeek;
             }
             this.$config.saveUserSettings(this.settings).then(res => {
-                this.$cache.set("menuAction", launchSetting, false, true);
+                this.menuActionsTab.setLaunchAction();
                 this.parseSettings(res);
             });
         });
@@ -176,9 +143,9 @@ class GeneralSettings extends PureComponent {
         else {
             sett.menuAction = '' + sett.launchAction.action;
         }
-        sett.autoLaunch = "" + (sett.autoLaunch || "0");
-        sett.notifyBefore = "" + (sett.notifyBefore || "0");
-        sett.checkUpdates = "" + (sett.checkUpdates || "15");
+        sett.autoLaunch = "" + (sett.autoLaunch || 0);
+        sett.notifyBefore = "" + (sett.notifyBefore || 0);
+        sett.checkUpdates = "" + (sett.checkUpdates || 15);
         cUser.team = sett.teamMembers;
         if (sett.startOfDay) {
             let temp = sett.startOfDay.split(':');
@@ -190,28 +157,10 @@ class GeneralSettings extends PureComponent {
         }
         this.setState({ removedIntg: false });
     }
-    googleSignIn = () => {
-        this.$calendar.authenticate(true).then((result) => {
-            this.settings.hasGoogleCredentials = true;
-            this.$session.CurrentUser.hasGoogleCreds = true;
-            this.$jaAnalytics.trackEvent("Signedin to Google Calendar");
-            this.message.success("Successfully integrated with google account.");
-        }, (err) => { this.message.warning("Unable to integrate with Google Calendar!"); });
-    }
-    selectSubMenus(menu, event) {
-        event.stopPropagation();
-        menu = menu.value;
-        for (var i = this.menus.indexOf(menu) + 1; i < this.menus.length; i++) {
-            var subMenu = this.menus[i];
-            if (subMenu.isHead) {
-                return;
-            }
-            subMenu.selected = menu.selected;
-        }
-    }
 
     tabChanged = (e) => this.setState({ currentTabIndex: e.index })
     settingsChanged = (settings) => this.setState({ settings })
+    intgStatusChanged = (removedIntg) => this.setState({ removedIntg })
 
     render() {
         var {
@@ -232,10 +181,10 @@ class GeneralSettings extends PureComponent {
                     <DefaultValuesTab settings={settings} onChange={this.settingsChanged} />
                 </TabPanel >
                 <TabPanel header="Meetings" lefticon="fa-calendar">
-                    <MeetingsTab settings={settings} onChange={this.settingsChanged} removedIntg={removedIntg} />
+                    <MeetingsTab settings={settings} onChange={this.settingsChanged} removedIntg={removedIntg} intgStatusChanged={this.intgStatusChanged} />
                 </TabPanel >
                 <TabPanel header="Menu options" lefticon="fa-calendar">
-                    <MenuOptionsTab settings={settings} onChange={this.settingsChanged} />
+                    <MenuOptionsTab ref={(r) => this.menuActionsTab = r} settings={settings} onChange={this.settingsChanged} />
                 </TabPanel>
             </TabView>
             <div className="pnl-footer">

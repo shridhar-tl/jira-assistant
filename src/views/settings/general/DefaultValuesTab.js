@@ -11,10 +11,13 @@ class DefaultValuesTab extends TabControlBase {
     }
 
     UNSAFE_componentWillMount() {
-        this.$jira.getRapidViews().then((views) => {
-            this.rapidViews = views.orderBy((d) => { return d.name; }).map((d) => {
+        this.$jira.getRapidViews().then((rapidViews) => {
+            rapidViews = rapidViews.orderBy((d) => { return d.name; }).map((d) => {
                 return { name: d.name, id: d.id };
             });
+
+            this.setState({ rapidViews });
+
             //if (this.props.settings.rapidViews && this.props.settings.rapidViews.length > 0) {
             //  this.props.settings.rapidViews = this.rapidViews
             //}
@@ -36,13 +39,13 @@ class DefaultValuesTab extends TabControlBase {
         });
     }
 
-    searchRapidView(query) {
+    searchRapidView = (query) => {
         query = (query || '').toLowerCase();
-        return this.rapidViews.filter(r => (r.name.toLowerCase().indexOf(query) >= 0 || r.id.toString().startsWith(query))
+        return this.state.rapidViews.filter(r => (r.name.toLowerCase().indexOf(query) >= 0 || r.id.toString().startsWith(query))
             && (!this.props.settings.rapidViews || !this.props.settings.rapidViews.some(v => v.id === r.id)));
     }
 
-    searchProject(query) {
+    searchProject = (query) => {
         query = (query || '').toLowerCase();
         return this.state.projects.filter(r => (r.name.toLowerCase().indexOf(query) >= 0 || r.key.toLowerCase().startsWith(query) || r.id.toString().startsWith(query))
             && (!this.props.settings.projects || !this.props.settings.projects.some(v => v.id === r.id)));
@@ -61,10 +64,10 @@ class DefaultValuesTab extends TabControlBase {
                 </div>
                 <div className="ui-g-12 ui-md-9 ui-lg-9 ui-xl-10">
                     <div className="form-group">
-                        <AutoComplete value={settings.projects} onChange={(val) => { settings.projects = val }}
-                            dataset={this.searchProject} selectbox={true} multiple={true} forceselection={true} displayField="name"
+                        <AutoComplete value={settings.projects} onChange={(val) => this.setValue("projects", val)}
+                            dataset={this.searchProject} dropdown={true} multiple={true} displayField="name"
                             placeholder="start typing the project name here" size={35}
-                            autohighlight={true} maxLength={25} className="autocomplete-350" scrollheight="300px"
+                            maxlength={25} className="autocomplete-350" scrollHeight="300px"
                             disabled={!projects || projects.length === 0} />
                         <span className="help-block">Add one or more projects which you are interested in</span>
                     </div>
@@ -76,10 +79,10 @@ class DefaultValuesTab extends TabControlBase {
                 </div>
                 <div className="ui-g-12 ui-md-9 ui-lg-9 ui-xl-10">
                     <div className="form-group">
-                        <AutoComplete value={settings.rapidViews} onChange={(val) => { settings.rapidViews = val }}
-                            dataset={this.searchRapidView} SelectBox={true} multiple={true} forceselection={true} displayField="name"
+                        <AutoComplete value={settings.rapidViews} onChange={(val) => this.setValue("rapidViews", val)}
+                            dataset={this.searchRapidView} dropdown={true} multiple={true} displayField="name"
                             placeholder="start typing the board name here"
-                            size={35} autohighlight="true" maxLength={25} styleclass="autocomplete-350" scrollheight="300px"
+                            size={35} maxlength={25} styleclass="autocomplete-350" scrollHeight="300px"
                             disabled={!rapidViews || rapidViews.length === 0} />
                         <span className="help-block">Add one or more rapid view board which you are interested in</span>
                     </div>
@@ -91,8 +94,9 @@ class DefaultValuesTab extends TabControlBase {
                 </div>
                 <div className="ui-g-12 ui-md-9 ui-lg-9 ui-xl-10">
                     <div className="form-group">
-                        <SelectBox options={numericFields} value={settings.storyPointField} onChange={(val) => { settings.storyPointField = val }}
-                            style={{ 'width': '200px' }} placeholder="Choose a storypoint field" filter="true" disabled={!numericFields} optionlabel="name" emptyfiltermessage="No fields found" resetfilteronhide="true" filterplaceholder="Type the field name to filter" />
+                        <SelectBox dataset={numericFields} value={settings.storyPointField} onChange={(val) => this.setValue("storyPointField", val)}
+                            style={{ 'width': '200px' }} placeholder="Choose a storypoint field" disabled={!numericFields}
+                            displayField="name" filterPlaceholder="Type the field name to filter" />
                         <span className="help-block">Story points field is a custom field in each jira instance and for some functionality to work,
                                 you will have to select appropriate field.</span>
                     </div>
@@ -104,9 +108,9 @@ class DefaultValuesTab extends TabControlBase {
                 </div>
                 <div className="ui-g-12 ui-md-9 ui-lg-9 ui-xl-10">
                     <div className="form-group">
-                        <SelectBox options={stringFields} value={settings.epicNameField} onChange={(val) => { settings.epicNameField = val }}
-                            style={{ 'width': '200px' }} placeholder="Choose a epic name field" filter="true" disabled={!stringFields}
-                            optionlabel="name" emptyfiltermessage="No fields found" resetfilteronhide="true" filterplaceholder="Type the field name to filter" />
+                        <SelectBox dataset={stringFields} value={settings.epicNameField} onChange={(val) => this.setValue("epicNameField", val)}
+                            style={{ 'width': '200px' }} placeholder="Choose a epic name field" disabled={!stringFields}
+                            displayField="name" filterPlaceholder="Type the field name to filter" />
                         <span className="help-block">Epic name field is a custom field in each jira instance and for some functionality to work,
                                  you will have to select appropriate field.</span>
                     </div>

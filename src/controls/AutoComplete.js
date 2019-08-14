@@ -35,13 +35,14 @@ class AC extends PureComponent {
     render() {
         var {
             onChange, filterResult,
-            props: { multiple, dropdown, displayField, children, placeholder, title, className, style },
+            props: { multiple, dropdown, displayField, children, placeholder, title, className, style, size, maxlength, scrollHeight, disabled },
             state: { value, list }
         } = this;
 
         return (
             <AutoComplete appendTo={document.body} multiple={multiple} itemTemplate={children} dropdown={dropdown}
                 field={displayField} placeholder={placeholder} tooltip={title} className={className} style={style}
+                size={size} maxlength={maxlength} scrollHeight={scrollHeight} disabled={disabled}
                 value={value} onChange={onChange} suggestions={list} completeMethod={filterResult} />
         );
     }

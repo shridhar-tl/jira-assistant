@@ -11,15 +11,18 @@ class InputCheckbox extends PureComponent {
     }
 
     onChange = (e) => {
-        this.props.onChange(e.checked);
+        const { onChange } = this.props;
+        if (onChange) {
+            onChange(e.checked);
+        }
     }
 
     render() {
-        var { inputId, onChange, props: { className, checked = false, label } } = this;
+        var { inputId, onChange, onClick, props: { className, checked = false, label } } = this;
 
         return (
             <span className={className}>
-                <Checkbox inputId={inputId} onChange={onChange} checked={checked}></Checkbox>
+                <Checkbox inputId={inputId} onChange={onChange} checked={checked} onClick={onClick} />
                 {label && <label htmlFor={inputId}>{label}</label>}
             </span>
         );

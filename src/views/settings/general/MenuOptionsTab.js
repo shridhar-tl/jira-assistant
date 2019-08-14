@@ -1,7 +1,8 @@
 import React from 'react';
 import TabControlBase from './TabControlBase';
 import { navigation } from '../../../_nav';
-import { Checkbox, SelectBox } from '../../../controls';
+import { Checkbox, SelectBox, RadioButton } from '../../../controls';
+import { ListBox } from 'primereact/listbox';
 
 class MenuOptionsTab extends TabControlBase {
     UNSAFE_componentWillMount() {
@@ -32,6 +33,83 @@ class MenuOptionsTab extends TabControlBase {
         });
     }
 
+    setLaunchAction() {
+        const { settings } = this.props;
+        var setting = { action: parseInt(settings.menuAction) };
+        var launchSetting = { action: setting.action };
+        settings.launchAction = setting;
+        switch (settings.menuAction) {
+            case 1:
+                launchSetting.menus = this.menus.map(menu => {
+                    if (menu.selected && !menu.isHead) {
+                        return { name: menu.name, url: menu.url };
+                    }
+                });
+                break;
+            case 2:
+                if (this.selectedLaunchPage) {
+                    var selLPage = this.menus.first(menu => menu.id === this.selectedLaunchPage);
+                    if (selLPage) {
+                        launchSetting.url = selLPage.url;
+                        setting.autoLaunch = this.selectedLaunchPage;
+                    }
+                }
+                break;
+            case 3:
+                if (this.selectedDashboard) {
+                    launchSetting.index = parseInt((this.selectedDashboard || '0').replace('D-', ''));
+                    setting.quickIndex = this.selectedDashboard;
+                }
+                break;
+            default: break;
+        }
+
+        this.$cache.set("menuAction", launchSetting, false, true);
+    }
+
+    menuSelected = (menu, event) => {
+        if (event) {
+            event.stopPropagation();
+        }
+
+        menu.selected = !menu.selected;
+
+        if (menu.isHead) {
+            this.selectSubMenus(menu);
+        }
+
+        const selectedMenus = this.state.menus.filter(m => m.selected && !m.isHead).map(m => m.id);
+        this.setValue("selectedMenus", selectedMenus);
+    }
+
+    selectSubMenus(menu) {
+        const { menus } = this.state;
+
+        for (var i = menus.indexOf(menu) + 1; i < menus.length; i++) {
+            const subMenu = menus[i];
+            if (subMenu.isHead) {
+                return;
+            }
+            subMenu.selected = menu.selected;
+        }
+    }
+
+    menuTemplate = (menu) => {
+        if (menu.isHead) {
+            return <div onClick={($event) => this.menuSelected(menu, $event)}>
+                <Checkbox checked={menu.selected} /><span>{menu.name}</span>
+            </div>
+        }
+        if (!menu.isHead) {
+            return <div style={{ marginLeft: 20 }} onClick={(e) => this.menuSelected(menu, e)}>
+                <Checkbox checked={menu.selected} /><span>{menu.name}</span>
+            </div>
+        }
+    }
+
+    dashboardChanged = (val) => this.setState({ selectedDashboard: val })
+    launchPageChanged = (val) => this.setState({ selectedLaunchPage: val })
+
     render() {
         var {
             props: { settings },
@@ -49,62 +127,56 @@ class MenuOptionsTab extends TabControlBase {
                         <div className="ui-g-12 ui-md-9 ui-lg-9 ui-xl-10">
                             <div className="form-group">
                                 <label className="check">
-                                    <input type="radio" value={settings.menuAction} onChange={(val) => { settings.menuAction = val }} defaultValue={1} /> Show menus
+                                    <RadioButton value={settings.menuAction} onChange={(val) => this.setValue("menuAction", val)} defaultValue={1} /> Show menus
                                         </label>
                                 <label className="check">
-                                    <input type="radio" value={settings.menuAction} onChange={(val) => { settings.menuAction = val }} defaultValue={2} /> Auto launch
+                                    <RadioButton value={settings.menuAction} onChange={(val) => this.setValue("menuAction", val)} defaultValue={2} /> Auto launch
                                         </label>
                                 <label className="check">
-                                    <input type="radio" value={settings.menuAction} onChange={(val) => { settings.menuAction = val }} defaultValue={3} /> Show quickview dashboard
+                                    <RadioButton value={settings.menuAction} onChange={(val) => this.setValue("menuAction", val)} defaultValue={3} /> Show quickview dashboard
                                         </label>
                                 <span className="help-block">Select appropriate option what you would expect to happen when you click on JA icon</span>
                             </div>
                         </div>
-                        <div hidden={settings.menuAction !== '1'} className="form-label ui-g-12 ui-md-3 ui-lg-3 ui-xl-2">
+
+                        {settings.menuAction === 1 && <div className="form-label ui-g-12 ui-md-3 ui-lg-3 ui-xl-2">
                             <strong>Menus to display</strong>
-                        </div>
-                        <div hidden={settings.menuAction !== '1'} className="ui-g-12 ui-md-9 ui-lg-9 ui-xl-10">
+                        </div>}
+                        {settings.menuAction === 1 && <div className="ui-g-12 ui-md-9 ui-lg-9 ui-xl-10">
                             <div className="form-group">
                                 <div style={{ display: 'inline-block', height: 300, overflow: 'auto' }}>
-                                    <p-listbox options={menus} value={selectedMenus} onChange={(val) => this.setState({ selectedMenus: val })} multiple="multiple" optionlabel="name" style={{ width: '300px', height: '300px' }}>
-                                        {(menu) => (<>
-                                            {menu.value.isHead && <div onClick={($event) => { menu.value.selected = !menu.value.selected; this.selectSubMenus(menu, $event) }}>
-                                                <Checkbox value={menu.value.selected} onChange={(val) => { menu.value.selected = val }} label={menu.label}
-                                                    binary="true" onClick={(e) => this.selectSubMenus(menu, e)} />
-                                            </div>}
-                                            {!menu.value.isHead && <div style={{ marginLeft: 20 }} onClick={() => menu.value.selected = !menu.value.selected}>
-                                                <Checkbox value={menu.value.selected} onChange={(val) => { menu.value.selected = val }} label={menu.label} binary="true" onClick={(e) => e.stopPropagation} />
-                                            </div>}</>)}
-                                    </p-listbox></div>
+                                    <ListBox options={menus} value={selectedMenus} onChange={(val) => this.setState({ selectedMenus: val })}
+                                        multiple={true} style={{ width: '300px' }} listStyle={{ maxHeight: '250px' }} itemTemplate={this.menuTemplate} />
+                                </div>
                                 <span className="help-block">Choose the list of menus you would like to be displayed</span>
                             </div>
-                        </div>
-                        <div hidden={settings.menuAction !== '2'} className="form-label ui-g-12 ui-md-3 ui-lg-3 ui-xl-2">
+                        </div>}
+
+                        <div hidden={settings.menuAction !== 2} className="form-label ui-g-12 ui-md-3 ui-lg-3 ui-xl-2">
                             <strong>Auto launch page</strong>
                         </div>
-                        <div hidden={settings.menuAction !== '2'} className="ui-g-12 ui-md-9 ui-lg-9 ui-xl-10">
+                        <div hidden={settings.menuAction !== 2} className="ui-g-12 ui-md-9 ui-lg-9 ui-xl-10">
                             <div className="form-group">
-                                <SelectBox options={launchMenus} value={selectedLaunchPage} onChange={(val) => this.setState({ selectedLaunchPage: val })} style={{ 'width': '200px' }} group={true}>
+                                <SelectBox options={launchMenus} value={selectedLaunchPage} onChange={this.launchPageChanged} style={{ 'width': '200px' }} group={true}>
                                     {(menu) => (<>
                                         <i className="fa" ngclass={menu.icon} />
                                         <span style={{ verticalAlign: 'middle' }}>{menu.label}</span>
                                     </>)}
-                                    {(group) => <>
-                                        <div style={{ height: '200px' }}>
-                                            <span style={{ verticalAlign: 'middle' }}>{group.label}</span>
-                                        </div>
-                                        <p />
-                                        <span className="help-block">Select the page to be launched when clicking on the JA icon</span>
-                                    </>}
+                                    {(group) => <div style={{ height: '200px' }}>
+                                        <span style={{ verticalAlign: 'middle' }}>{group.label}</span>
+                                    </div>}
                                 </SelectBox>
+                                <span className="help-block">Select the page to be launched when clicking on the JA icon</span>
                             </div>
                         </div>
-                        <div hidden={settings.menuAction !== '3'} className="form-label ui-g-12 ui-md-3 ui-lg-3 ui-xl-2">
+
+                        <div hidden={settings.menuAction !== 3} className="form-label ui-g-12 ui-md-3 ui-lg-3 ui-xl-2">
                             <strong>Quick view board</strong>
                         </div>
-                        <div hidden={settings.menuAction !== '3'} className="ui-g-12 ui-md-9 ui-lg-9 ui-xl-10">
+                        <div hidden={settings.menuAction !== 3} className="ui-g-12 ui-md-9 ui-lg-9 ui-xl-10">
                             <div className="form-group">
-                                <SelectBox options={dashboards} value={selectedDashboard} onChange={(val) => this.setState({ selectedDashboard: val })} style={{ 'width': '200px' }}>
+                                <SelectBox options={dashboards} value={selectedDashboard} onChange={this.dashboardChanged}
+                                    style={{ 'width': '200px' }}>
                                     {(menu) => <>
                                         <i className="fa" ngclass={menu.icon} />
                                         <span style={{ verticalAlign: 'middle' }}>{menu.label}</span>

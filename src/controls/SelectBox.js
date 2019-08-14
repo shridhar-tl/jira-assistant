@@ -52,7 +52,7 @@ class SelectBox extends PureComponent {
 
     render() {
         var {
-            props: { displayField, placeholder, multiselect, dataset, style, className },
+            props: { displayField, placeholder, multiselect, dataset, style, className, filterPlaceholder },
             state: { value }
         } = this;
 
@@ -67,7 +67,7 @@ class SelectBox extends PureComponent {
         else {
             return (
                 <Dropdown appendTo={document.body} value={value} optionLabel={displayField} options={dataset} filter={filter} style={style} className={className}
-                    onChange={this.onChange} placeholder={placeholder} />
+                    onChange={this.onChange} placeholder={placeholder} filterPlaceholder={filterPlaceholder} />
             );
         }
     }
