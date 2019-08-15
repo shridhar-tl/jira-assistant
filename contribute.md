@@ -2,6 +2,14 @@
 
 Due to several work related commitments, the development / bug fixes are little slow and I apologize for that. However, I'm looking for voluntiers who could contribute and help me maintain this project.
 
+## How to contribute?
+
+Latest code is now available in develop branch.
+Before starting to work on anything, please create a proper issue on Github and assign the issue to Shridhars TL. This ensures a smooth transition, once a pull request is created.
+
+Please keep in mind that, any changes you make should work in all the browser and should be generic to all users.
+No implementation is allowed which is specific to your requirements.
+
 ### Where can you contribute?
 - Covering documentation for all the features available in Jira Assistent. I get lots of mails related to requirements of some features. But most of the times, those would be already available but will have to change some settings or do some little tweaks to get it working. If someone can go through all the features and document it along with steps, then such mails would get reduced and I can concentrate more in development rather than trying to answer such mails.
 - Their is already a FAQ module available in Jira Assistant, but that does not cover all the modules / scenarios. Helping me in adding more scenarious / questions would serve the purpose same as that of documentation.
@@ -24,7 +32,7 @@ Following are some of the requirements for which analysis is yet to be done. If 
 
 **Note:** It is fine if the solution does not meet all the points mentioned, but should atleast meet the most necessary one.
 
-### Guidelines to start with deveopment
+### Guidelines to start with development
 If you are planning to start with development / bug fix activity, then please follow these guidelines to avoid any issues:
 
 - Do not develop a module which would serve only your purpose. Anything you build should be usable by all the users, irrrespective of the version of Jira they use.
@@ -36,9 +44,5 @@ If you are planning to start with development / bug fix activity, then please fo
 - Though it is not necessary, I would suggest providing a brief documentation about your module. This can also be added as part of FAQ module.
 - I suggest you to create a unit test cases for your module and have a good coverage for all the scenarious. This is not necessary. Do it only if your timelines permits.
 
-### How to start the development?
-
-- First and formost, please follow all the points provided under guidelines.
-- If you plan to develop a new module, please create an issue with all the details and start only after you get a go ahead from me.
-- Assign the appropriate issue in GitHub to your name before starting the development activity and have the status updated always in GitHub.
-- Create a branch out of develop and start the development and provide appropriate comment for each commits.
+### Setup Environment
+Please refer [development support](DEVELOPMENT.md) document to setup your local environment and starting the development. 
