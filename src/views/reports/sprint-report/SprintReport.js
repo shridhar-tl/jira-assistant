@@ -117,19 +117,19 @@ class SprintReport extends PureComponent {
                     sprint.contents.issuesNotCompletedInCurrentSprint.forEach(processAdded);
                     sprint.addedSP = addedSP || '';
                     sprint.addedSPOld = addedSPOld && addedSPOld !== addedSP ? addedSPOld : null;
-                    let completedModified = sprint.contents.completedIssuesInitialEstimateSum.value;
-                    let completed = sprint.contents.completedIssuesEstimateSum.value;
+                    const completedModified = sprint.contents.completedIssuesInitialEstimateSum.value;
+                    const completed = sprint.contents.completedIssuesEstimateSum.value;
                     sprint.completedSP = completed || '';
                     sprint.completedSPOld = completedModified && completedModified !== completed ? completedModified : null;
                     sprint.completedWithSP = getCountWithSP(sprint.contents.completedIssues);
                     sprint.CompletedTotal = sprint.contents.completedIssues.length;
-                    let incompletedModified = sprint.contents.issuesNotCompletedInitialEstimateSum.value;
-                    let incompleted = sprint.contents.issuesNotCompletedEstimateSum.value || '';
+                    const incompletedModified = sprint.contents.issuesNotCompletedInitialEstimateSum.value;
+                    const incompleted = sprint.contents.issuesNotCompletedEstimateSum.value || '';
                     sprint.incompletedSP = incompleted;
                     sprint.incompletedSPOld = incompletedModified && incompletedModified !== incompleted ? incompletedModified : null;
                     sprint.incompletedWithSP = getCountWithSP(sprint.contents.issuesNotCompletedInCurrentSprint);
                     sprint.incompletedTotal = sprint.contents.issuesNotCompletedInCurrentSprint.length;
-                    let removedModified = sprint.contents.puntedIssuesInitialEstimateSum.value;
+                    const removedModified = sprint.contents.puntedIssuesInitialEstimateSum.value;
                     removed = sprint.contents.puntedIssuesEstimateSum.value || ''; // ToDo: Need to check
                     sprint.removedSP = removed;
                     sprint.removedSPOld = removedModified && removedModified !== removed ? removedModified : null;

@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { ScrollableTable, THead, TRow, Column, TBody } from '../../components/ScrollableTable';
+import { ScrollableTable, THead, TRow, Column, TBody, NoDataRow } from '../../components/ScrollableTable';
 
 class FlatDataGrid extends PureComponent {
     render() {
@@ -37,6 +37,7 @@ class FlatDataGrid extends PureComponent {
                         <td>{row.comment}</td>
                     </tr>}
                 </TBody>
+                <NoDataRow span={11}>No worklog details available</NoDataRow>
             </ScrollableTable>
         );
     }

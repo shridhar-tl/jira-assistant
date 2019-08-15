@@ -19,25 +19,17 @@ class AddWorklog extends BaseDialog {
         this.state.uploadImmediately = this.$session.CurrentUser.autoUpload || false;
     }
 
-    componentDidMount() {
+    UNSAFE_componentWillMount() {
+        this.$suggestion.getTicketSuggestion().then(u => {
+            this.allTicketList = u;
+        });
+
         this.loadWorklog(this.state.log);
     }
 
     loadWorklog(log) {
         if (log.id) {
-            var pro = this.fillWorklog(log);
-
-            if (log.copy) {
-                pro.then(d => {
-                    delete d.id;
-                    delete d.isUploaded;
-                    delete d.worklogId;
-                    delete d.parentId;
-                    d.dateStarted = moment((new Date()).format('yyyy/MM/dd') + ' ' + d.dateStarted.format('HH:mm:ss')).toDate();
-
-                    this.setState({ loading: false, log: d });
-                });
-            }
+            this.fillWorklog(log, log.copy);
         }
     }
 
@@ -72,29 +64,35 @@ class AddWorklog extends BaseDialog {
         return newState;
     }
 
-    UNSAFE_componentWillMount() {
-        this.$suggestion.getTicketSuggestion().then(u => {
-            this.allTicketList = u;
-        });
-    }
-
     searchTickets = (query) => {
         query = (query || "").toLowerCase();
         return this.allTicketList.filter(t => t.value.toLowerCase().indexOf(query) > -1 || t.label.toLowerCase().indexOf(query) > -1);
     }
 
-    fillWorklog(worklog) {
+    fillWorklog(worklog, copy) {
         return this.$worklog.getWorklog(worklog).then((d) => {
             if (d.timeSpent) {
                 d.timeSpent = d.timeSpent.substring(0, 5);
-                if (d.timeSpent === "00:00")
+                if (d.timeSpent === "00:00") {
                     d.timeSpent = null;
+                }
             }
             if (d.overrideTimeSpent) {
                 d.overrideTimeSpent = d.overrideTimeSpent.substring(0, 5);
                 d.allowOverride = true;
             }
-            this.previousTime = d.dateStarted;
+
+            if (copy) {
+                delete d.id;
+                delete d.isUploaded;
+                delete d.worklogId;
+                delete d.parentId;
+                d.dateStarted = moment((new Date()).format('yyyy/MM/dd') + ' ' + d.dateStarted.format('HH:mm:ss')).toDate();
+            }
+            else {
+                this.previousTime = d.dateStarted;
+            }
+
             var newState = { log: d, vald: this.state.vald, ctlClass: this.state.ctlClass };
             this.validateData(newState.log, newState.vald, newState.ctlClass);
             this.setState(newState);
@@ -257,9 +255,9 @@ class AddWorklog extends BaseDialog {
                     <div className="form-group no-margin">
                         <div className="p-inputgroup ctlClass.overrideTimeSpent">
                             <span className="p-inputgroup-addon">
-                                <Checkbox checked={log.allowOverride} onChange={(val) => this.setValue("allowOverride", val)} />
+                                <Checkbox checked={log.allowOverride || false} onChange={(val) => this.setValue("allowOverride", val)} />
                             </span>
-                            <InputMask mask="99:99" className="w-80" value={log.overrideTimeSpent} placeholder="00:00" maxlength={5} disabled={!log.allowOverride}
+                            <InputMask mask="99:99" className="w-80" value={log.overrideTimeSpent || ""} placeholder="00:00" maxlength={5} disabled={!log.allowOverride}
                                 onChange={(e) => this.setValue("overrideTimeSpent", e.value)} />
                         </div>
                     </div>

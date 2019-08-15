@@ -21,6 +21,14 @@
     width: 100%;
 }
 
+.p-autocomplete-panel,.p-datepicker{
+    z-index: 3000 !important;
+}
+
+.p-autocomplete-panel{
+    max-width: 350px;
+}
+
 .p-dropdown {
     width: 100%;
     height: 30px;
@@ -54,6 +62,12 @@ a.p-menuitem-link {
 
 // TabView related styles
 .p-tabview {
+    &.no-padding{
+        .p-tabview-panels{
+            padding:0;
+        }
+    }
+
     .p-tabview-nav {
         a[role="tab"] {
             padding: 2px 14px !important;

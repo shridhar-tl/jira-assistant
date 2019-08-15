@@ -22,13 +22,17 @@ class GroupedDataGrid extends PureComponent {
             return time ? 'log-high' : 'col-holiday';
         }
         else {
-            var secsPerDay = this.maxSecsPerDay;
-            if (time === secsPerDay)
+            console.log()
+            var secsPerDay = this.props.maxSecsPerDay;
+            if (time === secsPerDay) {
                 return 'log-good';
-            else if (time < secsPerDay)
+            }
+            else if (time < secsPerDay) {
                 return 'log-less';
-            else if (time > secsPerDay)
+            }
+            else if (time > secsPerDay) {
                 return 'log-high';
+            }
         }
     }
 

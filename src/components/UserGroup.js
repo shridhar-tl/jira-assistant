@@ -158,7 +158,7 @@ class GroupRow extends PureComponent {
                 </td>
                 <td colSpan={2}>
                     <AutoComplete value={selectedUsers} onChange={this.usersSelected}
-                        field="displayName" multiple={true} minLength={2} forceselection={true}
+                        displayField="displayName" multiple={true} minLength={2} forceselection={true}
                         placeholder="Add one or more users"
                         dataset={this.searchUsers} style={{ 'width': '80%' }} />
                     <Button type="danger" icon="fa fa-close" onClick={this.clearSelection} />

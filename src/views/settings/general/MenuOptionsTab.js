@@ -5,6 +5,8 @@ import { Checkbox, SelectBox, RadioButton } from '../../../controls';
 import { ListBox } from 'primereact/listbox';
 
 class MenuOptionsTab extends TabControlBase {
+    state = { launchMenus: [] };
+
     UNSAFE_componentWillMount() {
         var menus = [];
         var launchMenus = [];

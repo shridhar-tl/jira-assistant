@@ -30,7 +30,7 @@ class InputCheckbox extends PureComponent {
 }
 
 InputCheckbox.propTypes = {
-    checked: PropTypes.bool.isRequired,
+    checked: PropTypes.bool,
     onChange: PropTypes.func.isRequired,
     label: PropTypes.string
 };

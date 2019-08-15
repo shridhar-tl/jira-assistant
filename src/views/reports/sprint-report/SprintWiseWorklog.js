@@ -1,10 +1,6 @@
 import React, { PureComponent } from 'react';
 
 class SprintWiseWorklog extends PureComponent {
-    constructor(props) {
-        super(props);
-    }
-
     UNSAFE_componentWillReceiveProps(change) {
         if (this.props.groups) {
             this.props.groups.forEach(grp => {
@@ -18,24 +14,24 @@ class SprintWiseWorklog extends PureComponent {
     }
 
     processTicketData() {
-        let userList = this.groups.union(grp => grp.users.map(u => u.name)).distinct();
+        const userList = this.groups.union(grp => grp.users.map(u => u.name)).distinct();
         this.reportData = this.sprintDetails.map(curSprint => {
-            let sprintInfo = curSprint.sprint;
-            let sprintWorklogs = {};
-            let sprint = {
+            const sprintInfo = curSprint.sprint;
+            const sprintWorklogs = {};
+            const sprint = {
                 sprintName: sprintInfo.name, startDate: sprintInfo.startDate,
                 endDate: sprintInfo.endDate, completeDate: sprintInfo.completeDate, issuetypes: [],
                 worklogs: sprintWorklogs,
                 completedSP: 0, incompleteSP: 0
             };
-            let sprintDetails = {
+            const sprintDetails = {
                 startDate: sprintInfo.startDate, endDate: sprintInfo.completeDate, sprintStatus: sprintInfo.state,
                 issueDetails: {}
             };
             var ticketDet = sprintDetails.issueDetails;
             let ticketList = [];
             curSprint.contents.completedIssues.forEach(i => {
-                var cs = curSprint;
+                //const cs = curSprint;
                 ticketList.push(i.key);
                 ticketDet[i.key] = {
                     done: i.done,
@@ -46,7 +42,7 @@ class SprintWiseWorklog extends PureComponent {
                 };
             });
 
-            let tickets = this.getIssueDetails(ticketList, sprintDetails, true);
+            const tickets = this.getIssueDetails(ticketList, sprintDetails, true);
             // Fetch incomplete issues
             ticketList = [];
             ticketDet = {};
@@ -66,7 +62,7 @@ class SprintWiseWorklog extends PureComponent {
             sprint.issuetypes = tickets.groupBy(t => t.issuetype.name)
                 .map(grp => {
                     let completedSP = 0, incompleteSP = 0;
-                    let worklogs = {};
+                    const worklogs = {};
                     grp.values.forEach(issue => {
                         if (issue.completed) {
                             completedSP += (issue.storyPoint || 0);
@@ -77,7 +73,7 @@ class SprintWiseWorklog extends PureComponent {
                             sprintIncompleteSP += (issue.storyPoint || 0);
                         }
                         userList.forEach(user => {
-                            let userTotal = ((issue.worklogs[user] || {}).allTotal || 0);
+                            const userTotal = ((issue.worklogs[user] || {}).allTotal || 0);
                             worklogs[user] = (worklogs[user] || 0) + userTotal;
                             sprintWorklogs[user] = (sprintWorklogs[user] || 0) + userTotal;
                         });
@@ -93,10 +89,10 @@ class SprintWiseWorklog extends PureComponent {
     }
 
     setUserWiseWorklog(fields) {
-        let worklogs = {};
+        const worklogs = {};
         var worklogList = (fields.worklog || {}).worklogs;
         worklogList.forEach(wl => {
-            let author = wl.author.name;
+            const author = wl.author.name;
             let wlObj = worklogs[author];
             if (!wlObj) {
                 wlObj = { total: 0, allTotal: 0 };
@@ -110,13 +106,13 @@ class SprintWiseWorklog extends PureComponent {
     }
 
     getIssueDetails(issueList, details, isMainTask) {
-        var issueDetails = details.issueDetails;
+        //var issueDetails = details.issueDetails;
         //var users = this.userObject;
-        var issues = this.ticketDetails.filter(i => issueList.Contains(i.key))
+        var issues = this.ticketDetails.filter(i => issueList.contains(i.key))
             .map(issue => {
-                let curDetail = issueDetails[issue.key];
-                let fields = issue.fields || {};
-                let ticket = {
+                //const curDetail = issueDetails[issue.key];
+                const fields = issue.fields || {};
+                const ticket = {
                     ticketNo: issue.key,
                     summary: fields.summary,
                     status: fields.status,
@@ -128,13 +124,13 @@ class SprintWiseWorklog extends PureComponent {
                     ticket.subtasks = this.getIssueDetails(this.ticketDetails.filter(i => ((i.fields || {}).parent || {}).key === issue.key)
                         .map(i => i.key), details);
                     if (ticket.subtasks) {
-                        let parentWl = ticket.worklogs;
+                        const parentWl = ticket.worklogs;
                         let estimateAll = 0;
                         ticket.subtasks.forEach(child => {
                             estimateAll += (child.estimate || 0);
-                            let childWL = child.worklogs;
-                            let usrs = Object.keys(childWL);
-                            for (let u of usrs) {
+                            const childWL = child.worklogs;
+                            const usrs = Object.keys(childWL);
+                            for (const u of usrs) {
                                 var subTotal = childWL[u].allTotal;
                                 let parentU = parentWl[u];
                                 if (!parentU) {
@@ -146,7 +142,7 @@ class SprintWiseWorklog extends PureComponent {
                         });
                         ticket.estimateAll = estimateAll + (ticket.estimate || 0);
                     }
-                    let iDetail = details.issueDetails[issue.key];
+                    const iDetail = details.issueDetails[issue.key];
                     ticket.sprintStatus = details.sprintStatus;
                     ticket.done = iDetail.done;
                     ticket.epic = iDetail.epic;
@@ -164,26 +160,26 @@ class SprintWiseWorklog extends PureComponent {
 
     updateWorklogDetails() {
         this.reportData.forEach(sprint => {
-            let sprintWorklogs = {};
+            const sprintWorklogs = {};
             sprint.worklogs = sprintWorklogs;
             let sprintGrandTotal = 0;
-            let sprintGroupTotal = [];
+            const sprintGroupTotal = [];
             let sprintEstimate = 0;
             sprint.issuetypes.forEach((issuetype => {
-                let issueTypeWorklogs = {};
+                const issueTypeWorklogs = {};
                 issuetype.worklogs = issueTypeWorklogs;
                 let typeGrandTotal = 0;
-                let typeGroupTotal = [];
+                const typeGroupTotal = [];
                 let issueTypeEstimate = 0;
-                let processIssue = (issue) => {
+                const processIssue = (issue) => {
                     if (!this.showIncomplete && !issue.completed) {
                         return;
                     }
                     issueTypeEstimate += issue.estimateAll || 0;
                     let grandTotal = 0;
                     let grandTotalAll = 0;
-                    let groupTotal = [];
-                    let groupTotalAll = [];
+                    const groupTotal = [];
+                    const groupTotalAll = [];
                     this.groups.forEach((grp, grpIdx) => {
                         if (!grp.include) {
                             return;
@@ -194,8 +190,8 @@ class SprintWiseWorklog extends PureComponent {
                             if (!user.include) {
                                 return;
                             }
-                            let userTotalAll = (issue.worklogs[user.name] || {}).allTotal || 0;
-                            let userTotal = (issue.worklogs[user.name] || {}).total || 0;
+                            const userTotalAll = (issue.worklogs[user.name] || {}).allTotal || 0;
+                            const userTotal = (issue.worklogs[user.name] || {}).total || 0;
                             issueTypeWorklogs[user.name] = (issueTypeWorklogs[user.name] || 0) + userTotalAll;
                             sprintWorklogs[user.name] = (sprintWorklogs[user.name] || 0) + userTotalAll;
                             grpTotalAll += userTotalAll;

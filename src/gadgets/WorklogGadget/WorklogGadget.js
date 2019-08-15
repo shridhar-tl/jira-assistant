@@ -9,8 +9,9 @@ import { TabView, TabPanel } from 'primereact/tabview';
 import FlatDataGrid from './FlatDataGrid';
 import GroupedDataGrid from './GroupedDataGrid';
 import WorklogReportInfo from './WorklogReportInfo';
+import "./WorklogGadget.scss";
 
-class DayWiseWorklog extends BaseGadget {
+class WorklogGadget extends BaseGadget {
     constructor(props) {
         super(props, 'Logged Work - [User - Day wise]', 'fa-list-alt');
         inject(this, "SessionService", "CacheService", "UtilsService", "UserUtilsService", "DataTransformService", "JiraService", "MessageService", "ConfigService", "UserGroupService");
@@ -249,7 +250,7 @@ class DayWiseWorklog extends BaseGadget {
     }
 
     filterUserData(arr, date) {
-        let tmp = date.format('yyyyMMdd');
+        const tmp = date.format('yyyyMMdd');
         return arr.filter((d) => { return this.$utils.convertDate(d.logTime).format('yyyyMMdd') === tmp; }).sum(d => d.totalHours);
     }
 
@@ -259,7 +260,7 @@ class DayWiseWorklog extends BaseGadget {
             groupdUsers = groupdUsers.filter(g => g.groupName === groupName);
         }
         if (date) {
-            let tmp = date.format('yyyyMMdd');
+            const tmp = date.format('yyyyMMdd');
             return groupdUsers.union(g => g.logData)
                 .filter((d) => { return this.$utils.convertDate(d.logTime).format('yyyyMMdd') === tmp; }).sum(d => d.totalHours);
         }
@@ -283,7 +284,7 @@ class DayWiseWorklog extends BaseGadget {
     showSettings = () => this.setState({ showSettings: true });
 
     renderCustomActions() {
-        var { isGadget, state: { dateRange } } = this;
+        const { isGadget, state: { dateRange } } = this;
 
         return <>
             <DatePicker value={dateRange} range={true} onChange={this.dateSelected} style={{ marginRight: '35px' }} />
@@ -292,12 +293,10 @@ class DayWiseWorklog extends BaseGadget {
             {!isGadget && <Button icon="fa fa-refresh" onClick={this.generateReport} title="Refresh data" />}
             {/*(groupedData || flatData) && <div jaexport element="tblGrp || tblFlat || wldiv" filename="User Daywise Worklogs" />*/}
             <Button icon="fa fa-cogs" onClick={this.showSettings} title="Show settings" />
-        </>
+        </>;
     }
 
-    groupsChanged = (groups) => {
-        this.setState({ showGroupsPopup: false, groups });
-    }
+    groupsChanged = (groups) => this.setState({ showGroupsPopup: false, groups })
 
     settingsChanged = (pageSettings) => {
         if (!pageSettings) {
@@ -334,10 +333,10 @@ class DayWiseWorklog extends BaseGadget {
                 {isLoading && <div className="pad-15">Loading... please wait while the report is being loaded.
                 It may take few seconds / minute based on the range you had selected.</div>}
 
-                {rawData && <TabView>
+                {rawData && <TabView className="no-padding">
                     <TabPanel header="Grouped - [User daywise]" contentClassName="no-padding">
                         {rawData && <GroupedDataGrid rawData={rawData} groups={groups} dates={dates} months={months} pageSettings={pageSettings}
-                            convertSecs={convertSecs} formatTime={formatTime} breakupMode={breakupMode} getTicketUrl={this.$userutils.getTicketUrl} />}
+                            convertSecs={convertSecs} formatTime={formatTime} breakupMode={breakupMode} getTicketUrl={this.$userutils.getTicketUrl} maxSecsPerDay={this.maxSecsPerDay} />}
                     </TabPanel>
                     <TabPanel header="Flat">
                         {flatData && <FlatDataGrid flatData={flatData} formatDateTime={formatDateTime} convertSecs={convertSecs} />}
@@ -351,5 +350,5 @@ class DayWiseWorklog extends BaseGadget {
     }
 }
 
-export default DayWiseWorklog;
+export default WorklogGadget;
 

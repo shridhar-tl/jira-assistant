@@ -6,14 +6,14 @@ export default class UserUtilsService {
         this.$utils = $utils;
     }
 
-    getTicketUrl(ticketNo) {
+    getTicketUrl = (ticketNo) => {
         if (!ticketNo) {
             return;
         }
         return this.$session.CurrentUser.ticketViewUrl + ticketNo;
     }
 
-    mapJiraUrl(url) {
+    mapJiraUrl = (url) => {
         if (!url || (url.startsWith('http') && url.indexOf(':') > 3)) {
             return url;
         }
@@ -23,14 +23,14 @@ export default class UserUtilsService {
         return this.$session.CurrentUser.jiraUrl + url;
     }
 
-    isHoliday(date) {
+    isHoliday = (date) => {
         var weekDay = date.getDay();
         var workingDays = this.$session.CurrentUser.workingDays;
         //ToDo: Need to have track of holiday and need to do the checking here
         return workingDays.indexOf(weekDay) === -1;
     }
 
-    getProfileImgUrl(user) {
+    getProfileImgUrl = (user) => {
         if (user.jiraUser) {
             user = user.jiraUser;
         }
@@ -43,7 +43,7 @@ export default class UserUtilsService {
         ///Security/ProfilePic / {{userInfo.name }}
     }
 
-    formatDateTime(value, format, utc) {
+    formatDateTime = (value, format, utc) => {
         if (!value)
             return value;
         if (!format)
@@ -58,18 +58,18 @@ export default class UserUtilsService {
         return date;
     }
 
-    formatDate(value, format, utc) {
+    formatDate = (value, format, utc) => {
         if (!format) {
             format = this.$session.CurrentUser.dateFormat;
         }
         return this.formatDateTime(value, format, utc);
     }
 
-    formatTime(value, format, utc) {
+    formatTime = (value, format, utc) => {
         return this.formatDateTime(value, format || this.$session.CurrentUser.timeFormat, utc);
     }
 
-    getDays(fromDate, toDate) {
+    getDays = (fromDate, toDate) => {
         var dateArr = this.$utils.getDateArray(fromDate, toDate);
         var now = new Date().getTime();
         return dateArr.map(d => {

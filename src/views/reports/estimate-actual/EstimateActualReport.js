@@ -4,13 +4,86 @@ import pattern from 'patternomaly';
 import { inject } from '../../../services';
 import BaseGadget from '../../../gadgets/BaseGadget';
 import { TabView, TabPanel } from 'primereact/tabview';
-import { AutoComplete, TextBox, Button, DatePicker, RadioButton } from '../../../controls'
+import { AutoComplete, TextBox, Button, DatePicker, RadioButton } from '../../../controls';
 import { Chart } from 'primereact/chart';
+import GroupEditor from '../../../dialogs/GroupEditor';
+
+const defaultChartColors = [
+    {
+        backgroundColor: '#f1c40f4a',
+        borderColor: '#f1c40f',
+        hoverBackgroundColor: '#f1c40f',
+        pointBackgroundColor: 'rgba(148,159,177,1)',
+        pointBorderColor: '#fff',
+    },
+    {
+        backgroundColor: '#27ae614a',
+        borderColor: '#27ae61',
+        pointBackgroundColor: 'rgba(77,83,96,1)',
+        pointBorderColor: '#fff',
+    },
+    {
+        backgroundColor: '#e84c3d4a',
+        borderColor: '#e84c3d',
+        pointBackgroundColor: 'rgba(148,159,177,1)',
+        pointBorderColor: '#fff',
+    },
+    {
+        backgroundColor: '#8f44ad4a',
+        borderColor: '#8f44ad',
+        pointBackgroundColor: 'rgba(148,159,177,1)',
+        pointBorderColor: '#fff',
+    },
+    {
+        backgroundColor: '#9a8d2f4a',
+        borderColor: '#9a8d2f',
+        pointBackgroundColor: 'rgba(148,159,177,1)',
+        pointBorderColor: '#fff',
+    },
+    {
+        backgroundColor: '#3e95cd94',
+        borderColor: '#3e95cd',
+        hoverBackgroundColor: '#3e95cd',
+        pointBackgroundColor: 'rgba(148,159,177,1)',
+        pointBorderColor: '#fff',
+    },
+    {
+        backgroundColor: '#8e5ea27a',
+        borderColor: '#8e5ea2',
+        hoverBackgroundColor: '#8e5ea2',
+        pointBackgroundColor: 'rgba(148,159,177,1)',
+        pointBorderColor: '#fff',
+    },
+    {
+        backgroundColor: '#3cba9f7d',
+        borderColor: '#3cba9f',
+        pointBackgroundColor: 'rgba(148,159,177,1)',
+        pointBorderColor: '#fff',
+    },
+    {
+        backgroundColor: '#e8c3b987',
+        borderColor: '#e8c3b9',
+        pointBackgroundColor: 'rgba(148,159,177,1)',
+        pointBorderColor: '#fff',
+    },
+    {
+        backgroundColor: '#c4585080',
+        borderColor: '#c45850',
+        pointBackgroundColor: 'rgba(148,159,177,1)',
+        pointBorderColor: '#fff',
+    },
+    {
+        backgroundColor: 'rgba(148,159,177,0.2)',
+        borderColor: 'rgba(148,159,177,1)',
+        pointBackgroundColor: 'rgba(148,159,177,1)',
+        pointBorderColor: '#fff',
+    }
+];
 
 class EstimateActualReport extends BaseGadget {
     constructor(props) {
         super(props, "Estimate vs Actual report", "fa fa-list-alt");
-        inject(this, "SessionService", "JiraService");
+        inject(this, "SessionService", "JiraService", "UserGroup");
 
         this.isGadget = false;
 
@@ -38,77 +111,7 @@ class EstimateActualReport extends BaseGadget {
                 }]
             }
         };
-        this.chartColours = [
-            {
-                backgroundColor: '#f1c40f4a',
-                borderColor: '#f1c40f',
-                hoverBackgroundColor: '#f1c40f',
-                pointBackgroundColor: 'rgba(148,159,177,1)',
-                pointBorderColor: '#fff',
-            },
-            {
-                backgroundColor: '#27ae614a',
-                borderColor: '#27ae61',
-                pointBackgroundColor: 'rgba(77,83,96,1)',
-                pointBorderColor: '#fff',
-            },
-            {
-                backgroundColor: '#e84c3d4a',
-                borderColor: '#e84c3d',
-                pointBackgroundColor: 'rgba(148,159,177,1)',
-                pointBorderColor: '#fff',
-            },
-            {
-                backgroundColor: '#8f44ad4a',
-                borderColor: '#8f44ad',
-                pointBackgroundColor: 'rgba(148,159,177,1)',
-                pointBorderColor: '#fff',
-            },
-            {
-                backgroundColor: '#9a8d2f4a',
-                borderColor: '#9a8d2f',
-                pointBackgroundColor: 'rgba(148,159,177,1)',
-                pointBorderColor: '#fff',
-            },
-            {
-                backgroundColor: '#3e95cd94',
-                borderColor: '#3e95cd',
-                hoverBackgroundColor: '#3e95cd',
-                pointBackgroundColor: 'rgba(148,159,177,1)',
-                pointBorderColor: '#fff',
-            },
-            {
-                backgroundColor: '#8e5ea27a',
-                borderColor: '#8e5ea2',
-                hoverBackgroundColor: '#8e5ea2',
-                pointBackgroundColor: 'rgba(148,159,177,1)',
-                pointBorderColor: '#fff',
-            },
-            {
-                backgroundColor: '#3cba9f7d',
-                borderColor: '#3cba9f',
-                pointBackgroundColor: 'rgba(148,159,177,1)',
-                pointBorderColor: '#fff',
-            },
-            {
-                backgroundColor: '#e8c3b987',
-                borderColor: '#e8c3b9',
-                pointBackgroundColor: 'rgba(148,159,177,1)',
-                pointBorderColor: '#fff',
-            },
-            {
-                backgroundColor: '#c4585080',
-                borderColor: '#c45850',
-                pointBackgroundColor: 'rgba(148,159,177,1)',
-                pointBorderColor: '#fff',
-            },
-            {
-                backgroundColor: 'rgba(148,159,177,0.2)',
-                borderColor: 'rgba(148,159,177,1)',
-                pointBackgroundColor: 'rgba(148,159,177,1)',
-                pointBorderColor: '#fff',
-            }
-        ].union(d => [
+        this.chartColours = defaultChartColors.union(d => [
             Object.assign({}, d, { hoverBackgroundColor: d.borderColor }),
             Object.assign({}, d, { hoverBackgroundColor: pattern.draw('zigzag', d.backgroundColor), backgroundColor: pattern.draw('zigzag', d.borderColor) })
         ]);
@@ -119,8 +122,10 @@ class EstimateActualReport extends BaseGadget {
     }
 
     UNSAFE_componentWillMount() {
-        this.$jira.getProjects().then((projects) => {
-            this.state.projectsList = projects.map((d) => { return { name: d.name, key: d.key, id: d.id }; }).orderBy((d) => { return d.name; });
+        this.$usergroup.getUserGroups().then(groups => this.setState({ groups }));
+        this.$jira.getProjects().then((projectsList) => {
+            projectsList = projectsList.map((d) => { return { name: d.name, key: d.key, id: d.id }; }).orderBy((d) => { return d.name; });
+            this.setState({ projectsList });
         });
     }
 
@@ -136,13 +141,13 @@ class EstimateActualReport extends BaseGadget {
 
     fetchData() {
         this.setState({ isLoading: true, chartData: {} });
-        var mfromDate = moment(this.dateRange.fromDate).startOf('day');
-        var mtoDate = moment(this.dateRange.toDate).endOf('day');
+        var mfromDate = moment(this.state.dateRange.fromDate).startOf('day');
+        var mtoDate = moment(this.state.dateRange.toDate).endOf('day');
         var fromDate = mfromDate.toDate();
         var toDate = mtoDate.toDate();
         var fromDateMS = fromDate.getTime();
         var toDateMS = toDate.getTime();
-        var users = this.groups.union(grps => grps.users.ForEach(gu => gu.groupName = grps.name));
+        var users = this.state.groups.union(grps => grps.users.ForEach(gu => gu.groupName = grps.name));
         var uniqueUsers = users.distinctObj(u => { return { name: u.name.toLowerCase(), display: u.displayName }; });
         var userList = uniqueUsers.map(u => u.name);
         var chartLabels = uniqueUsers.map(u => u.display);
@@ -201,7 +206,7 @@ class EstimateActualReport extends BaseGadget {
                             'timespent': function (obj) { return obj.timeSpentSeconds / 60 / 60; },
                         }
                     }
-                }, (data) => userList.Contains(data.author) && data.worklog.date.isBetween(fromDateMS, toDateMS));
+                }, (data) => userList.contains(data.author) && data.worklog.date.isBetween(fromDateMS, toDateMS));
                 // Story points will be available in parent ticket. So take the estimate from parent if story point is selected.
                 if (this.state.estimationField !== 'timeoriginalestimate') {
                     var parentIds = flatData.distinct(t => t.parentkey);
@@ -226,7 +231,7 @@ class EstimateActualReport extends BaseGadget {
                                 }).reduce((index, ticket) => { index[ticket.key] = ticket; return index; }, {});
                                 return flatData.ForEach(t => {
                                     var { parentkey, key } = t;
-                                    if (hasTickets && custTicketsList.Contains(key)) {
+                                    if (hasTickets && custTicketsList.contains(key)) {
                                         return;
                                     }
                                     if (parentkey) {
@@ -262,7 +267,7 @@ class EstimateActualReport extends BaseGadget {
                 if (hasProject) {
                     selProjects.forEach(proj => {
                         var projData = flatData.filter(t => t.projectKey.toUpperCase() === proj.key.toUpperCase()
-                            && (!hasTickets || !custTicketsList.Contains(t.key)));
+                            && (!hasTickets || !custTicketsList.contains(t.key)));
                         var estimateUserData = [];
                         var actUserData = [];
                         var estimatePrj = {
@@ -289,10 +294,10 @@ class EstimateActualReport extends BaseGadget {
                 }
                 // If tickets are specified then add the tickets as seperate item
                 if (hasTickets) {
-                    flatData = flatData.filter(t => custTicketsList.Contains(t.parentkey) || custTicketsList.Contains(t.key));
+                    flatData = flatData.filter(t => custTicketsList.contains(t.parentkey) || custTicketsList.contains(t.key));
 
                     flatData.forEach(t => {
-                        if (custTicketsList.Contains(t.key)) {
+                        if (custTicketsList.contains(t.key)) {
                             return;
                         }
                         t.key = t.parentkey;
@@ -331,7 +336,7 @@ class EstimateActualReport extends BaseGadget {
                     });
                 }
 
-                this.setState({ isLoading: false, chartData: { labels: chartLabels, datasets }, selectedTab: 1 })
+                this.setState({ isLoading: false, chartData: { labels: chartLabels, datasets }, selectedTab: 1 });
             });
     }
 
@@ -353,15 +358,21 @@ class EstimateActualReport extends BaseGadget {
     }
 
     showGroupsPopup = () => this.setState({ showGroupsPopup: true });
+    groupsChanged = (groups) => this.setState({ showGroupsPopup: false, groups })
+    onDateChange = (e) => this.setState({ dateRange: e.date })
+    validateData() {
+        var { dateRange, groups } = this.state;
+        return !(dateRange || "").fromDate || !(groups || "").length;
+    }
 
     render() {
         // ToDo: chartColours not yet implemented
         var {
-            projectsList, storyPointField, groups, chartColours, chartOptions, // eslint-disable-line no-unused-vars
-            state: { projects, ticketsList, estimationField, storyPointHour, dateRange, chartData }
+            storyPointField, chartColours, chartOptions, // eslint-disable-line no-unused-vars
+            state: { projectsList, projects, ticketsList, groups, estimationField, storyPointHour, dateRange, chartData, showGroupsPopup }
         } = this;
 
-        return super.renderBase(
+        return super.renderBase(<>
             <TabView>
                 <TabPanel header="Settings">
                     <div className="pad-15">
@@ -441,7 +452,7 @@ class EstimateActualReport extends BaseGadget {
                         </div>
                         <div className="row">
                             <div className="col-sm-12 col-md-3 col-lg-3 col-xl-2">
-                                <Button className="col-button-primary" disabled={!(dateRange || "").fromDate || !(groups || "").length}
+                                <Button className="col-button-primary" disabled={this.validateData()}
                                     icon="fa fa-play-circle" label="Generate report" onClick={this.generateReport} />
                             </div>
                         </div>
@@ -461,6 +472,9 @@ class EstimateActualReport extends BaseGadget {
                     </div>
                 </TabPanel>}
             </TabView>
+
+            {showGroupsPopup && <GroupEditor groups={groups} onHide={this.groupsChanged} />}
+        </>
         );
     }
 }

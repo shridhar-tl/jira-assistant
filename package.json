@@ -48,11 +48,16 @@
     "eslintConfig": {
         "extends": "react-app",
         "rules": {
-            "all": "error",
+            "no-unused-vars": "error",
+            "no-unreachable": "error",
+            "eqeqeq": "error",
+            "semi": "error",
+            "prefer-const": "error",
             "curly": "error",
-            "quotes": [
+            "max-len": [
                 "error",
-                "double"
+                300,
+                2
             ]
         }
     },
