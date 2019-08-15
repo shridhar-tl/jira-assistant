@@ -32,7 +32,7 @@ You can contribute to Jira Assistant by donating a small sum through following a
 
 ( or )
 
-You can contribute by helping in development of new feature and bug fixes. To know more about contributing in development activity please refer to [contribution guidelines](docs/contribute.md).
+You can contribute by helping in development of new feature and bug fixes. To know more about contributing in development activity please refer to [contribution guidelines](docs/CONTRIBUTE.md).
 
 ## Want to report a bug, suggest a new feature or have a question?
 Please navigate to **"Issues"** tab and raise a new issue. If you do not have an account and not willing to create a new account in GitHub then you can use the below Url to do that which wont require any authentication. But I would suggest to use the Issues tab instead as it would be easy for you to have a track of the issue and see the status / updates on the issues.
