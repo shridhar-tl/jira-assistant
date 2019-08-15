@@ -53,4 +53,4 @@ We use Google analytics to capture which module of the tool is being used much b
 Jira Assistant is a free software and anyone is free to use it for personal or commercial purpose. But you are authorized only to use this software. Any kind of changes or distribution of this software is not allowed. This software is provided as is without any warrenty and developer of this software is not responsible for any kind of loss incurred while using or mis-using this software.
 
 ## Features available in "Jira Assist"
-To know about the list of features available in Jira Assistant refer the [features list](docs/features.md).
+To know about the list of features available in Jira Assistant refer the [features list](docs/FEATURES.md).
