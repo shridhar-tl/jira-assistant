@@ -25,12 +25,20 @@ At this point, a local development service will be started and your browser is l
 
 ### setup and prepare a local Jira instance
 
-The best way is to have a local Jira for playing around.
+The best way is to have a local Jira for playing around. If you have Docker installed in your workstation, then run the following command to setup a docker container with Jira running on port 9090.
+
+**Note:** The following command will download around 1GB of data to setup the container.
 
 ```shell script
 docker pull atlassian/jira-software
 docker volume create --name jiraVolume
 docker run -v jiraVolume:/var/atlassian/application-data/jira --name="jira" -d -p 9090:8080 atlassian/jira-software
+```
+
+Above command need to be executed only once per workstation and from next time when you start your development activity, you can start your existing container by running just the following command:
+
+```shell script
+docker start jira
 ```
 
 Your personal Jira instance is up and running ... simply open "http://localhost:9090"

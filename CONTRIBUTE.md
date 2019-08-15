@@ -37,10 +37,15 @@ If you are planning to start with development / bug fix activity, then please fo
 
 - Do not develop a module which would serve only your purpose. Anything you build should be usable by all the users, irrrespective of the version of Jira they use.
 - The module you develop should not expect a particular plugin (particularly paid one) to be installed in Jira to work.
-- Do not use the name of any custom fields in Jira as it would differ in each instance of Jira. Instead let the user to select appropriate custom field so that it works for all users.
-- Do not make use of any non-open source components / libraries.
-- Do not checkin the code with any issues or warnings.
+
 - Before you create a pull request see to that all the functionality developed by you is working fine and you do not break any existing functionality.
+
+- Do not use the name of any custom fields in Jira as it would differ in each instance of Jira. Instead let the user to select appropriate custom field so that it works for all users.
+
+- Do not make use of any non-open source components / libraries.
+- Do not use React.Component and instead only use React.PureComponent. This would improve performance.
+- Do not checkin the code with any build issues or warnings.
+
 - Though it is not necessary, I would suggest providing a brief documentation about your module. This can also be added as part of FAQ module.
 - I suggest you to create a unit test cases for your module and have a good coverage for all the scenarious. This is not necessary. Do it only if your timelines permits.
 
