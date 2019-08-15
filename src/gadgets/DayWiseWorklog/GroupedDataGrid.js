@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import moment from 'moment';
-import { ScrollableTable, THead, NoDataRow, TBody, TRow, Column } from '../../components/ScrollableTable';
+import { ScrollableTable, THead, NoDataRow, TBody } from '../../components/ScrollableTable';
 
 class GroupedDataGrid extends PureComponent {
     constructor(props) {
@@ -166,11 +166,11 @@ class GroupedDataGrid extends PureComponent {
                 <THead>
                     <tr className="data-center pad-min auto-wrap">
                         <th style={{ minWidth: 380 }} rowSpan={2}>User Details</th>
-                        {months.map((day) => <th style={{ minWidth: 35 }} colSpan={day.days}>{day.monthName}</th>)}
+                        {months.map((day, i) => <th key={i} style={{ minWidth: 35 }} colSpan={day.days}>{day.monthName}</th>)}
                         <th style={{ minWidth: 50 }} rowSpan={2}>Total Hours</th>
                     </tr>
                     <tr className="pad-min auto-wrap">
-                        {dates.map((day) => <th style={{ minWidth: 35 }}>{day.display}</th>)}
+                        {dates.map((day, i) => <th key={i} style={{ minWidth: 35 }}>{day.display}</th>)}
                     </tr>
                 </THead>
                 <NoDataRow span={9}>No records exists</NoDataRow>
@@ -180,9 +180,9 @@ class GroupedDataGrid extends PureComponent {
                             convertSecs={convertSecs} formatTime={formatTime} breakupMode={breakupMode} />)
                     }
 
-                    <tr className="grouped-row right auto-wrap" no-export>
+                    <tr className="grouped-row right auto-wrap">
                         <td>Grand Total <i className="fa fa-arrow-right" /></td>
-                        {dates.map((day) => <td>{convertSecs(groupedData.total[day.prop])}</td>)}
+                        {dates.map((day, i) => <td key={i}>{convertSecs(groupedData.total[day.prop])}</td>)}
                         <td>{convertSecs(groupedData.grandTotal)}</td>
                     </tr>
                 </TBody>
@@ -206,7 +206,7 @@ class GroupRow extends PureComponent {
 
         return (
             <>
-                {!hidden && <tr className="grouped-row left" no-export title="Click to hide user details">
+                {!hidden && <tr className="grouped-row left" title="Click to hide user details">
                     <td colSpan={dates.length + 2} onClick={this.toggleDisplay}>
                         <i className="pull-left drill-down fa fa-chevron-circle-down" />
                         {grp.name}
@@ -216,7 +216,7 @@ class GroupRow extends PureComponent {
                 {!hidden && grp.users.map((u, i) => <UserRow key={i} user={u} dates={dates} breakupMode={breakupMode}
                     convertSecs={convertSecs} formatTime={formatTime} />)}
 
-                <tr className="grouped-row right auto-wrap" onClick={hidden ? this.toggleDisplay : null} no-export>
+                <tr className="grouped-row right auto-wrap" onClick={hidden ? this.toggleDisplay : null}>
                     <td>
                         {hidden && <div>
                             <i className="pull-left drill-down fa fa-chevron-circle-right" title="Click to show user details" />
@@ -224,7 +224,7 @@ class GroupRow extends PureComponent {
                         </div>}
                         {!hidden && <div>{grp.name} <i className="fa fa-arrow-right" /> Total <i className="fa fa-arrow-right" /></div>}
                     </td>
-                    {dates.map(day => <td>{convertSecs(grp.total[day.prop])}</td>)}
+                    {dates.map((day, i) => <td key={i}>{convertSecs(grp.total[day.prop])}</td>)}
                     <td>{convertSecs(grp.grandTotal)}</td>
                 </tr>
             </>
@@ -283,14 +283,14 @@ class UserRow extends PureComponent {
                 </tr>
 
                 {expanded &&
-                    u.tickets.map(t => (
-                        <tr className="auto-wrap">
+                    u.tickets.map((t, i) => (
+                        <tr key={i} className="auto-wrap">
                             <td className="data-left">
                                 {t.parent && <a href={t.parentUrl} className="link" target="_blank" rel="noopener noreferrer">{t.parent} - </a>}
                                 <a href={t.url} className="link" target="_blank" rel="noopener noreferrer">{t.ticketNo}</a> -
                                 <span>{t.summary}</span>
                             </td>
-                            {dates.map(day => <td>
+                            {dates.map((day, j) => <td key={j}>
                                 {breakupMode !== '2' && <span title={this.getComments(t.logs[day.prop])}>{convertSecs(this.getTotalTime(t.logs[day.prop]))}</span>}
                                 {breakupMode === '2' && <div> {this.getLogEntries(t.logs[day.prop])}</div>}
                             </td>)}

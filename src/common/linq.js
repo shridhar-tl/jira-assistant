@@ -96,13 +96,13 @@ Array.prototype.distinctObj = function (clause) {
   return retVal;
 }
 Array.prototype.sum = function (clause) {
-  var value = 0;
+  var value = 0, index;
   if (clause) {
-    for (var index = 0; index < this.length; index++) {
+    for (index = 0; index < this.length; index++) {
       value += clause(this[index]) || 0;
     }
   } else {
-    for (var index = 0; index < this.length; index++) {
+    for (index = 0; index < this.length; index++) {
       value += parseFloat(this[index]) || 0;
     }
   }
@@ -110,15 +110,15 @@ Array.prototype.sum = function (clause) {
 }
 Array.prototype.avg = function (clause) {
   var value = 0;
-  var count = 0;
+  var count = 0, val, index;
   if (clause) {
-    for (var index = 0; index < this.length; index++) {
-      var val = parseFloat(clause(this[index]));
+    for (index = 0; index < this.length; index++) {
+      val = parseFloat(clause(this[index]));
       if (val || val === 0) { value = value + val; count++; }
     }
   } else {
-    for (var index = 0; index < this.length; index++) {
-      var val = parseFloat(this[index]);
+    for (index = 0; index < this.length; index++) {
+      val = parseFloat(this[index]);
       if (val || val === 0) { value = value + val; count++; }
     }
   }
@@ -130,16 +130,16 @@ function prepareAgreData(data) {
   } else { return data; }
 }
 Array.prototype.max = function (clause) {
-  var value = 0;
+  var value = 0, index, newVal;
   if (clause) {
-    for (var index = 0; index < this.length; index++) {
-      var newVal = clause(this[index]) || 0;
+    for (index = 0; index < this.length; index++) {
+      newVal = clause(this[index]) || 0;
       if (prepareAgreData(newVal) > prepareAgreData(value))
         value = newVal;
     }
   } else {
-    for (var index = 0; index < this.length; index++) {
-      var newVal = this[index] || 0;
+    for (index = 0; index < this.length; index++) {
+      newVal = this[index] || 0;
       if (prepareAgreData(newVal) > prepareAgreData(value))
         value = newVal;
     }
@@ -147,16 +147,16 @@ Array.prototype.max = function (clause) {
   return value;
 }
 Array.prototype.min = function (clause) {
-  var value = 0;
+  var value = 0, index, newVal;
   if (clause) {
-    for (var index = 0; index < this.length; index++) {
-      var newVal = clause(this[index]) || 0;
+    for (index = 0; index < this.length; index++) {
+      newVal = clause(this[index]) || 0;
       if (prepareAgreData(newVal) < prepareAgreData(value))
         value = newVal;
     }
   } else {
-    for (var index = 0; index < this.length; index++) {
-      var newVal = this[index] || 0;
+    for (index = 0; index < this.length; index++) {
+      newVal = this[index] || 0;
       if (prepareAgreData(newVal) < prepareAgreData(value))
         value = newVal;
     }
@@ -223,12 +223,7 @@ Array.prototype.firstIndexOf = function (predicate) {
   return -1;
 }
 Array.prototype.intersect = function (secondArray, clause) {
-  var clauseMethod;
-  if (clause != undefined) {
-    clauseMethod = clause;
-  } else {
-    clauseMethod = function (item, index, item2, index2) { return item === item2; };
-  }
+  var clauseMethod = clause || function (item, index, item2, index2) { return item === item2; };
 
   var sa = secondArray.items || secondArray;
 
@@ -361,17 +356,18 @@ Array.prototype.groupBy = function (clause, filter) {
 };
 Array.prototype.replace = function (item, newItem) {
   var idx = this.indexOf(item);
-  if (idx != -1) this[idx] = newItem;
+  if (idx !== -1) this[idx] = newItem;
   return this;
 };
 Array.prototype.clone = function (items) {
   var result = [];
+
   for (var i = 0; i < this.length; i++) {
     result[i] = this[i];
   }
   if (items && items.length > 0) {
-    for (var i = 0; i < items.length; i++) {
-      result[result.length] = items[i];
+    for (var x = 0; x < items.length; x++) {
+      result[result.length] = items[x];
     }
   }
   return result;
@@ -577,7 +573,7 @@ function getObject(row, clause, curItem, propPrefix) {
 
     if (typeof field === 'object' && !Array.isArray(field)) {
       var obj = field;
-      var field = field.field;
+      field = field.field;
       if (!field || field === true) { field = propName; }
       var spread = obj.spread === true || !propName;
       var value = getObjVal(row, field);
@@ -592,11 +588,11 @@ function getObject(row, clause, curItem, propPrefix) {
           }
         }
         else if (Array.isArray(value)) {
-          var newVal = props ? value.flattern(props, null, spread ? curItem : null, spread ? propName : '') : value;
+          newVal = props ? value.flattern(props, null, spread ? curItem : null, spread ? propName : '') : value;
           if (!spread) {
             curItem = newVal.map(nv => {
               var ret = { ...curItem, [propPrefix + propName]: nv };
-              var newValProps = Object.keys(nv).forEach(nvp => {
+              Object.keys(nv).forEach(nvp => {
                 if (nvp.startsWith('...')) {
                   ret[nvp.substring(3)] = nv[nvp];
                   delete nv[nvp];
@@ -612,7 +608,7 @@ function getObject(row, clause, curItem, propPrefix) {
       }
     }
     else {
-      var value = getObjVal(row, field);
+      value = getObjVal(row, field);
       curItem[propPrefix + propName] = value;
     }
   }

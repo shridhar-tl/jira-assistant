@@ -15,21 +15,20 @@ export default class ReportService {
 
     exportQueries(ids) {
         return this.getSavedQueries(ids).toArray().then((qrys) => {
-            return Promise.all(qrys.map(qry => {
-                if (!qry.uniqueId) {
-                    return this.saveQuery(qry);
-                }
-            })).then(() => {
-                qrys.forEach(qry => {
-                    delete qry.id;
-                    delete qry.createdBy;
+            return Promise.all(qrys
+                .filter(qry => !qry.uniqueId)
+                .map(qry => this.saveQuery(qry)))
+                .then(() => {
+                    qrys.forEach(qry => {
+                        delete qry.id;
+                        delete qry.createdBy;
+                    });
+                    var json = JSON.stringify({ exported: new Date(), reports: qrys });
+                    var fileName = qrys.length === 1 ? qrys[0].queryName : "JA_Reports";
+                    fileName = fileName + "_" + (new Date().format('yyyyMMdd')) + ".jrd";
+                    saveStringAs(json, "jrd", fileName);
+                    return true;
                 });
-                var json = JSON.stringify({ exported: new Date(), reports: qrys });
-                var fileName = qrys.length === 1 ? qrys[0].queryName : "JA_Reports";
-                fileName = fileName + "_" + (new Date().format('yyyyMMdd')) + ".jrd";
-                saveStringAs(json, "jrd", fileName);
-                return true;
-            });
         });
     }
 

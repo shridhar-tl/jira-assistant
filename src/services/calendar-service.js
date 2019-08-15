@@ -23,7 +23,7 @@ export default class CalendarService {
     }
     getEvents(startDate, endDate, options) {
         options = options || {};
-        var reAuth = false;
+        var reAuth = false; // eslint-disable-line no-unused-vars
         var calendarUrl = this.CALENDAR_EVENTS_API_URL.replace('{calendarId}', encodeURIComponent(options.calendar || 'primary')) + ([
             'showDeleted=false',
             'singleEvents=true',

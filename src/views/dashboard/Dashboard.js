@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import './Dashboard.scss';
 import { inject } from '../../services/injector-service';
-import { GadgetActionType, Calendar, DateWiseWorklog, DayWiseWorklog, MyBookmarks, MyOpenTickets, MyReports, PendingWorklog, TicketWiseWorklog } from '../../gadgets';
+import { GadgetActionType, Calendar, DateWiseWorklog, MyBookmarks, MyOpenTickets, MyReports, PendingWorklog, TicketWiseWorklog } from '../../gadgets';
 import Header from './Header';
 import AddGadgetDialog from './AddGadgetDialog';
 import AddWorklog from '../../dialogs/AddWorklog';

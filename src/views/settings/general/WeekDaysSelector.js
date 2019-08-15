@@ -41,7 +41,7 @@ class WeekDaysSelector extends PureComponent {
 
     render() {
         return (
-            <div class="daysinweek">
+            <div className="daysinweek">
                 {shortDays.map((day, i) => <div key={day} className={this.getClass(i)} onClick={() => this.daySelected(i)}>{day}</div>)}
             </div>
         );

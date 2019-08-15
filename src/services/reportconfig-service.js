@@ -18,6 +18,7 @@ export default class ReportConfigService {
             return;
         }
         var defaultConfig = {
+            // eslint-disable-next-line no-new-func
             compiler: function (code, sandbox) { return Function(...sandbox, code)(); },
             subReports: (defn) => {
                 return this.$report.getSavedFilters().then((result) => {

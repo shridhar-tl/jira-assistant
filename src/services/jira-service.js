@@ -144,7 +144,9 @@ export default class JiraService {
         return this.searchTickets("assignee=currentUser() AND resolution=Unresolved and status != Closed", ["issuetype", "summary", "reporter", "priority", "status", "resolution", "created", "updated"])
             .then((result) => { this.$jaCache.session.set("myOpenTickets", result); return result; });
     }
+
     searchUsers(text, maxResult = 10, startAt = 0) { return this.$jaHttp.get(ApiUrls.searchUser, text, maxResult, startAt); }
+
     fillWorklogs(issues, callback) {
         issues = issues.filter((iss) => !(iss.fields || {}).worklog || (((iss.fields || {}).worklog || {}).worklogs || []).length < iss.fields.worklog.total);
         var pendCount = issues.length;
@@ -153,15 +155,19 @@ export default class JiraService {
             pendCount = 3;
         }
         console.log("FillStarted:- " + issues.length + " tickets found");
+
+        var onSuccess = (res) => {
+            if (res) {
+                successCount++;
+            }
+
+            if (--pendCount === 0) {
+                callback(issues.length - successCount, issues);
+            }
+        };
+
         for (var i = 0; i < pendCount; i++) {
-            this.fillWL(issues[i]).then((res) => {
-                if (res)
-                    successCount++;
-            }).then(() => {
-                if (--pendCount === 0) {
-                    callback(issues.length - successCount, issues);
-                }
-            });
+            this.fillWL(issues[i]).then(onSuccess);
         }
         if (issues.length === 0) {
             callback(issues.length);

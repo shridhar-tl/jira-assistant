@@ -98,7 +98,7 @@ var sessionBasedRoute = [
     }
 ];
 export default sessionBasedRoute;
-
+/*
 var routes = [
     {
         path: '',
@@ -136,7 +136,8 @@ var routes = [
                 loadChildren: './views/pages/pages.module#PagesModule',
             }
         ]
-    }*/
+    }* /
 ];
 // ToDo
-//export default routes;
+export default routes;
+*/

@@ -1,4 +1,4 @@
-import React, { PureComponent, Fragment } from 'react';
+import React, { PureComponent } from 'react';
 import Button from '../../controls/Button';
 import TextBox from '../../controls/TextBox';
 import './DashboardName.scss';

@@ -124,7 +124,8 @@ export const navigation = [
     }
 ];
 export default { items: navigation };
-
+/*
+REVISIT: Check if this would be needed anymore
 export function updateDashboard(dashboards) {
     var toRemove = navigation.filter(m => m.isDashboard).forEach(item => {
         delete item.name;
@@ -150,3 +151,4 @@ export function updateDashboard(dashboards) {
         }
     });
 }
+*/

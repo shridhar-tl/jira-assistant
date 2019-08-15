@@ -1,6 +1,12 @@
 {
     "name": "jira-assistant",
-    "version": "0.1.0",
+    "version": "1.0.0",
+    "description": "Contains source code for the browser extension Jira Assistant",
+    "homepage": "https://github.com/shridhar-tl/jira-assistant",
+    "author": {
+        "name": "Shridhar TL",
+        "email": "shridhar.tl@gmail.com"
+    },
     "private": true,
     "dependencies": {
         "@coreui/coreui": "^2.1.12",
@@ -40,7 +46,15 @@
         "eject": "react-scripts eject"
     },
     "eslintConfig": {
-        "extends": "react-app"
+        "extends": "react-app",
+        "rules": {
+            "all": "error",
+            "curly": "error",
+            "quotes": [
+                "error",
+                "double"
+            ]
+        }
     },
     "browserslist": {
         "production": [

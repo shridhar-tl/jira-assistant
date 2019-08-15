@@ -93,7 +93,7 @@ class DateWiseWorklog extends BaseGadget {
 
     render() {
         var {
-            settings, removeGadget, isFullScreen, tbl,
+            //settings, removeGadget, isFullScreen, tbl,
             state: { worklogs }
         } = this;
 

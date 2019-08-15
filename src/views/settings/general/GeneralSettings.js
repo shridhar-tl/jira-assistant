@@ -188,7 +188,7 @@ class GeneralSettings extends PureComponent {
                 </TabPanel>
             </TabView>
             <div className="pnl-footer">
-                <Button pbutton className="ui-button-primary pull-right" icon="fa fa-floppy-o" label="Save Changes" onClick={this.saveSettings} />
+                <Button type="primary" className="pull-right" icon="fa fa-floppy-o" label="Save Changes" onClick={this.saveSettings} />
             </div>
         </>
         );

@@ -36,7 +36,7 @@ class Integrate extends PureComponent {
         this.$ajax.get(ApiUrls.mySelf).then((data) => {
             var name = data.name;
             var email = data.emailAddress;
-            var temp = this.$db.users.where("userId").equalsIgnoreCase(name)
+            this.$db.users.where("userId").equalsIgnoreCase(name)
                 .and((u) => { return u.jiraUrl.toLowerCase() === root.toLowerCase(); }).first()
                 .then((user) => {
                     if (!user) {
@@ -50,7 +50,7 @@ class Integrate extends PureComponent {
                             maxHours: 8,
                             dateCreated: new Date()
                         };
-                        var result = this.$db.users.add(user).then((id) => {
+                        this.$db.users.add(user).then((id) => {
                             return id;
                         }, (err) => this.handleDBError(err)).then((id) => this.openDashboard(id));
                     }

@@ -1,6 +1,6 @@
 import React, { PureComponent, Fragment } from 'react';
 import { TextBox, Button, AutoComplete, SelectBox } from '../controls';
-import { ScrollableTable, TBody, THead, TRow, TD, NoDataRow } from './ScrollableTable';
+import { ScrollableTable, TBody, THead, NoDataRow } from './ScrollableTable';
 import moment from 'moment';
 import { inject } from '../services';
 

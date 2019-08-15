@@ -23,7 +23,7 @@ class FlatDataGrid extends PureComponent {
                     </TRow>
                 </THead>
                 <TBody>
-                    {row => <tr>
+                    {(row, i) => <tr key={i}>
                         <td>{row.groupName}</td>
                         <td>{row.projectName}</td>
                         <td>{row.issueType}</td>

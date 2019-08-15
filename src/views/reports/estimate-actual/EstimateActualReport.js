@@ -355,8 +355,9 @@ class EstimateActualReport extends BaseGadget {
     showGroupsPopup = () => this.setState({ showGroupsPopup: true });
 
     render() {
+        // ToDo: chartColours not yet implemented
         var {
-            projectsList, storyPointField, groups, chartColours, chartOptions,
+            projectsList, storyPointField, groups, chartColours, chartOptions, // eslint-disable-line no-unused-vars
             state: { projects, ticketsList, estimationField, storyPointHour, dateRange, chartData }
         } = this;
 

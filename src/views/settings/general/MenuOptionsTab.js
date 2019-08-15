@@ -40,10 +40,8 @@ class MenuOptionsTab extends TabControlBase {
         settings.launchAction = setting;
         switch (settings.menuAction) {
             case 1:
-                launchSetting.menus = this.menus.map(menu => {
-                    if (menu.selected && !menu.isHead) {
-                        return { name: menu.name, url: menu.url };
-                    }
+                launchSetting.menus = this.menus.filter(menu => menu.selected && !menu.isHead).map(menu => {
+                    return { name: menu.name, url: menu.url };
                 });
                 break;
             case 2:

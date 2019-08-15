@@ -528,8 +528,8 @@ class Calendar extends BaseGadget {
         //Revisit:check if this is required - $(this.calendar.el.nativeElement).find(".fc-header-toolbar").hide();
     }
 
-    eventDrop(event) {
-        var { event, delta, revert, jsEvent, ui, view } = event;
+    eventDrop(e) {
+        var { event, revert, jsEvent } = e;
 
         if (jsEvent.ctrlKey || jsEvent.altKey) {
             revert();
@@ -559,7 +559,7 @@ class Calendar extends BaseGadget {
     }
 
     eventResize(e) {
-        var { event, delta, revertFunc, jsEvent, ui, view } = e;
+        var { event } = e;
         this.$worklog.changeWorklogTS(event.extendedProps.sourceObject, this.getEventDuration(event)).then((entry) => {
             this.addEvent({ edited: entry });
             //this.updateAllDayEvent(event);
@@ -582,7 +582,7 @@ class Calendar extends BaseGadget {
     }
 
     eventRender(e) {
-        var { event, el, view } = e;
+        var { event, el } = e;
         var element = $(el);
         var hourDiff = ' (' + this.$transform.formatTs(this.getEventDuration(event)) + ')';
         var srcObj = event.extendedProps.sourceObject;

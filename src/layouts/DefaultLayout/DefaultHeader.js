@@ -114,9 +114,9 @@ class DefaultHeader extends PureComponent {
   }
 
   render() {
-    // eslint-disable-next-line
-    var { ratingUrl, gMailShare, gPlusShare, linkedInShare, fackbookShare, twitterShare,
-      props: { children, ...attributes },
+    var {
+      ratingUrl, gMailShare, gPlusShare, linkedInShare, fackbookShare, twitterShare,
+      //REVISIT: props: { children, ...attributes },
       state: { name, login, profile, emailAddress, imageUrl, users }
     } = this;
 

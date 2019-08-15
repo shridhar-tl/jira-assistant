@@ -188,7 +188,7 @@ export default class AppBrowserService {
             const AUTH_URL = 'https://accounts.google.com/o/oauth2/auth?client_id='
                 + CLIENT_ID + '&response_type=token&redirect_uri=' + encodeURIComponent(REDIRECT_URL)
                 + '&scope=' + encodeURIComponent(SCOPES.join(" "));
-            const VALIDATION_BASE_URL = "https://www.googleapis.com/oauth2/v3/tokeninfo";
+            //REVISIT: const VALIDATION_BASE_URL = "https://www.googleapis.com/oauth2/v3/tokeninfo"; // ToDo: Check why this URL is used
             return window['browser'].identity.launchWebAuthFlow({
                 interactive: options.interactive,
                 url: AUTH_URL
