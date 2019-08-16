@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react';
+import React, { PureComponent, Children } from 'react';
 import PropTypes from 'prop-types';
 import { Dropdown } from 'primereact/dropdown';
 import { MultiSelect } from 'primereact/multiselect';
@@ -10,8 +10,10 @@ class SelectBox extends PureComponent {
     }
 
     static getDerivedStateFromProps(props, state) {
-        var { value = null, valueField, multiselect, dataset } = props;
+        var { value = null, valueField, multiselect, dataset, group } = props;
         var { subValue } = state;
+
+        var newState = null;
 
         if (value !== subValue) {
             subValue = value;
@@ -25,10 +27,23 @@ class SelectBox extends PureComponent {
                 }
             }
 
-            return { subValue, value };
+            newState = { subValue, value };
         }
 
-        return null;
+        if (group && dataset !== state.dataset) {
+            newState = newState || {};
+            newState.dataset = dataset;
+            var groupedDataset = [];
+
+            dataset.forEach(grp => {
+                groupedDataset.push({ isGroup: true, value: grp });
+                grp.items.forEach(itm => groupedDataset.push(itm));
+            });
+
+            newState.groupedDataset = groupedDataset;
+        }
+
+        return newState;
     }
 
     onChange = (e) => {
@@ -52,11 +67,23 @@ class SelectBox extends PureComponent {
 
     render() {
         var {
-            props: { displayField, placeholder, multiselect, dataset, style, className, filterPlaceholder },
-            state: { value }
+            props: { displayField, placeholder, multiselect, dataset, style, className, filterPlaceholder, group, children },
+            state: { value, groupedDataset }
         } = this;
+        var itemTemplate = null;
 
         var filter = dataset && dataset.length >= 15;
+
+        if (group) {
+            dataset = groupedDataset;
+            itemTemplate = (itm, i) => {
+                if (itm.isGroup) {
+                    return children[1](itm.value, i);
+                } else {
+                    return children[0](itm, i);
+                }
+            };
+        }
 
         if (multiselect) {
             return (
@@ -67,7 +94,7 @@ class SelectBox extends PureComponent {
         else {
             return (
                 <Dropdown appendTo={document.body} value={value} optionLabel={displayField} options={dataset} filter={filter} style={style} className={className}
-                    onChange={this.onChange} placeholder={placeholder} filterPlaceholder={filterPlaceholder} />
+                    onChange={this.onChange} placeholder={placeholder} filterPlaceholder={filterPlaceholder} itemTemplate={itemTemplate} />
             );
         }
     }

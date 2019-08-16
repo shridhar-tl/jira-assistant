@@ -1,60 +1,31 @@
 import React from 'react';
 import TabControlBase from './TabControlBase';
 import { SelectBox, AutoComplete } from '../../../controls';
-import { inject } from '../../../services';
 
 class DefaultValuesTab extends TabControlBase {
     constructor(props) {
         super(props);
-        inject(this, "JiraService");
         this.state = {};
     }
 
     UNSAFE_componentWillMount() {
-        this.$jira.getRapidViews().then((rapidViews) => {
-            rapidViews = rapidViews.orderBy((d) => { return d.name; }).map((d) => {
-                return { name: d.name, id: d.id };
-            });
-
-            this.setState({ rapidViews });
-
-            //if (this.props.settings.rapidViews && this.props.settings.rapidViews.length > 0) {
-            //  this.props.settings.rapidViews = this.rapidViews
-            //}
-        });
-        this.$jira.getProjects().then((projects) => {
-            projects = projects.map((d) => { return { name: d.name, id: d.id, key: d.key }; }).orderBy((d) => d.name);
-            this.setState({ projects });
-        });
-        this.$jira.getCustomFields().then(cfList => {
-            var numericFields = cfList.filter(cf => cf.custom && cf.schema.type === "number")
-                .map(cf => { return { id: cf.id, name: cf.name, clauseNames: cf.clauseNames }; })
-                .orderBy(cf => cf.name);
-
-            var stringFields = cfList.filter(cf => cf.custom && (cf.schema.type === "any" || cf.schema.type === "string"))
-                .map(cf => { return { id: cf.id, name: cf.name, clauseNames: cf.clauseNames }; })
-                .orderBy(cf => cf.name);
-
-            this.setState({ numericFields, stringFields });
-        });
     }
 
     searchRapidView = (query) => {
         query = (query || '').toLowerCase();
-        return this.state.rapidViews.filter(r => (r.name.toLowerCase().indexOf(query) >= 0 || r.id.toString().startsWith(query))
+        return this.props.rapidViews.filter(r => (r.name.toLowerCase().indexOf(query) >= 0 || r.id.toString().startsWith(query))
             && (!this.props.settings.rapidViews || !this.props.settings.rapidViews.some(v => v.id === r.id)));
     }
 
     searchProject = (query) => {
         query = (query || '').toLowerCase();
-        return this.state.projects.filter(r => (r.name.toLowerCase().indexOf(query) >= 0 || r.key.toLowerCase().startsWith(query) || r.id.toString().startsWith(query))
+        return this.props.projects.filter(r => (r.name.toLowerCase().indexOf(query) >= 0 || r.key.toLowerCase().startsWith(query) || r.id.toString().startsWith(query))
             && (!this.props.settings.projects || !this.props.settings.projects.some(v => v.id === r.id)));
     }
 
     render() {
         var {
-            props: { settings },
-            state: { numericFields, stringFields, projects, rapidViews }
+            props: { settings, numericFields, stringFields, projects, rapidViews }
         } = this;
 
         return (<>

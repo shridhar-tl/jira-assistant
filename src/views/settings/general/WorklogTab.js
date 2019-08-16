@@ -1,5 +1,5 @@
 import React from 'react';
-import TabControlBase from './TabControlBase'
+import TabControlBase from './TabControlBase';
 import { TextBox, Checkbox } from '../../../controls';
 
 class WorklogTab extends TabControlBase {

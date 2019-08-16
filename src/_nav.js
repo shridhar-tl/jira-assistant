@@ -8,10 +8,10 @@ export function getDashboardMenu(d, idx, userId) {
         id: 'D-' + idx,
         url: '/' + userId + '/dashboard/' + (idx + 1),
         icon: icon,
-        badge: {
+        /*badge: {
             variant: 'info',
             text: 'NEW'
-        },
+        },*/
         isDashboard: true
     };
 }
@@ -19,17 +19,14 @@ export function getDashboardMenu(d, idx, userId) {
 export const navigation = [
     {
         title: true,
-        name: 'Dashboards'
+        name: 'Dashboards',
+        isDashboard: true
     },
     {
         name: 'Default',
         id: 'D-0',
         url: '/dashboard/0',
         icon: 'fa fa-tachometer',
-        badge: {
-            variant: 'info',
-            text: 'NEW'
-        },
         isDashboard: true
     },
     {

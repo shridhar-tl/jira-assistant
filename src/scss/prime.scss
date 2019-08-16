@@ -17,6 +17,12 @@
     }
 }
 
+.p-autocomplete-dd {
+    .p-autocomplete-multiple-container {
+        width: calc(100% - 30px);
+    }
+}
+
 .p-autocomplete-multiple-container {
     width: 100%;
 }
@@ -62,6 +68,8 @@ a.p-menuitem-link {
 
 // TabView related styles
 .p-tabview {
+    padding-bottom: 0;
+
     &.no-padding{
         .p-tabview-panels{
             padding:0;

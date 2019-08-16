@@ -4,7 +4,7 @@ import { TabView, TabPanel } from 'primereact/tabview';
 import { Button } from '../../../controls';
 import { inject } from '../../../services';
 import GeneralTab from './GeneralTab';
-import './Common.scss'
+import './Common.scss';
 import WorklogTab from './WorklogTab';
 import DefaultValuesTab from './DefaultValuesTab';
 import MeetingsTab from './MeetingsTab';
@@ -13,7 +13,7 @@ import MenuOptionsTab from './MenuOptionsTab';
 class GeneralSettings extends PureComponent {
     constructor(props) {
         super(props);
-        inject(this, "AppBrowserService", "SessionService", "MessageService", "CacheService", "ConfigService", "TicketService");
+        inject(this, "AppBrowserService", "SessionService", "MessageService", "CacheService", "ConfigService", "TicketService", "JiraService");
 
         this.noDonations = true;
         this.settings = {};
@@ -37,42 +37,102 @@ class GeneralSettings extends PureComponent {
             this.spaceInfo.progressClass = progressClass;
         });*/
 
+        this.$jira.getRapidViews().then((rapidViews) => {
+            rapidViews = rapidViews.orderBy((d) => { return d.name; }).map((d) => {
+                return { name: d.name, id: d.id };
+            });
+
+            this.setState({ rapidViews });
+
+            //if (this.props.settings.rapidViews && this.props.settings.rapidViews.length > 0) {
+            //  this.props.settings.rapidViews = this.rapidViews
+            //}
+        });
+
+        this.$jira.getProjects().then((projects) => {
+            projects = projects.map((d) => { return { name: d.name, id: d.id, key: d.key }; }).orderBy((d) => d.name);
+            this.setState({ projects });
+        });
+
+        this.$jira.getCustomFields().then(cfList => {
+            var numericFields = cfList.filter(cf => cf.custom && cf.schema.type === "number")
+                .map(cf => { return { id: cf.id, name: cf.name, clauseNames: cf.clauseNames }; })
+                .orderBy(cf => cf.name);
+
+            var stringFields = cfList.filter(cf => cf.custom && (cf.schema.type === "any" || cf.schema.type === "string"))
+                .map(cf => { return { id: cf.id, name: cf.name, clauseNames: cf.clauseNames }; })
+                .orderBy(cf => cf.name);
+
+            this.setState({ numericFields, stringFields });
+        });
+
         this.$config.getUserSettings().then(this.parseSettings);
     }
 
-    saveSettings() {
-        var validateTicket = () => {
-            let tickets = (this.settings.meetingTicket || "").trim();
-            if (tickets) {
-                tickets = tickets.replace(';', ',').replace(' ', ',');
-                tickets = tickets.split(',').map(t => t.trim() || null);
-                this.settings.meetingTicket = tickets.join();
-                return this.$ticket.getTicketDetails(tickets).then(res => {
-                    var list = tickets.map(t => res[t.toUpperCase()] || t);
-                    var invalidTickets = list.filter(t => typeof t === "string");
-                    if (invalidTickets.length > 0) {
-                        this.$message.warning("Invalid default ticket number(s) specified for meetings: " + invalidTickets.join());
-                        return false;
-                    }
-                    this.settings.meetingTicket = list.map(t => t.key).join();
-                    return true;
-                }, e => {
-                    var msgs = ((e.error || {}).errorMessages || []);
-                    if (msgs.some(m => m.toLowerCase().indexOf("'key' is invalid") > -1 || m.toLowerCase().indexOf("does not exist") > -1)) {
-                        this.$message.warning("Invalid default ticket number specified for meetings!");
-                    }
+    validateTicket() {
+        let tickets = (this.settings.meetingTicket || "").trim();
+        if (tickets) {
+            tickets = tickets.replace(';', ',').replace(' ', ',');
+            tickets = tickets.split(',').map(t => t.trim() || null);
+            this.settings.meetingTicket = tickets.join();
+            return this.$ticket.getTicketDetails(tickets).then(res => {
+                var list = tickets.map(t => res[t.toUpperCase()] || t);
+                var invalidTickets = list.filter(t => typeof t === "string");
+                if (invalidTickets.length > 0) {
+                    this.$message.warning("Invalid default ticket number(s) specified for meetings: " + invalidTickets.join());
                     return false;
+                }
+                this.settings.meetingTicket = list.map(t => t.key).join();
+                return true;
+            }, e => {
+                var msgs = ((e.error || {}).errorMessages || []);
+                if (msgs.some(m => m.toLowerCase().indexOf("'key' is invalid") > -1 || m.toLowerCase().indexOf("does not exist") > -1)) {
+                    this.$message.warning("Invalid default ticket number specified for meetings!");
+                }
+                return false;
+            });
+        }
+        else {
+            return Promise.resolve(true);
+        }
+    };
+
+    saveSettings = () => {
+        const { settings } = this;
+        const setting = { action: parseInt(settings.menuAction) };
+        const launchSetting = { action: setting.action };
+        settings.launchAction = setting;
+
+        switch (settings.menuAction) {
+            case 1:
+                launchSetting.menus = this.menus.filter(menu => menu.selected && !menu.isHead).map(menu => {
+                    return { name: menu.name, url: menu.url };
                 });
-            }
-            else {
-                return Promise.resolve(true);
-            }
-        };
-        validateTicket().then((result) => {
+                break;
+            case 2:
+                if (this.selectedLaunchPage) {
+                    var selLPage = this.menus.first(menu => menu.id === this.selectedLaunchPage);
+                    if (selLPage) {
+                        launchSetting.url = selLPage.url;
+                        setting.autoLaunch = this.selectedLaunchPage;
+                    }
+                }
+                break;
+            case 3:
+                if (this.selectedDashboard) {
+                    launchSetting.index = parseInt((this.selectedDashboard || '0').replace('D-', ''));
+                    setting.quickIndex = this.selectedDashboard;
+                }
+                break;
+            default: break;
+        }
+
+        this.validateTicket().then((result) => {
             if (result === false) {
                 this.setState({ currentTabIndex: 1 });
                 return;
             }
+
             if (!this.settings.storyPointField) {
                 // Find the field with exact match
                 var spF = this.state.numericFields.first(cf => cf.name.toLowerCase() === "story points");
@@ -84,9 +144,10 @@ class GeneralSettings extends PureComponent {
                     });
                 }
                 if (spF) {
-                    this.settings.storyPointField = spF;
+                    this.setValue("storyPointField", spF);
                 }
             }
+
             if (!this.settings.epicNameField) {
                 // Find the field with exact match
                 var enF = this.state.stringFields.first(cf => cf.name.toLowerCase() === "epic link");
@@ -98,18 +159,36 @@ class GeneralSettings extends PureComponent {
                     });
                 }
                 if (enF) {
-                    this.settings.epicNameField = enF;
+                    this.setValue("epicNameField", enF);
                 }
             }
+
             if (!(this.settings.startOfWeek > 0)) {
                 delete this.settings.startOfWeek;
             }
             this.$config.saveUserSettings(this.settings).then(res => {
-                this.menuActionsTab.setLaunchAction();
+                this.$cache.set("menuAction", launchSetting, false, true);
                 this.parseSettings(res);
             });
         });
     }
+
+    setValue = (field, value) => {
+        var { settings } = this;
+        if (value) {
+            settings[field] = value;
+        }
+        else {
+            delete settings[field];
+        }
+
+        this.settings = { ...settings };
+    }
+
+    launchPageChanged = (val) => this.selectedLaunchPage = val
+
+    dashboardChanged = (val) => this.selectedDashboard = val
+
     parseSettings = (result) => {
         var cUser = this.$session.CurrentUser;
         var sett = this.settings = result.settings;
@@ -136,23 +215,25 @@ class GeneralSettings extends PureComponent {
         else {
             $('body').removeClass('no-donation');
         }
+
         if (!sett.launchAction) {
             sett.launchAction = {};
-            sett.menuAction = '1';
+            sett.menuAction = 1;
         }
         else {
-            sett.menuAction = '' + sett.launchAction.action;
+            sett.menuAction = sett.launchAction.action;
         }
+
         sett.autoLaunch = "" + (sett.autoLaunch || 0);
         sett.notifyBefore = "" + (sett.notifyBefore || 0);
         sett.checkUpdates = "" + (sett.checkUpdates || 15);
         cUser.team = sett.teamMembers;
         if (sett.startOfDay) {
-            let temp = sett.startOfDay.split(':');
+            const temp = sett.startOfDay.split(':');
             cUser.startOfDay = temp[0] + ':' + temp[1];
         }
         if (sett.endOfDay) {
-            let temp = sett.endOfDay.split(':');
+            const temp = sett.endOfDay.split(':');
             cUser.endOfDay = temp[0] + ':' + temp[1];
         }
         this.setState({ removedIntg: false });
@@ -166,7 +247,7 @@ class GeneralSettings extends PureComponent {
         var {
             settings, noDonations,
             //props: { },
-            state: { currentTabIndex, removedIntg }
+            state: { currentTabIndex, removedIntg, numericFields, stringFields, projects, rapidViews }
         } = this;
 
         return (<>
@@ -178,13 +259,17 @@ class GeneralSettings extends PureComponent {
                     <WorklogTab settings={settings} onChange={this.settingsChanged} />
                 </TabPanel>
                 <TabPanel header="Default values" lefticon="fa-clock-o">
-                    <DefaultValuesTab settings={settings} onChange={this.settingsChanged} />
+                    <DefaultValuesTab ref={(r) => this.defaultValuesTab = r} settings={settings} onChange={this.settingsChanged}
+                        numericFields={numericFields} stringFields={stringFields} projects={projects} rapidViews={rapidViews}
+                    />
                 </TabPanel >
                 <TabPanel header="Meetings" lefticon="fa-calendar">
                     <MeetingsTab settings={settings} onChange={this.settingsChanged} removedIntg={removedIntg} intgStatusChanged={this.intgStatusChanged} />
                 </TabPanel >
                 <TabPanel header="Menu options" lefticon="fa-calendar">
-                    <MenuOptionsTab ref={(r) => this.menuActionsTab = r} settings={settings} onChange={this.settingsChanged} />
+                    <MenuOptionsTab ref={(r) => this.menuActionsTab = r} settings={settings} onChange={this.settingsChanged}
+                        launchPageChanged={this.launchPageChanged} dashboardChanged={this.dashboardChanged}
+                    />
                 </TabPanel>
             </TabView>
             <div className="pnl-footer">
