@@ -1,4 +1,4 @@
-import React, { PureComponent, Children } from 'react';
+import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { Dropdown } from 'primereact/dropdown';
 import { MultiSelect } from 'primereact/multiselect';
@@ -17,7 +17,6 @@ class SelectBox extends PureComponent {
 
         if (value !== subValue) {
             subValue = value;
-
             if (value && valueField) {
                 if (multiselect) {
                     value = dataset.filter(d => value.indexOf(d[valueField]) >= 0);

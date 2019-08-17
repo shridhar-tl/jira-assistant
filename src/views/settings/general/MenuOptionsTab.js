@@ -1,50 +1,17 @@
 import React from 'react';
 import TabControlBase from './TabControlBase';
-import { navigation } from '../../../_nav';
 import { Checkbox, SelectBox, RadioButton } from '../../../controls';
 import { ListBox } from 'primereact/listbox';
-import { inject } from '../../../services';
 
 class MenuOptionsTab extends TabControlBase {
     constructor(props) {
         super(props);
-        inject(this, "DashboardService");
         this.state = { launchMenus: [] };
     }
 
     UNSAFE_componentWillMount() {
-        const menus = [];
         const launchAct = this.props.settings.launchAction;
-        const selMenus = launchAct.selectedMenu || ['D-0', 'R-UD', 'R-SP', 'R-CG', 'CAL', 'S-GE'];
-
-        const dashboards = this.$dashboard.getDashboards();
-        const dasboardMenus = [];
-        dashboards.forEach((d, i) => {
-            const id = "D-" + i;
-            const url = "/dashboard/" + i;
-            menus.push({ id, name: d.name, icon: d.icon, url, selected: selMenus.indexOf(id) > -1 });
-            dasboardMenus.push({ value: id, label: d.name, icon: d.icon });
-        });
-
-        const launchMenus = [{ label: "Dashboards", items: dasboardMenus }];
-        let lastGroup = null;
-        navigation.forEach(menu => {
-            if (menu.name && !menu.isDashboard) {
-                menus.push({
-                    id: menu.id, isHead: menu.title, name: menu.name, icon: menu.icon,
-                    url: menu.url, selected: selMenus.indexOf(menu.id) > -1
-                });
-                if (menu.title) {
-                    lastGroup = { label: menu.name, items: [] };
-                    launchMenus.push(lastGroup);
-                }
-                else {
-                    lastGroup.items.push({ value: menu.id, label: menu.name, icon: menu.icon });
-                }
-            }
-        });
         this.setState({
-            menus, launchMenus, dashboards: dasboardMenus,
             selectedLaunchPage: launchAct.autoLaunch, selectedDashboard: launchAct.quickIndex
         });
     }
@@ -60,12 +27,13 @@ class MenuOptionsTab extends TabControlBase {
             this.selectSubMenus(menu);
         }
 
-        const selectedMenus = this.state.menus.filter(m => m.selected && !m.isHead).map(m => m.id);
-        this.setValue("selectedMenus", selectedMenus);
+        const selectedMenus = this.props.menus.filter(m => m.selected && !m.isHead).map(m => m.id);
+        this.props.menusChanged(selectedMenus);
+        this.setState({ selectedMenus });
     }
 
     selectSubMenus(menu) {
-        const { menus } = this.state;
+        const { menus } = this.props;
 
         for (var i = menus.indexOf(menu) + 1; i < menus.length; i++) {
             const subMenu = menus[i];
@@ -105,8 +73,8 @@ class MenuOptionsTab extends TabControlBase {
 
     render() {
         var {
-            props: { settings },
-            state: { selectedMenus, launchMenus, dashboards, menus, selectedDashboard, selectedLaunchPage }
+            props: { launchMenus, dashboards, menus, settings },
+            state: { selectedMenus, selectedDashboard, selectedLaunchPage }
         } = this;
 
         return (
@@ -131,10 +99,8 @@ class MenuOptionsTab extends TabControlBase {
                             </div>
                             <div className="ui-g-12 ui-md-9 ui-lg-9 ui-xl-10">
                                 <div className="form-group">
-                                    <div style={{ display: 'inline-block', height: 300, overflow: 'auto' }}>
-                                        <ListBox options={menus} value={selectedMenus} onChange={(val) => this.setState({ selectedMenus: val })}
-                                            multiple={true} style={{ width: '300px' }} listStyle={{ maxHeight: '250px' }} itemTemplate={this.menuTemplate} />
-                                    </div>
+                                    <ListBox options={menus} value={selectedMenus} onChange={(val) => this.setState({ selectedMenus: val })}
+                                        multiple={true} style={{ width: '300px' }} listStyle={{ maxHeight: '250px' }} itemTemplate={this.menuTemplate} />
                                     <span className="help-block">Choose the list of menus you would like to be displayed</span>
                                 </div>
                             </div>

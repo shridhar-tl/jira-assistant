@@ -1,6 +1,7 @@
 import React from 'react';
 import TabControlBase from './TabControlBase';
 import { TextBox, Checkbox } from '../../../controls';
+import TimePicker from '../../../controls/TimePicker';
 
 class WorklogTab extends TabControlBase {
     render() {
@@ -15,7 +16,7 @@ class WorklogTab extends TabControlBase {
                 </div>
                 <div className="ui-g-12 ui-md-9 ui-lg-9 ui-xl-10">
                     <div className="form-group">
-                        <ja-time-picker timevalue={settings.maxHours} valuemode="Hours" />
+                        <TimePicker value={settings.maxHours} onChange={(val) => this.setValue("maxHours", val)} placeholder="Choose max hours" />
                         <span className="help-block">Specify the maximum number of hours to be logged per day</span>
                     </div>
                 </div>

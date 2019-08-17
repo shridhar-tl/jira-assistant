@@ -41,7 +41,8 @@ export default class AjaxService {
             if (e.status === 0) {
                 this.$message.error("Unable to connect to server. Please check your network connectivity.", "Network error");
             }
-            return Promise.reject(e);
+            var { responseJSON: error, responseText: response, status } = e;
+            return Promise.reject({ error, response, status, ref: e });
         });
     }
 
@@ -70,7 +71,7 @@ export default class AjaxService {
                 },
                 beforeSend: (request) => {
                     var { headers } = this.httpOptions;
-                    Object.keys(headers).forEach(h => request.setRequestHeader(h, headers[h]))
+                    Object.keys(headers).forEach(h => request.setRequestHeader(h, headers[h]));
                 }
             });
         });

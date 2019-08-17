@@ -79,7 +79,7 @@ class MeetingsTab extends TabControlBase {
                         <div className="ui-g-12 ui-md-9 ui-lg-9 ui-xl-10">
                             <div className="form-group">
                                 <label className="check">
-                                    <Checkbox value={settings.googleIntegration}
+                                    <Checkbox checked={settings.googleIntegration}
                                         onChange={(val) => this.setValue("googleIntegration", val)} /> Allow integration
                                     </label>
                                 <span className="help-block">Select this checkbox if you would wish to view meetings in your calendar</span>

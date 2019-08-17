@@ -19,7 +19,7 @@ class RadioButton extends PureComponent {
         var checked = defaultValue === value;
 
         return (
-            <span className={className} title={title}>
+            <span className={"ja-radio " + (className || "")} title={title}>
                 <RButton inputId={inputId} name={name} onChange={onChange} checked={checked} disabled={disabled} />
                 {label && <label htmlFor={inputId}>{label}</label>}
             </span>

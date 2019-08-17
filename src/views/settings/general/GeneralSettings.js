@@ -4,6 +4,7 @@ import { TabView, TabPanel } from 'primereact/tabview';
 import { Button } from '../../../controls';
 import { inject } from '../../../services';
 import GeneralTab from './GeneralTab';
+import { navigation } from '../../../_nav';
 import './Common.scss';
 import WorklogTab from './WorklogTab';
 import DefaultValuesTab from './DefaultValuesTab';
@@ -13,7 +14,7 @@ import MenuOptionsTab from './MenuOptionsTab';
 class GeneralSettings extends PureComponent {
     constructor(props) {
         super(props);
-        inject(this, "AppBrowserService", "SessionService", "MessageService", "CacheService", "ConfigService", "TicketService", "JiraService");
+        inject(this, "AppBrowserService", "SessionService", "MessageService", "CacheService", "ConfigService", "TicketService", "JiraService", "DashboardService");
 
         this.noDonations = true;
         this.settings = {};
@@ -69,6 +70,43 @@ class GeneralSettings extends PureComponent {
         this.$config.getUserSettings().then(this.parseSettings);
     }
 
+    fillMenus() {
+        const menus = [];
+        const launchAct = this.settings.launchAction;
+        const selMenus = launchAct.selectedMenu || ['D-0', 'R-UD', 'R-SP', 'R-CG', 'CAL', 'S-GE'];
+
+        const dashboards = this.$dashboard.getDashboards();
+        const dashboardMenus = [];
+        dashboards.forEach((d, i) => {
+            const id = "D-" + i;
+            const url = "/dashboard/" + i;
+            menus.push({ id, name: d.name, icon: d.icon, url, selected: selMenus.indexOf(id) > -1 });
+            dashboardMenus.push({ value: id, label: d.name, icon: d.icon });
+        });
+
+        const launchMenus = [{ label: "Dashboards", items: dashboardMenus }];
+        let lastGroup = null;
+        navigation.forEach(menu => {
+            if (menu.name && !menu.isDashboard) {
+                menus.push({
+                    id: menu.id, isHead: menu.title, name: menu.name, icon: menu.icon,
+                    url: menu.url, selected: selMenus.indexOf(menu.id) > -1
+                });
+                if (menu.title) {
+                    lastGroup = { label: menu.name, items: [] };
+                    launchMenus.push(lastGroup);
+                }
+                else {
+                    lastGroup.items.push({ value: menu.id, label: menu.name, icon: menu.icon });
+                }
+            }
+        });
+
+        this.menus = menus;
+        this.launchMenus = launchMenus;
+        this.dashboardMenus = dashboardMenus;
+    }
+
     validateTicket() {
         let tickets = (this.settings.meetingTicket || "").trim();
         if (tickets) {
@@ -108,6 +146,7 @@ class GeneralSettings extends PureComponent {
                 launchSetting.menus = this.menus.filter(menu => menu.selected && !menu.isHead).map(menu => {
                     return { name: menu.name, url: menu.url };
                 });
+                setting.selectedMenu = this.selectedMenu;
                 break;
             case 2:
                 if (this.selectedLaunchPage) {
@@ -187,6 +226,7 @@ class GeneralSettings extends PureComponent {
 
     launchPageChanged = (val) => this.selectedLaunchPage = val
 
+    menusChanged = (val) => this.selectedMenu = val
     dashboardChanged = (val) => this.selectedDashboard = val
 
     parseSettings = (result) => {
@@ -224,9 +264,9 @@ class GeneralSettings extends PureComponent {
             sett.menuAction = sett.launchAction.action;
         }
 
-        sett.autoLaunch = "" + (sett.autoLaunch || 0);
-        sett.notifyBefore = "" + (sett.notifyBefore || 0);
-        sett.checkUpdates = "" + (sett.checkUpdates || 15);
+        sett.autoLaunch = (sett.autoLaunch || 0);
+        sett.notifyBefore = (sett.notifyBefore || 0);
+        sett.checkUpdates = (sett.checkUpdates || 15);
         cUser.team = sett.teamMembers;
         if (sett.startOfDay) {
             const temp = sett.startOfDay.split(':');
@@ -236,7 +276,10 @@ class GeneralSettings extends PureComponent {
             const temp = sett.endOfDay.split(':');
             cUser.endOfDay = temp[0] + ':' + temp[1];
         }
-        this.setState({ removedIntg: false });
+
+        this.fillMenus();
+
+        this.setState({ removedIntg: false, settings: this.settings });
     }
 
     tabChanged = (e) => this.setState({ currentTabIndex: e.index })
@@ -267,7 +310,9 @@ class GeneralSettings extends PureComponent {
                     <MeetingsTab settings={settings} onChange={this.settingsChanged} removedIntg={removedIntg} intgStatusChanged={this.intgStatusChanged} />
                 </TabPanel >
                 <TabPanel header="Menu options" lefticon="fa-calendar">
-                    <MenuOptionsTab ref={(r) => this.menuActionsTab = r} settings={settings} onChange={this.settingsChanged}
+                    <MenuOptionsTab ref={(r) => this.menuActionsTab = r} settings={settings}
+                        dashboards={this.dashboardMenus} menus={this.menus} launchMenus={this.launchMenus}
+                        onChange={this.settingsChanged} menusChanged={this.menusChanged}
                         launchPageChanged={this.launchPageChanged} dashboardChanged={this.dashboardChanged}
                     />
                 </TabPanel>
