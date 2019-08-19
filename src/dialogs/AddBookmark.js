@@ -6,7 +6,7 @@ import { inject } from '../services';
 class AddBookmark extends BaseDialog {
     constructor(props) {
         super(props, "Add Bookmark");
-        inject(this, "BookmarkService");
+        inject(this, "BookmarkService", "MessageService");
         this.style.width = "380px";
         this.state.ticketsList = [];
     }
@@ -25,10 +25,10 @@ class AddBookmark extends BaseDialog {
                         this.setState({ ticketsList: result });
 
                         if (ticketsList.length === result.length) {
-                            this.message.warning("None of the ticket numbers provided are valid.");
+                            this.$message.warning("None of the ticket numbers provided are valid.");
                         }
                         else if (ticketsList.length > result.length) {
-                            this.message.warning("Some of the ticket numbers provided are not valid.");
+                            this.$message.warning("Some of the ticket numbers provided are not valid.");
                         }
                     }
                 });
@@ -44,7 +44,7 @@ class AddBookmark extends BaseDialog {
         return <>
             <Button type="primary" onClick={this.addBookmark} label="Save" />
             <Button type="default" onClick={this.onHide} label="Cancel" />
-        </>
+        </>;
     }
 
     render() {

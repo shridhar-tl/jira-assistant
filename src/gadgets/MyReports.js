@@ -33,7 +33,7 @@ class MyReports extends BaseGadget {
         }
         var ids = items.map((w) => w.id);
         if (ids.length === 0) {
-            this.message.info("Select the reports to be deleted!");
+            this.$message.info("Select the reports to be deleted!");
             return;
         }
         this.isLoading = true;
@@ -54,7 +54,7 @@ class MyReports extends BaseGadget {
         var items = this.savedQueries.filter((w) => w.selected);
         var ids = items.map((w) => w.id);
         if (ids.length === 0) {
-            this.message.info("Select the reports to be exported!");
+            this.$message.info("Select the reports to be exported!");
             return;
         }
         this.$report.exportQueries(ids);
@@ -80,10 +80,10 @@ class MyReports extends BaseGadget {
                 }, err => { r.status = "Duplicate name"; return Promise.reject(err); });
             });
             Promise.all(saveAction).then(() => {
-                this.message.success(selectedReports.length + " selected reports were imported", "Reports imported");
+                this.$message.success(selectedReports.length + " selected reports were imported", "Reports imported");
                 this.refreshData();
                 this.reportsToImport = null;
-            }, () => { this.message.error("Some of the reports were not import!", "Import failed"); this.updateSelReportCount(); });
+            }, () => { this.$message.error("Some of the reports were not import!", "Import failed"); this.updateSelReportCount(); });
         }
     }
 
@@ -92,7 +92,7 @@ class MyReports extends BaseGadget {
         var file = selector.files[0];
         if (file) {
             if (!file.name.endsWith('.jrd')) {
-                this.message.warning("Unknown file selected to import. Select a valid Jira Assist Report definition (*.jrd) file");
+                this.$message.warning("Unknown file selected to import. Select a valid Jira Assist Report definition (*.jrd) file");
                 selector.value = '';
                 return;
             }
@@ -104,7 +104,7 @@ class MyReports extends BaseGadget {
                     var rpt = JSON.parse(json);
                     var reports = rpt.reports;
                     if (!reports || !Array.isArray(reports)) {
-                        this.message.error("Selected file is invalid or is corrupted");
+                        this.$message.error("Selected file is invalid or is corrupted");
                         return;
                     }
                     reports.forEach(r => {
@@ -117,11 +117,11 @@ class MyReports extends BaseGadget {
                     this.selAllRpts = true;
                 }
                 catch (err) {
-                    this.message.error("Selected file is invalid or is corrupted");
+                    this.$message.error("Selected file is invalid or is corrupted");
                 }
             };
             reader.onerror = (evt) => {
-                this.message.error("Selected file is invalid or is corrupted. Unable to load the file!");
+                this.$message.error("Selected file is invalid or is corrupted. Unable to load the file!");
             };
         }
         selector.value = '';

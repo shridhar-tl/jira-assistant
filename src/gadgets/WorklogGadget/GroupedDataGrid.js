@@ -22,7 +22,6 @@ class GroupedDataGrid extends PureComponent {
             return time ? 'log-high' : 'col-holiday';
         }
         else {
-            console.log()
             var secsPerDay = this.props.maxSecsPerDay;
             if (time === secsPerDay) {
                 return 'log-good';
@@ -89,7 +88,7 @@ class GroupedDataGrid extends PureComponent {
                             totalHours: 0
                         };
                         let totalHours = 0;
-                        items.ForEach(item => {
+                        items.forEach(item => {
                             var logTime = item.logTime;
                             if (curTimeZone) {
                                 logTime = moment(moment(logTime).tz(curTimeZone).format('YYYY-MM-DD HH:mm:ss')).toDate();
@@ -260,7 +259,7 @@ class UserRow extends PureComponent {
 
     getLogEntries(entries) {
         if (Array.isArray(entries) && entries.length > 0) {
-            return entries.map((d, i) => <span key={i} title={this.props.formatTime(d.logTime) + " - " + d.comment}> {this.props.convertSecs(d.totalHours)}; </span>)
+            return entries.map((d, i) => <span key={i} title={this.props.formatTime(d.logTime) + " - " + d.comment}> {this.props.convertSecs(d.totalHours)}; </span>);
         }
     }
 

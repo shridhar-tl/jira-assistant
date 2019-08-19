@@ -2,10 +2,10 @@ import * as moment from 'moment';
 import { ApiUrls, DummyWLId } from '../_constants';
 
 export default class WorklogService {
-    static dependencies = ["UserUtilsService", "JiraService", "SessionService", "DatabaseService", "TicketService", "AjaxService", "DataTransformService"];
+    static dependencies = ["UserUtilsService", "JiraService", "SessionService", "DatabaseService", "TicketService", "AjaxService", "DataTransformService", "MessageService"];
 
     //ToDo: FormatTsPipe is not a service
-    constructor($userutils, $jira, $session, $db, $ticket, $ajax, $transform) {
+    constructor($userutils, $jira, $session, $db, $ticket, $ajax, $transform, $message) {
         this.$userutils = $userutils;
         this.$jira = $jira;
         this.$session = $session;
@@ -13,6 +13,7 @@ export default class WorklogService {
         this.$ticket = $ticket;
         this.$ajax = $ajax;
         this.$transform = $transform;
+        this.$message = $message;
     } // format ts should be pipe
 
     getUploadedWorklogs(fromDate, toDate, userList, fields) {
@@ -291,13 +292,13 @@ export default class WorklogService {
     saveWorklog(worklog, upload) {
         return this.$ticket.getTicketDetails(worklog.ticketNo).then((ticket) => {
             if (!ticket) {
-                this.message.error(worklog.ticketNo + " is not a valid Jira Key");
+                this.$message.error(worklog.ticketNo + " is not a valid Jira Key");
                 return Promise.reject(worklog.ticketNo + " is not a valid Jira Key");
             }
             if (!this.$session.CurrentUser.allowClosedTickets) {
                 if (ticket.fields.status.name.toLowerCase() === "closed") {
-                    let msg = ticket.key + " is already closed. Cannot add worklog for closed ticket!";
-                    this.message.error(msg);
+                    const msg = ticket.key + " is already closed. Cannot add worklog for closed ticket!";
+                    this.$message.error(msg);
                     return Promise.reject(msg);
                 }
             }
@@ -366,10 +367,12 @@ export default class WorklogService {
             return 0;
         }
         var tmp = timeSpent.replace(" ", "0").split(':');
-        if (tmp.length === 2)
+        if (tmp.length === 2) {
             return ((parseInt("0" + tmp[0]) * 60) + parseInt("0" + tmp[1])) * (ticks ? 60 * 1000 : 1);
-        else
+        }
+        else {
             return 0;
+        }
     }
 
     getDWWorklog(data, fromDate, toDate) {

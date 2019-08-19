@@ -7,6 +7,7 @@ import { Growl } from 'primereact/growl';
 import 'primereact/resources/themes/nova-light/theme.css';
 import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
+import 'jsd-report/build/css/style.css';
 import './scss/style.scss';
 
 import './App.scss';

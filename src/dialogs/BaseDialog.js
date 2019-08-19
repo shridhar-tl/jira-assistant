@@ -10,7 +10,12 @@ class BaseDialog extends PureComponent {
     }
 
     onHide = (prop) => {
-        this.setState({ showDialog: false })
+        this.setState({ showDialog: false });
+
+        // Do not send prop in onHide event callback if it is an event
+        if (prop && prop.nativeEvent) {
+            prop = null;
+        };
 
         var { onHide } = this.props;
         if (onHide) {

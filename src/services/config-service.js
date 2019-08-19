@@ -3,14 +3,14 @@ import { ApiUrls, dateFormats, timeFormats } from '../_constants';
 export default class ConfigService {
     static dependencies = ["SessionService", "AuthService", "DatabaseService", "AjaxService", "UtilsService", "AppBrowserService", "MessageService"];
 
-    constructor($session, $auth, $db, $jaHttp, $utils, $jaBrowserExtn, message) {
+    constructor($session, $auth, $db, $jaHttp, $utils, $jaBrowserExtn, $message) {
         this.$session = $session;
         this.$auth = $auth;
         this.$db = $db;
         this.$jaHttp = $jaHttp;
         this.$utils = $utils;
         this.$jaBrowserExtn = $jaBrowserExtn;
-        this.message = message;
+        this.$message = $message;
     }
 
     // ToDo
@@ -165,7 +165,7 @@ export default class ConfigService {
                 delete user.checkUpdates;
             }
             user.timeFormat = settings.timeFormat;
-            return this.$db.users.put(user).then(() => { this.message.success("Settings saved successfully!"); return this.getUserSettings(); });
+            return this.$db.users.put(user).then(() => { this.$message.success("Settings saved successfully!"); return this.getUserSettings(); });
         });
     }
 }

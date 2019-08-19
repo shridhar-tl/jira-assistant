@@ -4,11 +4,11 @@ import * as $ from 'jquery';
 export default class CalendarService {
     static dependencies = ["AppBrowserService", "AnalyticsService", "ConfigService", "MessageService"];
 
-    constructor($jaBrowserExtn, $analytics, $config, message) {
+    constructor($jaBrowserExtn, $analytics, $config, $message) {
         this.$jaBrowserExtn = $jaBrowserExtn;
         this.$analytics = $analytics;
         this.$config = $config;
-        this.message = message;
+        this.$message = $message;
         // Client ID and API key from the Developer Console
         //var CLIENT_ID = "692513716183-s97kv5slq5ihm410jq2kc4r8hr77rcku.apps.googleusercontent.com";
         //var API_KEY = "AIzaSyC6BS-Z_7E7ejv-nfJgq1KmrJ146xneenI";
@@ -58,12 +58,12 @@ export default class CalendarService {
                     error: (error) => {
                         this.$analytics.trackEvent("Authentication error :-" + ((error || "").status || ""));
                         if (error && error.status === 401) {
-                            this.message.warning("Authenticated session with the Google Calendar has expired. You will have to reauthenticate.");
+                            this.$message.warning("Authenticated session with the Google Calendar has expired. You will have to reauthenticate.");
                             this.$jaBrowserExtn.removeAuthTokken(authToken);
                             //return svc.getEvents(startDate, endDate, options);
                         }
                         else {
-                            this.message.error("Unknown error occured while trying to fetch the calendar data.");
+                            this.$message.error("Unknown error occured while trying to fetch the calendar data.");
                         }
                         reject(error);
                     }
@@ -72,7 +72,7 @@ export default class CalendarService {
         };
         return this.authenticate().then(onAuthSuccess, (err) => {
             if (err.error && err.error.message && err.error.message.toLowerCase().indexOf("invalid credentials")) {
-                this.message.warning("Authentication with google calendar has expired. You will have to reauthenticate to proceed!");
+                this.$message.warning("Authentication with google calendar has expired. You will have to reauthenticate to proceed!");
                 this.$analytics.trackEvent("Calendar auto reauthenticate");
                 reAuth = true;
                 return this.authenticate(true).then(onAuthSuccess);

@@ -7,9 +7,10 @@ import MyOpenTickets from './MyOpenTickets';
 import MyReports from './MyReports';
 import PendingWorklog from './PendingWorklog';
 import TicketWiseWorklog from './TicketWiseWorklog';
+import ReportViewer from './ReportViewer';
 
 
-export { GadgetActionType, Calendar, DateWiseWorklog, WorklogGadget, MyBookmarks, MyOpenTickets, MyReports, PendingWorklog, TicketWiseWorklog }
+export { GadgetActionType, Calendar, DateWiseWorklog, WorklogGadget, MyBookmarks, MyOpenTickets, MyReports, PendingWorklog, TicketWiseWorklog, ReportViewer };
 
 export const GadgetList = [
     { id: 'myOpenTickets', icon: 'fa-eye', name: 'My Open Tickets', details: 'Contains the list of open tickets assigned to you' },

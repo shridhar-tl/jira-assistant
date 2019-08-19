@@ -68,7 +68,7 @@ class MyBookmarks extends BaseGadget {
             ids = this.state.bookmarksList.filter((b) => { return b.selected; }).map((b) => { return b.ticketNo; });
         }
         if (ids.length === 0) {
-            this.message.info("Select the bookmarks to be deleted!");
+            this.$message.info("Select the bookmarks to be deleted!");
             return;
         }
 
@@ -100,7 +100,7 @@ class MyBookmarks extends BaseGadget {
         return <>
             <Button icon="fa fa-plus" onClick={this.showAddPopup} title="Add ticket to bookmarks" />
             <Button type="danger" icon="fa fa-trash-o" onClick={() => this.deleteBookmark()} title="Remove selected ticket(s) from bookmarks" />
-        </>
+        </>;
     }
 
     render() {
@@ -142,7 +142,7 @@ class MyBookmarks extends BaseGadget {
                             <td>{b.resolutionIcon && <img className="img-x16" src={b.resolutionIcon} alt={b.resolution} />}{b.resolution}</td>
                             <td>{b.created}</td>
                             <td>{b.updated}</td>
-                        </tr>
+                        </tr>;
                     }}
                 </TBody>
                 <NoDataRow span={11}>You have not yet bookmarked any tickets.Bookmark your frequently used tickets</NoDataRow>

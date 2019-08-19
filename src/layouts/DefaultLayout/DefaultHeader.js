@@ -1,9 +1,9 @@
 import React, { PureComponent } from 'react';
 import { NavLink } from 'react-router-dom';
-import { UncontrolledDropdown, DropdownItem, DropdownMenu, DropdownToggle, Nav, NavItem, Badge } from 'reactstrap';
+import { UncontrolledDropdown, DropdownItem, DropdownMenu, DropdownToggle, Nav, NavItem } from 'reactstrap';
 import PropTypes from 'prop-types';
 
-import { AppAsideToggler, AppSidebarToggler } from '@coreui/react';
+import { AppSidebarToggler } from '@coreui/react';
 import logo from '../../img/logo-symbol.png';
 import * as $ from 'jquery';
 import { CHROME_WS_URL, FF_STORE_URL } from '../../_constants';
@@ -156,10 +156,12 @@ class DefaultHeader extends PureComponent {
               {users && users.length > 0 && <>
                 <DropdownItem header tag="div" className="text-center"><strong>Accounts</strong></DropdownItem>
 
-                {users.map(u => <DropdownItem key={u.id} tag="a" href={"/index.html/#/" + u.id + "/dashboard/1"} title={u.jiraUrl}><i className="fa fa-bell-o"></i> {u.email}</DropdownItem>)}
+                {users.map(u => <DropdownItem key={u.id} tag="a" href={"/index.html/#/" + u.id + "/dashboard/1"} title={u.jiraUrl}><i className="fa fa-external-link"></i> {u.email}</DropdownItem>)}
+
+                <DropdownItem tag="a" href="/index.html/#/integrate" title="Integrate with new instance of Jira"><i className="fa fa-plug"></i> Integrate</DropdownItem>
                 {
-                  <DropdownItem><i className="fa fa-envelope-o"></i> Messages<Badge color="success">42</Badge></DropdownItem>
-                /*<DropdownItem><i className="fa fa-tasks"></i> Tasks<Badge color="danger">42</Badge></DropdownItem>
+                 /*<DropdownItem><i className="fa fa-envelope-o"></i> Messages<Badge color="success">42</Badge></DropdownItem>
+                <DropdownItem><i className="fa fa-tasks"></i> Tasks<Badge color="danger">42</Badge></DropdownItem>
                 <DropdownItem><i className="fa fa-comments"></i> Comments<Badge color="warning">42</Badge></DropdownItem>
                 */}
               </>
@@ -210,7 +212,7 @@ class DefaultHeader extends PureComponent {
             <NavLink to="/feedback" className="nav-link"><i className="fa fa-bug" title="Report a bug or suggest a new feature"></i></NavLink>
           </NavItem>
         </Nav>
-        <AppAsideToggler className="d-md-down-none"><span className="fa fa-bars" /></AppAsideToggler>
+        {/*<AppAsideToggler className="d-md-down-none"><span className="fa fa-bars" /></AppAsideToggler>*/}
         {/*<AppAsideToggler className="d-lg-none" mobile />*/}
       </React.Fragment >
     );

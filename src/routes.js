@@ -13,8 +13,8 @@ const EstimateActualComponent = React.lazy(() => import('./views/reports/estimat
 //const SprintReportComponent = React.lazy(() => import('./views/'));
 const WorklogReportComponent = React.lazy(() => import('./views/reports/worklog-report/WorklogReport'));
 
-/*const AdvancedReportComponent = React.lazy(() => import('./views/'));
-*/
+const ReportBuilderComponent = React.lazy(() => import('./views/reports/report-builder/ReportBuilder'));
+
 const GeneralSettingsComponent = React.lazy(() => import('./views/settings/general/GeneralSettings'));
 
 const UserGroupsComponent = React.lazy(() => import('./components/UserGroup'));
@@ -58,16 +58,16 @@ var sessionBasedRoute = [
     {
         path: '/reports/customgrouped',
         component: CustomReportComponent
-    },
+    },*/
     {
         path: '/reports/advanced/:queryId',
-        component: AdvancedReportComponent
+        component: ReportBuilderComponent
     },
     {
         path: '/reports/advanced',
-        component: AdvancedReportComponent
+        component: ReportBuilderComponent
     },
-    {
+    /*{
         path: '/bulkimport',
         component: BulkImportComponent
     },*/

@@ -4,10 +4,10 @@ import * as moment from 'moment';
 export default class JiraService {
     static dependencies = ["AjaxService", "CacheService", "MessageService", "SessionService"];
 
-    constructor($jaHttp, $jaCache, message, $session) {
+    constructor($jaHttp, $jaCache, $message, $session) {
         this.$jaHttp = $jaHttp;
         this.$jaCache = $jaCache;
-        this.message = message;
+        this.$message = $message;
         this.$session = $session;
     }
     searchTickets(jql, fields, startAt) {
@@ -21,7 +21,7 @@ export default class JiraService {
                 .then((result) => {
                     var issues = result.issues;
                     //if (result.maxResults < result.total) {
-                    //  this.message.warning("Your filter returned " + result.total + " tickets but only first " + result.maxResults + " were fetched!");
+                    //  this.$message.warning("Your filter returned " + result.total + " tickets but only first " + result.maxResults + " were fetched!");
                     //}
                     if (fields.indexOf("worklog") > -1) {
                         var prevCount = issues.length;
@@ -47,7 +47,7 @@ export default class JiraService {
                 }, (err) => {
                     var messages = (err.error || {}).errorMessages;
                     if (messages && messages.length > 0) {
-                        this.message.error(messages.join('<br/>'), "Error fetching ticket details");
+                        this.$message.error(messages.join('<br/>'), "Error fetching ticket details");
                     }
                     reject(err);
                 });
@@ -187,13 +187,13 @@ export default class JiraService {
     getCurrentUser() {
         return this.$jaHttp.get(ApiUrls.mySelf).then(null, (e) => {
             if (e.status === 401) {
-                this.message.warning("You must be authenticated in Jira to access this tool. Please authenticate in Jira and then retry.", "Unauthorized");
+                this.$message.warning("You must be authenticated in Jira to access this tool. Please authenticate in Jira and then retry.", "Unauthorized");
             }
             else if (e.error && e.error.message) {
-                this.message.warning(e.error.message, "Server error");
+                this.$message.warning(e.error.message, "Server error");
             }
             else {
-                this.message.warning(e.status + ":- " + e.statusText, "Unknown error");
+                this.$message.warning(e.status + ":- " + e.statusText, "Unknown error");
             }
             return Promise.reject(e);
         });

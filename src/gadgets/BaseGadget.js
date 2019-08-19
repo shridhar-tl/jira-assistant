@@ -130,7 +130,7 @@ export class BaseGadget extends PureComponent {
                 {this.renderCustomActions && this.renderCustomActions()}
                 {this.isGadget && <Button icon="fa fa-wrench" onClick={e => showContextMenu(e, this.getContextMenu())} />}
             </div>
-        </div>
+        </div>;
     }
 
     renderBase(childern) {
@@ -143,6 +143,7 @@ export class BaseGadget extends PureComponent {
             {isLoading && <div className="data-loader"><i className="fa fa-refresh fa-spin"></i></div>}
             <Panel header={this.getHeader()}>
                 {childern}
+                {this.renderFooter && this.renderFooter()}
             </Panel>
         </div>);
     }
