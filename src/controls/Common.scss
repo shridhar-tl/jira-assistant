@@ -32,6 +32,19 @@
     }
 }
 
+.react-bootstrap-daterangepicker-container {
+    input.date-range-ctl {
+        width: 250px;
+        height: 27px;
+        border-right: 0px;
+    }
+
+    .icon {
+        margin-left: -2px;
+        height: 27px;
+    }
+}
+
 /* Chips */
 
 .p-chips {

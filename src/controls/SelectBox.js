@@ -35,7 +35,11 @@ class SelectBox extends PureComponent {
             var groupedDataset = [];
 
             dataset.forEach(grp => {
-                groupedDataset.push({ isGroup: true, value: grp });
+                const grpWrap = { isGroup: true, value: grp };
+                if (props.displayField) {
+                    grpWrap[props.displayField] = "";
+                }
+                groupedDataset.push(grpWrap);
                 grp.items.forEach(itm => groupedDataset.push(itm));
             });
 
@@ -69,9 +73,7 @@ class SelectBox extends PureComponent {
             props: { displayField, placeholder, multiselect, dataset, style, className, filterPlaceholder, group, children },
             state: { value, groupedDataset }
         } = this;
-        var itemTemplate = null;
-
-        var filter = dataset && dataset.length >= 15;
+        let itemTemplate = null;
 
         if (group) {
             dataset = groupedDataset;
@@ -83,6 +85,8 @@ class SelectBox extends PureComponent {
                 }
             };
         }
+
+        const filter = dataset && dataset.length >= 15;
 
         if (multiselect) {
             return (

@@ -1,11 +1,30 @@
 import React, { PureComponent } from 'react';
-import { Calendar } from 'primereact/calendar';
+import DateRangePicker from 'react-bootstrap-daterangepicker';
+import 'bootstrap-daterangepicker/daterangepicker.css';
+import TextBox from './TextBox';
+import moment from 'moment';
+import Button from './Button';
+
+const labelText = ['This month', 'Last one month', 'Last month', 'This week', 'Last one week', 'Last week'];
 
 class DatePicker extends PureComponent {
     constructor(props) {
         super(props);
         var { value, range } = props;
-        this.state = { value: this.getDateValue(value, range) };
+        this.dateRange = this.getRange();
+        this.displayFormat = props.dateFormat || "DD-MMM-YYYY";
+        this.state = { value: this.getDateValue(value, range), displayDate: "" };
+    }
+
+    getRange() {
+        return {
+            'This month': [moment().startOf('month').toDate(), moment().endOf('month').toDate()],
+            'Last one month': [moment().subtract(1, 'months').toDate(), moment().toDate()],
+            'Last month': [moment().subtract(1, 'months').startOf('month').toDate(), moment().subtract(1, 'months').endOf('month').toDate()],
+            'This week': [moment().startOf('week').toDate(), moment().endOf('week').toDate()],
+            'Last one week': [moment().subtract(6, 'days').toDate(), moment().toDate()],
+            'Last week': [moment().subtract(1, 'weeks').startOf('week').toDate(), moment().subtract(1, 'weeks').endOf('week').toDate()]
+        };
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
@@ -13,16 +32,28 @@ class DatePicker extends PureComponent {
         this.setState({ value: this.getDateValue(value, range) });
     }
 
-    onChange = (e) => {
+    onChange = (e, picker) => {
         var { value } = e;
         var { range } = this.props;
         var valToPush = value;
+        let displayDate = "";
+
         if (range) {
-            if (Array.isArray(value)) {
-                valToPush = { fromDate: value[0], toDate: value[1] };
+            const { chosenLabel, startDate, endDate } = picker;
+            if (startDate && endDate) {
+                valToPush = { fromDate: startDate.toDate(), toDate: endDate.toDate() };
+
+                const idx = labelText.indexOf(chosenLabel);
+                if (idx >= 0) {
+                    valToPush.quickDate = idx;
+                }
+
+                displayDate = `${startDate.format(this.displayFormat)} - ${endDate.format(this.displayFormat)}`;
+
+                value = [valToPush.fromDate, valToPush.toDate];
             }
         }
-        this.setState({ value });
+        this.setState({ value, displayDate });
         this.props.onChange(valToPush);
     }
 
@@ -37,29 +68,42 @@ class DatePicker extends PureComponent {
 
     render() {
         var {
-            onChange,
-            props: { showTime, navigator, multiselect, range, disabled, title, style, className, placeholder },
-            state: { value }
+            onChange, dateRange,
+            props: { showTime, multiselect, range, disabled, style, className, placeholder },
+            state: { value, displayDate }
         } = this;
 
-        var selectionMode = "single";
+        //var selectionMode = "single";
         if (multiselect === true) {
-            selectionMode = "multiple";
+            //selectionMode = "multiple";
             placeholder = placeholder || "Select one or more date";
         }
         else if (range === true) {
-            selectionMode = "range";
+            //selectionMode = "range";
             placeholder = placeholder || "Select a date range";
         }
 
         placeholder = placeholder || "Select a date";
 
-        return (
-            <Calendar appendTo={document.body} value={value} disabled={disabled} tooltip={title} style={style}
-                className={className} showIcon={true} showSeconds={true} showTime={showTime} placeholder={placeholder}
-                selectionMode={selectionMode} monthNavigator={navigator} yearNavigator={navigator} readonlyInput={true} hourFormat="12"
-                onChange={onChange} />
-        );
+        return <DateRangePicker style={style} className={className} disabled={disabled} startDate={value[0]} endDate={value[1]} showDropdowns={true}
+            timePicker={showTime || false}
+            ranges={range ? dateRange : null} showCustomRangeLabel={true} alwaysShowCalendars={false} maxSpan={6} autoApply={true}
+            linkedCalendars={false} autoUpdateInput={false} singleDatePicker={!range} onApply={onChange}>
+            <TextBox className="date-range-ctl" value={displayDate} readOnly={true} placeholder={placeholder} />
+            <Button icon="fa fa-calendar" className="icon" />
+        </DateRangePicker>;
+
+        /*
+        if (range) {
+        }
+        else {
+            return (
+                <Calendar appendTo={document.body} value={value} disabled={disabled} tooltip={title} style={style}
+                    className={className} showIcon={true} showSeconds={true} showTime={showTime} placeholder={placeholder}
+                    selectionMode={selectionMode} monthNavigator={navigator} yearNavigator={navigator} readonlyInput={true} hourFormat="12"
+                    onChange={onChange} />
+            );
+        }*/
     }
 }
 

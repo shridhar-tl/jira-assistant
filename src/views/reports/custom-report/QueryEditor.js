@@ -13,14 +13,18 @@ class QueryEditor extends BaseGadget {
         inject(this, "ReportService", "JiraService", "AnalyticsService");
 
         //this.groupIgnore = ['issuekey', 'summary', 'description'];
-        this.state = this.getClearState();
+        this.state = this.getClearState(false, props);
     }
 
-    getClearState(clear) {
+    getClearState(clear, props) {
         var { reportQuery } = this.state;
 
         if (!reportQuery || clear) {
-            reportQuery = { fields: {}, filterFields: [], outputFields: [] };
+            if (props && props.reportQuery) {
+                reportQuery = { ...props.reportQuery };
+            } else {
+                reportQuery = { fields: {}, filterFields: [], outputFields: [] };
+            }
         }
         else {
             reportQuery.fields = reportQuery.fields || {};
@@ -35,7 +39,7 @@ class QueryEditor extends BaseGadget {
     }
 
     UNSAFE_componentWillMount() {
-        this.$jira.getCustomFields().then(data => this.processJson(data));
+        this.$jira.getCustomFields().then(this.processJson);
         this.fillQueriesList();
         //this.$report.getSavedQuery(value).then( (result)=> {
         //  this.reportRequest = result;
@@ -97,8 +101,6 @@ class QueryEditor extends BaseGadget {
         }
         return query.join(' AND ');
     }
-
-    removeField(arr, field) { arr.Remove(field); }
 
     isSaveEnabled() {
         return this.state.reportQuery.jql && this.state.reportQuery.jql.trim().length > 10
@@ -263,17 +265,26 @@ class QueryEditor extends BaseGadget {
         this.selectedFilterField = '';
     }
 
-    displayFieldAdded(val) {
-        if (!val) {
+    displayFieldAdded = (val) => {
+        if (!val || val.items) { // Return if a group is selected instead of items
             return;
         }
-        this.setState({ selectedDisplayField: val });
+
+        let { reportQuery } = this.state;
+        reportQuery = { ...reportQuery };
         var field = this.jiraFields.first((f) => f.id === val);
-        this.state.reportQuery.outputFields.push(this.getField(field, false));
-        this.selectedDisplayField = null;
+        reportQuery.outputFields = reportQuery.outputFields.concat(this.getField(field, false));
+        this.setState({ reportQuery });
     }
 
-    processJson(data) {
+    removeOutputField(index) {
+        let { reportQuery } = this.state;
+        reportQuery = { ...reportQuery };
+        reportQuery.outputFields.splice(index, 1);
+        this.setState({ reportQuery });
+    }
+
+    processJson = (data) => {
         this.jiraFields = data;
         //var favoriteFilters = ['key', 'assignee', 'created', 'creator', 'issue type', 'labels', 'project', 'reporter', 'resolution', 'resolved', 'status', 'summary', 'updated', 'sprint'];
         var basicFields = [], customFields = [];
@@ -287,22 +298,28 @@ class QueryEditor extends BaseGadget {
                 basicFields.push(f);
             }
         });
+
         basicFields = basicFields.orderBy((f) => f.name);
         customFields = customFields.orderBy((f) => f.name);
-        this.filterFields = [
-            {
-                label: 'Basic Fields',
-                items: basicFields.filter((f) => f.clauseNames && f.clauseNames.length > 0)
-            },
-            {
-                label: 'Custom Fields',
-                items: customFields.filter((f) => f.clauseNames && f.clauseNames.length > 0)
-            }
-        ];
-        this.displayFields = [{
-            label: 'Basic Fields',
-            items: basicFields
-        }, { label: 'Custom Fields', items: customFields }]; // false
+
+        this.setState({
+            filterFields: [
+                {
+                    label: 'Basic Fields',
+                    items: basicFields.filter((f) => f.clauseNames && f.clauseNames.length > 0)
+                },
+                {
+                    label: 'Custom Fields',
+                    items: customFields.filter((f) => f.clauseNames && f.clauseNames.length > 0)
+                }
+            ]
+        });
+        this.setState({
+            displayFields: [
+                { label: 'Basic Fields', items: basicFields },
+                { label: 'Custom Fields', items: customFields }
+            ]
+        }); // false
     }
 
     columnReordered(event) {
@@ -348,6 +365,8 @@ class QueryEditor extends BaseGadget {
         });
     }
 
+
+
     renderCustomActions() {
         const {
             queryList,
@@ -389,9 +408,8 @@ class QueryEditor extends BaseGadget {
 
     render() {
         const {
-            displayFields, selectedDisplayField,
             props: { builderOnly },
-            state: { reportQuery, }
+            state: { reportQuery, displayFields, }
         } = this;
 
         const html = <>
@@ -420,15 +438,23 @@ class QueryEditor extends BaseGadget {
                                 <td>{row.type} {row.isArray ? '(multiple)' : ''}</td>
                                 {!builderOnly && <td className="data-center"><Checkbox checked={row.groupBy} onChange={val => { row.groupBy = val; this.groupField(row, $index); }} /></td>}
                                 {!builderOnly && <td jabindfunction row={row} />}
-                                <td className="data-center"><i className="fa fa-times pointer" onClick={() => this.removeField(reportQuery.outputFields, row)} /></td>
+                                <td className="data-center"><i className="fa fa-times pointer" onClick={() => this.removeOutputField($index)} /></td>
                             </tr>)}
                         </tbody>
                         <tbody>
                             <tr>
                                 <td className="data-center">{reportQuery.outputFields.length + 1}</td>
                                 <td>
-                                    <SelectBox options={displayFields} value={selectedDisplayField} style={{ 'width': '100%' }} placeholder="Choose a column to add to the list" group={true}
-                                        filterplaceholder="Type the field name to filter" onChange={this.displayFieldAdded} datakey="id" />
+                                    <SelectBox dataset={displayFields} value="" style={{ 'width': '100%' }}
+                                        placeholder="Choose a column to add to the list" group={true} displayField="name"
+                                        filterPlaceholder="Type the field name to filter" onChange={this.displayFieldAdded}>
+                                        {(itm, i) => {
+                                            return <span>{itm.name}</span>;
+                                        }}
+                                        {(grp, i) => {
+                                            return <strong>{grp.label}</strong>;
+                                        }}
+                                    </SelectBox>
                                     {/*<select id="lstCustomFields" style="width:100%;" title="Choose a column to add to the list" data-container="body"></select>*/}
                                 </td>
                                 <td colSpan={5}>Note: Select the column from the list to add it as output</td>

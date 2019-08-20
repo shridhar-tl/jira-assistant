@@ -6,6 +6,7 @@ import QueryEditor from '../custom-report/QueryEditor';
 class JQLEditorDialog extends BaseDialog {
     constructor(props) {
         super(props, "Select dataset fields");
+        this.style = { width: "900px" };
         const { filterQuery } = props;
         this.state = { showDialog: true, filterQuery };
     }
