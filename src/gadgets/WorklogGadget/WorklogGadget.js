@@ -327,7 +327,7 @@ class WorklogGadget extends BaseGadget {
         var { breakupMode } = pageSettings;
 
         return super.renderBase(
-            <div>
+            <div className="worklog-gadget-container">
                 {!rawData && !isLoading && <WorklogReportInfo />}
 
                 {isLoading && <div className="pad-15">Loading... please wait while the report is being loaded.

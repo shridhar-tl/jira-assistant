@@ -81,6 +81,12 @@ a.p-menuitem-link {
             padding: 2px 14px !important;
         }
     }
+
+    .p-tabview-selected {
+        a {
+            height: 32px;
+        }
+    }
 }
 
 /* #endregion*/

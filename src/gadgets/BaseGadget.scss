@@ -58,6 +58,7 @@ div.full-height {
         div.p-panel-content {
             height: calc(100vh - 130px);
             padding: 0;
+            overflow: auto;
         }
     }
 
@@ -67,6 +68,7 @@ div.full-height {
         div.p-panel-content {
             height: calc(100vh - 86px);
             padding: 0;
+            overflow: auto;
         }
     }
 }

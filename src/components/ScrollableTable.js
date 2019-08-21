@@ -1,8 +1,12 @@
 import React, { PureComponent, createContext } from 'react';
 import "./ScrollableTable.scss";
+import $ from "jquery";
 import { EventEmitter } from 'events';
 
 var TableContext = createContext({});
+
+const tableScrollingEvent = "tableScrolling";
+const sortChangedEvent = "sortChanged";
 
 export class ScrollableTable extends PureComponent {
     constructor(props) {
@@ -28,21 +32,29 @@ export class ScrollableTable extends PureComponent {
 
             if (sortBy) {
                 this.setState({ sortBy, isDesc });
-                this.eventEmitter.emit("sortChanged", sortBy, isDesc);
+                this.eventEmitter.emit(sortChangedEvent, sortBy, isDesc);
             }
             else {
                 return this.state.sortBy;
             }
         },
         onSortFieldChanged: (callback) => {
-            this.eventEmitter.on("sortChanged", callback);
-            return () => this.eventEmitter.off("sortChanged", callback);
+            this.eventEmitter.on(sortChangedEvent, callback);
+            return () => this.eventEmitter.off(sortChangedEvent, callback);
+        },
+        onScroll: (callback) => {
+            this.eventEmitter.on(tableScrollingEvent, callback);
+            return () => this.eventEmitter.off(tableScrollingEvent, callback);
         }
     };
 
+    tableScrolled = (e) => {
+        this.eventEmitter.emit(tableScrollingEvent, e.currentTarget.scrollTop, e);
+    }
+
     render() {
         return (
-            <div className="scroll-table-container" ref={el => this.container = el}>
+            <div className="scroll-table-container" ref={el => this.container = el} onScroll={this.tableScrolled}>
                 <TableContext.Provider value={this.sharedProps}>
                     <table ref={el => this.table = el} className="scroll-table table-bordered" {...this.props}>
 
@@ -55,12 +67,64 @@ export class ScrollableTable extends PureComponent {
 
 export class THead extends PureComponent {
     static contextType = TableContext;
+    state = { showOverlay: false };
+
+    componentDidMount() {
+        this.cleanup = this.context.onScroll((scrollTop) => {
+            this.scrollTop = scrollTop;
+            if (scrollTop > 0) {
+                if (!this.state.showOverlay) {
+                    this.setState({ showOverlay: true });
+                }
+
+                if (this.overlay) {
+                    this.overlay.style.top = this.scrollTop + "px";
+                }
+            }
+            else {
+                this.setState({ showOverlay: false });
+            }
+        });
+    }
+
+    setOverLay = (ref) => this.overlay = ref
+    setHeaderEl = (ref) => this.headerEl = ref
+
+    componentWillUnmount() {
+        this.cleanup();
+    }
+
+    componentDidUpdate() {
+        this.setOverLayStyle();
+    }
+
+    setOverLayStyle() {
+        if (!this.state.showOverlay) { return; }
+
+        const actualTH = $(this.headerEl).find("th");
+        const overlayTH = $(this.overlay).find("th");
+
+        actualTH.each((i, ath) => {
+            const $ath = $(ath);
+            const $oth = $(overlayTH[i]);
+            $oth.width($ath.width());
+        });
+    }
 
     render() {
-        return (
-            <thead {...this.props}>
+        var { className = "", style, children } = this.props;
+        const { showOverlay } = this.state;
 
+        const overlayStyle = { ...style, top: this.scrollTop };
+
+        return (<>
+            {showOverlay && <thead ref={this.setOverLay} className={className + " scroll-overlay"} style={overlayStyle}>
+                {children}
+            </thead>}
+            <thead ref={this.setHeaderEl} className={className} style={style}>
+                {children}
             </thead>
+        </>
         );
     }
 }

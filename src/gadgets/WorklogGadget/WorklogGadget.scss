@@ -1,3 +1,9 @@
+.worklog-gadget-container {
+  .scroll-table-container {
+    height: calc(100vh - 121px);
+    overflow: auto;
+  }
+}
 
 td .user-info {
     min-height: 42px;

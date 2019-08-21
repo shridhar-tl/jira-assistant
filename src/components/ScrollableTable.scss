@@ -14,8 +14,20 @@ div.scroll-table-container {
 
     .scroll-table {
         min-width: 100%;
+        position: relative;
 
         thead {
+            &.scroll-overlay {
+                position: absolute;
+                left: 0;
+
+                tr {
+                    th:last-child {
+                        border-right: 0;
+                    }
+                }
+            }
+
             tr {
                 background-color: #ebedf0;
 
