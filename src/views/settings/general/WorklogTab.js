@@ -5,7 +5,7 @@ import TimePicker from '../../../controls/TimePicker';
 
 class WorklogTab extends TabControlBase {
     render() {
-        var {
+        const {
             props: { settings }
         } = this;
 

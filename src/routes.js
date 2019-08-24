@@ -25,7 +25,7 @@ const FeedbackViewComponent = React.lazy(() => import('./views/feedback-view/Fee
 
 export const isQuickView = document.location.href.indexOf('?quick=true') > -1;
 
-var sessionBasedRoute = [
+const sessionBasedRoute = [
     {
         path: '/dashboard/:index/:isQuickView',
         component: DashboardComponent

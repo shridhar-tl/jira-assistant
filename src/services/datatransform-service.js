@@ -34,9 +34,9 @@ export default class DataTransformService {
             return null;
         }
         if (prop)
-            return arr.sum((v) => { return v[prop]; });
+            {return arr.sum((v) => { return v[prop]; });}
         else
-            return arr.sum();
+            {return arr.sum();}
     }
 
     min(arr, prop) {
@@ -55,18 +55,18 @@ export default class DataTransformService {
             return null;
         }
         if (prop)
-            return arr.Max((v) => { return v[prop]; });
+            {return arr.Max((v) => { return v[prop]; });}
         else
-            return arr.Max();
+            {return arr.Max();}
     }
     bytes(bytes, precision) {
         if (isNaN(parseFloat(bytes)) || !isFinite(bytes))
-            return '-';
+            {return '-';}
         if (typeof precision === 'undefined') {
             precision = 1;
         }
-        var units = ['bytes', 'kB', 'MB', 'GB', 'TB', 'PB'], number = Math.floor(Math.log(bytes) / Math.log(1024));
-        return (bytes / Math.pow(1024, Math.floor(number))).toFixed(precision) + ' ' + units[number];
+        const units = ['bytes', 'kB', 'MB', 'GB', 'TB', 'PB'], number = Math.floor(Math.log(bytes) / Math.log(1024));
+        return `${(bytes / Math.pow(1024, Math.floor(number))).toFixed(precision)  } ${  units[number]}`;
     }
     convertSecs(d, opts) {
         if (!opts) {
@@ -99,15 +99,15 @@ export default class DataTransformService {
     }
     cut(value, max, wordwise, tail) {
         if (!value || max === -1)
-            return value;
+            {return value;}
         max = parseInt(max || 20, 10);
         if (!max)
-            return value;
+            {return value;}
         if (value.length <= max)
-            return value;
+            {return value;}
         value = value.substr(0, max);
         if (wordwise) {
-            var lastspace = value.lastIndexOf(' ');
+            let lastspace = value.lastIndexOf(' ');
             if (lastspace !== -1) {
                 //Also remove . and , so it gives a cleaner result.
                 if (value.charAt(lastspace - 1) === '.' || value.charAt(lastspace - 1) === ',') {
@@ -126,19 +126,19 @@ export default class DataTransformService {
             d = d.sum();
         }
         d = Number(d);
-        var prefix = "";
+        let prefix = "";
         if (d < 0) {
             prefix = "-";
             d = Math.abs(d);
         }
-        var h = Math.floor(d / 3600);
-        var m = Math.floor(d % 3600 / 60);
-        var s = Math.floor(d % 3600 % 60);
+        const h = Math.floor(d / 3600);
+        const m = Math.floor(d % 3600 / 60);
+        const s = Math.floor(d % 3600 % 60);
         if (simple) {
-            return prefix + (h > 0 ? h.pad(2) : "00") + ':' + (m > 0 ? m.pad(2) : "00");
+            return `${prefix + (h > 0 ? h.pad(2) : "00")  }:${  m > 0 ? m.pad(2) : "00"}`;
         }
         else {
-            return prefix + ((h > 0 ? h + "h " : "") + (m > 0 ? m + "m " : "") + (s > 0 ? s + "s" : "")).trim();
+            return prefix + ((h > 0 ? `${h  }h ` : "") + (m > 0 ? `${m  }m ` : "") + (s > 0 ? `${s  }s` : "")).trim();
         }
     }
     formatTs(d, simple) {
@@ -151,29 +151,29 @@ export default class DataTransformService {
         switch (fields) {
             case "EM": return obj.emailAddress;
             case "LG": return obj.name;
-            case "NE": return obj.displayName + '(' + obj.emailAddress + ')';
-            case "NL": return obj.displayName + '(' + obj.name + ')';
+            case "NE": return `${obj.displayName  }(${  obj.emailAddress  })`;
+            case "NL": return `${obj.displayName  }(${  obj.name  })`;
             default: return obj.displayName;
         }
     }
     propOfNthItem(arr, index, prop, fromCsv) {
         if (!arr)
-            return null;
+            {return null;}
         if (!Array.isArray(arr))
-            return "#Error:Array expected";
+            {return "#Error:Array expected";}
         if (!arr.length)
-            return null;
+            {return null;}
         if (typeof index === "string" && isNaN(Number(index))) {
             if (index === "last")
-                index = arr.length - 1;
+                {index = arr.length - 1;}
         }
         index = Number(index);
         if (!isNaN(index)) {
             index = index - 0;
             if (index < 0)
-                return "#Error:Out of L Bound";
+                {return "#Error:Out of L Bound";}
             if (index >= arr.length)
-                return "#Error:Out of U Bound";
+                {return "#Error:Out of U Bound";}
         }
         return this.getProperty(arr[index], prop, fromCsv);
     }
@@ -185,13 +185,13 @@ export default class DataTransformService {
             object = this.convertCustObj(object);
         }
         if (!prop)
-            return object;
+            {return object;}
         return object[prop];
     }
     convertCustObj(obj) {
-        var i;
+        let i;
         if (Array.isArray(obj)) {
-            var arr = [];
+            const arr = [];
             for (i = 0; i < obj.length; i++) {
                 arr[i] = this.convertCustObj(obj[i]);
             }
@@ -200,18 +200,18 @@ export default class DataTransformService {
         else {
             if (typeof obj === "string") {
                 obj = obj.replace(/(^.*\[|\].*$)/g, '');
-                var vals = obj.split(',');
+                const vals = obj.split(',');
                 obj = {};
                 for (i = 0; i < vals.length; i++) {
-                    var val = vals[i].split('=');
-                    var data = val[1];
+                    const val = vals[i].split('=');
+                    const data = val[1];
                     if (data !== "<null>")
-                        obj[val[0]] = data;
+                        {obj[val[0]] = data;}
                 }
                 return obj;
             }
             else
-                return obj;
+                {return obj;}
         }
     }
 }

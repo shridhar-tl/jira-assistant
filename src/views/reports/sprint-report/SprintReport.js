@@ -25,7 +25,7 @@ class SprintReport extends PureComponent {
     }
 
     searchRapidView($event) {
-        var query = ($event.query || '').toLowerCase();
+        const query = ($event.query || '').toLowerCase();
         this.filteredRapidViews = this.rapidViews.filter(r => (r.name.toLowerCase().indexOf(query) >= 0 || r.id.toString().startsWith(query))
             && this.selectedRapidIds.indexOf(r.id) === -1);
     }
@@ -36,7 +36,7 @@ class SprintReport extends PureComponent {
             this.sprints = sprints.orderByDescending(s => s.id).ForEach((s) => {
                 if (!s.stateAppended) {
                     s.stateAppended = true;
-                    s.name += (" - (" + s.state + ")" || "");
+                    s.name += (` - (${  s.state  })` || "");
                 }
             });
         });
@@ -44,7 +44,7 @@ class SprintReport extends PureComponent {
         this.sprintChanged();
     }
     searchSprints($event) {
-        var query = ($event.query || '').toLowerCase();
+        const query = ($event.query || '').toLowerCase();
         this.filteredSprints = this.sprints.filter(r => (r.name.toLowerCase().indexOf(query) >= 0 || r.id.toString().startsWith(query))
             && this.selectedSprintIds.indexOf(r.id) === -1);
     }
@@ -52,12 +52,12 @@ class SprintReport extends PureComponent {
         this.selectedSprintIds = this.selectedSprints.map(r => r.id);
     }
     generateReport() {
-        var selectedItems = this.selectedSprints;
+        const selectedItems = this.selectedSprints;
         if (selectedItems.length === 0) {
             return;
         }
         this.isLoading = true;
-        var arr = selectedItems.map((sprint) => {
+        const arr = selectedItems.map((sprint) => {
             if (sprint.report) {
                 return Promise.resolve(sprint.report);
             }
@@ -66,10 +66,10 @@ class SprintReport extends PureComponent {
         Promise.all(arr)
             .then((result) => {
                 if (this.includeWorklogs) {
-                    var ticketsList = result.union(spr => spr.contents.completedIssues).distinct(t => t.key);
+                    const ticketsList = result.union(spr => spr.contents.completedIssues).distinct(t => t.key);
                     ticketsList.AddDistinctRange(result.union(spr => spr.contents.puntedIssues).distinct(t => t.key));
                     ticketsList.AddDistinctRange(result.union(spr => spr.contents.issuesNotCompletedInCurrentSprint).distinct(t => t.key));
-                    return this.$jira.searchTickets('key in (' + ticketsList.join() + ') or parent in (' + ticketsList.join() + ')', ["summary", "worklog", "issuetype", "parent", "timeoriginalestimate"])
+                    return this.$jira.searchTickets(`key in (${  ticketsList.join()  }) or parent in (${  ticketsList.join()  })`, ["summary", "worklog", "issuetype", "parent", "timeoriginalestimate"])
                         .then(tickets => { return { sprintDetails: result, ticketDetails: tickets }; });
                 }
                 return { sprintDetails: result };
@@ -77,13 +77,13 @@ class SprintReport extends PureComponent {
             .then((data) => {
                 this.isLoading = false;
                 this.worklogDetails = data.ticketDetails;
-                var result = data.sprintDetails;
+                const result = data.sprintDetails;
                 this.sprintDetails = result;
-                var getCountWithSP = (issues) => { return issues.count((issue) => { return ((issue.currentEstimateStatistic || {}).statFieldValue || {}).value; }); };
+                const getCountWithSP = (issues) => { return issues.count((issue) => { return ((issue.currentEstimateStatistic || {}).statFieldValue || {}).value; }); };
                 result.forEach((sprint) => {
                     let added = 0, removed = 0, addedWithSP = 0;
-                    var jiraKeysList = sprint.contents.issueKeysAddedDuringSprint;
-                    var keys = Object.keys(jiraKeysList);
+                    const jiraKeysList = sprint.contents.issueKeysAddedDuringSprint;
+                    const keys = Object.keys(jiraKeysList);
                     keys.forEach((key) => {
                         if (jiraKeysList[key] === true) {
                             added += 1;
@@ -92,8 +92,8 @@ class SprintReport extends PureComponent {
                             removed += 1;
                         }
                     });
-                    var addedSP = 0, addedSPOld = 0;
-                    var processAdded = (issue) => {
+                    let addedSP = 0, addedSPOld = 0;
+                    const processAdded = (issue) => {
                         issue.addedLater = jiraKeysList[issue.key] === true;
                         issue.removedLater = jiraKeysList[issue.key] === false;
                         issue.currentSP = ((issue.currentEstimateStatistic || {}).statFieldValue || {}).value || 0;
@@ -164,7 +164,7 @@ class SprintReport extends PureComponent {
                         }
                     }
                     sprint.expanded = result.length === 1;
-                    var link = $(sprint.lastUserToClose)
+                    let link = $(sprint.lastUserToClose)
                         .attr('target', '_blank');
                     link = link.attr('href', this.$utils.mapJiraUrl(link.attr('href')));
                     sprint.lastUserToClose = $("<div/>").append(link).html();

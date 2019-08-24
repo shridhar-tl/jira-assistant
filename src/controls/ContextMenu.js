@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { Menu } from 'primereact/menu';
 import { ContextMenu as CMenu } from 'primereact/contextmenu';
 
-var contextHandler = () => { };
+let contextHandler = () => { };
 export function showContextMenu(event, model) {
     event.preventDefault();
     contextHandler(event, model);
@@ -32,13 +32,13 @@ export default class ContextMenu extends PureComponent {
                 this.contextMenu.hide();
                 this.menu.show(event);
             }
-        }
+        };
     }
 
     render() {
         return <>
             <Menu appendTo={document.body} model={this.state.contextItems} popup={true} ref={el => this.menu = el} />
             <CMenu appendTo={document.body} model={this.state.contextItems} popup={true} ref={el => this.contextMenu = el} />
-        </>
+        </>;
     }
 }

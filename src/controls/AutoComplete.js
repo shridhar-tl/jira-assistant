@@ -4,7 +4,7 @@ import { AutoComplete } from 'primereact/autocomplete';
 class AC extends PureComponent {
     constructor(props) {
         super(props);
-        var { value } = props;
+        let { value } = props;
         value = value || "";
         this.state = { value };
     }
@@ -15,10 +15,10 @@ class AC extends PureComponent {
     }
 
     filterResult = ({ query }) => {
-        var { dataset } = this.props;
+        const { dataset } = this.props;
 
         if (typeof dataset === "function") {
-            var result = dataset(query);
+            const result = dataset(query);
             if (Array.isArray(result)) {
                 this.setState({ list: result });
                 return;
@@ -33,7 +33,7 @@ class AC extends PureComponent {
     }
 
     render() {
-        var {
+        const {
             onChange, filterResult,
             props: { multiple, dropdown, displayField, children, placeholder, title, className, style, size, maxlength, scrollHeight, disabled },
             state: { value, list }

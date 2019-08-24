@@ -10,7 +10,7 @@ class TextBox extends PureComponent {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        var { value } = newProps;
+        let { value } = newProps;
         if (!value) { value = ""; }
         if (value !== this.state.value) {
             this.setState({ value });
@@ -18,9 +18,9 @@ class TextBox extends PureComponent {
     }
 
     onChange = (e) => {
-        var { filter, onChange } = this.props;
-        var { value: oldValue } = this.state;
-        var { target: { value } } = e;
+        const { filter, onChange } = this.props;
+        const { value: oldValue } = this.state;
+        let { target: { value } } = e;
         if (filter) {
             value = oldValue; // ToDo: implement filter
         }
@@ -29,9 +29,9 @@ class TextBox extends PureComponent {
     }
 
     keyPress = (e) => {
-        var { key } = e;
+        const { key } = e;
         if (key && key.length > 1) {
-            var func = this.props['onKey_' + key];
+            const func = this.props[`onKey_${  key}`];
             if (func) {
                 func(this.state.value);
             }
@@ -39,13 +39,13 @@ class TextBox extends PureComponent {
     }
 
     render() {
-        var { value } = this.state;
-        var { keyfilter, style, className, maxLength, placeholder, multiline, rows, autoResize, readOnly } = this.props;
+        const { value } = this.state;
+        const { keyfilter, style, className, maxLength, placeholder, multiline, rows, autoResize, readOnly } = this.props;
 
         if (multiline) {
             return (
                 <InputTextarea rows={rows} value={value} autoResize={autoResize} keyfilter={keyfilter} style={style} maxLength={maxLength}
-                    className={'w-p-100 ' + (className || '')} placeholder={placeholder} onChange={this.onChange} onKeyPress={this.keyPress} />
+                    className={`w-p-100 ${  className || ''}`} placeholder={placeholder} onChange={this.onChange} onKeyPress={this.keyPress} />
             );
         }
         else {

@@ -10,7 +10,7 @@ export default class AuthService {
     }
 
     async getCurrentUser() {
-        var user = await this.$user.getUser(this.$session.getCurrentUserId());
+        const user = await this.$user.getUser(this.$session.getCurrentUserId());
         this.rootUrl = user.jiraUrl;
 
         return user;
@@ -47,7 +47,7 @@ export default class AuthService {
                 });
             })
             .then(userDetails => {
-                var settings = userDetails.settings;
+                const settings = userDetails.settings;
 
                 this.$session.pageSettings = {
                     dashboard: this.parseIfJson(settings.page_dashboard, {
@@ -68,7 +68,7 @@ export default class AuthService {
                     reports_UserDayWise: this.parseIfJson(settings.page_reports_UserDayWise, { logFormat: '1', breakupMode: '1', groupMode: '1' })
                 };
 
-                var lastVisisted = this.$cache.get("LV");
+                let lastVisisted = this.$cache.get("LV");
                 if (lastVisisted) {
                     lastVisisted = moment(lastVisisted);
                     if (moment().startOf('day').isAfter(lastVisisted)) {

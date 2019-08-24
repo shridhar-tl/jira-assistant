@@ -47,9 +47,9 @@ class App extends PureComponent {
       if (this.messenger) { this.messenger.show(message); }
     });
 
-    var { pathname } = this.props.location;
-    var parts = pathname.split("/");
-    var userId = parseInt(parts[1]);
+    const { pathname } = this.props.location;
+    const parts = pathname.split("/");
+    let userId = parseInt(parts[1]);
     if (!userId || !isNumber(userId)) {
       userId = null;
     }
@@ -61,10 +61,10 @@ class App extends PureComponent {
 
         if (result) {
           if (!pathname || pathname === "/") {
-            this.props.history.push("/" + this.$session.userId + "/dashboard/1");
+            this.props.history.push(`/${  this.$session.userId  }/dashboard/1`);
           }
           else if (!userId) {
-            this.props.history.push("/" + this.$session.userId + pathname);
+            this.props.history.push(`/${  this.$session.userId  }${pathname}`);
           }
         }
         else {
@@ -78,7 +78,7 @@ class App extends PureComponent {
   }
 
   render() {
-    var { isLoading } = this.state;
+    const { isLoading } = this.state;
 
     if (isLoading) {
       return <>{this.getMessanger()}{loading()}</>;

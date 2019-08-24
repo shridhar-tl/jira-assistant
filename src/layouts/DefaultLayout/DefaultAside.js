@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { Nav, NavItem, NavLink, Progress, TabContent, TabPane, ListGroup, ListGroupItem } from 'reactstrap';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import { AppSwitch } from '@coreui/react'
+import { AppSwitch } from '@coreui/react';
 
 const propTypes = {
   children: PropTypes.node,

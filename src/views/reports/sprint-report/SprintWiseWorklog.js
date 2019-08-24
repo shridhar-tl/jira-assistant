@@ -28,7 +28,7 @@ class SprintWiseWorklog extends PureComponent {
                 startDate: sprintInfo.startDate, endDate: sprintInfo.completeDate, sprintStatus: sprintInfo.state,
                 issueDetails: {}
             };
-            var ticketDet = sprintDetails.issueDetails;
+            let ticketDet = sprintDetails.issueDetails;
             let ticketList = [];
             curSprint.contents.completedIssues.forEach(i => {
                 //const cs = curSprint;
@@ -90,7 +90,7 @@ class SprintWiseWorklog extends PureComponent {
 
     setUserWiseWorklog(fields) {
         const worklogs = {};
-        var worklogList = (fields.worklog || {}).worklogs;
+        const worklogList = (fields.worklog || {}).worklogs;
         worklogList.forEach(wl => {
             const author = wl.author.name;
             let wlObj = worklogs[author];
@@ -108,7 +108,7 @@ class SprintWiseWorklog extends PureComponent {
     getIssueDetails(issueList, details, isMainTask) {
         //var issueDetails = details.issueDetails;
         //var users = this.userObject;
-        var issues = this.ticketDetails.filter(i => issueList.contains(i.key))
+        const issues = this.ticketDetails.filter(i => issueList.contains(i.key))
             .map(issue => {
                 //const curDetail = issueDetails[issue.key];
                 const fields = issue.fields || {};
@@ -131,7 +131,7 @@ class SprintWiseWorklog extends PureComponent {
                             const childWL = child.worklogs;
                             const usrs = Object.keys(childWL);
                             for (const u of usrs) {
-                                var subTotal = childWL[u].allTotal;
+                                const subTotal = childWL[u].allTotal;
                                 let parentU = parentWl[u];
                                 if (!parentU) {
                                     parentU = {};

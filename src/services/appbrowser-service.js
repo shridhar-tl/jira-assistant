@@ -13,9 +13,9 @@ export default class AppBrowserService {
                 this.notSetting.curShowing = {};
             },
             buttonClicked: (id, index) => {
-                var noti = this.notSetting.curShowing[id];
+                const noti = this.notSetting.curShowing[id];
                 if (noti) {
-                    var btn = noti.buttons[index];
+                    const btn = noti.buttons[index];
                     if (btn && btn.onClick) {
                         btn.onClick();
                     }
@@ -26,7 +26,7 @@ export default class AppBrowserService {
                 }
             },
             onClicked: (id, byUser) => {
-                var noti = this.notSetting.curShowing[id];
+                const noti = this.notSetting.curShowing[id];
                 if (noti) {
                     if (noti.onClicked) {
                         noti.onClicked(byUser);
@@ -34,7 +34,7 @@ export default class AppBrowserService {
                 }
             },
             onClosed: (id, byUser) => {
-                var noti = this.notSetting.curShowing[id];
+                const noti = this.notSetting.curShowing[id];
                 if (noti) {
                     delete this.notSetting.curShowing[id];
                     if (noti.onClosed) {
@@ -43,7 +43,7 @@ export default class AppBrowserService {
                 }
             },
             show: (id, title, message, ctxMsg, opts) => {
-                var msgObj = {
+                const msgObj = {
                     type: "basic",
                     iconUrl: "/img/icon_48.png",
                     title: title,
@@ -113,8 +113,8 @@ export default class AppBrowserService {
     }
     getStorageInfo() {
         return navigator.storage.estimate().then((estimate) => {
-            var usedSpace = estimate.usage;
-            var totalSpace = estimate.quota;
+            const usedSpace = estimate.usage;
+            const totalSpace = estimate.quota;
             return {
                 totalSpace: totalSpace,
                 usedSpace: usedSpace,
@@ -126,7 +126,7 @@ export default class AppBrowserService {
     getAppInfo() {
         if (this.isChrome) {
             return new Promise((resolve, reject) => {
-                let { management } = this.chrome;
+                const { management } = this.chrome;
                 if (management) {
                     management.getSelf((info) => {
                         if (info) {
@@ -141,7 +141,7 @@ export default class AppBrowserService {
             });
         }
         else {
-            var browser = window['browser'];
+            const browser = window['browser'];
             if (!browser) {
                 return Promise.reject(null);
             }
@@ -185,9 +185,9 @@ export default class AppBrowserService {
             const REDIRECT_URL = window['browser'].identity.getRedirectURL();
             const CLIENT_ID = "692513716183-jm587gc534dvsere4qhnk5bj68pql3p9.apps.googleusercontent.com";
             const SCOPES = ["https://www.googleapis.com/auth/calendar.readonly"];
-            const AUTH_URL = 'https://accounts.google.com/o/oauth2/auth?client_id='
-                + CLIENT_ID + '&response_type=token&redirect_uri=' + encodeURIComponent(REDIRECT_URL)
-                + '&scope=' + encodeURIComponent(SCOPES.join(" "));
+            const AUTH_URL = `https://accounts.google.com/o/oauth2/auth?client_id=${
+                 CLIENT_ID  }&response_type=token&redirect_uri=${  encodeURIComponent(REDIRECT_URL)
+                 }&scope=${  encodeURIComponent(SCOPES.join(" "))}`;
             //REVISIT: const VALIDATION_BASE_URL = "https://www.googleapis.com/oauth2/v3/tokeninfo"; // ToDo: Check why this URL is used
             return window['browser'].identity.launchWebAuthFlow({
                 interactive: options.interactive,
@@ -212,10 +212,10 @@ export default class AppBrowserService {
         }
     }
     extractAccessToken(redirectUri) {
-        let m = redirectUri.match(/[#?](.*)/);
+        const m = redirectUri.match(/[#?](.*)/);
         if (!m || m.length < 1)
-            return null;
-        let params = new URLSearchParams(m[1].split("#")[0]);
+            {return null;}
+        const params = new URLSearchParams(m[1].split("#")[0]);
         return params.get("access_token");
     }
 }

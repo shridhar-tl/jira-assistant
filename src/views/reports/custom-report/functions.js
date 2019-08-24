@@ -54,22 +54,26 @@ export const functions = [
     { name: 'formatUser?4', returns: 'string', text: 'User Display Name & Email', description: '', types: ['user'], params: [{ value: "NE" }] },
     { name: 'formatUser?5', returns: 'string', text: 'User Display Name & Login', description: '', types: ['user'], params: [{ value: "NL" }] },
     {
-        name: 'getProperty?0', returns: 'string', text: 'Get name value', description: '', types: ['object'], params: [{
+        name: 'getProperty?0', returns: 'string', text: 'Get name value', description: '', types: ['object'], params: [
+{
             type: "string",
             display: "Property Name:",
             //required: true,
             value: "name"
-        }]
+        }
+]
     },
     {
         name: 'getProperty?1', returns: 'string', text: 'Get property value (string)', description: '', types: ['object'],
-        params: [{
+        params: [
+{
             type: "string",
             display: "Property Name:",
             //required: true,
             default: "name",
             prompt: true
-        }]
+        }
+]
     },
     { name: 'getProperty?2', returns: 'number', text: 'Get property value (number)', description: '', types: ['object'] },
     { name: 'getProperty?3', returns: 'datetime', text: 'Get property value (datetime)', description: '', types: ['object'] },

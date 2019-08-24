@@ -8,9 +8,9 @@ class FeedbackView extends PureComponent {
         super(props);
         inject(this, "SessionService", "AppBrowserService");
 
-        var cUser = this.$session.CurrentUser;
+        const cUser = this.$session.CurrentUser;
         this.$jaBrowserExtn.getAppVersion().then((version) => {
-            var siteVersionNumber = (version || '0.58');
+            const siteVersionNumber = (version || '0.58');
             this.feedbackUrl = cUser.feedbackUrl.format([cUser.displayName, cUser.emailAddress, siteVersionNumber, navigator.userAgent]);
         });
     }
@@ -18,7 +18,7 @@ class FeedbackView extends PureComponent {
     resizeIframe(obj) {
         setTimeout(function () {
             obj.style.height = 0;
-            obj.style.height = (obj.contentWindow.document.body.scrollHeight + 30) + 'px';
+            obj.style.height = `${obj.contentWindow.document.body.scrollHeight + 30  }px`;
         }, 2000);
     }
 

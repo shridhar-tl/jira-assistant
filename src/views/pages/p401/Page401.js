@@ -7,7 +7,7 @@ class Page401 extends PureComponent {
     }
 
     render() {
-        var { jiraUrl } = this.props;
+        const { jiraUrl } = this.props;
 
         return (
             <div className="error-card global">

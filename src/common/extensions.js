@@ -1,17 +1,17 @@
 /* eslint-disable no-extend-native */
 
 Number.prototype.pad = function (size) {
-    var s = String(this);
-    while (s.length < (size || 2)) { s = "0" + s; }
+    let s = String(this);
+    while (s.length < (size || 2)) { s = `0${  s}`; }
     return s;
 };
 
-var SHORT_MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-var FULL_MONTH_NAMES = ['January', 'Febraury', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+const SHORT_MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const FULL_MONTH_NAMES = ['January', 'Febraury', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
-var TINY_DAY_NAMES = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
-var SHORT_DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-var FULL_DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+const TINY_DAY_NAMES = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+const SHORT_DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const FULL_DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
 Date.prototype.isBetween = function (fromDate, toDate) {
     if (typeof fromDate !== 'number') {
@@ -20,18 +20,18 @@ Date.prototype.isBetween = function (fromDate, toDate) {
     if (typeof toDate !== 'number') {
         toDate = new Date(toDate).getTime();
     }
-    var curDate = this.getTime();
+    const curDate = this.getTime();
 
     return fromDate <= curDate && curDate <= toDate;
-}
+};
 
 Date.prototype.format = function (seperat) {
-    var yyyy = this.getFullYear();
-    var mm = this.getMonth() < 9 ? "0" + (this.getMonth() + 1) : (this.getMonth() + 1); // getMonth() is zero-based
-    var dd = this.getDate() < 10 ? "0" + this.getDate() : this.getDate();
-    var hh = this.getHours() < 10 ? "0" + this.getHours() : this.getHours();
-    var min = this.getMinutes() < 10 ? "0" + this.getMinutes() : this.getMinutes();
-    var ss = this.getSeconds() < 10 ? "0" + this.getSeconds() : this.getSeconds();
+    const yyyy = this.getFullYear();
+    const mm = this.getMonth() < 9 ? `0${  this.getMonth() + 1}` : (this.getMonth() + 1); // getMonth() is zero-based
+    const dd = this.getDate() < 10 ? `0${  this.getDate()}` : this.getDate();
+    const hh = this.getHours() < 10 ? `0${  this.getHours()}` : this.getHours();
+    const min = this.getMinutes() < 10 ? `0${  this.getMinutes()}` : this.getMinutes();
+    const ss = this.getSeconds() < 10 ? `0${  this.getSeconds()}` : this.getSeconds();
 
 
     if (seperat) {
@@ -65,22 +65,22 @@ Date.prototype.format = function (seperat) {
 };
 
 Date.prototype.toUTCDate = function () {
-    var newObj = new Date(this.getTime());
+    const newObj = new Date(this.getTime());
     newObj.setMinutes(newObj.getMinutes() + this.getTimezoneOffset());
     return newObj;
 };
 
 Date.prototype.addDays = function (days) {
-    var dat = new Date(this);
+    const dat = new Date(this);
     dat.setDate(dat.getDate() + days);
     return dat;
 };
 
 String.prototype.format = function (args) {
     if (args && !Array.isArray(args)) { args = [args]; }
-    var str = this;
-    for (var i = 0; i < args.length; i++) {
-        str = str.replace(new RegExp('\\{' + i + '\\}', 'g'), args[i]);
+    let str = this;
+    for (let i = 0; i < args.length; i++) {
+        str = str.replace(new RegExp(`\\{${  i  }\\}`, 'g'), args[i]);
     }
     return str;
 };
@@ -88,31 +88,31 @@ String.prototype.format = function (args) {
 if (!String.prototype.startsWith) {
     String.prototype.startsWith = function (str) {
         return this.toLowerCase().indexOf(str.toLowerCase()) === 0;
-    }
+    };
 }
 
 if (!String.prototype.endsWith) {
     String.prototype.endsWith = function (str) {
         return this.toLowerCase().lastIndexOf(str.toLowerCase()) === this.length - str.length;
-    }
+    };
 }
 
 if (!String.prototype.trimEnd) {
     String.prototype.trimEnd = function (str) {
-        var s = this;
+        let s = this;
         while (s.endsWith(str)) {
             s = s.substring(0, s.length - str.length);
         }
         return s;
-    }
+    };
 }
 
 if (!String.prototype.trimStart) {
     String.prototype.trimStart = function (str) {
-        var s = this;
+        let s = this;
         while (s.startsWith(str)) {
             s = s.substring(str.length);
         }
         return s;
-    }
+    };
 }

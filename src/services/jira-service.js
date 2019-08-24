@@ -13,19 +13,19 @@ export default class JiraService {
     searchTickets(jql, fields, startAt) {
         startAt = startAt || 0;
         return new Promise((resolve, reject) => {
-            let postData = { jql: jql, fields: fields, maxResults: 1000 };
+            const postData = { jql: jql, fields: fields, maxResults: 1000 };
             if (startAt > 0) {
                 postData.startAt = startAt;
             }
             this.$jaHttp.post(ApiUrls.search, postData)
                 .then((result) => {
-                    var issues = result.issues;
+                    const issues = result.issues;
                     //if (result.maxResults < result.total) {
                     //  this.$message.warning("Your filter returned " + result.total + " tickets but only first " + result.maxResults + " were fetched!");
                     //}
                     if (fields.indexOf("worklog") > -1) {
-                        var prevCount = issues.length;
-                        var retryCount = 3;
+                        let prevCount = issues.length;
+                        let retryCount = 3;
                         var cback = (remaining, isus) => {
                             if (remaining === 0) {
                                 resolve({ total: result.total, issues: issues, startAt: startAt });
@@ -45,14 +45,14 @@ export default class JiraService {
                         resolve({ total: result.total, issues: issues, startAt: startAt });
                     }
                 }, (err) => {
-                    var messages = (err.error || {}).errorMessages;
+                    const messages = (err.error || {}).errorMessages;
                     if (messages && messages.length > 0) {
                         this.$message.error(messages.join('<br/>'), "Error fetching ticket details");
                     }
                     reject(err);
                 });
         }).then((result) => {
-            var issues = result.issues;
+            const issues = result.issues;
             if ((issues.length + result.startAt) < result.total && issues.length > 0) {
                 return this.searchTickets(jql, fields, result.startAt + issues.length).then(res => issues.addRange(res));
             }
@@ -74,7 +74,7 @@ export default class JiraService {
         });
     }
     getRapidViews() {
-        var value = this.$jaCache.session.get("rapidViews");
+        const value = this.$jaCache.session.get("rapidViews");
         if (value) {
             return new Promise((resolve, reject) => resolve(value));
         }
@@ -82,7 +82,7 @@ export default class JiraService {
             .then((result) => { this.$jaCache.session.set("rapidViews", result.views, 10); return result.views; });
     }
     getProjects() {
-        var value = this.$jaCache.session.get("projects");
+        const value = this.$jaCache.session.get("projects");
         if (value) {
             return new Promise((resolve) => resolve(value));
         }
@@ -90,7 +90,7 @@ export default class JiraService {
             .then((projects) => { this.$jaCache.session.set("projects", projects, 10); return projects; });
     }
     getIssueTypes() {
-        var value = this.$jaCache.session.get("issuetypes");
+        const value = this.$jaCache.session.get("issuetypes");
         if (value) {
             return new Promise((resolve, reject) => resolve(value));
         }
@@ -104,15 +104,15 @@ export default class JiraService {
         return this.$jaHttp.put(ApiUrls.individualIssue, issue, key);
     }
     getRapidSprintList(rapidIds) {
-        var reqArr = rapidIds.map((rapidId) => {
-            return this.$jaCache.session.getPromise("rapidSprintList" + rapidId).then((value) => {
+        const reqArr = rapidIds.map((rapidId) => {
+            return this.$jaCache.session.getPromise(`rapidSprintList${  rapidId}`).then((value) => {
                 if (value) {
                     return value;
                 }
                 return this.$jaHttp.get(ApiUrls.rapidSprintList, rapidId)
                     .then((result) => {
-                        var sprints = result.sprints.forEach((sp) => { sp.rapidId = rapidId; });
-                        this.$jaCache.session.set("rapidSprintList" + rapidId, sprints, 10);
+                        const sprints = result.sprints.forEach((sp) => { sp.rapidId = rapidId; });
+                        this.$jaCache.session.set(`rapidSprintList${  rapidId}`, sprints, 10);
                         return sprints;
                     });
             });
@@ -123,12 +123,12 @@ export default class JiraService {
         if (Array.isArray(projects)) {
             projects = projects.join();
         }
-        return this.$jaCache.session.getPromise("sprintListAll" + projects).then((value) => {
+        return this.$jaCache.session.getPromise(`sprintListAll${  projects}`).then((value) => {
             if (value) {
                 return value;
             }
             return this.$jaHttp.get(ApiUrls.sprintListAll, projects)
-                .then((result) => { this.$jaCache.session.set("sprintListAll" + projects, result.sprints, 10); return result.sprints; });
+                .then((result) => { this.$jaCache.session.set(`sprintListAll${  projects}`, result.sprints, 10); return result.sprints; });
         });
     }
     getRapidSprintDetails(rapidViewId, sprintId) {
@@ -136,7 +136,7 @@ export default class JiraService {
     }
     getOpenTickets(refresh) {
         if (!refresh) {
-            var value = this.$jaCache.session.get("myOpenTickets");
+            const value = this.$jaCache.session.get("myOpenTickets");
             if (value) {
                 return new Promise(resolve => resolve(value));
             }
@@ -149,14 +149,14 @@ export default class JiraService {
 
     fillWorklogs(issues, callback) {
         issues = issues.filter((iss) => !(iss.fields || {}).worklog || (((iss.fields || {}).worklog || {}).worklogs || []).length < iss.fields.worklog.total);
-        var pendCount = issues.length;
-        var successCount = 0;
+        let pendCount = issues.length;
+        let successCount = 0;
         if (pendCount > 3) {
             pendCount = 3;
         }
-        console.log("FillStarted:- " + issues.length + " tickets found");
+        console.log(`FillStarted:- ${  issues.length  } tickets found`);
 
-        var onSuccess = (res) => {
+        const onSuccess = (res) => {
             if (res) {
                 successCount++;
             }
@@ -166,7 +166,7 @@ export default class JiraService {
             }
         };
 
-        for (var i = 0; i < pendCount; i++) {
+        for (let i = 0; i < pendCount; i++) {
             this.fillWL(issues[i]).then(onSuccess);
         }
         if (issues.length === 0) {
@@ -174,15 +174,15 @@ export default class JiraService {
         }
     }
     fillWL(issue) {
-        console.log("Started fetching worklog for " + issue.key);
+        console.log(`Started fetching worklog for ${  issue.key}`);
         return this.getWorklogs(issue.key).then((res) => {
-            console.log("Success fetching worklog for " + issue.key);
+            console.log(`Success fetching worklog for ${  issue.key}`);
             if (!issue.fields) {
                 issue.fields = {};
             }
             issue.fields.worklog = res;
             return true;
-        }, () => { console.log("Failed fetching worklog for " + issue.key); return false; });
+        }, () => { console.log(`Failed fetching worklog for ${  issue.key}`); return false; });
     }
     getCurrentUser() {
         return this.$jaHttp.get(ApiUrls.mySelf).then(null, (e) => {
@@ -193,15 +193,15 @@ export default class JiraService {
                 this.$message.warning(e.error.message, "Server error");
             }
             else {
-                this.$message.warning(e.status + ":- " + e.statusText, "Unknown error");
+                this.$message.warning(`${e.status  }:- ${  e.statusText}`, "Unknown error");
             }
             return Promise.reject(e);
         });
     }
     getJAWorklog(worklogId, ticketNo) {
         return this.getWorklog(worklogId, ticketNo).then(w => {
-            var mins = (w.timeSpentSeconds / 60);
-            var wl = {
+            const mins = (w.timeSpentSeconds / 60);
+            const wl = {
                 id: DummyWLId,
                 createdBy: this.$session.CurrentUser.userId,
                 dateStarted: moment(w.started).toDate(),
@@ -209,7 +209,7 @@ export default class JiraService {
                 isUploaded: true,
                 ticketNo: ticketNo,
                 worklogId: Number(w.id),
-                timeSpent: parseInt((mins / 60).toString()).pad(2) + ":" + parseInt((mins % 60).toString()).pad(2)
+                timeSpent: `${parseInt((mins / 60).toString()).pad(2)  }:${  parseInt((mins % 60).toString()).pad(2)}`
             };
             return wl;
         });

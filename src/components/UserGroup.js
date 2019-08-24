@@ -8,9 +8,9 @@ class UserGroup extends PureComponent {
     constructor(props) {
         super(props);
         inject(this, "SessionService", "MessageService", "UserGroupService");
-        var { groups } = props;
+        const { groups } = props;
 
-        var timezones = moment.tz.names().map(t => { return { label: t, value: t }; });
+        const timezones = moment.tz.names().map(t => { return { label: t, value: t }; });
         this.groupTimezones = [{ label: 'My local time zone', value: '' }].union([timezones]);
         this.userTimezones = [{ label: 'My local time zone', value: '' }, { label: "Use group's time zone", value: 'GRP_TZ' }].union([timezones]);
         this.state = { groups };
@@ -27,10 +27,10 @@ class UserGroup extends PureComponent {
         if (!groupName) {
             return;
         }
-        var { groups } = this.state;
+        const { groups } = this.state;
 
         if (this.hasGroupWithName(groupName)) {
-            this.$message.warning("The group with the name '" + groupName + "' already exists!", "Group already exists");
+            this.$message.warning(`The group with the name '${  groupName  }' already exists!`, "Group already exists");
             return false;
         }
         else {
@@ -45,7 +45,7 @@ class UserGroup extends PureComponent {
     }
 
     deleteGroup = (index) => {
-        var { groups } = this.state;
+        let { groups } = this.state;
         groups.splice(index, 1);
         groups = [...groups];
         this.setState({ groups });
@@ -67,7 +67,7 @@ class UserGroup extends PureComponent {
     }
 
     render() {
-        var {
+        const {
             userTimezones,
             props: { isPlugged },
             state: { groups }
@@ -102,7 +102,7 @@ class GroupRow extends PureComponent {
     constructor(props) {
         super(props);
         inject(this, "JiraService");
-        var { group: { users = [], timeZone } } = props;
+        const { group: { users = [], timeZone } } = props;
         this.state = { selectedUsers: [], users, timeZone };
     }
 
@@ -112,13 +112,13 @@ class GroupRow extends PureComponent {
     searchUsers = (query) => this.$jira.searchUsers(query)
 
     addUsersToGroup() {
-        var {
+        const {
             props: { group },
             state: { selectedUsers }
         } = this;
-        var { users } = group;
+        const { users } = group;
 
-        var existingUsers = users.map(u => u.name.toLowerCase());
+        const existingUsers = users.map(u => u.name.toLowerCase());
         selectedUsers.removeAll(u => existingUsers.indexOf(u.name.toLowerCase()) > -1);
         users.addRange(selectedUsers);
         group.users = users;
@@ -126,8 +126,8 @@ class GroupRow extends PureComponent {
     }
 
     removeUser = (index) => {
-        var { group } = this.props;
-        var { users } = group;
+        const { group } = this.props;
+        let { users } = group;
         users.splice(index, 1);
         users = [...users];
         group.users = users;
@@ -144,7 +144,7 @@ class GroupRow extends PureComponent {
     }
 
     render() {
-        var {
+        const {
             onRemove, setTimezone,
 
             props: { group, groupTimezones, userTimezones, hasGroupWithName },
@@ -173,19 +173,19 @@ class GroupRow extends PureComponent {
             {(!users || users.length === 0) && <tr><td colSpan={5}>No users were available under this group</td></tr >}
 
             {users && users.map((user, i) => <UserRow key={user.name} user={user} index={i} userTimezones={userTimezones} onRemove={this.removeUser} />)}
-        </Fragment>
+        </Fragment>;
     }
 }
 
 class UserRow extends PureComponent {
     constructor(props) {
         super(props);
-        var { user: { timeZone } } = props;
+        const { user: { timeZone } } = props;
         this.state = { timeZone };
     }
 
     timeZoneChanged = (timeZone) => {
-        var { user } = this.props;
+        const { user } = this.props;
         user.timeZone = timeZone;
         this.setState({ timeZone });
     }
@@ -195,7 +195,7 @@ class UserRow extends PureComponent {
     }
 
     render() {
-        var {
+        const {
             timeZoneChanged, onRemove,
             props: { user, userTimezones }
         } = this;
@@ -236,7 +236,7 @@ class GroupFooter extends PureComponent {
     endAdd = () => this.setAddMode(false)
 
     render() {
-        var {
+        const {
             endAdd, addNewGroup, setGroupName,
             props: { isPlugged, saveGroups, onDone },
             state: { editMode, groupName }
@@ -274,7 +274,7 @@ class GroupFooter extends PureComponent {
 class GroupNameComponent extends PureComponent {
     constructor(props) {
         super(props);
-        inject(this, "MessageService")
+        inject(this, "MessageService");
         this.state = { editMode: false };
     }
 
@@ -285,14 +285,14 @@ class GroupNameComponent extends PureComponent {
     setGroupName = (groupName) => this.setState({ groupName })
 
     updateGroupName = () => {
-        var {
+        let {
             props: { group, hasGroupWithName },
             state: { groupName }
         } = this;
 
         groupName = groupName.trim();
         if (hasGroupWithName(groupName, group)) {
-            this.$message.warning("The group with the name '" + groupName + "' already exists!", "Group already exists");
+            this.$message.warning(`The group with the name '${  groupName  }' already exists!`, "Group already exists");
             return;
         }
 
@@ -301,7 +301,7 @@ class GroupNameComponent extends PureComponent {
     }
 
     render() {
-        var {
+        const {
             beginEdit, endEdit, setGroupName, updateGroupName,
             state: { editMode, groupName },
             props: { group }
@@ -311,14 +311,14 @@ class GroupNameComponent extends PureComponent {
             return <div onClick={beginEdit}>
                 <span style={{ fontWeight: 600, fontSize: 17 }}>{group.name} </span>
                 ({group.users.length} users) <i className="fa fa-edit" />
-            </div>
+            </div>;
         }
         else {
             return <div className="ui-inputgroup">
                 <TextBox value={groupName} maxLength={40} onChange={setGroupName} />
                 <Button type="success" icon="fa fa-check" onClick={updateGroupName} />
                 <Button type="danger" icon="fa fa-undo" onClick={endEdit} />
-            </div>
+            </div>;
         }
     }
 }

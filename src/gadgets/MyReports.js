@@ -31,7 +31,7 @@ class MyReports extends BaseGadget {
         if (!items) {
             items = this.savedQueries.filter((w) => w.selected);
         }
-        var ids = items.map((w) => w.id);
+        const ids = items.map((w) => w.id);
         if (ids.length === 0) {
             this.$message.info("Select the reports to be deleted!");
             return;
@@ -43,7 +43,7 @@ class MyReports extends BaseGadget {
     }
 
     selectAll = () => {
-        var { savedQueries, selAllChk } = this.state;
+        let { savedQueries, selAllChk } = this.state;
         selAllChk = !selAllChk;
         savedQueries.forEach(wl => wl.selected = selAllChk);
         savedQueries = [...savedQueries];
@@ -51,8 +51,8 @@ class MyReports extends BaseGadget {
     }
 
     downloadReports() {
-        var items = this.savedQueries.filter((w) => w.selected);
-        var ids = items.map((w) => w.id);
+        const items = this.savedQueries.filter((w) => w.selected);
+        const ids = items.map((w) => w.id);
         if (ids.length === 0) {
             this.$message.info("Select the reports to be exported!");
             return;
@@ -62,13 +62,13 @@ class MyReports extends BaseGadget {
 
     importReports(save) {
         if (!save) {
-            var selector = this.fileSelector.nativeElement;
+            const selector = this.fileSelector.nativeElement;
             selector.click();
         }
         else {
-            var selectedReports = this.reportsToImport.filter((r) => r.selected);
-            var saveAction = selectedReports.map((r) => {
-                var newObj = Object.assign({}, r);
+            const selectedReports = this.reportsToImport.filter((r) => r.selected);
+            const saveAction = selectedReports.map((r) => {
+                const newObj = Object.assign({}, r);
                 delete newObj.selected;
                 delete newObj.id;
                 delete newObj.oldName;
@@ -80,7 +80,7 @@ class MyReports extends BaseGadget {
                 }, err => { r.status = "Duplicate name"; return Promise.reject(err); });
             });
             Promise.all(saveAction).then(() => {
-                this.$message.success(selectedReports.length + " selected reports were imported", "Reports imported");
+                this.$message.success(`${selectedReports.length  } selected reports were imported`, "Reports imported");
                 this.refreshData();
                 this.reportsToImport = null;
             }, () => { this.$message.error("Some of the reports were not import!", "Import failed"); this.updateSelReportCount(); });
@@ -88,21 +88,21 @@ class MyReports extends BaseGadget {
     }
 
     fileSelected($event) {
-        var selector = this.fileSelector.nativeElement;
-        var file = selector.files[0];
+        const selector = this.fileSelector.nativeElement;
+        const file = selector.files[0];
         if (file) {
             if (!file.name.endsWith('.jrd')) {
                 this.$message.warning("Unknown file selected to import. Select a valid Jira Assist Report definition (*.jrd) file");
                 selector.value = '';
                 return;
             }
-            var reader = new FileReader();
+            const reader = new FileReader();
             reader.readAsText(file, "UTF-8");
             reader.onload = (evt) => {
-                var json = evt.target.result;
+                const json = evt.target.result;
                 try {
-                    var rpt = JSON.parse(json);
-                    var reports = rpt.reports;
+                    const rpt = JSON.parse(json);
+                    const reports = rpt.reports;
                     if (!reports || !Array.isArray(reports)) {
                         this.$message.error("Selected file is invalid or is corrupted");
                         return;
@@ -160,18 +160,18 @@ class MyReports extends BaseGadget {
     }
 
     editReport(rpt) {
-        this.router.navigateByUrl("/reports/" + (rpt.advanced ? "advanced" : "customgrouped") + "/" + rpt.id);
+        this.router.navigateByUrl(`/reports/${  rpt.advanced ? "advanced" : "customgrouped"  }/${  rpt.id}`);
     }
 
     selectRowItem(item) {
         item.selected = !item.selected;
-        var { savedQueries } = this.state;
+        let { savedQueries } = this.state;
         savedQueries = [...savedQueries];
         this.setState({ savedQueries });
     }
 
     render() {
-        var { savedQueries, selAllChk } = this.state;
+        const { savedQueries, selAllChk } = this.state;
 
         return super.renderBase(
             <ScrollableTable dataset={savedQueries}>
@@ -198,7 +198,7 @@ class MyReports extends BaseGadget {
                             <td>{b.filtersCount}</td>
                             <td>{b.outputCount}</td>
                             <td className="text-center"><Button icon="fa fa-edit" onClick={() => this.editReport(b)} title="Click to edit this report" /></td>
-                        </tr>
+                        </tr>;
                     }}
                 </TBody>
                 <NoDataRow span={7}>You have not yet created or imported any reports.</NoDataRow>

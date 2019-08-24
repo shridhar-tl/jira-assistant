@@ -46,7 +46,7 @@ export default class CacheService {
                         }
                     }
                     if (this.storage.set) {
-                        var obj = {};
+                        const obj = {};
                         obj[key] = value;
                         this.storage.set(obj);
                     }
@@ -61,10 +61,10 @@ export default class CacheService {
             },
             get: (key) => {
                 return new Promise((resolve, reject) => {
-                    var process = (data) => {
+                    const process = (data) => {
                         if (data && (data = data[key])) {
                             if (data.expires) {
-                                var exp = moment(data.expires);
+                                const exp = moment(data.expires);
                                 if (exp.diff(moment()) > 0) {
                                     data.value = null;
                                 }
@@ -117,14 +117,14 @@ export default class CacheService {
         return value;
     }
     get(key, raw) {
-        var data = localStorage.getItem(key);
+        let data = localStorage.getItem(key);
         if (raw) {
             return data;
         }
         if (data) {
             data = this.parse(data);
             if (data.expires) {
-                var exp = moment(data.expires);
+                const exp = moment(data.expires);
                 if (exp.diff(moment()) > 0) {
                     data.value = null;
                 }
@@ -146,12 +146,12 @@ export default class CacheService {
     stringify(value) {
         return JSON.stringify(value, (key, val) => {
             if (val && val instanceof Date) {
-                return "/Date(" + val.getTime() + ")/";
+                return `/Date(${  val.getTime()  })/`;
             }
             else if (val && typeof val === "string") {
-                var a = this.reISO.test(val); //reISO.exec(val);
+                const a = this.reISO.test(val); //reISO.exec(val);
                 if (a) {
-                    return '/Date(' + new Date(val).getTime() + ')/'; //Date.UTC(+a[1], +a[2] - 1, +a[3], +a[4], +a[5], +a[6])
+                    return `/Date(${  new Date(val).getTime()  })/`; //Date.UTC(+a[1], +a[2] - 1, +a[3], +a[4], +a[5], +a[6])
                     //this[key] = val;
                     //return val;
                 }

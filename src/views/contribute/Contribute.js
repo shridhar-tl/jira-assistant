@@ -17,12 +17,12 @@ const currencies = [
 
 class Contribute extends PureComponent {
     constructor(props) {
-        super(props)
+        super(props);
         this.state = { selectedCurrency: currencies[0].value };
     }
 
     render() {
-        var { state: { selectedCurrency } } = this;
+        const { state: { selectedCurrency } } = this;
 
         return (
             <div className="layout-7">
@@ -38,7 +38,7 @@ class Contribute extends PureComponent {
                         <div className="donate-cntr">
                             <span>Choose your currency to pay:</span>
                             <SelectBox dataset={currencies} value={selectedCurrency} onChange={(val) => this.setState({ selectedCurrency: val })} />
-                            <a className="dbox-button" href={"https://donorbox.org/donate-jira-assistant-extension-" + selectedCurrency}
+                            <a className="dbox-button" href={`https://donorbox.org/donate-jira-assistant-extension-${  selectedCurrency}`}
                                 target="_blank" rel="noopener noreferrer">Donate</a>
                         </div>
                     </div>

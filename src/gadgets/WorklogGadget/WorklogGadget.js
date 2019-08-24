@@ -17,13 +17,13 @@ class WorklogGadget extends BaseGadget {
         inject(this, "SessionService", "CacheService", "UtilsService", "UserUtilsService", "DataTransformService", "JiraService", "MessageService", "ConfigService", "UserGroupService");
 
         //$facade.getUserGroups().then(grps => this.state.groups = grps);
-        var pageSettings = this.$session.pageSettings.reports_UserDayWise;
+        const pageSettings = this.$session.pageSettings.reports_UserDayWise;
         if (!pageSettings.timeZone) {
             pageSettings.timeZone = '1';
         }
 
         this.state = { dateRange: {}, pageSettings };
-        var { maxHours, epicNameField } = this.$session.CurrentUser;
+        const { maxHours, epicNameField } = this.$session.CurrentUser;
 
         this.maxSecsPerDay = (maxHours || 8) * 60 * 60;
         this.epicNameField = (epicNameField || {}).id;
@@ -43,14 +43,14 @@ class WorklogGadget extends BaseGadget {
     }
 
     generateReport = () => {
-        var { groups } = this.state;
+        const { groups } = this.state;
 
         if (!groups || groups.length === 0) {
             this.$message.warning("User list need to be added before generating report", "Missing input");
             return;
         }
         this.userList = groups.union(grps => grps.users.ForEach(gu => gu.groupName = grps.name));
-        var req = {
+        const req = {
             userList: this.userList.map(u => u.name.toLowerCase()),
             fromDate: this.state.dateRange.fromDate,
             toDate: this.state.dateRange.toDate
@@ -69,12 +69,12 @@ class WorklogGadget extends BaseGadget {
     }
 
     getDayWiseReportData(req) {
-        var userList = req.userList.distinct();
-        var mfromDate = moment(req.fromDate).startOf('day');
-        var mtoDate = moment(req.toDate).endOf('day');
-        var fromDate = mfromDate.toDate();
-        var toDate = mtoDate.toDate();
-        var dateArr = this.getDateArray(fromDate, toDate);
+        const userList = req.userList.distinct();
+        const mfromDate = moment(req.fromDate).startOf('day');
+        const mtoDate = moment(req.toDate).endOf('day');
+        const fromDate = mfromDate.toDate();
+        const toDate = mtoDate.toDate();
+        const dateArr = this.getDateArray(fromDate, toDate);
         this.dates = dateArr.map(d => {
             return {
                 prop: d.format('yyyyMMdd'),
@@ -84,38 +84,38 @@ class WorklogGadget extends BaseGadget {
             };
         });
         this.months = dateArr.groupBy((d) => d.format("MMM, yyyy")).map(grp => { return { monthName: grp.key, days: grp.values.length }; });
-        var additionalJQL = (this.state.pageSettings.jql || '').trim();
+        let additionalJQL = (this.state.pageSettings.jql || '').trim();
         if (additionalJQL) {
-            additionalJQL = ' AND (' + additionalJQL + ')';
+            additionalJQL = ` AND (${  additionalJQL  })`;
         }
-        var jql = "worklogAuthor in ('" + userList.join("','") + "') and worklogDate >= '"
-            + mfromDate.clone().add(-1, 'days').format("YYYY-MM-DD") + "' and worklogDate < '" + mtoDate.clone().add(1, 'days').format("YYYY-MM-DD") + "'"
-            + additionalJQL;
-        var fieldsToFetch = ["summary", "worklog", "issuetype", "parent", "project"];
-        var epicNameField = this.epicNameField;
+        const jql = `worklogAuthor in ('${  userList.join("','")  }') and worklogDate >= '${
+             mfromDate.clone().add(-1, 'days').format("YYYY-MM-DD")  }' and worklogDate < '${  mtoDate.clone().add(1, 'days').format("YYYY-MM-DD")  }'${
+             additionalJQL}`;
+        const fieldsToFetch = ["summary", "worklog", "issuetype", "parent", "project"];
+        const epicNameField = this.epicNameField;
         if (epicNameField) {
             fieldsToFetch.push(epicNameField);
         }
         return this.$jira.searchTickets(jql, fieldsToFetch) //, "status", "assignee"
             .then((issues) => {
-                var arr = userList.map((u) => { return { logData: [], userName: u.toLowerCase() }; });
-                var report = {};
-                for (var x = 0; x < arr.length; x++) {
-                    var a = arr[x];
+                const arr = userList.map((u) => { return { logData: [], userName: u.toLowerCase() }; });
+                const report = {};
+                for (let x = 0; x < arr.length; x++) {
+                    const a = arr[x];
                     report[a.userName] = a;
                 }
-                for (var iss = 0; iss < issues.length; iss++) {
-                    var issue = issues[iss];
-                    var fields = issue.fields || {};
-                    var worklogs = (fields.worklog || {}).worklogs || [];
-                    for (var i = 0; i < worklogs.length; i++) {
-                        var worklog = worklogs[i];
-                        var startedTime = moment(worklog.started).toDate();
-                        var startedDate = moment(worklog.started).startOf("day").toDate();
+                for (let iss = 0; iss < issues.length; iss++) {
+                    const issue = issues[iss];
+                    const fields = issue.fields || {};
+                    const worklogs = (fields.worklog || {}).worklogs || [];
+                    for (let i = 0; i < worklogs.length; i++) {
+                        const worklog = worklogs[i];
+                        const startedTime = moment(worklog.started).toDate();
+                        const startedDate = moment(worklog.started).startOf("day").toDate();
                         if (startedDate.getTime() >= fromDate.getTime() && startedDate.getTime() <= toDate.getTime()) {
-                            var reportUser = report[worklog.author.name.toLowerCase()];
+                            const reportUser = report[worklog.author.name.toLowerCase()];
                             if (reportUser) {
-                                var obj = {
+                                const obj = {
                                     ticketNo: issue.key,
                                     epicDisplay: null,
                                     epicUrl: null,
@@ -131,8 +131,8 @@ class WorklogGadget extends BaseGadget {
                                 };
                                 if (epicNameField) {
                                     obj.epicDisplay = fields[epicNameField];
-                                    var key = obj.ticketNo.split('-')[0];
-                                    if (obj.epicDisplay && obj.epicDisplay.indexOf(key + '-') === 0) {
+                                    const key = obj.ticketNo.split('-')[0];
+                                    if (obj.epicDisplay && obj.epicDisplay.indexOf(`${key  }-`) === 0) {
                                         obj.epicUrl = this.$userutils.getTicketUrl(obj.epicDisplay);
                                     }
                                 }
@@ -141,8 +141,8 @@ class WorklogGadget extends BaseGadget {
                         }
                     }
                 }
-                for (var j = 0; j < arr.length; j++) {
-                    var userData = arr[j];
+                for (let j = 0; j < arr.length; j++) {
+                    const userData = arr[j];
                     userData.totalHours = userData.logData.sum((t) => { return t.totalHours; });
                 }
                 return arr;
@@ -151,9 +151,9 @@ class WorklogGadget extends BaseGadget {
 
     generateFlatData(data) {
         this.flatData = this.state.groups.union(grp => {
-            var groupName = grp.name;
+            const groupName = grp.name;
             return grp.users.union(usr => {
-                var userName = usr.displayName;
+                const userName = usr.displayName;
                 return data.first(d => d.userName === usr.name.toLowerCase()).logData
                     .map(log => {
                         return {
@@ -179,9 +179,9 @@ class WorklogGadget extends BaseGadget {
     }
 
     processReportData(data) {
-        var param = { fromDate: this.state.dateRange.fromDate, toDate: this.state.dateRange.toDate, dateArr: [] };
+        const param = { fromDate: this.state.dateRange.fromDate, toDate: this.state.dateRange.toDate, dateArr: [] };
         data.forEach((d) => {
-            var usr = this.userList.first((u) => u.name.toLowerCase() === d.userName.toLowerCase());
+            const usr = this.userList.first((u) => u.name.toLowerCase() === d.userName.toLowerCase());
             d.userName = usr.name;
             d.displayName = usr.displayName;
             d.userEmail = usr.emailAddress;
@@ -189,9 +189,9 @@ class WorklogGadget extends BaseGadget {
             delete usr.groupName;
             d.jiraUser = usr;
         });
-        var dateArr = this.getDateArray(param.fromDate, param.toDate);
+        const dateArr = this.getDateArray(param.fromDate, param.toDate);
         param.dateArr = dateArr;
-        var months = dateArr.distinct((d) => { return d.format("MMM, yyyy"); })
+        const months = dateArr.distinct((d) => { return d.format("MMM, yyyy"); })
             .map((m) => {
                 return {
                     monthName: m,
@@ -210,11 +210,11 @@ class WorklogGadget extends BaseGadget {
                 };
             });
             u.ticketWise.forEach((t) => {
-                var tickets = u.logData.filter((l) => {
+                const tickets = u.logData.filter((l) => {
                     return l.ticketNo === t.ticketNo;
                 });
                 t.totalHours = tickets.sum((l) => { return l.totalHours; });
-                var dates = tickets.distinct((l) => { return this.$utils.convertDate(l.logTime).format("yyyyMMdd"); });
+                const dates = tickets.distinct((l) => { return this.$utils.convertDate(l.logTime).format("yyyyMMdd"); });
                 dates.forEach((d) => {
                     t[d] = tickets.filter((l) => {
                         return this.$utils.convertDate(l.logTime).format("yyyyMMdd") === d;
@@ -233,7 +233,7 @@ class WorklogGadget extends BaseGadget {
 
     bindReportData(dateArr, data, months) {
         if (!dateArr && !data) {
-            var obj = this.$cache.session.get("lastViewed_DayWiseRpt");
+            const obj = this.$cache.session.get("lastViewed_DayWiseRpt");
             if (obj) {
                 dateArr = obj.dateRanges;
                 data = obj.logs;
@@ -255,7 +255,7 @@ class WorklogGadget extends BaseGadget {
     }
 
     getGroupTotal(groupName, date) {
-        var groupdUsers = this.userDayWise;
+        let groupdUsers = this.userDayWise;
         if (groupName) {
             groupdUsers = groupdUsers.filter(g => g.groupName === groupName);
         }
@@ -270,9 +270,9 @@ class WorklogGadget extends BaseGadget {
     }
 
     getDateArray(startDate, endDate) {
-        var interval = 1;
-        var retVal = [];
-        var current = new Date(startDate);
+        const interval = 1;
+        const retVal = [];
+        let current = new Date(startDate);
         while (current <= endDate) {
             retVal.push(new Date(current));
             current = current.addDays(interval);
@@ -318,13 +318,13 @@ class WorklogGadget extends BaseGadget {
     }
 
     render() {
-        var {
+        const {
             months, dates, convertSecs, formatTime, formatDateTime,
             //props: { },
             rawData, flatData,
             state: { isLoading, showGroupsPopup, showSettings, groups, pageSettings }
         } = this;
-        var { breakupMode } = pageSettings;
+        const { breakupMode } = pageSettings;
 
         return super.renderBase(
             <div className="worklog-gadget-container">

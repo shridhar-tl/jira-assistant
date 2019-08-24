@@ -12,7 +12,7 @@ class BindValue extends PureComponent {
         if (change.operator && change.operator.currentValue) {
             this.oper = OPERATORS.first((o) => o.value === this.operator);
             this.row.valueArr = null;
-            var type = this.oper.type;
+            const type = this.oper.type;
             if (type === "multiple") {
                 if (this.row.value) {
                     this.row.valueArr = this.row.value.split(',');

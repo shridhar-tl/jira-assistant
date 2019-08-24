@@ -31,7 +31,7 @@ class DatabaseService extends Dexie {
             if (!user) {
                 this.transaction('rw', this.users, () => {
                     this.users.add({ jiraUrl: 'SystemUser', userId: 'SystemUser', dateCreated: new Date() });
-                }).catch((e) => { console.error("Unable to initialize the database:-" + e.stack); });
+                }).catch((e) => { console.error(`Unable to initialize the database:-${  e.stack}`); });
             }
         });
 
@@ -42,7 +42,7 @@ class DatabaseService extends Dexie {
         window.onerror = (msg, url, line, col, error) => {
             this.$message.error("An unknown error occured while processing your request", "Unhandled error", true);
             console.error(msg, url, line, col, error);
-        }
+        };
 
         window.addEventListener("error", (e) => {
             this.$message.error("An unknown error occured while processing your request", "Unhandled error", true);
@@ -51,7 +51,7 @@ class DatabaseService extends Dexie {
     }
 
     handleError(event) {
-        var detail = event.detail || event;
+        const detail = event.detail || event;
         this.$message.error("One or more of the actions failed", "Action error", true);
         console.error('Unhandled rejection (promise: ', detail.promise || event.promise, ', reason: ', detail.reason || event.reason, ').');
     }

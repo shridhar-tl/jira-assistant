@@ -14,7 +14,7 @@ class AddWorklog extends BaseDialog {
         this.displayDateFormat = "yyyy-MM-dd HH:mm";
         this.minCommentLength = this.$session.CurrentUser.commentLength || 0;
 
-        var { worklog } = props;
+        const { worklog } = props;
         this.state = this.getState(worklog);
         this.state.uploadImmediately = this.$session.CurrentUser.autoUpload || false;
     }
@@ -34,14 +34,14 @@ class AddWorklog extends BaseDialog {
     }
 
     getState(obj) {
-        var newState = { showDialog: true, vald: {}, ctlClass: {}, loading: false, log: obj };
+        const newState = { showDialog: true, vald: {}, ctlClass: {}, loading: false, log: obj };
 
         if (!obj.id) {
             newState.log = {
                 ticketNo: obj.ticketNo,
                 dateStarted: moment(obj.startTime || obj.dateStarted || new Date()).toDate(),
                 allowOverride: obj.allowOverride
-            }
+            };
 
             if (obj.parentId) {
                 newState.log.parentId = obj.parentId;
@@ -87,13 +87,13 @@ class AddWorklog extends BaseDialog {
                 delete d.isUploaded;
                 delete d.worklogId;
                 delete d.parentId;
-                d.dateStarted = moment((new Date()).format('yyyy/MM/dd') + ' ' + d.dateStarted.format('HH:mm:ss')).toDate();
+                d.dateStarted = moment(`${(new Date()).format('yyyy/MM/dd')  } ${  d.dateStarted.format('HH:mm:ss')}`).toDate();
             }
             else {
                 this.previousTime = d.dateStarted;
             }
 
-            var newState = { log: d, vald: this.state.vald, ctlClass: this.state.ctlClass };
+            const newState = { log: d, vald: this.state.vald, ctlClass: this.state.ctlClass };
             this.validateData(newState.log, newState.vald, newState.ctlClass);
             this.setState(newState);
             return d;
@@ -105,9 +105,9 @@ class AddWorklog extends BaseDialog {
             log.overrideTimeSpent = log.overrideTimeSpent || log.timeSpent || "00:00";
         }
 
-        var validation = true;
+        let validation = true;
 
-        var ticketNo = this.getTicketNo(log);
+        const ticketNo = this.getTicketNo(log);
         validation = (vald.ticketNo = !(!ticketNo || ticketNo.length < 3)) && validation;
         validation = (vald.dateStarted = !(!log.dateStarted || log.dateStarted.length < 16)) && validation;
         vald.overrideTimeSpent = (log.allowOverride && log.overrideTimeSpent && log.overrideTimeSpent.length >= 4);
@@ -154,7 +154,7 @@ class AddWorklog extends BaseDialog {
 
     deleteWorklog(log) {
         this.loading = true;
-        var prevTicketNo = log.ticketNo;
+        const prevTicketNo = log.ticketNo;
         log.ticketNo = prevTicketNo.value || prevTicketNo;
         this.$worklog.deleteWorklog(log).then((result) => {
             this.loading = false;
@@ -172,7 +172,7 @@ class AddWorklog extends BaseDialog {
     }
 
     setValue = (field, value) => {
-        var { log } = this.state;
+        let { log } = this.state;
 
         if (value) {
             log[field] = value;
@@ -186,7 +186,7 @@ class AddWorklog extends BaseDialog {
     }
 
     getFooter() {
-        var {
+        const {
             loading,
             state: { log, vald, uploadImmediately }
         } = this;
@@ -198,7 +198,7 @@ class AddWorklog extends BaseDialog {
                 onClick={() => this.saveWorklog(log, vald, true)} />}
             <Button type="primary" icon="fa fa-save" label="Save" disabled={loading} onClick={() => this.saveWorklog(log, vald, uploadImmediately && !(log.id > 0))} />
             <Button type="secondary" icon="fa fa-times" label="Cancel" onClick={this.onHide} />
-        </>
+        </>;
     }
 
     formatTs = (val) => {
@@ -206,7 +206,7 @@ class AddWorklog extends BaseDialog {
     }
 
     render() {
-        var {
+        const {
             minCommentLength,
             state: { log, vald }
         } = this;
@@ -221,7 +221,7 @@ class AddWorklog extends BaseDialog {
                         <div className="ctlClass.dateStarted">
                             <DatePicker value={log.dateStarted} showTime={true} onChange={(val) => this.setValue("dateStarted", val)} />
                         </div>
-                        <span className={"help-block " + (vald.dateStarted ? '' : 'msg-error')}>Provide the time you had started the work</span>
+                        <span className={`help-block ${  vald.dateStarted ? '' : 'msg-error'}`}>Provide the time you had started the work</span>
                     </div>
                 </div>
             </div>
@@ -237,7 +237,7 @@ class AddWorklog extends BaseDialog {
                         onChange={(val) => this.setValue("ticketNo", val)}>
                         {(ticket) => <span style={{ fontSize: 12, margin: '10px 10px 0 0' }}>{ticket.value} - {ticket.label}</span>}
                     </AutoComplete>
-                    <span className={"help-block " + (vald.ticketNo ? '' : 'msg-error')}>Provide the ticket no on which you had to log your work</span>
+                    <span className={`help-block ${  vald.ticketNo ? '' : 'msg-error'}`}>Provide the ticket no on which you had to log your work</span>
                 </div>
             </div>
 
@@ -264,7 +264,7 @@ class AddWorklog extends BaseDialog {
                 </div>
                 <div className="col-sm-3"></div>
                 <div className="col-sm-9 no-t-padding">
-                    <span className={"help-block " + (vald.overrideTimeSpent ? '' : 'msg-error')}>
+                    <span className={`help-block ${  vald.overrideTimeSpent ? '' : 'msg-error'}`}>
                         Provide the time spent on this task (override to change existing)</span>
                 </div>
             </div>
@@ -274,9 +274,9 @@ class AddWorklog extends BaseDialog {
                     <strong>Comments</strong>
                 </div>
                 <div className="col-sm-9">
-                    <TextBox multiline={true} rows={5} value={log.description || ""} className={"form-control " + (vald.description ? '' : 'ctl-error')}
+                    <TextBox multiline={true} rows={5} value={log.description || ""} className={`form-control ${  vald.description ? '' : 'ctl-error'}`}
                         onChange={(val) => this.setValue("description", val)}
-                        placeholder={"Provide a brief info about the task you had done." + (minCommentLength ? ' Should be atleast ' + minCommentLength + ' chars is length.' : '')} />
+                        placeholder={`Provide a brief info about the task you had done.${  minCommentLength ? ` Should be atleast ${  minCommentLength  } chars is length.` : ''}`} />
                 </div>
             </div>
         </div>

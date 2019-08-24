@@ -23,7 +23,7 @@ class MyBookmarks extends BaseGadget {
 
     selectTicket(ticket) {
         ticket.selected = !ticket.selected;
-        var { bookmarksList } = this.state;
+        let { bookmarksList } = this.state;
         bookmarksList = [...bookmarksList];
         this.setState({ bookmarksList });
     }
@@ -52,7 +52,7 @@ class MyBookmarks extends BaseGadget {
     }
 
     selectAll = () => {
-        var { bookmarksList, selAllChk } = this.state;
+        let { bookmarksList, selAllChk } = this.state;
         selAllChk = !selAllChk;
         bookmarksList.forEach(wl => wl.selected = selAllChk);
         bookmarksList = [...bookmarksList];
@@ -60,7 +60,7 @@ class MyBookmarks extends BaseGadget {
     }
 
     deleteBookmark(ticketNo) {
-        var ids;
+        let ids;
         if (ticketNo) {
             ids = [ticketNo];
         }
@@ -104,7 +104,7 @@ class MyBookmarks extends BaseGadget {
     }
 
     render() {
-        var { bookmarksList, selAllChk, showAddPopup } = this.state;
+        const { bookmarksList, selAllChk, showAddPopup } = this.state;
 
         return super.renderBase(<>
             <ScrollableTable dataset={bookmarksList}>

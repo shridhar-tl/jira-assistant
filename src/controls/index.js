@@ -7,6 +7,6 @@ import TextBox from './TextBox';
 import RadioButton from './RadioButton';
 import MultiValueText from './MultiValueText';
 
-import './Common.scss'
+import './Common.scss';
 
 export { AutoComplete, Button, Checkbox, SelectBox, TextBox, DatePicker, RadioButton, MultiValueText };

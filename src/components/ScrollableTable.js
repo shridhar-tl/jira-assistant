@@ -3,7 +3,7 @@ import "./ScrollableTable.scss";
 import $ from "jquery";
 import { EventEmitter } from 'events';
 
-var TableContext = createContext({});
+const TableContext = createContext({});
 
 const tableScrollingEvent = "tableScrolling";
 const sortChangedEvent = "sortChanged";
@@ -25,7 +25,7 @@ export class ScrollableTable extends PureComponent {
     sharedProps = {
         getData: () => this.state.dataset,
         sortBy: (sortBy) => {
-            var { sortBy: oldSortBy, isDesc } = this.state;
+            let { sortBy: oldSortBy, isDesc } = this.state;
 
             if (sortBy === oldSortBy) { isDesc = !isDesc; }
             else { isDesc = false; }
@@ -78,7 +78,7 @@ export class THead extends PureComponent {
                 }
 
                 if (this.overlay) {
-                    this.overlay.style.top = this.scrollTop + "px";
+                    this.overlay.style.top = `${this.scrollTop  }px`;
                 }
             }
             else {
@@ -112,13 +112,13 @@ export class THead extends PureComponent {
     }
 
     render() {
-        var { className = "", style, children } = this.props;
+        const { className = "", style, children } = this.props;
         const { showOverlay } = this.state;
 
         const overlayStyle = { ...style, top: this.scrollTop };
 
         return (<>
-            {showOverlay && <thead ref={this.setOverLay} className={className + " scroll-overlay"} style={overlayStyle}>
+            {showOverlay && <thead ref={this.setOverLay} className={`${className  } scroll-overlay`} style={overlayStyle}>
                 {children}
             </thead>}
             <thead ref={this.setHeaderEl} className={className} style={style}>
@@ -133,9 +133,9 @@ export class TBody extends PureComponent {
     static contextType = TableContext;
 
     render() {
-        var { children } = this.props;
-        var data = this.context.getData();
-        var toRender = null;
+        const { children } = this.props;
+        const data = this.context.getData();
+        let toRender = null;
 
         if (data && data.length === 0) {
             return null;
@@ -157,8 +157,8 @@ export class NoDataRow extends PureComponent {
     static contextType = TableContext;
 
     render() {
-        var { children, span } = this.props;
-        var data = this.context.getData();
+        const { children, span } = this.props;
+        const data = this.context.getData();
 
         if (!data || data.length > 0) {
             return null;
@@ -187,7 +187,7 @@ export class Column extends PureComponent {
     state = {};
 
     componentDidMount() {
-        this.cleanup = this.context.onSortFieldChanged((sortBy, isDesc) => { this.setState({ sortBy, isDesc }) });
+        this.cleanup = this.context.onSortFieldChanged((sortBy, isDesc) => { this.setState({ sortBy, isDesc }); });
     }
 
     onClick = (e) => {
@@ -199,8 +199,8 @@ export class Column extends PureComponent {
     }
 
     render() {
-        var { className, style, sortBy: curField, children } = this.props;
-        var { sortBy, isDesc } = this.state;
+        let { className, style, sortBy: curField, children } = this.props;
+        const { sortBy, isDesc } = this.state;
 
         if (!className) {
             className = "";
@@ -212,7 +212,7 @@ export class Column extends PureComponent {
 
         return (
             <th className={className} style={style} onClick={this.onClick}>
-                {children} {curField ? (curField === sortBy ? (<i className={"fa fa-sort-" + (isDesc ? "desc" : "asc")}></i>) : <i className="fa fa-sort"></i>) : null}
+                {children} {curField ? (curField === sortBy ? (<i className={`fa fa-sort-${  isDesc ? "desc" : "asc"}`}></i>) : <i className="fa fa-sort"></i>) : null}
             </th>
         );
     }

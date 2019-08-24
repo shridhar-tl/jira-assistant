@@ -24,7 +24,7 @@ class DefaultValuesTab extends TabControlBase {
     }
 
     render() {
-        var {
+        const {
             props: { settings, numericFields, stringFields, projects, rapidViews }
         } = this;
 

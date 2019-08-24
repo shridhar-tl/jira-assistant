@@ -12,7 +12,7 @@ class AddBookmark extends BaseDialog {
     }
 
     addBookmark = () => {
-        var { ticketsList } = this.state;
+        const { ticketsList } = this.state;
 
         if (ticketsList.length > 0) {
             this.isLoading = true;
@@ -48,7 +48,7 @@ class AddBookmark extends BaseDialog {
     }
 
     render() {
-        var { state: { ticketsList } } = this;
+        const { state: { ticketsList } } = this;
 
         return super.renderBase(<div>
             <MultiValueText value={ticketsList} onChange={this.listChanged} placeholder="Enter one or more ticket numbers" />

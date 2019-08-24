@@ -2,18 +2,18 @@ import React, { PureComponent } from 'react';
 
 class CustomReport extends PureComponent {
 
-    constructor(route) {
-        this.route = route;
-    }
-    ngOnInit() {
+    constructor(props) {
+        super(props);
+
         this.route.params.subscribe(params => {
-            var queryId = parseInt(params['queryId'] || 0) || null;
+            const queryId = parseInt(params['queryId'] || 0) || null;
             if (queryId) {
                 this.reportEditor.selQueryId = queryId;
                 this.reportEditor.queryChanged();
             }
         });
     }
+
     generateReport($event) {
         this.queryAvailable = true;
         this.report.generateReport($event.queryModel);

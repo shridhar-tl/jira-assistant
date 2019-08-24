@@ -7,7 +7,7 @@ export default class SessionService {
     }
 
     getCurrentUserId() {
-        var userId = this.userId;
+        let userId = this.userId;
         if (!userId) {
             userId = this.$cache.get("CurrentUserId");
             this.userId = userId;
@@ -21,7 +21,7 @@ export default class SessionService {
     canActivate() {
         console.log('Checking if the user is authenticated');
         if (!this.authenticated) {
-            var redirectUrl = '/index.html#/pages/' + (this.needIntegration ? 'integrate' : 'p401');
+            const redirectUrl = `/index.html#/pages/${  this.needIntegration ? 'integrate' : 'p401'}`;
             console.log('Access forbidden to module. Navigating to:-', redirectUrl);
             window.location.replace(redirectUrl);
         }

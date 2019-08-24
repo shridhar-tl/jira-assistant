@@ -7,9 +7,9 @@ class MultiValueText extends PureComponent {
     }
 
     render() {
-        var { props: { value, placeholder } } = this;
+        const { props: { value, placeholder } } = this;
 
-        return <Chips value={value} onChange={this.valueChanged} placeholder={placeholder} />
+        return <Chips value={value} onChange={this.valueChanged} placeholder={placeholder} />;
     }
 }
 

@@ -60,7 +60,7 @@ class MeetingsTab extends TabControlBase {
     }
 
     render() {
-        var {
+        const {
             props: { settings, removedIntg },
         } = this;
 

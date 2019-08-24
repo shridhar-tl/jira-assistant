@@ -3,7 +3,7 @@ import { ScrollableTable, THead, TRow, Column, TBody, NoDataRow } from '../../co
 
 class FlatDataGrid extends PureComponent {
     render() {
-        var { props: { formatDateTime, convertSecs, flatData } } = this;
+        const { props: { formatDateTime, convertSecs, flatData } } = this;
 
         return (
             <ScrollableTable dataset={flatData}>

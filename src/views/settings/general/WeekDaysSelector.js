@@ -9,7 +9,7 @@ class WeekDaysSelector extends PureComponent {
     }
 
     UNSAFE_componentWillReceiveProps(props) {
-        var { value } = props;
+        let { value } = props;
         if (!value) {
             value = value || [1, 2, 3, 4, 5];
         }
@@ -24,8 +24,8 @@ class WeekDaysSelector extends PureComponent {
     }
 
     daySelected(index) {
-        var { value } = this.state;
-        var pos = value.indexOf(index);
+        let { value } = this.state;
+        const pos = value.indexOf(index);
 
         if (pos === -1) {
             value = value.concat(index);

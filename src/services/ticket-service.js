@@ -11,13 +11,13 @@ export default class TicketService {
         if (!tickets) {
             return null;
         }
-        var onlyOne = false;
+        let onlyOne = false;
         if (typeof tickets === "string") {
             tickets = [tickets];
             onlyOne = true;
         }
         return this.fetchTicketDetails(tickets, ["summary", "assignee", "reporter", "priority", "status", "resolution", "created", "updated", "issuetype", "parent"]).then((arr) => {
-            var result = {};
+            const result = {};
             arr.forEach((t) => {
                 this.ticketsCache[t.key.toUpperCase()] = t;
                 if (!asArr) {
@@ -32,8 +32,8 @@ export default class TicketService {
     }
 
     fetchTicketDetails(tickets, fields) {
-        var result = [];
-        var toFetch = [];
+        const result = [];
+        const toFetch = [];
         tickets.forEach((t) => {
             if (!this.ticketsCache[t]) {
                 toFetch.push(t);
@@ -43,8 +43,8 @@ export default class TicketService {
             }
         });
         if (toFetch.length > 0) {
-            var jql = "'" + toFetch.join("', '") + "'";
-            jql = "key in (" + jql + ")";
+            let jql = `'${  toFetch.join("', '")  }'`;
+            jql = `key in (${  jql  })`;
             return this.$jira.searchTickets(jql, fields).then((list) => {
                 result.addRange(list);
                 return result;

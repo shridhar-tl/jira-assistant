@@ -20,12 +20,12 @@ export class BaseGadget extends PureComponent {
     }
 
     getContextMenu() {
-        var { isFullScreen, fullWidth, fullHeight } = this.state;
+        const { isFullScreen, fullWidth, fullHeight } = this.state;
 
-        var gadgetActions = !this.isGadget ? [] : [
+        const gadgetActions = !this.isGadget ? [] : [
             { separator: true },
-            { label: "Full width", icon: "fa fa-" + (fullWidth ? "check" : "remove"), command: () => this.setSizeOptions(!fullWidth, fullHeight) },
-            { label: "Full height", icon: "fa fa-" + (fullHeight ? "check" : "remove"), command: () => this.setSizeOptions(fullWidth, !fullHeight) },
+            { label: "Full width", icon: `fa fa-${  fullWidth ? "check" : "remove"}`, command: () => this.setSizeOptions(!fullWidth, fullHeight) },
+            { label: "Full height", icon: `fa fa-${  fullHeight ? "check" : "remove"}`, command: () => this.setSizeOptions(fullWidth, !fullHeight) },
             { separator: true },
             { label: "Remove", icon: "fa fa-remove", command: () => this.removeGadget() }
         ];
@@ -33,7 +33,7 @@ export class BaseGadget extends PureComponent {
         return [
             { label: "Refresh", icon: "fa fa-refresh", disabled: !this.refreshData, command: () => this.refreshData(true) },
             { label: "Export", icon: "fa fa-download", disabled: !this.exportData, command: () => this.exportData() },
-            { label: "Toggle full screen", icon: "fa fa-" + (isFullScreen ? "collapse" : "expand"), command: () => this.toggleFullScreen() },
+            { label: "Toggle full screen", icon: `fa fa-${  isFullScreen ? "collapse" : "expand"}`, command: () => this.toggleFullScreen() },
             ...gadgetActions
         ];
     }
@@ -72,7 +72,7 @@ export class BaseGadget extends PureComponent {
     }
 
     toggleFullScreen() {
-        var { isFullScreen } = this.state;
+        let { isFullScreen } = this.state;
         isFullScreen = !isFullScreen;
         if (isFullScreen) {
             this.bodyTag.addClass('fs-layout');
@@ -86,7 +86,7 @@ export class BaseGadget extends PureComponent {
     }
 
     performAction(type, data) {
-        var { onAction } = this.props;
+        const { onAction } = this.props;
         if (onAction) { onAction({ type, data }, this.props.model, this.props.index); }
     }
 
@@ -118,14 +118,14 @@ export class BaseGadget extends PureComponent {
 
     getFullScreenButton() {
         if (this.isGadget) { return null; }
-        var { state: { isFullScreen } } = this;
-        return <Button icon={isFullScreen ? 'fa fa-compress' : 'fa fa-expand'} onClick={super.toggleFullScreen} title="Toggle full screen" />
+        const { state: { isFullScreen } } = this;
+        return <Button icon={isFullScreen ? 'fa fa-compress' : 'fa fa-expand'} onClick={super.toggleFullScreen} title="Toggle full screen" />;
     }
 
     getHeader = () => {
-        var { title, subTitle, isGadget } = this;
+        const { title, subTitle, isGadget } = this;
         return <div onContextMenu={!isGadget ? null : (e) => showContextMenu(e, this.getContextMenu())}>
-            <i className={'fa ' + this.iconClass}></i> {title} {subTitle && <span> - {subTitle}</span>}
+            <i className={`fa ${  this.iconClass}`}></i> {title} {subTitle && <span> - {subTitle}</span>}
             <div className="pull-right">
                 {this.renderCustomActions && this.renderCustomActions()}
                 {this.isGadget && <Button icon="fa fa-wrench" onClick={e => showContextMenu(e, this.getContextMenu())} />}
@@ -134,12 +134,12 @@ export class BaseGadget extends PureComponent {
     }
 
     renderBase(childern) {
-        var { fullWidth, fullHeight, isLoading } = this.state;
-        var { isGadget, isFullScreen } = this;
+        const { fullWidth, fullHeight, isLoading } = this.state;
+        const { isGadget, isFullScreen } = this;
 
-        var className = !isGadget ? "docked full-width full-height" : (fullWidth ? 'full-width' : 'half-width') + ' ' + (fullHeight ? 'full-height' : 'half-height');
+        const className = !isGadget ? "docked full-width full-height" : `${fullWidth ? 'full-width' : 'half-width'  } ${  fullHeight ? 'full-height' : 'half-height'}`;
 
-        return (<div ref={el => this.el = el} className={'gadget ' + (isFullScreen ? 'full-screen ' : className)}>
+        return (<div ref={el => this.el = el} className={`gadget ${  isFullScreen ? 'full-screen ' : className}`}>
             {isLoading && <div className="data-loader"><i className="fa fa-refresh fa-spin"></i></div>}
             <Panel header={this.getHeader()}>
                 {childern}

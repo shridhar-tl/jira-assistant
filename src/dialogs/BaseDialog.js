@@ -15,20 +15,20 @@ class BaseDialog extends PureComponent {
         // Do not send prop in onHide event callback if it is an event
         if (prop && prop.nativeEvent) {
             prop = null;
-        };
+        }
 
-        var { onHide } = this.props;
+        const { onHide } = this.props;
         if (onHide) {
             onHide(prop);
         }
     }
 
     renderBase(children) {
-        var {
+        const {
             style, className, title, onHide,
             state: { showDialog } } = this;
 
-        var footer = null;
+        let footer = null;
         if (this.getFooter) {
             footer = this.getFooter();
         }

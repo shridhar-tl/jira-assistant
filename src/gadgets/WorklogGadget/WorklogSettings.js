@@ -10,12 +10,12 @@ class WorklogSettings extends BaseDialog {
         inject(this, "ConfigService");
         this.className = "no-padding";
 
-        var { pageSettings } = props;
+        const { pageSettings } = props;
         this.state = { showDialog: true, pageSettings: { ...pageSettings } };
     }
 
     getFooter() {
-        return <Button icon="fa fa-floppy-o" label="Done" onClick={this.onDone} />
+        return <Button icon="fa fa-floppy-o" label="Done" onClick={this.onDone} />;
     }
 
     onDone = () => {
@@ -24,14 +24,14 @@ class WorklogSettings extends BaseDialog {
     }
 
     setValue = (field, value) => {
-        var { pageSettings } = this.state;
+        let { pageSettings } = this.state;
         pageSettings[field] = value;
         pageSettings = { ...pageSettings };
         this.setState({ pageSettings });
     }
 
     render() {
-        var { setValue, state: { pageSettings: { logFormat, breakupMode, timeZone, jql } } } = this;
+        const { setValue, state: { pageSettings: { logFormat, breakupMode, timeZone, jql } } } = this;
 
         return super.renderBase(
             <TabView styleclass="query-tab">

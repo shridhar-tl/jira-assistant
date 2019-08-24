@@ -16,14 +16,14 @@ export default class BookmarkService {
         }
 
         return this.$user.getUser(this.$session.userId).then((u) => {
-            var favTickets = u.favTicketList;
+            let favTickets = u.favTicketList;
             if (!favTickets) {
                 favTickets = [];
             }
 
-            var pending = ticketNo.filter((t) => { return !favTickets.some((k) => { return k.toUpperCase() === t.toUpperCase(); }); });
+            const pending = ticketNo.filter((t) => { return !favTickets.some((k) => { return k.toUpperCase() === t.toUpperCase(); }); });
             if (pending.length === 0) {
-                this.$message.warning(ticketNo.length === 1 ? ticketNo[0] + " is already bookmarked" : "The specified ticket is already bookmarked");
+                this.$message.warning(ticketNo.length === 1 ? `${ticketNo[0]  } is already bookmarked` : "The specified ticket is already bookmarked");
                 return [];
             }
 
@@ -44,7 +44,7 @@ export default class BookmarkService {
         }
 
         return this.$user.getUser(this.$session.userId).then((u) => {
-            var favTickets = u.favTicketList;
+            let favTickets = u.favTicketList;
             if (!favTickets) {
                 favTickets = [];
             }
@@ -56,11 +56,11 @@ export default class BookmarkService {
 
     getBookmarks() {
         return this.$user.getUser(this.$session.userId).then((u) => {
-            var tickets = u.favTicketList;
+            const tickets = u.favTicketList;
             if (tickets && tickets.length > 0) {
                 return this.$ticket.getTicketDetails(tickets, true).then((tickets) => {
                     return tickets.map((i) => {
-                        let fields = i.fields || {};
+                        const fields = i.fields || {};
                         return {
                             ticketNo: i.key,
                             summary: fields.summary || "(unavailable)",
@@ -81,9 +81,9 @@ export default class BookmarkService {
                         };
                     });
                 }, (err) => {
-                    var msg = ((err.error || {}).errorMessages || [])[0];
+                    const msg = ((err.error || {}).errorMessages || [])[0];
                     if (msg && msg.indexOf('does not exist')) {
-                        var bks = tickets.filter(t => msg.indexOf(t) > -1);
+                        const bks = tickets.filter(t => msg.indexOf(t) > -1);
                         if (bks.length > 0) {
                             return this.removeBookmark(bks);
                         }

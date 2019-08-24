@@ -13,7 +13,7 @@ import Button from '../controls/Button';
 import SelectBox from '../controls/SelectBox';
 import { hideContextMenu, showContextMenu } from '../controls/ContextMenu';
 import AddWorklog from '../dialogs/AddWorklog';
-import './Calendar.scss'
+import './Calendar.scss';
 
 //var moment;
 const viewModes = [{ value: 'dayGridMonth', label: 'Month' }, { value: 'timeGridWeek', label: 'Week' }, { value: 'timeGridDay', label: 'Day' }];
@@ -58,8 +58,8 @@ class Calendar extends BaseGadget {
             { label: "Delete worklog", icon: "fa fa-times", command: () => this.deleteWorklog() }
         ];
 
-        var meetingTicket = (this.$session.CurrentUser.meetingTicket || "").trim().split(',').select(t => t || null);
-        var wlTickets = [];
+        const meetingTicket = (this.$session.CurrentUser.meetingTicket || "").trim().split(',').select(t => t || null);
+        const wlTickets = [];
         if (meetingTicket.length > 0) {
             meetingTicket.forEach(t => wlTickets.push({
                 label: t, icon: "fa fa-ticket",
@@ -86,8 +86,8 @@ class Calendar extends BaseGadget {
     }
 
     getCalendarOptions() {
-        var { startOfWeek, startOfDay, endOfDay, workingDays } = this.CurrentUser;
-        var { viewMode } = this.props;
+        const { startOfWeek, startOfDay, endOfDay, workingDays } = this.CurrentUser;
+        let { viewMode } = this.props;
 
         if (!this.isGadget) {
             viewMode = this.settings.viewMode;
@@ -103,7 +103,7 @@ class Calendar extends BaseGadget {
             }
         }
 
-        var firstDay = startOfWeek;
+        let firstDay = startOfWeek;
         if (firstDay && firstDay > 0) {
             firstDay = firstDay - 1;
         }
@@ -204,10 +204,10 @@ class Calendar extends BaseGadget {
         $event.stopPropagation();
         $event.preventDefault();
         this.calMenu.hide();
-        var diff = moment.duration(moment(m.end.dateTime).diff(m.start.dateTime));
-        var obj = {
+        const diff = moment.duration(moment(m.end.dateTime).diff(m.start.dateTime));
+        const obj = {
             dateStarted: m.start.dateTime,
-            timeSpent: diff.hours().pad(2) + ':' + diff.minutes().pad(2),
+            timeSpent: `${diff.hours().pad(2)  }:${  diff.minutes().pad(2)}`,
             description: m.summary,
             parentId: m.id
         };
@@ -228,15 +228,15 @@ class Calendar extends BaseGadget {
     fillEvents(start, end) {
         start = moment(start).startOf('day');
         end = moment(end).endOf('day');
-        var filter = (data) => {
-            var types = [];
-            var ps = this.settings;
+        const filter = (data) => {
+            const types = [];
+            const ps = this.settings;
             if (ps.showMeetings)
-                types.push(2);
+                {types.push(2);}
             if (ps.showWorklogs)
-                types.push(1);
+                {types.push(1);}
             if (ps.showInfo)
-                types.push(3);
+                {types.push(3);}
             switch (types.length) {
                 case 0:
                     data = [];
@@ -250,12 +250,12 @@ class Calendar extends BaseGadget {
             this.setEventsData(data);
         };
 
-        var req = [this.$worklog.getWorklogsEntry(start, end)];
+        const req = [this.$worklog.getWorklogsEntry(start, end)];
         if (this.CurrentUser.gIntegration && this.CurrentUser.hasGoogleCreds && this.settings.showMeetings) {
             req.push(this.$calendar.getEvents(start, end).then((data) => { return data; }, (err) => {
-                var msg = "Unable to fetch meetings!";
+                let msg = "Unable to fetch meetings!";
                 if (err.error && err.error.message) {
-                    msg += "<br /><br />Reason:- " + err.error.message;
+                    msg += `<br /><br />Reason:- ${  err.error.message}`;
                 }
                 this.$message.warning(msg);
                 return [];
@@ -268,8 +268,8 @@ class Calendar extends BaseGadget {
         this.setState({ isLoading: true, uploading: false });
         Promise.all(req).then((arr) => {
             this.setState({ isLoading: false });
-            var data = arr[0];
-            var allDayEvents = data.filter((d) => { return d.entryType === 1; })
+            const data = arr[0];
+            const allDayEvents = data.filter((d) => { return d.entryType === 1; })
                 .groupBy((key) => { return moment(key.start).format("YYYY-MM-DD"); })
                 .map((d) => this.getAllDayObj(d));
             this.latestData = data;
@@ -278,12 +278,12 @@ class Calendar extends BaseGadget {
     }
 
     setLoggedTime(arr, obj) {
-        var time = this.getTimeSpent(arr);
+        const time = this.getTimeSpent(arr);
         obj.logged = time;
-        var title = "Logged: " + this.$transform.formatSecs(time);
+        let title = `Logged: ${  this.$transform.formatSecs(time)}`;
         obj.diff = time - this.maxTime;
         if (this.maxTime && obj.diff) {
-            title += " (" + (obj.diff > 0 ? "+" : "-") + this.$transform.formatSecs(Math.abs(obj.diff)) + ")";
+            title += ` (${  obj.diff > 0 ? "+" : "-"  }${this.$transform.formatSecs(Math.abs(obj.diff))  })`;
         }
         this.setInfoColor(obj, this.settings);
         obj.title = title;
@@ -302,20 +302,20 @@ class Calendar extends BaseGadget {
 
     getTimeSpent(arr) {
         return arr.sum((v) => {
-            var s = moment(v.start);
-            var e = moment(v.end);
-            var diff = moment.duration(e.diff(s));
+            const s = moment(v.start);
+            const e = moment(v.end);
+            const diff = moment.duration(e.diff(s));
             return diff.asSeconds();
         });
     }
 
     updateAllDayEvent(result) {
-        var key = moment(result.start).format("YYYY-MM-DD");
-        var { events } = this.state;
+        const key = moment(result.start).format("YYYY-MM-DD");
+        const { events } = this.state;
         events.removeAll((e) => e.id === key && e.entryType === 3);
-        var logs = events.filter((a) => { return a.entryType === 1 && moment(a.start).format("YYYY-MM-DD") === key; });
+        const logs = events.filter((a) => { return a.entryType === 1 && moment(a.start).format("YYYY-MM-DD") === key; });
         if (logs && logs.length > 0) {
-            var allDayEvent = this.getAllDayObj({ key: key, values: logs });
+            const allDayEvent = this.getAllDayObj({ key: key, values: logs });
             if (allDayEvent.logged) {
                 events.push(allDayEvent);
                 //this.calendar.renderEvent(allDayEvent);
@@ -332,28 +332,28 @@ class Calendar extends BaseGadget {
 
     showWorklogPopup(obj) {
         hideContextMenu();
-        var newState = { showAddWorklogPopup: true };
+        const newState = { showAddWorklogPopup: true };
 
         if (obj.copy) {
             newState.worklogItem = obj.copy;
             this.setState(newState);
             return;
         }
-        var worklogObj;
+        let worklogObj;
         if (obj.id || obj.parentId) {
             worklogObj = obj;
         }
         else {
-            var diff = moment.duration(obj.end.diff(obj.start));
+            const diff = moment.duration(obj.end.diff(obj.start));
             worklogObj = {
-                timeSpent: diff.hours().pad(2) + ':' + diff.minutes().pad(2),
+                timeSpent: `${diff.hours().pad(2)  }:${  diff.minutes().pad(2)}`,
                 allowOverride: true
             };
             if (obj.dateStarted) {
                 worklogObj.startTime = obj.dateStarted;
             }
             else {
-                worklogObj.startTime = obj.isMonthMode ? moment(obj.start.format("YYYY-MM-DD") + " " + this.CurrentUser.startOfDay, "YYYY-MM-DD HH:mm").toDate() : obj.start.toDate();
+                worklogObj.startTime = obj.isMonthMode ? moment(`${obj.start.format("YYYY-MM-DD")  } ${  this.CurrentUser.startOfDay}`, "YYYY-MM-DD HH:mm").toDate() : obj.start.toDate();
             }
         }
         newState.worklogItem = worklogObj;
@@ -364,16 +364,16 @@ class Calendar extends BaseGadget {
         if (result.type === 0) {
             return;
         } // This will be triggered when closing the popup
-        var resp = false;
-        var { events } = this.state;
+        let resp = false;
+        let { events } = this.state;
         if (result.removed) {
-            var removedId = result.removed + (result.deletedObj.worklogId ? "#" + result.deletedObj.worklogId : "");
+            const removedId = result.removed + (result.deletedObj.worklogId ? `#${  result.deletedObj.worklogId}` : "");
             result = events.first((e) => { return e.id === removedId && e.entryType === 1; });
             events.remove(result);
             this.latestData.remove((e) => { return e.id === result.id && e.entryType === 1; });
         }
         else if (result.added || result.edited) {
-            var previousTime = result.previousTime;
+            const previousTime = result.previousTime;
             result = result.added || result.edited;
             result.color = this.settings.worklogColor; // Set color for newely added worklog
             events.removeAll((e) => e.id === result.id && e.entryType === 1);
@@ -405,8 +405,8 @@ class Calendar extends BaseGadget {
     }
 
     setColors(data) {
-        var ps = this.settings;
-        var wc = ps.worklogColor, ec = ps.eventColor;
+        const ps = this.settings;
+        const wc = ps.worklogColor, ec = ps.eventColor;
         data.forEach((w) => {
             switch (w.entryType) {
                 case 1:
@@ -424,7 +424,7 @@ class Calendar extends BaseGadget {
     }
 
     select({ start, end, allDay }) {
-        var isMonthMode = this.settings.viewMode === "dayGridMonth";
+        const isMonthMode = this.settings.viewMode === "dayGridMonth";
 
         if (!isMonthMode && allDay) {// start.hasTime() ==> allDay
             return false;
@@ -437,7 +437,7 @@ class Calendar extends BaseGadget {
         hideContextMenu();
         jsEvent.preventDefault();
         jsEvent.stopPropagation();
-        var item = event.extendedProps.sourceObject;
+        const item = event.extendedProps.sourceObject;
 
         this.currentMeetingItem = {
             summary: item.summary,
@@ -451,7 +451,7 @@ class Calendar extends BaseGadget {
         if (item.start) {
             this.currentMeetingItem.date = this.$transform.formatDate(item.start.dateTime);
             this.currentMeetingItem.startTime = this.$transform.formatTime(item.start.dateTime);
-            var remaining = moment(item.start.dateTime).diff(moment());
+            let remaining = moment(item.start.dateTime).diff(moment());
             if (remaining < 0) {
                 if (item.end && item.end.dateTime && moment().diff(item.end.dateTime) < 0) {
                     remaining = "(now ongoing)";
@@ -461,7 +461,7 @@ class Calendar extends BaseGadget {
                 }
             }
             else {
-                remaining = "(in " + this.$transform.formatTs(remaining) + ")";
+                remaining = `(in ${  this.$transform.formatTs(remaining)  })`;
             }
             this.currentMeetingItem.remaining = remaining;
         }
@@ -479,14 +479,14 @@ class Calendar extends BaseGadget {
             };
         }
         if (item.hangoutLink) {
-            var name = item.hangoutLink;
+            let name = item.hangoutLink;
             if (name.lastIndexOf('/') > 0) {
                 name = name.substring(name.lastIndexOf('/') + 1);
             }
             this.currentMeetingItem.videoCall = { url: item.hangoutLink, name: name };
         }
         if (this.$session.isQuickView) {
-            var targetCtl = $('.app-header.navbar > button[appmobilesidebartoggler]').get(0);
+            const targetCtl = $('.app-header.navbar > button[appmobilesidebartoggler]').get(0);
             if (targetCtl) {
                 jsEvent = { currentTarget: targetCtl };
             }
@@ -506,7 +506,7 @@ class Calendar extends BaseGadget {
     }
 
     eventClick(e) {
-        var { event, jsEvent, view } = e;
+        const { event, jsEvent, view } = e;
         this.currentMeetingViewItem = null;
         if (event.extendedProps.entryType === 1) {
             this.showWorklogPopup(event.extendedProps.sourceObject);
@@ -519,23 +519,23 @@ class Calendar extends BaseGadget {
 
     //dayClick: function (date) { console.log('dayClick', date.format()); },
     viewRender(event) {
-        var { view } = event;
+        const { view } = event;
         this.settings.viewMode = view.type;
         this.startDate = view.activeStart;
         this.endDate = view.activeEnd;
-        this.title = 'Calendar - [' + view.title.replace(/[^a-zA-Z0-9, ]+/g, '-') + ']';
+        this.title = `Calendar - [${  view.title.replace(/[^a-zA-Z0-9, ]+/g, '-')  }]`;
         this.refreshData();
         //Revisit:check if this is required - $(this.calendar.el.nativeElement).find(".fc-header-toolbar").hide();
     }
 
     eventDrop(e) {
-        var { event, revert, jsEvent } = e;
+        const { event, revert, jsEvent } = e;
 
         if (jsEvent.ctrlKey || jsEvent.altKey) {
             revert();
-            var eventFromArr = this.state.events.first(e => e.entryType === 1 && e.id === event.id);
+            const eventFromArr = this.state.events.first(e => e.entryType === 1 && e.id === event.id);
             if (eventFromArr) {
-                var srcObj = eventFromArr.sourceObject;
+                const srcObj = eventFromArr.sourceObject;
                 eventFromArr.start = moment(new Date(srcObj.dateStarted)).toDate();
                 eventFromArr.end = moment(new Date(srcObj.dateStarted))
                     .add(this.$worklog.getTimeSpent(srcObj), "minutes").toDate();
@@ -545,7 +545,7 @@ class Calendar extends BaseGadget {
                 .then((result) => { this.addEvent({ added: result }); });
         }
         else {
-            var oldDate = event.extendedProps.sourceObject.dateStarted;
+            const oldDate = event.extendedProps.sourceObject.dateStarted;
             this.$worklog.changeWorklogDate(event.extendedProps.sourceObject, event.start).then((entry) => {
                 //this.updateAllDayEvent({ start: oldDate }); // This is to update the info of previous date
                 //event.extendedProps.sourceObject.dateStarted = event.start.toDate();
@@ -559,7 +559,7 @@ class Calendar extends BaseGadget {
     }
 
     eventResize(e) {
-        var { event } = e;
+        const { event } = e;
         this.$worklog.changeWorklogTS(event.extendedProps.sourceObject, this.getEventDuration(event)).then((entry) => {
             this.addEvent({ edited: entry });
             //this.updateAllDayEvent(event);
@@ -568,12 +568,12 @@ class Calendar extends BaseGadget {
 
     getEventDuration(event) {
         if (event.end && event.start) {
-            var diff = moment.duration(moment(event.end).diff(event.start));
-            return diff.hours().pad(2) + ":" + diff.minutes().pad(2);
+            const diff = moment.duration(moment(event.end).diff(event.start));
+            return `${diff.hours().pad(2)  }:${  diff.minutes().pad(2)}`;
         }
         else if (event.extendedProps.sourceObject) {
-            var srcObj = event.extendedProps.sourceObject;
-            var ts = srcObj.overrideTimeSpent || srcObj.timespent;
+            const srcObj = event.extendedProps.sourceObject;
+            const ts = srcObj.overrideTimeSpent || srcObj.timespent;
             if (ts && ~ts.indexOf(':')) {
                 return ts;
             }
@@ -582,21 +582,21 @@ class Calendar extends BaseGadget {
     }
 
     eventRender(e) {
-        var { event, el } = e;
-        var element = $(el);
-        var hourDiff = ' (' + this.$transform.formatTs(this.getEventDuration(event)) + ')';
-        var srcObj = event.extendedProps.sourceObject;
+        const { event, el } = e;
+        const element = $(el);
+        const hourDiff = ` (${  this.$transform.formatTs(this.getEventDuration(event))  })`;
+        const srcObj = event.extendedProps.sourceObject;
         if (srcObj) {
-            var title = element.find(".fc-time").text() + hourDiff + '\n' + event.title;
+            const title = `${element.find(".fc-time").text() + hourDiff  }\n${  event.title}`;
             element.attr('title', title);
         }
 
-        element.find(".fc-time").append('<span class="fc-hour">' + hourDiff + '</span>');
-        var entryType = event.extendedProps.entryType;
+        element.find(".fc-time").append(`<span class="fc-hour">${  hourDiff  }</span>`);
+        const entryType = event.extendedProps.entryType;
         if (entryType === 1) {
-            let w = srcObj;
+            const w = srcObj;
 
-            var contextEvent = (e) => {
+            const contextEvent = (e) => {
                 e.stopPropagation();
                 e.preventDefault();
                 this.mnuWL_Upload.disabled = w.isUploaded;
@@ -605,15 +605,15 @@ class Calendar extends BaseGadget {
                 //this.contextMenu.toggle(e);
             };
 
-            let icon = $('<i class="fa fa-ellipsis-v pull-left" title="Show options"></i>')
+            const icon = $('<i class="fa fa-ellipsis-v pull-left" title="Show options"></i>')
                 .on('click', contextEvent);
             element.find(".fc-time").prepend(icon);
             element.bind('contextmenu', contextEvent);
         }
         else if (entryType === 2) {
             let icon = null;
-            let m = srcObj;
-            var hasWorklog = this.latestData.some((e) => { return e.parentId === event.id && e.entryType === 1; });
+            const m = srcObj;
+            const hasWorklog = this.latestData.some((e) => { return e.parentId === event.id && e.entryType === 1; });
             if (!hasWorklog) {
                 icon = $('<i class="fa fa-clock-o pull-left" title="Create worklog for this meeting"></i>')
                     .on('click', (e) => { e.stopPropagation(); this.createWorklog(e, m, this.defaultMeetingTicket); });
@@ -622,7 +622,7 @@ class Calendar extends BaseGadget {
                 icon = $('<i class="fa fa-ellipsis-v pull-left" title="Show options"></i>')
                     .on('click', (e) => { e.stopPropagation(); element.trigger('contextmenu'); });
             }
-            var timeItem = element.find(".fc-time");
+            const timeItem = element.find(".fc-time");
             timeItem.prepend(icon);
             element.bind('contextmenu', (e) => {
                 e.stopPropagation();
@@ -643,10 +643,10 @@ class Calendar extends BaseGadget {
 
         hideContextMenu();
         if (all) {
-            var worklogs = this.getPendingWorklogs().map(e => e.sourceObject.id);
+            const worklogs = this.getPendingWorklogs().map(e => e.sourceObject.id);
             this.$worklog.uploadWorklogs(worklogs)
                 .then(() => {
-                    this.$message.success(worklogs.length + " worklog(s) uploaded successfully!");
+                    this.$message.success(`${worklogs.length  } worklog(s) uploaded successfully!`);
                     this.refreshData();
                 }, () => {
                     this.refreshData();
@@ -676,7 +676,7 @@ class Calendar extends BaseGadget {
 
     copyWorklog() {
         hideContextMenu();
-        var newObj = Object.create(this.currentWLItem);
+        const newObj = Object.create(this.currentWLItem);
         newObj.copy = true;
         this.showWorklogPopup({ copy: newObj });
     }
@@ -706,7 +706,7 @@ class Calendar extends BaseGadget {
     }
 
     renderCustomActions() {
-        var {
+        const {
             isGadget,
             state: { pendingWorklogCount, isLoading, uploading }
         } = this;
@@ -717,17 +717,17 @@ class Calendar extends BaseGadget {
                 <Button icon="fa fa-arrow-right" onClick={() => this.calendar.next()} />
                 <SelectBox dataset={viewModes} value={this.settings.viewMode} valueField="value" placeholder="Select a view mode" onChange={this.viewModeChanged} />
             </>}
-            <span className="info-badge" title={pendingWorklogCount ? 'Upload ' + pendingWorklogCount + ' pending worklog(s)' : 'No worklog pending to be uploaded'}>
+            <span className="info-badge" title={pendingWorklogCount ? `Upload ${  pendingWorklogCount  } pending worklog(s)` : 'No worklog pending to be uploaded'}>
                 {pendingWorklogCount > 0 && <span className="info btn-warning">{pendingWorklogCount}</span>}
                 <Button type="success" icon={uploading ? 'fa fa-spin fa-spinner' : 'fa fa-upload'} disabled={uploading || pendingWorklogCount < 1 || isLoading} onClick={() => this.uploadWorklog(true)} />
             </span>
             {!isGadget && <Button icon="fa fa-refresh" disabled={isLoading || uploading} onClick={this.refreshData} title="Refresh meetings and worklogs" />}
             {!isGadget && <Button icon="fa fa-cogs" onClick={() => this.setState({ showSettings: true })} title="Show settings" />}
-        </>
+        </>;
     }
 
     render() {
-        var {
+        const {
             hideWorklogDialog, addEvent,
             state: { showAddWorklogPopup, worklogItem, events }
         } = this;

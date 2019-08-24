@@ -18,14 +18,14 @@ export default class UserUtilsService {
             return url;
         }
         if (!url.startsWith('/')) {
-            url = '/' + url;
+            url = `/${  url}`;
         }
         return this.$session.CurrentUser.jiraUrl + url;
     }
 
     isHoliday = (date) => {
-        var weekDay = date.getDay();
-        var workingDays = this.$session.CurrentUser.workingDays;
+        const weekDay = date.getDay();
+        const workingDays = this.$session.CurrentUser.workingDays;
         //ToDo: Need to have track of holiday and need to do the checking here
         return workingDays.indexOf(weekDay) === -1;
     }
@@ -38,17 +38,17 @@ export default class UserUtilsService {
             return user.avatarUrls["48x48"] || user.avatarUrls["32x32"];
         }
         else {
-            return this.$session.rootUrl + "/secure/useravatar?ownerId=" + user.name.toLowerCase();
+            return `${this.$session.rootUrl  }/secure/useravatar?ownerId=${  user.name.toLowerCase()}`;
         }
         ///Security/ProfilePic / {{userInfo.name }}
     }
 
     formatDateTime = (value, format, utc) => {
         if (!value)
-            return value;
+            {return value;}
         if (!format)
-            format = this.$session.CurrentUser.dateFormat + " " + this.$session.CurrentUser.timeFormat;
-        var date = this.$utils.convertDate(value);
+            {format = `${this.$session.CurrentUser.dateFormat  } ${  this.$session.CurrentUser.timeFormat}`;}
+        let date = this.$utils.convertDate(value);
         if (date && date instanceof Date) {
             if (utc === true) {
                 date = date.toUTCDate();
@@ -70,8 +70,8 @@ export default class UserUtilsService {
     }
 
     getDays = (fromDate, toDate) => {
-        var dateArr = this.$utils.getDateArray(fromDate, toDate);
-        var now = new Date().getTime();
+        const dateArr = this.$utils.getDateArray(fromDate, toDate);
+        const now = new Date().getTime();
         return dateArr.map(d => {
             return {
                 prop: d.format('yyyyMMdd'),
@@ -84,10 +84,10 @@ export default class UserUtilsService {
     }
 
     getWorklogUrl(ticketNo, worklogId) {
-        var url = this.getTicketUrl(ticketNo);
+        let url = this.getTicketUrl(ticketNo);
         if (url && worklogId) {
         }
-        url += "?focusedWorklogId=" + worklogId + "&page=com.atlassian.jira.plugin.system.issuetabpanels%3Aworklog-tabpanel#worklog-" + worklogId;
+        url += `?focusedWorklogId=${  worklogId  }&page=com.atlassian.jira.plugin.system.issuetabpanels%3Aworklog-tabpanel#worklog-${  worklogId}`;
         return url;
     }
 }

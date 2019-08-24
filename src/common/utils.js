@@ -1,6 +1,6 @@
 
 export function saveAs(blob, fileName) {
-    var reader = new FileReader();
+    const reader = new FileReader();
     reader.onload = function (e) {
         saveStringAs(reader.result, blob.type, fileName);
     };
@@ -8,9 +8,9 @@ export function saveAs(blob, fileName) {
 }
 
 export function saveStringAs(str, typeName, fileName) {
-    var bdata = btoa(str);
-    var datauri = 'data:' + typeName + ';base64,' + bdata;
-    var a = document.createElement('a');
+    const bdata = btoa(str);
+    const datauri = `data:${  typeName  };base64,${  bdata}`;
+    const a = document.createElement('a');
     if ('download' in a) { //html5 A[download]
         a.href = datauri;
         a.setAttribute('download', fileName);

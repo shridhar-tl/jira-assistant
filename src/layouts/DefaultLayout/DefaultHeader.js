@@ -21,7 +21,7 @@ class DefaultHeader extends PureComponent {
   constructor(props) {
     super(props);
     inject(this, "AppBrowserService", "CacheService", "SessionService", "UserService");
-    var { jiraUser: { displayName, self, emailAddress, key, avatarUrls } } = this.$session.CurrentUser;
+    const { jiraUser: { displayName, self, emailAddress, key, avatarUrls } } = this.$session.CurrentUser;
     this.state = { name: displayName, login: key, profile: self, emailAddress, imageUrl: avatarUrls["24x24"] };
   }
 
@@ -33,20 +33,20 @@ class DefaultHeader extends PureComponent {
     this.useLightTheme = this.selectedSkin.indexOf('-light') > -1;
     this.ratingUrl = this.$jaBrowserExtn.getStoreUrl(true);
     this.storeUrl = this.$jaBrowserExtn.getStoreUrl();
-    var subj = encodeURIComponent('Check out "Jira Assistant" in web store');
-    var body = encodeURIComponent('Check out "Jira Assistant" extension / add-on for your browser from below url:'
-      + '\n\nChrome users: ' + CHROME_WS_URL + "?utm_source%3Dgmail#"
-      + '\n\nFirefox users: ' + FF_STORE_URL
+    const subj = encodeURIComponent('Check out "Jira Assistant" in web store');
+    const body = encodeURIComponent(`${'Check out "Jira Assistant" extension / add-on for your browser from below url:'
+      + '\n\nChrome users: '}${  CHROME_WS_URL  }?utm_source%3Dgmail#`
+      + `\n\nFirefox users: ${  FF_STORE_URL
       //+ '\n\nEdge users: <<Not available yet>>'
       //+ '\n\nSafari users: <<Not available yet>>'
-      + '\n\n\n\nThis would help you to track your worklog and generate reports from Jira easily with lots of customizations. '
-      + 'Also has lot more features like Google Calendar integration, Jira comment & meeting + worklog notifications, Worklog and custom report generations, etc..');
-    var storeUrl = encodeURIComponent(this.storeUrl);
-    this.gMailShare = "https://mail.google.com/mail/u/0/?view=cm&tf=1&fs=1&su=" + subj + "&body=" + body;
-    this.gPlusShare = "https://plus.google.com/share?app=110&url=" + storeUrl;
-    this.linkedInShare = "https://www.linkedin.com/shareArticle?mini=true&url=" + storeUrl + "&title=" + subj + "&summary=" + body + "&source=";
-    this.fackbookShare = "https://www.facebook.com/sharer/sharer.php?u=" + storeUrl;
-    this.twitterShare = "https://twitter.com/home?status=" + storeUrl;
+       }\n\n\n\nThis would help you to track your worklog and generate reports from Jira easily with lots of customizations. `
+      + `Also has lot more features like Google Calendar integration, Jira comment & meeting + worklog notifications, Worklog and custom report generations, etc..`);
+    const storeUrl = encodeURIComponent(this.storeUrl);
+    this.gMailShare = `https://mail.google.com/mail/u/0/?view=cm&tf=1&fs=1&su=${  subj  }&body=${  body}`;
+    this.gPlusShare = `https://plus.google.com/share?app=110&url=${  storeUrl}`;
+    this.linkedInShare = `https://www.linkedin.com/shareArticle?mini=true&url=${  storeUrl  }&title=${  subj  }&summary=${  body  }&source=`;
+    this.fackbookShare = `https://www.facebook.com/sharer/sharer.php?u=${  storeUrl}`;
+    this.twitterShare = `https://twitter.com/home?status=${  storeUrl}`;
 
     if (this.$session.CurrentUser.hideDonateMenu) { // When this settings is changed, below class will be removed from body in settings page
       $('body').addClass('no-donation');
@@ -54,10 +54,10 @@ class DefaultHeader extends PureComponent {
   }
 
   showVideo() {
-    var url = "https://www.youtube.com/embed/f2aBSXzbYuA?rel=0&autoplay=1&showinfo=0&cc_load_policy=1&start=";
-    var route = this.$location.url;
-    var startAt = 0;
-    var endAt = 0;
+    let url = "https://www.youtube.com/embed/f2aBSXzbYuA?rel=0&autoplay=1&showinfo=0&cc_load_policy=1&start=";
+    const route = this.$location.url;
+    let startAt = 0;
+    const endAt = 0;
     switch (route) {
       case "/":
       default:
@@ -79,7 +79,7 @@ class DefaultHeader extends PureComponent {
         startAt = 1147;
         break;
     }
-    url += startAt + "&end=" + endAt;
+    url += `${startAt  }&end=${  endAt}`;
     $('#ifVideoHelp').attr('src', url);
     this.showVideoHelp = true;
   }
@@ -90,21 +90,21 @@ class DefaultHeader extends PureComponent {
   }
 
   setSkin(skin, fromChk = false) {
-    var passedSkin = skin;
+    const passedSkin = skin;
     if (this.useLightTheme !== fromChk) {
       skin += '-light';
     }
     if (this.selectedSkin === skin) {
       return;
     }
-    var body = $('body');
+    const body = $('body');
     body.removeClass(this.selectedSkin);
     this.skinClass = passedSkin;
     this.selectedSkin = skin;
     this.$cache.set('skin', skin, false, true);
     body.addClass(this.selectedSkin);
     $('#divSkins .selected').removeClass('selected');
-    $('#divSkins .' + this.selectedSkin).addClass('selected');
+    $(`#divSkins .${  this.selectedSkin}`).addClass('selected');
   }
 
   logout() {
@@ -114,7 +114,7 @@ class DefaultHeader extends PureComponent {
   }
 
   render() {
-    var {
+    const {
       ratingUrl, gMailShare, gPlusShare, linkedInShare, fackbookShare, twitterShare,
       //REVISIT: props: { children, ...attributes },
       state: { name, login, profile, emailAddress, imageUrl, users }
@@ -156,7 +156,7 @@ class DefaultHeader extends PureComponent {
               {users && users.length > 0 && <>
                 <DropdownItem header tag="div" className="text-center"><strong>Accounts</strong></DropdownItem>
 
-                {users.map(u => <DropdownItem key={u.id} tag="a" href={"/index.html/#/" + u.id + "/dashboard/1"} title={u.jiraUrl}><i className="fa fa-external-link"></i> {u.email}</DropdownItem>)}
+                {users.map(u => <DropdownItem key={u.id} tag="a" href={`/index.html/#/${  u.id  }/dashboard/1`} title={u.jiraUrl}><i className="fa fa-external-link"></i> {u.email}</DropdownItem>)}
 
                 <DropdownItem tag="a" href="/index.html/#/integrate" title="Integrate with new instance of Jira"><i className="fa fa-plug"></i> Integrate</DropdownItem>
                 {

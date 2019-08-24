@@ -20,7 +20,7 @@ class DateWiseWorklog extends BaseGadget {
     }
 
     refreshData() {
-        var selDate = this.settings.dateRange;
+        const selDate = this.settings.dateRange;
         if (!selDate || !selDate.fromDate) {
             return;
         }
@@ -58,7 +58,7 @@ class DateWiseWorklog extends BaseGadget {
     }
 
     uploadWorklog() {
-        var toUpload = this.selectedDay.ticketList.filter(t => !t.worklogId).map(t => t.id);
+        const toUpload = this.selectedDay.ticketList.filter(t => !t.worklogId).map(t => t.id);
         if (toUpload.length === 0) {
             return;
         }
@@ -70,8 +70,8 @@ class DateWiseWorklog extends BaseGadget {
     }
 
     addWorklog() {
-        var date = moment(this.selectedDay.dateLogged).toDate();
-        var hrsRemaining = null;
+        const date = moment(this.selectedDay.dateLogged).toDate();
+        let hrsRemaining = null;
         if (this.selectedDay.pendingUpload > 0) {
             hrsRemaining = this.$transform.formatTs(this.selectedDay.pendingUpload, true);
         }
@@ -88,11 +88,11 @@ class DateWiseWorklog extends BaseGadget {
     }
 
     renderCustomActions() {
-        return <DatePicker range={true} value={this.settings.dateRange} onChange={(e) => this.dateSelected(e)} style={{ marginRight: "35px" }} />
+        return <DatePicker range={true} value={this.settings.dateRange} onChange={(e) => this.dateSelected(e)} style={{ marginRight: "35px" }} />;
     }
 
     render() {
-        var {
+        const {
             //settings, removeGadget, isFullScreen, tbl,
             state: { worklogs }
         } = this;
@@ -128,7 +128,7 @@ class DateWiseWorklog extends BaseGadget {
                                     </li>)}
                                 </ul>
                             </td>
-                        </tr>
+                        </tr>;
                     }}
                 </TBody>
                 <NoDataRow span={5}>No worklog exists for selected date range!</NoDataRow>

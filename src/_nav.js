@@ -1,12 +1,12 @@
 export function getDashboardMenu(d, idx, userId) {
     if (!d) { return null; }
 
-    var { icon, name } = d;
+    const { icon, name } = d;
 
     return {
         name,
-        id: 'D-' + idx,
-        url: '/' + userId + '/dashboard/' + (idx + 1),
+        id: `D-${  idx}`,
+        url: `/${  userId  }/dashboard/${  idx + 1}`,
         icon: icon,
         /*badge: {
             variant: 'info',

@@ -22,7 +22,7 @@ class GroupedDataGrid extends PureComponent {
             return time ? 'log-high' : 'col-holiday';
         }
         else {
-            var secsPerDay = this.props.maxSecsPerDay;
+            const secsPerDay = this.props.maxSecsPerDay;
             if (time === secsPerDay) {
                 return 'log-good';
             }
@@ -36,18 +36,18 @@ class GroupedDataGrid extends PureComponent {
     }
 
     generateGroupData(props) {
-        var { rawData: data, dates, pageSettings, groups, getTicketUrl } = props;
-        var timezoneSetting = parseInt(pageSettings.timeZone);
+        const { rawData: data, dates, pageSettings, groups, getTicketUrl } = props;
+        const timezoneSetting = parseInt(pageSettings.timeZone);
 
-        var groupedData = groups.map(grp => {
-            var grpInfo = {
+        const groupedData = groups.map(grp => {
+            const grpInfo = {
                 name: grp.name,
                 total: {},
                 grandTotal: 0,
                 users: null
             };
             grpInfo.users = grp.users.map(usr => {
-                var curTimeZone = null;
+                let curTimeZone = null;
                 if (timezoneSetting === 2) {
                     curTimeZone = grp.timeZone;
                 }
@@ -57,7 +57,7 @@ class GroupedDataGrid extends PureComponent {
                 if (curTimeZone === "GRP_TZ") {
                     curTimeZone = grp.timeZone;
                 }
-                var usrInfo = {
+                const usrInfo = {
                     name: usr.name,
                     displayName: usr.displayName,
                     emailAddress: usr.emailAddress,
@@ -69,13 +69,13 @@ class GroupedDataGrid extends PureComponent {
                     logClass: {},
                     grandTotal: 0
                 };
-                var logData = data.first(d => d.userName === usr.name.toLowerCase()).logData;
+                const logData = data.first(d => d.userName === usr.name.toLowerCase()).logData;
                 usrInfo.tickets = logData.groupBy(lGrp => lGrp.ticketNo)
                     .map(tGrp => {
-                        var items = tGrp.values;
-                        var firstTkt = items.first();
-                        var logs = {};
-                        var ticket = {
+                        const items = tGrp.values;
+                        const firstTkt = items.first();
+                        const logs = {};
+                        const ticket = {
                             ticketNo: tGrp.key,
                             parent: firstTkt.parent,
                             parentUrl: firstTkt.parent ? getTicketUrl(firstTkt.parent) : null,
@@ -89,12 +89,12 @@ class GroupedDataGrid extends PureComponent {
                         };
                         let totalHours = 0;
                         items.forEach(item => {
-                            var logTime = item.logTime;
+                            let logTime = item.logTime;
                             if (curTimeZone) {
                                 logTime = moment(moment(logTime).tz(curTimeZone).format('YYYY-MM-DD HH:mm:ss')).toDate();
                             }
-                            var dateFormated = logTime.format('yyyyMMdd');
-                            var logForDate = logs[dateFormated];
+                            const dateFormated = logTime.format('yyyyMMdd');
+                            let logForDate = logs[dateFormated];
                             if (!logForDate) {
                                 logForDate = [];
                                 logs[dateFormated] = logForDate;
@@ -106,12 +106,12 @@ class GroupedDataGrid extends PureComponent {
                         return ticket;
                     });
                 // Set date wise total per user
-                var logClass = usrInfo.logClass;
-                var usrTotal = usrInfo.total;
-                var usrGTotal = 0;
+                const logClass = usrInfo.logClass;
+                const usrTotal = usrInfo.total;
+                let usrGTotal = 0;
                 dates.forEach(d => {
-                    var totalHrs = usrInfo.tickets.sum(t => {
-                        var lgArr = t.logs[d.prop];
+                    const totalHrs = usrInfo.tickets.sum(t => {
+                        const lgArr = t.logs[d.prop];
                         if (lgArr) {
                             return lgArr.sum(l => l.totalHours);
                         }
@@ -129,10 +129,10 @@ class GroupedDataGrid extends PureComponent {
                 return usrInfo;
             });
             // Set date wise total per group
-            var grpTotal = grpInfo.total;
-            var grpGTotal = 0;
+            const grpTotal = grpInfo.total;
+            let grpGTotal = 0;
             dates.forEach(d => {
-                var totalHrs = grpInfo.users.sum(u => u.total[d.prop] || 0);
+                const totalHrs = grpInfo.users.sum(u => u.total[d.prop] || 0);
                 if (totalHrs > 0) {
                     grpTotal[d.prop] = totalHrs;
                     grpGTotal += totalHrs;
@@ -143,10 +143,10 @@ class GroupedDataGrid extends PureComponent {
         });
 
         // Set date wise total for all groups
-        var grandTotal = 0;
-        var grpTotal = {};
+        let grandTotal = 0;
+        const grpTotal = {};
         dates.forEach(d => {
-            var totalHrs = groupedData.sum(u => u.total[d.prop] || 0);
+            const totalHrs = groupedData.sum(u => u.total[d.prop] || 0);
             if (totalHrs > 0) {
                 grpTotal[d.prop] = totalHrs;
                 grandTotal += totalHrs;
@@ -160,7 +160,7 @@ class GroupedDataGrid extends PureComponent {
     }
 
     render() {
-        var { state: { groupedData },
+        const { state: { groupedData },
             props: { months, dates, convertSecs, formatTime, breakupMode }
         } = this;
 
@@ -202,7 +202,7 @@ class GroupRow extends PureComponent {
     toggleDisplay = () => this.setState({ hidden: !this.state.hidden })
 
     render() {
-        var {
+        const {
             props: { group: grp, dates, convertSecs, formatTime, breakupMode },
             state: { hidden }
         } = this;
@@ -244,7 +244,7 @@ class UserRow extends PureComponent {
         }
 
         return arr.map((a) => {
-            return this.props.formatTime(a.logTime) + "(" + this.props.convertSecs(a.totalHours) + ") - " + a.comment;
+            return `${this.props.formatTime(a.logTime)  }(${  this.props.convertSecs(a.totalHours)  }) - ${  a.comment}`;
         }).join(';\n');
     }
 
@@ -259,12 +259,12 @@ class UserRow extends PureComponent {
 
     getLogEntries(entries) {
         if (Array.isArray(entries) && entries.length > 0) {
-            return entries.map((d, i) => <span key={i} title={this.props.formatTime(d.logTime) + " - " + d.comment}> {this.props.convertSecs(d.totalHours)}; </span>);
+            return entries.map((d, i) => <span key={i} title={`${this.props.formatTime(d.logTime)  } - ${  d.comment}`}> {this.props.convertSecs(d.totalHours)}; </span>);
         }
     }
 
     render() {
-        var {
+        const {
             props: { user: u, dates, convertSecs, breakupMode },
             state: { expanded }
         } = this;
@@ -274,7 +274,7 @@ class UserRow extends PureComponent {
                 <tr className="pointer auto-wrap" onClick={this.toggleDisplay}>
                     <td className="data-left">
                         <div className="user-info" style={{ paddingLeft: 0 }}>
-                            <i className={"pull-left drill-down fa " + (expanded ? 'fa-chevron-circle-down' : 'fa-chevron-circle-right')}
+                            <i className={`pull-left drill-down fa ${  expanded ? 'fa-chevron-circle-down' : 'fa-chevron-circle-right'}`}
                                 title="Click to toggle ticket details" />
                             <img src={u.imageUrl} height={40} width={40} className="pull-left" alt={u.displayName} />
                             <span className="name">{u.displayName}</span>

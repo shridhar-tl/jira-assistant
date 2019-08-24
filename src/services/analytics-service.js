@@ -28,6 +28,6 @@ export default class AnalyticsService {
         if (page === "/") {
             page = "/dashboard";
         }
-        window['_gaq'].push(['_trackPageview', "v" + this.versionNumber + "/index.html" + page]);
+        window['_gaq'].push(['_trackPageview', `v${  this.versionNumber  }/index.html${  page}`]);
     }
 }

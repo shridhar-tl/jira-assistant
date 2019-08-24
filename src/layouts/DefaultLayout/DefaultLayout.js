@@ -30,22 +30,22 @@ class DefaultLayout extends PureComponent {
   constructor() {
     super();
     inject(this, "DashboardService", "SessionService", "CacheService");
-    var { userId } = this.$session;
+    const { userId } = this.$session;
     this.state = { menus: this.getMenus(userId), userId };
   }
 
   UNSAFE_componentWillMount() {
-    var { userId } = this.state;
+    const { userId } = this.state;
     this.$dashboard.onChange(() => this.setState({ menus: this.getMenus(userId) }));
     this.initBody();
   }
 
   initBody() {
-    var skinName = this.$cache.get('skin', true) || 'skin-blue';
-    var isSideBarToggled = this.$cache.get('SideBarToggled');
-    var isSideBarHidden = this.$cache.get('SideBarHidden');
+    const skinName = this.$cache.get('skin', true) || 'skin-blue';
+    const isSideBarToggled = this.$cache.get('SideBarToggled');
+    const isSideBarHidden = this.$cache.get('SideBarHidden');
 
-    var body = $(document.body);
+    const body = $(document.body);
     body.addClass(skinName);
 
     if (isSideBarHidden) { body.addClass('sidebar-hidden brand-minimized'); }
@@ -62,12 +62,12 @@ class DefaultLayout extends PureComponent {
   }
 
   getMenus(userId) {
-    var dashboards = this.$dashboard.getDashboards();
+    const dashboards = this.$dashboard.getDashboards();
     if (!dashboards || !dashboards.length) { return navigation; }
 
-    var items = navigation.items.map(p => {
-      var route = { ...p };
-      route.url = "/" + userId + route.url;
+    const items = navigation.items.map(p => {
+      const route = { ...p };
+      route.url = `/${  userId  }${route.url}`;
       return route;
     });
     items.splice(1, 1, ...dashboards.map((p, i) => getDashboardMenu(p, i, userId)));
@@ -77,12 +77,12 @@ class DefaultLayout extends PureComponent {
   loading = () => <div className="animated fadeIn pt-1 text-center">Loading...</div>
 
   signOut(e) {
-    e.preventDefault()
+    e.preventDefault();
     this.props.history.push('/integrate');
   }
 
   render() {
-    var { userId, menus } = this.state;
+    const { userId, menus } = this.state;
 
     return (
       <div className="app">
@@ -109,7 +109,7 @@ class DefaultLayout extends PureComponent {
                     return route.component ? (
                       <Route
                         key={idx}
-                        path={"/" + userId + route.path}
+                        path={`/${  userId  }${route.path}`}
                         exact={route.exact}
                         name={route.name}
                         render={props => (

@@ -15,13 +15,13 @@ class Dashboard extends PureComponent {
 
         this.rapidViews = this.$session.CurrentUser.rapidViews || [];
 
-        var { match: { params } } = props;
+        const { match: { params } } = props;
         this.isQuickView = parseInt(params['isQuickView'] || 0) === 1;
         this.state = this.loadDashboard(parseInt(params['index'] || 1));
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        var newIndex = newProps.match.params.index;
+        const newIndex = newProps.match.params.index;
         if (newIndex !== this.state.dashboardIndex) {
             this.setState(this.loadDashboard(newIndex));
         }
@@ -29,7 +29,7 @@ class Dashboard extends PureComponent {
 
     loadDashboard(index) {
         index -= 1;
-        var dashboards = this.$session.CurrentUser.dashboards;
+        const dashboards = this.$session.CurrentUser.dashboards;
         if (index >= dashboards.length) {
             index = 0;
         }
@@ -46,21 +46,21 @@ class Dashboard extends PureComponent {
     }
 
     addGadget = (gadgetName, settings) => {
-        var { currentBoard } = this.state;
+        let { currentBoard } = this.state;
         currentBoard.widgets.push({ name: gadgetName, settings: settings || {} });
         currentBoard = { ...currentBoard };
         this.setState({ currentBoard });
     }
 
     removeGadget = (gadgetName) => {
-        var { currentBoard } = this.state;
+        let { currentBoard } = this.state;
         currentBoard.widgets.removeAll(g => g.name === gadgetName);
         currentBoard = { ...currentBoard };
         this.setState({ currentBoard });
     }
 
     saveDashboardInfo() {
-        var { dashboardIndex, currentBoard } = this.state;
+        const { dashboardIndex, currentBoard } = this.state;
         this.$dashboard.saveDashboardInfo(dashboardIndex, currentBoard);
     }
 
@@ -109,9 +109,9 @@ class Dashboard extends PureComponent {
         }*/
 
     getControls = (w, i) => {
-        var { name, settings } = w;
+        const { name, settings } = w;
 
-        var props = {
+        const props = {
             key: name,
             index: i,
             model: w,
@@ -122,31 +122,31 @@ class Dashboard extends PureComponent {
 
         switch (name) {
             case "myOpenTickets":
-                return <MyOpenTickets {...props} />
+                return <MyOpenTickets {...props} />;
 
             case "myBookmarks":
             case "bookmarksList":
-                return <MyBookmarks {...props} />
+                return <MyBookmarks {...props} />;
 
             case "dateWiseWorklog":
             case "dtWiseWL":
-                return <DateWiseWorklog {...props} />
+                return <DateWiseWorklog {...props} />;
 
             case "pendingWL":
             case "pendingWorklog":
-                return <PendingWorklog {...props} />
+                return <PendingWorklog {...props} />;
 
             case "ticketWiseWorklog":
-                return <TicketWiseWorklog {...props} />
+                return <TicketWiseWorklog {...props} />;
 
             case "myFilters":
-                return <MyReports {...props} />
+                return <MyReports {...props} />;
 
             case "agendaDay":
-                return <Calendar {...props} viewMode="timeGridDay" />
+                return <Calendar {...props} viewMode="timeGridDay" />;
 
             case "agendaWeek":
-                return <Calendar {...props} viewMode="timeGridWeek" />
+                return <Calendar {...props} viewMode="timeGridWeek" />;
 
             default:
 
@@ -164,7 +164,7 @@ class Dashboard extends PureComponent {
     }
 
     isGadgetAdded = (id) => {
-        var { currentBoard: { widgets } } = this.state;
+        const { currentBoard: { widgets } } = this.state;
         return widgets.some(w => w.name === id);
     }
 
@@ -174,7 +174,7 @@ class Dashboard extends PureComponent {
     hideWorklog = () => this.setState({ showWorklogPopup: false });
 
     render() {
-        var { currentBoard: { widgets },
+        const { currentBoard: { widgets },
             dashboardIndex, currentBoard, showGadgetDialog, showWorklogPopup } = this.state;
 
         return (

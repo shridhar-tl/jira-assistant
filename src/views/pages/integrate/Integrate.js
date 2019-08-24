@@ -29,13 +29,13 @@ class Integrate extends PureComponent {
     }
 
     integrate = () => {
-        var root = this.state.jiraUrl.trim().trimEnd('/').trimEnd('\\');
+        const root = this.state.jiraUrl.trim().trimEnd('/').trimEnd('\\');
         this.setState({ jiraUrl: root });
         this.$session.rootUrl = root;
         this.loading = true;
         this.$ajax.get(ApiUrls.mySelf).then((data) => {
-            var name = data.name;
-            var email = data.emailAddress;
+            const name = data.name;
+            const email = data.emailAddress;
             this.$db.users.where("userId").equalsIgnoreCase(name)
                 .and((u) => { return u.jiraUrl.toLowerCase() === root.toLowerCase(); }).first()
                 .then((user) => {
@@ -89,7 +89,7 @@ class Integrate extends PureComponent {
     }
 
     render() {
-        var { integrate, version, browser, state: { jiraUrl, loading } } = this;
+        const { integrate, version, browser, state: { jiraUrl, loading } } = this;
 
         return (
             <div className="app flex-row align-items-center">
@@ -126,7 +126,7 @@ class Integrate extends PureComponent {
                                             </span> |
                                             <span>
                                                 <i className="fa fa-phone" />
-                                                <a href={"https://docs.google.com/forms/d/e/1FAIpQLScJvQtHZI_yZr1xd4Z8TwWgvtFss33hW5nJp4gePCgI2ScNvg/viewform?entry.1426640786=" + version + "&entry.972533768=" + browser} target="_blank" rel="noopener noreferrer" title="Click to report about any issues or ask a question">Contact us</a>
+                                                <a href={`https://docs.google.com/forms/d/e/1FAIpQLScJvQtHZI_yZr1xd4Z8TwWgvtFss33hW5nJp4gePCgI2ScNvg/viewform?entry.1426640786=${  version  }&entry.972533768=${  browser}`} target="_blank" rel="noopener noreferrer" title="Click to report about any issues or ask a question">Contact us</a>
                                             </span>
                                         </div>
                                     </div>

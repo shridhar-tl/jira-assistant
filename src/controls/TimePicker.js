@@ -7,8 +7,8 @@ const disabledHours = [13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23];
 
 class TimePicker extends PureComponent {
     static getDerivedStateFromProps(nextProps, prevState) {
-        var { value, mode } = nextProps;
-        var newState = null;
+        let { value, mode } = nextProps;
+        let newState = null;
 
         if (!prevState || prevState.value !== value) {
             newState = { value };

@@ -45,8 +45,8 @@ export default class DashboardService {
             if (!u.dashboards) {
                 u.dashboards = [this.currentBoard];
             }
-            var iconIdx = this.rand(0, DASHBOARD_ICONS.length - 1);
-            u.dashboards.push({ icon: DASHBOARD_ICONS[iconIdx], layout: 1, name: 'New Dashboard ' + (u.dashboards.length + 1), widgets: [], isQuickView: false });
+            const iconIdx = this.rand(0, DASHBOARD_ICONS.length - 1);
+            u.dashboards.push({ icon: DASHBOARD_ICONS[iconIdx], layout: 1, name: `New Dashboard ${  u.dashboards.length + 1}`, widgets: [], isQuickView: false });
             return this.saveUserDashboards(u);
         });
     }
@@ -57,11 +57,11 @@ export default class DashboardService {
 
     deleteDashboard(index) {
         return this.$user.getUser(this.$session.userId).then(u => {
-            var [removedBoard] = u.dashboards.splice(index, 1);
+            const [removedBoard] = u.dashboards.splice(index, 1);
             if (removedBoard.isQuickView) {
                 u.dashboards[0].isQuickView = true;
             }
-            return this.saveUserDashboards(u)
+            return this.saveUserDashboards(u);
         });
     }
 
@@ -75,7 +75,7 @@ export default class DashboardService {
                 u.dashboards.forEach((dboard, i) => dboard.isQuickView = i === index);
             }
 
-            var quickMenu = this.$cache.get("menuAction", true);
+            let quickMenu = this.$cache.get("menuAction", true);
             if (quickMenu) {
                 quickMenu = JSON.parse(quickMenu);
                 if (quickMenu.action === 3) {

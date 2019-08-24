@@ -18,7 +18,7 @@ class TicketWiseWorklog extends BaseGadget {
     }
 
     refreshData() {
-        var selDate = this.settings.dateRange;
+        const selDate = this.settings.dateRange;
         if (!selDate || !selDate.fromDate) {
             return;
         }
@@ -62,7 +62,7 @@ class TicketWiseWorklog extends BaseGadget {
     addWorklog() { alert("This functionality is not yet implemented!"); }
 
     render() {
-        var { worklogs } = this.state;
+        const { worklogs } = this.state;
 
         return super.renderBase(
             <ScrollableTable dataset={worklogs}>
@@ -86,7 +86,7 @@ class TicketWiseWorklog extends BaseGadget {
                             <td>{b.totalHours}</td>
                             <td>{b.uploaded}</td>
                             <td>{b.pendingUpload}</td>
-                            <td>{b.parentKey ? (b.parentKey + ' - ' + b.parentSumm) : ''}</td>
+                            <td>{b.parentKey ? (`${b.parentKey  } - ${  b.parentSumm}`) : ''}</td>
                             <td>
                                 <ul className="tags">
                                     {b.logData.map((ld, x) => <li key={x}>
@@ -101,7 +101,7 @@ class TicketWiseWorklog extends BaseGadget {
                                 </ul>
                             </td>
                             <td>{b.description}</td>
-                        </tr>
+                        </tr>;
                     }}
                 </TBody>
                 <NoDataRow span={7}>No records exists</NoDataRow>

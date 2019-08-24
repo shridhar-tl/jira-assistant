@@ -2,12 +2,12 @@ import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { Checkbox } from 'primereact/checkbox';
 
-var _globalUniqueId = 0;
+let _globalUniqueId = 0;
 
 class InputCheckbox extends PureComponent {
     constructor(props) {
         super(props);
-        this.inputId = props.inputId || (props.label ? "chk_" + (++_globalUniqueId) : null);
+        this.inputId = props.inputId || (props.label ? `chk_${  ++_globalUniqueId}` : null);
     }
 
     onChange = (e) => {
@@ -18,7 +18,7 @@ class InputCheckbox extends PureComponent {
     }
 
     render() {
-        var { inputId, onChange, onClick, props: { className, checked = false, label } } = this;
+        const { inputId, onChange, onClick, props: { className, checked = false, label } } = this;
 
         return (
             <span className={className}>

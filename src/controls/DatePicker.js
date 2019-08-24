@@ -10,7 +10,7 @@ const labelText = ['This month', 'Last one month', 'Last month', 'This week', 'L
 class DatePicker extends PureComponent {
     constructor(props) {
         super(props);
-        var { value, range } = props;
+        const { value, range } = props;
         this.dateRange = this.getRange();
         this.displayFormat = props.dateFormat || "DD-MMM-YYYY";
         this.state = { value: this.getDateValue(value, range), displayDate: "" };
@@ -28,14 +28,14 @@ class DatePicker extends PureComponent {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        var { value, range } = newProps;
+        const { value, range } = newProps;
         this.setState({ value: this.getDateValue(value, range) });
     }
 
     onChange = (e, picker) => {
-        var { value } = e;
-        var { range } = this.props;
-        var valToPush = value;
+        let { value } = e;
+        const { range } = this.props;
+        let valToPush = value;
         let displayDate = "";
 
         if (range) {
@@ -67,7 +67,7 @@ class DatePicker extends PureComponent {
     }
 
     render() {
-        var {
+        let {
             onChange, dateRange,
             props: { showTime, multiselect, range, disabled, style, className, placeholder },
             state: { value, displayDate }

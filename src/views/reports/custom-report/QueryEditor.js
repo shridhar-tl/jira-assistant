@@ -17,7 +17,7 @@ class QueryEditor extends BaseGadget {
     }
 
     getClearState(clear, props) {
-        var { reportQuery } = this.state;
+        let { reportQuery } = this.state;
 
         if (!reportQuery || clear) {
             if (props && props.reportQuery) {
@@ -60,9 +60,9 @@ class QueryEditor extends BaseGadget {
 
     //this.sortOpt = {
     //  update: function (e, ui) {
-    //    var sortable = ui.item.sortable;
-    //    var item = sortable.model;
-    //    var targItem = this.state.reportQuery.outputFields[sortable.dropindex] || this.state.reportQuery.outputFields[sortable.dropindex - 1];
+    //    const sortable = ui.item.sortable;
+    //    const item = sortable.model;
+    //    const targItem = this.state.reportQuery.outputFields[sortable.dropindex] || this.state.reportQuery.outputFields[sortable.dropindex - 1];
     //    if (targItem) {
     //      item.groupBy = targItem.groupBy;
     //    }
@@ -71,29 +71,29 @@ class QueryEditor extends BaseGadget {
     //};
 
     generateJql() {
-        var query = [];
-        var fields = this.state.reportQuery.filterFields;
-        for (var i = 0; i < fields.length; i++) {
-            var field = fields[i];
-            var val = field.value;
-            var clause = (!field.custom) ? field.clauseName : field.name; // || field.name.indexOf(' ') > -1
-            var val2 = field.value2;
+        const query = [];
+        const fields = this.state.reportQuery.filterFields;
+        for (let i = 0; i < fields.length; i++) {
+            const field = fields[i];
+            let val = field.value;
+            let clause = (!field.custom) ? field.clauseName : field.name; // || field.name.indexOf(' ') > -1
+            let val2 = field.value2;
             if (val2) {
-                val2 = '"' + val2.trim() + '"';
+                val2 = `"${val2.trim()}"`;
             }
             if (clause.indexOf(' ') > -1) {
-                clause = '"' + clause + '"';
+                clause = `"${clause}"`;
             }
             if (Array.isArray(field.valueArr) && field.valueArr.length > 0) {
-                val = field.valueArr.filter(v => !!v).map((v) => '"' + v.trim() + '"').join(',');
+                val = field.valueArr.filter(v => !!v).map((v) => `"${v.trim()}"`).join(',');
             }
             else if (field.quickDate) {
-                var range = getDateRange(field.quickDate);
+                const range = getDateRange(field.quickDate);
                 val = range[0].format('yyyy-MM-dd');
                 val2 = range[1].format('yyyy-MM-dd');
             }
             else if (typeof val === "string") {
-                val = '"' + val.trim() + '"';
+                val = `"${val.trim()}"`;
             }
             if (val) {
                 query.push(field.operator.format([clause, val, val2]));
@@ -103,19 +103,21 @@ class QueryEditor extends BaseGadget {
     }
 
     isSaveEnabled() {
-        return this.state.reportQuery.jql && this.state.reportQuery.jql.trim().length > 10
-            && this.state.reportQuery.outputFields && this.state.reportQuery.outputFields.length >= 1;
+        const { reportQuery } = this.state;
+
+        return reportQuery.jql && reportQuery.jql.trim().length > 10
+            && reportQuery.outputFields && reportQuery.outputFields.length >= 1;
     }
 
     saveQuery(queryName, copy) {
-        var { reportQuery } = this.state;
+        let { reportQuery } = this.state;
         reportQuery = { ...reportQuery };
 
-        var oldQryName = reportQuery.queryName;
+        const oldQryName = reportQuery.queryName;
         if (queryName) {
             reportQuery.queryName = queryName;
             if (copy) {
-                delete this.state.reportQuery.id;
+                delete reportQuery.id;
             }
             this.$report.saveQuery(reportQuery).then((result) => {
                 reportQuery.id = result;
@@ -140,8 +142,12 @@ class QueryEditor extends BaseGadget {
     }
 
     groupField(row, $index) {
-        var grpBy = !row.groupBy;
-        var list = this.state.reportQuery.outputFields;
+        const grpBy = !row.groupBy;
+        let { reportQuery } = this.state;
+        reportQuery = { ...reportQuery };
+        const list = [...reportQuery.outputFields];
+        reportQuery.outputFields = list;
+
         if (grpBy) {
             for (let i = 0; i < $index; i++) {
                 list[i].groupBy = grpBy;
@@ -152,17 +158,19 @@ class QueryEditor extends BaseGadget {
                 list[i].groupBy = grpBy;
             }
         }
+        this.queryChanged(reportQuery);
     }
 
+    // eslint-disable-next-line complexity
     getField(field, filter) {
-        var obj = { id: field.id, name: field.name, custom: field.custom };
+        const obj = { id: field.id, name: field.name, custom: field.custom };
         if (filter) {
             obj.clauseName = field.clauseNames[0];
         }
-        var schema = field.schema || {};
-        var type = schema.type || "(Unsupported)";
-        var system = schema.system;
-        var items = schema.items;
+        const schema = field.schema || {};
+        const type = schema.type || "(Unsupported)";
+        const system = schema.system;
+        const items = schema.items;
         if (field.id === "issuekey") {
             obj.type = "string";
             return obj;
@@ -256,12 +264,16 @@ class QueryEditor extends BaseGadget {
         return obj;
     }
 
-    filterAdded(event) {
-        if (!event || !event.value) {
+    filterAdded(val) {
+        if (!val || val.items) { // Return if a group is selected instead of items
             return;
         }
-        var field = this.jiraFields.first((f) => f.id === event.value);
-        this.state.reportQuery.filterFields.push(this.getField(field, true));
+
+        const field = this.jiraFields.first((f) => f.id === val);
+        let { reportQuery } = this.state;
+        reportQuery = { ...reportQuery };
+        reportQuery.filterFields = reportQuery.filterFields.concat(this.getField(field, true));
+        this.queryChanged(reportQuery);
         this.selectedFilterField = '';
     }
 
@@ -272,24 +284,24 @@ class QueryEditor extends BaseGadget {
 
         let { reportQuery } = this.state;
         reportQuery = { ...reportQuery };
-        var field = this.jiraFields.first((f) => f.id === val);
+        const field = this.jiraFields.first((f) => f.id === val);
         reportQuery.outputFields = reportQuery.outputFields.concat(this.getField(field, false));
-        this.setState({ reportQuery });
+        this.queryChanged(reportQuery);
     }
 
     removeOutputField(index) {
         let { reportQuery } = this.state;
         reportQuery = { ...reportQuery };
         reportQuery.outputFields.splice(index, 1);
-        this.setState({ reportQuery });
+        this.queryChanged(reportQuery);
     }
 
     processJson = (data) => {
         this.jiraFields = data;
-        //var favoriteFilters = ['key', 'assignee', 'created', 'creator', 'issue type', 'labels', 'project', 'reporter', 'resolution', 'resolved', 'status', 'summary', 'updated', 'sprint'];
-        var basicFields = [], customFields = [];
+        //const favoriteFilters = ['key', 'assignee', 'created', 'creator', 'issue type', 'labels', 'project', 'reporter', 'resolution', 'resolved', 'status', 'summary', 'updated', 'sprint'];
+        let basicFields = [], customFields = [];
         data.forEach(f => {
-            f.label = f.name + (f.name.toLowerCase() !== f.id.toLowerCase() ? ' (' + f.id + ')' : '');
+            f.label = f.name + (f.name.toLowerCase() !== f.id.toLowerCase() ? ` (${f.id})` : '');
             f.value = f.id;
             if (f.custom) {
                 customFields.push(f);
@@ -323,9 +335,9 @@ class QueryEditor extends BaseGadget {
     }
 
     columnReordered(event) {
-        var item = event.value;
-        var drpIdx = event.dropIndex;
-        var targItem = this.state.reportQuery.outputFields[drpIdx + 1] || this.state.reportQuery.outputFields[drpIdx - 1];
+        const item = event.value;
+        const drpIdx = event.dropIndex;
+        const targItem = this.state.reportQuery.outputFields[drpIdx + 1] || this.state.reportQuery.outputFields[drpIdx - 1];
         if (targItem) {
             item.groupBy = targItem.groupBy;
         }
@@ -333,7 +345,7 @@ class QueryEditor extends BaseGadget {
 
     //private getOptionTags(data, group, forFilter) {
     //  if (forFilter) { data = data.filter((f) => { return f.clauseNames && f.clauseNames.length > 0; }); }
-    //  var html = data.orderBy((f) => { return f.name; })//.filter( (f) =>{ return f.searchable; })
+    //  const html = data.orderBy((f) => { return f.name; })//.filter( (f) =>{ return f.searchable; })
     //    .map((f) => { return '<option value="' + f.id + '"' + (f.name.toLowerCase() !== f.id.toLowerCase() ? ' data-subtext="(' + f.id + ')"' : '') + '>' + f.name + '</option>'; }).join('');
     //  if (group)
     //    return '<optgroup label="' + group + '">' + html + '</optgroup>';
@@ -353,7 +365,7 @@ class QueryEditor extends BaseGadget {
         }
     }
 
-    queryChanged(selQueryId) {
+    querySelected(selQueryId) {
         this.$report.getSavedQuery(selQueryId).then(reportQuery => this.setState({ selQueryId, reportQuery }));
     }
 
@@ -365,7 +377,10 @@ class QueryEditor extends BaseGadget {
         });
     }
 
-
+    queryChanged = (reportQuery) => {
+        this.setState({ reportQuery });
+        this.props.onChange(reportQuery);
+    }
 
     renderCustomActions() {
         const {
@@ -378,7 +393,7 @@ class QueryEditor extends BaseGadget {
         }
 
         return <>
-            <SelectBox dataset={queryList} value={selQueryId} onChange={this.queryChanged} placeholder="Select a query to edit" />
+            <SelectBox dataset={queryList} value={selQueryId} onChange={this.querySelected} placeholder="Select a query to edit" />
             <Button icon="fa fa-plus" onClick={this.initModel} label="New query" />
             {/*<button pButton [icon]="isFullScreen?'fa fa-compress':'fa fa-expand'" (click)="isFullScreen=!isFullScreen;onResize(isFullScreen)"></button>*/}
         </>;
@@ -446,7 +461,7 @@ class QueryEditor extends BaseGadget {
                                 <td className="data-center">{reportQuery.outputFields.length + 1}</td>
                                 <td>
                                     <SelectBox dataset={displayFields} value="" style={{ 'width': '100%' }}
-                                        placeholder="Choose a column to add to the list" group={true} displayField="name"
+                                        placeholder="Choose a column to add to the list" group={true} displayField="name" valueField="id"
                                         filterPlaceholder="Type the field name to filter" onChange={this.displayFieldAdded}>
                                         {(itm, i) => {
                                             return <span>{itm.name}</span>;

@@ -17,7 +17,7 @@ export default class ReportConfigService {
         if (this.isConfigured) {
             return;
         }
-        var defaultConfig = {
+        const defaultConfig = {
             // eslint-disable-next-line no-new-func
             compiler: function (code, sandbox) { return Function(...sandbox, code)(); },
             subReports: (defn) => {
@@ -38,7 +38,7 @@ export default class ReportConfigService {
             builtInFields: {
                 UserDateFormat: { value: this.$session.CurrentUser.dateFormat, helpText: "Provides the date format of the current user" },
                 UserTimeFormat: { value: this.$session.CurrentUser.timeFormat },
-                UserDateTimeFormat: { value: this.$session.CurrentUser.dateFormat + " " + this.$session.CurrentUser.timeFormat }
+                UserDateTimeFormat: { value: `${this.$session.CurrentUser.dateFormat  } ${  this.$session.CurrentUser.timeFormat}` }
             },
             commonFunctions: {
                 getUsersFromGroup: { value: (group) => { } },
@@ -118,7 +118,7 @@ export default class ReportConfigService {
         };
     }
     getParameterTypesConfig() {
-        var userGroups = null;
+        let userGroups = null;
         return {
             UG: {
                 label: "User group",
@@ -150,7 +150,7 @@ export default class ReportConfigService {
         if (this.isViewerConfigured) {
             return;
         }
-        var defaultConfig = {
+        const defaultConfig = {
             parameterTypes: this.getParameterTypesConfig(),
             datasetTypes: this.getDatasetConfig()
         };
@@ -162,7 +162,7 @@ export default class ReportConfigService {
         if (this.isBuilderConfigured) {
             return;
         }
-        var defaultConfig = {
+        const defaultConfig = {
             parameterTypes: this.getParameterTypesConfig(),
             datasetTypes: this.getDatasetConfig()
         };
@@ -172,7 +172,7 @@ export default class ReportConfigService {
     }
     processSearchData(data) {
         return data.map(d => {
-            let fields = d.fields;
+            const fields = d.fields;
             fields.key = d.key;
             if (fields.worklog && fields.worklog.worklogs) {
                 fields.worklogs = fields.worklog.worklogs;
@@ -182,24 +182,24 @@ export default class ReportConfigService {
         });
     }
     prepareJQL(jql, parameters, parameterTemplate) {
-        var usedParams = jql.match(/@Parameters.([a-zA-Z_\d.]+[|a-zA-Z_\d.()"',-//]+)\$/g); // Revisit: Escape charactors removed due to warning
+        const usedParams = jql.match(/@Parameters.([a-zA-Z_\d.]+[|a-zA-Z_\d.()"',-//]+)\$/g); // Revisit: Escape charactors removed due to warning
         if (usedParams && usedParams.length) {
-            for (let param of usedParams) {
+            for (const param of usedParams) {
                 let paramName = param.substring(12, param.length - 1);
-                var paramsPart = paramName.split('|');
+                const paramsPart = paramName.split('|');
                 if (paramsPart.length > 2) {
                     continue;
                 }
                 paramName = paramsPart[0];
-                let value = parameters ? this.getParamValue(parameters, parameterTemplate, paramName) : paramsPart[1];
+                const value = parameters ? this.getParamValue(parameters, parameterTemplate, paramName) : paramsPart[1];
                 jql = jql.replace(param, value);
             }
         }
         return jql;
     }
     getParamValue(parameters, parameterTemplate, name) {
-        var parts = name.split('.');
-        var curPath = parameters[parts[0]];
+        const parts = name.split('.');
+        let curPath = parameters[parts[0]];
         for (let i = 1; curPath && i < parts.length; i++) {
             curPath = curPath[parts[i]];
         }
@@ -208,8 +208,8 @@ export default class ReportConfigService {
                 curPath = curPath.format('yyyy-MM-dd');
             }
             else if (typeof curPath === "object") {
-                var paramName = parts[0];
-                var template = parameterTemplate[paramName];
+                const paramName = parts[0];
+                const template = parameterTemplate[paramName];
                 switch (template.type) {
                     case "UG":
                         curPath = curPath.union(grp => grp.users.map(u => u.name)).join('","');
@@ -220,6 +220,6 @@ export default class ReportConfigService {
                 }
             }
         }
-        return Number(curPath) ? curPath : '"' + (curPath || '') + '"';
+        return Number(curPath) ? curPath : `"${  curPath || ''  }"`;
     }
 }

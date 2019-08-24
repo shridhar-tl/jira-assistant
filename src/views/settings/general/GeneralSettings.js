@@ -56,11 +56,11 @@ class GeneralSettings extends PureComponent {
         });
 
         this.$jira.getCustomFields().then(cfList => {
-            var numericFields = cfList.filter(cf => cf.custom && cf.schema.type === "number")
+            const numericFields = cfList.filter(cf => cf.custom && cf.schema.type === "number")
                 .map(cf => { return { id: cf.id, name: cf.name, clauseNames: cf.clauseNames }; })
                 .orderBy(cf => cf.name);
 
-            var stringFields = cfList.filter(cf => cf.custom && (cf.schema.type === "any" || cf.schema.type === "string"))
+            const stringFields = cfList.filter(cf => cf.custom && (cf.schema.type === "any" || cf.schema.type === "string"))
                 .map(cf => { return { id: cf.id, name: cf.name, clauseNames: cf.clauseNames }; })
                 .orderBy(cf => cf.name);
 
@@ -78,8 +78,8 @@ class GeneralSettings extends PureComponent {
         const dashboards = this.$dashboard.getDashboards();
         const dashboardMenus = [];
         dashboards.forEach((d, i) => {
-            const id = "D-" + i;
-            const url = "/dashboard/" + i;
+            const id = `D-${  i}`;
+            const url = `/dashboard/${  i}`;
             menus.push({ id, name: d.name, icon: d.icon, url, selected: selMenus.indexOf(id) > -1 });
             dashboardMenus.push({ value: id, label: d.name, icon: d.icon });
         });
@@ -114,16 +114,16 @@ class GeneralSettings extends PureComponent {
             tickets = tickets.split(',').map(t => t.trim() || null);
             this.settings.meetingTicket = tickets.join();
             return this.$ticket.getTicketDetails(tickets).then(res => {
-                var list = tickets.map(t => res[t.toUpperCase()] || t);
-                var invalidTickets = list.filter(t => typeof t === "string");
+                const list = tickets.map(t => res[t.toUpperCase()] || t);
+                const invalidTickets = list.filter(t => typeof t === "string");
                 if (invalidTickets.length > 0) {
-                    this.$message.warning("Invalid default ticket number(s) specified for meetings: " + invalidTickets.join());
+                    this.$message.warning(`Invalid default ticket number(s) specified for meetings: ${  invalidTickets.join()}`);
                     return false;
                 }
                 this.settings.meetingTicket = list.map(t => t.key).join();
                 return true;
             }, e => {
-                var msgs = ((e.error || {}).errorMessages || []);
+                const msgs = ((e.error || {}).errorMessages || []);
                 if (msgs.some(m => m.toLowerCase().indexOf("'key' is invalid") > -1 || m.toLowerCase().indexOf("does not exist") > -1)) {
                     this.$message.warning("Invalid default ticket number specified for meetings!");
                 }
@@ -133,7 +133,7 @@ class GeneralSettings extends PureComponent {
         else {
             return Promise.resolve(true);
         }
-    };
+    }
 
     saveSettings = () => {
         const { settings } = this;
@@ -150,7 +150,7 @@ class GeneralSettings extends PureComponent {
                 break;
             case 2:
                 if (this.selectedLaunchPage) {
-                    var selLPage = this.menus.first(menu => menu.id === this.selectedLaunchPage);
+                    const selLPage = this.menus.first(menu => menu.id === this.selectedLaunchPage);
                     if (selLPage) {
                         launchSetting.url = selLPage.url;
                         setting.autoLaunch = this.selectedLaunchPage;
@@ -174,11 +174,11 @@ class GeneralSettings extends PureComponent {
 
             if (!this.settings.storyPointField) {
                 // Find the field with exact match
-                var spF = this.state.numericFields.first(cf => cf.name.toLowerCase() === "story points");
+                const spF = this.state.numericFields.first(cf => cf.name.toLowerCase() === "story points");
                 // IF exact match is not available then find a field with both the words
                 if (!spF) {
                     this.state.numericFields.first(cf => {
-                        var name = cf.name.toLowerCase();
+                        const name = cf.name.toLowerCase();
                         return name.indexOf('story') > -1 && ~name.indexOf('points') > -1;
                     });
                 }
@@ -189,11 +189,11 @@ class GeneralSettings extends PureComponent {
 
             if (!this.settings.epicNameField) {
                 // Find the field with exact match
-                var enF = this.state.stringFields.first(cf => cf.name.toLowerCase() === "epic link");
+                const enF = this.state.stringFields.first(cf => cf.name.toLowerCase() === "epic link");
                 // IF exact match is not available then find a field with both the words
                 if (!enF) {
                     this.state.stringFields.first(cf => {
-                        var name = cf.name.toLowerCase();
+                        const name = cf.name.toLowerCase();
                         return name.indexOf('epic') > -1 && ~name.indexOf('link') > -1;
                     });
                 }
@@ -213,7 +213,7 @@ class GeneralSettings extends PureComponent {
     }
 
     setValue = (field, value) => {
-        var { settings } = this;
+        const { settings } = this;
         if (value) {
             settings[field] = value;
         }
@@ -230,8 +230,8 @@ class GeneralSettings extends PureComponent {
     dashboardChanged = (val) => this.selectedDashboard = val
 
     parseSettings = (result) => {
-        var cUser = this.$session.CurrentUser;
-        var sett = this.settings = result.settings;
+        const cUser = this.$session.CurrentUser;
+        const sett = this.settings = result.settings;
         cUser.dateFormat = sett.dateFormat;
         cUser.timeFormat = sett.timeFormat;
         cUser.workingDays = sett.workingDays;
@@ -270,11 +270,11 @@ class GeneralSettings extends PureComponent {
         cUser.team = sett.teamMembers;
         if (sett.startOfDay) {
             const temp = sett.startOfDay.split(':');
-            cUser.startOfDay = temp[0] + ':' + temp[1];
+            cUser.startOfDay = `${temp[0]  }:${  temp[1]}`;
         }
         if (sett.endOfDay) {
             const temp = sett.endOfDay.split(':');
-            cUser.endOfDay = temp[0] + ':' + temp[1];
+            cUser.endOfDay = `${temp[0]  }:${  temp[1]}`;
         }
 
         this.fillMenus();
@@ -287,7 +287,7 @@ class GeneralSettings extends PureComponent {
     intgStatusChanged = (removedIntg) => this.setState({ removedIntg })
 
     render() {
-        var {
+        let {
             settings, noDonations,
             //props: { },
             state: { currentTabIndex, removedIntg, numericFields, stringFields, projects, rapidViews }

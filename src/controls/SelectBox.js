@@ -10,10 +10,11 @@ class SelectBox extends PureComponent {
     }
 
     static getDerivedStateFromProps(props, state) {
-        var { value = null, valueField, multiselect, dataset, group } = props;
-        var { subValue } = state;
+        const { valueField, multiselect, dataset, group } = props;
+        let { value = null } = props;
+        let { subValue } = state;
 
-        var newState = null;
+        let newState = null;
 
         if (value !== subValue) {
             subValue = value;
@@ -32,7 +33,7 @@ class SelectBox extends PureComponent {
         if (group && dataset !== state.dataset) {
             newState = newState || {};
             newState.dataset = dataset;
-            var groupedDataset = [];
+            const groupedDataset = [];
 
             dataset.forEach(grp => {
                 const grpWrap = { isGroup: true, value: grp };
@@ -50,10 +51,10 @@ class SelectBox extends PureComponent {
     }
 
     onChange = (e) => {
-        var { value } = e;
-        var subValue = value;
+        const { value } = e;
+        let subValue = value;
 
-        var { multiselect, valueField } = this.props;
+        const { multiselect, valueField } = this.props;
 
         if (valueField && valueField !== "value") {
             if (multiselect) {
@@ -69,10 +70,13 @@ class SelectBox extends PureComponent {
     }
 
     render() {
-        var {
-            props: { displayField, placeholder, multiselect, dataset, style, className, filterPlaceholder, group, children },
+        const {
+            props: { displayField, placeholder, multiselect, style, className, filterPlaceholder, group, children, dataKey },
             state: { value, groupedDataset }
         } = this;
+
+        let { dataset } = this.props;
+
         let itemTemplate = null;
 
         if (group) {
@@ -96,7 +100,8 @@ class SelectBox extends PureComponent {
         }
         else {
             return (
-                <Dropdown appendTo={document.body} value={value} optionLabel={displayField} options={dataset} filter={filter} style={style} className={className}
+                <Dropdown appendTo={document.body} value={value} dataKey={dataKey} optionLabel={displayField} options={dataset}
+                    filter={filter} style={style} className={className}
                     onChange={this.onChange} placeholder={placeholder} filterPlaceholder={filterPlaceholder} itemTemplate={itemTemplate} />
             );
         }

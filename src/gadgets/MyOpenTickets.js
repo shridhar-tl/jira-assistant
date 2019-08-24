@@ -23,7 +23,7 @@ class MyOpenTickets extends BaseGadget {
     }
 
     render() {
-        var { ticketList } = this.state;
+        const { ticketList } = this.state;
 
         return super.renderBase(
             <ScrollableTable dataset={ticketList}>
@@ -55,7 +55,7 @@ class MyOpenTickets extends BaseGadget {
                             <td>{b.resolutionIcon && <img className="img-x16" src={b.resolutionIcon} alt="" />}{b.resolution}</td>
                             <td>{b.created}</td>
                             <td>{b.updated}</td>
-                        </tr>
+                        </tr>;
                     }}
                 </TBody>
                 <NoDataRow span={9}>No open tickets were assigned to you. Enjoy your day!</NoDataRow>
@@ -68,8 +68,8 @@ class MyOpenTickets extends BaseGadget {
 
         this.$jira.getOpenTickets(refresh)
             .then((result) => {
-                var ticketList = result.map(t => {
-                    var fields = t.fields;
+                const ticketList = result.map(t => {
+                    const fields = t.fields;
                     return {
                         ticketNo: t.key,
                         issuetypeIcon: (fields.issuetype || {}).iconUrl,

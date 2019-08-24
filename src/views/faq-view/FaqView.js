@@ -8,7 +8,7 @@ import './FaqView.scss';
 class FaqView extends PureComponent {
     constructor(props) {
         super(props);
-        var { match: { params } } = props;
+        const { match: { params } } = props;
         this.state = { searchText: (params['query'] || "").trim() };
     }
 
@@ -32,7 +32,7 @@ class FaqView extends PureComponent {
 
     search = (e) => {
         //ToDo handle enter key press .enter
-        var query = this.state.searchText;
+        const query = this.state.searchText;
 
         if (typeof query === "string") {
             this.setState({
@@ -45,27 +45,27 @@ class FaqView extends PureComponent {
             });
         }
         else {
-            var option = faqArray.first(f => f.id === query.id);
+            const option = faqArray.first(f => f.id === query.id);
             this.setState({ searchResults: [option] });
         }
     }
 
     getDescription(res) {
-        var descr = res.description;
-        var lines = descr.split('\n');
-        var result = "";
+        const descr = res.description;
+        const lines = descr.split('\n');
+        let result = "";
         lines.forEach((str, idx, opt) => {
-            var curOpts = this.getLineOpts(str);
-            var prevOpts = this.getLineOpts(opt.prev);
+            const curOpts = this.getLineOpts(str);
+            const prevOpts = this.getLineOpts(opt.prev);
             if (curOpts.isList) {
                 if (!prevOpts.isList) {
-                    result += '<' + curOpts.listType + '>';
+                    result += `<${  curOpts.listType  }>`;
                 }
                 result += curOpts.html;
             }
             else {
                 if (prevOpts.isList) {
-                    result += '</' + prevOpts.listType + '>';
+                    result += `</${  prevOpts.listType  }>`;
                 }
                 result += curOpts.html;
             }
@@ -79,16 +79,16 @@ class FaqView extends PureComponent {
             return false;
         }
 
-        var isNextLvl = str.charAt(0) === '>';
-        var isOL = str.charAt(isNextLvl ? 1 : 0) === '-';
-        var isUL = str.charAt(isNextLvl ? 1 : 0) === '*';
-        var isList = isOL || isUL;
-        var line = str.substring((isNextLvl ? 1 : 0) + (isList ? 1 : 0)).trim();
+        const isNextLvl = str.charAt(0) === '>';
+        const isOL = str.charAt(isNextLvl ? 1 : 0) === '-';
+        const isUL = str.charAt(isNextLvl ? 1 : 0) === '*';
+        const isList = isOL || isUL;
+        let line = str.substring((isNextLvl ? 1 : 0) + (isList ? 1 : 0)).trim();
         line = line.replace(/~(.*)~/g, '<i class="fa $1"></i>');
-        var listType = null;
+        let listType = null;
 
         if (isList) {
-            line = '<li>' + line + '</li>';
+            line = `<li>${  line  }</li>`;
             listType = isOL ? 'ol' : 'ul';
         }
         else {
@@ -103,7 +103,7 @@ class FaqView extends PureComponent {
             return;
         }
 
-        var item = faqArray.first(f => f.id === id);
+        const item = faqArray.first(f => f.id === id);
         if (item) {
             return item.strand;
         }
@@ -116,7 +116,7 @@ class FaqView extends PureComponent {
         if (!id) {
             return;
         }
-        var newResult = faqArray.first(f => f.id === id);
+        const newResult = faqArray.first(f => f.id === id);
 
         if (this.state.searchResults.indexOf(newResult) === -1) {
             this.setState({ searchResults: this.state.searchResults.concat(newResult) });
@@ -124,7 +124,7 @@ class FaqView extends PureComponent {
     }
 
     render() {
-        var {
+        const {
             search,
             state: { searchText, searchResults }
         } = this;

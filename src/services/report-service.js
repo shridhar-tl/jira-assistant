@@ -23,9 +23,9 @@ export default class ReportService {
                         delete qry.id;
                         delete qry.createdBy;
                     });
-                    var json = JSON.stringify({ exported: new Date(), reports: qrys });
-                    var fileName = qrys.length === 1 ? qrys[0].queryName : "JA_Reports";
-                    fileName = fileName + "_" + (new Date().format('yyyyMMdd')) + ".jrd";
+                    const json = JSON.stringify({ exported: new Date(), reports: qrys });
+                    let fileName = qrys.length === 1 ? qrys[0].queryName : "JA_Reports";
+                    fileName = `${fileName  }_${  new Date().format('yyyyMMdd')  }.jrd`;
                     saveStringAs(json, "jrd", fileName);
                     return true;
                 });
@@ -52,19 +52,19 @@ export default class ReportService {
 
     saveQuery(query) {
         query.createdBy = this.$session.userId;
-        var updateId = true;
+        let updateId = true;
         if (!query.uniqueId) {
             updateId = false;
             query.uniqueId = UUID.generate();
         }
         query.dateCreated = new Date();
-        var existingQry = this.$db.savedFilters.where("queryName").equals(query.queryName);
+        const existingQry = this.$db.savedFilters.where("queryName").equals(query.queryName);
         if (query.id > 0) {
             return existingQry.and((q) => { return q.createdBy === this.$session.userId && query.id !== q.id; })
                 .first()
                 .then((qry) => {
                     if (qry) {
-                        return Promise.reject({ message: 'The query with the name "' + query.queryName + '" already exists!' });
+                        return Promise.reject({ message: `The query with the name "${  query.queryName  }" already exists!` });
                     }
                     else {
                         if (updateId) {
@@ -80,7 +80,7 @@ export default class ReportService {
                 .first()
                 .then((qry) => {
                     if (qry) {
-                        return Promise.reject({ message: 'The query with the name "' + query.queryName + '" already exists!' });
+                        return Promise.reject({ message: `The query with the name "${  query.queryName  }" already exists!` });
                     }
                     else {
                         return this.$db.savedFilters.add(query).then((newQueryId) => { return newQueryId; });

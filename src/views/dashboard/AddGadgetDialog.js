@@ -18,20 +18,20 @@ class AddGadgetDialog extends PureComponent {
     }
 
     render() {
-        var { onCheckIsAdded, addGadget, removeGadget } = this.props;
-        var { showDialog } = this.state;
+        const { onCheckIsAdded, addGadget, removeGadget } = this.props;
+        const { showDialog } = this.state;
 
-        var footer = <Button icon="fa fa-check" label="Done" onClick={this.onHide} />
+        const footer = <Button icon="fa fa-check" label="Done" onClick={this.onHide} />;
 
         return (
             <Dialog header="Manage gadgets" footer={footer} visible={showDialog}
                 style={DIALOG_STYLE} modal={true}
                 onHide={this.onHide}>
                 {GadgetList.map(g => {
-                    var added = onCheckIsAdded(g.id);
+                    const added = onCheckIsAdded(g.id);
                     return (
                         <div key={g.id} className="gadget-info">
-                            <div className="icon"><i className={"fa " + g.icon}></i></div>
+                            <div className="icon"><i className={`fa ${  g.icon}`}></i></div>
                             <div className="details">
                                 <span className="name">{g.name}</span>
                                 <span className="desc">{g.details}</span>

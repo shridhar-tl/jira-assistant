@@ -98,7 +98,8 @@ class EstimateActualReport extends BaseGadget {
                 mode: 'index'
             },
             scales: {
-                xAxes: [{
+                xAxes: [
+{
                     stacked: false,
                     ticks: {
                         stepSize: 1,
@@ -108,7 +109,8 @@ class EstimateActualReport extends BaseGadget {
                     categoryPercentage: 1,
                     barPercentage: 1,
                     barThickness: 'flex'
-                }]
+                }
+]
             }
         };
         this.chartColours = defaultChartColors.union(d => [
@@ -141,51 +143,51 @@ class EstimateActualReport extends BaseGadget {
 
     fetchData() {
         this.setState({ isLoading: true, chartData: {} });
-        var mfromDate = moment(this.state.dateRange.fromDate).startOf('day');
-        var mtoDate = moment(this.state.dateRange.toDate).endOf('day');
-        var fromDate = mfromDate.toDate();
-        var toDate = mtoDate.toDate();
-        var fromDateMS = fromDate.getTime();
-        var toDateMS = toDate.getTime();
-        var users = this.state.groups.union(grps => grps.users.ForEach(gu => gu.groupName = grps.name));
-        var uniqueUsers = users.distinctObj(u => { return { name: u.name.toLowerCase(), display: u.displayName }; });
-        var userList = uniqueUsers.map(u => u.name);
-        var chartLabels = uniqueUsers.map(u => u.display);
+        const mfromDate = moment(this.state.dateRange.fromDate).startOf('day');
+        const mtoDate = moment(this.state.dateRange.toDate).endOf('day');
+        const fromDate = mfromDate.toDate();
+        const toDate = mtoDate.toDate();
+        const fromDateMS = fromDate.getTime();
+        const toDateMS = toDate.getTime();
+        const users = this.state.groups.union(grps => grps.users.ForEach(gu => gu.groupName = grps.name));
+        const uniqueUsers = users.distinctObj(u => { return { name: u.name.toLowerCase(), display: u.displayName }; });
+        const userList = uniqueUsers.map(u => u.name);
+        const chartLabels = uniqueUsers.map(u => u.display);
 
-        var { ticketsList, projects } = this.state;
+        let { ticketsList, projects } = this.state;
 
         ticketsList = (ticketsList || '').trim().replace(/[\s;]/g, ',');
         this.chartWidth = userList.length * 250;
-        var custTicketsList = ticketsList ? ticketsList.split(',').filter(t => !!t) : [];
+        const custTicketsList = ticketsList ? ticketsList.split(',').filter(t => !!t) : [];
 
-        var jql = "(worklogAuthor in (\"" + userList.join("\",\"") + "\") and worklogDate >= '"
-            + mfromDate.clone().add(-1, 'days').format("YYYY-MM-DD") + "' and worklogDate < '" + mtoDate.clone().add(1, 'days').format("YYYY-MM-DD") + "') ";
-        var addJql = '';
-        var hasProject = projects && projects.length > 0;
-        var hasTickets = custTicketsList.length > 0;
+        let jql = `(worklogAuthor in ("${  userList.join("\",\"")  }") and worklogDate >= '${
+             mfromDate.clone().add(-1, 'days').format("YYYY-MM-DD")  }' and worklogDate < '${  mtoDate.clone().add(1, 'days').format("YYYY-MM-DD")  }') `;
+        let addJql = '';
+        let hasProject = projects && projects.length > 0;
+        const hasTickets = custTicketsList.length > 0;
         if (hasProject) {
-            addJql += "project in (" + projects.map(p => p.key).join(',') + ") ";
+            addJql += `project in (${  projects.map(p => p.key).join(',')  }) `;
         }
         if (hasTickets) {
             if (addJql) {
                 addJql += ' or ';
             }
-            var tickets = custTicketsList.join(',');
-            addJql += "key in (" + tickets + ") or parent in (" + tickets + ")";
+            const tickets = custTicketsList.join(',');
+            addJql += `key in (${  tickets  }) or parent in (${  tickets  })`;
         }
         if (addJql) {
-            jql += ' and (' + addJql + ')';
+            jql += ` and (${  addJql  })`;
         }
 
         return this.$jira.searchTickets(jql, ["worklog", "project", "parent", this.state.estimationField]) //, "status", "assignee"
             .then((issues) => {
-                var flatData = issues.flattern({
+                const flatData = issues.flattern({
                     'key': true,
                     'projectName': 'fields.project.name',
                     'projectKey': 'fields.project.key',
                     'parentkey': 'fields.parent.key',
                     'estimate': (obj) => {
-                        var estField = obj.fields[this.state.estimationField];
+                        let estField = obj.fields[this.state.estimationField];
                         if (this.state.estimationField === 'timeoriginalestimate') {
                             estField = estField / 60 / 60;
                         }
@@ -209,17 +211,17 @@ class EstimateActualReport extends BaseGadget {
                 }, (data) => userList.contains(data.author) && data.worklog.date.isBetween(fromDateMS, toDateMS));
                 // Story points will be available in parent ticket. So take the estimate from parent if story point is selected.
                 if (this.state.estimationField !== 'timeoriginalestimate') {
-                    var parentIds = flatData.distinct(t => t.parentkey);
+                    let parentIds = flatData.distinct(t => t.parentkey);
                     parentIds = parentIds.filter(t => t && !flatData.some(ft => ft.key === t));
                     if (parentIds.length) {
-                        return this.$jira.searchTickets("key in (" + parentIds.join(',') + ")", ["project", this.state.estimationField])
+                        return this.$jira.searchTickets(`key in (${  parentIds.join(',')  })`, ["project", this.state.estimationField])
                             .then((parents) => {
-                                var flatParents = parents.flattern({
+                                const flatParents = parents.flattern({
                                     'key': true,
                                     'projectName': 'fields.project.name',
                                     'projectKey': 'fields.project.key',
                                     'estimate': (obj) => {
-                                        var estField = obj.fields[this.state.estimationField];
+                                        let estField = obj.fields[this.state.estimationField];
                                         if (this.state.estimationField === 'timeoriginalestimate') {
                                             estField = estField / 60 / 60;
                                         }
@@ -230,12 +232,12 @@ class EstimateActualReport extends BaseGadget {
                                     }
                                 }).reduce((index, ticket) => { index[ticket.key] = ticket; return index; }, {});
                                 return flatData.ForEach(t => {
-                                    var { parentkey, key } = t;
+                                    const { parentkey, key } = t;
                                     if (hasTickets && custTicketsList.contains(key)) {
                                         return;
                                     }
                                     if (parentkey) {
-                                        var parentT = flatParents[parentkey];
+                                        let parentT = flatParents[parentkey];
                                         if (!parentT) {
                                             parentT = flatData.first(tkt => tkt.key === parentkey);
                                             flatParents[parentkey] = parentT;
@@ -251,7 +253,7 @@ class EstimateActualReport extends BaseGadget {
                 return flatData;
             })
             .then((flatData) => {
-                var selProjects = this.state.projects;
+                let selProjects = this.state.projects;
                 // If both project and ticket filter is not selected, then by default take the list of projects from data
                 if (!hasProject && !hasTickets) {
                     hasProject = true;
@@ -262,29 +264,29 @@ class EstimateActualReport extends BaseGadget {
                         };
                     });
                 }
-                var datasets = [];
+                const datasets = [];
 
                 if (hasProject) {
                     selProjects.forEach(proj => {
-                        var projData = flatData.filter(t => t.projectKey.toUpperCase() === proj.key.toUpperCase()
+                        const projData = flatData.filter(t => t.projectKey.toUpperCase() === proj.key.toUpperCase()
                             && (!hasTickets || !custTicketsList.contains(t.key)));
-                        var estimateUserData = [];
-                        var actUserData = [];
-                        var estimatePrj = {
-                            label: proj.name + ' (estimate)',
+                        const estimateUserData = [];
+                        const actUserData = [];
+                        const estimatePrj = {
+                            label: `${proj.name  } (estimate)`,
                             //backgroundColor: "#3e95cd",
                             data: estimateUserData
                         };
-                        var actPrj = {
-                            label: proj.name + ' (spent)',
+                        const actPrj = {
+                            label: `${proj.name  } (spent)`,
                             //backgroundColor: "#3e95cd",
                             data: actUserData
                         };
                         userList.forEach(u => {
-                            var usrData = projData.filter(t => t.author === u);
-                            var tktGrp = usrData.groupBy(t => t.key);
-                            var estimate = tktGrp.sum(g => g.values[0].estimate);
-                            var actual = tktGrp.sum(g => g.values.sum(t => t.worklog.timespent));
+                            const usrData = projData.filter(t => t.author === u);
+                            const tktGrp = usrData.groupBy(t => t.key);
+                            const estimate = tktGrp.sum(g => g.values[0].estimate);
+                            const actual = tktGrp.sum(g => g.values.sum(t => t.worklog.timespent));
                             estimateUserData.push(estimate);
                             actUserData.push(actual);
                         });
@@ -304,24 +306,24 @@ class EstimateActualReport extends BaseGadget {
                     });
 
                     flatData.groupBy(t => t.key).forEach(ticket => {
-                        var projData = ticket.values;
-                        var estimateUserData = [];
-                        var actUserData = [];
-                        var estimatePrj = {
-                            label: ticket.key + ' (estimate)',
+                        const projData = ticket.values;
+                        const estimateUserData = [];
+                        const actUserData = [];
+                        const estimatePrj = {
+                            label: `${ticket.key  } (estimate)`,
                             //backgroundColor: "#3e95cd",
                             data: estimateUserData
                         };
-                        var actPrj = {
+                        const actPrj = {
                             label: ticket.key,
                             //backgroundColor: "#3e95cd",
                             data: actUserData
                         };
                         userList.forEach(u => {
-                            var usrData = projData.filter(t => t.author === u);
-                            var tktGrp = usrData.groupBy(t => t.key);
-                            var estimate = tktGrp.sum(g => g.values[0].estimate);
-                            var actual = tktGrp.sum(g => g.values.sum(t => t.worklog.timespent));
+                            const usrData = projData.filter(t => t.author === u);
+                            const tktGrp = usrData.groupBy(t => t.key);
+                            let estimate = tktGrp.sum(g => g.values[0].estimate);
+                            let actual = tktGrp.sum(g => g.values.sum(t => t.worklog.timespent));
                             if (!estimate) {
                                 estimate = null;
                             }
@@ -342,11 +344,11 @@ class EstimateActualReport extends BaseGadget {
 
     resizeChart(value) {
         value = value * 100;
-        var instances = window['Chart'].instances;
-        var key = Object.keys(instances)[0];
-        var Chart = instances[key];
-        var canvas = Chart.canvas;
-        var curWidth = parseInt(canvas.style.width.replace('px', ''));
+        const instances = window['Chart'].instances;
+        const key = Object.keys(instances)[0];
+        const Chart = instances[key];
+        const canvas = Chart.canvas;
+        let curWidth = parseInt(canvas.style.width.replace('px', ''));
         if (!(curWidth > 0)) {
             curWidth = 500;
         }
@@ -354,20 +356,20 @@ class EstimateActualReport extends BaseGadget {
             curWidth = this.chartWidth;
         }
         curWidth = curWidth + value;
-        canvas.parentNode.style.width = curWidth + 'px';
+        canvas.parentNode.style.width = `${curWidth  }px`;
     }
 
     showGroupsPopup = () => this.setState({ showGroupsPopup: true });
     groupsChanged = (groups) => this.setState({ showGroupsPopup: false, groups })
     onDateChange = (e) => this.setState({ dateRange: e.date })
     validateData() {
-        var { dateRange, groups } = this.state;
+        const { dateRange, groups } = this.state;
         return !(dateRange || "").fromDate || !(groups || "").length;
     }
 
     render() {
         // ToDo: chartColours not yet implemented
-        var {
+        const {
             storyPointField, chartColours, chartOptions, // eslint-disable-line no-unused-vars
             state: { projectsList, projects, ticketsList, groups, estimationField, storyPointHour, dateRange, chartData, showGroupsPopup }
         } = this;

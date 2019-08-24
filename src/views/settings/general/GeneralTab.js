@@ -22,7 +22,7 @@ class GeneralTab extends TabControlBase {
         super(props);
         inject(this, "UtilsService");
 
-        var curDate = new Date();
+        const curDate = new Date();
         this.dateFormats = dateFormats.map((f) => { return { format: f, text: this.$utils.formatDate(curDate, f) }; });
         this.timeFormats = timeFormats.map((f) => { return { format: f, text: this.$utils.formatDate(curDate, f) }; });
     }
@@ -45,7 +45,7 @@ class GeneralTab extends TabControlBase {
     }*/
 
     render() {
-        var {
+        const {
             dateFormats, timeFormats,
             props: { settings, noDonations },
         } = this;

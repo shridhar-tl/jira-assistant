@@ -8,24 +8,24 @@ export default class MessageService {
     }
 
     warning(message, title) {
-        var msg = { summary: title, detail: message, severity: "warn" };
+        const msg = { summary: title, detail: message, severity: "warn" };
         this.handler(msg);
     }
     error(message, title, suspendable) {
-        var curErrTime = new Date().getTime();
+        const curErrTime = new Date().getTime();
         if (suspendable && this.lastErrorTime + 500 > curErrTime) {
             return;
         }
         this.lastErrorTime = curErrTime;
-        var msg = { summary: title, detail: message, severity: "error" };
+        const msg = { summary: title, detail: message, severity: "error" };
         this.handler(msg);
     }
     success(message, title) {
-        var msg = { summary: title, detail: message, severity: "success" };
+        const msg = { summary: title, detail: message, severity: "success" };
         this.handler(msg);
     }
     info(message, title) {
-        var msg = { summary: title, detail: message, severity: "info" };
+        const msg = { summary: title, detail: message, severity: "info" };
         this.handler(msg);
     }
 }

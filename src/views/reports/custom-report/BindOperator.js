@@ -12,7 +12,7 @@ class BindOperator extends PureComponent {
     }
 
     render() {
-        var {
+        const {
             applFuncs,
             props: { row }
         } = this;

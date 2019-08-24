@@ -17,8 +17,8 @@ export default class WorklogService {
     } // format ts should be pipe
 
     getUploadedWorklogs(fromDate, toDate, userList, fields) {
-        var mfromDate = moment(fromDate).startOf('day');
-        var mtoDate = moment(toDate).endOf('day');
+        const mfromDate = moment(fromDate).startOf('day');
+        const mtoDate = moment(toDate).endOf('day');
 
         fromDate = mfromDate.toDate();
         toDate = mtoDate.toDate();
@@ -26,32 +26,32 @@ export default class WorklogService {
         if (!userList || userList.length === 0) {
             userList = [this.$session.CurrentUser.name];
         }
-        var jql = "worklogAuthor in (\"" + userList.join("\", \"") + "\") and worklogDate >= '"
-            + mfromDate.clone().add(-1, 'days').format("YYYY-MM-DD") + "' and worklogDate < '"
-            + mtoDate.clone().add(1, 'days').format("YYYY-MM-DD") + "'";
+        const jql = `worklogAuthor in ("${  userList.join("\", \"")  }") and worklogDate >= '${
+             mfromDate.clone().add(-1, 'days').format("YYYY-MM-DD")  }' and worklogDate < '${
+             mtoDate.clone().add(1, 'days').format("YYYY-MM-DD")  }'`;
         if (!fields || fields.length === 0) {
             fields = ["worklog"];
         } //, "summary", "issuetype", "parent", "status", "assignee"
         return this.$jira.searchTickets(jql, fields)
             .then((issues) => {
-                var arr = userList.map((u) => { return { logData: [], userName: u.toLowerCase() }; });
-                var report = {};
-                for (var x = 0; x < arr.length; x++) {
-                    var a = arr[x];
+                const arr = userList.map((u) => { return { logData: [], userName: u.toLowerCase() }; });
+                const report = {};
+                for (let x = 0; x < arr.length; x++) {
+                    const a = arr[x];
                     report[a.userName] = a;
                 }
-                for (var iss = 0; iss < issues.length; iss++) {
-                    var issue = issues[iss];
-                    var fields = issue.fields || {};
-                    var worklogs = (fields.worklog || {}).worklogs || [];
-                    for (var i = 0; i < worklogs.length; i++) {
-                        var worklog = worklogs[i] || {};
-                        var startedTime = moment(worklog.started).toDate();
-                        var startedDate = moment(worklog.started).startOf("day").toDate();
+                for (let iss = 0; iss < issues.length; iss++) {
+                    const issue = issues[iss];
+                    const fields = issue.fields || {};
+                    const worklogs = (fields.worklog || {}).worklogs || [];
+                    for (let i = 0; i < worklogs.length; i++) {
+                        const worklog = worklogs[i] || {};
+                        const startedTime = moment(worklog.started).toDate();
+                        const startedDate = moment(worklog.started).startOf("day").toDate();
                         if (startedDate.getTime() >= fromDate.getTime() && startedDate.getTime() <= toDate.getTime()) {
-                            var reportUser = report[((worklog.author || {}).name || '').toLowerCase()];
+                            const reportUser = report[((worklog.author || {}).name || '').toLowerCase()];
                             if (reportUser) {
-                                var mins = worklog.timeSpentSeconds / 60;
+                                const mins = worklog.timeSpentSeconds / 60;
                                 reportUser.logData.push({
                                     ticketNo: issue.key,
                                     url: this.$userutils.getTicketUrl(issue.key),
@@ -60,7 +60,7 @@ export default class WorklogService {
                                     summary: fields.summary,
                                     logTime: startedTime,
                                     comment: worklog.comment,
-                                    totalHours: parseInt((mins / 60).toString()).pad(2) + ":" + parseInt((mins % 60).toString()).pad(2),
+                                    totalHours: `${parseInt((mins / 60).toString()).pad(2)  }:${  parseInt((mins % 60).toString()).pad(2)}`,
                                     worklogId: worklog.id
                                 });
                             }
@@ -73,11 +73,11 @@ export default class WorklogService {
 
     getPendingWorklogs() {
         return this.$db.worklogs.where("createdBy").equals(this.$session.userId).and((w) => { return !w.isUploaded; }).toArray().then((worklogs) => {
-            var keys = worklogs.distinct((w) => { return w.ticketNo; });
+            const keys = worklogs.distinct((w) => { return w.ticketNo; });
             return this.$ticket.getTicketDetails(keys).then((tickets) => {
-                var wlList = worklogs.map((w) => {
-                    var fields = (tickets[w.ticketNo.toUpperCase()] || {}).fields || {};
-                    var data = w;
+                const wlList = worklogs.map((w) => {
+                    const fields = (tickets[w.ticketNo.toUpperCase()] || {}).fields || {};
+                    const data = w;
                     data.summary = fields.summary || "(unavailable)";
                     data.status = (fields.status || "").name || "(unavailable)";
                     return data;
@@ -89,8 +89,8 @@ export default class WorklogService {
 
     uploadWorklogs(ids) {
         return this.$db.worklogs.where("id").anyOf(ids).toArray().then((worklogs) => {
-            var promises = worklogs.groupBy(wl => wl.ticketNo).map(grp => {
-                var promise = null;
+            const promises = worklogs.groupBy(wl => wl.ticketNo).map(grp => {
+                let promise = null;
                 grp.values.forEach(wl => {
                     if (!promise) {
                         promise = this.uploadWorklog(wl);
@@ -107,14 +107,14 @@ export default class WorklogService {
     }
 
     uploadWorklog(entry) {
-        var timeSpent = entry.overrideTimeSpent || entry.timeSpent;
-        var request = {
+        const timeSpent = entry.overrideTimeSpent || entry.timeSpent;
+        const request = {
             comment: entry.description,
-            started: entry.dateStarted.toISOString().replace('Z', '').replace('z', '') + "+0000",
+            started: `${entry.dateStarted.toISOString().replace('Z', '').replace('z', '')  }+0000`,
             timeSpent: this.$transform.formatTs(timeSpent) //,
             //visibility = new Visibility { type="group", value= "Deployment Team" }
         };
-        var uploadRequest = null;
+        let uploadRequest = null;
         if (entry.worklogId > 0) {
             uploadRequest = this.$ajax.put(ApiUrls.updateIndividualWorklog, request, entry.ticketNo, entry.worklogId);
         }
@@ -139,9 +139,9 @@ export default class WorklogService {
             }
         }, (err) => {
             if (err.status === 400) {
-                var errors = (err.error || {}).errorMessages || [];
+                const errors = (err.error || {}).errorMessages || [];
                 if (errors.some((e) => e.indexOf("non-editable") > -1)) {
-                    return Promise.reject({ message: entry.ticketNo + " is already closed and cannot upload worklog" });
+                    return Promise.reject({ message: `${entry.ticketNo  } is already closed and cannot upload worklog` });
                 }
             }
             return Promise.reject(err);
@@ -149,7 +149,7 @@ export default class WorklogService {
     }
 
     deleteWorklogs(ids) {
-        var reqArr = [];
+        const reqArr = [];
         return this.$db.worklogs.where("id").anyOf(ids).toArray().then((wls) => {
             wls.forEach((entry) => { reqArr.push(this.deleteWorklog(entry)); });
             return Promise.all(reqArr);
@@ -157,7 +157,7 @@ export default class WorklogService {
     }
 
     deleteWorklog(entry) {
-        var delReq = this.$db.worklogs.where("id").equals(entry.id).delete().then(null, (e) => {
+        const delReq = this.$db.worklogs.where("id").equals(entry.id).delete().then(null, (e) => {
             if (!entry.worklogId) {
                 return Promise.reject(e);
             }
@@ -174,14 +174,14 @@ export default class WorklogService {
     }
 
     getWorklogs(range) {
-        var curUserId = this.$session.userId;
-        var fromDate = moment(range.fromDate).toDate();
-        var toDate = moment(range.toDate).endOf('day').toDate();
-        var prom = this.$db.worklogs.where("dateStarted").between(fromDate, toDate, true, true)
+        const curUserId = this.$session.userId;
+        const fromDate = moment(range.fromDate).toDate();
+        const toDate = moment(range.toDate).endOf('day').toDate();
+        const prom = this.$db.worklogs.where("dateStarted").between(fromDate, toDate, true, true)
             .and((w) => { return w.createdBy === curUserId; }).toArray();
-        var uploadedWL = this.getUploadedWorklogs(fromDate, toDate).then(wl => {
-            var logData = wl.first().logData;
-            var wlArr = logData.map(ld => {
+        const uploadedWL = this.getUploadedWorklogs(fromDate, toDate).then(wl => {
+            const logData = wl.first().logData;
+            const wlArr = logData.map(ld => {
                 return {
                     createdBy: curUserId,
                     dateStarted: ld.logTime,
@@ -196,11 +196,11 @@ export default class WorklogService {
             });
             return wlArr;
         });
-        var modProm = Promise.all([prom, uploadedWL])
+        let modProm = Promise.all([prom, uploadedWL])
             .then((wls) => {
-                var pending = wls[0].filter(w => !w.isUploaded && !w.worklogId);
+                const pending = wls[0].filter(w => !w.isUploaded && !w.worklogId);
                 wls[1].forEach(w => {
-                    var relWL = wls[0].first(rw => rw.worklogId === w.worklogId);
+                    const relWL = wls[0].first(rw => rw.worklogId === w.worklogId);
                     if (relWL) {
                         w.id = relWL.id;
                         w.parentId = relWL.parentId;
@@ -220,13 +220,13 @@ export default class WorklogService {
     getWorklogsEntry(start, end) {
         return this.getWorklogs({ fromDate: start.toDate(), toDate: end.toDate() })
             .then((worklogs) => {
-                var result = worklogs.map(w => this.getWLCalendarEntry(w));
+                const result = worklogs.map(w => this.getWLCalendarEntry(w));
                 return result;
             });
     }
 
     copyWorklog(wl, startDate) {
-        var newWL = {
+        const newWL = {
             createdBy: this.$session.CurrentUser.userId,
             dateStarted: moment(startDate).toDate(),
             description: wl.description,
@@ -238,7 +238,7 @@ export default class WorklogService {
     }
 
     changeWorklogDate(worklog, startDate) {
-        var pro = null;
+        let pro = null;
         if (!isNaN(Number(worklog.id)) && worklog.id !== DummyWLId) {
             pro = this.$db.worklogs.where("id").equals(worklog.id).first();
         }
@@ -247,7 +247,7 @@ export default class WorklogService {
         }
         return pro.then((wl) => {
             wl.dateStarted = moment(startDate).toDate();
-            var getCalEntry = () => { return this.getWLCalendarEntry(wl); };
+            const getCalEntry = () => { return this.getWLCalendarEntry(wl); };
             if (wl.worklogId > 0) {
                 return this.uploadWorklog(wl).then(() => getCalEntry());
             }
@@ -258,7 +258,7 @@ export default class WorklogService {
     }
 
     changeWorklogTS(worklog, timeSpent) {
-        var pro = null;
+        let pro = null;
         if (!isNaN(Number(worklog.id)) && worklog.id !== DummyWLId) {
             pro = this.$db.worklogs.where("id").equals(worklog.id).first();
         }
@@ -268,7 +268,7 @@ export default class WorklogService {
         return pro.then((wl) => {
             wl.timeSpent = timeSpent;
             delete wl.overrideTimeSpent;
-            var getCalEntry = () => { return this.getWLCalendarEntry(wl); };
+            const getCalEntry = () => { return this.getWLCalendarEntry(wl); };
             if (wl.worklogId > 0) {
                 return this.uploadWorklog(wl).then(() => getCalEntry());
             }
@@ -278,7 +278,7 @@ export default class WorklogService {
         });
     }
 
-    getLocalWorklog(worklogId) { return this.$db.worklogs.where("id").equals(parseInt("" + worklogId)).first(); }
+    getLocalWorklog(worklogId) { return this.$db.worklogs.where("id").equals(parseInt(`${  worklogId}`)).first(); }
 
     getWorklog(worklog) {
         if (worklog.isUploaded) {
@@ -292,17 +292,17 @@ export default class WorklogService {
     saveWorklog(worklog, upload) {
         return this.$ticket.getTicketDetails(worklog.ticketNo).then((ticket) => {
             if (!ticket) {
-                this.$message.error(worklog.ticketNo + " is not a valid Jira Key");
-                return Promise.reject(worklog.ticketNo + " is not a valid Jira Key");
+                this.$message.error(`${worklog.ticketNo  } is not a valid Jira Key`);
+                return Promise.reject(`${worklog.ticketNo  } is not a valid Jira Key`);
             }
             if (!this.$session.CurrentUser.allowClosedTickets) {
                 if (ticket.fields.status.name.toLowerCase() === "closed") {
-                    const msg = ticket.key + " is already closed. Cannot add worklog for closed ticket!";
+                    const msg = `${ticket.key  } is already closed. Cannot add worklog for closed ticket!`;
                     this.$message.error(msg);
                     return Promise.reject(msg);
                 }
             }
-            var wl = {
+            const wl = {
                 createdBy: this.$session.userId,
                 dateStarted: moment(worklog.dateStarted).toDate(),
                 ticketNo: ticket.key,
@@ -327,7 +327,7 @@ export default class WorklogService {
                 wl.parentId = worklog.parentId;
             }
             worklog = wl;
-            var pro = null;
+            let pro = null;
             if (worklog.id > 0) {
                 pro = this.$db.worklogs.put(worklog);
             }
@@ -342,11 +342,11 @@ export default class WorklogService {
     }
 
     getWLCalendarEntry(worklog) {
-        var obj = {
+        const obj = {
             entryType: 1,
             start: worklog.dateStarted,
-            title: worklog.ticketNo + ": " + (worklog.description || '(no comment provided)'),
-            id: worklog.id.toString() + (worklog.worklogId ? "#" + worklog.worklogId : ""),
+            title: `${worklog.ticketNo  }: ${  worklog.description || '(no comment provided)'}`,
+            id: worklog.id.toString() + (worklog.worklogId ? `#${  worklog.worklogId}` : ""),
             url: "",
             end: moment(worklog.dateStarted).add(this.getTimeSpent(worklog), "minutes").toDate(),
             editable: true,
@@ -362,13 +362,13 @@ export default class WorklogService {
         if (!entry) {
             return 0;
         }
-        var timeSpent = (typeof entry === 'string') ? entry : (entry.overrideTimeSpent || entry.timeSpent);
+        const timeSpent = (typeof entry === 'string') ? entry : (entry.overrideTimeSpent || entry.timeSpent);
         if (!timeSpent) {
             return 0;
         }
-        var tmp = timeSpent.replace(" ", "0").split(':');
+        const tmp = timeSpent.replace(" ", "0").split(':');
         if (tmp.length === 2) {
-            return ((parseInt("0" + tmp[0]) * 60) + parseInt("0" + tmp[1])) * (ticks ? 60 * 1000 : 1);
+            return ((parseInt(`0${  tmp[0]}`) * 60) + parseInt(`0${  tmp[1]}`)) * (ticks ? 60 * 1000 : 1);
         }
         else {
             return 0;
@@ -376,16 +376,16 @@ export default class WorklogService {
     }
 
     getDWWorklog(data, fromDate, toDate) {
-        var dateArr = this.$userutils.getDays(fromDate, toDate);
-        var entries = data.groupBy((l) => { return l.dateStarted.format("yyyy-MM-dd"); });
+        const dateArr = this.$userutils.getDays(fromDate, toDate);
+        let entries = data.groupBy((l) => { return l.dateStarted.format("yyyy-MM-dd"); });
         entries = dateArr.leftJoin(entries, (left, right) => left.date.format("yyyy-MM-dd") === right.key)
             .select(data => data.right || (data.left.isHoliday || data.left.isFuture ? null : {
                 key: data.left.date.format("yyyy-MM-dd"),
                 values: []
             }))
             .map((l) => {
-                var $values = l.values;
-                var logDate = moment(l.key, "YYYY-MM-DD").toDate();
+                const $values = l.values;
+                const logDate = moment(l.key, "YYYY-MM-DD").toDate();
                 return {
                     key: l.key,
                     dateLogged: logDate,
@@ -396,12 +396,12 @@ export default class WorklogService {
                     ticketList: $values.map((d) => { return { id: d.id, ticketNo: d.ticketNo, uploaded: (d.overrideTimeSpent || d.timeSpent), comment: d.description, worklogId: d.worklogId }; })
                 };
             }).orderByDescending((l) => { return l.key; });
-        var maxHours = this.$session.CurrentUser.maxHours;
+        let maxHours = this.$session.CurrentUser.maxHours;
         maxHours = maxHours * 60 * 60 * 1000;
         entries.forEach((d) => {
             //d.pendingUpload = d.totalHours - d.uploaded;
             if (maxHours !== null && maxHours > 0) {
-                var diff = d.totalHours - maxHours;
+                const diff = d.totalHours - maxHours;
                 if (diff !== 0) {
                     d.difference = diff;
                 }
@@ -411,11 +411,11 @@ export default class WorklogService {
     }
 
     getTWWorklog(data) {
-        var $data = data;
+        const $data = data;
         return this.$ticket.getTicketDetails($data.distinct((w) => { return w.ticketNo; })).then((tickets) => {
-            var entries = $data.groupBy((l) => { return l.ticketNo; }).map((l) => {
-                var t = tickets[l.key];
-                var item = {
+            const entries = $data.groupBy((l) => { return l.ticketNo; }).map((l) => {
+                const t = tickets[l.key];
+                const item = {
                     ticketNo: l.key,
                     parentSumm: ((t.fields.parent || "").fields || "").summary,
                     parentKey: ((t.fields || "").parent || "").key,

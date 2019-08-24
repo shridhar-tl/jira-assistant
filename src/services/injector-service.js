@@ -1,7 +1,7 @@
 export const injector = (function () {
-    let services = {};
-    let defaultOpts = { isSingleton: true };
-    let svc = {};
+    const services = {};
+    const defaultOpts = { isSingleton: true };
+    const svc = {};
 
     svc.getRef = function (name) {
         if (!name) { throw Error("Service name is required to resolve it"); }
@@ -12,27 +12,27 @@ export const injector = (function () {
         let svcObj = services[name];
 
         if (!svcObj && name.indexOf('Service') === -1) {
-            svcObj = services[name + 'Service'];
+            svcObj = services[`${name  }Service`];
         }
 
         if (!svcObj) {
-            throw Error("'" + name + "' is not a known service");
+            throw Error(`'${  name  }' is not a known service`);
         }
         return svcObj;
-    }
+    };
 
     svc.resolve = function (name) {
-        var svcObj = svc.getRef(name);
+        const svcObj = svc.getRef(name);
 
         if (svcObj.isSingleton && svcObj.instance) {
             return svcObj.instance;
         }
 
-        var instance = null;
+        let instance = null;
 
         if (svcObj.dependency) {
-            var depLen = svcObj.dependency.length;
-            var dependencies = new Array(depLen + 1);
+            const depLen = svcObj.dependency.length;
+            const dependencies = new Array(depLen + 1);
             dependencies[0] = svcObj.type;
             for (let i = 0; i < depLen; i++) {
                 dependencies[i + 1] = svc.resolve(svcObj.dependency[i]);
@@ -54,14 +54,14 @@ export const injector = (function () {
     svc.injectable = function (type, defaultName) {
         svc.addService(type.name, type, defaultName, type.dependencies);
         return type;
-    }
+    };
 
     svc.inject = function (instance, dependencies) {
         dependencies.forEach(dependency => {
-            var svcObj = svc.getRef(dependency);
+            const svcObj = svc.getRef(dependency);
             instance[svcObj.defaultName] = svc.resolve(dependency);
         });
-    }
+    };
 
     svc.addService = function (name, type, defaultName, dependency, opts) {
         if (!name) { throw Error("Service name is required to resolve it"); }
@@ -77,7 +77,7 @@ export const injector = (function () {
         name = name.trim();
 
         opts = Object.assign(opts || {}, defaultOpts);
-        let svcRef = {
+        const svcRef = {
             isSingleton: opts.isSingleton,
             type: type,
             instance: null,
@@ -86,7 +86,7 @@ export const injector = (function () {
             defaultName
         };
         services[name] = svcRef;
-    }
+    };
 
     return svc;
 })();
@@ -105,5 +105,5 @@ export function resolveDependency(component) {
     return function () {
         //var arr = [...arguments];
         return new component(...arguments);
-    }
+    };
 }

@@ -7,7 +7,7 @@ export default class AjaxService {
         this.$session = $session;
         this.$message = $message;
         // Jira has issue with some user agent. Hence always customize it
-        var headerObj = { 'Content-Type': 'application/json', 'User-Agent': 'Chrome' };
+        const headerObj = { 'Content-Type': 'application/json', 'User-Agent': 'Chrome' };
 
         this.httpOptions = {
             headers: headerObj
@@ -27,7 +27,7 @@ export default class AjaxService {
         if (!this._basePath.endsWith('/')) {
             this._basePath += '/';
         }
-        var urlStr = url.toString();
+        let urlStr = url.toString();
         if (params && params.length > 0) {
             urlStr = urlStr.format(params);
         }
@@ -41,7 +41,7 @@ export default class AjaxService {
             if (e.status === 0) {
                 this.$message.error("Unable to connect to server. Please check your network connectivity.", "Network error");
             }
-            var { responseJSON: error, responseText: response, status } = e;
+            const { responseJSON: error, responseText: response, status } = e;
             return Promise.reject({ error, response, status, ref: e });
         });
     }
@@ -51,7 +51,7 @@ export default class AjaxService {
     }
 
     async execute(method, url, params) {
-        var body = params;
+        let body = params;
         if ((method || "GET").toUpperCase() === "GET") {
             body = undefined;
         }
@@ -70,7 +70,7 @@ export default class AjaxService {
                     withCredentials: true
                 },
                 beforeSend: (request) => {
-                    var { headers } = this.httpOptions;
+                    const { headers } = this.httpOptions;
                     Object.keys(headers).forEach(h => request.setRequestHeader(h, headers[h]));
                 }
             });

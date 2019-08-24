@@ -31,7 +31,7 @@ class PendingWorklog extends BaseGadget {
 
         return this.$worklog.getPendingWorklogs()
             .then((worklogs) => {
-                var { selAllChk } = this.state;
+                const { selAllChk } = this.state;
 
                 worklogs.forEach((w) => {
                     w.rowClass = this.$utils.getRowStatus(w);
@@ -46,7 +46,7 @@ class PendingWorklog extends BaseGadget {
     }
 
     editWorklogObj(copy) {
-        var newObj = Object.create(this.selectedItem);
+        const newObj = Object.create(this.selectedItem);
         newObj.copy = copy;
         this.addWorklog(newObj);
     }
@@ -70,7 +70,7 @@ class PendingWorklog extends BaseGadget {
         if (!items) {
             items = this.state.worklogs.filter((w) => w.selected);
         }
-        var ids = items.map((w) => w.id);
+        const ids = items.map((w) => w.id);
         if (ids.length === 0) {
             this.$message.info("Select the worklogs to be uploaded!");
             return;
@@ -93,7 +93,7 @@ class PendingWorklog extends BaseGadget {
         if (!items) {
             items = this.state.worklogs.filter((w) => w.selected);
         }
-        var ids = items.map((w) => w.id);
+        const ids = items.map((w) => w.id);
         if (ids.length === 0) {
             this.$message.info("Select the worklogs to be deleted!");
             return;
@@ -116,7 +116,7 @@ class PendingWorklog extends BaseGadget {
 
     selectRowItem(item) {
         item.selected = !item.selected;
-        var { worklogs } = this.state;
+        let { worklogs } = this.state;
         worklogs = [...worklogs];
         this.setState({ worklogs });
     }
@@ -125,12 +125,12 @@ class PendingWorklog extends BaseGadget {
         return <>
             <Button icon="fa fa-upload" onClick={() => this.uploadWorklog()} title="Upload selected worklogs" />
             <Button type="danger" icon="fa fa-trash-o" onClick={() => this.deleteWorklog()} title="Delete selected worklogs" />
-        </>
+        </>;
 
     }
 
     render() {
-        var { worklogs, selAllChk } = this.state;
+        const { worklogs, selAllChk } = this.state;
 
         return super.renderBase(
             <ScrollableTable dataset={worklogs}>
@@ -158,7 +158,7 @@ class PendingWorklog extends BaseGadget {
                             <td>{b.timeSpent}</td>
                             <td>{b.overrideTimeSpent}</td>
                             <td>{b.description}</td>
-                        </tr>
+                        </tr>;
                     }}
                 </TBody>
                 <NoDataRow span={7}>No worklog pending to be uploaded!</NoDataRow>

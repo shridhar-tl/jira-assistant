@@ -12,7 +12,10 @@ class JQLEditorDialog extends BaseDialog {
     }
 
     onDone = () => {
-        this.onHide(this.state.filterQuery);
+        const qry = this.state.filterQuery;
+
+        this.$jira.searchTickets(this.$reportConfig.prepareJQL(qry.jql), qry.outputFields.map(f => f.id))
+            .then(data => this.onHide(qry, data));
     }
 
     queryChanged = (filterQuery) => this.setState({ filterQuery })

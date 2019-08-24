@@ -29,7 +29,7 @@ export default class ConfigService {
                 newSettings = this.$session.pageSettings[pageName];
             }
 
-            usr.settings["page_" + pageName] = newSettings;
+            usr.settings[`page_${  pageName}`] = newSettings;
             return this.$db.users.put(usr).then(r => r);
         });
     }
@@ -43,7 +43,7 @@ export default class ConfigService {
 
     getUserSettings() {
         return this.$auth.getCurrentUser().then((user) => {
-            var settings = {
+            const settings = {
                 teamMembers: user.team || [],
                 autoUpload: user.autoUpload,
                 dateFormat: user.dateFormat,
@@ -75,10 +75,10 @@ export default class ConfigService {
                 notifyWL: user.notifyWL || (user.notifyWL == null ? true : false)
             };
             if (settings.launchAction && user.dashboards) {
-                var idx = user.dashboards.indexOf(user.dashboards.first(d => d.isQuickView));
-                settings.launchAction.quickIndex = 'D-' + idx;
+                const idx = user.dashboards.indexOf(user.dashboards.first(d => d.isQuickView));
+                settings.launchAction.quickIndex = `D-${  idx}`;
             }
-            var curDate = new Date();
+            const curDate = new Date();
             return {
                 settings: settings,
                 dateFormats: dateFormats.map((f) => { return { value: f, text: this.$utils.formatDate(curDate, f) }; }),
@@ -118,12 +118,12 @@ export default class ConfigService {
                 delete user.hideDonateMenu;
             }
             if (user.launchAction && user.launchAction.action === 3) {
-                var idx = parseInt((user.launchAction.quickIndex || '0').replace('D-', '')) || 0;
+                const idx = parseInt((user.launchAction.quickIndex || '0').replace('D-', '')) || 0;
                 delete user.launchAction.quickIndex;
                 user.dashboards.forEach((dboard, i) => dboard.isQuickView = i === idx);
             }
             if (!settings.hasGoogleCredentials && user.dataStore) {
-                var tokken = user.dataStore.access_token;
+                const tokken = user.dataStore.access_token;
                 if (tokken) {
                     this.$jaHttp.get(ApiUrls.googleLogoutUrl, tokken).then((response) => {
                         this.$jaBrowserExtn.removeAuthTokken(tokken);
@@ -143,21 +143,21 @@ export default class ConfigService {
             else {
                 delete user.projects;
             }
-            var autoLaunch = parseInt(settings.autoLaunch);
+            const autoLaunch = parseInt(settings.autoLaunch);
             if (autoLaunch > 0) {
                 user.autoLaunch = autoLaunch;
             }
             else {
                 delete user.autoLaunch;
             }
-            var notifyBefore = parseInt(settings.notifyBefore);
+            const notifyBefore = parseInt(settings.notifyBefore);
             if (notifyBefore > 0) {
                 user.notifyBefore = notifyBefore;
             }
             else {
                 delete user.notifyBefore;
             }
-            var checkUpdates = parseInt(settings.checkUpdates);
+            const checkUpdates = parseInt(settings.checkUpdates);
             if (checkUpdates > 0) {
                 user.checkUpdates = checkUpdates;
             }

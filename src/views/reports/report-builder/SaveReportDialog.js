@@ -13,12 +13,12 @@ class SaveReportDialog extends BaseDialog {
     copyChanged = (copyQuery) => this.setState({ copyQuery })
 
     done = () => {
-        var { newQueryName, copyQuery } = this.state;
+        const { newQueryName, copyQuery } = this.state;
         this.props.onChange(newQueryName, copyQuery);
     }
 
     getFooter() {
-        var {
+        const {
             state: { newQueryName }
         } = this;
 
@@ -31,7 +31,7 @@ class SaveReportDialog extends BaseDialog {
     }
 
     render() {
-        var {
+        const {
             props: { allowCopy },
             state: { newQueryName, copyQuery }
         } = this;

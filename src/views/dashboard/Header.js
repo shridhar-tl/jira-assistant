@@ -16,7 +16,7 @@ class Header extends PureComponent {
     }
 
     getStateDetails(props) {
-        var { config, index } = props;
+        const { config, index } = props;
 
         var quickViewLink = {
             label: "Set as quick view", icon: config.isQuickView ? "fa-check-square" : "fa-square",
@@ -40,7 +40,7 @@ class Header extends PureComponent {
 
     deleteDashboard() {
         this.$dashboard.deleteDashboard(this.state.index).then(uid => {
-            this.props.history.push('/' + this.props.userId + '/dashboard/1');
+            this.props.history.push(`/${  this.props.userId  }/dashboard/1`);
         });
     }
 
@@ -51,14 +51,14 @@ class Header extends PureComponent {
     }
 
     nameChanged = (name, icon) => {
-        var { index, config } = this.state;
+        const { index, config } = this.state;
         config.name = name;
         config.icon = icon;
         this.$dashboard.saveDashboardInfo(index, config, true);
     }
 
     render() {
-        var { config: { icon, name } } = this.state;
+        const { config: { icon, name } } = this.state;
 
         return (
             <>

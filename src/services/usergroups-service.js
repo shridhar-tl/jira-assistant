@@ -9,7 +9,7 @@ export default class UserGroupService {
 
     getUserGroups() {
         return this.$auth.getCurrentUser().then(u => {
-            var groups = u.groups;
+            let groups = u.groups;
             if (!groups && u.team && u.team.length > 0) {
                 groups = [{ name: 'My Team', users: u.team }];
             }

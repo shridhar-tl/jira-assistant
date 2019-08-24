@@ -27,9 +27,9 @@ class ReportBuilder extends BaseGadget {
     getApi = api => (this.builderAPI = api)
 
     UNSAFE_componentWillMount() {
-        var { match: { params } } = this.props;
+        const { match: { params } } = this.props;
 
-        var queryId = parseInt(params['queryId'] || 0) || null;
+        const queryId = parseInt(params['queryId'] || 0) || null;
         if (queryId) {
             this.queryChanged(queryId);
         }
@@ -42,20 +42,20 @@ class ReportBuilder extends BaseGadget {
         this.setState({ selectedDatasetType: "JQL" });
     }
 
-    saveDataset_JQL() {
-        var qry = this.filterQuery;
-        var promise = this.$jira.searchTickets(this.$reportConfig.prepareJQL(qry.jql), qry.outputFields.map(f => f.id));
-
-        promise = promise.then(data => {
-            var processedData = this.$reportConfig.processSearchData(data);
-            this.resolveJQLEvent.schema.resolve(qry);
-            this.resolveJQLEvent.data.resolve(processedData);
-            this.resolveJQLEvent = null;
-        });
-
-        promise.then(() => {
+    saveDataset_JQL = (qry, data) => {
+        if (!qry) {
             this.setState({ selectedDatasetType: null });
-        });
+            this.resolveJQLEvent.schema.reject(false);
+            this.resolveJQLEvent.data.reject(false);
+            return;
+        }
+
+        const processedData = this.$reportConfig.processSearchData(data);
+        this.resolveJQLEvent.schema.resolve(qry);
+        this.resolveJQLEvent.data.resolve(processedData);
+        this.resolveJQLEvent = null;
+
+        this.setState({ selectedDatasetType: null });
     }
 
     fillQueriesList() {
@@ -95,7 +95,7 @@ class ReportBuilder extends BaseGadget {
         const reportDefinition = { ...this.state.reportDefinition, ...this.builderAPI.getReportDefinition(), advanced: true };
 
         const oldQryName = reportDefinition.queryName;
-        var refillList = false;
+        let refillList = false;
 
         reportDefinition.queryName = queryName;
         if (copy) {
@@ -180,7 +180,7 @@ class ReportBuilder extends BaseGadget {
                 {reportDefinition && <JSReportBuilder api={this.getApi} definition={reportDefinition} />}
                 {showSaveDialog && <SaveReportDialog queryName={reportDefinition.queryName} allowCopy={isEditing}
                     onHide={this.hideSaveDialog} onChange={this.saveQuery} />}
-                {selectedDatasetType === 'JQL' && <JQLEditorDialog />}
+                {selectedDatasetType === 'JQL' && <JQLEditorDialog onHide={this.saveDataset_JQL} />}
             </>
             );
         }
