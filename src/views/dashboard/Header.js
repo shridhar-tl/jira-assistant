@@ -19,19 +19,13 @@ class Header extends PureComponent {
         const { config, index } = props;
 
         const quickViewLink = {
-            label: "Set as quick view", icon: config.isQuickView ? "fa-check-square" : "fa-square",
+            label: "Set as quick view", icon: config.isQuickView ? "fa fa-check-square" : "fa fa-square",
             disabled: config.isQuickView, command: () => this.setAsQuickView(quickViewLink)
         };
 
         this.contextMenu = [
             { label: "Create dashboard", icon: "fa fa-plus", command: () => this.$dashboard.createDashboard() },
             { label: "Delete dashboard", icon: "fa fa-trash-o", command: () => this.deleteDashboard(), disabled: index === 0 },
-            {
-                label: "Edit layout", icon: "fa fa-columns", command: () => {
-                    this.showLayoutPopup = true;
-                    this.selectedLayout = config.layout;
-                }
-            },
             quickViewLink
         ];
 
@@ -40,7 +34,7 @@ class Header extends PureComponent {
 
     deleteDashboard() {
         this.$dashboard.deleteDashboard(this.state.index).then(uid => {
-            this.props.history.push(`/${  this.props.userId  }/dashboard/1`);
+            this.props.history.push(`/${this.props.userId}/dashboard/1`);
         });
     }
 

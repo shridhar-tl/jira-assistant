@@ -1,5 +1,25 @@
+body.fs-layout {
+    overflow: hidden;
+}
+
 div.gadget {
     float: left;
+
+    &.full-screen {
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 1050;
+        width: 100vw;
+        height: 100vh;
+        margin: 0 !important;
+    
+        div.p-panel-content {
+            height: calc(100vh - 42px);
+            padding: 0;
+            overflow: auto;
+        }
+    }
 
     &.half-width:nth-child(2n) {
         margin-left: 4px;

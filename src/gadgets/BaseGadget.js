@@ -3,6 +3,7 @@ import { Panel } from 'primereact/panel';
 import $ from 'jquery';
 import { EventEmitter } from 'events';
 import Button from '../controls/Button';
+import classNames from "classnames";
 import { showContextMenu } from '../controls/ContextMenu';
 import "./BaseGadget.scss";
 
@@ -33,7 +34,7 @@ export class BaseGadget extends PureComponent {
         return [
             { label: "Refresh", icon: "fa fa-refresh", disabled: !this.refreshData, command: () => this.refreshData(true) },
             { label: "Export", icon: "fa fa-download", disabled: !this.exportData, command: () => this.exportData() },
-            { label: "Toggle full screen", icon: `fa fa-${isFullScreen ? "collapse" : "expand"}`, command: () => this.toggleFullScreen() },
+            { label: "Toggle full screen", icon: `fa fa-${isFullScreen ? "compress" : "expand"}`, command: () => this.toggleFullScreen() },
             ...gadgetActions
         ];
     }
@@ -134,12 +135,24 @@ export class BaseGadget extends PureComponent {
     }
 
     renderBase(childern) {
-        const { fullWidth, fullHeight, isLoading } = this.state;
-        const { isGadget, isFullScreen } = this;
+        const { fullWidth, fullHeight, isLoading, isFullScreen } = this.state;
+        const { isGadget } = this;
 
-        const className = !isGadget ? "docked full-width full-height" : `${fullWidth ? 'full-width' : 'half-width'} ${fullHeight ? 'full-height' : 'half-height'}`;
+        const fw = fullWidth || !isGadget;
+        const fh = fullHeight || !isGadget;
 
-        return (<div ref={el => this.el = el} className={`gadget ${isFullScreen ? 'full-screen ' : className}`}>
+        const className = classNames("gadget", {
+            "docked": !isGadget,
+            "full-width": fw && !isFullScreen,
+            "full-height": fh && !isFullScreen,
+            "half-width": !fw && !isFullScreen,
+            "half-height": !fh && !isFullScreen,
+            "full-screen": isFullScreen
+        });
+
+        //const className = !isGadget ? "docked full-width full-height" : `${fullWidth ? 'full-width' : 'half-width'} ${fullHeight ? 'full-height' : 'half-height'}`;
+
+        return (<div ref={el => this.el = el} className={className}>
             {isLoading && <div className="data-loader"><i className="fa fa-refresh fa-spin"></i></div>}
             <Panel header={this.getHeader()}>
                 {childern}

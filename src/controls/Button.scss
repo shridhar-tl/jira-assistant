@@ -6,6 +6,10 @@ button.p-button {
         width: 2em;
     }
 
+    span:nth-child(2){
+        margin-left: 5px;
+    }
+
     .p-button-text {
         padding: 2.5px 15px 4px 30px !important;
     }

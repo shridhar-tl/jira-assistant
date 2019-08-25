@@ -66,6 +66,10 @@ a.p-menuitem-link {
     text-decoration: none;
 }
 
+.p-menu {
+    z-index: 1060 !important;
+}
+
 // TabView related styles
 .p-tabview {
     padding-bottom: 0;

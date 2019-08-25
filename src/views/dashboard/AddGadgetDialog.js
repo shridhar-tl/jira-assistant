@@ -1,37 +1,38 @@
-import React, { PureComponent } from 'react';
-import { Dialog } from 'primereact/dialog';
+import React from 'react';
 import { GadgetList } from '../../gadgets';
 import Button from '../../controls/Button';
+import BaseDialog from '../../dialogs/BaseDialog';
 import './AddGadgetDialog.scss';
 
-const DIALOG_STYLE = { width: '700px' };
-
-class AddGadgetDialog extends PureComponent {
+class AddGadgetDialog extends BaseDialog {
     constructor(props) {
-        super(props);
-        this.state = { showDialog: true };
+        super(props, "Manage gadgets");
+        this.style = { width: '700px' };
+        this.state.widgets = props.widgetsList;
     }
 
-    onHide = () => {
-        this.setState({ showDialog: false });
-        this.props.onHide();
+    UNSAFE_componentWillReceiveProps(props) {
+        if (this.state.widgets !== props.widgetsList) {
+            this.setState({ widgets: props.widgetsList });
+        }
+    }
+
+    getFooter() {
+        return <Button icon="fa fa-check" label="Done" onClick={this.onHide} />;
     }
 
     render() {
-        const { onCheckIsAdded, addGadget, removeGadget } = this.props;
-        const { showDialog } = this.state;
+        const { addGadget, removeGadget } = this.props;
+        const { widgets } = this.state;
 
-        const footer = <Button icon="fa fa-check" label="Done" onClick={this.onHide} />;
-
-        return (
-            <Dialog header="Manage gadgets" footer={footer} visible={showDialog}
-                style={DIALOG_STYLE} modal={true}
-                onHide={this.onHide}>
+        return super.renderBase(
+            <>
                 {GadgetList.map(g => {
-                    const added = onCheckIsAdded(g.id);
+                    const added = widgets.some(w => w.name === g.id);
+
                     return (
                         <div key={g.id} className="gadget-info">
-                            <div className="icon"><i className={`fa ${  g.icon}`}></i></div>
+                            <div className="icon"><i className={`fa ${g.icon}`}></i></div>
                             <div className="details">
                                 <span className="name">{g.name}</span>
                                 <span className="desc">{g.details}</span>
@@ -45,7 +46,7 @@ class AddGadgetDialog extends PureComponent {
                     );
                 })}
                 <div className="clearfix"></div>
-            </Dialog>
+            </>
         );
     }
 }

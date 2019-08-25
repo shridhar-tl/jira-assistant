@@ -47,19 +47,21 @@ class Dashboard extends PureComponent {
 
     addGadget = (gadgetName, settings) => {
         let { currentBoard } = this.state;
-        currentBoard.widgets.push({ name: gadgetName, settings: settings || {} });
         currentBoard = { ...currentBoard };
+        currentBoard.widgets = currentBoard.widgets.concat({ name: gadgetName, settings: settings || {} });
         this.setState({ currentBoard });
     }
 
     removeGadget = (gadgetName) => {
         let { currentBoard } = this.state;
-        currentBoard.widgets.removeAll(g => g.name === gadgetName);
         currentBoard = { ...currentBoard };
+        const widgets = [...currentBoard.widgets];
+        widgets.removeAll(g => g.name === gadgetName);
+        currentBoard.widgets = widgets;
         this.setState({ currentBoard });
     }
 
-    saveDashboardInfo() {
+    saveDashboardInfo = () => {
         const { dashboardIndex, currentBoard } = this.state;
         this.$dashboard.saveDashboardInfo(dashboardIndex, currentBoard);
     }
@@ -72,8 +74,11 @@ class Dashboard extends PureComponent {
                 break;
             //case 2: this.worklogIdToEdit = $event.worklogId; this.showWorklogPopup = true; break;
             case GadgetActionType.RemoveGadget:
-                this.state.currentBoard.widgets.splice(widgetIndex, 1);
-                this.saveDashboardInfo();
+                let { currentBoard } = this.state;
+                currentBoard = { ...currentBoard };
+                const { widgets } = currentBoard;
+                widgets.splice(widgetIndex, 1);
+                this.setState({ currentBoard }, this.saveDashboardInfo);
                 this.emitToChildren($event, widgetIndex);
                 break;
             case GadgetActionType.SettingsChanged:
@@ -163,14 +168,7 @@ class Dashboard extends PureComponent {
         this.saveDashboardInfo();
     }
 
-    isGadgetAdded = (id) => {
-        const { currentBoard: { widgets } } = this.state;
-        return widgets.some(w => w.name === id);
-    }
-
-    worklogAdded = (e) => {
-        this.hideWorklog();
-    }
+    worklogAdded = (e) => this.hideWorklog();
     hideWorklog = () => this.setState({ showWorklogPopup: false });
 
     render() {
@@ -184,7 +182,7 @@ class Dashboard extends PureComponent {
                 {widgets && widgets.length > 0 && <div>
                     {widgets.map(this.getControls)}
                 </div>}
-                {showGadgetDialog && <AddGadgetDialog onHide={this.hideGadgetDialog} onCheckIsAdded={this.isGadgetAdded}
+                {showGadgetDialog && <AddGadgetDialog onHide={this.hideGadgetDialog} widgetsList={widgets}
                     addGadget={this.addGadget} removeGadget={this.removeGadget} />}
                 {showWorklogPopup && <AddWorklog worklog={this.worklogItem} onDone={this.worklogAdded} onHide={this.hideWorklog} />}
             </div>

@@ -6,7 +6,7 @@ export default class DashboardService {
     constructor($session, $user) {
         this.$session = $session;
         this.$user = $user;
-        this.updated = () => { };
+        this.updated = () => { /* Empty method, no need of implementation */ };
     }
 
     onChange(callback) {
@@ -46,7 +46,7 @@ export default class DashboardService {
                 u.dashboards = [this.currentBoard];
             }
             const iconIdx = this.rand(0, DASHBOARD_ICONS.length - 1);
-            u.dashboards.push({ icon: DASHBOARD_ICONS[iconIdx], layout: 1, name: `New Dashboard ${  u.dashboards.length + 1}`, widgets: [], isQuickView: false });
+            u.dashboards.push({ icon: DASHBOARD_ICONS[iconIdx], layout: 1, name: `New Dashboard ${u.dashboards.length + 1}`, widgets: [], isQuickView: false });
             return this.saveUserDashboards(u);
         });
     }
