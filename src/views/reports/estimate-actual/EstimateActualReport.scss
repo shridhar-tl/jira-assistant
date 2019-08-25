@@ -1,0 +1,61 @@
+.estimate-type {
+    label {
+      margin-right: 10px;
+    }
+  
+    input {
+      margin-right: 4px;
+    }
+  }
+  
+  .chart-container {
+    width: 100%;
+    position: relative;
+  
+    .canvas-block {
+      width: 100%;
+      overflow-x: auto;
+      overflow-y: hidden;
+      position: relative;
+    }
+  
+    .canvas-container .p-chart{
+      height: calc(100vh - 100px);
+      min-width: 99%;
+      position: relative;
+    }
+  
+    .magnifier {
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 999;
+      padding: 8px;
+      background-color: #423c3cbd;
+      border-radius: 15%;
+      display: none;
+      opacity: .5;
+  
+      i.fa {
+        cursor: pointer;
+        font-size: 25px;
+        margin-right: 8px;
+        color: antiquewhite;
+      }
+  
+      i.fa:hover {
+        opacity: 0.8;
+      }
+    }
+  
+    .magnifier:hover {
+      opacity: 1;
+    }
+  
+    &:hover {
+      .magnifier {
+        display: block;
+      }
+    }
+  }
+  

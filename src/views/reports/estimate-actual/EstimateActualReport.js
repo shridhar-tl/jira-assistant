@@ -7,6 +7,7 @@ import { TabView, TabPanel } from 'primereact/tabview';
 import { AutoComplete, TextBox, Button, DatePicker, RadioButton } from '../../../controls';
 import { Chart } from 'primereact/chart';
 import GroupEditor from '../../../dialogs/GroupEditor';
+import "./EstimateActualReport.scss";
 
 const defaultChartColors = [
     {
@@ -99,18 +100,18 @@ class EstimateActualReport extends BaseGadget {
             },
             scales: {
                 xAxes: [
-{
-                    stacked: false,
-                    ticks: {
-                        stepSize: 1,
-                        min: 0,
-                        autoSkip: false
-                    },
-                    categoryPercentage: 1,
-                    barPercentage: 1,
-                    barThickness: 'flex'
-                }
-]
+                    {
+                        stacked: false,
+                        ticks: {
+                            stepSize: 1,
+                            min: 0,
+                            autoSkip: false
+                        },
+                        categoryPercentage: 1,
+                        barPercentage: 1,
+                        barThickness: 'flex'
+                    }
+                ]
             }
         };
         this.chartColours = defaultChartColors.union(d => [
@@ -160,23 +161,23 @@ class EstimateActualReport extends BaseGadget {
         this.chartWidth = userList.length * 250;
         const custTicketsList = ticketsList ? ticketsList.split(',').filter(t => !!t) : [];
 
-        let jql = `(worklogAuthor in ("${  userList.join("\",\"")  }") and worklogDate >= '${
-             mfromDate.clone().add(-1, 'days').format("YYYY-MM-DD")  }' and worklogDate < '${  mtoDate.clone().add(1, 'days').format("YYYY-MM-DD")  }') `;
+        let jql = `(worklogAuthor in ("${userList.join("\",\"")}") and worklogDate >= '${
+            mfromDate.clone().add(-1, 'days').format("YYYY-MM-DD")}' and worklogDate < '${mtoDate.clone().add(1, 'days').format("YYYY-MM-DD")}') `;
         let addJql = '';
         let hasProject = projects && projects.length > 0;
         const hasTickets = custTicketsList.length > 0;
         if (hasProject) {
-            addJql += `project in (${  projects.map(p => p.key).join(',')  }) `;
+            addJql += `project in (${projects.map(p => p.key).join(',')}) `;
         }
         if (hasTickets) {
             if (addJql) {
                 addJql += ' or ';
             }
             const tickets = custTicketsList.join(',');
-            addJql += `key in (${  tickets  }) or parent in (${  tickets  })`;
+            addJql += `key in (${tickets}) or parent in (${tickets})`;
         }
         if (addJql) {
-            jql += ` and (${  addJql  })`;
+            jql += ` and (${addJql})`;
         }
 
         return this.$jira.searchTickets(jql, ["worklog", "project", "parent", this.state.estimationField]) //, "status", "assignee"
@@ -191,8 +192,8 @@ class EstimateActualReport extends BaseGadget {
                         if (this.state.estimationField === 'timeoriginalestimate') {
                             estField = estField / 60 / 60;
                         }
-                        else if (this.storyPointHour) {
-                            estField = estField * this.storyPointHour;
+                        else if (this.state.storyPointHour) {
+                            estField = estField * this.state.storyPointHour;
                         }
                         return estField;
                     },
@@ -214,7 +215,7 @@ class EstimateActualReport extends BaseGadget {
                     let parentIds = flatData.distinct(t => t.parentkey);
                     parentIds = parentIds.filter(t => t && !flatData.some(ft => ft.key === t));
                     if (parentIds.length) {
-                        return this.$jira.searchTickets(`key in (${  parentIds.join(',')  })`, ["project", this.state.estimationField])
+                        return this.$jira.searchTickets(`key in (${parentIds.join(',')})`, ["project", this.state.estimationField])
                             .then((parents) => {
                                 const flatParents = parents.flattern({
                                     'key': true,
@@ -225,8 +226,8 @@ class EstimateActualReport extends BaseGadget {
                                         if (this.state.estimationField === 'timeoriginalestimate') {
                                             estField = estField / 60 / 60;
                                         }
-                                        else if (this.storyPointHour) {
-                                            estField = estField * this.storyPointHour;
+                                        else if (this.state.storyPointHour) {
+                                            estField = estField * this.state.storyPointHour;
                                         }
                                         return estField;
                                     }
@@ -266,21 +267,29 @@ class EstimateActualReport extends BaseGadget {
                 }
                 const datasets = [];
 
+                let colorIndex = -1;
+
                 if (hasProject) {
                     selProjects.forEach(proj => {
+                        colorIndex++;
+
                         const projData = flatData.filter(t => t.projectKey.toUpperCase() === proj.key.toUpperCase()
                             && (!hasTickets || !custTicketsList.contains(t.key)));
                         const estimateUserData = [];
                         const actUserData = [];
                         const estimatePrj = {
-                            label: `${proj.name  } (estimate)`,
+                            label: `${proj.name} (estimate)`,
                             //backgroundColor: "#3e95cd",
-                            data: estimateUserData
+                            data: estimateUserData,
+                            ...this.chartColours[colorIndex]
                         };
+
+                        colorIndex++;
                         const actPrj = {
-                            label: `${proj.name  } (spent)`,
+                            label: `${proj.name} (spent)`,
                             //backgroundColor: "#3e95cd",
-                            data: actUserData
+                            data: actUserData,
+                            ...this.chartColours[colorIndex]
                         };
                         userList.forEach(u => {
                             const usrData = projData.filter(t => t.author === u);
@@ -310,12 +319,12 @@ class EstimateActualReport extends BaseGadget {
                         const estimateUserData = [];
                         const actUserData = [];
                         const estimatePrj = {
-                            label: `${ticket.key  } (estimate)`,
+                            label: `${ticket.key} (estimate)`,
                             //backgroundColor: "#3e95cd",
                             data: estimateUserData
                         };
                         const actPrj = {
-                            label: ticket.key,
+                            label: `${ticket.key} (spent)`,
                             //backgroundColor: "#3e95cd",
                             data: actUserData
                         };
@@ -338,7 +347,7 @@ class EstimateActualReport extends BaseGadget {
                     });
                 }
 
-                this.setState({ isLoading: false, chartData: { labels: chartLabels, datasets }, selectedTab: 1 });
+                this.setState({ isLoading: false, chartData: { labels: chartLabels, datasets, colors: this.chartColours }, selectedTab: 1 });
             });
     }
 
@@ -356,7 +365,7 @@ class EstimateActualReport extends BaseGadget {
             curWidth = this.chartWidth;
         }
         curWidth = curWidth + value;
-        canvas.parentNode.style.width = `${curWidth  }px`;
+        canvas.parentNode.style.width = `${curWidth}px`;
     }
 
     showGroupsPopup = () => this.setState({ showGroupsPopup: true });
@@ -366,16 +375,16 @@ class EstimateActualReport extends BaseGadget {
         const { dateRange, groups } = this.state;
         return !(dateRange || "").fromDate || !(groups || "").length;
     }
+    tabChanged = (e) => this.setState({ selectedTab: e.index })
 
     render() {
-        // ToDo: chartColours not yet implemented
         const {
-            storyPointField, chartColours, chartOptions, // eslint-disable-line no-unused-vars
-            state: { projectsList, projects, ticketsList, groups, estimationField, storyPointHour, dateRange, chartData, showGroupsPopup }
+            storyPointField, chartOptions,
+            state: { projectsList, projects, ticketsList, groups, estimationField, storyPointHour, dateRange, chartData, showGroupsPopup, selectedTab }
         } = this;
 
         return super.renderBase(<>
-            <TabView>
+            <TabView activeIndex={selectedTab} onTabChange={this.tabChanged}>
                 <TabPanel header="Settings">
                     <div className="pad-15">
                         <strong>How to use:</strong> To generate the estimate vs actual report follow the below steps
@@ -460,7 +469,7 @@ class EstimateActualReport extends BaseGadget {
                         </div>
                     </div>
                 </TabPanel>
-                {<TabPanel header="Chart" disabled={!chartData.datasets}>
+                <TabPanel header="Chart" disabled={!chartData.datasets}>
                     <div className="chart-container">
                         <div className="magnifier">
                             <i className="fa fa-search-minus" onClick={() => this.resizeChart(-1)} title="Decrease the width of the chart" />
@@ -472,7 +481,7 @@ class EstimateActualReport extends BaseGadget {
                             </div>
                         </div>
                     </div>
-                </TabPanel>}
+                </TabPanel>
             </TabView>
 
             {showGroupsPopup && <GroupEditor groups={groups} onHide={this.groupsChanged} />}
