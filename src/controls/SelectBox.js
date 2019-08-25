@@ -56,7 +56,7 @@ class SelectBox extends PureComponent {
 
         const { multiselect, valueField } = this.props;
 
-        if (valueField && valueField !== "value") {
+        if (valueField) {
             if (multiselect) {
                 subValue = value.map(v => v[valueField]);
             }
@@ -71,7 +71,7 @@ class SelectBox extends PureComponent {
 
     render() {
         const {
-            props: { displayField, placeholder, multiselect, style, className, filterPlaceholder, group, children, dataKey },
+            props: { displayField = "label", placeholder, multiselect, style, className, filterPlaceholder, group, children, dataKey },
             state: { value, groupedDataset }
         } = this;
 

@@ -1,11 +1,11 @@
 import React, { PureComponent } from 'react';
-import './Calendar.scss';
 import { Calendar } from '../../gadgets';
+import './Calendar.scss';
 
 class CalendarView extends PureComponent {
     render() {
         return (
-            <div className="">
+            <div className="calendar-view">
                 <Calendar isGadget={false} />
             </div>
         );
