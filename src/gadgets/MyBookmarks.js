@@ -4,7 +4,7 @@ import { GadgetActionType } from '.';
 import { ScrollableTable, THead, TBody, Column, NoDataRow } from '../components/ScrollableTable';
 import { showContextMenu } from '../controls/ContextMenu';
 import { inject } from '../services/injector-service';
-import { Button } from '../controls';
+import { Button, Checkbox } from '../controls';
 import AddBookmark from '../dialogs/AddBookmark';
 
 class MyBookmarks extends BaseGadget {
@@ -37,7 +37,13 @@ class MyBookmarks extends BaseGadget {
 
         this.$bookmark.getBookmarks()
             .then((result) => {
-                result.forEach((b) => b.rowClass = this.$utils.getRowStatus(b));
+                const { selAllChk } = this.state;
+
+                result.forEach(b => {
+                    b.selected = selAllChk;
+                    b.rowClass = this.$utils.getRowStatus(b);
+                });
+
                 this.setState({ isLoading: false, bookmarksList: result });
             });
     }
@@ -51,11 +57,10 @@ class MyBookmarks extends BaseGadget {
         return d.rowClass;
     }
 
-    selectAll = () => {
-        let { bookmarksList, selAllChk } = this.state;
-        selAllChk = !selAllChk;
-        bookmarksList.forEach(wl => wl.selected = selAllChk);
+    selectAll = (selAllChk) => {
+        let { bookmarksList } = this.state;
         bookmarksList = [...bookmarksList];
+        bookmarksList.forEach(wl => wl.selected = selAllChk);
         this.setState({ selAllChk, bookmarksList });
     }
 
@@ -110,7 +115,7 @@ class MyBookmarks extends BaseGadget {
             <ScrollableTable dataset={bookmarksList}>
                 <THead>
                     <tr>
-                        <Column className="w40"><input type="checkbox" checked={selAllChk} onChange={this.selectAll} /></Column>
+                        <Column className="w40"><Checkbox checked={selAllChk} onChange={this.selectAll} /></Column>
                         <Column sortBy="ticketNo">Ticket No</Column>
                         <Column sortBy="issuetype">Type</Column>
                         <Column sortBy="summary">Summary</Column>
@@ -127,7 +132,7 @@ class MyBookmarks extends BaseGadget {
                     {(b, i) => {
                         return <tr key={b.ticketNo} onContextMenu={(e) => this.showContext(e, b)}>
                             <td className="text-center">
-                                {b.selected && <input type="checkbox" checked={true} onChange={() => this.selectTicket(b)} />}
+                                {b.selected && <Checkbox checked={true} onChange={() => this.selectTicket(b)} />}
                                 {!b.selected && <i className="fa fa-ellipsis-v" onClick={(e) => this.showContext(e, b)}></i>}
                             </td>
                             <td>

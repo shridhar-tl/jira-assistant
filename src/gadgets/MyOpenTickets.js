@@ -44,7 +44,7 @@ class MyOpenTickets extends BaseGadget {
                     {(b, i) => {
                         return <tr key={i} onContextMenu={(e) => this.showContext(e, b)}>
                             <td>
-                                <i className="fa fa-ellipsis-v" style={{ marginRight: "8px" }} onClick={(e) => this.showContext(e, b)}></i>
+                                <i className="fa fa-ellipsis-v margin-r-8" onClick={(e) => this.showContext(e, b)}></i>
                                 <a href={b.ticketNo} className="link strike" target="_blank" rel="noopener noreferrer">{b.ticketNo}</a>
                             </td>
                             <td><img className="img-x16" src={b.issuetypeIcon} alt="" />{b.issuetype}</td>

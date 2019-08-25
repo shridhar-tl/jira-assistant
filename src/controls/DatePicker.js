@@ -10,9 +10,9 @@ const labelText = ['This month', 'Last one month', 'Last month', 'This week', 'L
 class DatePicker extends PureComponent {
     constructor(props) {
         super(props);
-        const { value, range } = props;
+        const { value, range, showTime } = props;
         this.dateRange = this.getRange();
-        this.displayFormat = props.dateFormat || "DD-MMM-YYYY";
+        this.displayFormat = props.dateFormat || `DD-MMM-YYYY${showTime ? " hh:mm" : ""}`;
         this.state = { value: this.getDateValue(value, range), displayDate: "" };
     }
 
@@ -33,9 +33,10 @@ class DatePicker extends PureComponent {
     }
 
     onChange = (e, picker) => {
-        let { value } = e;
+        //let { value } = e;
         const { range } = this.props;
-        let valToPush = value;
+        let value = picker.startDate;
+        let valToPush = value.toDate();
         let displayDate = "";
 
         if (range) {
@@ -53,6 +54,10 @@ class DatePicker extends PureComponent {
                 value = [valToPush.fromDate, valToPush.toDate];
             }
         }
+        else {
+            displayDate = value.format(this.displayFormat);
+        }
+
         this.setState({ value, displayDate });
         this.props.onChange(valToPush);
     }
@@ -67,11 +72,12 @@ class DatePicker extends PureComponent {
     }
 
     render() {
-        let {
+        const {
             onChange, dateRange,
-            props: { showTime, multiselect, range, disabled, style, className, placeholder },
+            props: { showTime, multiselect, range, disabled, style, className },
             state: { value, displayDate }
         } = this;
+        let { placeholder } = this.props;
 
         //var selectionMode = "single";
         if (multiselect === true) {
@@ -85,13 +91,23 @@ class DatePicker extends PureComponent {
 
         placeholder = placeholder || "Select a date";
 
-        return <DateRangePicker style={style} className={className} disabled={disabled} startDate={value[0]} endDate={value[1]} showDropdowns={true}
-            timePicker={showTime || false}
-            ranges={range ? dateRange : null} showCustomRangeLabel={true} alwaysShowCalendars={false} maxSpan={6} autoApply={true}
-            linkedCalendars={false} autoUpdateInput={false} singleDatePicker={!range} onApply={onChange}>
-            <TextBox className="date-range-ctl" value={displayDate} readOnly={true} placeholder={placeholder} />
-            <Button icon="fa fa-calendar" className="icon" />
-        </DateRangePicker>;
+        if (range) {
+            return <DateRangePicker style={style} className={className} disabled={disabled} startDate={value[0]} endDate={value[1]} showDropdowns={true}
+                timePicker={showTime || false}
+                ranges={range ? dateRange : null} showCustomRangeLabel={true} alwaysShowCalendars={false} maxSpan={6} autoApply={true}
+                linkedCalendars={false} autoUpdateInput={false} singleDatePicker={!range} onApply={onChange}>
+                <TextBox className="date-range-ctl" value={displayDate} readOnly={true} placeholder={placeholder} />
+                <Button icon="fa fa-calendar" className="icon" />
+            </DateRangePicker>;
+        }
+        else {
+            return <DateRangePicker style={style} className={className} disabled={disabled} startDate={value} endDate={value} showDropdowns={true}
+                timePicker={showTime || false} alwaysShowCalendars={false} maxSpan={6} autoApply={true}
+                linkedCalendars={false} autoUpdateInput={false} singleDatePicker={!range} onApply={onChange}>
+                <TextBox className="date-range-ctl" value={displayDate} readOnly={true} placeholder={placeholder} />
+                <Button icon="fa fa-calendar" className="icon" />
+            </DateRangePicker>;
+        }
 
         /*
         if (range) {

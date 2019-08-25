@@ -47,6 +47,33 @@
 
 /* #region Custom styles */
 
+
+/* #region Margin related styles */
+
+.no-margin {
+    margin: 0 !important;
+}
+
+.margin-r-8 {
+    margin-right: 8px;
+}
+
+/* #endregion */
+
+
+/* #region Width related styles */
+
+.w-p-100 {
+    width: 100%;
+}
+
+.w-80 {
+    width: 80px;
+}
+
+/* #endregion */
+
+/* #region Padding related styles */
 .no-b-pad {
     padding-bottom: 0 !important;
 }
@@ -59,28 +86,22 @@
     padding-bottom: 8px;
 }
 
-.no-margin {
-    margin: 0 !important;
-}
-
-.w-p-100 {
-    width: 100%;
-}
-
-.w-80 {
-    width: 80px;
-}
-
-.link {
-    cursor: pointer;
-}
-
 .pad-15 {
     padding: 15px;
 }
 
 .pad-22 {
     padding: 22px;
+}
+
+.pad-32 {
+    padding: 32px;
+}
+
+/* #endregion */
+
+.link {
+    cursor: pointer;
 }
 
 .img-x16 {

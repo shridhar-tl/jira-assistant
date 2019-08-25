@@ -7,6 +7,7 @@ const TableContext = createContext({});
 
 const tableScrollingEvent = "tableScrolling";
 const sortChangedEvent = "sortChanged";
+const dataChangedEvent = "dataChanged";
 
 export class ScrollableTable extends PureComponent {
     constructor(props) {
@@ -19,15 +20,16 @@ export class ScrollableTable extends PureComponent {
     UNSAFE_componentWillReceiveProps(newProps) {
         if (newProps.dataset !== this.state.dataset) {
             this.setState({ dataset: newProps.dataset });
+            this.eventEmitter.emit(dataChangedEvent, newProps.dataset);
         }
     }
 
     sharedProps = {
         getData: () => this.state.dataset,
         sortBy: (sortBy) => {
-            let { sortBy: oldSortBy, isDesc } = this.state;
+            let { isDesc } = this.state;
 
-            if (sortBy === oldSortBy) { isDesc = !isDesc; }
+            if (sortBy === this.state.sortBy) { isDesc = !isDesc; }
             else { isDesc = false; }
 
             if (sortBy) {
@@ -37,6 +39,10 @@ export class ScrollableTable extends PureComponent {
             else {
                 return this.state.sortBy;
             }
+        },
+        onDataChanged: (callback) => {
+            this.eventEmitter.on(dataChangedEvent, callback);
+            return () => this.eventEmitter.off(dataChangedEvent, callback);
         },
         onSortFieldChanged: (callback) => {
             this.eventEmitter.on(sortChangedEvent, callback);
@@ -78,7 +84,7 @@ export class THead extends PureComponent {
                 }
 
                 if (this.overlay) {
-                    this.overlay.style.top = `${this.scrollTop  }px`;
+                    this.overlay.style.top = `${this.scrollTop}px`;
                 }
             }
             else {
@@ -118,7 +124,7 @@ export class THead extends PureComponent {
         const overlayStyle = { ...style, top: this.scrollTop };
 
         return (<>
-            {showOverlay && <thead ref={this.setOverLay} className={`${className  } scroll-overlay`} style={overlayStyle}>
+            {showOverlay && <thead ref={this.setOverLay} className={`${className} scroll-overlay`} style={overlayStyle}>
                 {children}
             </thead>}
             <thead ref={this.setHeaderEl} className={className} style={style}>
@@ -133,7 +139,7 @@ export class TBody extends PureComponent {
     static contextType = TableContext;
 
     render() {
-        const { children } = this.props;
+        const { children, className, style } = this.props;
         const data = this.context.getData();
         let toRender = null;
 
@@ -148,21 +154,33 @@ export class TBody extends PureComponent {
         }
 
         return (
-            <tbody>{toRender}</tbody>
+
+            <tbody className={className} style={style}>{toRender}</tbody>
         );
     }
 }
 
 export class NoDataRow extends PureComponent {
     static contextType = TableContext;
+    state = { hasRows: false };
+
+    componentDidMount() {
+        const data = this.context.getData();
+        this.setState({ hasRows: !!(data && data.length) });
+
+        this.cleanup = this.context.onDataChanged(d => this.setState({ hasRows: !!(d && d.length) }));
+    }
+
+    componentWillUnmount() {
+        this.cleanup();
+    }
 
     render() {
-        const { children, span } = this.props;
-        const data = this.context.getData();
-
-        if (!data || data.length > 0) {
+        if (this.state.hasRows) {
             return null;
         }
+
+        const { children, span } = this.props;
 
         return (
             <tbody><tr><td colSpan={span}>{children}</td></tr></tbody>
@@ -199,8 +217,9 @@ export class Column extends PureComponent {
     }
 
     render() {
-        let { className, style, sortBy: curField, children } = this.props;
         const { sortBy, isDesc } = this.state;
+        const { style, sortBy: curField, children } = this.props;
+        let { className } = this.props;
 
         if (!className) {
             className = "";
@@ -212,7 +231,7 @@ export class Column extends PureComponent {
 
         return (
             <th className={className} style={style} onClick={this.onClick}>
-                {children} {curField ? (curField === sortBy ? (<i className={`fa fa-sort-${  isDesc ? "desc" : "asc"}`}></i>) : <i className="fa fa-sort"></i>) : null}
+                {children} {curField ? (curField === sortBy ? (<i className={`fa fa-sort-${isDesc ? "desc" : "asc"}`}></i>) : <i className="fa fa-sort"></i>) : null}
             </th>
         );
     }

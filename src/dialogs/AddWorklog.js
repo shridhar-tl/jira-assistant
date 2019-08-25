@@ -87,7 +87,7 @@ class AddWorklog extends BaseDialog {
                 delete d.isUploaded;
                 delete d.worklogId;
                 delete d.parentId;
-                d.dateStarted = moment(`${(new Date()).format('yyyy/MM/dd')  } ${  d.dateStarted.format('HH:mm:ss')}`).toDate();
+                d.dateStarted = moment(`${(new Date()).format('yyyy/MM/dd')} ${d.dateStarted.format('HH:mm:ss')}`).toDate();
             }
             else {
                 this.previousTime = d.dateStarted;
@@ -100,6 +100,7 @@ class AddWorklog extends BaseDialog {
         });
     }
 
+    // eslint-disable-next-line complexity
     validateData(log, vald, ctlClass) {
         if (log.allowOverride) {
             log.overrideTimeSpent = log.overrideTimeSpent || log.timeSpent || "00:00";
@@ -211,7 +212,7 @@ class AddWorklog extends BaseDialog {
             state: { log, vald }
         } = this;
 
-        return super.renderBase(<div>
+        return super.renderBase(<div className="pad-22">
             <div className="row pad-b">
                 <div className="col-sm-3">
                     <strong>Log time</strong>
@@ -221,7 +222,7 @@ class AddWorklog extends BaseDialog {
                         <div className="ctlClass.dateStarted">
                             <DatePicker value={log.dateStarted} showTime={true} onChange={(val) => this.setValue("dateStarted", val)} />
                         </div>
-                        <span className={`help-block ${  vald.dateStarted ? '' : 'msg-error'}`}>Provide the time you had started the work</span>
+                        <span className={`help-block ${vald.dateStarted ? '' : 'msg-error'}`}>Provide the time you had started the work</span>
                     </div>
                 </div>
             </div>
@@ -237,7 +238,7 @@ class AddWorklog extends BaseDialog {
                         onChange={(val) => this.setValue("ticketNo", val)}>
                         {(ticket) => <span style={{ fontSize: 12, margin: '10px 10px 0 0' }}>{ticket.value} - {ticket.label}</span>}
                     </AutoComplete>
-                    <span className={`help-block ${  vald.ticketNo ? '' : 'msg-error'}`}>Provide the ticket no on which you had to log your work</span>
+                    <span className={`help-block ${vald.ticketNo ? '' : 'msg-error'}`}>Provide the ticket no on which you had to log your work</span>
                 </div>
             </div>
 
@@ -264,7 +265,7 @@ class AddWorklog extends BaseDialog {
                 </div>
                 <div className="col-sm-3"></div>
                 <div className="col-sm-9 no-t-padding">
-                    <span className={`help-block ${  vald.overrideTimeSpent ? '' : 'msg-error'}`}>
+                    <span className={`help-block ${vald.overrideTimeSpent ? '' : 'msg-error'}`}>
                         Provide the time spent on this task (override to change existing)</span>
                 </div>
             </div>
@@ -274,9 +275,9 @@ class AddWorklog extends BaseDialog {
                     <strong>Comments</strong>
                 </div>
                 <div className="col-sm-9">
-                    <TextBox multiline={true} rows={5} value={log.description || ""} className={`form-control ${  vald.description ? '' : 'ctl-error'}`}
+                    <TextBox multiline={true} rows={5} value={log.description || ""} className={`form-control ${vald.description ? '' : 'ctl-error'}`}
                         onChange={(val) => this.setValue("description", val)}
-                        placeholder={`Provide a brief info about the task you had done.${  minCommentLength ? ` Should be atleast ${  minCommentLength  } chars is length.` : ''}`} />
+                        placeholder={`Provide a brief info about the task you had done.${minCommentLength ? ` Should be atleast ${minCommentLength} chars is length.` : ''}`} />
                 </div>
             </div>
         </div>

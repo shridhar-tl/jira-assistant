@@ -3,7 +3,7 @@ import BaseGadget, { GadgetActionType } from './BaseGadget';
 import { ScrollableTable, THead, TBody, Column, NoDataRow } from '../components/ScrollableTable';
 import { inject } from '../services/injector-service';
 import { showContextMenu } from '../controls/ContextMenu';
-import { Button } from '../controls';
+import { Button, Checkbox } from '../controls';
 
 class PendingWorklog extends BaseGadget {
     //dateStarted
@@ -51,8 +51,10 @@ class PendingWorklog extends BaseGadget {
         this.addWorklog(newObj);
     }
 
-    selectAll(selAllWks) {
-        this.state.worklogs.forEach(wl => wl.selected = !selAllWks);
+    selectAll = (selAllChk) => {
+        const { worklogs } = this.state;
+        worklogs.forEach(wl => wl.selected = !selAllChk);
+        this.setState({ worklogs: [...worklogs], selAllChk });
     }
 
     getRowStatus(d, index) {
@@ -136,7 +138,7 @@ class PendingWorklog extends BaseGadget {
             <ScrollableTable dataset={worklogs}>
                 <THead>
                     <tr>
-                        <Column className="w40"><input type="checkbox" checked={selAllChk} onChange={this.selectAll} /></Column>
+                        <Column className="w40"><Checkbox checked={selAllChk} onChange={this.selectAll} /></Column>
                         <Column sortBy="ticketNo">Ticket No</Column>
                         <Column sortBy="summary">Summary</Column>
                         <Column sortBy="dateStarted">Log Time</Column>
@@ -146,10 +148,10 @@ class PendingWorklog extends BaseGadget {
                     </tr>
                 </THead>
                 <TBody>
-                    {(b, i) => {
+                    {b => {
                         return <tr key={b.id} onContextMenu={(e) => this.showContext(e, b)}>
                             <td className="text-center">
-                                {b.selected && <input type="checkbox" checked={true} onChange={() => this.selectRowItem(b)} />}
+                                {b.selected && <Checkbox checked={true} onChange={() => this.selectRowItem(b)} />}
                                 {!b.selected && <i className="fa fa-ellipsis-v" onClick={(e) => this.showContext(e, b)}></i>}
                             </td>
                             <td><a href={b.ticketNo} rel="noopener noreferrer" className="link strike" target="_blank">{b.ticketNo}</a></td>
