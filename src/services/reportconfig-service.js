@@ -3,7 +3,7 @@ import { initReportBuilder } from 'jsd-report';
 import EventEmitter from 'events';
 
 export default class ReportConfigService {
-    static dependencies = ["ReportService", "SessionService", "JiraService", "AjaxService", "UserGroup"];
+    static dependencies = ["ReportService", "SessionService", "JiraService", "AjaxService", "UserGroup", "UserUtilsService"];
 
     constructor($report, $session, $jira, $http, $) {
         this.$report = $report;
@@ -13,6 +13,7 @@ export default class ReportConfigService {
         this.parameters = new EventEmitter();
         this.datasets = new EventEmitter();
     }
+
     configureReport() {
         if (this.isConfigured) {
             return;
@@ -38,11 +39,11 @@ export default class ReportConfigService {
             builtInFields: {
                 UserDateFormat: { value: this.$session.CurrentUser.dateFormat, helpText: "Provides the date format of the current user" },
                 UserTimeFormat: { value: this.$session.CurrentUser.timeFormat },
-                UserDateTimeFormat: { value: `${this.$session.CurrentUser.dateFormat  } ${  this.$session.CurrentUser.timeFormat}` }
+                UserDateTimeFormat: { value: `${this.$session.CurrentUser.dateFormat} ${this.$session.CurrentUser.timeFormat}` }
             },
             commonFunctions: {
                 getUsersFromGroup: { value: (group) => { } },
-                getJiraIssueUrl: { value: (jiraIssueKey) => { } },
+                getJiraIssueUrl: { value: (jiraIssueKey) => this.$userutils.getTicketUrl(jiraIssueKey) },
                 getUserProfileUrl: { value: (userName) => { } },
                 getTicketDetails: { value: (ticketsList, fields) => this.$report.fetchTicketDetails(ticketsList, fields) },
                 executeJQL: { value: (jql, fields) => this.$jira.searchTickets(jql, fields) },
@@ -56,6 +57,7 @@ export default class ReportConfigService {
         initReportBuilder(defaultConfig);
         this.isConfigured = true;
     }
+
     getDatasetConfig(datasetTypes = {}) {
         return {
             JQL: {
@@ -66,9 +68,8 @@ export default class ReportConfigService {
                     });
                 })),
                 resolveData: (qry, parametersValues, { parameterTemplate }) => {
-                    return this.$jira.searchTickets(this.prepareJQL(qry.jql, parametersValues, parameterTemplate), qry.outputFields.map(f => f.id)).then(data => {
-                        return this.processSearchData(data);
-                    });
+                    return this.$jira.searchTickets(this.prepareJQL(qry.jql, parametersValues, parameterTemplate), qry.outputFields.map(f => f.id))
+                        .then(this.processSearchData);
                 }
             },
             FLT: true,
@@ -117,6 +118,7 @@ export default class ReportConfigService {
             STC: true
         };
     }
+
     getParameterTypesConfig() {
         let userGroups = null;
         return {
@@ -146,6 +148,7 @@ export default class ReportConfigService {
             }
         };
     }
+
     configureViewer() {
         if (this.isViewerConfigured) {
             return;
@@ -158,6 +161,7 @@ export default class ReportConfigService {
         this.configureReport();
         this.isViewerConfigured = true;
     }
+
     configureBuilder() {
         if (this.isBuilderConfigured) {
             return;
@@ -170,7 +174,8 @@ export default class ReportConfigService {
         this.configureViewer();
         this.isBuilderConfigured = true;
     }
-    processSearchData(data) {
+
+    processSearchData = (data) => {
         return data.map(d => {
             const fields = d.fields;
             fields.key = d.key;
@@ -181,6 +186,7 @@ export default class ReportConfigService {
             return fields;
         });
     }
+
     prepareJQL(jql, parameters, parameterTemplate) {
         const usedParams = jql.match(/@Parameters.([a-zA-Z_\d.]+[|a-zA-Z_\d.()"',-//]+)\$/g); // Revisit: Escape charactors removed due to warning
         if (usedParams && usedParams.length) {
@@ -197,6 +203,7 @@ export default class ReportConfigService {
         }
         return jql;
     }
+
     getParamValue(parameters, parameterTemplate, name) {
         const parts = name.split('.');
         let curPath = parameters[parts[0]];
@@ -220,6 +227,6 @@ export default class ReportConfigService {
                 }
             }
         }
-        return Number(curPath) ? curPath : `"${  curPath || ''  }"`;
+        return Number(curPath) ? curPath : `"${curPath || ''}"`;
     }
 }

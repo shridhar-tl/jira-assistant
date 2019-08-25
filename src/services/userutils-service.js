@@ -18,7 +18,7 @@ export default class UserUtilsService {
             return url;
         }
         if (!url.startsWith('/')) {
-            url = `/${  url}`;
+            url = `/${url}`;
         }
         return this.$session.CurrentUser.jiraUrl + url;
     }
@@ -38,16 +38,14 @@ export default class UserUtilsService {
             return user.avatarUrls["48x48"] || user.avatarUrls["32x32"];
         }
         else {
-            return `${this.$session.rootUrl  }/secure/useravatar?ownerId=${  user.name.toLowerCase()}`;
+            return `${this.$session.rootUrl}/secure/useravatar?ownerId=${user.name.toLowerCase()}`;
         }
         ///Security/ProfilePic / {{userInfo.name }}
     }
 
     formatDateTime = (value, format, utc) => {
-        if (!value)
-            {return value;}
-        if (!format)
-            {format = `${this.$session.CurrentUser.dateFormat  } ${  this.$session.CurrentUser.timeFormat}`;}
+        if (!value) { return value; }
+        if (!format) { format = `${this.$session.CurrentUser.dateFormat} ${this.$session.CurrentUser.timeFormat}`; }
         let date = this.$utils.convertDate(value);
         if (date && date instanceof Date) {
             if (utc === true) {
@@ -87,7 +85,7 @@ export default class UserUtilsService {
         let url = this.getTicketUrl(ticketNo);
         if (url && worklogId) {
         }
-        url += `?focusedWorklogId=${  worklogId  }&page=com.atlassian.jira.plugin.system.issuetabpanels%3Aworklog-tabpanel#worklog-${  worklogId}`;
+        url += `?focusedWorklogId=${worklogId}&page=com.atlassian.jira.plugin.system.issuetabpanels%3Aworklog-tabpanel#worklog-${worklogId}`;
         return url;
     }
 }

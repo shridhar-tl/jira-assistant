@@ -97,7 +97,7 @@ class ReportViewer extends BaseGadget {
                     const issue = issues[j];
                     const issFields = issue.fields;
                     for (let z = 0; z < this.dataFields.length; z++) {
-                        var df = this.dataFields[z];
+                        const df = this.dataFields[z];
                         if (df.functions && df.functions.useArray) {
                             if (j === 0) {
                                 if (df.id === "issuekey") {

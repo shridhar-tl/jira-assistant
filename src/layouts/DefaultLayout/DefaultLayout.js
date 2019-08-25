@@ -2,6 +2,7 @@ import React, { PureComponent, Suspense } from 'react';
 import { Route, Switch } from 'react-router-dom';
 import * as router from 'react-router-dom';
 import { Container } from 'reactstrap';
+import { CustomDialog } from "../../dialogs";
 
 import "./DefaultLayout.scss";
 
@@ -67,7 +68,7 @@ class DefaultLayout extends PureComponent {
 
     const items = navigation.items.map(p => {
       const route = { ...p };
-      route.url = `/${  userId  }${route.url}`;
+      route.url = `/${userId}${route.url}`;
       return route;
     });
     items.splice(1, 1, ...dashboards.map((p, i) => getDashboardMenu(p, i, userId)));
@@ -109,7 +110,7 @@ class DefaultLayout extends PureComponent {
                     return route.component ? (
                       <Route
                         key={idx}
-                        path={`/${  userId  }${route.path}`}
+                        path={`/${userId}${route.path}`}
                         exact={route.exact}
                         name={route.name}
                         render={props => (
@@ -129,6 +130,7 @@ class DefaultLayout extends PureComponent {
           </AppAside>
         </div>
         <ContextMenu />
+        <CustomDialog />
       </div>
     );
   }

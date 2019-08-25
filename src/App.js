@@ -61,10 +61,10 @@ class App extends PureComponent {
 
         if (result) {
           if (!pathname || pathname === "/") {
-            this.props.history.push(`/${  this.$session.userId  }/dashboard/1`);
+            this.props.history.push(`/${this.$session.userId}/dashboard/1`);
           }
           else if (!userId) {
-            this.props.history.push(`/${  this.$session.userId  }${pathname}`);
+            this.props.history.push(`/${this.$session.userId}${pathname}`);
           }
         }
         else {

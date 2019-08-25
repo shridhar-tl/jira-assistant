@@ -80,7 +80,7 @@ class ReportViewer extends BaseGadget {
         const { state: { definition, showGroupsPopup, groups } } = this;
 
         return super.renderBase(<>
-            definition && <JSRViewer api={this.getApi} definition={definition} />
+            {definition && <JSRViewer api={this.getApi} definition={definition} />}
             {showGroupsPopup && <GroupEditor groups={groups} onHide={this.usersSelected} />}
         </>
         );

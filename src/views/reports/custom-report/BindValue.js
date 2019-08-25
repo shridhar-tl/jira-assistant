@@ -34,14 +34,14 @@ class BindValue extends PureComponent {
             }
             //else if (type === "range") {
             //  if (this.row.type === "date" || this.row.type === "datetime") {
-            //    var selectHtml = '<div class="dtrange" style="width:100%;max-width:250px;"><span></span><div class="pull-right"><b class="caret"></b></div></div>';
+            //    const selectHtml = '<div class="dtrange" style="width:100%;max-width:250px;"><span></span><div class="pull-right"><b class="caret"></b></div></div>';
             //  }
             //  else {
-            //    var selectHtml = '';
+            //    const selectHtml = '';
             //  }
             //}
             //else {
-            //  var selectHtml = '<input type="text" ng-model="row.value" placeholder="value for {{row.name}}" style="width:100%;max-width:250px;">';
+            //  const selectHtml = '<input type="text" ng-model="row.value" placeholder="value for {{row.name}}" style="width:100%;max-width:250px;">';
             //}
         }
     }

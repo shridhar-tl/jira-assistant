@@ -34,20 +34,18 @@ class QueryEditor extends BaseGadget {
         return { reportQuery, selQueryId: null };
     }
 
-    initModel(clear) {
-        this.setState(this.getClearState(!!clear));
+    initModel(clear, props) {
+        this.setState(this.getClearState(!!clear, props));
     }
 
     UNSAFE_componentWillMount() {
         this.$jira.getCustomFields().then(this.processJson);
-        this.fillQueriesList();
+        if (!this.props.builderOnly) {
+            this.fillQueriesList();
+        }
         //this.$report.getSavedQuery(value).then( (result)=> {
         //  this.reportRequest = result;
         //});
-    }
-
-    UNSAFE_componentWillReceiveProps(props) {
-        this.initModel();
     }
 
     fillQueriesList() {
@@ -272,8 +270,10 @@ class QueryEditor extends BaseGadget {
         const field = this.jiraFields.first((f) => f.id === val);
         let { reportQuery } = this.state;
         reportQuery = { ...reportQuery };
+
         reportQuery.filterFields = reportQuery.filterFields.concat(this.getField(field, true));
         this.queryChanged(reportQuery);
+
         this.selectedFilterField = '';
     }
 
@@ -284,15 +284,19 @@ class QueryEditor extends BaseGadget {
 
         let { reportQuery } = this.state;
         reportQuery = { ...reportQuery };
+
         const field = this.jiraFields.first((f) => f.id === val);
         reportQuery.outputFields = reportQuery.outputFields.concat(this.getField(field, false));
+
         this.queryChanged(reportQuery);
     }
 
     removeOutputField(index) {
         let { reportQuery } = this.state;
         reportQuery = { ...reportQuery };
+
         reportQuery.outputFields.splice(index, 1);
+
         this.queryChanged(reportQuery);
     }
 
@@ -382,6 +386,15 @@ class QueryEditor extends BaseGadget {
         this.props.onChange(reportQuery);
     }
 
+    jqlChanged = (jql) => {
+        let { reportQuery } = this.state;
+        reportQuery = { ...reportQuery };
+
+        reportQuery.jql = jql;
+
+        this.queryChanged(reportQuery);
+    }
+
     renderCustomActions() {
         const {
             queryList,
@@ -413,10 +426,11 @@ class QueryEditor extends BaseGadget {
                 <Button icon="fa fa-floppy-o" label="Save Query As" type="success" onClick={this.saveQuery} disabled={!isSaveEnabled} />
             </div>}
 
-
             <div className="pull-right">
-                <Button icon="fa fa-floppy-o" label="Save Query" type="success" onClick={() => this.saveQuery(reportQuery.queryName)} disabled={!isSaveEnabled || reportQuery.isSystemQuery} />
-                <Button icon="fa fa-list" label="View Report" type="info" onClick={() => this.props.viewReport(reportQuery)} disabled={!isSaveEnabled} />
+                <Button icon="fa fa-floppy-o" label="Save Query" type="success" onClick={() => this.saveQuery(reportQuery.queryName)}
+                    disabled={!isSaveEnabled || reportQuery.isSystemQuery} />
+                <Button icon="fa fa-list" label="View Report" type="info" onClick={() => this.props.viewReport(reportQuery)}
+                    disabled={!isSaveEnabled} />
             </div>
         </>;
     }
@@ -432,7 +446,7 @@ class QueryEditor extends BaseGadget {
                 <TabPanel header="Filters" leftIcon="fa fa-filter">
                 </TabPanel>
                 <TabPanel header="Advanced Filter (JQL)">
-                    <TextBox multiline={true} value={reportQuery.jql} style={{ minWidth: '100%', minHeight: 100, height: '100%' }} />
+                    <TextBox multiline={true} value={reportQuery.jql} onChange={this.jqlChanged} style={{ minWidth: '100%', minHeight: 100, height: '100%' }} />
                 </TabPanel>
                 <TabPanel header="Display Settings" leftIcon="fa fa-columns">
                     <table className="table table-bordered table-striped">
@@ -461,7 +475,7 @@ class QueryEditor extends BaseGadget {
                                 <td className="data-center">{reportQuery.outputFields.length + 1}</td>
                                 <td>
                                     <SelectBox dataset={displayFields} value="" style={{ 'width': '100%' }}
-                                        placeholder="Choose a column to add to the list" group={true} displayField="name" valueField="id"
+                                        placeholder="Choose a column to add to the list" group={true} displayField="name" valueField="id" dataKey="id"
                                         filterPlaceholder="Type the field name to filter" onChange={this.displayFieldAdded}>
                                         {(itm, i) => {
                                             return <span>{itm.name}</span>;

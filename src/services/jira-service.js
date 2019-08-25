@@ -10,6 +10,7 @@ export default class JiraService {
         this.$message = $message;
         this.$session = $session;
     }
+
     searchTickets(jql, fields, startAt) {
         startAt = startAt || 0;
         return new Promise((resolve, reject) => {
@@ -26,7 +27,7 @@ export default class JiraService {
                     if (fields.indexOf("worklog") > -1) {
                         let prevCount = issues.length;
                         let retryCount = 3;
-                        var cback = (remaining, isus) => {
+                        const cback = (remaining, isus) => {
                             if (remaining === 0) {
                                 resolve({ total: result.total, issues: issues, startAt: startAt });
                             }
@@ -61,9 +62,11 @@ export default class JiraService {
             }
         });
     }
+
     getWorklogs(jiraKey) {
         return this.$jaHttp.get(ApiUrls.issueWorklog, jiraKey);
     }
+
     getCustomFields() {
         return this.$jaCache.session.getPromise("customFields").then((value) => {
             if (value) {
@@ -73,6 +76,7 @@ export default class JiraService {
                 .then((result) => { this.$jaCache.session.set("customFields", result, 10); return result; });
         });
     }
+
     getRapidViews() {
         const value = this.$jaCache.session.get("rapidViews");
         if (value) {
@@ -81,6 +85,7 @@ export default class JiraService {
         return this.$jaHttp.get(ApiUrls.rapidViews)
             .then((result) => { this.$jaCache.session.set("rapidViews", result.views, 10); return result.views; });
     }
+
     getProjects() {
         const value = this.$jaCache.session.get("projects");
         if (value) {
@@ -89,6 +94,7 @@ export default class JiraService {
         return this.$jaHttp.get(ApiUrls.getAllProjects)
             .then((projects) => { this.$jaCache.session.set("projects", projects, 10); return projects; });
     }
+
     getIssueTypes() {
         const value = this.$jaCache.session.get("issuetypes");
         if (value) {
@@ -97,43 +103,49 @@ export default class JiraService {
         return this.$jaHttp.get(ApiUrls.getAllIssueTypes)
             .then((issuetypes) => { this.$jaCache.session.set("issuetypes", issuetypes, 10); return issuetypes; });
     }
+
     createIssue(issue) {
         return this.$jaHttp.post(ApiUrls.getIssue, { fields: issue });
     }
+
     updateIssue(key, issue) {
         return this.$jaHttp.put(ApiUrls.individualIssue, issue, key);
     }
+
     getRapidSprintList(rapidIds) {
         const reqArr = rapidIds.map((rapidId) => {
-            return this.$jaCache.session.getPromise(`rapidSprintList${  rapidId}`).then((value) => {
+            return this.$jaCache.session.getPromise(`rapidSprintList${rapidId}`).then((value) => {
                 if (value) {
                     return value;
                 }
                 return this.$jaHttp.get(ApiUrls.rapidSprintList, rapidId)
                     .then((result) => {
                         const sprints = result.sprints.forEach((sp) => { sp.rapidId = rapidId; });
-                        this.$jaCache.session.set(`rapidSprintList${  rapidId}`, sprints, 10);
+                        this.$jaCache.session.set(`rapidSprintList${rapidId}`, sprints, 10);
                         return sprints;
                     });
             });
         });
         return Promise.all(reqArr).then((results) => { return results.union(); });
     }
+
     getSprintList(projects) {
         if (Array.isArray(projects)) {
             projects = projects.join();
         }
-        return this.$jaCache.session.getPromise(`sprintListAll${  projects}`).then((value) => {
+        return this.$jaCache.session.getPromise(`sprintListAll${projects}`).then((value) => {
             if (value) {
                 return value;
             }
             return this.$jaHttp.get(ApiUrls.sprintListAll, projects)
-                .then((result) => { this.$jaCache.session.set(`sprintListAll${  projects}`, result.sprints, 10); return result.sprints; });
+                .then((result) => { this.$jaCache.session.set(`sprintListAll${projects}`, result.sprints, 10); return result.sprints; });
         });
     }
+
     getRapidSprintDetails(rapidViewId, sprintId) {
         return this.$jaHttp.get(ApiUrls.rapidSprintDetails, rapidViewId, sprintId);
     }
+
     getOpenTickets(refresh) {
         if (!refresh) {
             const value = this.$jaCache.session.get("myOpenTickets");
@@ -154,7 +166,7 @@ export default class JiraService {
         if (pendCount > 3) {
             pendCount = 3;
         }
-        console.log(`FillStarted:- ${  issues.length  } tickets found`);
+        console.log(`FillStarted:- ${issues.length} tickets found`);
 
         const onSuccess = (res) => {
             if (res) {
@@ -173,17 +185,19 @@ export default class JiraService {
             callback(issues.length);
         }
     }
+
     fillWL(issue) {
-        console.log(`Started fetching worklog for ${  issue.key}`);
+        console.log(`Started fetching worklog for ${issue.key}`);
         return this.getWorklogs(issue.key).then((res) => {
-            console.log(`Success fetching worklog for ${  issue.key}`);
+            console.log(`Success fetching worklog for ${issue.key}`);
             if (!issue.fields) {
                 issue.fields = {};
             }
             issue.fields.worklog = res;
             return true;
-        }, () => { console.log(`Failed fetching worklog for ${  issue.key}`); return false; });
+        }, () => { console.log(`Failed fetching worklog for ${issue.key}`); return false; });
     }
+
     getCurrentUser() {
         return this.$jaHttp.get(ApiUrls.mySelf).then(null, (e) => {
             if (e.status === 401) {
@@ -193,11 +207,12 @@ export default class JiraService {
                 this.$message.warning(e.error.message, "Server error");
             }
             else {
-                this.$message.warning(`${e.status  }:- ${  e.statusText}`, "Unknown error");
+                this.$message.warning(`${e.status}:- ${e.statusText}`, "Unknown error");
             }
             return Promise.reject(e);
         });
     }
+
     getJAWorklog(worklogId, ticketNo) {
         return this.getWorklog(worklogId, ticketNo).then(w => {
             const mins = (w.timeSpentSeconds / 60);
@@ -209,11 +224,12 @@ export default class JiraService {
                 isUploaded: true,
                 ticketNo: ticketNo,
                 worklogId: Number(w.id),
-                timeSpent: `${parseInt((mins / 60).toString()).pad(2)  }:${  parseInt((mins % 60).toString()).pad(2)}`
+                timeSpent: `${parseInt((mins / 60).toString()).pad(2)}:${parseInt((mins % 60).toString()).pad(2)}`
             };
             return wl;
         });
     }
+
     getWorklog(worklogId, ticketNo) {
         return this.$jaHttp.get(ApiUrls.individualWorklog, ticketNo, worklogId);
     }

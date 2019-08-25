@@ -7,6 +7,7 @@ import { Button, SelectBox } from '../../../controls';
 import "./ReportBuilder.scss";
 import SaveReportDialog from './SaveReportDialog';
 import JQLEditorDialog from './JQLEditorDialog';
+import Dialog from '../../../dialogs';
 
 class ReportBuilder extends BaseGadget {
     constructor(props) {
@@ -42,8 +43,8 @@ class ReportBuilder extends BaseGadget {
         this.setState({ selectedDatasetType: "JQL" });
     }
 
-    saveDataset_JQL = (qry, data) => {
-        if (!qry) {
+    saveDataset_JQL = (query, data) => {
+        if (!query) {
             this.setState({ selectedDatasetType: null });
             this.resolveJQLEvent.schema.reject(false);
             this.resolveJQLEvent.data.reject(false);
@@ -51,7 +52,7 @@ class ReportBuilder extends BaseGadget {
         }
 
         const processedData = this.$reportConfig.processSearchData(data);
-        this.resolveJQLEvent.schema.resolve(qry);
+        this.resolveJQLEvent.schema.resolve(query);
         this.resolveJQLEvent.data.resolve(processedData);
         this.resolveJQLEvent = null;
 
@@ -83,12 +84,15 @@ class ReportBuilder extends BaseGadget {
     }
 
     deleteQuery = () => {
-        this.$report.deleteSavedQuery(this.state.selQueryId).then(q => {
-            this.$message.success('Selected query deleted successfully!');
-            this.setState({ selQueryId: null });
-            this.initModel();
-            this.fillQueriesList();
-        });
+        Dialog.confirmDelete(`Are you sure to delete the report named "${this.state.reportDefinition.queryName}" permenantly?`)
+            .then(() => {
+                this.$report.deleteSavedQuery(this.state.selQueryId).then(q => {
+                    this.$message.success('Selected query deleted successfully!');
+                    this.setState({ selQueryId: null });
+                    this.initModel();
+                    this.fillQueriesList();
+                });
+            });
     }
 
     saveQuery = (queryName, copy) => {
@@ -153,8 +157,8 @@ class ReportBuilder extends BaseGadget {
 
         return <div className="pnl-footer">
             {isEditing && <div className="pull-left">
-                <Button icon="fa fa-trash" label="Delete Query" className="ui-button-danger" onClick={this.deleteQuery} />
-                <Button icon="fa fa-floppy-o" label="Save Query As" className="ui-button-success" onClick={this.showSaveDialog} />
+                <Button icon="fa fa-trash" label="Delete Query" type="danger" onClick={this.deleteQuery} />
+                <Button icon="fa fa-floppy-o" label="Save Query As" type="success" onClick={this.showSaveDialog} />
             </div>}
 
             <div className="pull-right">
@@ -164,6 +168,7 @@ class ReportBuilder extends BaseGadget {
         </div>;
     }
 
+    hideDatasetPopup = () => this.setState({ selectedDatasetType: null })
 
     render() {
         const {
@@ -180,7 +185,7 @@ class ReportBuilder extends BaseGadget {
                 {reportDefinition && <JSReportBuilder api={this.getApi} definition={reportDefinition} />}
                 {showSaveDialog && <SaveReportDialog queryName={reportDefinition.queryName} allowCopy={isEditing}
                     onHide={this.hideSaveDialog} onChange={this.saveQuery} />}
-                {selectedDatasetType === 'JQL' && <JQLEditorDialog onHide={this.saveDataset_JQL} />}
+                {selectedDatasetType === 'JQL' && <JQLEditorDialog onHide={this.hideDatasetPopup} onResolve={this.saveDataset_JQL} />}
             </>
             );
         }

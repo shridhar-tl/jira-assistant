@@ -124,7 +124,7 @@ export default { items: navigation };
 /*
 REVISIT: Check if this would be needed anymore
 export function updateDashboard(dashboards) {
-    var toRemove = navigation.filter(m => m.isDashboard).forEach(item => {
+    const toRemove = navigation.filter(m => m.isDashboard).forEach(item => {
         delete item.name;
         item.url = '';
         delete item.icon;
@@ -132,7 +132,7 @@ export function updateDashboard(dashboards) {
     });
     //navigation.removeAll(toRemove);
     dashboards.forEach((d, i) => {
-        var item = navigation.splice(i + 1, 0, {
+        const item = navigation.splice(i + 1, 0, {
             name: d.name,
             id: 'D-' + i,
             url: '/dashboard' + (i ? '/' + i : ''),

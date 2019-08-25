@@ -51,7 +51,7 @@ export default class UtilsService {
 
     //ToDo:
     //loadModal(url, scope) {
-    //  var div = $('<div id="divRemoteModal" class="modal fade" role="dialog"></div>');
+    //  const div = $('<div id="divRemoteModal" class="modal fade" role="dialog"></div>');
     //  $("#divRemoteModal").remove();
     //  $("body > div.page-container").append(div);
     //}
@@ -63,7 +63,7 @@ export default class UtilsService {
     //    settings = obj.pageSettings;
     //  }
     //  if (settings) {
-    //    var items = tourData[name];
+    //    const items = tourData[name];
     //    if (items && items.length > 0) {
     //      bootstro.start('', { items: items });
     //    }

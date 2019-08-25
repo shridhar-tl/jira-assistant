@@ -25,7 +25,7 @@ class GeneralSettings extends PureComponent {
     UNSAFE_componentWillMount() {
         /*this.$jaBrowserExtn.getStorageInfo().then((info) => {
             this.spaceInfo = info;
-            var progressClass = 'progress-bar-';
+            const progressClass = 'progress-bar-';
             if (info.usedSpacePerc < 50) {
                 progressClass += 'green';
             }

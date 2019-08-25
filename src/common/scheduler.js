@@ -1,9 +1,9 @@
 var scheduler = new (function () {
-  var schedules = {};
+  const schedules = {};
 
   this.create = function (id, time, callback, options) {
     options = options || {};
-    var sch = schedules[id];
+    const sch = schedules[id];
     if (sch) { sch.cancel(); }
 
     sch = new Schedule(id, time, function () {
@@ -18,14 +18,14 @@ var scheduler = new (function () {
   function Schedule(id, time, callback, cancelled, options) {
     //this.id = id;
     //this.time = time;
-    var waitTime = null;
+    const waitTime = null;
     if (time instanceof Date) {
       waitTime = time.getTime() - (new Date()).getTime();
     }
     else if (typeof time === "number") {
       waitTime = time * 60 * 1000;
     }
-    var obj = {};
+    const obj = {};
     if (waitTime >= 0) {
       if (options.recursive) {
         obj.cTokken = setInterval(callback, waitTime);
@@ -56,13 +56,13 @@ function loadScript(src, scriptId, isLoaded, done, retryCount) {
   }
   console.log("Loading script:- " + src);
 
-  var scriptGAPI = document.createElement("script");
+  const scriptGAPI = document.createElement("script");
   scriptGAPI.id = scriptId;
   scriptGAPI.src = src;
   scriptGAPI.async = true;
   scriptGAPI.defer = true;
   //var scriptGAPI = $("head").append('<script id="' + scriptId + '" async defer src="' + src + '"></script>').get(0);
-  var lSch = scheduler.create("scriptLoader" + retryCount, 0.2, completeCallback);
+  const lSch = scheduler.create("scriptLoader" + retryCount, 0.2, completeCallback);
 
   scriptGAPI.onload = function () {
     this.onload = function () { };

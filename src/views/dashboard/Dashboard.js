@@ -97,13 +97,13 @@ class Dashboard extends PureComponent {
     /* Rewisit: Not sure where this is used
         getGadgetName(idx) {
             if (this.gadgetsList && this.gadgetsList.length > 0) {
-                var gadget = this.gadgetsList.toArray()[idx];
+                const gadget = this.gadgetsList.toArray()[idx];
                 return gadget ? gadget.title : '';
             }
         }
         getGadgetIcon(idx) {
             if (this.gadgetsList && this.gadgetsList.length > 0) {
-                var gadget = this.gadgetsList.toArray()[idx];
+                const gadget = this.gadgetsList.toArray()[idx];
                 return gadget ? gadget.iconClass : '';
             }
         }*/

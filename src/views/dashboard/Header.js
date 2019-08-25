@@ -18,7 +18,7 @@ class Header extends PureComponent {
     getStateDetails(props) {
         const { config, index } = props;
 
-        var quickViewLink = {
+        const quickViewLink = {
             label: "Set as quick view", icon: config.isQuickView ? "fa-check-square" : "fa-square",
             disabled: config.isQuickView, command: () => this.setAsQuickView(quickViewLink)
         };
