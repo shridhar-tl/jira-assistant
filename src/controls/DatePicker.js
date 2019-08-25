@@ -13,7 +13,7 @@ class DatePicker extends PureComponent {
         const { value, range, showTime } = props;
         this.dateRange = this.getRange();
         this.displayFormat = props.dateFormat || `DD-MMM-YYYY${showTime ? " hh:mm" : ""}`;
-        this.state = { value: this.getDateValue(value, range), displayDate: "" };
+        this.state = this.getDateValue(value, range);
     }
 
     getRange() {
@@ -29,7 +29,7 @@ class DatePicker extends PureComponent {
 
     UNSAFE_componentWillReceiveProps(newProps) {
         const { value, range } = newProps;
-        this.setState({ value: this.getDateValue(value, range) });
+        this.setState(this.getDateValue(value, range));
     }
 
     onChange = (e, picker) => {
@@ -63,12 +63,26 @@ class DatePicker extends PureComponent {
     }
 
     getDateValue(value, range) {
-        if (range) {
-            return typeof value === "object" && value.fromDate ? [value.fromDate, value.toDate || null] : [];
+        const newState = { displayDate: "" };
+
+        if (value) {
+            if (range) {
+                value = typeof value === "object" && value.fromDate ? [moment(value.fromDate), moment(value.toDate) || null] : [];
+                newState.value = value;
+                if (value[0] && value[1]) {
+                    newState.displayDate = `${value[0].format(this.displayFormat)} - ${value[1].format(this.displayFormat)}`;
+                }
+            }
+            else {
+                newState.value = moment(value);
+                newState.displayDate = newState.value.format(this.displayFormat);
+            }
         }
-        else {
-            return value;
+        else if (range) {
+            newState.value = [];
         }
+
+        return newState;
     }
 
     render() {
