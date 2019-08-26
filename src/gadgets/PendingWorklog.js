@@ -12,14 +12,15 @@ class PendingWorklog extends BaseGadget {
         inject(this, "WorklogService", "UtilsService", "UserUtilsService", "DataTransformService", "MessageService");
 
         this.contextMenu = [
-            { label: "Select worklog", icon: "fa fa-check-square-o", command: () => this.selectedItem.selected = true },
+            { label: "Select worklog", icon: "fa fa-check-square-o", command: () => this.selectRowItem(this.selectedItem) },
             { label: "Edit worklog", icon: "fa fa-edit", command: () => this.editWorklogObj() },
             { label: "Copy worklog", icon: "fa fa-copy", command: () => this.editWorklogObj(true) },
             { label: "Upload worklog", icon: "fa fa-upload", command: () => this.uploadWorklog([this.selectedItem]) },
             { label: "Delete worklog", icon: "fa fa-trash-o", command: () => this.deleteWorklog([this.selectedItem]) }
         ];
 
-        this.state = { selAllChk: true, isLoading: true };
+        this.state.selAllChk = true;
+        this.state.isLoading = true;
     }
 
     UNSAFE_componentWillMount() {
@@ -53,7 +54,7 @@ class PendingWorklog extends BaseGadget {
 
     selectAll = (selAllChk) => {
         const { worklogs } = this.state;
-        worklogs.forEach(wl => wl.selected = !selAllChk);
+        worklogs.forEach(wl => wl.selected = selAllChk);
         this.setState({ worklogs: [...worklogs], selAllChk });
     }
 
@@ -118,9 +119,8 @@ class PendingWorklog extends BaseGadget {
 
     selectRowItem(item) {
         item.selected = !item.selected;
-        let { worklogs } = this.state;
-        worklogs = [...worklogs];
-        this.setState({ worklogs });
+        const { worklogs } = this.state;
+        this.setState({ worklogs: [...worklogs] });
     }
 
     renderCustomActions() {

@@ -19,7 +19,7 @@ class ReportViewer extends BaseGadget {
         this.$reportConfig.parameters.removeAllListeners();
         this.$reportConfig.parameters.on("click", this.parameterClicked.bind(this));
         const { definition } = props;
-        this.state = { definition };
+        this.state.definition = definition;
     }
 
     UNSAFE_componentWillReceiveProps(props) {

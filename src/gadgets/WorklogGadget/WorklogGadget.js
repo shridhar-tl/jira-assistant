@@ -22,7 +22,8 @@ class WorklogGadget extends BaseGadget {
             pageSettings.timeZone = '1';
         }
 
-        this.state = { dateRange: {}, pageSettings };
+        this.state.dateRange = {};
+        this.state.pageSettings = pageSettings;
         const { maxHours, epicNameField } = this.$session.CurrentUser;
 
         this.maxSecsPerDay = (maxHours || 8) * 60 * 60;
@@ -86,11 +87,11 @@ class WorklogGadget extends BaseGadget {
         this.months = dateArr.groupBy((d) => d.format("MMM, yyyy")).map(grp => { return { monthName: grp.key, days: grp.values.length }; });
         let additionalJQL = (this.state.pageSettings.jql || '').trim();
         if (additionalJQL) {
-            additionalJQL = ` AND (${  additionalJQL  })`;
+            additionalJQL = ` AND (${additionalJQL})`;
         }
-        const jql = `worklogAuthor in ('${  userList.join("','")  }') and worklogDate >= '${
-             mfromDate.clone().add(-1, 'days').format("YYYY-MM-DD")  }' and worklogDate < '${  mtoDate.clone().add(1, 'days').format("YYYY-MM-DD")  }'${
-             additionalJQL}`;
+        const jql = `worklogAuthor in ('${userList.join("','")}') and worklogDate >= '${
+            mfromDate.clone().add(-1, 'days').format("YYYY-MM-DD")}' and worklogDate < '${mtoDate.clone().add(1, 'days').format("YYYY-MM-DD")}'${
+            additionalJQL}`;
         const fieldsToFetch = ["summary", "worklog", "issuetype", "parent", "project"];
         const epicNameField = this.epicNameField;
         if (epicNameField) {
@@ -132,7 +133,7 @@ class WorklogGadget extends BaseGadget {
                                 if (epicNameField) {
                                     obj.epicDisplay = fields[epicNameField];
                                     const key = obj.ticketNo.split('-')[0];
-                                    if (obj.epicDisplay && obj.epicDisplay.indexOf(`${key  }-`) === 0) {
+                                    if (obj.epicDisplay && obj.epicDisplay.indexOf(`${key}-`) === 0) {
                                         obj.epicUrl = this.$userutils.getTicketUrl(obj.epicDisplay);
                                     }
                                 }

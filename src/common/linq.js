@@ -47,6 +47,15 @@ Array.prototype.orderByDescending = function (clause) {
     return ((x < y) ? -1 : ((x > y) ? 1 : 0));
   });
 };
+
+Array.prototype.sortBy = function (clause, desc) {
+  if (clause && typeof clause === "string") {
+    const tmpSort = clause;
+    clause = (b) => b[tmpSort];
+  }
+  return desc ? this.orderByDescending(clause) : this.orderBy(clause);
+};
+
 Array.prototype.selectMany = function (clause) {
   let r = [];
   for (let i = 0; i < this.length; i++) {

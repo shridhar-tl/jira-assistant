@@ -15,7 +15,8 @@ class MyOpenTickets extends BaseGadget {
             //{ label: "Start progress", icon: "fa fa-play", command: () => this.startProgress() } //ToDo: Add option for move to progress, show in tree view
         ];
 
-        this.state = { isLoading: true, ticketList: [] };
+        this.state.isLoading = true;
+        this.state.ticketList = [];
     }
 
     UNSAFE_componentWillMount() {

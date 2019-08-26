@@ -8,7 +8,7 @@ class MyReports extends BaseGadget {
     constructor(props) {
         super(props, 'Saved Query', 'fa-filter');
         inject(this, "ReportService", "MessageService", "UserUtils");
-        this.state = { isLoading: true };
+        this.state.isLoading = true;
     }
 
     UNSAFE_componentWillMount() {
@@ -80,7 +80,7 @@ class MyReports extends BaseGadget {
                 }, err => { r.status = "Duplicate name"; return Promise.reject(err); });
             });
             Promise.all(saveAction).then(() => {
-                this.$message.success(`${selectedReports.length  } selected reports were imported`, "Reports imported");
+                this.$message.success(`${selectedReports.length} selected reports were imported`, "Reports imported");
                 this.refreshData();
                 this.reportsToImport = null;
             }, () => { this.$message.error("Some of the reports were not import!", "Import failed"); this.updateSelReportCount(); });
@@ -160,7 +160,7 @@ class MyReports extends BaseGadget {
     }
 
     editReport(rpt) {
-        this.router.navigateByUrl(`/reports/${  rpt.advanced ? "advanced" : "customgrouped"  }/${  rpt.id}`);
+        this.router.navigateByUrl(`/reports/${rpt.advanced ? "advanced" : "customgrouped"}/${rpt.id}`);
     }
 
     selectRowItem(item) {

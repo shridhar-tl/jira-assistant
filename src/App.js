@@ -40,7 +40,7 @@ class App extends PureComponent {
     this.state = { isLoading: true, needIntegration: false, authenticated: false };
   }
 
-  getMessanger = () => <Growl ref={(el) => this.messenger = el} />
+  getMessanger = () => <Growl ref={(el) => this.messenger = el} baseZIndex={3000} />
 
   UNSAFE_componentWillMount() {
     this.$message.onNewMessage((message) => {

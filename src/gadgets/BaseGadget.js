@@ -15,9 +15,11 @@ export class BaseGadget extends PureComponent {
         this.title = title;
         this.iconClass = iconClass;
         this.isGadget = props.isGadget !== false;
-        this.settings = props.settings || {};
+        this.settings = props.settings || { fullWidth: false, fullHeight: false };
         this.bodyTag = $(document.body);
-        this.state = {};
+
+        const { fullWidth = false, fullHeight = false } = this.settings;
+        this.state = { fullWidth, fullHeight };
     }
 
     getContextMenu() {
@@ -61,7 +63,14 @@ export class BaseGadget extends PureComponent {
     }
 
     setSizeOptions(fullWidth, fullHeight) {
+        const { settings } = this;
+
+        settings.fullWidth = fullWidth;
+        settings.fullHeight = fullHeight;
+
         this.setState({ fullWidth, fullHeight });
+
+        this.saveSettings();
     }
 
     UNSAFE_componentWillReceiveProps(changes) {
@@ -69,10 +78,15 @@ export class BaseGadget extends PureComponent {
             this.onResize();
         }
 
-        this.settings = changes.settings || {};
+        if (this.settings !== changes.settings) {
+            this.settings = changes.settings || {};
+
+            const { fullWidth, fullHeight } = this.settings;
+            this.setState({ fullWidth, fullHeight });
+        }
     }
 
-    toggleFullScreen() {
+    toggleFullScreen = () => {
         let { isFullScreen } = this.state;
         isFullScreen = !isFullScreen;
         if (isFullScreen) {
@@ -125,7 +139,7 @@ export class BaseGadget extends PureComponent {
 
     getHeader = () => {
         const { title, subTitle, isGadget } = this;
-        return <div onContextMenu={!isGadget ? null : (e) => showContextMenu(e, this.getContextMenu())}>
+        return <div onContextMenu={!isGadget ? null : (e) => showContextMenu(e, this.getContextMenu())} onDoubleClick={this.toggleFullScreen}>
             <i className={`fa ${this.iconClass}`}></i> {title} {subTitle && <span> - {subTitle}</span>}
             <div className="pull-right">
                 {this.renderCustomActions && this.renderCustomActions()}

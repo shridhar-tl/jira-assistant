@@ -18,7 +18,8 @@ class MyBookmarks extends BaseGadget {
             { label: "Delete Bookmark", icon: "fa fa-trash-o", command: () => this.deleteBookmark(this.selectedTicket.ticketNo) } //ToDo: Add option for move to progress, show in tree view
         ];
 
-        this.state = { selAllBks: false, bookmarksList: [] };
+        this.state.selAllBks = false;
+        this.state.bookmarksList = [];
     }
 
     selectTicket(ticket) {

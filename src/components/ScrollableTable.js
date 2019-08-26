@@ -13,12 +13,15 @@ export class ScrollableTable extends PureComponent {
     constructor(props) {
         super(props);
         this.eventEmitter = new EventEmitter();
-        this.eventEmitter.setMaxListeners(20);
+        this.eventEmitter.setMaxListeners(40);
+
+        this.actualDataset = props.dataset;
         this.state = { dataset: props.dataset };
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        if (newProps.dataset !== this.state.dataset) {
+        if (newProps.dataset !== this.actualDataset) {
+            this.actualDataset = newProps.dataset;
             this.setState({ dataset: newProps.dataset });
             this.eventEmitter.emit(dataChangedEvent, newProps.dataset);
         }
@@ -33,12 +36,19 @@ export class ScrollableTable extends PureComponent {
             else { isDesc = false; }
 
             if (sortBy) {
-                this.setState({ sortBy, isDesc });
+                let { dataset } = this.state;
+                dataset = dataset.sortBy(sortBy, isDesc);
+
+                this.setState({ dataset, sortBy, isDesc });
                 this.eventEmitter.emit(sortChangedEvent, sortBy, isDesc);
             }
             else {
                 return this.state.sortBy;
             }
+        },
+        getSortedField: () => {
+            const { sortBy, isDesc } = this.state;
+            return { sortBy, isDesc };
         },
         onDataChanged: (callback) => {
             this.eventEmitter.on(dataChangedEvent, callback);
@@ -59,11 +69,13 @@ export class ScrollableTable extends PureComponent {
     }
 
     render() {
+        const { className = "", style, children } = this.props;
+
         return (
             <div className="scroll-table-container" ref={el => this.container = el} onScroll={this.tableScrolled}>
                 <TableContext.Provider value={this.sharedProps}>
-                    <table ref={el => this.table = el} className="scroll-table table-bordered" {...this.props}>
-
+                    <table ref={el => this.table = el} className={`scroll-table table-bordered ${className}`} style={style}>
+                        {children}
                     </table>
                 </TableContext.Provider>
             </div>
@@ -138,6 +150,14 @@ export class THead extends PureComponent {
 export class TBody extends PureComponent {
     static contextType = TableContext;
 
+    componentDidMount() {
+        this.cleanup = this.context.onSortFieldChanged((sortBy, isDesc) => { this.setState({ sortBy, isDesc }); });
+    }
+
+    componentWillUnmount() {
+        this.cleanup();
+    }
+
     render() {
         const { children, className, style } = this.props;
         const data = this.context.getData();
@@ -205,6 +225,7 @@ export class Column extends PureComponent {
     state = {};
 
     componentDidMount() {
+        this.setState(this.context.getSortedField());
         this.cleanup = this.context.onSortFieldChanged((sortBy, isDesc) => { this.setState({ sortBy, isDesc }); });
     }
 

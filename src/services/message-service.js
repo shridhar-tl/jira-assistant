@@ -8,7 +8,7 @@ export default class MessageService {
     }
 
     warning(message, title) {
-        const msg = { summary: title, detail: message, severity: "warn" };
+        const msg = { life: 5000, summary: title, detail: message, severity: "warn" };
         this.handler(msg);
     }
     error(message, title, suspendable) {
@@ -17,15 +17,15 @@ export default class MessageService {
             return;
         }
         this.lastErrorTime = curErrTime;
-        const msg = { summary: title, detail: message, severity: "error" };
+        const msg = { life: 6000, summary: title, detail: message, severity: "error" };
         this.handler(msg);
     }
     success(message, title) {
-        const msg = { summary: title, detail: message, severity: "success" };
+        const msg = { life: 4000, summary: title, detail: message, severity: "success" };
         this.handler(msg);
     }
     info(message, title) {
-        const msg = { summary: title, detail: message, severity: "info" };
+        const msg = { life: 5000, summary: title, detail: message, severity: "info" };
         this.handler(msg);
     }
 }

@@ -8,15 +8,16 @@ class ReportViewer extends BaseGadget {
         inject(this, "AnalyticsService", "ReportService", "TicketService", "$transformService");
         this.queryModel = {};
     }
-    ngOnChanges(change) {
-        if ((change.queryModel && change.queryModel.currentValue)
-            || (change.queryId && change.queryId.currentValue)) {
+
+    componentWillReceiveProps(props) {
+        if (props.queryModel || (props.queryId && props.queryId)) {
             this.generateReport(this.queryModel);
         }
         else {
             this.queryModel = {};
         }
     }
+
     generateReport(queryModel) {
         this.queryModel = queryModel;
         if (queryModel) {
@@ -150,15 +151,15 @@ class ReportViewer extends BaseGadget {
         if (obj == null) {
             return '<td>&nbsp;</td>';
         }
-        return `<td>${  this.execute(obj, funcInfo)  }</td>`;
+        return `<td>${this.execute(obj, funcInfo)}</td>`;
     }
     getAggregateTD(arr, funcInfo) {
-        return `<td class="bold" rowspan="${  arr.length  }">${  this.execute(arr, funcInfo)  }</td>`;
+        return `<td class="bold" rowspan="${arr.length}">${this.execute(arr, funcInfo)}</td>`;
     }
     getGroupedTD(text, len) {
-        text += ` (${  len  })`;
+        text += ` (${len})`;
         const rotate = len > 4 || (text.length / len) < 2.5;
-        return `<td class="${  rotate ? 'rotateM90' : 'bold'  }" rowspan="${  len  }">&nbsp;<div>${  text  }</div></td>`;
+        return `<td class="${rotate ? 'rotateM90' : 'bold'}" rowspan="${len}">&nbsp;<div>${text}</div></td>`;
     }
     groupData(issues, groups) {
         if (!groups || !groups.length) {
@@ -190,8 +191,7 @@ class ReportViewer extends BaseGadget {
         else {
             return issues.groupBy((issue) => {
                 const fieldVal = issue.fields[field];
-                if (!fieldVal)
-                    {return fieldVal;}
+                if (!fieldVal) { return fieldVal; }
                 return this.execute(fieldVal, func);
             }).map((grp) => selectFunc(grp));
         }

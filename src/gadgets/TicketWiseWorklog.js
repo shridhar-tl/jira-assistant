@@ -14,6 +14,9 @@ class TicketWiseWorklog extends BaseGadget {
             { label: "Upload worklog", icon: "fa fa-clock-o", command: () => this.uploadWorklog() },
             { label: "Add worklog", icon: "fa fa-bookmark", command: () => this.addWorklog() } //ToDo: Add option for move to progress, show in tree view
         ];
+    }
+
+    componentWillMount() {
         this.refreshData();
     }
 
@@ -86,7 +89,7 @@ class TicketWiseWorklog extends BaseGadget {
                             <td>{b.totalHours}</td>
                             <td>{b.uploaded}</td>
                             <td>{b.pendingUpload}</td>
-                            <td>{b.parentKey ? (`${b.parentKey  } - ${  b.parentSumm}`) : ''}</td>
+                            <td>{b.parentKey ? (`${b.parentKey} - ${b.parentSumm}`) : ''}</td>
                             <td>
                                 <ul className="tags">
                                     {b.logData.map((ld, x) => <li key={x}>
