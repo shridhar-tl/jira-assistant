@@ -9,7 +9,7 @@ class BindFunction extends PureComponent {
                 return (((f.types.indexOf(this.row.type) > -1 || f.types.indexOf("*") > -1)
                     || (this.row.knownObj && f.types.indexOf("object") > -1))
                     && (!this.row.isArray === !f.forArray))
-                    && f.types.indexOf(`!${  this.row.type}`) === -1;
+                    && f.types.indexOf(`!${this.row.type}`) === -1;
             }).map(f => { return { value: f.name, label: f.text }; });
             if (this.row.functions) {
                 this.selFunction = this.row.functions.id;
@@ -41,7 +41,7 @@ class BindFunction extends PureComponent {
         }
         const func = functions.first((f) => f.name === funcId);
         if (!func) {
-            functions.first((f) => f.name.startsWith(`${funcId  }?`));
+            functions.first((f) => f.name.startsWith(`${funcId}?`));
         }
         if (!func) {
             console.error("Unknown function expression:", funcId);
@@ -49,7 +49,7 @@ class BindFunction extends PureComponent {
         }
         this.selFunction = funcId;
         const funcName = func.name.split("?")[0];
-        const params = !func.params ? null : func.params.map((p) => { return (p.value != null) ? p.value : p.default; });
+        const params = !func.params ? null : func.params.map((p) => { return p.value ? p.value : p.default; });
         this.row.functions = { id: func.name, name: funcName, params: params, useArray: func.aggregate, header: func.header };
     }
 

@@ -3,6 +3,14 @@ div.scroll-table-container {
     height: 100%;
     overflow: auto;
 
+    &.data-center > table.scroll-table {
+        text-align: center;
+
+        td {
+            text-align: center;
+        }
+    }
+
     caption {
         caption-side: top;
         text-align: center;
@@ -65,6 +73,10 @@ div.scroll-table-container {
                 td {
                     padding: 5px 8px 5px 10px;
                     white-space: nowrap;
+
+                    &.data-left {
+                        text-align: left;
+                    }
 
                     i.fa-ellipsis-v {
                         cursor: pointer;

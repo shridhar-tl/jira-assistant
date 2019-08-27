@@ -13,6 +13,10 @@
             }
         }
     }
+
+    button.p-autocomplete-dropdown {
+        margin-left: 0;
+    }
 }
 
 /* Datepicker */
@@ -63,4 +67,9 @@ span.ja-radio{
         margin-left: 5px;
         margin-top: 6px;
     }
+}
+
+/* Checkbox */
+.chk-label {
+    padding: 7px 0 0 5px;
 }

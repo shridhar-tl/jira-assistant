@@ -9,6 +9,12 @@ class AC extends PureComponent {
         this.state = { value };
     }
 
+    UNSAFE_componentWillReceiveProps(props) {
+        if (this.state.value !== props.value) {
+            this.setState({ value: props.value });
+        }
+    }
+
     onChange = ({ value }) => {
         this.setState({ value });
         this.props.onChange(value);

@@ -7,7 +7,7 @@ let _globalUniqueId = 0;
 class InputCheckbox extends PureComponent {
     constructor(props) {
         super(props);
-        this.inputId = props.inputId || (props.label ? `chk_${  ++_globalUniqueId}` : null);
+        this.inputId = props.inputId || (props.label ? `chk_${++_globalUniqueId}` : null);
     }
 
     onChange = (e) => {
@@ -23,7 +23,7 @@ class InputCheckbox extends PureComponent {
         return (
             <span className={className}>
                 <Checkbox inputId={inputId} onChange={onChange} checked={checked} onClick={onClick} />
-                {label && <label htmlFor={inputId}>{label}</label>}
+                {label && <label htmlFor={inputId} className="chk-label">{label}</label>}
             </span>
         );
     }

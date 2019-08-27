@@ -120,7 +120,8 @@ export default class JiraService {
                 }
                 return this.$jaHttp.get(ApiUrls.rapidSprintList, rapidId)
                     .then((result) => {
-                        const sprints = result.sprints.forEach((sp) => { sp.rapidId = rapidId; });
+                        const sprints = result.sprints;
+                        sprints.forEach((sp) => { sp.rapidId = rapidId; });
                         this.$jaCache.session.set(`rapidSprintList${rapidId}`, sprints, 10);
                         return sprints;
                     });

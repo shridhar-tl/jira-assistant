@@ -8,9 +8,6 @@ class DefaultValuesTab extends TabControlBase {
         this.state = {};
     }
 
-    UNSAFE_componentWillMount() {
-    }
-
     searchRapidView = (query) => {
         query = (query || '').toLowerCase();
         return this.props.rapidViews.filter(r => (r.name.toLowerCase().indexOf(query) >= 0 || r.id.toString().startsWith(query))

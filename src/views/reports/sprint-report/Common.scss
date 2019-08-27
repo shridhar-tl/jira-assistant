@@ -1,0 +1,13 @@
+.sprint-report {
+    .p-tabview-panels{
+        padding: 0 !important;
+    }
+
+    div.scroll-table-container {
+        height: calc(100vh - 85px);
+
+        table.scroll-table{
+            min-width: 300px;
+        }
+    }
+}

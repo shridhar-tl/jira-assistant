@@ -72,7 +72,7 @@ export class ScrollableTable extends PureComponent {
         const { className = "", style, children } = this.props;
 
         return (
-            <div className="scroll-table-container" ref={el => this.container = el} onScroll={this.tableScrolled}>
+            <div className={`scroll-table-container ${className}`} ref={el => this.container = el} onScroll={this.tableScrolled}>
                 <TableContext.Provider value={this.sharedProps}>
                     <table ref={el => this.table = el} className={`scroll-table table-bordered ${className}`} style={style}>
                         {children}

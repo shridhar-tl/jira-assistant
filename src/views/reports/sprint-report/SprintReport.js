@@ -1,63 +1,50 @@
 import React, { PureComponent } from 'react';
 import { inject } from '../../../services';
+import { TabView, TabPanel } from 'primereact/tabview';
 import $ from 'jquery';
+import RapidViewList from '../../../components/RapidViewList';
+import { Checkbox, Button } from '../../../controls';
+import SprintList from '../../../components/SprintList';
+import SummaryView1 from './SummaryView1';
+import "./Common.scss";
+import SummaryView2 from './SummaryView2';
+
+const notes = <div className="padding-15">
+    <strong>Experimental:</strong> This report is experimental and development / bug fixes are in progress. If you encounter any issues or have any
+suggestions for improvement please send us a feedback by clicking on <i className="fa fa-bug" /> icon on top right corner of the page.
+<br />
+    <br />
+    <strong>How to use:</strong> To generate the sprint report follow the below steps
+<ul>
+        <li>Rapid view: This is the name of the Agile board which contains the sprint.</li>
+        <li>Select one or more rapid view from the list. You can alternatively start typing the id or name of the board which will filter the list</li>
+        <li>If you want to repeatedly view the sprint of selective rapid views, then add it in Settings -&gt; General -&gt; Default values tab.</li>
+        <li>Once all the required rapid view is selected, sprint field will be populated with the list of available sprints.</li>
+        <li>You can either click on the drop icon and select the sprint or start typing the sprint name to filter the list</li>
+        <li>You can add one or more sprints in the sprint field and once done click Generate report button to generate the report</li>
+        <li>Select worklog option to see the worklog added by the individual users on each ticket grouped based on sprint, issue type and tickets</li>
+        <li>Add atleast 2 sprint to see the velocity graph.</li>
+    </ul>
+</div>;
 
 class SprintReport extends PureComponent {
     constructor(props) {
         super(props);
-        inject(this, "JiraService", "UtilsService");
-        this.selectedRapidViews = this.$session.CurrentUser.rapidViews;
-        this.selectedRapidIds = [];
-        this.selectedSprints = [];
+        inject(this, "JiraService", "UserUtilsService", "SessionService");
+
+        this.state = { selectedRapidViews: this.$session.CurrentUser.rapidViews, selectedSprints: null };
     }
 
-    UNSAFE_componentWillMount() {
-        this.rapidViewLoading = true;
-        return this.$jira.getRapidViews().then((views) => {
-            this.rapidViewLoading = false;
-            this.rapidViews = views.orderBy((d) => { return d.name; }).map((d) => {
-                return { name: d.name, id: d.id };
-            });
-            if (this.selectedRapidViews && this.selectedRapidViews.length > 0) {
-                this.rapidViewChanged();
-            }
-        });
-    }
+    generateReport = () => {
+        const { selectedSprints } = this.state;
 
-    searchRapidView($event) {
-        const query = ($event.query || '').toLowerCase();
-        this.filteredRapidViews = this.rapidViews.filter(r => (r.name.toLowerCase().indexOf(query) >= 0 || r.id.toString().startsWith(query))
-            && this.selectedRapidIds.indexOf(r.id) === -1);
-    }
-
-    rapidViewChanged() {
-        this.selectedRapidIds = this.selectedRapidViews.map(r => r.id);
-        this.$jira.getRapidSprintList(this.selectedRapidIds).then((sprints) => {
-            this.sprints = sprints.orderByDescending(s => s.id).ForEach((s) => {
-                if (!s.stateAppended) {
-                    s.stateAppended = true;
-                    s.name += (` - (${  s.state  })` || "");
-                }
-            });
-        });
-        this.selectedSprints.removeAll(s => this.selectedRapidIds.indexOf(s.rapidId) === -1);
-        this.sprintChanged();
-    }
-    searchSprints($event) {
-        const query = ($event.query || '').toLowerCase();
-        this.filteredSprints = this.sprints.filter(r => (r.name.toLowerCase().indexOf(query) >= 0 || r.id.toString().startsWith(query))
-            && this.selectedSprintIds.indexOf(r.id) === -1);
-    }
-    sprintChanged() {
-        this.selectedSprintIds = this.selectedSprints.map(r => r.id);
-    }
-    generateReport() {
-        const selectedItems = this.selectedSprints;
-        if (selectedItems.length === 0) {
+        if (selectedSprints && selectedSprints.length === 0) {
             return;
         }
-        this.isLoading = true;
-        const arr = selectedItems.map((sprint) => {
+
+        this.setState({ isLoading: true });
+
+        const arr = selectedSprints.map((sprint) => {
             if (sprint.report) {
                 return Promise.resolve(sprint.report);
             }
@@ -69,17 +56,15 @@ class SprintReport extends PureComponent {
                     const ticketsList = result.union(spr => spr.contents.completedIssues).distinct(t => t.key);
                     ticketsList.AddDistinctRange(result.union(spr => spr.contents.puntedIssues).distinct(t => t.key));
                     ticketsList.AddDistinctRange(result.union(spr => spr.contents.issuesNotCompletedInCurrentSprint).distinct(t => t.key));
-                    return this.$jira.searchTickets(`key in (${  ticketsList.join()  }) or parent in (${  ticketsList.join()  })`, ["summary", "worklog", "issuetype", "parent", "timeoriginalestimate"])
+                    return this.$jira.searchTickets(`key in (${ticketsList.join()}) or parent in (${ticketsList.join()})`, ["summary", "worklog", "issuetype", "parent", "timeoriginalestimate"])
                         .then(tickets => { return { sprintDetails: result, ticketDetails: tickets }; });
                 }
                 return { sprintDetails: result };
             })
             .then((data) => {
-                this.isLoading = false;
-                this.worklogDetails = data.ticketDetails;
                 const result = data.sprintDetails;
-                this.sprintDetails = result;
                 const getCountWithSP = (issues) => { return issues.count((issue) => { return ((issue.currentEstimateStatistic || {}).statFieldValue || {}).value; }); };
+                // eslint-disable-next-line complexity
                 result.forEach((sprint) => {
                     let added = 0, removed = 0, addedWithSP = 0;
                     const jiraKeysList = sprint.contents.issueKeysAddedDuringSprint;
@@ -166,23 +151,87 @@ class SprintReport extends PureComponent {
                     sprint.expanded = result.length === 1;
                     let link = $(sprint.lastUserToClose)
                         .attr('target', '_blank');
-                    link = link.attr('href', this.$utils.mapJiraUrl(link.attr('href')));
+                    link = link.attr('href', this.$userutils.mapJiraUrl(link.attr('href')));
                     sprint.lastUserToClose = $("<div/>").append(link).html();
                 });
-                // Show the second tab
-                window.setTimeout(() => this.selectedTab = 1, 500);
+
+                this.setState({ isLoading: false, worklogDetails: data.ticketDetails, selectedTab: 1, sprintDetails: result });
             });
     }
-    tabChanged(event) {
-        $('.tab-sprint .ui-tabview-panel:not(.ui-helper-hidden) div.table-container').trigger('resize');
+
+    tabChanged = (e) => {
+        this.setState({ selectedTab: e.index });
+        //$('.tab-sprint .ui-tabview-panel:not(.ui-helper-hidden) div.table-container').trigger('resize');
     }
 
+    rapidViewSelected = (val) => this.setState({ selectedRapidViews: val });
+    sprintSelected = (val) => this.setState({ selectedSprints: val });
+    incWorklogChanged = (val) => this.setState({ includeWorklogs: val });
+    showGroupsDialog = (val) => this.setState({ showGroupsPopup: val });
+
+    formatDateTime = (val) => this.$userutils.formatDateTime(val);
 
     render() {
-        return (
-            <div>
+        const {
+            state: { selectedTab, selectedRapidViews, sprintDetails, selectedSprints, includeWorklogs }
+        } = this;
 
-            </div>
+        return (
+            <div className="sprint-report">
+                <TabView activeIndex={selectedTab} onTabChange={this.tabChanged}>
+                    <TabPanel header="Settings">
+                        {notes}
+                        <div className={sprintDetails && sprintDetails.length > 0 ? 'fs-hide' : ''}>
+                            <div className="ui-g ui-fluid">
+                                <div className="ui-g-12 ui-md-2 ui-lg-2 ui-xl-1">
+                                    <strong>Rapid view</strong>
+                                </div>
+                                <div className="ui-g-12 ui-md-5 ui-lg-4 ui-xl-3">
+                                    <div className="form-group">
+                                        <RapidViewList value={selectedRapidViews} onChange={this.rapidViewSelected}
+                                            placeholder="add one or more rapid view to fetch sprints from" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="ui-g ui-fluid">
+                                <div className="ui-g-12 ui-md-2 ui-lg-2 ui-xl-1">
+                                    <strong>Sprints</strong>
+                                </div>
+                                <div className="ui-g-12 ui-md-5 ui-lg-4 ui-xl-3">
+                                    <div className="form-group">
+                                        <SprintList value={selectedSprints} rapidViews={selectedRapidViews} onChange={this.sprintSelected}
+                                            placeholder="add one or more sprint to view report" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="ui-g ui-fluid">
+                                <div className="ui-g-12 ui-md-5 ui-lg-4 ui-xl-3">
+                                    <div className="form-group">
+                                        <Checkbox checked={includeWorklogs} onChange={this.incWorklogChanged} label="Include worklog details in report for " />
+                                        <span className="link" onClick={this.showGroupsDialog} disabled={includeWorklogs}> selected users</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="ui-g ui-fluid">
+                                <div className="ui-g-12 ui-md-3 ui-lg-3 ui-xl-2">
+                                    <Button className="ui-button-primary" disabled={!selectedSprints || selectedSprints.length === 0}
+                                        icon="fa fa-play-circle" label="Generate report" onClick={this.generateReport} />
+                                </div>
+                            </div>
+                        </div>
+                    </TabPanel>
+                    <TabPanel header="Summary view 1">
+                        {sprintDetails && <SummaryView1 sprintDetails={sprintDetails} formatDateTime={this.formatDateTime} />}
+                    </TabPanel >
+                    <TabPanel header="Summary view 2">
+                        {sprintDetails && <SummaryView2 sprintDetails={sprintDetails} formatDateTime={this.formatDateTime} />}
+                    </TabPanel>
+                    <TabPanel header="Velocity chart">
+                    </TabPanel>
+                    <TabPanel header="Worklog details">
+                    </TabPanel>
+                </TabView >
+            </div >
         );
     }
 }
