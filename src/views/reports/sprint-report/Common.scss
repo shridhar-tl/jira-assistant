@@ -3,11 +3,23 @@
         padding: 0 !important;
     }
 
-    div.scroll-table-container {
+    div.scroll-table-container.f-height {
         height: calc(100vh - 85px);
 
         table.scroll-table{
             min-width: 300px;
         }
+    }
+
+    div.scroll-table-container.summ-2 {
+        height: calc(100vh - 162px);
+
+        table.scroll-table{
+            width: 100%;
+        }
+    }
+
+    div.scroll-table-container.p-100 {
+        width: calc(100% - 400px)
     }
 }

@@ -1,20 +1,31 @@
 import React, { PureComponent } from 'react';
+import { ScrollableTable, THead, TBody } from "../../../components/ScrollableTable";
+import { Checkbox } from '../../../controls';
 
 class SprintWiseWorklog extends PureComponent {
-    UNSAFE_componentWillReceiveProps(change) {
-        if (this.props.groups) {
-            this.props.groups.forEach(grp => {
-                grp.include = true;
-                grp.users.forEach(usr => usr.include = true);
-            });
+    state = { showSubtask: false, showIncomplete: false, excludeNonSprintHrs: false };
+
+    UNSAFE_componentWillReceiveProps(props) {
+        if (props.groups !== this.state.groups) {
+            this.updateGroups(props.groups);
         }
+    }
+
+    updateGroups(groups) {
+        groups = [...groups];
+        groups.forEach(grp => {
+            grp.include = true;
+            grp.users.forEach(usr => usr.include = true);
+        });
+        this.setState({ groups });
+
         if (this.ticketDetails) {
             this.processTicketData();
         }
     }
 
     processTicketData() {
-        const userList = this.groups.union(grp => grp.users.map(u => u.name)).distinct();
+        const userList = this.props.groups.union(grp => grp.users.map(u => u.name)).distinct();
         this.reportData = this.sprintDetails.map(curSprint => {
             const sprintInfo = curSprint.sprint;
             const sprintWorklogs = {};
@@ -158,7 +169,9 @@ class SprintWiseWorklog extends PureComponent {
         return issues;
     }
 
-    updateWorklogDetails() {
+    updateWorklogDetails(showIncomplete) {
+        this.setState({ showIncomplete });
+
         this.reportData.forEach(sprint => {
             const sprintWorklogs = {};
             sprint.worklogs = sprintWorklogs;
@@ -180,7 +193,7 @@ class SprintWiseWorklog extends PureComponent {
                     let grandTotalAll = 0;
                     const groupTotal = [];
                     const groupTotalAll = [];
-                    this.groups.forEach((grp, grpIdx) => {
+                    this.props.groups.forEach((grp, grpIdx) => {
                         if (!grp.include) {
                             return;
                         }
@@ -223,13 +236,165 @@ class SprintWiseWorklog extends PureComponent {
         }); // End of sprint loop
     }
 
-    render() {
-        return (
-            <div>
+    toggleSubTasks = (val) => this.setState({ showSubtask: val })
+    toggleNonSprintHrs = (val) => this.setState({ excludeNonSprintHrs: val })
 
-            </div>
+    convertSecs = (val) => val
+
+    render() {
+        const {
+            props: { groups },
+            state: { showSubtask, showIncomplete, excludeNonSprintHrs, reportData }
+        } = this;
+
+        return (
+            <>
+                <div>
+                    <Checkbox checked={showSubtask} onChange={this.toggleSubTasks} label="Show subtask breakup" />
+                    <Checkbox checked={showIncomplete} label="Include in-complete stories" onChange={this.updateWorklogDetails} />
+                    <Checkbox checked={excludeNonSprintHrs} onChange={this.toggleNonSprintHrs} label="Exclude hours logged out of sprint" disabled />
+                    <br />
+                    <strong>Note: </strong> Hours displayed below may not be accurate. Still work in progress.
+                </div>
+
+                <ScrollableTable dataset={reportData} class="dataTable exportable" exportSheetName="Worklog details">
+                    <THead>
+                        <tr>
+                            <th rowSpan="3" colSpan="2" style={{ width: "120px", minWidth: "120px" }}>Ticket number</th>
+                            <th rowSpan="3" style={{ width: "400px" }}>Summary</th>
+                            <th rowSpan="3" style={{ width: "100px" }}>Sprint status</th>
+                            <th rowSpan="3" style={{ width: "60px" }}>Story points</th>
+                            <th rowSpan="3" style={{ width: "60px" }}>Estimate</th>
+                            {groups.map((grp, g) => <th key={g} colSpan={grp.users.length + 1} class="data-center">
+                                <Checkbox checked={grp.include} title="Select to include the worklog of this group in grand total"
+                                    onChange="grp.include=!grp.include;updateWorklogDetails()" label={grp.name} />
+                            </th>)}
+                            <th rowSpan="3" style={{ width: "70px" }}>Grand total</th>
+                        </tr>
+                        <tr exportHidden={true}>
+                            {groups.map((grp) => <>
+                                {grp.users.map((user) => <th class="data-center" style={{ width: "100px" }}>
+                                    <Checkbox checked={user.include} onChange="user.include=!user.include;updateWorklogDetails()"
+                                        title="Select to include the worklog of this user in group total" />
+                                </th>)}
+                                <th rowSpan="2" style={{ width: "70px" }}>Group total</th>
+                            </>)}
+                        </tr>
+                        <tr>
+                            {groups.map((grp) => <>
+                                {grp.users.map((user) => <th ngFor="let user of " class="data-center" style={{ width: "100px" }}>{user.displayName}</th>)}
+                            </>)}
+                        </tr>
+                    </THead>
+                    <TBody>
+                        {(sprint, i) => <SprintDetails groups={groups} sprint={sprint} showIncomplete={showIncomplete}
+                            showSubtask={showSubtask} convertSecs={this.convertSecs} />}
+                    </TBody>
+                </ScrollableTable>
+            </>
         );
     }
 }
 
 export default SprintWiseWorklog;
+
+class SprintDetails extends PureComponent {
+    render() {
+        const { groups, sprint, showIncomplete, showSubtask, convertSecs } = this.props;
+
+        return (
+            <>
+                <tr>
+                    <td colspan="4"><strong>{sprint.sprintName}</strong></td>
+                    <td exportType="number" class="data-center"><strong>{sprint.completedSP + (showIncomplete ? sprint.incompleteSP : 0)}</strong></td>
+                    <td exportType="number" class="data-center"><strong>{convertSecs(sprint.estimate)}</strong></td>
+                    {groups.map((grp, i) => <>
+                        {grp.users.map((user) => <td class="data-center" exportType="number">{convertSecs(sprint.worklogs[user.name])}</td>)}
+                        <td exportType="number" class="data-center"><strong>{convertSecs(sprint.groupTotal[i])}</strong></td>
+                    </>)}
+                    <td exportType="number" class="data-center"><strong>{convertSecs(sprint.grandTotal)}</strong></td>
+                </tr >
+                <IssueTypesList issueTypes={sprint.issuetypes} groups={groups} showIncomplete={showIncomplete} showSubtask={showSubtask} />
+            </>
+        );
+    }
+}
+
+class IssueTypesList extends PureComponent {
+    render() {
+        const { convertSecs, issueTypes, groups, showIncomplete, showSubtask } = this.props;
+
+        return issueTypes.map((type) => <>
+            <tr>
+                <td colspan="4"><img src={type.issuetype.iconUrl} alt="" /> {type.issuetype.name}</td>
+                <td exportType="number" class="data-center">{type.completedSP + (showIncomplete ? type.incompleteSP : 0)}</td>
+                <td exportType="number" class="data-center"><strong>{type.estimate | convertSecs}</strong></td>
+                {groups.map((grp, i) => <>
+                    {grp.users.map((user) => <td class="data-center" exportType="number">
+                        {convertSecs(type.worklogs[user.name])}
+                    </td>)}
+                    <td exportType="number" class="data-center"><strong>{type.groupTotal[i] | convertSecs}</strong></td>
+                </>)}
+                <td exportType="number" class="data-center"><strong>{type.grandTotal | convertSecs}</strong></td>
+            </tr >
+            <IssueList groups={groups} issues={type.issues} showIncomplete={showIncomplete} showSubtask={showSubtask} />
+        </>);
+    }
+}
+
+class IssueList extends PureComponent {
+    render() {
+        const { convertSecs, groups, issues, showIncomplete, showSubtask } = this.props;
+
+        return (
+            issues.map((issue) => {
+                if (!showIncomplete && !issue.completed) { return null; }
+
+                return <>
+                    <tr>
+                        <td colspan="2">{issue.ticketNo}</td>
+                        <td>{issue.summary}</td>
+                        <td>{issue.completed ? 'Completed' : 'In complete'}</td>
+                        <td exportType="number" class="data-center">{issue.storyPoint}</td>
+                        <td exportType="number" class="data-center">{convertSecs(showSubtask ? issue.estimate : issue.estimateAll)}</td>
+                        {
+                            groups.map((grp, i) => <>
+                                {
+                                    grp.users.map((user) => <td class="data-center" exportType="number">
+                                        {convertSecs(showSubtask ? issue.worklogs[user.name].total : issue.worklogs[user.name].allTotal)}
+                                    </td>)
+                                }
+                                <td exportType="number"><strong>{convertSecs(showSubtask ? issue.groupTotal[i] : issue.groupTotalAll[i])}</strong></td>
+                            </>)
+                        }
+                        <td exportType="number"><strong>{convertSecs(showSubtask ? issue.grandTotal : issue.grandTotalAll)}</strong></td>
+                    </tr>
+
+                    {showSubtask && <SubtaskList issue={issue} groups={groups} convertSecs={convertSecs} />}
+                </>;
+            })
+        );
+    }
+}
+
+class SubtaskList extends PureComponent {
+    render() {
+        const { issue, groups, convertSecs } = this.props;
+
+        return (
+            issue.subtasks.map((task) => <tr>
+                <td style={{ width: "25px" }}>-</td>
+                <td>{task.ticketNo}</td>
+                <td>{task.summary}</td>
+                <td></td>
+                <td exportType="number" class="data-center">{task.storyPoint}</td>
+                <td exportType="number" class="data-center">{convertSecs(task.estimate)}</td>
+                {groups.map((grp, i) => <>
+                    {grp.users.map((user, j) => <td className="data-center">{convertSecs(task.worklogs[user.name].total)}</td>)}
+                    <td exportType="number"><strong>{convertSecs(issue.groupTotal[i])}</strong></td>
+                </>)}
+                <td exportType="number"><strong>{convertSecs(task.grandTotal)}</strong></td>
+            </tr>)
+        );
+    }
+}

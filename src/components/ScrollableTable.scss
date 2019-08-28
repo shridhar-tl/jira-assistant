@@ -65,6 +65,12 @@ div.scroll-table-container {
         }
 
         tbody {
+            tr:not(.auto-wrap) {
+                td {
+                    white-space: nowrap;
+                }
+            }
+
             tr {
                 &:nth-child(even) {
                     background-color: #fafafb;
@@ -72,7 +78,6 @@ div.scroll-table-container {
 
                 td {
                     padding: 5px 8px 5px 10px;
-                    white-space: nowrap;
 
                     &.data-left {
                         text-align: left;

@@ -6,7 +6,7 @@ class SummaryView1 extends PureComponent {
         const { sprintDetails, formatDateTime } = this.props;
 
         return (
-            <ScrollableTable dataset={sprintDetails} className="no-full-width data-center exportable" exportSheetName="Summary view 1">
+            <ScrollableTable dataset={sprintDetails} className="f-height no-full-width data-center exportable" exportSheetName="Summary view 1">
                 <THead>
                     <tr>
                         <th rowSpan={2} colSpan={2}>Sprint details</th>

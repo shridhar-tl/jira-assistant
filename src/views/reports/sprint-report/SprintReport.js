@@ -8,6 +8,7 @@ import SprintList from '../../../components/SprintList';
 import SummaryView1 from './SummaryView1';
 import "./Common.scss";
 import SummaryView2 from './SummaryView2';
+import SprintWiseWorklog from './SprintWiseWorklog';
 
 const notes = <div className="padding-15">
     <strong>Experimental:</strong> This report is experimental and development / bug fixes are in progress. If you encounter any issues or have any
@@ -30,9 +31,13 @@ suggestions for improvement please send us a feedback by clicking on <i classNam
 class SprintReport extends PureComponent {
     constructor(props) {
         super(props);
-        inject(this, "JiraService", "UserUtilsService", "SessionService");
+        inject(this, "JiraService", "UserUtilsService", "SessionService", "UserGroupService");
 
         this.state = { selectedRapidViews: this.$session.CurrentUser.rapidViews, selectedSprints: null };
+    }
+
+    UNSAFE_componentWillMount() {
+        this.$usergroup.getUserGroups().then(groups => this.setState({ groups }));
     }
 
     generateReport = () => {
@@ -173,7 +178,7 @@ class SprintReport extends PureComponent {
 
     render() {
         const {
-            state: { selectedTab, selectedRapidViews, sprintDetails, selectedSprints, includeWorklogs }
+            state: { selectedTab, selectedRapidViews, sprintDetails, selectedSprints, includeWorklogs, groups }
         } = this;
 
         return (
@@ -229,6 +234,7 @@ class SprintReport extends PureComponent {
                     <TabPanel header="Velocity chart">
                     </TabPanel>
                     <TabPanel header="Worklog details">
+                        {includeWorklogs && <SprintWiseWorklog groups={groups} />}
                     </TabPanel>
                 </TabView >
             </div >
