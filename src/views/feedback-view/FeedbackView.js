@@ -18,7 +18,7 @@ class FeedbackView extends PureComponent {
     resizeIframe(obj) {
         setTimeout(function () {
             obj.style.height = 0;
-            obj.style.height = `${obj.contentWindow.document.body.scrollHeight + 30  }px`;
+            obj.style.height = `${obj.contentWindow.document.body.scrollHeight + 30}px`;
         }, 2000);
     }
 

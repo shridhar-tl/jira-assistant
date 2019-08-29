@@ -27,16 +27,16 @@ export default class CalendarService {
         const calendarUrl = this.CALENDAR_EVENTS_API_URL.replace('{calendarId}', encodeURIComponent(options.calendar || 'primary')) + ([
             'showDeleted=false',
             'singleEvents=true',
-            `timeMin=${  encodeURIComponent(startDate.toDate().toISOString())}`,
-            `timeMax=${  encodeURIComponent(endDate.toDate().toISOString())}`,
-            `maxResults=${  options.maxResults || 1000}`,
+            `timeMin=${encodeURIComponent(startDate.toDate().toISOString())}`,
+            `timeMax=${encodeURIComponent(endDate.toDate().toISOString())}`,
+            `maxResults=${options.maxResults || 1000}`,
             'orderBy=startTime',
             'singleEvents=true'
         ].join('&'));
         const onAuthSuccess = (authToken) => {
             return new Promise((resolve, reject) => {
                 $.ajax(calendarUrl, {
-                    headers: { 'Authorization': `Bearer ${  authToken}` },
+                    headers: { 'Authorization': `Bearer ${authToken}` },
                     success: (data) => {
                         resolve(data.items.map((e) => {
                             const obj = {
@@ -56,7 +56,7 @@ export default class CalendarService {
                         this.$analytics.trackEvent("Fetch calendar data");
                     },
                     error: (error) => {
-                        this.$analytics.trackEvent(`Authentication error :-${  (error || "").status || ""}`);
+                        this.$analytics.trackEvent(`Authentication error :-${(error || "").status || ""}`);
                         if (error && error.status === 401) {
                             this.$message.warning("Authenticated session with the Google Calendar has expired. You will have to reauthenticate.");
                             this.$jaBrowserExtn.removeAuthTokken(authToken);

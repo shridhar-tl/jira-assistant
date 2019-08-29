@@ -6,7 +6,7 @@ let _globalUniqueId = 0;
 class RadioButton extends PureComponent {
     constructor(props) {
         super(props);
-        this.inputId = props.inputId || (props.label ? `rdo_${  ++_globalUniqueId}` : null);
+        this.inputId = props.inputId || (props.label ? `rdo_${++_globalUniqueId}` : null);
     }
 
     onChange = (e) => {
@@ -19,7 +19,7 @@ class RadioButton extends PureComponent {
         const checked = defaultValue === value;
 
         return (
-            <span className={`ja-radio ${  className || ""}`} title={title}>
+            <span className={`ja-radio ${className || ""}`} title={title}>
                 <RButton inputId={inputId} name={name} onChange={onChange} checked={checked} disabled={disabled} />
                 {label && <label htmlFor={inputId}>{label}</label>}
             </span>

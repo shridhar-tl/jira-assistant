@@ -78,8 +78,8 @@ class GeneralSettings extends PureComponent {
         const dashboards = this.$dashboard.getDashboards();
         const dashboardMenus = [];
         dashboards.forEach((d, i) => {
-            const id = `D-${  i}`;
-            const url = `/dashboard/${  i}`;
+            const id = `D-${i}`;
+            const url = `/dashboard/${i}`;
             menus.push({ id, name: d.name, icon: d.icon, url, selected: selMenus.indexOf(id) > -1 });
             dashboardMenus.push({ value: id, label: d.name, icon: d.icon });
         });
@@ -117,7 +117,7 @@ class GeneralSettings extends PureComponent {
                 const list = tickets.map(t => res[t.toUpperCase()] || t);
                 const invalidTickets = list.filter(t => typeof t === "string");
                 if (invalidTickets.length > 0) {
-                    this.$message.warning(`Invalid default ticket number(s) specified for meetings: ${  invalidTickets.join()}`);
+                    this.$message.warning(`Invalid default ticket number(s) specified for meetings: ${invalidTickets.join()}`);
                     return false;
                 }
                 this.settings.meetingTicket = list.map(t => t.key).join();
@@ -270,11 +270,11 @@ class GeneralSettings extends PureComponent {
         cUser.team = sett.teamMembers;
         if (sett.startOfDay) {
             const temp = sett.startOfDay.split(':');
-            cUser.startOfDay = `${temp[0]  }:${  temp[1]}`;
+            cUser.startOfDay = `${temp[0]}:${temp[1]}`;
         }
         if (sett.endOfDay) {
             const temp = sett.endOfDay.split(':');
-            cUser.endOfDay = `${temp[0]  }:${  temp[1]}`;
+            cUser.endOfDay = `${temp[0]}:${temp[1]}`;
         }
 
         this.fillMenus();
@@ -287,14 +287,14 @@ class GeneralSettings extends PureComponent {
     intgStatusChanged = (removedIntg) => this.setState({ removedIntg })
 
     render() {
-        let {
+        const {
             settings, noDonations,
             //props: { },
             state: { currentTabIndex, removedIntg, numericFields, stringFields, projects, rapidViews }
         } = this;
 
         return (<>
-            <TabView styleclass="query-tab" activeindex={currentTabIndex} onChange={($event) => currentTabIndex = $event.index}>
+            <TabView styleclass="query-tab" activeindex={currentTabIndex} onChange={this.tabChanged}>
                 <TabPanel header="General" lefticon="fa-filter" selected="true">
                     <GeneralTab settings={settings} noDonations={noDonations} onChange={this.settingsChanged} />
                 </TabPanel>

@@ -2,7 +2,7 @@
 
 Number.prototype.pad = function (size) {
     let s = String(this);
-    while (s.length < (size || 2)) { s = `0${  s}`; }
+    while (s.length < (size || 2)) { s = `0${s}`; }
     return s;
 };
 
@@ -27,11 +27,11 @@ Date.prototype.isBetween = function (fromDate, toDate) {
 
 Date.prototype.format = function (seperat) {
     const yyyy = this.getFullYear();
-    const mm = this.getMonth() < 9 ? `0${  this.getMonth() + 1}` : (this.getMonth() + 1); // getMonth() is zero-based
-    const dd = this.getDate() < 10 ? `0${  this.getDate()}` : this.getDate();
-    const hh = this.getHours() < 10 ? `0${  this.getHours()}` : this.getHours();
-    const min = this.getMinutes() < 10 ? `0${  this.getMinutes()}` : this.getMinutes();
-    const ss = this.getSeconds() < 10 ? `0${  this.getSeconds()}` : this.getSeconds();
+    const mm = this.getMonth() < 9 ? `0${this.getMonth() + 1}` : (this.getMonth() + 1); // getMonth() is zero-based
+    const dd = this.getDate() < 10 ? `0${this.getDate()}` : this.getDate();
+    const hh = this.getHours() < 10 ? `0${this.getHours()}` : this.getHours();
+    const min = this.getMinutes() < 10 ? `0${this.getMinutes()}` : this.getMinutes();
+    const ss = this.getSeconds() < 10 ? `0${this.getSeconds()}` : this.getSeconds();
 
 
     if (seperat) {
@@ -80,7 +80,7 @@ String.prototype.format = function (args) {
     if (args && !Array.isArray(args)) { args = [args]; }
     let str = this;
     for (let i = 0; i < args.length; i++) {
-        str = str.replace(new RegExp(`\\{${  i  }\\}`, 'g'), args[i]);
+        str = str.replace(new RegExp(`\\{${i}\\}`, 'g'), args[i]);
     }
     return str;
 };

@@ -5,12 +5,12 @@ export default class UtilsService {
     formatDate(date, format) {
         const yyyy = date.getFullYear().toString();
         const mmInt = date.getMonth();
-        const mm = mmInt < 9 ? `0${  mmInt + 1}` : (mmInt + 1).toString(); // getMonth() is zero-based
-        const dd = date.getDate() < 10 ? `0${  date.getDate()}` : date.getDate().toString();
+        const mm = mmInt < 9 ? `0${mmInt + 1}` : (mmInt + 1).toString(); // getMonth() is zero-based
+        const dd = date.getDate() < 10 ? `0${date.getDate()}` : date.getDate().toString();
         const hhInt = date.getHours();
-        const hh = hhInt < 10 ? `0${  hhInt}` : hhInt.toString();
-        const min = date.getMinutes() < 10 ? `0${  date.getMinutes()}` : date.getMinutes().toString();
-        const ss = date.getSeconds() < 10 ? `0${  date.getSeconds()}` : date.getSeconds().toString();
+        const hh = hhInt < 10 ? `0${hhInt}` : hhInt.toString();
+        const min = date.getMinutes() < 10 ? `0${date.getMinutes()}` : date.getMinutes().toString();
+        const ss = date.getSeconds() < 10 ? `0${date.getSeconds()}` : date.getSeconds().toString();
         const day = date.getDay();
         if (format)
             {return format

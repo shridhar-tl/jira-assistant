@@ -25,7 +25,7 @@ export default class ReportService {
                     });
                     const json = JSON.stringify({ exported: new Date(), reports: qrys });
                     let fileName = qrys.length === 1 ? qrys[0].queryName : "JA_Reports";
-                    fileName = `${fileName  }_${  new Date().format('yyyyMMdd')  }.jrd`;
+                    fileName = `${fileName}_${new Date().format('yyyyMMdd')}.jrd`;
                     saveStringAs(json, "jrd", fileName);
                     return true;
                 });
@@ -64,7 +64,7 @@ export default class ReportService {
                 .first()
                 .then((qry) => {
                     if (qry) {
-                        return Promise.reject({ message: `The query with the name "${  query.queryName  }" already exists!` });
+                        return Promise.reject({ message: `The query with the name "${query.queryName}" already exists!` });
                     }
                     else {
                         if (updateId) {
@@ -80,7 +80,7 @@ export default class ReportService {
                 .first()
                 .then((qry) => {
                     if (qry) {
-                        return Promise.reject({ message: `The query with the name "${  query.queryName  }" already exists!` });
+                        return Promise.reject({ message: `The query with the name "${query.queryName}" already exists!` });
                     }
                     else {
                         return this.$db.savedFilters.add(query).then((newQueryId) => { return newQueryId; });

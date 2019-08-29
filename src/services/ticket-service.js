@@ -43,8 +43,8 @@ export default class TicketService {
             }
         });
         if (toFetch.length > 0) {
-            let jql = `'${  toFetch.join("', '")  }'`;
-            jql = `key in (${  jql  })`;
+            let jql = `'${toFetch.join("', '")}'`;
+            jql = `key in (${jql})`;
             return this.$jira.searchTickets(jql, fields).then((list) => {
                 result.addRange(list);
                 return result;

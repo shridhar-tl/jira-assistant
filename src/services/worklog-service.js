@@ -26,9 +26,9 @@ export default class WorklogService {
         if (!userList || userList.length === 0) {
             userList = [this.$session.CurrentUser.name];
         }
-        const jql = `worklogAuthor in ("${  userList.join("\", \"")  }") and worklogDate >= '${
-             mfromDate.clone().add(-1, 'days').format("YYYY-MM-DD")  }' and worklogDate < '${
-             mtoDate.clone().add(1, 'days').format("YYYY-MM-DD")  }'`;
+        const jql = `worklogAuthor in ("${userList.join("\", \"")}") and worklogDate >= '${
+             mfromDate.clone().add(-1, 'days').format("YYYY-MM-DD")}' and worklogDate < '${
+             mtoDate.clone().add(1, 'days').format("YYYY-MM-DD")}'`;
         if (!fields || fields.length === 0) {
             fields = ["worklog"];
         } //, "summary", "issuetype", "parent", "status", "assignee"
@@ -60,7 +60,7 @@ export default class WorklogService {
                                     summary: fields.summary,
                                     logTime: startedTime,
                                     comment: worklog.comment,
-                                    totalHours: `${parseInt((mins / 60).toString()).pad(2)  }:${  parseInt((mins % 60).toString()).pad(2)}`,
+                                    totalHours: `${parseInt((mins / 60).toString()).pad(2)}:${parseInt((mins % 60).toString()).pad(2)}`,
                                     worklogId: worklog.id
                                 });
                             }
@@ -110,7 +110,7 @@ export default class WorklogService {
         const timeSpent = entry.overrideTimeSpent || entry.timeSpent;
         const request = {
             comment: entry.description,
-            started: `${entry.dateStarted.toISOString().replace('Z', '').replace('z', '')  }+0000`,
+            started: `${entry.dateStarted.toISOString().replace('Z', '').replace('z', '')}+0000`,
             timeSpent: this.$transform.formatTs(timeSpent) //,
             //visibility = new Visibility { type="group", value= "Deployment Team" }
         };
@@ -141,7 +141,7 @@ export default class WorklogService {
             if (err.status === 400) {
                 const errors = (err.error || {}).errorMessages || [];
                 if (errors.some((e) => e.indexOf("non-editable") > -1)) {
-                    return Promise.reject({ message: `${entry.ticketNo  } is already closed and cannot upload worklog` });
+                    return Promise.reject({ message: `${entry.ticketNo} is already closed and cannot upload worklog` });
                 }
             }
             return Promise.reject(err);
@@ -278,7 +278,7 @@ export default class WorklogService {
         });
     }
 
-    getLocalWorklog(worklogId) { return this.$db.worklogs.where("id").equals(parseInt(`${  worklogId}`)).first(); }
+    getLocalWorklog(worklogId) { return this.$db.worklogs.where("id").equals(parseInt(`${worklogId}`)).first(); }
 
     getWorklog(worklog) {
         if (worklog.isUploaded) {
@@ -292,12 +292,12 @@ export default class WorklogService {
     saveWorklog(worklog, upload) {
         return this.$ticket.getTicketDetails(worklog.ticketNo).then((ticket) => {
             if (!ticket) {
-                this.$message.error(`${worklog.ticketNo  } is not a valid Jira Key`);
-                return Promise.reject(`${worklog.ticketNo  } is not a valid Jira Key`);
+                this.$message.error(`${worklog.ticketNo} is not a valid Jira Key`);
+                return Promise.reject(`${worklog.ticketNo} is not a valid Jira Key`);
             }
             if (!this.$session.CurrentUser.allowClosedTickets) {
                 if (ticket.fields.status.name.toLowerCase() === "closed") {
-                    const msg = `${ticket.key  } is already closed. Cannot add worklog for closed ticket!`;
+                    const msg = `${ticket.key} is already closed. Cannot add worklog for closed ticket!`;
                     this.$message.error(msg);
                     return Promise.reject(msg);
                 }
@@ -345,8 +345,8 @@ export default class WorklogService {
         const obj = {
             entryType: 1,
             start: worklog.dateStarted,
-            title: `${worklog.ticketNo  }: ${  worklog.description || '(no comment provided)'}`,
-            id: worklog.id.toString() + (worklog.worklogId ? `#${  worklog.worklogId}` : ""),
+            title: `${worklog.ticketNo}: ${worklog.description || '(no comment provided)'}`,
+            id: worklog.id.toString() + (worklog.worklogId ? `#${worklog.worklogId}` : ""),
             url: "",
             end: moment(worklog.dateStarted).add(this.getTimeSpent(worklog), "minutes").toDate(),
             editable: true,
@@ -368,7 +368,7 @@ export default class WorklogService {
         }
         const tmp = timeSpent.replace(" ", "0").split(':');
         if (tmp.length === 2) {
-            return ((parseInt(`0${  tmp[0]}`) * 60) + parseInt(`0${  tmp[1]}`)) * (ticks ? 60 * 1000 : 1);
+            return ((parseInt(`0${tmp[0]}`) * 60) + parseInt(`0${tmp[1]}`)) * (ticks ? 60 * 1000 : 1);
         }
         else {
             return 0;

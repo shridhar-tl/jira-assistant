@@ -1,9 +1,9 @@
-var scheduler = new (function () {
+const scheduler = new (function () {
   const schedules = {};
 
   this.create = function (id, time, callback, options) {
     options = options || {};
-    const sch = schedules[id];
+    let sch = schedules[id];
     if (sch) { sch.cancel(); }
 
     sch = new Schedule(id, time, function () {
@@ -18,7 +18,7 @@ var scheduler = new (function () {
   function Schedule(id, time, callback, cancelled, options) {
     //this.id = id;
     //this.time = time;
-    const waitTime = null;
+    let waitTime = null;
     if (time instanceof Date) {
       waitTime = time.getTime() - (new Date()).getTime();
     }
@@ -43,10 +43,10 @@ var scheduler = new (function () {
         else {
           clearTimeout(obj.cTokken);
         }
-        delete obj;
+
         cancelled();
       }
-    }
+    };
   }
 })();
 
@@ -54,7 +54,7 @@ function loadScript(src, scriptId, isLoaded, done, retryCount) {
   if (retryCount == null) {
     retryCount = 10;
   }
-  console.log("Loading script:- " + src);
+  console.log(`Loading script:- ${src}`);
 
   const scriptGAPI = document.createElement("script");
   scriptGAPI.id = scriptId;
@@ -62,13 +62,13 @@ function loadScript(src, scriptId, isLoaded, done, retryCount) {
   scriptGAPI.async = true;
   scriptGAPI.defer = true;
   //var scriptGAPI = $("head").append('<script id="' + scriptId + '" async defer src="' + src + '"></script>').get(0);
-  const lSch = scheduler.create("scriptLoader" + retryCount, 0.2, completeCallback);
+  const lSch = scheduler.create(`scriptLoader${retryCount}`, 0.2, completeCallback);
 
   scriptGAPI.onload = function () {
-    this.onload = function () { };
+    this.onload = function () { /* Nothing to do here */ };
     completeCallback(lSch);
-  }
-  scriptGAPI.onerror = function (err) { }
+  };
+  scriptGAPI.onerror = function (err) { /* Nothing to do here */ };
   scriptGAPI.onreadystatechange = function () { if (this.readyState === 'complete') { this.onload(); } };
 
   $('head').append(scriptGAPI);
@@ -76,9 +76,9 @@ function loadScript(src, scriptId, isLoaded, done, retryCount) {
   function completeCallback(sch) {
     sch.cancel();
     if (!isLoaded()) {
-      console.error("Script not loaded:- " + src);
-      scheduler.create("scriptLoadCaller" + retryCount, 10, function () {
-        $('#' + scriptId).remove();
+      console.error(`Script not loaded:- ${src}`);
+      scheduler.create(`scriptLoadCaller${retryCount}`, 10, function () {
+        $(`#${scriptId}`).remove();
         loadScript(src, scriptId, isLoaded, done, --retryCount);
       });
     }

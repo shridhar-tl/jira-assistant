@@ -244,7 +244,7 @@ class UserRow extends PureComponent {
         }
 
         return arr.map((a) => {
-            return `${this.props.formatTime(a.logTime)  }(${  this.props.convertSecs(a.totalHours)  }) - ${  a.comment}`;
+            return `${this.props.formatTime(a.logTime)}(${this.props.convertSecs(a.totalHours)}) - ${a.comment}`;
         }).join(';\n');
     }
 
@@ -259,7 +259,7 @@ class UserRow extends PureComponent {
 
     getLogEntries(entries) {
         if (Array.isArray(entries) && entries.length > 0) {
-            return entries.map((d, i) => <span key={i} title={`${this.props.formatTime(d.logTime)  } - ${  d.comment}`}> {this.props.convertSecs(d.totalHours)}; </span>);
+            return entries.map((d, i) => <span key={i} title={`${this.props.formatTime(d.logTime)} - ${d.comment}`}> {this.props.convertSecs(d.totalHours)}; </span>);
         }
     }
 
@@ -274,7 +274,7 @@ class UserRow extends PureComponent {
                 <tr className="pointer auto-wrap" onClick={this.toggleDisplay}>
                     <td className="data-left">
                         <div className="user-info" style={{ paddingLeft: 0 }}>
-                            <i className={`pull-left drill-down fa ${  expanded ? 'fa-chevron-circle-down' : 'fa-chevron-circle-right'}`}
+                            <i className={`pull-left drill-down fa ${expanded ? 'fa-chevron-circle-down' : 'fa-chevron-circle-right'}`}
                                 title="Click to toggle ticket details" />
                             <img src={u.imageUrl} height={40} width={40} className="pull-left" alt={u.displayName} />
                             <span className="name">{u.displayName}</span>

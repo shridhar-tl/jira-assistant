@@ -36,7 +36,7 @@ class DashboardName extends PureComponent {
         if (isEditMode) {
             return (
                 <div className="p-inputgroup dashboard-name-edit">
-                    <Button icon={`fa ${  icon}`} />
+                    <Button icon={`fa ${icon}`} />
                     <TextBox value={value} maxLength={18} onChange={this.onChange} />
                     <Button icon="fa fa-check" type="success" onClick={this.saveName} disabled={!value || value.length <= 2} />
                     <Button icon="fa fa-undo" onClick={this.cancelEdit} />
@@ -45,7 +45,7 @@ class DashboardName extends PureComponent {
         } else {
             return (
                 <div className="dashboard-name" title="Click to edit the name or change the icon" onClick={() => this.setState({ isEditMode: true })}>
-                    <i className={`board-icon fa ${  icon}`}></i>
+                    <i className={`board-icon fa ${icon}`}></i>
                     <span className="lev-1">Dashboards</span>
                     <i className="fa fa-arrow-right"></i>
                     <span className="lev-2">{value}</span>

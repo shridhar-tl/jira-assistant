@@ -146,12 +146,12 @@ export default class CacheService {
     stringify(value) {
         return JSON.stringify(value, (key, val) => {
             if (val && val instanceof Date) {
-                return `/Date(${  val.getTime()  })/`;
+                return `/Date(${val.getTime()})/`;
             }
             else if (val && typeof val === "string") {
                 const a = this.reISO.test(val); //reISO.exec(val);
                 if (a) {
-                    return `/Date(${  new Date(val).getTime()  })/`; //Date.UTC(+a[1], +a[2] - 1, +a[3], +a[4], +a[5], +a[6])
+                    return `/Date(${new Date(val).getTime()})/`; //Date.UTC(+a[1], +a[2] - 1, +a[3], +a[4], +a[5], +a[6])
                     //this[key] = val;
                     //return val;
                 }

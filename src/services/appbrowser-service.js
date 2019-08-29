@@ -186,8 +186,8 @@ export default class AppBrowserService {
             const CLIENT_ID = "692513716183-jm587gc534dvsere4qhnk5bj68pql3p9.apps.googleusercontent.com";
             const SCOPES = ["https://www.googleapis.com/auth/calendar.readonly"];
             const AUTH_URL = `https://accounts.google.com/o/oauth2/auth?client_id=${
-                 CLIENT_ID  }&response_type=token&redirect_uri=${  encodeURIComponent(REDIRECT_URL)
-                 }&scope=${  encodeURIComponent(SCOPES.join(" "))}`;
+                 CLIENT_ID}&response_type=token&redirect_uri=${encodeURIComponent(REDIRECT_URL)
+                 }&scope=${encodeURIComponent(SCOPES.join(" "))}`;
             //REVISIT: const VALIDATION_BASE_URL = "https://www.googleapis.com/oauth2/v3/tokeninfo"; // ToDo: Check why this URL is used
             return window['browser'].identity.launchWebAuthFlow({
                 interactive: options.interactive,

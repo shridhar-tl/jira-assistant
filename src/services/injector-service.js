@@ -12,11 +12,11 @@ export const injector = (function () {
         let svcObj = services[name];
 
         if (!svcObj && name.indexOf('Service') === -1) {
-            svcObj = services[`${name  }Service`];
+            svcObj = services[`${name}Service`];
         }
 
         if (!svcObj) {
-            throw Error(`'${  name  }' is not a known service`);
+            throw Error(`'${name}' is not a known service`);
         }
         return svcObj;
     };

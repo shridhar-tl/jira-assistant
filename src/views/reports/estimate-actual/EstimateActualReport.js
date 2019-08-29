@@ -155,7 +155,8 @@ class EstimateActualReport extends BaseGadget {
         const userList = uniqueUsers.map(u => u.name);
         const chartLabels = uniqueUsers.map(u => u.display);
 
-        let { ticketsList, projects } = this.state;
+        const { projects } = this.state;
+        let { ticketsList } = this.state;
 
         ticketsList = (ticketsList || '').trim().replace(/[\s;]/g, ',');
         this.chartWidth = userList.length * 250;

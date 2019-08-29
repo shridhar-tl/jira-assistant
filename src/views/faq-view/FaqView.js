@@ -59,13 +59,13 @@ class FaqView extends PureComponent {
             const prevOpts = this.getLineOpts(opt.prev);
             if (curOpts.isList) {
                 if (!prevOpts.isList) {
-                    result += `<${  curOpts.listType  }>`;
+                    result += `<${curOpts.listType}>`;
                 }
                 result += curOpts.html;
             }
             else {
                 if (prevOpts.isList) {
-                    result += `</${  prevOpts.listType  }>`;
+                    result += `</${prevOpts.listType}>`;
                 }
                 result += curOpts.html;
             }
@@ -88,7 +88,7 @@ class FaqView extends PureComponent {
         let listType = null;
 
         if (isList) {
-            line = `<li>${  line  }</li>`;
+            line = `<li>${line}</li>`;
             listType = isOL ? 'ol' : 'ul';
         }
         else {

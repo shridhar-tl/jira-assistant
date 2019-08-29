@@ -31,7 +31,7 @@ class TextBox extends PureComponent {
     keyPress = (e) => {
         const { key } = e;
         if (key && key.length > 1) {
-            const func = this.props[`onKey_${  key}`];
+            const func = this.props[`onKey_${key}`];
             if (func) {
                 func(this.state.value);
             }
@@ -45,7 +45,7 @@ class TextBox extends PureComponent {
         if (multiline) {
             return (
                 <InputTextarea rows={rows} value={value} autoResize={autoResize} keyfilter={keyfilter} style={style} maxLength={maxLength}
-                    className={`w-p-100 ${  className || ''}`} placeholder={placeholder} onChange={this.onChange} onKeyPress={this.keyPress} />
+                    className={`w-p-100 ${className || ''}`} placeholder={placeholder} onChange={this.onChange} onKeyPress={this.keyPress} />
             );
         }
         else {

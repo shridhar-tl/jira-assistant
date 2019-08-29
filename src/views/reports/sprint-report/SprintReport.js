@@ -227,7 +227,7 @@ class SprintReport extends PureComponent {
                     </TabPanel>
                     <TabPanel header="Summary view 1">
                         {sprintDetails && <SummaryView1 sprintDetails={sprintDetails} formatDateTime={this.formatDateTime} />}
-                    </TabPanel >
+                    </TabPanel>
                     <TabPanel header="Summary view 2">
                         {sprintDetails && <SummaryView2 sprintDetails={sprintDetails} formatDateTime={this.formatDateTime} />}
                     </TabPanel>
@@ -236,8 +236,8 @@ class SprintReport extends PureComponent {
                     <TabPanel header="Worklog details">
                         {includeWorklogs && <SprintWiseWorklog groups={groups} />}
                     </TabPanel>
-                </TabView >
-            </div >
+                </TabView>
+            </div>
         );
     }
 }

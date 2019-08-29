@@ -9,7 +9,7 @@ export function saveAs(blob, fileName) {
 
 export function saveStringAs(str, typeName, fileName) {
     const bdata = btoa(str);
-    const datauri = `data:${  typeName  };base64,${  bdata}`;
+    const datauri = `data:${typeName};base64,${bdata}`;
     const a = document.createElement('a');
     if ('download' in a) { //html5 A[download]
         a.href = datauri;

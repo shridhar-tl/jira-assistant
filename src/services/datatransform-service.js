@@ -66,7 +66,7 @@ export default class DataTransformService {
             precision = 1;
         }
         const units = ['bytes', 'kB', 'MB', 'GB', 'TB', 'PB'], number = Math.floor(Math.log(bytes) / Math.log(1024));
-        return `${(bytes / Math.pow(1024, Math.floor(number))).toFixed(precision)  } ${  units[number]}`;
+        return `${(bytes / Math.pow(1024, Math.floor(number))).toFixed(precision)} ${units[number]}`;
     }
     convertSecs(d, opts) {
         if (!opts) {
@@ -135,10 +135,10 @@ export default class DataTransformService {
         const m = Math.floor(d % 3600 / 60);
         const s = Math.floor(d % 3600 % 60);
         if (simple) {
-            return `${prefix + (h > 0 ? h.pad(2) : "00")  }:${  m > 0 ? m.pad(2) : "00"}`;
+            return `${prefix + (h > 0 ? h.pad(2) : "00")}:${m > 0 ? m.pad(2) : "00"}`;
         }
         else {
-            return prefix + ((h > 0 ? `${h  }h ` : "") + (m > 0 ? `${m  }m ` : "") + (s > 0 ? `${s  }s` : "")).trim();
+            return prefix + ((h > 0 ? `${h}h ` : "") + (m > 0 ? `${m}m ` : "") + (s > 0 ? `${s}s` : "")).trim();
         }
     }
     formatTs(d, simple) {
@@ -151,8 +151,8 @@ export default class DataTransformService {
         switch (fields) {
             case "EM": return obj.emailAddress;
             case "LG": return obj.name;
-            case "NE": return `${obj.displayName  }(${  obj.emailAddress  })`;
-            case "NL": return `${obj.displayName  }(${  obj.name  })`;
+            case "NE": return `${obj.displayName}(${obj.emailAddress})`;
+            case "NL": return `${obj.displayName}(${obj.name})`;
             default: return obj.displayName;
         }
     }

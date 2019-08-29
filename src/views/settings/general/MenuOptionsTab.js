@@ -114,7 +114,7 @@ class MenuOptionsTab extends TabControlBase {
                                 <div className="form-group">
                                     <SelectBox dataset={launchMenus} value={selectedLaunchPage} onChange={this.launchPageChanged} style={{ 'width': '200px' }} group={true}>
                                         {(menu) => (<>
-                                            <span className={`fa ${  menu.icon}`} />
+                                            <span className={`fa ${menu.icon}`} />
                                             <span style={{ marginLeft: "4px" }}>{menu.label}</span>
                                         </>)}
                                         {(group, i) => <strong key={i}>{group.label}</strong>}

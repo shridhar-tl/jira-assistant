@@ -35,18 +35,18 @@ class DefaultHeader extends PureComponent {
     this.storeUrl = this.$jaBrowserExtn.getStoreUrl();
     const subj = encodeURIComponent('Check out "Jira Assistant" in web store');
     const body = encodeURIComponent(`${'Check out "Jira Assistant" extension / add-on for your browser from below url:'
-      + '\n\nChrome users: '}${  CHROME_WS_URL  }?utm_source%3Dgmail#`
-      + `\n\nFirefox users: ${  FF_STORE_URL
+      + '\n\nChrome users: '}${CHROME_WS_URL}?utm_source%3Dgmail#`
+      + `\n\nFirefox users: ${FF_STORE_URL
       //+ '\n\nEdge users: <<Not available yet>>'
       //+ '\n\nSafari users: <<Not available yet>>'
        }\n\n\n\nThis would help you to track your worklog and generate reports from Jira easily with lots of customizations. `
       + `Also has lot more features like Google Calendar integration, Jira comment & meeting + worklog notifications, Worklog and custom report generations, etc..`);
     const storeUrl = encodeURIComponent(this.storeUrl);
-    this.gMailShare = `https://mail.google.com/mail/u/0/?view=cm&tf=1&fs=1&su=${  subj  }&body=${  body}`;
-    this.gPlusShare = `https://plus.google.com/share?app=110&url=${  storeUrl}`;
-    this.linkedInShare = `https://www.linkedin.com/shareArticle?mini=true&url=${  storeUrl  }&title=${  subj  }&summary=${  body  }&source=`;
-    this.fackbookShare = `https://www.facebook.com/sharer/sharer.php?u=${  storeUrl}`;
-    this.twitterShare = `https://twitter.com/home?status=${  storeUrl}`;
+    this.gMailShare = `https://mail.google.com/mail/u/0/?view=cm&tf=1&fs=1&su=${subj}&body=${body}`;
+    this.gPlusShare = `https://plus.google.com/share?app=110&url=${storeUrl}`;
+    this.linkedInShare = `https://www.linkedin.com/shareArticle?mini=true&url=${storeUrl}&title=${subj}&summary=${body}&source=`;
+    this.fackbookShare = `https://www.facebook.com/sharer/sharer.php?u=${storeUrl}`;
+    this.twitterShare = `https://twitter.com/home?status=${storeUrl}`;
 
     if (this.$session.CurrentUser.hideDonateMenu) { // When this settings is changed, below class will be removed from body in settings page
       $('body').addClass('no-donation');
@@ -79,7 +79,7 @@ class DefaultHeader extends PureComponent {
         startAt = 1147;
         break;
     }
-    url += `${startAt  }&end=${  endAt}`;
+    url += `${startAt}&end=${endAt}`;
     $('#ifVideoHelp').attr('src', url);
     this.showVideoHelp = true;
   }
@@ -104,7 +104,7 @@ class DefaultHeader extends PureComponent {
     this.$cache.set('skin', skin, false, true);
     body.addClass(this.selectedSkin);
     $('#divSkins .selected').removeClass('selected');
-    $(`#divSkins .${  this.selectedSkin}`).addClass('selected');
+    $(`#divSkins .${this.selectedSkin}`).addClass('selected');
   }
 
   logout() {
@@ -156,7 +156,7 @@ class DefaultHeader extends PureComponent {
               {users && users.length > 0 && <>
                 <DropdownItem header tag="div" className="text-center"><strong>Accounts</strong></DropdownItem>
 
-                {users.map(u => <DropdownItem key={u.id} tag="a" href={`/index.html/#/${  u.id  }/dashboard/1`} title={u.jiraUrl}><i className="fa fa-external-link"></i> {u.email}</DropdownItem>)}
+                {users.map(u => <DropdownItem key={u.id} tag="a" href={`/index.html/#/${u.id}/dashboard/1`} title={u.jiraUrl}><i className="fa fa-external-link"></i> {u.email}</DropdownItem>)}
 
                 <DropdownItem tag="a" href="/index.html/#/integrate" title="Integrate with new instance of Jira"><i className="fa fa-plug"></i> Integrate</DropdownItem>
                 {

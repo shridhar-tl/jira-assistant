@@ -23,7 +23,7 @@ export default class BookmarkService {
 
             const pending = ticketNo.filter((t) => { return !favTickets.some((k) => { return k.toUpperCase() === t.toUpperCase(); }); });
             if (pending.length === 0) {
-                this.$message.warning(ticketNo.length === 1 ? `${ticketNo[0]  } is already bookmarked` : "The specified ticket is already bookmarked");
+                this.$message.warning(ticketNo.length === 1 ? `${ticketNo[0]} is already bookmarked` : "The specified ticket is already bookmarked");
                 return [];
             }
 

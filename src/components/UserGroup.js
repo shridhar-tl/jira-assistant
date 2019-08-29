@@ -30,7 +30,7 @@ class UserGroup extends PureComponent {
         const { groups } = this.state;
 
         if (this.hasGroupWithName(groupName)) {
-            this.$message.warning(`The group with the name '${  groupName  }' already exists!`, "Group already exists");
+            this.$message.warning(`The group with the name '${groupName}' already exists!`, "Group already exists");
             return false;
         }
         else {
@@ -285,14 +285,15 @@ class GroupNameComponent extends PureComponent {
     setGroupName = (groupName) => this.setState({ groupName })
 
     updateGroupName = () => {
-        let {
-            props: { group, hasGroupWithName },
-            state: { groupName }
+        const {
+            props: { group, hasGroupWithName }
         } = this;
+
+        let { groupName } = this.state;
 
         groupName = groupName.trim();
         if (hasGroupWithName(groupName, group)) {
-            this.$message.warning(`The group with the name '${  groupName  }' already exists!`, "Group already exists");
+            this.$message.warning(`The group with the name '${groupName}' already exists!`, "Group already exists");
             return;
         }
 

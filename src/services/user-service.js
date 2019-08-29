@@ -59,8 +59,8 @@ export default class UserService {
             endOfDay: currentUser.endOfDay || "19:00",
             notifyWL: currentUser.notifyWL,
             jiraUrl: currentUser.jiraUrl,
-            ticketViewUrl: `${currentUser.jiraUrl.trimEnd('/')  }/browse/`,
-            profileUrl: `${currentUser.jiraUrl  }/secure/ViewProfile.jspa`,
+            ticketViewUrl: `${currentUser.jiraUrl.trimEnd('/')}/browse/`,
+            profileUrl: `${currentUser.jiraUrl}/secure/ViewProfile.jspa`,
             maxHours: currentUser.maxHours || 8,
             meetingTicket: currentUser.meetingTicket,
             team: currentUser.team || [],
@@ -75,7 +75,7 @@ export default class UserService {
             autoUpload: currentUser.autoUpload,
             gIntegration: currentUser.googleIntegration,
             hasGoogleCreds: !!currentUser.dataStore,
-            feedbackUrl: `${feedbackUrl  }&embedded=true`,
+            feedbackUrl: `${feedbackUrl}&embedded=true`,
             dashboards: currentUser.dashboards || [
 {
                 isQuickView: true, layout: 1, name: 'Default', icon: 'fa fa-tachometer',

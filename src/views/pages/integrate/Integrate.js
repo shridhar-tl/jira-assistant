@@ -126,7 +126,7 @@ class Integrate extends PureComponent {
                                             </span> |
                                             <span>
                                                 <i className="fa fa-phone" />
-                                                <a href={`https://docs.google.com/forms/d/e/1FAIpQLScJvQtHZI_yZr1xd4Z8TwWgvtFss33hW5nJp4gePCgI2ScNvg/viewform?entry.1426640786=${  version  }&entry.972533768=${  browser}`} target="_blank" rel="noopener noreferrer" title="Click to report about any issues or ask a question">Contact us</a>
+                                                <a href={`https://docs.google.com/forms/d/e/1FAIpQLScJvQtHZI_yZr1xd4Z8TwWgvtFss33hW5nJp4gePCgI2ScNvg/viewform?entry.1426640786=${version}&entry.972533768=${browser}`} target="_blank" rel="noopener noreferrer" title="Click to report about any issues or ask a question">Contact us</a>
                                             </span>
                                         </div>
                                     </div>
