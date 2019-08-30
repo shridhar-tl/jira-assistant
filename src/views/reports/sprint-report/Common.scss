@@ -11,6 +11,10 @@
         }
     }
 
+    div.scroll-table-container.worklog-table {
+        height: calc(100vh - 140px);
+    }
+
     div.scroll-table-container.summ-2 {
         height: calc(100vh - 162px);
 
@@ -21,5 +25,11 @@
 
     div.scroll-table-container.p-100 {
         width: calc(100% - 400px)
+    }
+
+    .worklog-options {
+        .span-cb {
+            margin-left: 5px;
+        }
     }
 }

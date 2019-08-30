@@ -18,11 +18,11 @@ class InputCheckbox extends PureComponent {
     }
 
     render() {
-        const { inputId, onChange, onClick, props: { className, checked = false, label } } = this;
+        const { inputId, onChange, onClick, props: { className = "", checked = false, label, disabled } } = this;
 
         return (
-            <span className={className}>
-                <Checkbox inputId={inputId} onChange={onChange} checked={checked} onClick={onClick} />
+            <span className={`span-cb ${className}`}>
+                <Checkbox inputId={inputId} onChange={onChange} checked={checked} disabled={disabled} onClick={onClick} />
                 {label && <label htmlFor={inputId} className="chk-label">{label}</label>}
             </span>
         );
