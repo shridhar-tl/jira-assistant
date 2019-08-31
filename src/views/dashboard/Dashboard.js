@@ -182,6 +182,12 @@ class Dashboard extends PureComponent {
                 {widgets && widgets.length > 0 && <div>
                     {widgets.map(this.getControls)}
                 </div>}
+
+                {(!widgets || widgets.length === 0) && <div className="no-widget-div">
+                    You haven't added any gadgets to this dashboard. Click on "Add gadgets" button above to start adding a cool one and personalize your experience.
+                    </div>
+                }
+
                 {showGadgetDialog && <AddGadgetDialog onHide={this.hideGadgetDialog} widgetsList={widgets}
                     addGadget={this.addGadget} removeGadget={this.removeGadget} />}
                 {showWorklogPopup && <AddWorklog worklog={this.worklogItem} onDone={this.worklogAdded} onHide={this.hideWorklog} />}

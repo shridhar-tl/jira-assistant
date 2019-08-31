@@ -184,7 +184,6 @@ class ReportViewer extends BaseGadget {
         }
         const group = groups[0];
         const field = group.id;
-        const isCustom = group.custom;
         const func = group.functions;
         groups.RemoveAt(0);
         const isAggGrp = func.useArray;

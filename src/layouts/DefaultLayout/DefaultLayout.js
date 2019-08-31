@@ -11,8 +11,6 @@ import {
   AppHeader,
   AppSidebar,
   AppSidebarFooter,
-  AppSidebarForm,
-  AppSidebarHeader,
   AppSidebarMinimizer,
   AppSidebarNav2 as AppSidebarNav,
 } from '@coreui/react';
@@ -23,6 +21,7 @@ import routes from '../../routes';
 import { inject } from '../../services/injector-service';
 import ContextMenu from '../../controls/ContextMenu';
 import $ from 'jquery';
+import AsideUserInfo from './AsideUserInfo';
 
 const DefaultAside = React.lazy(() => import('./DefaultAside'));
 const DefaultHeader = React.lazy(() => import('./DefaultHeader'));
@@ -94,8 +93,7 @@ class DefaultLayout extends PureComponent {
         </AppHeader>
         <div className="app-body">
           <AppSidebar fixed display="lg">
-            <AppSidebarHeader />
-            <AppSidebarForm />
+            <AsideUserInfo />
             <Suspense>
               <AppSidebarNav navConfig={menus} {...this.props} router={router} />
             </Suspense>

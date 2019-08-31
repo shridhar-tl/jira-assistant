@@ -15,3 +15,40 @@
 .app-body {
     overflow: hidden;
 }
+
+.sidebar {
+    .sidebar-header {
+        padding: 0;
+
+        .user-panel {
+            position: relative;
+            width: 100%;
+            padding: 10px 10px 30px 10px;
+            overflow: hidden;
+
+            .image {
+                .img-circle {
+                    border-radius: 50%;
+                    max-width: 35px;
+                    height: 35px;
+                }
+            }
+
+            .info {
+                color: #fff;
+                position: absolute;
+                left: 55px;
+                text-align: left;
+            }
+        }
+
+        .dropdown-menu {
+            max-width: 300px;
+
+            .icon-extl {
+                vertical-align: top;
+                padding-top: 15px;
+            }
+        }
+    }
+}

@@ -22,7 +22,7 @@ export default class UserService {
 
     async getUsersList() {
         const users = await this.$db.users.where("id").notEqual(1).toArray();
-        return users.map(u => { return { id: u.id, email: u.email, jiraUrl: u.jiraUrl }; });
+        return users.map(u => { return { id: u.id, email: u.email, jiraUrl: u.jiraUrl, userId: u.userId }; });
     }
 
     async getUserDetails(userId) {
@@ -77,11 +77,11 @@ export default class UserService {
             hasGoogleCreds: !!currentUser.dataStore,
             feedbackUrl: `${feedbackUrl}&embedded=true`,
             dashboards: currentUser.dashboards || [
-{
-                isQuickView: true, layout: 1, name: 'Default', icon: 'fa fa-tachometer',
-                widgets: gridList.map(g => { return { name: g }; })
-            }
-]
+                {
+                    isQuickView: true, layout: 1, name: 'Default', icon: 'fa fa-tachometer',
+                    widgets: gridList.map(g => { return { name: g }; })
+                }
+            ]
         };
         const jiraUrlLower = currentUser.jiraUrl.toLowerCase();
         if (jiraUrlLower.indexOf('pearson') >= 0 || jiraUrlLower.indexOf('emoneyadv')) {

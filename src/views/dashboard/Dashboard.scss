@@ -10,3 +10,18 @@
         padding-right: 4px;
     }
 }
+
+div.no-widget-div, div.placeholder-msg {
+    font-size: 30px;
+    text-align: center;
+    border: 2px dashed grey;
+    background-color: #f5f5f5;
+    padding: 50px 15px;
+    width: calc(100% - 18px);
+}
+
+div.no-widget-div {
+    width: 100%;
+    min-height: 50vh;
+    padding: 115px 15px;
+}

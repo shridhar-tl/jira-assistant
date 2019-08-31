@@ -43,6 +43,24 @@ export default class UserUtilsService {
         ///Security/ProfilePic / {{userInfo.name }}
     }
 
+    getProfileUrl = (user, rootUrl) => {
+        if (!user) {
+            user = this.$session.CurrentUser;
+        }
+
+        if (typeof user === "object") {
+            if (user.jiraUser) {
+                user = user.jiraUser;
+            }
+            user = user.name;
+        }
+        else if (typeof user !== "string") {
+            user = "";
+        }
+
+        return `${rootUrl || this.$session.rootUrl}/secure/ViewUser.jspa?name=${user.toLowerCase()}`;
+    }
+
     formatDateTime = (value, format, utc) => {
         if (!value) { return value; }
         if (!format) { format = `${this.$session.CurrentUser.dateFormat} ${this.$session.CurrentUser.timeFormat}`; }
