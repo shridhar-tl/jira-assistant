@@ -14,7 +14,7 @@ import "./WorklogGadget.scss";
 class WorklogGadget extends BaseGadget {
     constructor(props) {
         super(props, 'Logged Work - [User - Day wise]', 'fa-list-alt');
-        inject(this, "SessionService", "CacheService", "UtilsService", "UserUtilsService", "DataTransformService", "JiraService", "MessageService", "ConfigService", "UserGroupService");
+        inject(this, "SessionService", "CacheService", "UtilsService", "UserUtilsService", "JiraService", "MessageService", "ConfigService", "UserGroupService");
 
         //$facade.getUserGroups().then(grps => this.state.groups = grps);
         const pageSettings = this.$session.pageSettings.reports_UserDayWise;
@@ -307,7 +307,7 @@ class WorklogGadget extends BaseGadget {
     }
 
     convertSecs = (val) => {
-        return this.$transform.convertSecs(val, { format: this.state.pageSettings.logFormat === "1" });
+        return this.$utils.convertSecs(val, { format: this.state.pageSettings.logFormat === "1" });
     }
 
     formatTime = (val) => {

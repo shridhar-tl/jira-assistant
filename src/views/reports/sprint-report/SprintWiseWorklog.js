@@ -6,8 +6,8 @@ import { inject } from '../../../services';
 class SprintWiseWorklog extends PureComponent {
     constructor(props) {
         super(props);
-        inject(this, "DataTransformService");
-        this.convertSecs = this.$transform.convertSecs;
+        inject(this, "UtilsService");
+        this.convertSecs = this.$utils.convertSecs;
         this.state = { showSubtask: false, showIncomplete: false, excludeNonSprintHrs: false };
     }
 

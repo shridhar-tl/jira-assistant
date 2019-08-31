@@ -8,7 +8,7 @@ import { ScrollableTable, THead, Column, TBody, NoDataRow } from '../components/
 class DateWiseWorklog extends BaseGadget {
     constructor(props) {
         super(props, 'Daywise worklog', 'fa-list-alt');
-        inject(this, "WorklogService", "UtilsService", "UserUtilsService", "DataTransformService");
+        inject(this, "WorklogService", "UtilsService", "UserUtilsService");
         this.contextMenu = [
             { label: "Upload worklog", icon: "fa fa-clock-o", command: () => this.uploadWorklog() },
             { label: "Add worklog", icon: "fa fa-bookmark", command: () => this.addWorklog() } //ToDo: Add option for move to progress, show in tree view
@@ -73,7 +73,7 @@ class DateWiseWorklog extends BaseGadget {
         const date = moment(this.selectedDay.dateLogged).toDate();
         let hrsRemaining = null;
         if (this.selectedDay.pendingUpload > 0) {
-            hrsRemaining = this.$transform.formatTs(this.selectedDay.pendingUpload, true);
+            hrsRemaining = this.$utils.formatTs(this.selectedDay.pendingUpload, true);
         }
         super.addWorklog({ startTime: date, timeSpent: hrsRemaining, allowOverride: hrsRemaining ? true : false });
     }
@@ -112,9 +112,9 @@ class DateWiseWorklog extends BaseGadget {
                     {(b) => {
                         return <tr key={b.dateLogged} onContextMenu={(e) => this.showContext(e, b)}>
                             <td>{this.$userutils.formatDate(b.dateLogged)}</td>
-                            <td>{this.$transform.formatTs(b.totalHours)}</td>
-                            <td>{this.$transform.formatTs(b.uploaded)}</td>
-                            <td>{this.$transform.formatTs(b.pendingUpload)}</td>
+                            <td>{this.$utils.formatTs(b.totalHours)}</td>
+                            <td>{this.$utils.formatTs(b.uploaded)}</td>
+                            <td>{this.$utils.formatTs(b.pendingUpload)}</td>
                             <td>
                                 <ul className="tags">
                                     {b.ticketList.map((ld, x) => <li key={x}>

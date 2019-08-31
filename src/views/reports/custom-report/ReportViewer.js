@@ -5,7 +5,7 @@ import { inject } from "../../../services/injector-service";
 class ReportViewer extends BaseGadget {
     constructor(props) {
         super(props, 'Query report viewer', 'fa-clock-o');
-        inject(this, "AnalyticsService", "ReportService", "TicketService", "$transformService");
+        inject(this, "AnalyticsService", "ReportService", "TicketService", "UtilsService");
         this.queryModel = {};
     }
 
@@ -202,12 +202,12 @@ class ReportViewer extends BaseGadget {
         }
         let value = "#Error";
         try {
-            const func = this.$transform[funcInfo.name];
+            const func = this.$utils[funcInfo.name];
             if (!func || !func.apply) {
                 return "#Error: Func not found";
             }
             const params = [obj].addRange(funcInfo.params);
-            value = func.apply(this.$transform, params);
+            value = func.apply(this.$utils, params);
         }
         catch (err) {
             console.error(err);

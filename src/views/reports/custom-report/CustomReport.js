@@ -1,17 +1,14 @@
 import React, { PureComponent } from 'react';
+import QueryEditor from "./QueryEditor";
+import ReportViewer from "./ReportViewer";
 
 class CustomReport extends PureComponent {
 
     constructor(props) {
         super(props);
 
-        this.route.params.subscribe(params => {
-            const queryId = parseInt(params['queryId'] || 0) || null;
-            if (queryId) {
-                this.reportEditor.selQueryId = queryId;
-                this.reportEditor.queryChanged();
-            }
-        });
+        const { match: { params: { queryId } } } = props;
+        this.state = { queryId };
     }
 
     generateReport($event) {
@@ -19,10 +16,17 @@ class CustomReport extends PureComponent {
         this.report.generateReport($event.queryModel);
     }
 
+    viewReport = () => {
+
+    }
+
     render() {
+        const { queryId } = this.state;
+
         return (
             <div>
-
+                <QueryEditor queryId={queryId} onViewReport={this.viewReport} />
+                <ReportViewer />
             </div>
         );
     }

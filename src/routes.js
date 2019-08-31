@@ -6,9 +6,9 @@ const DashboardComponent = React.lazy(() => import('./views/dashboard/Dashboard'
 
 /*
 const BulkImportComponent = React.lazy(() => import('./views/'));
-
+*/
 // reports
-const CustomReportComponent = React.lazy(() => import('./views/'));*/
+const CustomReportComponent = React.lazy(() => import('./views/reports/custom-report/CustomReport'));
 const EstimateActualComponent = React.lazy(() => import('./views/reports/estimate-actual/EstimateActualReport'));
 const SprintReportComponent = React.lazy(() => import('./views/reports/sprint-report/SprintReport'));
 const WorklogReportComponent = React.lazy(() => import('./views/reports/worklog-report/WorklogReport'));
@@ -51,14 +51,14 @@ const sessionBasedRoute = [
         path: '/reports/sprint',
         component: SprintReportComponent
     },
-    /*{
+    {
         path: '/reports/customgrouped/:queryId',
         component: CustomReportComponent
     },
     {
         path: '/reports/customgrouped',
         component: CustomReportComponent
-    },*/
+    },
     {
         path: '/reports/advanced/:queryId',
         component: ReportBuilderComponent

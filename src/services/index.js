@@ -8,7 +8,6 @@ import CacheService from './cache-service';
 import CalendarService from './calendar-service';
 import ConfigService from './config-service';
 import DashboardService from './dashboard-service';
-import DataTransformService from './datatransform-service';
 import DatabaseService from './database-service';
 import JiraService from './jira-service';
 import MessageService from './message-service';
@@ -35,7 +34,6 @@ export default function injectServices() {
     injectable(CalendarService, "$calendar");
     injectable(ConfigService, "$config");
     injectable(DashboardService, "$dashboard");
-    injectable(DataTransformService, "$transform");
     injectable(DatabaseService, "$db");
     injectable(JiraService, "$jira");
     injectable(MessageService, "$message");

@@ -2,7 +2,7 @@ import * as moment from 'moment';
 import { ApiUrls, DummyWLId } from '../_constants';
 
 export default class WorklogService {
-    static dependencies = ["UserUtilsService", "JiraService", "SessionService", "DatabaseService", "TicketService", "AjaxService", "DataTransformService", "MessageService"];
+    static dependencies = ["UserUtilsService", "JiraService", "SessionService", "DatabaseService", "TicketService", "AjaxService", "UtilsService", "MessageService"];
 
     //ToDo: FormatTsPipe is not a service
     constructor($userutils, $jira, $session, $db, $ticket, $ajax, $transform, $message) {
@@ -12,7 +12,7 @@ export default class WorklogService {
         this.$db = $db;
         this.$ticket = $ticket;
         this.$ajax = $ajax;
-        this.$transform = $transform;
+        this.$utils = $transform;
         this.$message = $message;
     } // format ts should be pipe
 
@@ -27,8 +27,8 @@ export default class WorklogService {
             userList = [this.$session.CurrentUser.name];
         }
         const jql = `worklogAuthor in ("${userList.join("\", \"")}") and worklogDate >= '${
-             mfromDate.clone().add(-1, 'days').format("YYYY-MM-DD")}' and worklogDate < '${
-             mtoDate.clone().add(1, 'days').format("YYYY-MM-DD")}'`;
+            mfromDate.clone().add(-1, 'days').format("YYYY-MM-DD")}' and worklogDate < '${
+            mtoDate.clone().add(1, 'days').format("YYYY-MM-DD")}'`;
         if (!fields || fields.length === 0) {
             fields = ["worklog"];
         } //, "summary", "issuetype", "parent", "status", "assignee"
@@ -111,7 +111,7 @@ export default class WorklogService {
         const request = {
             comment: entry.description,
             started: `${entry.dateStarted.toISOString().replace('Z', '').replace('z', '')}+0000`,
-            timeSpent: this.$transform.formatTs(timeSpent) //,
+            timeSpent: this.$utils.formatTs(timeSpent) //,
             //visibility = new Visibility { type="group", value= "Deployment Team" }
         };
         let uploadRequest = null;

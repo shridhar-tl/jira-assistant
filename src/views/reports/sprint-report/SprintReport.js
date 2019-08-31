@@ -193,7 +193,7 @@ class SprintReport extends PureComponent {
                 <TabView activeIndex={selectedTab} onTabChange={this.tabChanged}>
                     <TabPanel header="Settings">
                         {notes}
-                        <div className={isReportDataReady ? 'fs-hide' : 'pad-22'}>
+                        <div className={isReportDataReady ? 'fs-hide pad-22' : 'pad-22'}>
                             <div className="ui-g ui-fluid">
                                 <div className="ui-g-12 ui-md-2 ui-lg-2 ui-xl-1">
                                     <strong>Rapid view</strong>

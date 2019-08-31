@@ -7,7 +7,7 @@ import { ScrollableTable, THead, TBody, NoDataRow, Column } from '../components/
 class TicketWiseWorklog extends BaseGadget {
     constructor(props) {
         super(props, 'Ticketwise worklog', 'fa-list-alt');
-        inject(this, "WorklogService", "UserUtilsService", "UtilsService", "DataTransformService");
+        inject(this, "WorklogService", "UserUtilsService", "UtilsService");
 
         this.settings.dateRange = {};
         this.contextMenu = [
@@ -31,9 +31,9 @@ class TicketWiseWorklog extends BaseGadget {
             worklogs.forEach((b) => {
                 b.rowClass = this.$utils.getRowStatus(b);
                 b.ticketUrl = this.$userutils.getTicketUrl(b.ticketNo);
-                b.totalHours = this.$transform.formatTs(b.totalHours);
-                b.uploaded = this.$transform.formatTs(b.uploaded);
-                b.pendingUpload = this.$transform.formatTs(b.pendingUpload);
+                b.totalHours = this.$utils.formatTs(b.totalHours);
+                b.uploaded = this.$utils.formatTs(b.uploaded);
+                b.pendingUpload = this.$utils.formatTs(b.pendingUpload);
             });
             this.setState({ isLoading: false, worklogs });
         });

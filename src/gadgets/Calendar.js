@@ -21,7 +21,7 @@ const viewModes = [{ value: 'dayGridMonth', label: 'Month' }, { value: 'timeGrid
 class Calendar extends BaseGadget {
     constructor(props) {
         super(props, "Calendar", "fa-calendar");
-        inject(this, "SessionService", "WorklogService", "MessageService", "AnalyticsService", "CalendarService", "DataTransformService", "ConfigService");
+        inject(this, "SessionService", "WorklogService", "MessageService", "AnalyticsService", "CalendarService", "UtilsService", "ConfigService");
 
         if (this.$session.pageSettings.calendar) {
             this.settings = Object.assign({}, this.$session.pageSettings.calendar);
@@ -277,10 +277,10 @@ class Calendar extends BaseGadget {
     setLoggedTime(arr, obj) {
         const time = this.getTimeSpent(arr);
         obj.logged = time;
-        let title = `Logged: ${this.$transform.formatSecs(time)}`;
+        let title = `Logged: ${this.$utils.formatSecs(time)}`;
         obj.diff = time - this.maxTime;
         if (this.maxTime && obj.diff) {
-            title += ` (${obj.diff > 0 ? "+" : "-"}${this.$transform.formatSecs(Math.abs(obj.diff))})`;
+            title += ` (${obj.diff > 0 ? "+" : "-"}${this.$utils.formatSecs(Math.abs(obj.diff))})`;
         }
         this.setInfoColor(obj, this.settings);
         obj.title = title;
@@ -448,8 +448,8 @@ class Calendar extends BaseGadget {
             organizer: item.organizer
         };
         if (item.start) {
-            this.currentMeetingItem.date = this.$transform.formatDate(item.start.dateTime);
-            this.currentMeetingItem.startTime = this.$transform.formatTime(item.start.dateTime);
+            this.currentMeetingItem.date = this.$utils.formatDate(item.start.dateTime);
+            this.currentMeetingItem.startTime = this.$utils.formatTime(item.start.dateTime);
             let remaining = moment(item.start.dateTime).diff(moment());
             if (remaining < 0) {
                 if (item.end && item.end.dateTime && moment().diff(item.end.dateTime) < 0) {
@@ -460,12 +460,12 @@ class Calendar extends BaseGadget {
                 }
             }
             else {
-                remaining = `(in ${this.$transform.formatTs(remaining)})`;
+                remaining = `(in ${this.$utils.formatTs(remaining)})`;
             }
             this.currentMeetingItem.remaining = remaining;
         }
         if (item.end && item.end.dateTime) {
-            this.currentMeetingItem.endTime = this.$transform.formatTime(item.end.dateTime);
+            this.currentMeetingItem.endTime = this.$utils.formatTime(item.end.dateTime);
         }
         if (item.attendees) {
             this.currentMeetingItem.attendees = {
@@ -583,7 +583,7 @@ class Calendar extends BaseGadget {
     eventRender(e) {
         const { event, el } = e;
         const element = $(el);
-        const hourDiff = ` (${this.$transform.formatTs(this.getEventDuration(event))})`;
+        const hourDiff = ` (${this.$utils.formatTs(this.getEventDuration(event))})`;
         const srcObj = event.extendedProps.sourceObject;
         if (srcObj) {
             const title = `${element.find(".fc-time").text() + hourDiff}\n${event.title}`;

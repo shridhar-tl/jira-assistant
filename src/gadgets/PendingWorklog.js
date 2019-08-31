@@ -9,7 +9,7 @@ class PendingWorklog extends BaseGadget {
     //dateStarted
     constructor(props) {
         super(props, 'Worklog - [Pending upload]', 'fa-clock-o');
-        inject(this, "WorklogService", "UtilsService", "UserUtilsService", "DataTransformService", "MessageService");
+        inject(this, "WorklogService", "UtilsService", "UserUtilsService", "MessageService");
 
         this.contextMenu = [
             { label: "Select worklog", icon: "fa fa-check-square-o", command: () => this.selectRowItem(this.selectedItem) },
@@ -38,8 +38,8 @@ class PendingWorklog extends BaseGadget {
                     w.rowClass = this.$utils.getRowStatus(w);
                     w.displayDate = this.$userutils.formatDateTime(w.dateStarted);
                     w.selected = selAllChk;
-                    w.timeSpent = this.$transform.formatTs(w.timeSpent);
-                    w.overrideTimeSpent = this.$transform.formatTs(w.overrideTimeSpent);
+                    w.timeSpent = this.$utils.formatTs(w.timeSpent);
+                    w.overrideTimeSpent = this.$utils.formatTs(w.overrideTimeSpent);
                 });
 
                 this.setState({ isLoading: false, worklogs });
