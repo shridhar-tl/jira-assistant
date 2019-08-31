@@ -1,50 +1,64 @@
 import React from 'react';
 import BaseGadget from "../../../gadgets/BaseGadget";
 import { inject } from "../../../services/injector-service";
+import { ScrollableTable, THead } from '../../../components/ScrollableTable';
 
 class ReportViewer extends BaseGadget {
     constructor(props) {
-        super(props, 'Query report viewer', 'fa-clock-o');
-        inject(this, "AnalyticsService", "ReportService", "TicketService", "UtilsService");
-        this.queryModel = {};
+        let { definition } = props;
+        definition = definition || {};
+        super(props, definition.queryName || 'Custom report viewer', 'fa-clock-o');
+        inject(this, "AnalyticsService", "ReportService", "JiraService", "UtilsService", "UserUtilsService");
+        this.state.reportDefinition = definition;
+    }
+
+    UNSAFE_componentWillMount() {
+        const { reportDefinition } = this.state;
+
+        if (reportDefinition) {
+            this.generateReport(reportDefinition);
+        }
     }
 
     componentWillReceiveProps(props) {
-        if (props.queryModel || (props.queryId && props.queryId)) {
-            this.generateReport(this.queryModel);
+        if (props.definition || props.reportId) {
+            this.setState({ reportDefinition: props.definition });
+            this.generateReport(props.definition);
         }
         else {
-            this.queryModel = {};
+            this.state.reportDefinition = {};
         }
     }
 
-    generateReport(queryModel) {
-        this.queryModel = queryModel;
-        if (queryModel) {
-            this.title = queryModel.queryName;
+    generateReport(reportDefinition) {
+        if (reportDefinition) {
+            this.title = reportDefinition.queryName;
         }
         this.refreshReport();
     }
+
     refreshReport() {
         if (this.queryId > 0) {
             this.$report.getSavedQuery(this.queryId).then(qm => {
-                this.queryModel = qm;
-                this.fillReport();
+                this.setState({ reportDefinition: qm }, this.fillReport);
             });
         }
-        else if (this.queryModel) {
+        else if (this.state.reportDefinition) {
             this.fillReport();
         }
     }
-    fillReport() {
-        const model = this.queryModel;
+
+    fillReport = () => {
+        const model = this.state.reportDefinition;
         if (!model.jql || !model.outputFields || !model.outputFields.length) {
             return;
         }
-        this.isLoading = true;
+
+        this.setState({ isLoading: true });
+
         //this.showReport = true;
         this.dataFields = model.outputFields.map((f) => f.id);
-        this.$ticket.searchTickets(model.jql, this.dataFields)
+        this.$jira.searchTickets(model.jql, this.dataFields)
             .then((issues) => {
                 this.headerFields = model.outputFields.map((f) => {
                     let txt = f.name;
@@ -54,29 +68,28 @@ class ReportViewer extends BaseGadget {
                     return { text: txt, rowspan: 2 };
                 });
                 this.processIssues(issues);
-                this.displayFields = this.headerFields;
+                const displayFields = this.headerFields;
                 const subHeads = [];
                 this.headerFields.filter((f) => { return f.subCols && f.subCols.length > 0; })
-                    .ForEach((f) => {
+                    .forEach((f) => {
                         subHeads.addRange(f.subCols);
                         subHeads.push({ text: "Total" });
                         f.colspan = f.subCols.length + 1;
                         f.rowspan = 1;
                     });
                 this.subFields = subHeads;
-                this.groupList = model.outputFields.filter((f) => { return f.groupBy; });
-                const groupedData = this.groupList.length > 0 ? this.groupData(issues, Array.from(this.groupList)) : issues;
+                const groupList = model.outputFields.filter((f) => { return f.groupBy; });
+                const groupedData = groupList.length > 0 ? this.groupData(issues, Array.from(groupList)) : issues;
                 this.dataFields = model.outputFields.filter((f) => { return !f.groupBy; });
                 this.reportHtml = this.genHtmlRow(groupedData);
                 //var tbody = $("#tbody").html(this.genHtmlRow(groupedData));
-                this.hasReportData = groupedData.length > 0;
-                //setTimeout( () =>{ tbody.closest("table").bootstrapTable({ height: 400 }) }, 1000);
-                this.onResize({});
-            }).then(() => {
-                this.isLoading = false;
-                this.$analytics.trackEvent("Generated report");
+                const hasReportData = groupedData.length > 0;
+
+                this.setState({ hasReportData, displayFields, isLoading: false });
+                this.$analytics.trackEvent("Custom report viewed");
             });
     }
+    // eslint-disable-next-line complexity
     genHtmlRow(arr, prepn) {
         prepn = prepn || "";
         let html = "";
@@ -147,20 +160,24 @@ class ReportViewer extends BaseGadget {
         }
         return html;
     }
+
     getTD(obj, funcInfo) {
-        if (obj == null) {
+        if (!obj) {
             return '<td>&nbsp;</td>';
         }
         return `<td>${this.execute(obj, funcInfo)}</td>`;
     }
+
     getAggregateTD(arr, funcInfo) {
         return `<td class="bold" rowspan="${arr.length}">${this.execute(arr, funcInfo)}</td>`;
     }
+
     getGroupedTD(text, len) {
         text += ` (${len})`;
         const rotate = len > 4 || (text.length / len) < 2.5;
         return `<td class="${rotate ? 'rotateM90' : 'bold'}" rowspan="${len}">&nbsp;<div>${text}</div></td>`;
     }
+
     groupData(issues, groups) {
         if (!groups || !groups.length) {
             return issues;
@@ -196,16 +213,23 @@ class ReportViewer extends BaseGadget {
             }).map((grp) => selectFunc(grp));
         }
     }
+
     execute(obj, funcInfo) {
         if (!obj || !funcInfo || !funcInfo.name) {
             return obj;
         }
         let value = "#Error";
         try {
-            const func = this.$utils[funcInfo.name];
+            let func = this.$utils[funcInfo.name];
+
+            if (!func || !func.apply) {
+                func = this.$userutils[funcInfo.name];
+            }
+
             if (!func || !func.apply) {
                 return "#Error: Func not found";
             }
+
             const params = [obj].addRange(funcInfo.params);
             value = func.apply(this.$utils, params);
         }
@@ -214,6 +238,7 @@ class ReportViewer extends BaseGadget {
         }
         return value !== null ? value : "";
     }
+
     processIssues(issues) {
         const wlIndex = this.dataFields.indexOf('worklog');
         if (wlIndex === -1) {
@@ -251,10 +276,45 @@ class ReportViewer extends BaseGadget {
         this.fieldOpts.worklogUsers = headObj.subCols;
     }
 
-    render() {
-        return (
-            <div>
+    renderCustomActions() {
+        const {
+            isGadget,
+            state: { hasReportData, reportDefinition }
+        } = this;
 
+        if (isGadget) {
+            return null;
+        }
+
+        return <>
+            {this.getFullScreenButton()}
+            {this.getRefreshButton(this.fillReport)}
+            {hasReportData && this.getExportButton(reportDefinition.queryName)}
+        </>;
+    }
+
+    render() {
+        const {
+            reportHtml,
+            state: { isLoading, hasReportData, displayFields, subFields }
+        } = this;
+
+        return super.renderBase(
+            <div className="cust-report-viewer">
+                {hasReportData && <ScrollableTable>
+                    <THead>
+                        <tr className="data-center">
+                            {displayFields.map((g, i) => <th key={i} rowSpan={g.rowspan} colSpan={g.colspan}>{g.text}</th>)}
+                        </tr>
+                        {subFields && subFields.length && <tr className="data-center">
+                            {subFields.map((g, i) => <th key={i}>{g.text}</th>)}
+                        </tr>}
+                    </THead>
+                    {!hasReportData && !isLoading && <tbody>
+                        <tr><td colSpan={displayFields && displayFields.length}>No records exists</td></tr>
+                    </tbody>}
+                    {hasReportData && <tbody dangerouslySetInnerHTML={{ __html: reportHtml }} />}
+                </ScrollableTable>}
             </div>
         );
     }

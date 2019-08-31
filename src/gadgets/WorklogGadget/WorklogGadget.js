@@ -50,7 +50,10 @@ class WorklogGadget extends BaseGadget {
             this.$message.warning("User list need to be added before generating report", "Missing input");
             return;
         }
-        this.userList = groups.union(grps => grps.users.ForEach(gu => gu.groupName = grps.name));
+        this.userList = groups.union(grps => {
+            grps.users.forEach(gu => gu.groupName = grps.name);
+            return grps.users;
+        });
         const req = {
             userList: this.userList.map(u => u.name.toLowerCase()),
             fromDate: this.state.dateRange.fromDate,

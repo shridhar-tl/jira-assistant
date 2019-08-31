@@ -11,23 +11,29 @@ export default class AnalyticsService {
 
     trackEvent(event, page) {
         if (!page) {
-            page = this.router.url;
+            page = this.getCurrentRouteUrl();
         }
-        if (page === "/") {
-            page = "/dashboard";
-        }
+
         //_gaq.push(['_trackPageView', $location.url()]);
         window['_gaq'].push(['_trackEvent', page, event]);
         //ga('send', 'pageview', $location.path());
     }
 
-    trackPageView(page) {
-        if (!page) {
-            page = this.router.url;
-        }
+    getCurrentRouteUrl() {
+        let page = document.location.hash.substring(1);
+
         if (page === "/") {
             page = "/dashboard";
         }
+
+        return page;
+    }
+
+    trackPageView(page) {
+        if (!page) {
+            page = this.getCurrentRouteUrl();
+        }
+
         window['_gaq'].push(['_trackPageview', `v${this.versionNumber}/index.html${page}`]);
     }
 }

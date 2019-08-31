@@ -255,19 +255,6 @@ Array.prototype.firstOrDefault = function (defaultValue, clause) {
 Array.prototype.lastOrDefault = function (defaultValue, clause) {
   return this.last(clause) || defaultValue;
 };
-Array.prototype.ForEach = function (clause) {
-  const total = this.length;
-  for (let index = 0; index < total; index++) {
-    clause(this[index], index, {
-      prev: this[index - 1],
-      next: this[index + 1],
-      count: total,
-      isLast: index === total - 1,
-      isFirst: index === 0
-    });
-  }
-  return this;
-};
 Array.prototype.ToString = function (str) {
   str = str || ',';
   let returnVal = "";

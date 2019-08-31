@@ -150,7 +150,10 @@ class EstimateActualReport extends BaseGadget {
         const toDate = mtoDate.toDate();
         const fromDateMS = fromDate.getTime();
         const toDateMS = toDate.getTime();
-        const users = this.state.groups.union(grps => grps.users.ForEach(gu => gu.groupName = grps.name));
+        const users = this.state.groups.union(grps => {
+            grps.users.forEach(gu => gu.groupName = grps.name);
+            return grps.users;
+        });
         const uniqueUsers = users.distinctObj(u => { return { name: u.name.toLowerCase(), display: u.displayName }; });
         const userList = uniqueUsers.map(u => u.name);
         const chartLabels = uniqueUsers.map(u => u.display);
@@ -233,7 +236,7 @@ class EstimateActualReport extends BaseGadget {
                                         return estField;
                                     }
                                 }).reduce((index, ticket) => { index[ticket.key] = ticket; return index; }, {});
-                                return flatData.ForEach(t => {
+                                flatData.forEach(t => {
                                     const { parentkey, key } = t;
                                     if (hasTickets && custTicketsList.contains(key)) {
                                         return;
@@ -249,6 +252,8 @@ class EstimateActualReport extends BaseGadget {
                                         t.estimate = parentT.estimate;
                                     }
                                 });
+
+                                return flatData;
                             });
                     }
                 }

@@ -1,0 +1,45 @@
+.custom-report {
+    .scroll-table-container.query-editor {
+        max-height: calc(100vh - 300px);
+
+        table {
+            thead {
+                tr {
+                    th:first-child{
+                        width: 70px;
+                    }
+
+                    th:last-child {
+                        width:88px;
+                    }
+
+                    th.col-group-by {
+                        width:88px;
+                    }
+
+                    th.col-format-func {
+                        width:250px;
+                    }
+
+                    th.col-type {
+                        width:250px;
+                    }
+                }
+            }
+        }
+    }
+}
+
+div.query-editor-gadget {
+    &.gadget.full-height.docked {
+        height: auto;
+
+        .p-panel-content {
+            height:auto;
+        }
+    }
+}
+
+.cust-report-viewer {
+    height: 100%;
+}

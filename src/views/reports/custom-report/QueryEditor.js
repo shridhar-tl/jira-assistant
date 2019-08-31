@@ -5,15 +5,21 @@ import { getDateRange } from '../../../_constants';
 import BaseGadget from '../../../gadgets/BaseGadget';
 import { Button, SelectBox, TextBox, Checkbox } from '../../../controls';
 import { TabView, TabPanel } from 'primereact/tabview';
+import { ScrollableTable, THead } from "../../../components/ScrollableTable";
+import BindFunction from './BindFunction';
+import SaveReportDialog from '../../../dialogs/SaveReportDialog';
+import Dialog from '../../../dialogs';
 
 class QueryEditor extends BaseGadget {
     constructor(props) {
         super(props, "Query Editor", "fa-filter");
+        this.className = "query-editor-gadget";
         this.isGadget = false;
-        inject(this, "ReportService", "JiraService", "AnalyticsService");
+        inject(this, "ReportService", "JiraService", "MessageService", "AnalyticsService");
 
         //this.groupIgnore = ['issuekey', 'summary', 'description'];
         this.state = this.getClearState(false, props);
+        this.state.displayFields = [];
     }
 
     getClearState(clear, props) {
@@ -31,7 +37,12 @@ class QueryEditor extends BaseGadget {
             reportQuery.filterFields = reportQuery.filterFields || [];
             reportQuery.outputFields = reportQuery.outputFields || [];
         }
-        return { reportQuery, selQueryId: null };
+
+        if (props.reportId > 0) {
+            this.querySelected(props.reportId);
+        }
+
+        return { reportQuery, selReportId: null };
     }
 
     initModel(clear, props) {
@@ -49,10 +60,10 @@ class QueryEditor extends BaseGadget {
     }
 
     fillQueriesList() {
-        return this.$report.getSavedFilters().then((result) => {
-            //this.savedQueries = result;
-            this.queryList = result.filter(q => !q.advanced).map(q => { return { value: q.id, label: q.queryName }; });
-            //this.state.selQueryId = this.reportRequest.id //ToDo:|| queryList.selectpicker('val');
+        this.$report.getSavedFilters().then((result) => {
+            const reportsList = result.filter(q => !q.advanced).map(q => { return { value: q.id, label: q.queryName }; });
+            this.setState({ reportsList });
+            //this.state.selReportId = this.reportRequest.id //ToDo:|| reportsList.selectpicker('val');
         });
     }
 
@@ -107,36 +118,40 @@ class QueryEditor extends BaseGadget {
             && reportQuery.outputFields && reportQuery.outputFields.length >= 1;
     }
 
-    saveQuery(queryName, copy) {
+    saveQuery = (queryName, copy) => {
         let { reportQuery } = this.state;
         reportQuery = { ...reportQuery };
 
         const oldQryName = reportQuery.queryName;
-        if (queryName) {
-            reportQuery.queryName = queryName;
-            if (copy) {
-                delete reportQuery.id;
-            }
-            this.$report.saveQuery(reportQuery).then((result) => {
-                reportQuery.id = result;
+        let refillList = false;
 
-                this.setState({ reportQuery, selQueryId: reportQuery.id, showSaveDialog: false });
-                this.props.onSave();
+        reportQuery.queryName = queryName;
+        if (copy) {
+            delete reportQuery.id;
+            refillList = true;
+        }
+        else if (oldQryName !== queryName) {
+            refillList = true;
+        }
 
+        this.$report.saveQuery(reportQuery).then((result) => {
+            reportQuery.id = result;
+
+            this.setState({ showSaveDialog: false, selReportId: reportQuery.id, reportQuery });
+
+            if (refillList) {
                 this.fillQueriesList();
+            }
 
-                this.$message.success("Query saved successfully!");
-                this.$analytics.trackEvent("Query Saved");
-            }, (err) => {
-                if (err && err.message) {
-                    this.$message.error(err.message);
-                }
-            });
-        }
-        else {
-            this.newQueryName = oldQryName;
-            this.showSaveDialog = true;
-        }
+            //this.props.onSave(reportQuery);
+
+            this.$message.success("Report saved successfully!");
+            this.$analytics.trackEvent("Custom Report Saved");
+        }, (err) => {
+            if (err && err.message) {
+                this.$message.error(err.message);
+            }
+        });
     }
 
     groupField(row, $index) {
@@ -369,16 +384,20 @@ class QueryEditor extends BaseGadget {
         }
     }
 
-    querySelected(selQueryId) {
-        this.$report.getSavedQuery(selQueryId).then(reportQuery => this.setState({ selQueryId, reportQuery }));
+    querySelected = (selReportId) => {
+        this.$report.getSavedQuery(selReportId).then(reportQuery => this.setState({ selReportId, reportQuery }));
     }
 
-    deleteQuery() {
-        this.$report.deleteSavedQuery(this.selQueryId).then(q => {
-            this.$message.success('Selected query deleted successfully!');
-            this.initModel(true);
-            this.fillQueriesList();
-        });
+    deleteQuery = () => {
+        Dialog.confirmDelete(`Are you sure to delete the report named "${this.state.reportQuery.queryName}" permenantly?`)
+            .then(() => {
+                this.$report.deleteSavedQuery(this.state.selReportId).then(q => {
+                    this.$message.success('Report deleted successfully!');
+                    this.setState({ selReportId: null });
+                    this.initModel();
+                    this.fillQueriesList();
+                });
+            });
     }
 
     queryChanged = (reportQuery) => {
@@ -395,78 +414,97 @@ class QueryEditor extends BaseGadget {
         this.queryChanged(reportQuery);
     }
 
+    setFunction = (i, func) => {
+        let { reportQuery } = this.state;
+        reportQuery = { ...reportQuery };
+        const outputFields = [...reportQuery.outputFields];
+        reportQuery.outputFields = outputFields;
+        const row = { ...outputFields[i] };
+        outputFields[i] = row;
+        row.functions = func;
+        this.queryChanged(reportQuery);
+    }
+
+    viewReport = () => this.props.onViewReport(this.state.reportQuery)
+    showSaveDialog = () => this.setState({ showSaveDialog: true })
+    saveAs = () => this.saveQuery(this.state.reportQuery.queryName)
+    hideSaveDialog = () => this.setState({ showSaveDialog: false })
+
     renderCustomActions() {
         const {
-            queryList,
-            state: { selQueryId }
+
+            state: { reportsList, selReportId }
         } = this;
 
-        if (!queryList || queryList.length === 0) {
+        if (!reportsList || reportsList.length === 0) {
             return null;
         }
 
         return <>
-            <SelectBox dataset={queryList} value={selQueryId} onChange={this.querySelected} placeholder="Select a query to edit" />
+            <SelectBox dataset={reportsList} value={selReportId} valueField="value" onChange={this.querySelected} placeholder="Select a report to edit" />
             <Button icon="fa fa-plus" onClick={this.initModel} label="New query" />
             {/*<button pButton [icon]="isFullScreen?'fa fa-compress':'fa fa-expand'" (click)="isFullScreen=!isFullScreen;onResize(isFullScreen)"></button>*/}
         </>;
 
     }
 
-    getFooter() {
+    renderFooter() {
         const {
             reportQuery
-        } = this;
+        } = this.state;
 
         const isSaveEnabled = this.isSaveEnabled();
+        const isEditing = reportQuery.id > 0;
 
-        return <>
+        return <div className="pnl-footer">
             {reportQuery.id && <div className="pull-left">
                 <Button icon="fa fa-trash" label="Delete Query" type="danger" onClick={this.deleteQuery} />
-                <Button icon="fa fa-floppy-o" label="Save Query As" type="success" onClick={this.saveQuery} disabled={!isSaveEnabled} />
+                <Button icon="fa fa-floppy-o" label="Save Query As" type="success" onClick={this.showSaveDialog} disabled={!isSaveEnabled} />
             </div>}
 
             <div className="pull-right">
-                <Button icon="fa fa-floppy-o" label="Save Query" type="success" onClick={() => this.saveQuery(reportQuery.queryName)}
+                <Button icon="fa fa-floppy-o" label="Save Query" type="success" onClick={isEditing ? this.saveAs : this.showSaveDialog}
                     disabled={!isSaveEnabled || reportQuery.isSystemQuery} />
-                <Button icon="fa fa-list" label="View Report" type="info" onClick={() => this.props.viewReport(reportQuery)}
+                <Button icon="fa fa-list" label="View Report" type="info" onClick={this.viewReport}
                     disabled={!isSaveEnabled} />
             </div>
-        </>;
+        </div>;
     }
 
     render() {
         const {
             props: { builderOnly },
-            state: { reportQuery, displayFields, }
+            state: { reportQuery, displayFields, showSaveDialog }
         } = this;
+
+        const isEditing = reportQuery.id > 0;
 
         const html = <>
             <TabView>
-                <TabPanel header="Filters" leftIcon="fa fa-filter">
-                </TabPanel>
+                {/*<TabPanel header="Filters" leftIcon="fa fa-filter">
+                </TabPanel>*/}
                 <TabPanel header="Advanced Filter (JQL)">
                     <TextBox multiline={true} value={reportQuery.jql} onChange={this.jqlChanged} style={{ minWidth: '100%', minHeight: 100, height: '100%' }} />
                 </TabPanel>
                 <TabPanel header="Display Settings" leftIcon="fa fa-columns">
-                    <table className="table table-bordered table-striped">
-                        <thead>
+                    <ScrollableTable className="query-editor">
+                        <THead>
                             <tr>
-                                <th className="data-center">#</th>
+                                <th>#</th>
                                 <th>Display Column</th>
-                                <th>Type</th>
-                                {!builderOnly && <th className="data-center" style={{ width: 35 }}>Group By</th>}
-                                {!builderOnly && <th>Format function</th>}
-                                <th className="data-center" style={{ width: 30 }}>Remove</th>
+                                <th className="col-type">Type</th>
+                                {!builderOnly && <th className="col-group-by">Group By</th>}
+                                {!builderOnly && <th className="col-format-func">Format function</th>}
+                                <th>Remove</th>
                             </tr>
-                        </thead>
-                        <tbody ngxdroppable model={reportQuery.outputFields} onDrop={this.columnReordered}>
-                            {reportQuery.outputFields.map((row, $index) => <tr style={{ cursor: 'move' }} ngxdraggable model={row}>
+                        </THead>
+                        <tbody model={reportQuery.outputFields} onDrop={this.columnReordered}>
+                            {reportQuery.outputFields.map((row, $index) => <tr key={row._uniqueId} style={{ cursor: 'move' }} ngxdraggable model={row}>
                                 <td className="data-center">{$index + 1}</td>
                                 <td>{row.name}</td>
                                 <td>{row.type} {row.isArray ? '(multiple)' : ''}</td>
                                 {!builderOnly && <td className="data-center"><Checkbox checked={row.groupBy} onChange={val => { row.groupBy = val; this.groupField(row, $index); }} /></td>}
-                                {!builderOnly && <td jabindfunction row={row} />}
+                                {!builderOnly && <td><BindFunction row={row} onChange={(func) => this.setFunction($index, func)} /></td>}
                                 <td className="data-center"><i className="fa fa-times pointer" onClick={() => this.removeOutputField($index)} /></td>
                             </tr>)}
                         </tbody>
@@ -489,13 +527,15 @@ class QueryEditor extends BaseGadget {
                                 <td colSpan={5}>Note: Select the column from the list to add it as output</td>
                             </tr>
                         </tbody>
-                    </table>
+                    </ScrollableTable>
                 </TabPanel>
-            </TabView >
+            </TabView>
+            {showSaveDialog && <SaveReportDialog queryName={reportQuery.queryName} allowCopy={isEditing}
+                onHide={this.hideSaveDialog} onChange={this.saveQuery} />}
         </>;
 
         if (builderOnly) { return html; }
-        else { super.renderBase(html); }
+        else { return super.renderBase(html); }
     }
 }
 

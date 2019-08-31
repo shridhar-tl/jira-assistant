@@ -137,6 +137,23 @@ export class BaseGadget extends PureComponent {
         return <Button icon={isFullScreen ? 'fa fa-compress' : 'fa fa-expand'} onClick={super.toggleFullScreen} title="Toggle full screen" />;
     }
 
+    getRefreshButton(callback) {
+        if (this.isGadget) { return null; }
+
+        return <Button icon="fa fa-refresh" onClick={callback || this.refreshData} title="Refresh data" />;
+    }
+
+    exportData = () => {
+        // ToDo: export functionality need to be implemented
+    }
+
+    getExportButton(disabled) {
+        if (this.isGadget) { return null; }
+        disabled = true; //ToDo: need to remove after export functionality is implemented
+
+        return <Button icon="fa fa-download" disabled={disabled} onClick={this.exportData} title="Export to csv" />;
+    }
+
     getHeader = () => {
         const { title, subTitle, isGadget } = this;
         return <div onContextMenu={!isGadget ? null : (e) => showContextMenu(e, this.getContextMenu())} onDoubleClick={this.toggleFullScreen}>
@@ -155,7 +172,7 @@ export class BaseGadget extends PureComponent {
         const fw = fullWidth || !isGadget;
         const fh = fullHeight || !isGadget;
 
-        const className = classNames("gadget", {
+        const className = classNames("gadget", this.className, {
             "docked": !isGadget,
             "full-width": fw && !isFullScreen,
             "full-height": fh && !isFullScreen,

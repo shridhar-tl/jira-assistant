@@ -1,10 +1,10 @@
 import React from 'react';
-import BaseDialog from "../../../dialogs/BaseDialog";
-import { TextBox, Checkbox, Button } from '../../../controls';
+import BaseDialog from "./BaseDialog";
+import { TextBox, Checkbox, Button } from '../controls';
 
 class SaveReportDialog extends BaseDialog {
     constructor(props) {
-        super(props, "Save Query As");
+        super(props, "Save Report As");
         this.style = { width: "350px" };
         this.state = { showDialog: true, newQueryName: props.queryName || "", copyQuery: false };
     }
@@ -38,9 +38,9 @@ class SaveReportDialog extends BaseDialog {
 
         return super.renderBase(
             <div className="pad-15">
-                <label>Query Name</label>
-                <p><TextBox value={newQueryName} onChange={this.nameChanged} style={{ width: "100%" }} /></p>
-                {allowCopy && <p><Checkbox checked={copyQuery} onChange={this.copyChanged} label="Create as a new query" /></p>}
+                <label>Report Name</label>
+                <div><TextBox value={newQueryName} onChange={this.nameChanged} style={{ width: "100%" }} /></div>
+                {allowCopy && <div><Checkbox checked={copyQuery} onChange={this.copyChanged} label="Save as new report" /></div>}
             </div>
         );
     }

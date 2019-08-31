@@ -5,7 +5,7 @@ import BaseGadget from '../../../gadgets/BaseGadget';
 import { ReportViewer } from '../../../gadgets';
 import { Button, SelectBox } from '../../../controls';
 import "./ReportBuilder.scss";
-import SaveReportDialog from './SaveReportDialog';
+import SaveReportDialog from '../../../dialogs/SaveReportDialog';
 import JQLEditorDialog from './JQLEditorDialog';
 import Dialog from '../../../dialogs';
 
@@ -87,7 +87,7 @@ class ReportBuilder extends BaseGadget {
         Dialog.confirmDelete(`Are you sure to delete the report named "${this.state.reportDefinition.queryName}" permenantly?`)
             .then(() => {
                 this.$report.deleteSavedQuery(this.state.selQueryId).then(q => {
-                    this.$message.success('Selected query deleted successfully!');
+                    this.$message.success('Report deleted successfully!');
                     this.setState({ selQueryId: null });
                     this.initModel();
                     this.fillQueriesList();
