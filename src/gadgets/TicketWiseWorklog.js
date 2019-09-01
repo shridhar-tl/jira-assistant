@@ -3,6 +3,7 @@ import BaseGadget from './BaseGadget';
 import { inject } from '../services';
 import { showContextMenu } from '../controls/ContextMenu';
 import { ScrollableTable, THead, TBody, NoDataRow, Column } from '../components/ScrollableTable';
+import { Dialog } from '../dialogs/CommonDialog';
 
 class TicketWiseWorklog extends BaseGadget {
     constructor(props) {
@@ -61,8 +62,8 @@ class TicketWiseWorklog extends BaseGadget {
     }
 
     getTicketUrl(ticketNo) { return this.$userutils.getTicketUrl(ticketNo); }
-    uploadWorklog() { alert("This functionality is not yet implemented!"); }
-    addWorklog() { alert("This functionality is not yet implemented!"); }
+    uploadWorklog() { Dialog.alert("This functionality is not yet implemented!", "Unimplemented functionality!"); }
+    addWorklog() { Dialog.alert("This functionality is not yet implemented!", "Unimplemented functionality!"); }
 
     render() {
         const { worklogs } = this.state;

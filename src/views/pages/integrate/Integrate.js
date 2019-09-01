@@ -122,11 +122,13 @@ class Integrate extends PureComponent {
                                         <div className="col-6" style={{ textAlign: 'right' }}>
                                             <span>
                                                 <i className="fa fa-youtube" />
-                                                <a href="https://www.youtube.com/embed/f2aBSXzbYuA?rel=0&autoplay=1&showinfo=0&cc_load_policy=1&start=34" target="_blank" rel="noopener noreferrer" title="Click to open youtube video guiding you to setup Jira Assistant">Help setup</a>
+                                                <a href="https://www.youtube.com/embed/f2aBSXzbYuA?rel=0&autoplay=1&showinfo=0&cc_load_policy=1&start=34" target="_blank" rel="noopener noreferrer"
+                                                    title="Click to open youtube video guiding you to setup Jira Assistant">Help setup</a>
                                             </span> |
                                             <span>
                                                 <i className="fa fa-phone" />
-                                                <a href={`https://docs.google.com/forms/d/e/1FAIpQLScJvQtHZI_yZr1xd4Z8TwWgvtFss33hW5nJp4gePCgI2ScNvg/viewform?entry.1426640786=${version}&entry.972533768=${browser}`} target="_blank" rel="noopener noreferrer" title="Click to report about any issues or ask a question">Contact us</a>
+                                                <a href={`https://docs.google.com/forms/d/e/1FAIpQLScJvQtHZI_yZr1xd4Z8TwWgvtFss33hW5nJp4gePCgI2ScNvg/viewform?entry.1426640786=${version}&entry.972533768=${browser}`}
+                                                    target="_blank" rel="noopener noreferrer" title="Click to report about any issues or ask a question">Contact us</a>
                                             </span>
                                         </div>
                                     </div>

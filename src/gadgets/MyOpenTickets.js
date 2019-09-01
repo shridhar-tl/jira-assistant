@@ -3,6 +3,7 @@ import { inject } from '../services/injector-service';
 import BaseGadget, { GadgetActionType } from './BaseGadget';
 import { ScrollableTable, THead, TBody, Column, NoDataRow } from '../components/ScrollableTable';
 import { showContextMenu } from '../controls/ContextMenu';
+import { Dialog } from '../dialogs/CommonDialog';
 
 class MyOpenTickets extends BaseGadget {
     constructor(props) {
@@ -99,7 +100,7 @@ class MyOpenTickets extends BaseGadget {
         showContextMenu($event, this.contextMenu);
     }
 
-    startProgress() { alert("This functionality is not yet implemented!"); }
+    startProgress() { Dialog.alert("This functionality is not yet implemented!", "Unimplemented functionality!"); }
 
     addBookmark() {
         this.$bookmark.addBookmark([this.selectedTicket.ticketNo])

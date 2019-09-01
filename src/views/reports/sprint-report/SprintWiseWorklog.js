@@ -151,7 +151,7 @@ class SprintWiseWorklog extends PureComponent {
                             estimateAll += (child.estimate || 0);
                             const childWL = child.worklogs;
                             const usrs = Object.keys(childWL);
-                            for (const u of usrs) {
+                            usrs.forEach(u => {
                                 const subTotal = childWL[u].allTotal;
                                 let parentU = parentWl[u];
                                 if (!parentU) {
@@ -159,7 +159,7 @@ class SprintWiseWorklog extends PureComponent {
                                     parentWl[u] = parentU;
                                 }
                                 parentU.allTotal = (parentU.allTotal || 0) + subTotal;
-                            }
+                            });
                         });
                         ticket.estimateAll = estimateAll + (ticket.estimate || 0);
                     }

@@ -42,9 +42,9 @@ export default class ReportConfigService {
                 UserDateTimeFormat: { value: `${this.$session.CurrentUser.dateFormat} ${this.$session.CurrentUser.timeFormat}` }
             },
             commonFunctions: {
-                getUsersFromGroup: { value: (group) => { } },
+                getUsersFromGroup: { value: (group) => { /*ToDo: Yet to implement */ } },
                 getJiraIssueUrl: { value: (jiraIssueKey) => this.$userutils.getTicketUrl(jiraIssueKey) },
-                getUserProfileUrl: { value: (userName) => { } },
+                getUserProfileUrl: { value: (userName) => { /*ToDo: Yet to implement */ } },
                 getTicketDetails: { value: (ticketsList, fields) => this.$report.fetchTicketDetails(ticketsList, fields) },
                 executeJQL: { value: (jql, fields) => this.$jira.searchTickets(jql, fields) },
                 getRapidSprintList: { value: (rapidIds) => this.$jira.getRapidSprintList(rapidIds) },
@@ -190,16 +190,16 @@ export default class ReportConfigService {
     prepareJQL(jql, parameters, parameterTemplate) {
         const usedParams = jql.match(/@Parameters.([a-zA-Z_\d.]+[|a-zA-Z_\d.()"',-//]+)\$/g); // Revisit: Escape charactors removed due to warning
         if (usedParams && usedParams.length) {
-            for (const param of usedParams) {
+            usedParams.forEach(param => {
                 let paramName = param.substring(12, param.length - 1);
                 const paramsPart = paramName.split('|');
                 if (paramsPart.length > 2) {
-                    continue;
+                    return;
                 }
                 paramName = paramsPart[0];
                 const value = parameters ? this.getParamValue(parameters, parameterTemplate, paramName) : paramsPart[1];
                 jql = jql.replace(param, value);
-            }
+            });
         }
         return jql;
     }
