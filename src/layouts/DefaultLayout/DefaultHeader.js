@@ -10,6 +10,7 @@ import { CHROME_WS_URL, FF_STORE_URL } from '../../_constants';
 
 import './DefaultHeader.scss';
 import { inject } from '../../services/injector-service';
+import YoutubeVideo from '../../dialogs/YoutubeVideo';
 
 const propTypes = {
   children: PropTypes.node,
@@ -21,6 +22,8 @@ class DefaultHeader extends PureComponent {
   constructor(props) {
     super(props);
     inject(this, "AppBrowserService", "CacheService", "SessionService");
+    this.userId = this.$session.CurrentUser.userId;
+    this.state = {};
   }
 
   UNSAFE_componentWillMount() {
@@ -49,41 +52,11 @@ class DefaultHeader extends PureComponent {
     }
   }
 
-  showVideo() {
-    let url = "https://www.youtube.com/embed/f2aBSXzbYuA?rel=0&autoplay=1&showinfo=0&cc_load_policy=1&start=";
-    const route = this.$location.url;
-    let startAt = 0;
-    const endAt = 0;
-    switch (route) {
-      case "/":
-      default:
-        startAt = 74;
-        break;
-      case "/calendar":
-        startAt = 290;
-        break;
-      case "/reports/userdaywise":
-        startAt = 538;
-        break;
-      case "/reports/customgrouped":
-        startAt = 713;
-        break;
-      case "/settings":
-        startAt = 1069;
-        break;
-      case "/feedback":
-        startAt = 1147;
-        break;
-    }
-    url += `${startAt}&end=${endAt}`;
-    $('#ifVideoHelp').attr('src', url);
-    this.showVideoHelp = true;
-  }
+  showYoutubeHelp = () => this.setState({ showYoutubeVideo: true });
 
-  onHelpClosed() {
-    this.showVideoHelp = false;
-    $('#ifVideoHelp').attr('src', '#');
-  }
+  hideYoutube = () => this.setState({ showYoutubeVideo: false })
+
+  //$('#ifVideoHelp').attr('src', '#');
 
   setSkin(skin, fromChk = false) {
     const passedSkin = skin;
@@ -111,7 +84,8 @@ class DefaultHeader extends PureComponent {
 
   render() {
     const {
-      ratingUrl, gMailShare, gPlusShare, linkedInShare, fackbookShare, twitterShare
+      ratingUrl, gMailShare, gPlusShare, linkedInShare, fackbookShare, twitterShare,
+      state: { showYoutubeVideo }
       //REVISIT: props: { children, ...attributes }
     } = this;
 
@@ -123,7 +97,9 @@ class DefaultHeader extends PureComponent {
           <span className="navbar-brand-full">Jira Assistant</span>
         </a>
         <AppSidebarToggler className="d-md-down-none" display="lg"><span className="fa fa-bars" /></AppSidebarToggler>
-
+        <a className="btn-donate" href={`${this.userId}/#/contribute`} title="Would you like to contribute / compensate us for the effort we put in development of this tool? Click to know more">
+          <img src="/assets/donate.png" width="145" className="Donate us" alt="Donate us" />
+        </a>
         {/*<Nav className="d-md-down-none" navbar>
           <NavItem className="px-3">
             <NavLink to="/dashboard" className="nav-link" >Dashboard</NavLink>
@@ -137,7 +113,7 @@ class DefaultHeader extends PureComponent {
         </Nav>*/}
         <Nav className="ml-auto" navbar>
           <NavItem className="d-md-down-none">
-            <NavLink to="#" className="nav-link"><i className="fa fa-youtube-play"></i></NavLink>
+            <NavLink to="#" className="nav-link" onClick={this.showYoutubeHelp}><i className="fa fa-youtube-play"></i></NavLink>
           </NavItem>
           <NavItem className="d-md-down-none">
             <NavLink to="#" className="nav-link"><i className="fa fa-adjust"></i></NavLink>
@@ -176,6 +152,7 @@ class DefaultHeader extends PureComponent {
             <NavLink to="/feedback" className="nav-link"><i className="fa fa-bug" title="Report a bug or suggest a new feature"></i></NavLink>
           </NavItem>
         </Nav>
+        {showYoutubeVideo && <YoutubeVideo onHide={this.hideYoutube} />}
         {/*<AppAsideToggler className="d-md-down-none"><span className="fa fa-bars" /></AppAsideToggler>*/}
         {/*<AppAsideToggler className="d-lg-none" mobile />*/}
       </React.Fragment >

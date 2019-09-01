@@ -16,7 +16,8 @@ class GeneralSettings extends PureComponent {
         super(props);
         inject(this, "AppBrowserService", "SessionService", "MessageService", "CacheService", "ConfigService", "TicketService", "JiraService", "DashboardService");
 
-        this.noDonations = true;
+        this.noDonations = this.$session.CurrentUser.noDonations;
+        this.userId = this.$session.CurrentUser.userId;
         this.settings = {};
         this.spaceInfo = {};
         this.state = {};
@@ -296,7 +297,7 @@ class GeneralSettings extends PureComponent {
         return (<>
             <TabView styleclass="query-tab" activeindex={currentTabIndex} onChange={this.tabChanged}>
                 <TabPanel header="General" lefticon="fa-filter" selected="true">
-                    <GeneralTab settings={settings} noDonations={noDonations} onChange={this.settingsChanged} />
+                    <GeneralTab settings={settings} noDonations={noDonations} userId={this.userId} onChange={this.settingsChanged} />
                 </TabPanel>
                 <TabPanel header="Worklog" lefticon="fa-clock-o">
                     <WorklogTab settings={settings} onChange={this.settingsChanged} />

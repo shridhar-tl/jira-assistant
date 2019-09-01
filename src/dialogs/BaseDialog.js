@@ -33,7 +33,8 @@ class BaseDialog extends PureComponent {
         }
 
         return (
-            <Dialog header={title} footer={footer} appendTo={document.body} visible={showDialog} style={style} className={className} modal={true} onHide={onHide} baseZIndex={1035}>
+            <Dialog header={title} footer={footer} showHeader={!!title} dismissableMask={!title} closeOnEscape={!title}
+                appendTo={document.body} visible={showDialog} style={style} className={className} modal={true} onHide={onHide} baseZIndex={1035}>
                 {children}
             </Dialog>
         );

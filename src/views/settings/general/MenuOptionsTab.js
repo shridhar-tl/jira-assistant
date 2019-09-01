@@ -134,7 +134,7 @@ class MenuOptionsTab extends TabControlBase {
                                     <SelectBox dataset={dashboards} value={selectedDashboard} onChange={this.dashboardChanged}
                                         style={{ 'width': '200px' }}>
                                         {(menu) => <>
-                                            <i className="fa" ngclass={menu.icon} />
+                                            <i className={`fa ${menu.icon}`} />
                                             <span style={{ verticalAlign: 'middle' }}>{menu.label}</span>
                                         </>}
                                     </SelectBox>

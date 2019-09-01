@@ -21,7 +21,7 @@ strong.share-header-text {
     padding: 5px;
 
     .fa {
-        font-size: 26px;
+        font-size: 26px !important;
         margin: 8px 4px;
     }
     .fa-star {
@@ -43,4 +43,16 @@ strong.share-header-text {
 
 .header-fixed .app-header {
     z-index: 500;
+}
+
+body.no-donation .btn-donate {
+    display: none!important;
+}
+
+.video-help {
+    .p-dialog-content {
+        height: 95vh !important;
+        max-height: 95vh !important;
+        overflow: hidden !important;
+    }
 }

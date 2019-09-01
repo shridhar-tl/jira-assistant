@@ -7,7 +7,7 @@ import { CustomDialog } from "../../dialogs";
 import "./DefaultLayout.scss";
 
 import {
-  AppAside,
+  //AppAside,
   AppHeader,
   AppSidebar,
   AppSidebarFooter,
@@ -23,7 +23,7 @@ import ContextMenu from '../../controls/ContextMenu';
 import $ from 'jquery';
 import AsideUserInfo from './AsideUserInfo';
 
-const DefaultAside = React.lazy(() => import('./DefaultAside'));
+//const DefaultAside = React.lazy(() => import('./DefaultAside'));
 const DefaultHeader = React.lazy(() => import('./DefaultHeader'));
 
 class DefaultLayout extends PureComponent {
@@ -58,7 +58,7 @@ class DefaultLayout extends PureComponent {
   }
 
   componentWillUnmount() {
-    this.$dashboard.onChange(() => { });
+    this.$dashboard.onChange(() => { /* Nothing to be done here */ });
   }
 
   getMenus(userId) {
@@ -121,11 +121,11 @@ class DefaultLayout extends PureComponent {
               </Suspense>
             </Container>
           </main>
-          <AppAside fixed>
+          {/*<AppAside fixed>
             <Suspense fallback={this.loading()}>
               <DefaultAside />
             </Suspense>
-          </AppAside>
+          </AppAside>*/}
         </div>
         <ContextMenu />
         <CustomDialog />

@@ -103,10 +103,10 @@ class GeneralTab extends TabControlBase {
                 {!noDonations && <div className="ui-g-12 ui-md-9 ui-lg-9 ui-xl-10" >
                     <div className="form-group">
                         <div>
-                            <Checkbox value={settings.hideDonateMenu} onChange={(val) => this.setValue('hideDonateMenu', val)} label="Hide Donate button in header" />
+                            <Checkbox checked={settings.hideDonateMenu} onChange={(val) => this.setValue('hideDonateMenu', val)} label="Hide Donate button in header" />
                         </div>
                         <div>
-                            <a href="/#/contribute" title="Would you like to contribute / compensate us for the effort we put in development of this tool? Click to know more">
+                            <a href={`/#/${this.props.userId}/contribute`} title="Would you like to contribute / compensate us for the effort we put in development of this tool? Click to know more">
                                 <img src="/assets/donate.png" width={145} className="Donate us" alt="Donate" />
                             </a>
                         </div>

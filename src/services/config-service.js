@@ -72,7 +72,7 @@ export default class ConfigService {
                 startOfWeek: user.startOfWeek,
                 hideDonateMenu: user.hideDonateMenu,
                 highlightVariance: user.highlightVariance,
-                notifyWL: user.notifyWL || (user.notifyWL == null ? true : false)
+                notifyWL: user.notifyWL || user.notifyWL !== false
             };
             if (settings.launchAction && user.dashboards) {
                 const idx = user.dashboards.indexOf(user.dashboards.first(d => d.isQuickView));

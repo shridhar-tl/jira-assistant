@@ -84,7 +84,8 @@ export default class UserService {
             ]
         };
         const jiraUrlLower = currentUser.jiraUrl.toLowerCase();
-        if (jiraUrlLower.indexOf('pearson') >= 0 || jiraUrlLower.indexOf('emoneyadv')) {
+
+        if (jiraUrlLower.indexOf('pearson') >= 0 || jiraUrlLower.indexOf('emoneyadv') >= 0) {
             sessionUser.noDonations = true;
             sessionUser.hideDonateMenu = true;
         }

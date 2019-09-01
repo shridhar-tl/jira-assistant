@@ -21,6 +21,8 @@ class Contribute extends PureComponent {
         this.state = { selectedCurrency: currencies[0].value };
     }
 
+    currencySelected = (val) => this.setState({ selectedCurrency: val })
+
     render() {
         const { state: { selectedCurrency } } = this;
 
@@ -37,7 +39,7 @@ class Contribute extends PureComponent {
                         <div className="seperator"><span>(or)</span></div>
                         <div className="donate-cntr">
                             <span>Choose your currency to pay:</span>
-                            <SelectBox dataset={currencies} value={selectedCurrency} onChange={(val) => this.setState({ selectedCurrency: val })} />
+                            <SelectBox dataset={currencies} value={selectedCurrency} valueField="value" onChange={this.currencySelected} />
                             <a className="dbox-button" href={`https://donorbox.org/donate-jira-assistant-extension-${selectedCurrency}`}
                                 target="_blank" rel="noopener noreferrer">Donate</a>
                         </div>
