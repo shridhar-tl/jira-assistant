@@ -3,11 +3,6 @@ import Dexie from 'dexie';
 class DatabaseService extends Dexie {
     static dependencies = ["MessageService"];
 
-    users;
-    savedFilters;
-    //settings: Dexie.Table<ISettings, number>;
-    worklogs;
-
     constructor($message) {
         super("JiraAssist");
         this.$message = $message;
