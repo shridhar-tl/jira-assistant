@@ -94,6 +94,7 @@ export const OPERATORS = [
     { value: '{0} in ({1})', label: 'Contains any of', type: 'multiple' },
     { value: '{0} not in ({1})', label: 'Does not contain', type: 'multiple' }
 ];
+
 export function getDateRange(rangeOf) {
     const ranges = [
         [moment().startOf('month').toDate(), moment().endOf('month').toDate()],
@@ -110,7 +111,9 @@ export function getDateRange(rangeOf) {
         return ranges;
     }
 }
+
 export const DummyWLId = 9999999;
+
 export const UUID = (function () {
     const self = {};
     const lut = [];
@@ -122,10 +125,10 @@ export const UUID = (function () {
         const d1 = Math.random() * 0xffffffff | 0;
         const d2 = Math.random() * 0xffffffff | 0;
         const d3 = Math.random() * 0xffffffff | 0;
-        return `${lut[d0 & 0xff] + lut[(d0 >> 8) & 0xff] + lut[(d0 >> 16) & 0xff] + lut[(d0 >> 24) & 0xff]  }-${ 
-            lut[d1 & 0xff]  }${lut[(d1 >> 8) & 0xff]  }-${  lut[((d1 >> 16) & 0x0f) | 0x40]  }${lut[(d1 >> 24) & 0xff]  }-${ 
-            lut[(d2 & 0x3f) | 0x80]  }${lut[(d2 >> 8) & 0xff]  }-${  lut[(d2 >> 16) & 0xff]  }${lut[(d2 >> 24) & 0xff] 
-            }${lut[d3 & 0xff]  }${lut[(d3 >> 8) & 0xff]  }${lut[(d3 >> 16) & 0xff]  }${lut[(d3 >> 24) & 0xff]}`;
+        return `${lut[d0 & 0xff] + lut[(d0 >> 8) & 0xff] + lut[(d0 >> 16) & 0xff] + lut[(d0 >> 24) & 0xff]}-${
+            lut[d1 & 0xff]}${lut[(d1 >> 8) & 0xff]}-${lut[((d1 >> 16) & 0x0f) | 0x40]}${lut[(d1 >> 24) & 0xff]}-${
+            lut[(d2 & 0x3f) | 0x80]}${lut[(d2 >> 8) & 0xff]}-${lut[(d2 >> 16) & 0xff]}${lut[(d2 >> 24) & 0xff]
+            }${lut[d3 & 0xff]}${lut[(d3 >> 8) & 0xff]}${lut[(d3 >> 16) & 0xff]}${lut[(d3 >> 24) & 0xff]}`;
     };
     return self;
 })();

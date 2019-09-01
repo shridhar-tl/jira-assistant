@@ -1,3 +1,5 @@
+const $ = window['$'];
+
 const scheduler = new (function () {
   const schedules = {};
 
@@ -50,8 +52,9 @@ const scheduler = new (function () {
   }
 })();
 
+// eslint-disable-next-line no-unused-vars
 function loadScript(src, scriptId, isLoaded, done, retryCount) {
-  if (retryCount == null) {
+  if (!retryCount && retryCount !== 0) {
     retryCount = 10;
   }
   console.log(`Loading script:- ${src}`);

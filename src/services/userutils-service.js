@@ -102,6 +102,7 @@ export default class UserUtilsService {
     getWorklogUrl(ticketNo, worklogId) {
         let url = this.getTicketUrl(ticketNo);
         if (url && worklogId) {
+            // ToDo: pending implementation
         }
         url += `?focusedWorklogId=${worklogId}&page=com.atlassian.jira.plugin.system.issuetabpanels%3Aworklog-tabpanel#worklog-${worklogId}`;
         return url;

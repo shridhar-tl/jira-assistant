@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { Menu } from 'primereact/menu';
 import { ContextMenu as CMenu } from 'primereact/contextmenu';
 
-let contextHandler = () => { };
+let contextHandler = () => { /* Nothing to do */ };
 export function showContextMenu(event, model) {
     event.preventDefault();
     contextHandler(event, model);
