@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body {
+      margin: 0;
+      font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+      font-size: 14px;
+      color: #333;
+    }
+
+    ul {
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+      width: 160px;
+    }
+
+      ul li:not(:last-child) {
+        border-bottom: 1px solid #ddd;
+      }
+
+    li a {
+      display: block;
+      color: #000;
+      padding: 8px 16px;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+      li a:hover {
+        background-color: #f5f5f5;
+      }
+  </style>
+</head>
+<body>
+  <ul id="menus">
+    <li><a s-href="/dashboard/0">Dashboard</a></li>
+    <li><a s-href="/calendar">Add worklog</a></li>
+    <li><a s-href="/reports/userdaywise">User daywise report</a></li>
+    <li><a s-href="/reports/sprint">Sprint report</a></li>
+    <li><a s-href="/reports/customgrouped">Custom report</a></li>
+    <li><a s-href="/settings/general">Settings</a></li>
+  </ul>
+  <script src="/menu.min.js"></script>
+</body>
+</html>

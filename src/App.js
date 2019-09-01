@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import { Route, Switch, withRouter } from 'react-router-dom';
 import 'moment-timezone/builds/moment-timezone-with-data.min.js';
-import registerServices from './services';
+import registerServices, { inject } from './services';
 import 'font-awesome/css/font-awesome.min.css';
 import { Growl } from 'primereact/growl';
 import 'primereact/resources/themes/nova-light/theme.css';
@@ -11,7 +11,6 @@ import 'jsd-report/build/css/style.css';
 import './scss/style.scss';
 
 import './App.scss';
-import { inject } from './services/injector-service';
 import { isNumber } from 'util';
 
 const loading = () => (

@@ -51,8 +51,8 @@ export const injector = (function () {
         return instance;
     };
 
-    svc.injectable = function (type, defaultName) {
-        svc.addService(type.name, type, defaultName, type.dependencies);
+    svc.injectable = function (type, serviceName, defaultName) {
+        svc.addService(serviceName, type, defaultName, type.dependencies);
         return type;
     };
 
@@ -93,8 +93,8 @@ export const injector = (function () {
 
 export function resolve(name) { return injector.resolve(name); }
 
-export function injectable(service, defaultName) {
-    return injector.injectable(service, defaultName);
+export function injectable(service, serviceName, defaultName) {
+    return injector.injectable(service, serviceName, defaultName);
 }
 
 export function inject(instance, ...dependencies) {
