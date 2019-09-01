@@ -1,0 +1,50 @@
+{
+  "manifest_version": 2,
+  "name": "Jira Assistant",
+  "short_name": "Jira Assist",
+  "version": "0.80",
+
+  "description": "Help to track & upload work done on a Jira Ticket on timely basis and generate report.",
+  "icons": {
+    "16": "/assets/icon_16.png",
+    "24": "/assets/icon_24.png",
+    "32": "/assets/icon_32.png",
+    "48": "/assets/icon_48.png",
+    "128": "/assets/icon_128.png"
+  },
+  "browser_action": {
+    "default_icon": {
+      "16": "/assets/icon_16.png",
+      "24": "/assets/icon_24.png",
+      "32": "/assets/icon_32.png",
+      "48": "/assets/icon_48.png",
+      "128": "/assets/icon_128.png"
+    },
+    "default_title": "Jira Assistant",
+    "default_popup": "/menu_new.min.html"
+  },
+  "background": {
+    "persistent": true,
+    "page": "/background.min.html"
+  },
+  "commands": {
+    "open-ja-dashboard": {
+      "suggested_key": {
+        "default": "Alt+J",
+        "mac": "Command+Shift+J"
+      },
+      "description": "Open JiraAssist dashboard page"
+    }
+  },
+  "oauth2": {
+    "client_id": "692513716183-s97kv5slq5ihm410jq2kc4r8hr77rcku.apps.googleusercontent.com",
+    "scopes": [ "https://www.googleapis.com/auth/calendar.readonly" ]
+  },
+
+  "content_security_policy": "script-src 'self' 'unsafe-eval' https://apis.google.com https://calendar.google.com https://ssl.google-analytics.com https://www.google-analytics.com ; object-src 'self';",
+  "offline_enabled": true,
+  "permissions": [ "tabs", "identity", "http://*/", "https://*/", "storage", "background", "notifications", "http://calendar.google.com/calendar/*", "https://calendar.google.com/calendar/*" ],
+  "optional_permissions": [ "activeTab", "unlimitedStorage" ],
+  "author": "Shridhar",
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAqubtoyFP8J36QWUHoe0K3rsvSc347uAaMaxjwhPj9Hu68BEH85tuqp4LM92MVu7TPXx30JCBUBqDpo4PUaQqVwSmIAjnlDrJ7ZB8+jw5Sm7vLTztex/24wcF6Qtbsz9bXj8yLtVKHi2claEENLItrTx/uJH0c8KzDPu0Vr3f3H7xAzh2i+6GJhyNDI4l0SNjJ3n/CyGvuo6aNs8Q4zxoGPsqZrWH4eG98ozvPgGMrxTa0oDgpah/LPrKulMDQmYRnwpgTw4lSyznrC6ydvcarkGebi6YajInmKm5dieL6rS8YPMyHBySu2l22ANIHz7jqHrbXaChw1ykMd7Er6slYQIDAQAB"
+}
