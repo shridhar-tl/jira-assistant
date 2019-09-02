@@ -12,6 +12,20 @@
     }
 }
 
+body.quick-view {
+    div#root {
+        height: 550px;
+        overflow: hidden;
+
+        .app {
+            height: 550px;
+            min-height: 550px;
+            width: 800px;
+            overflow: hidden;
+        }
+    }
+}
+
 .app-body {
     overflow: hidden;
 }
