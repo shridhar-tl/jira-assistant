@@ -5,12 +5,12 @@ import PropTypes from 'prop-types';
 
 import { AppSidebarToggler } from '@coreui/react';
 import logo from '../../img/logo-symbol.png';
-import * as $ from 'jquery';
 import { CHROME_WS_URL, FF_STORE_URL } from '../../_constants';
 
 import './DefaultHeader.scss';
 import { inject } from '../../services/injector-service';
 import YoutubeVideo from '../../dialogs/YoutubeVideo';
+import SkinPicker from './SkinPicker';
 
 const propTypes = {
   children: PropTypes.node,
@@ -48,7 +48,7 @@ class DefaultHeader extends PureComponent {
     this.twitterShare = `https://twitter.com/home?status=${storeUrl}`;
 
     if (this.$session.CurrentUser.hideDonateMenu) { // When this settings is changed, below class will be removed from body in settings page
-      $('body').addClass('no-donation');
+      document.body.classList.add('no-donation');
     }
   }
 
@@ -57,24 +57,6 @@ class DefaultHeader extends PureComponent {
   hideYoutube = () => this.setState({ showYoutubeVideo: false })
 
   //$('#ifVideoHelp').attr('src', '#');
-
-  setSkin(skin, fromChk = false) {
-    const passedSkin = skin;
-    if (this.useLightTheme !== fromChk) {
-      skin += '-light';
-    }
-    if (this.selectedSkin === skin) {
-      return;
-    }
-    const body = $('body');
-    body.removeClass(this.selectedSkin);
-    this.skinClass = passedSkin;
-    this.selectedSkin = skin;
-    this.$cache.set('skin', skin, false, true);
-    body.addClass(this.selectedSkin);
-    $('#divSkins .selected').removeClass('selected');
-    $(`#divSkins .${this.selectedSkin}`).addClass('selected');
-  }
 
   logout() {
     this.$cache.clear();
@@ -113,11 +95,19 @@ class DefaultHeader extends PureComponent {
         </Nav>*/}
         <Nav className="ml-auto" navbar>
           <NavItem className="d-md-down-none">
-            <NavLink to="#" className="nav-link" onClick={this.showYoutubeHelp}><i className="fa fa-youtube-play"></i></NavLink>
+            <a className="btn btn-warning" href="/old/index.html" onClick={this.showYoutubeHelp}>Switch back to old version</a>
           </NavItem>
           <NavItem className="d-md-down-none">
-            <NavLink to="#" className="nav-link"><i className="fa fa-adjust"></i></NavLink>
+            <NavLink className="nav-link" onClick={this.showYoutubeHelp}><i className="fa fa-youtube-play"></i></NavLink>
           </NavItem>
+          <UncontrolledDropdown nav direction="down">
+            <DropdownToggle nav>
+              <i className="fa fa-adjust"></i>
+            </DropdownToggle>
+            <DropdownMenu right>
+              <SkinPicker />
+            </DropdownMenu>
+          </UncontrolledDropdown>
           <UncontrolledDropdown nav direction="down">
             <DropdownToggle nav>
               <i className="fa fa-share-alt"></i>

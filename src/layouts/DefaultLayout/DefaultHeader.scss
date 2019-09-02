@@ -56,3 +56,26 @@ body.no-donation .btn-donate {
         overflow: hidden !important;
     }
 }
+
+.skin-items {
+    width: 200px;
+    padding: 6px;
+
+    div {
+        display: inline-block;
+        border-radius: 50%;
+        border: 6px solid;
+        height: 35px;
+        width: 35px;
+        font-weight: 700;
+        text-align: center;
+        margin: 6px;
+        color: #fff;
+        cursor: pointer;
+        opacity: .2;
+    }
+
+    div.selected {
+        opacity: 1;
+    }
+}

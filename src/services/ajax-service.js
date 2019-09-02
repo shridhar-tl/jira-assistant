@@ -6,8 +6,11 @@ export default class AjaxService {
     constructor($session, $message) {
         this.$session = $session;
         this.$message = $message;
+
         // Jira has issue with some user agent. Hence always customize it
-        const headerObj = { 'Content-Type': 'application/json', 'User-Agent': 'Chrome' };
+        const headerObj = { 'Content-Type': 'application/json' };
+
+        //headerObj["User-Agent"] = "Chrome"; //ToDo: Add it only for firefox browser.
 
         this.httpOptions = {
             headers: headerObj
