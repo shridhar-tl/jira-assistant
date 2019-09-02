@@ -10,25 +10,11 @@ class SelectBox extends PureComponent {
     }
 
     static getDerivedStateFromProps(props, state) {
-        const { valueField, multiselect, dataset, group } = props;
-        let { value = null } = props;
+        const { valueField, multiselect, group } = props;
+        let { value = null, dataset } = props;
         let { subValue } = state;
 
-        let newState = null;
-
-        if (value !== subValue) {
-            subValue = value;
-            if (value && valueField) {
-                if (multiselect) {
-                    value = dataset.filter(d => value.indexOf(d[valueField]) >= 0);
-                }
-                else {
-                    value = dataset.filter(d => d[valueField] === value)[0];
-                }
-            }
-
-            newState = { subValue, value };
-        }
+        let newState = {};
 
         if (group && dataset !== state.dataset) {
             newState = newState || {};
@@ -45,6 +31,22 @@ class SelectBox extends PureComponent {
             });
 
             newState.groupedDataset = groupedDataset;
+            dataset = groupedDataset;
+        }
+
+        if (value !== subValue) {
+            subValue = value;
+            if (value && valueField) {
+                if (multiselect) {
+                    value = dataset.filter(d => value.indexOf(d[valueField]) >= 0);
+                }
+                else {
+                    value = dataset.filter(d => d[valueField] === value)[0];
+                }
+            }
+
+            newState.subValue = subValue;
+            newState.value = value;
         }
 
         return newState;

@@ -17,7 +17,7 @@ class Dashboard extends PureComponent {
 
         const { match: { params } } = props;
         this.isQuickView = parseInt(params['isQuickView'] || 0) === 1;
-        this.state = this.loadDashboard(parseInt(params['index'] || 1));
+        this.state = this.loadDashboard(parseInt(params['index'] || 0));
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
@@ -28,7 +28,6 @@ class Dashboard extends PureComponent {
     }
 
     loadDashboard(index) {
-        index -= 1;
         const dashboards = this.$session.CurrentUser.dashboards;
         if (index >= dashboards.length) {
             index = 0;
