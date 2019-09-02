@@ -215,6 +215,7 @@ class GeneralSettings extends PureComponent {
 
     setValue = (field, value) => {
         const { settings } = this;
+
         if (value) {
             settings[field] = value;
         }
@@ -223,12 +224,28 @@ class GeneralSettings extends PureComponent {
         }
 
         this.settings = { ...settings };
+        this.setState({ settings: this.settings });
     }
 
-    launchPageChanged = (val) => this.selectedLaunchPage = val
+    launchPageChanged = (val) => {
+        const launchAction = {};
+        launchAction.action = 2;
+        launchAction.autoLaunch = val;
+
+        this.selectedLaunchPage = val;
+        this.setValue("launchAction", launchAction);
+        console.log("launchAction", launchAction);
+    }
 
     menusChanged = (val) => this.selectedMenu = val
-    dashboardChanged = (val) => this.selectedDashboard = val
+    dashboardChanged = (val) => {
+        const launchAction = {};
+        launchAction.action = 3;
+        launchAction.quickIndex = val;
+
+        this.selectedDashboard = val;
+        this.setValue("launchAction", launchAction);
+    }
 
     parseSettings = (result) => {
         const cUser = this.$session.CurrentUser;
@@ -311,7 +328,7 @@ class GeneralSettings extends PureComponent {
                     <MeetingsTab settings={settings} onChange={this.settingsChanged} removedIntg={removedIntg} intgStatusChanged={this.intgStatusChanged} />
                 </TabPanel >
                 <TabPanel header="Menu options" lefticon="fa-calendar">
-                    <MenuOptionsTab ref={(r) => this.menuActionsTab = r} settings={settings}
+                    <MenuOptionsTab key={settings._uniqueId} ref={(r) => this.menuActionsTab = r} settings={settings}
                         dashboards={this.dashboardMenus} menus={this.menus} launchMenus={this.launchMenus}
                         onChange={this.settingsChanged} menusChanged={this.menusChanged}
                         launchPageChanged={this.launchPageChanged} dashboardChanged={this.dashboardChanged}

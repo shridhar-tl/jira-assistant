@@ -11,6 +11,7 @@ class MenuOptionsTab extends TabControlBase {
 
     UNSAFE_componentWillMount() {
         const launchAct = this.props.settings.launchAction;
+
         this.setState({
             selectedLaunchPage: launchAct.autoLaunch, selectedDashboard: launchAct.quickIndex
         });
@@ -112,7 +113,8 @@ class MenuOptionsTab extends TabControlBase {
                             </div>
                             <div className="ui-g-12 ui-md-9 ui-lg-9 ui-xl-10">
                                 <div className="form-group">
-                                    <SelectBox dataset={launchMenus} value={selectedLaunchPage} onChange={this.launchPageChanged} style={{ 'width': '200px' }} group={true}>
+                                    <SelectBox dataset={launchMenus} value={selectedLaunchPage} onChange={this.launchPageChanged}
+                                        valueField="value" style={{ 'width': '200px' }} group={true}>
                                         {(menu) => (<>
                                             <span className={`fa ${menu.icon}`} />
                                             <span style={{ marginLeft: "4px" }}>{menu.label}</span>
@@ -132,7 +134,7 @@ class MenuOptionsTab extends TabControlBase {
                             <div className="ui-g-12 ui-md-9 ui-lg-9 ui-xl-10">
                                 <div className="form-group">
                                     <SelectBox dataset={dashboards} value={selectedDashboard} onChange={this.dashboardChanged}
-                                        style={{ 'width': '200px' }}>
+                                        style={{ 'width': '200px' }} valueField="value">
                                         {(menu) => <>
                                             <i className={`fa ${menu.icon}`} />
                                             <span style={{ verticalAlign: 'middle' }}>{menu.label}</span>

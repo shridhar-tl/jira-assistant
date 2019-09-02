@@ -6,7 +6,7 @@ export function getDashboardMenu(d, idx, userId) {
     return {
         name,
         id: `D-${idx}`,
-        url: `/${userId}/dashboard/${idx + 1}`,
+        url: `/${userId}/dashboard/${idx}`,
         icon: icon,
         /*badge: {
             variant: 'info',

@@ -56,8 +56,6 @@ class DefaultHeader extends PureComponent {
 
   hideYoutube = () => this.setState({ showYoutubeVideo: false })
 
-  //$('#ifVideoHelp').attr('src', '#');
-
   logout() {
     this.$cache.clear();
     window.close();
@@ -79,23 +77,18 @@ class DefaultHeader extends PureComponent {
           <span className="navbar-brand-full">Jira Assistant</span>
         </a>
         <AppSidebarToggler className="d-md-down-none" display="lg"><span className="fa fa-bars" /></AppSidebarToggler>
-        <a className="btn-donate" href={`${this.userId}/#/contribute`} title="Would you like to contribute / compensate us for the effort we put in development of this tool? Click to know more">
+        <NavLink to={`/${this.userId}/contribute`} className="btn-donate"
+          title="Would you like to contribute / compensate us for the effort we put in development of this tool? Click to know more">
           <img src="/assets/donate.png" width="145" className="Donate us" alt="Donate us" />
-        </a>
+        </NavLink>
         {/*<Nav className="d-md-down-none" navbar>
           <NavItem className="px-3">
             <NavLink to="/dashboard" className="nav-link" >Dashboard</NavLink>
           </NavItem>
-          <NavItem className="px-3">
-            <Link to="/users" className="nav-link">Users</Link>
-          </NavItem>
-          <NavItem className="px-3">
-            <NavLink to="#" className="nav-link">Settings</NavLink>
-          </NavItem>
         </Nav>*/}
         <Nav className="ml-auto" navbar>
           <NavItem className="d-md-down-none">
-            <a className="btn btn-warning" href="/old/index.html" onClick={this.showYoutubeHelp}>Switch back to old version</a>
+            <a className="btn btn-warning" href="/old/index.html">Switch back to old version</a>
           </NavItem>
           <NavItem className="d-md-down-none">
             <NavLink className="nav-link" onClick={this.showYoutubeHelp}><i className="fa fa-youtube-play"></i></NavLink>
@@ -134,12 +127,12 @@ class DefaultHeader extends PureComponent {
                 </a>
                 <a href={twitterShare} target="_blank" rel="noopener noreferrer" title="Share with Twitter" >
                   <i className="fa fa-twitter-square pull-left"></i>
-                </a >
+                </a>
               </div>
             </DropdownMenu>
           </UncontrolledDropdown>
           <NavItem className="d-md-down-none">
-            <NavLink to="/feedback" className="nav-link"><i className="fa fa-bug" title="Report a bug or suggest a new feature"></i></NavLink>
+            <NavLink to={`/${this.userId}/feedback`} className="nav-link"><i className="fa fa-bug" title="Report a bug or suggest a new feature"></i></NavLink>
           </NavItem>
         </Nav>
         {showYoutubeVideo && <YoutubeVideo onHide={this.hideYoutube} />}
