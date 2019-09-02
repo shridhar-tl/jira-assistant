@@ -37,7 +37,7 @@ const launchList = [
 class MeetingsTab extends TabControlBase {
     constructor(props) {
         super(props);
-        inject(this, "CalendarService", "AnalyticsService", "MessageService");
+        inject(this, "CalendarService", "AnalyticsService", "MessageService", "SessionService");
     }
 
     googleSignIn = () => {
@@ -78,10 +78,8 @@ class MeetingsTab extends TabControlBase {
                         </div>
                         <div className="ui-g-12 ui-md-9 ui-lg-9 ui-xl-10">
                             <div className="form-group">
-                                <label className="check">
-                                    <Checkbox checked={settings.googleIntegration}
-                                        onChange={(val) => this.setValue("googleIntegration", val)} /> Allow integration
-                                    </label>
+                                <Checkbox checked={settings.googleIntegration}
+                                    onChange={(val) => this.setValue("googleIntegration", val)} label="Allow integration" />
                                 <span className="help-block">Select this checkbox if you would wish to view meetings in your calendar</span>
                             </div>
                         </div>
@@ -108,7 +106,7 @@ class MeetingsTab extends TabControlBase {
                         </div>
                         <div className="ui-g-12 ui-md-9 ui-lg-9 ui-xl-10">
                             <div className="form-group">
-                                <SelectBox className="form-control select" value={settings.checkUpdates} dataset={intervalList}
+                                <SelectBox className="form-control select" value={settings.checkUpdates} dataset={intervalList} valueField="value"
                                     onChange={(val) => this.setValue("checkUpdates", val)} style={{ width: 180, display: 'inline-block' }} />
                                 <span className="help-block">Refresh the meeting invites for notification regularly in given interval</span>
                             </div>
@@ -118,7 +116,7 @@ class MeetingsTab extends TabControlBase {
                         </div>
                         <div className="ui-g-12 ui-md-9 ui-lg-9 ui-xl-10">
                             <div className="form-group">
-                                <SelectBox className="form-control select" value={settings.notifyBefore} dataset={notificationList}
+                                <SelectBox className="form-control select" value={settings.notifyBefore} dataset={notificationList} valueField="value"
                                     onChange={(val) => this.setValue("notifyBefore", val)} style={{ width: 180, display: 'inline-block' }} />
                                 <span className="help-block">Show notification before the selected time of meeting</span>
                             </div>
@@ -129,7 +127,7 @@ class MeetingsTab extends TabControlBase {
                         <div className="ui-g-12 ui-md-9 ui-lg-9 ui-xl-10">
                             <div className="form-group">
                                 <SelectBox className="form-control select" value={settings.autoLaunch} onChange={(val) => this.setValue("autoLaunch", val)}
-                                    dataset={launchList} style={{ width: 180, display: 'inline-block' }} />
+                                    dataset={launchList} valueField="value" style={{ width: 180, display: 'inline-block' }} />
                                 <span className="help-block">Automatically launch hangout Url before the selected time of meeting</span>
                             </div>
                         </div>
