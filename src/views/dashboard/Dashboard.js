@@ -212,7 +212,7 @@ class Dashboard extends PureComponent {
         const gadgets = widgets.map(this.getControls);
 
         if (this.state.isTabView) {
-            return <TabView className="no-padding">{gadgets}</TabView>;
+            return <TabView className="no-padding tab-gadgets">{gadgets}</TabView>;
         }
         else {
             return <div>{gadgets}</div>;

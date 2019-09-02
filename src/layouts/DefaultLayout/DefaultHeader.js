@@ -74,7 +74,7 @@ class DefaultHeader extends PureComponent {
         <AppSidebarToggler className="d-lg-none" display="md" mobile><span className="fa fa-bars" /></AppSidebarToggler>
         <a href={this.storeUrl} className="navbar-brand" target="_blank" rel="noopener noreferrer">
           <img src={logo} width="24" height="24" alt="Jira Assistant" className="navbar-brand-minimized" />
-          <span className="navbar-brand-full">Jira Assistant</span>
+          <span className="navbar-brand-full">Jira Assistant <span className="v-info badge badge-warning">BETA</span></span>
         </a>
         <AppSidebarToggler className="d-md-down-none" display="lg"><span className="fa fa-bars" /></AppSidebarToggler>
         <NavLink to={`/${this.userId}/contribute`} className="btn-donate"

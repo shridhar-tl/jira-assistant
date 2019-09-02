@@ -35,7 +35,7 @@ class WorklogSettings extends BaseDialog {
 
         return super.renderBase(
             <TabView styleclass="query-tab">
-                <TabPanel header="General" leftIcon="fa fa-cog" selected="true">
+                <TabPanel header="General" leftIcon="fa fa-cog" contentClassName="pad-22">
                     <div className="form-group row">
                         <label className="col-md-3 col-form-label">Log hour format</label>
                         <div className="col-md-9 col-form-label">

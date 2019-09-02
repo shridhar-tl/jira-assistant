@@ -6,6 +6,8 @@ import moment from "moment";
 const disabledHours = [13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23];
 
 class TimePicker extends PureComponent {
+    state = {};
+
     static getDerivedStateFromProps(nextProps, prevState) {
         let { value } = nextProps;
         let newState = null;
