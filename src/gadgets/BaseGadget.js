@@ -167,7 +167,16 @@ export class BaseGadget extends PureComponent {
 
     renderBase(childern) {
         const { fullWidth, fullHeight, isLoading, isFullScreen } = this.state;
-        const { isGadget } = this;
+        const {
+            isGadget, props: { tabLayout }
+        } = this;
+
+        if (tabLayout) {
+            return <>
+                {childern}
+                {this.renderFooter && this.renderFooter()}
+            </>;
+        }
 
         const fw = fullWidth || !isGadget;
         const fh = fullHeight || !isGadget;
@@ -180,8 +189,6 @@ export class BaseGadget extends PureComponent {
             "half-height": !fh && !isFullScreen,
             "full-screen": isFullScreen
         });
-
-        //const className = !isGadget ? "docked full-width full-height" : `${fullWidth ? 'full-width' : 'half-width'} ${fullHeight ? 'full-height' : 'half-height'}`;
 
         return (<div ref={el => this.el = el} className={className}>
             {isLoading && <div className="data-loader"><i className="fa fa-refresh fa-spin"></i></div>}

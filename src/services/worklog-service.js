@@ -5,14 +5,14 @@ export default class WorklogService {
     static dependencies = ["UserUtilsService", "JiraService", "SessionService", "DatabaseService", "TicketService", "AjaxService", "UtilsService", "MessageService"];
 
     //ToDo: FormatTsPipe is not a service
-    constructor($userutils, $jira, $session, $db, $ticket, $ajax, $transform, $message) {
+    constructor($userutils, $jira, $session, $db, $ticket, $ajax, $utils, $message) {
         this.$userutils = $userutils;
         this.$jira = $jira;
         this.$session = $session;
         this.$db = $db;
         this.$ticket = $ticket;
         this.$ajax = $ajax;
-        this.$utils = $transform;
+        this.$utils = $utils;
         this.$message = $message;
     } // format ts should be pipe
 

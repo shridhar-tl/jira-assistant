@@ -6,6 +6,7 @@ import Header from './Header';
 import AddGadgetDialog from './AddGadgetDialog';
 import AddWorklog from '../../dialogs/AddWorklog';
 import { onDashboardEvent } from '../../gadgets/BaseGadget';
+import { TabView, TabPanel } from 'primereact/tabview';
 
 class Dashboard extends PureComponent {
     constructor(props) {
@@ -16,9 +17,13 @@ class Dashboard extends PureComponent {
         this.rapidViews = this.$session.CurrentUser.rapidViews || [];
 
         const { match: { params } } = props;
-        this.isQuickView = parseInt(params['isQuickView'] || 0) === 1;
+        //this.isQuickView = parseInt(params['isQuickView'] || 0) === 1;
+        this.isQuickView = this.$session.isQuickView;
         this.state = this.loadDashboard(parseInt(params['index'] || 0));
+        this.setGadgetsList();
     }
+
+    tabViewChanged = (isTabView) => this.setState({ isTabView })
 
     UNSAFE_componentWillReceiveProps(newProps) {
         const newIndex = newProps.match.params.index;
@@ -32,7 +37,8 @@ class Dashboard extends PureComponent {
         if (index >= dashboards.length) {
             index = 0;
         }
-        return { dashboardIndex: index, currentBoard: dashboards[index] };
+        const currentBoard = dashboards[index];
+        return { dashboardIndex: index, currentBoard, isTabView: this.isQuickView || currentBoard.isTabView };
     }
 
     // ToDo: need to be removed
@@ -112,19 +118,60 @@ class Dashboard extends PureComponent {
             }
         }*/
 
+    setGadgetsList() {
+        const controls = {
+            myOpenTickets: { title: "My open tickets", control: MyOpenTickets },
+            bookmarksList: { title: "My Bookmarks", control: MyBookmarks },
+            dateWiseWorklog: { title: "Daywise worklog", control: DateWiseWorklog },
+            pendingWorklog: { title: "Worklog - [Pending upload]", control: PendingWorklog },
+            ticketWiseWorklog: { title: "Ticketwise worklog", control: TicketWiseWorklog },
+            myFilters: { title: "My reports", control: MyReports },
+            agendaDay: { title: "Calendar", control: Calendar, props: { viewMode: "timeGridDay" } },
+            agendaWeek: { title: "Calendar", control: Calendar, props: { viewMode: "timeGridWeek" } },
+        };
+        controls.myBookmarks = controls.bookmarksList;
+        controls.dtWiseWL = controls.dateWiseWorklog;
+        controls.pendingWL = controls.pendingWorklog;
+        this.gadgetsList = controls;
+    }
+
     getControls = (w, i) => {
         const { name, settings } = w;
+        const tabLayout = this.state.isTabView;
+        const gadgetRef = this.gadgetsList[name];
 
         const props = {
             key: name,
+            tabLayout,
             index: i,
             model: w,
             settings,
             layout: this.state.currentBoard.layout,
-            onAction: this.widgetAction
+            onAction: this.widgetAction,
+            ...gadgetRef.props
         };
 
-        switch (name) {
+        const Gadget = gadgetRef.control;
+
+        const gHtml = <Gadget {...props} />;
+
+        if (tabLayout) {
+            let title = gadgetRef.title;
+            if (!title) {
+                if (typeof Gadget.getTitle === "function") {
+                    title = Gadget.getTitle(props);
+                }
+                else {
+                    title = "Unknown Gadget";
+                }
+            }
+            return <TabPanel key={name} header={title}>{gHtml}</TabPanel>;
+        }
+        else {
+            return gHtml;
+        }
+
+        /*switch (name) {
             case "myOpenTickets":
                 return <MyOpenTickets {...props} />;
 
@@ -136,8 +183,8 @@ class Dashboard extends PureComponent {
             case "dtWiseWL":
                 return <DateWiseWorklog {...props} />;
 
-            case "pendingWL":
             case "pendingWorklog":
+            case "pendingWL":
                 return <PendingWorklog {...props} />;
 
             case "ticketWiseWorklog":
@@ -155,6 +202,20 @@ class Dashboard extends PureComponent {
             default:
 
                 break;
+        }*/
+
+    }
+
+    getGadgets(widgets) {
+        if (!widgets || !widgets.length) { return null; }
+
+        const gadgets = widgets.map(this.getControls);
+
+        if (this.state.isTabView) {
+            return <TabView className="no-padding">{gadgets}</TabView>;
+        }
+        else {
+            return <div>{gadgets}</div>;
         }
     }
 
@@ -171,16 +232,16 @@ class Dashboard extends PureComponent {
     hideWorklog = () => this.setState({ showWorklogPopup: false });
 
     render() {
-        const { currentBoard: { widgets },
-            dashboardIndex, currentBoard, showGadgetDialog, showWorklogPopup } = this.state;
+        const {
+            currentBoard: { widgets },
+            dashboardIndex, currentBoard, showGadgetDialog, showWorklogPopup
+        } = this.state;
 
         return (
             <div>
                 <Header {...this.props} config={currentBoard} index={dashboardIndex} userId={this.$session.userId}
-                    onShowGadgets={this.onShowGadgets} />
-                {widgets && widgets.length > 0 && <div>
-                    {widgets.map(this.getControls)}
-                </div>}
+                    onShowGadgets={this.onShowGadgets} tabViewChanged={this.tabViewChanged} isQuickView={this.isQuickView} />
+                {this.getGadgets(widgets)}
 
                 {(!widgets || widgets.length === 0) && <div className="no-widget-div">
                     You haven't added any gadgets to this dashboard. Click on "Add gadgets" button above to start adding a cool one and personalize your experience.

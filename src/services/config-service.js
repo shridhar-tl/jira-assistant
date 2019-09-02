@@ -3,11 +3,11 @@ import { ApiUrls, dateFormats, timeFormats } from '../_constants';
 export default class ConfigService {
     static dependencies = ["SessionService", "AuthService", "DatabaseService", "AjaxService", "UtilsService", "AppBrowserService", "MessageService"];
 
-    constructor($session, $auth, $db, $jaHttp, $utils, $jaBrowserExtn, $message) {
+    constructor($session, $auth, $db, $ajax, $utils, $jaBrowserExtn, $message) {
         this.$session = $session;
         this.$auth = $auth;
         this.$db = $db;
-        this.$jaHttp = $jaHttp;
+        this.$ajax = $ajax;
         this.$utils = $utils;
         this.$jaBrowserExtn = $jaBrowserExtn;
         this.$message = $message;
@@ -125,7 +125,7 @@ export default class ConfigService {
             if (!settings.hasGoogleCredentials && user.dataStore) {
                 const tokken = user.dataStore.access_token;
                 if (tokken) {
-                    this.$jaHttp.get(ApiUrls.googleLogoutUrl, tokken).then((response) => {
+                    this.$ajax.get(ApiUrls.googleLogoutUrl, tokken).then((response) => {
                         this.$jaBrowserExtn.removeAuthTokken(tokken);
                     });
                 }

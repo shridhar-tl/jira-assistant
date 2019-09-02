@@ -3,9 +3,10 @@ import { DASHBOARD_ICONS } from "../_constants";
 export default class DashboardService {
     static dependencies = ["SessionService", "UserService", "CacheService"];
 
-    constructor($session, $user) {
+    constructor($session, $user, $cache) {
         this.$session = $session;
         this.$user = $user;
+        this.$cache = $cache;
         this.updated = () => { /* Empty method, no need of implementation */ };
     }
 
@@ -87,6 +88,20 @@ export default class DashboardService {
                     }
                 }
                 this.$cache.set("menuAction", quickMenu, false, true);
+            }
+
+            return this.saveUserDashboards(u, true);
+        });
+    }
+
+    setAsTabView(currentBoard, index) {
+        currentBoard.isTabView = !currentBoard.isTabView;
+        this.$user.getUser(this.$session.userId).then(u => {
+            if (!u.dashboards) {
+                u.dashboards = [currentBoard];
+            }
+            else {
+                u.dashboards[index].isTabView = currentBoard.isTabView;
             }
 
             return this.saveUserDashboards(u, true);

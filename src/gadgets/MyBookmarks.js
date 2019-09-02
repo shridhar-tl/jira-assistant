@@ -9,7 +9,7 @@ import AddBookmark from '../dialogs/AddBookmark';
 
 class MyBookmarks extends BaseGadget {
     constructor(props) {
-        super(props, 'Bookmark', 'fa-bookmark');
+        super(props, 'My Bookmarks', 'fa-bookmark');
         inject(this, "JiraService", "BookmarkService", "UtilsService", "MessageService");
 
         this.contextMenu = [

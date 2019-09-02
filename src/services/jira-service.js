@@ -4,8 +4,8 @@ import * as moment from 'moment';
 export default class JiraService {
     static dependencies = ["AjaxService", "CacheService", "MessageService", "SessionService"];
 
-    constructor($jaHttp, $jaCache, $message, $session) {
-        this.$jaHttp = $jaHttp;
+    constructor($ajax, $jaCache, $message, $session) {
+        this.$ajax = $ajax;
         this.$jaCache = $jaCache;
         this.$message = $message;
         this.$session = $session;
@@ -18,7 +18,7 @@ export default class JiraService {
             if (startAt > 0) {
                 postData.startAt = startAt;
             }
-            this.$jaHttp.post(ApiUrls.search, postData)
+            this.$ajax.post(ApiUrls.search, postData)
                 .then((result) => {
                     const issues = result.issues;
                     //if (result.maxResults < result.total) {
@@ -64,7 +64,7 @@ export default class JiraService {
     }
 
     getWorklogs(jiraKey) {
-        return this.$jaHttp.get(ApiUrls.issueWorklog, jiraKey);
+        return this.$ajax.get(ApiUrls.issueWorklog, jiraKey);
     }
 
     getCustomFields() {
@@ -72,7 +72,7 @@ export default class JiraService {
             if (value) {
                 return value;
             }
-            return this.$jaHttp.get(ApiUrls.getCustomFields)
+            return this.$ajax.get(ApiUrls.getCustomFields)
                 .then((result) => { this.$jaCache.session.set("customFields", result, 10); return result; });
         });
     }
@@ -82,7 +82,7 @@ export default class JiraService {
         if (value) {
             return new Promise((resolve, reject) => resolve(value));
         }
-        return this.$jaHttp.get(ApiUrls.rapidViews)
+        return this.$ajax.get(ApiUrls.rapidViews)
             .then((result) => { this.$jaCache.session.set("rapidViews", result.views, 10); return result.views; });
     }
 
@@ -91,7 +91,7 @@ export default class JiraService {
         if (value) {
             return new Promise((resolve) => resolve(value));
         }
-        return this.$jaHttp.get(ApiUrls.getAllProjects)
+        return this.$ajax.get(ApiUrls.getAllProjects)
             .then((projects) => { this.$jaCache.session.set("projects", projects, 10); return projects; });
     }
 
@@ -100,16 +100,16 @@ export default class JiraService {
         if (value) {
             return new Promise((resolve, reject) => resolve(value));
         }
-        return this.$jaHttp.get(ApiUrls.getAllIssueTypes)
+        return this.$ajax.get(ApiUrls.getAllIssueTypes)
             .then((issuetypes) => { this.$jaCache.session.set("issuetypes", issuetypes, 10); return issuetypes; });
     }
 
     createIssue(issue) {
-        return this.$jaHttp.post(ApiUrls.getIssue, { fields: issue });
+        return this.$ajax.post(ApiUrls.getIssue, { fields: issue });
     }
 
     updateIssue(key, issue) {
-        return this.$jaHttp.put(ApiUrls.individualIssue, issue, key);
+        return this.$ajax.put(ApiUrls.individualIssue, issue, key);
     }
 
     getRapidSprintList(rapidIds) {
@@ -118,7 +118,7 @@ export default class JiraService {
                 if (value) {
                     return value;
                 }
-                return this.$jaHttp.get(ApiUrls.rapidSprintList, rapidId)
+                return this.$ajax.get(ApiUrls.rapidSprintList, rapidId)
                     .then((result) => {
                         const sprints = result.sprints;
                         sprints.forEach((sp) => { sp.rapidId = rapidId; });
@@ -138,13 +138,13 @@ export default class JiraService {
             if (value) {
                 return value;
             }
-            return this.$jaHttp.get(ApiUrls.sprintListAll, projects)
+            return this.$ajax.get(ApiUrls.sprintListAll, projects)
                 .then((result) => { this.$jaCache.session.set(`sprintListAll${projects}`, result.sprints, 10); return result.sprints; });
         });
     }
 
     getRapidSprintDetails(rapidViewId, sprintId) {
-        return this.$jaHttp.get(ApiUrls.rapidSprintDetails, rapidViewId, sprintId);
+        return this.$ajax.get(ApiUrls.rapidSprintDetails, rapidViewId, sprintId);
     }
 
     getOpenTickets(refresh) {
@@ -158,7 +158,7 @@ export default class JiraService {
             .then((result) => { this.$jaCache.session.set("myOpenTickets", result); return result; });
     }
 
-    searchUsers(text, maxResult = 10, startAt = 0) { return this.$jaHttp.get(ApiUrls.searchUser, text, maxResult, startAt); }
+    searchUsers(text, maxResult = 10, startAt = 0) { return this.$ajax.get(ApiUrls.searchUser, text, maxResult, startAt); }
 
     fillWorklogs(issues, callback) {
         issues = issues.filter((iss) => !(iss.fields || {}).worklog || (((iss.fields || {}).worklog || {}).worklogs || []).length < iss.fields.worklog.total);
@@ -200,7 +200,7 @@ export default class JiraService {
     }
 
     getCurrentUser() {
-        return this.$jaHttp.get(ApiUrls.mySelf).then(null, (e) => {
+        return this.$ajax.get(ApiUrls.mySelf).then(null, (e) => {
             if (e.status === 401) {
                 this.$message.warning("You must be authenticated in Jira to access this tool. Please authenticate in Jira and then retry.", "Unauthorized");
             }
@@ -232,6 +232,6 @@ export default class JiraService {
     }
 
     getWorklog(worklogId, ticketNo) {
-        return this.$jaHttp.get(ApiUrls.individualWorklog, ticketNo, worklogId);
+        return this.$ajax.get(ApiUrls.individualWorklog, ticketNo, worklogId);
     }
 }
