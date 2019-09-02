@@ -106,8 +106,9 @@ class GeneralTab extends TabControlBase {
                             <Checkbox checked={settings.hideDonateMenu} onChange={(val) => this.setValue('hideDonateMenu', val)} label="Hide Donate button in header" />
                         </div>
                         <div>
-                            <a href={`/#/${this.props.userId}/contribute`} title="Would you like to contribute / compensate us for the effort we put in development of this tool? Click to know more">
-                                <img src="/assets/donate.png" width={145} className="Donate us" alt="Donate" />
+                            <a href={`/index.html#/${this.props.userId}/contribute`}
+                                title="Would you like to contribute / compensate us for the effort we put in development of this tool? Click to know more">
+                                <img src="/assets/donate.png" width={145} className="Donate us" alt="Donate us" />
                             </a>
                         </div>
                         <span className="help-block">

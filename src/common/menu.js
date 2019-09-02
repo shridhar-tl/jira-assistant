@@ -1,6 +1,6 @@
 const chrome = window["chrome"];
 const browser = window["browser"];
-const useNewUI = (localStorage.getItem("useNewUI") || { value: false }).value;
+const useNewUI = (localStorage.getItem("useNewUI") || false);
 
 const indexPageUrl = useNewUI ? "/index.html" : "/old/index.html";
 
