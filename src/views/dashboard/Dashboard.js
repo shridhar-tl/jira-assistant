@@ -5,7 +5,7 @@ import { GadgetActionType, Calendar, DateWiseWorklog, MyBookmarks, MyOpenTickets
 import Header from './Header';
 import AddGadgetDialog from './AddGadgetDialog';
 import AddWorklog from '../../dialogs/AddWorklog';
-import { onDashboardEvent } from '../../gadgets/BaseGadget';
+import BaseGadget, { onDashboardEvent } from '../../gadgets/BaseGadget';
 import { TabView, TabPanel } from 'primereact/tabview';
 
 class Dashboard extends PureComponent {
@@ -138,7 +138,9 @@ class Dashboard extends PureComponent {
     getControls = (w, i) => {
         const { name, settings } = w;
         const tabLayout = this.state.isTabView;
-        const gadgetRef = this.gadgetsList[name];
+        let gadgetRef = this.gadgetsList[name];
+
+        if (!gadgetRef) { gadgetRef = { title: "Gadget Unavailable", control: BaseGadget }; } // ToDo: Need to remove once report gadgets are implemented
 
         const props = {
             key: name,

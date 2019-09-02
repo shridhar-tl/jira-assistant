@@ -47,7 +47,7 @@ class AsideUserInfo extends PureComponent {
                         {users && users.length > 0 && <>
                             <DropdownItem header tag="div" className="text-center"><strong>Switch Accounts</strong></DropdownItem>
 
-                            {users.map(u => <DropdownItem key={u.id} tag="a" href={`/index.html/#/${u.id}/dashboard/1`} title={u.email}>
+                            {users.map(u => <DropdownItem key={u.id} tag="a" href={`/index.html#/${u.id}/dashboard/1`} title={u.email}>
                                 <i className="fa fa-external-link icon-extl" />
                                 <div className="inline">
                                     <div>{this.getJiraServerName(u.jiraUrl)}</div>
@@ -55,7 +55,7 @@ class AsideUserInfo extends PureComponent {
                                 </div>
                             </DropdownItem>)}
 
-                            <DropdownItem tag="a" href="/index.html/#/integrate" title="Integrate with new instance of Jira"><i className="fa fa-plug"></i> Integrate</DropdownItem>
+                            <DropdownItem tag="a" href="/index.html#/integrate" title="Integrate with new instance of Jira"><i className="fa fa-plug"></i> Integrate</DropdownItem>
                             {/*<DropdownItem><i className="fa fa-envelope-o"></i> Messages<Badge color="success">42</Badge></DropdownItem>
                             <DropdownItem><i className="fa fa-tasks"></i> Tasks<Badge color="danger">42</Badge></DropdownItem>
                             <DropdownItem><i className="fa fa-comments"></i> Comments<Badge color="warning">42</Badge></DropdownItem>*/}

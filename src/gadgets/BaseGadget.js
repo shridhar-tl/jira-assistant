@@ -198,6 +198,17 @@ export class BaseGadget extends PureComponent {
             </Panel>
         </div>);
     }
+
+    render() {
+        return (<div ref={el => this.el = el} className="gadget half-width half-height">
+            <Panel header="Gadget Unavailable">
+                <div className="pad-22">
+                    This section contains an un-implemented gadget.
+                    This gadget will be available soon while you try out other features in beta!
+                </div>
+            </Panel>
+        </div>);
+    }
 }
 
 export default BaseGadget;
