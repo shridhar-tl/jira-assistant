@@ -7,24 +7,21 @@ class FeedbackView extends PureComponent {
     constructor(props) {
         super(props);
         inject(this, "SessionService", "AppBrowserService");
-
-        const cUser = this.$session.CurrentUser;
-        this.$jaBrowserExtn.getAppVersion().then((version) => {
-            const siteVersionNumber = (version || '0.58');
-            this.feedbackUrl = cUser.feedbackUrl.format([cUser.displayName, cUser.emailAddress, siteVersionNumber, navigator.userAgent]);
-        });
+        this.state = {};
     }
 
-    resizeIframe(obj) {
-        setTimeout(function () {
-            obj.style.height = 0;
-            obj.style.height = `${obj.contentWindow.document.body.scrollHeight + 30}px`;
-        }, 2000);
+    UNSAFE_componentWillMount() {
+        const cUser = this.$session.CurrentUser;
+        this.$jaBrowserExtn.getAppVersion().then((version) => {
+            const siteVersionNumber = (version || '0.80');
+            const feedbackUrl = cUser.feedbackUrl.format([cUser.displayName, cUser.emailAddress, siteVersionNumber, navigator.userAgent]);
+            this.setState({ feedbackUrl });
+        });
     }
 
     render() {
         return (
-            <iframe src={this.feedbackUrl} title="Feedback" style={style} />
+            <iframe src={this.state.feedbackUrl} title="Feedback" style={style} />
         );
     }
 }

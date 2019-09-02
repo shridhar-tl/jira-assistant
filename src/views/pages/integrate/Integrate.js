@@ -13,15 +13,14 @@ class Integrate extends PureComponent {
     }
 
     UNSAFE_componentWillMount() {
-        /*
-        this.$jaBrowserExtn.getAppVersion().then(v => this.version = v);
-        
+        this.$jaBrowserExtn.getAppVersion().then(v => this.setState({ version: v }));
+
         this.$jaBrowserExtn.getCurrentUrl().then((url) => {
-            let root = this.getJiraRootUrl(url);
+            const root = this.getJiraRootUrl(url);
             if (root && root.length > 20 && root.startsWith('http')) {
                 this.setState({ jiraUrl: root });
             }
-        });*/
+        });
     }
 
     getJiraRootUrl(url) {
@@ -32,7 +31,8 @@ class Integrate extends PureComponent {
         const root = this.state.jiraUrl.trim().trimEnd('/').trimEnd('\\');
         this.setState({ jiraUrl: root });
         this.$session.rootUrl = root;
-        this.loading = true;
+        this.setState({ isLoading: true });
+
         this.$ajax.get(ApiUrls.mySelf).then((data) => {
             const name = data.name;
             const email = data.emailAddress;
@@ -50,18 +50,22 @@ class Integrate extends PureComponent {
                             maxHours: 8,
                             dateCreated: new Date()
                         };
-                        this.$db.users.add(user).then((id) => {
-                            return id;
-                        }, (err) => this.handleDBError(err)).then((id) => this.openDashboard(id));
+                        this.$db.users.add(user)
+                            .then((id) => {
+                                return id;
+                            }, this.handleDBError)
+                            .then(this.openDashboard);
                     }
                     else {
                         user.jiraUrl = root;
                         user.userId = name;
                         user.email = email;
                         user.lastLogin = new Date();
-                        this.$db.users.put(user).then((id) => {
-                            return user.id;
-                        }, (err) => this.handleDBError(err)).then((id) => this.openDashboard(id));
+                        this.$db.users.put(user)
+                            .then((id) => {
+                                return user.id;
+                            }, this.handleDBError)
+                            .then(this.openDashboard);
                     }
                 });
         }, (response) => {
@@ -72,13 +76,15 @@ class Integrate extends PureComponent {
             else {
                 this.$message.error("This is not a valid Jira server url or the server does not respond.", "Unknown server");
             }
-        }).then(() => { this.loading = false; });
+        }).then(() => { this.setState({ isLoading: false }); });
     }
-    handleDBError(err) {
+
+    handleDBError = (err) => {
         this.$message.error("Unable to save the changes. Verify if you have sufficient free space in your C:", "Allocation failed");
         return -1;
     }
-    openDashboard(id) {
+
+    openDashboard = (id) => {
         if (id <= 0) {
             return;
         }
@@ -89,7 +95,7 @@ class Integrate extends PureComponent {
     }
 
     render() {
-        const { integrate, version, browser, state: { jiraUrl, loading } } = this;
+        const { integrate, version, browser, state: { jiraUrl, isLoading } } = this;
 
         return (
             <div className="app flex-row align-items-center">
@@ -111,7 +117,7 @@ class Integrate extends PureComponent {
                                         Login to your Jira in current tab or provide the Url of your Jira server to integrate.
                                         Ensure you have already been authenticated in Jira before you click on Integrate button.
                                     </p>
-                                    <Button className="btn btn-block btn-success" icon={loading ? "fa fa-spinner fa-spin" : "fa fa-unlock-alt"} disabled={!jiraUrl || loading}
+                                    <Button type="success" className="btn-block" icon={isLoading ? "fa fa-spinner fa-spin" : "fa fa-unlock-alt"} disabled={!jiraUrl || isLoading}
                                         onClick={integrate} label="Integrate" />
                                 </div>
                                 <div className="card-footer p-4">
