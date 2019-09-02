@@ -3,7 +3,6 @@
   "name": "Jira Assistant",
   "short_name": "Jira Assist",
   "version": "0.80",
-
   "updateURL": "https://raw.githubusercontent.com/shridhar-tl/jira-assistant/master/release/firefox/update_manifest.json",
   "updateLink": "https://github.com/shridhar-tl/jira-assistant/raw/master/release/firefox/JiraAssist_Latest.xpi",
   "applications": {
@@ -12,29 +11,26 @@
       "update_url": "https://raw.githubusercontent.com/shridhar-tl/jira-assistant/master/release/firefox/update_manifest.json"
     }
   },
-
   "description": "Help to track & upload work done on a Jira Ticket on timely basis and generate report.",
   "icons": {
     "16": "/assets/icon_16.png",
     "24": "/assets/icon_24.png",
     "32": "/assets/icon_32.png",
-    "48": "/assets/icon_48.png",
-    "128": "/assets/icon_128.png"
+    "48": "/assets/icon_48.png"
   },
   "browser_action": {
     "default_icon": {
       "16": "/assets/icon_16.png",
       "24": "/assets/icon_24.png",
       "32": "/assets/icon_32.png",
-      "48": "/assets/icon_48.png",
-      "128": "/assets/icon_128.png"
+      "48": "/assets/icon_48.png"
     },
     "default_title": "Jira Assistant",
-    "default_popup": "/menu_new.min.html"
+    "default_popup": "/menu.html"
   },
   "background": {
     //"persistent": true,
-    "page": "/background.min.html"
+    "page": "/background.html"
   },
   "commands": {
     "open-ja-dashboard": {
@@ -49,11 +45,21 @@
   //  "client_id": "692513716183-s97kv5slq5ihm410jq2kc4r8hr77rcku.apps.googleusercontent.com",
   //  "scopes": [ "https://www.googleapis.com/auth/calendar.readonly" ]
   //},
-
   "content_security_policy": "script-src 'self' 'unsafe-eval' https://apis.google.com https://calendar.google.com https://ssl.google-analytics.com https://www.google-analytics.com ; object-src 'self';",
   //"offline_enabled": true,
-  "permissions": [ "tabs", "identity", "http://*/", "https://*/", "storage", "notifications", "http://calendar.google.com/calendar/*", "https://calendar.google.com/calendar/*" ],
-  "optional_permissions": [ "activeTab" ],
+  "permissions": [
+    "tabs",
+    "identity",
+    "http://*/",
+    "https://*/",
+    "storage",
+    "notifications",
+    "http://calendar.google.com/calendar/*",
+    "https://calendar.google.com/calendar/*"
+  ],
+  "optional_permissions": [
+    "activeTab"
+  ],
   "developer": {
     "name": "Shridhar",
     "url": "http://github.com/shridhar-tl/jira-assistant"

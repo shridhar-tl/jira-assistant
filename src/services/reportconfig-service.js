@@ -5,11 +5,14 @@ import EventEmitter from 'events';
 export default class ReportConfigService {
     static dependencies = ["ReportService", "SessionService", "JiraService", "AjaxService", "UserGroup", "UserUtilsService"];
 
-    constructor($report, $session, $jira, $http, $) {
+    constructor($report, $session, $jira, $http, $usergroup, $userutils) {
         this.$report = $report;
         this.$session = $session;
         this.$jira = $jira;
         this.$http = $http;
+        this.$usergroup = $usergroup;
+        this.$userutils = $userutils;
+
         this.parameters = new EventEmitter();
         this.datasets = new EventEmitter();
     }
@@ -130,7 +133,7 @@ export default class ReportConfigService {
                             props.onChange(props.definition, userGroups);
                         }
                         else {
-                            this.$report.getUserGroups().then(grps => {
+                            this.$usergroup.getUserGroups().then(grps => {
                                 userGroups = grps;
                                 if (userGroups) {
                                     props.onChange(props.definition, userGroups);

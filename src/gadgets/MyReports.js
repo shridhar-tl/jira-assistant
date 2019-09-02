@@ -6,7 +6,7 @@ import { Button } from 'primereact/button';
 
 class MyReports extends BaseGadget {
     constructor(props) {
-        super(props, 'Saved Query', 'fa-filter');
+        super(props, 'My Reports', 'fa-filter');
         inject(this, "ReportService", "MessageService", "UserUtils");
         this.state.isLoading = true;
     }

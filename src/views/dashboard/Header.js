@@ -18,16 +18,27 @@ class Header extends PureComponent {
     getStateDetails(props) {
         const { config, index } = props;
 
-        const quickViewLink = {
-            label: "Set as quick view", icon: config.isQuickView ? "fa fa-check-square" : "fa fa-square",
-            disabled: config.isQuickView, command: () => this.setAsQuickView(quickViewLink)
-        };
-
-        this.contextMenu = [
+        const contextMenu = [
             { label: "Create dashboard", icon: "fa fa-plus", command: () => this.$dashboard.createDashboard() },
-            { label: "Delete dashboard", icon: "fa fa-trash-o", command: () => this.deleteDashboard(), disabled: index === 0 },
-            quickViewLink
+            { label: "Delete dashboard", icon: "fa fa-trash-o", command: () => this.deleteDashboard(), disabled: index === 0 }
         ];
+
+        if (!this.props.isQuickView) {
+            const tabViewLink = {
+                label: "Show in tabs", icon: config.isTabView ? "fa fa-check-square" : "fa fa-square",
+                command: () => this.setAsTabView(tabViewLink)
+            };
+
+            const quickViewLink = {
+                label: "Set as quick view", icon: config.isQuickView ? "fa fa-check-square" : "fa fa-square",
+                disabled: config.isQuickView, command: () => this.setAsQuickView(quickViewLink)
+            };
+
+            contextMenu.push(tabViewLink);
+            contextMenu.push(quickViewLink);
+        }
+
+        this.contextMenu = contextMenu;
 
         return { config, index };
     }
@@ -40,8 +51,17 @@ class Header extends PureComponent {
 
     setAsQuickView(quickViewLink) {
         quickViewLink.disabled = true;
-        quickViewLink.icon = 'fa-check-square';
+        quickViewLink.icon = 'fa fa-check-square';
         this.$dashboard.setAsQuickView(this.state.config, this.state.index);
+    }
+
+    setAsTabView(tabViewLink) {
+        const { config, index } = this.state;
+
+        this.$dashboard.setAsTabView(config, index);
+
+        tabViewLink.icon = config.isQuickView ? "fa fa-check-square" : "fa fa-square";
+        this.props.tabViewChanged(config.isTabView);
     }
 
     nameChanged = (name, icon) => {

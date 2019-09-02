@@ -1,7 +1,7 @@
 export default class TicketService {
     static dependencies = ["JiraService"];
 
-    constructor($jira, $bookmark) {
+    constructor($jira) {
         this.$jira = $jira;
 
         this.ticketsCache = {};
