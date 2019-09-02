@@ -1,7 +1,10 @@
 const chrome = window["chrome"];
 const browser = window["browser"];
+const useNewUI = (localStorage.getItem("useNewUI") || { value: false }).value;
 
-if (!localStorage.getItem('CurrentJiraUrl') || !localStorage.getItem('CurrentUserId')) { document.location.href = '/index.html#/pages/integrate'; }
+const indexPageUrl = useNewUI ? "/index.html" : "/old/index.html";
+
+if (!localStorage.getItem('CurrentJiraUrl') || !localStorage.getItem('CurrentUserId')) { document.location.href = `${indexPageUrl}#/pages/integrate`; }
 else {
   const isFirefox = typeof InstallTrigger !== 'undefined';
   const isChrome = !!chrome && (!!chrome.webstore || !!chrome.identity) && !isFirefox;
@@ -13,7 +16,7 @@ else {
   }
 
   function openUrl(url) {
-    url = `/index.html#${url}`;
+    url = `${indexPageUrl}#${url}`;
 
     chrome.tabs.query({ 'active': true, 'lastFocusedWindow': true }, function (tabs) {
       if (tabs && tabs[0] && tabs[0].url) {
@@ -58,13 +61,13 @@ else {
             }
             menus.innerHTML = html;
           }
-          // eslint-disable-next-line
+        // eslint-disable-next-line
         default:
           bindEvents();
           break;
         case 2: openUrl(menu.url || '/dashboard/0'); break;
         case 3:
-          document.location.href = `/index.html?quick=true#/dashboard/${(menu.index || 0)}/1`;
+          document.location.href = `${indexPageUrl}?quick=true#/dashboard/${(menu.index || 0)}/1`;
           break;
       }
     } catch (err) { console.error(err); bindEvents(); }

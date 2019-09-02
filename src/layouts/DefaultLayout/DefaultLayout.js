@@ -10,7 +10,7 @@ import {
   //AppAside,
   AppHeader,
   AppSidebar,
-  AppSidebarFooter,
+  //AppSidebarFooter,
   AppSidebarMinimizer,
   AppSidebarNav2 as AppSidebarNav,
 } from '@coreui/react';
@@ -38,6 +38,8 @@ class DefaultLayout extends PureComponent {
     const { userId } = this.state;
     this.$dashboard.onChange(() => this.setState({ menus: this.getMenus(userId) }));
     this.initBody();
+
+    this.$cache.set("useNewUI", true);
   }
 
   initBody() {
@@ -97,7 +99,7 @@ class DefaultLayout extends PureComponent {
             <Suspense>
               <AppSidebarNav navConfig={menus} {...this.props} router={router} />
             </Suspense>
-            <AppSidebarFooter />
+            {/*<AppSidebarFooter />*/}
             <AppSidebarMinimizer />
           </AppSidebar>
           <main className="main">
