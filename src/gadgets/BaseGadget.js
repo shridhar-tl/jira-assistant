@@ -6,6 +6,8 @@ import Button from '../controls/Button';
 import classNames from "classnames";
 import { showContextMenu } from '../controls/ContextMenu';
 import "./BaseGadget.scss";
+import { ExportHelper } from '../common/ExportHelper';
+import { ExportFormat } from '../common/Exporter';
 
 export const onDashboardEvent = new EventEmitter();
 
@@ -144,14 +146,17 @@ export class BaseGadget extends PureComponent {
     }
 
     exportData = () => {
-        // ToDo: export functionality need to be implemented
+        const exportHelper = new ExportHelper();
+        exportHelper.fileName = this.title;
+        exportHelper.format = this.exportFormat;
+        exportHelper.element = this.el;
+        exportHelper.export();
     }
 
     getExportButton(disabled) {
         if (this.isGadget) { return null; }
-        disabled = true; //ToDo: need to remove after export functionality is implemented
 
-        return <Button icon="fa fa-download" disabled={disabled} onClick={this.exportData} title="Export to csv" />;
+        return <Button icon="fa fa-download" disabled={disabled} onClick={this.exportData} title={this.exportFormat === ExportFormat.XLSX ? "Export to Excel" : "Export to csv"} />;
     }
 
     getHeader = () => {

@@ -116,7 +116,7 @@ class MyBookmarks extends BaseGadget {
             <ScrollableTable dataset={bookmarksList}>
                 <THead>
                     <tr>
-                        <Column className="w40"><Checkbox checked={selAllChk} onChange={this.selectAll} /></Column>
+                        <Column className="w40" noExport={true}><Checkbox checked={selAllChk} onChange={this.selectAll} /></Column>
                         <Column sortBy="ticketNo">Ticket No</Column>
                         <Column sortBy="issuetype">Type</Column>
                         <Column sortBy="summary">Summary</Column>
@@ -151,7 +151,7 @@ class MyBookmarks extends BaseGadget {
                         </tr>;
                     }}
                 </TBody>
-                <NoDataRow span={11}>You have not yet bookmarked any tickets.Bookmark your frequently used tickets</NoDataRow>
+                <NoDataRow span={11}>You have not yet bookmarked any tickets. Bookmark your frequently used tickets</NoDataRow>
             </ScrollableTable>
             {showAddPopup && <AddBookmark onHide={this.hideAddPopup} />}
         </>

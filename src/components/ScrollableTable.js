@@ -2,6 +2,7 @@ import React, { PureComponent, createContext } from 'react';
 import "./ScrollableTable.scss";
 import $ from "jquery";
 import { EventEmitter } from 'events';
+import classNames from "classnames";
 
 const TableContext = createContext({});
 
@@ -69,12 +70,16 @@ export class ScrollableTable extends PureComponent {
     }
 
     render() {
-        const { className = "", style, children } = this.props;
+        const { className, style, children, exportable, exportSheetName } = this.props;
 
         return (
-            <div className={`scroll-table-container ${className}`} ref={el => this.container = el} onScroll={this.tableScrolled}>
+            <div className={classNames("scroll-table-container", className)}
+                ref={el => this.container = el} onScroll={this.tableScrolled}>
                 <TableContext.Provider value={this.sharedProps}>
-                    <table ref={el => this.table = el} className={`scroll-table table-bordered ${className}`} style={style}>
+                    <table ref={el => this.table = el}
+                        export-sheet-name={exportSheetName}
+                        className={classNames("scroll-table table-bordered", className, exportable !== false ? "exportable" : null)}
+                        style={style}>
                         {children}
                     </table>
                 </TableContext.Provider>
@@ -136,7 +141,7 @@ export class THead extends PureComponent {
         const overlayStyle = { ...style, top: this.scrollTop };
 
         return (<>
-            {showOverlay && <thead ref={this.setOverLay} className={`${className} scroll-overlay`} style={overlayStyle}>
+            {showOverlay && <thead ref={this.setOverLay} no-export className={`${className} scroll-overlay`} style={overlayStyle}>
                 {children}
             </thead>}
             <thead ref={this.setHeaderEl} className={className} style={style}>
@@ -239,7 +244,7 @@ export class Column extends PureComponent {
 
     render() {
         const { sortBy, isDesc } = this.state;
-        const { style, sortBy: curField, children } = this.props;
+        const { style, sortBy: curField, children, noExport } = this.props;
         let { className } = this.props;
 
         if (!className) {
@@ -251,7 +256,7 @@ export class Column extends PureComponent {
         }
 
         return (
-            <th className={className} style={style} onClick={this.onClick}>
+            <th className={className} style={style} onClick={this.onClick} no-export={noExport ? "true" : null}>
                 {children} {curField ? (curField === sortBy ? (<i className={`fa fa-sort-${isDesc ? "desc" : "asc"}`}></i>) : <i className="fa fa-sort"></i>) : null}
             </th>
         );

@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react';
+import React from 'react';
 import { inject } from '../../../services';
 import { TabView, TabPanel } from 'primereact/tabview';
 import $ from 'jquery';
@@ -11,6 +11,8 @@ import SprintWiseWorklog from './SprintWiseWorklog';
 import GroupEditor from "../../../dialogs/GroupEditor";
 import "./Common.scss";
 import VelocityChart from './VelocityChart';
+import BaseGadget from "../../../gadgets/BaseGadget";
+import { ExportFormat } from '../../../common/Exporter';
 
 const notes = <div className="padding-15">
     <strong>Experimental:</strong> This report is experimental and development / bug fixes are in progress. If you encounter any issues or have any
@@ -30,9 +32,11 @@ suggestions for improvement please send us a feedback by clicking on <i classNam
     </ul>
 </div>;
 
-class SprintReport extends PureComponent {
+class SprintReport extends BaseGadget {
     constructor(props) {
-        super(props);
+        super(props, "Sprint report", "fa fa-list-alt");
+        this.isGadget = false;
+        this.exportFormat = ExportFormat.XLSX;
         inject(this, "JiraService", "UserUtilsService", "SessionService", "UserGroupService");
 
         this.state = { selectedRapidViews: this.$session.CurrentUser.rapidViews, selectedSprints: null };
@@ -179,6 +183,21 @@ class SprintReport extends PureComponent {
 
     formatDateTime = (val) => this.$userutils.formatDateTime(val);
 
+    renderCustomActions() {
+        const {
+            state: { sprintDetails }
+        } = this;
+
+        const sprintCount = sprintDetails ? sprintDetails.length : 0;
+
+        const isReportDataReady = sprintDetails && sprintCount > 0;
+
+        return <>
+            {this.getFullScreenButton()}
+            {this.getExportButton(!isReportDataReady)}
+        </>;
+    }
+
     render() {
         const {
             state: { selectedTab, selectedRapidViews, sprintDetails, selectedSprints, includeWorklogs, showGroupsPopup, groups, worklogDetails }
@@ -188,9 +207,9 @@ class SprintReport extends PureComponent {
 
         const isReportDataReady = sprintDetails && sprintCount > 0;
 
-        return (
+        return super.renderBase(
             <div className="sprint-report">
-                <TabView activeIndex={selectedTab} onTabChange={this.tabChanged}>
+                <TabView renderActiveOnly={false} activeIndex={selectedTab} onTabChange={this.tabChanged}>
                     <TabPanel header="Settings">
                         {notes}
                         <div className={isReportDataReady ? 'fs-hide pad-22' : 'pad-22'}>
@@ -239,7 +258,7 @@ class SprintReport extends PureComponent {
                         {sprintDetails && <SummaryView2 sprintDetails={sprintDetails} formatDateTime={this.formatDateTime} />}
                     </TabPanel>
                     <TabPanel header="Velocity chart" disabled={!isReportDataReady || sprintCount < 2}>
-                        <VelocityChart sprintDetails={sprintDetails} />
+                        {sprintDetails && <VelocityChart sprintDetails={sprintDetails} />}
                     </TabPanel>
                     <TabPanel header="Worklog details" disabled={!isReportDataReady || !includeWorklogs}>
                         {includeWorklogs && <SprintWiseWorklog groups={groups} ticketDetails={worklogDetails} sprintDetails={sprintDetails} />}

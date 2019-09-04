@@ -4,7 +4,7 @@
     }
 
     div.scroll-table-container.f-height {
-        height: calc(100vh - 85px);
+        height: calc(100vh - 125px);
 
         table.scroll-table{
             min-width: 300px;
@@ -12,11 +12,11 @@
     }
 
     div.scroll-table-container.worklog-table {
-        height: calc(100vh - 140px);
+        height: calc(100vh - 181px);
     }
 
     div.scroll-table-container.summ-2 {
-        height: calc(100vh - 162px);
+        height: calc(100vh - 203px);
 
         table.scroll-table{
             width: 100%;

@@ -138,7 +138,7 @@ class PendingWorklog extends BaseGadget {
             <ScrollableTable dataset={worklogs}>
                 <THead>
                     <tr>
-                        <Column className="w40"><Checkbox checked={selAllChk} onChange={this.selectAll} /></Column>
+                        <Column className="w40" noExport={true}><Checkbox checked={selAllChk} onChange={this.selectAll} /></Column>
                         <Column sortBy="ticketNo">Ticket No</Column>
                         <Column sortBy="summary">Summary</Column>
                         <Column sortBy="dateStarted">Log Time</Column>
