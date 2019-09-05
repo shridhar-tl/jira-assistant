@@ -165,7 +165,7 @@ class GroupedDataGrid extends PureComponent {
         } = this;
 
         return (
-            <ScrollableTable>
+            <ScrollableTable exportSheetName="Grouped - [User daywise]">
                 <THead>
                     <tr className="data-center pad-min auto-wrap">
                         <th style={{ minWidth: 380 }} rowSpan={2}>User Details</th>

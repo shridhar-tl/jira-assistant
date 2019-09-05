@@ -183,6 +183,7 @@ class SprintReport extends BaseGadget {
 
     formatDateTime = (val) => this.$userutils.formatDateTime(val);
 
+    /* This functionality is taken care by BaseGadget
     renderCustomActions() {
         const {
             state: { sprintDetails }
@@ -196,7 +197,7 @@ class SprintReport extends BaseGadget {
             {this.getFullScreenButton()}
             {this.getExportButton(!isReportDataReady)}
         </>;
-    }
+    }*/
 
     render() {
         const {

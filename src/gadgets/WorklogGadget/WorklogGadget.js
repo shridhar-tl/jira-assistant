@@ -13,7 +13,7 @@ import "./WorklogGadget.scss";
 
 class WorklogGadget extends BaseGadget {
     constructor(props) {
-        super(props, 'Logged Work - [User - Day wise]', 'fa-list-alt');
+        super(props, 'Worklog Report', 'fa-list-alt');
         inject(this, "SessionService", "CacheService", "UtilsService", "UserUtilsService", "JiraService", "MessageService", "ConfigService", "UserGroupService");
 
         //$facade.getUserGroups().then(grps => this.state.groups = grps);
@@ -288,13 +288,13 @@ class WorklogGadget extends BaseGadget {
     showSettings = () => this.setState({ showSettings: true });
 
     renderCustomActions() {
-        const { isGadget, state: { dateRange } } = this;
+        const { state: { dateRange } } = this;
 
         return <>
             <DatePicker value={dateRange} range={true} onChange={this.dateSelected} style={{ marginRight: '35px' }} />
             <Button icon="fa fa-users" onClick={this.showGroupsPopup} title="Add users / groups to report" />
-            {super.getFullScreenButton()}
-            {!isGadget && <Button icon="fa fa-refresh" onClick={this.generateReport} title="Refresh data" />}
+            {/*super.getFullScreenButton()*/}
+            {/*!isGadget && <Button icon="fa fa-refresh" onClick={this.generateReport} title="Refresh data" />*/}
             {/*(groupedData || flatData) && <div jaexport element="tblGrp || tblFlat || wldiv" filename="User Daywise Worklogs" />*/}
             <Button icon="fa fa-cogs" onClick={this.showSettings} title="Show settings" />
         </>;
@@ -337,7 +337,7 @@ class WorklogGadget extends BaseGadget {
                 {isLoading && <div className="pad-15">Loading... please wait while the report is being loaded.
                 It may take few seconds / minute based on the range you had selected.</div>}
 
-                {rawData && <TabView className="no-padding">
+                {rawData && <TabView className="no-padding" renderActiveOnly={false}>
                     <TabPanel header="Grouped - [User daywise]" contentClassName="no-padding">
                         {rawData && <GroupedDataGrid rawData={rawData} groups={groups} dates={dates} months={months} pageSettings={pageSettings}
                             convertSecs={convertSecs} formatTime={formatTime} breakupMode={breakupMode} getTicketUrl={this.$userutils.getTicketUrl} maxSecsPerDay={this.maxSecsPerDay} />}

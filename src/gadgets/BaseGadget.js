@@ -35,10 +35,16 @@ export class BaseGadget extends PureComponent {
             { label: "Remove", icon: "fa fa-remove", command: () => this.removeGadget() }
         ];
 
+        const exportOpts = this.hideExport ? null : [
+            { separator: true },
+            { label: "Export to CSV", icon: "fa fa-file-text-o", disabled: !this.exportData, command: () => this.exportData(ExportFormat.CSV) },
+            { label: "Export to Excel", icon: "fa fa-file-excel-o", disabled: !this.exportData, command: () => this.exportData(ExportFormat.XLSX) }
+        ];
+
         return [
-            { label: "Refresh", icon: "fa fa-refresh", disabled: !this.refreshData, command: () => this.refreshData(true) },
-            { label: "Export", icon: "fa fa-download", disabled: !this.exportData, command: () => this.exportData() },
+            { label: "Refresh", icon: "fa fa-refresh", disabled: !this.refreshData || this.state.isLoading, command: () => this.refreshData(true) },
             { label: "Toggle full screen", icon: `fa fa-${isFullScreen ? "compress" : "expand"}`, command: () => this.toggleFullScreen() },
+            ...exportOpts,
             ...gadgetActions
         ];
     }
@@ -145,10 +151,10 @@ export class BaseGadget extends PureComponent {
         return <Button icon="fa fa-refresh" onClick={callback || this.refreshData} title="Refresh data" />;
     }
 
-    exportData = () => {
+    exportData = (exportFormat) => {
         const exportHelper = new ExportHelper();
         exportHelper.fileName = this.title;
-        exportHelper.format = this.exportFormat;
+        exportHelper.format = exportFormat || this.exportFormat;
         exportHelper.element = this.el;
         exportHelper.export();
     }
@@ -161,11 +167,11 @@ export class BaseGadget extends PureComponent {
 
     getHeader = () => {
         const { title, subTitle, isGadget } = this;
-        return <div onContextMenu={!isGadget ? null : (e) => showContextMenu(e, this.getContextMenu())} onDoubleClick={this.toggleFullScreen}>
+        return <div className="gadget-header" onContextMenu={!isGadget ? null : (e) => showContextMenu(e, this.getContextMenu())} onDoubleClick={this.toggleFullScreen}>
             <i className={`fa ${this.iconClass}`}></i> {title} {subTitle && <span> - {subTitle}</span>}
             <div className="pull-right">
                 {this.renderCustomActions && this.renderCustomActions()}
-                {this.isGadget && <Button icon="fa fa-wrench" onClick={e => showContextMenu(e, this.getContextMenu())} />}
+                {!this.hideMenu && <Button icon="fa fa-wrench" onClick={e => showContextMenu(e, this.getContextMenu())} />}
             </div>
         </div>;
     }

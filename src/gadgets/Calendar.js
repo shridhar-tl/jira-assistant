@@ -23,6 +23,9 @@ class Calendar extends BaseGadget {
         super(props, "Calendar", "fa-calendar");
         inject(this, "SessionService", "WorklogService", "MessageService", "AnalyticsService", "CalendarService", "UtilsService", "ConfigService");
 
+        this.hideMenu = !this.props.isGadget;
+        this.hideExport = true;
+
         if (this.$session.pageSettings.calendar) {
             this.settings = Object.assign({}, this.$session.pageSettings.calendar);
         }

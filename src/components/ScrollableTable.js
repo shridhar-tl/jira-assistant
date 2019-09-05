@@ -141,7 +141,7 @@ export class THead extends PureComponent {
         const overlayStyle = { ...style, top: this.scrollTop };
 
         return (<>
-            {showOverlay && <thead ref={this.setOverLay} no-export className={`${className} scroll-overlay`} style={overlayStyle}>
+            {showOverlay && <thead ref={this.setOverLay} no-export="true" className={`${className} scroll-overlay`} style={overlayStyle}>
                 {children}
             </thead>}
             <thead ref={this.setHeaderEl} className={className} style={style}>

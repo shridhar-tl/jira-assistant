@@ -5,6 +5,12 @@ body.fs-layout {
 div.gadget {
     float: left;
 
+    div.gadget-header {
+        padding: 4px 3px 0 5px;
+        height: 30px;
+        margin: -5px;
+    }
+
     &.full-screen {
         position: absolute;
         top: 0;
