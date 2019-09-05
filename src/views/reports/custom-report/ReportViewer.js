@@ -275,6 +275,7 @@ class ReportViewer extends BaseGadget {
         this.fieldOpts.worklogUsers = headObj.subCols;
     }
 
+    /* This functionality is taken care by Base Gadget
     renderCustomActions() {
         const {
             isGadget,
@@ -290,7 +291,7 @@ class ReportViewer extends BaseGadget {
             {this.getRefreshButton(this.fillReport)}
             {hasReportData && this.getExportButton(reportDefinition.queryName)}
         </>;
-    }
+    }*/
 
     render() {
         const {

@@ -35,7 +35,7 @@ export class BaseGadget extends PureComponent {
             { label: "Remove", icon: "fa fa-remove", command: () => this.removeGadget() }
         ];
 
-        const exportOpts = this.hideExport ? null : [
+        const exportOpts = this.hideExport ? [] : [
             { separator: true },
             { label: "Export to CSV", icon: "fa fa-file-text-o", disabled: !this.exportData, command: () => this.exportData(ExportFormat.CSV) },
             { label: "Export to Excel", icon: "fa fa-file-excel-o", disabled: !this.exportData, command: () => this.exportData(ExportFormat.XLSX) }

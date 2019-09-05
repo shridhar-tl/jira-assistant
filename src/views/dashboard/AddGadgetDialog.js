@@ -3,12 +3,33 @@ import { GadgetList } from '../../gadgets';
 import Button from '../../controls/Button';
 import BaseDialog from '../../dialogs/BaseDialog';
 import './AddGadgetDialog.scss';
+import { inject } from '../../services';
 
 class AddGadgetDialog extends BaseDialog {
     constructor(props) {
         super(props, "Manage gadgets");
+        inject(this, "ReportService");
         this.style = { width: '700px' };
         this.state.widgets = props.widgetsList;
+        this.state.gadgetList = GadgetList;
+    }
+
+    UNSAFE_componentWillMount() {
+        this.$report.getReportsList().then(reports => {
+            if (reports && reports.length) {
+                const list = reports.map(r => {
+                    return {
+                        id: (r.advanced ? "AR:" : "SQ:") + r.id,
+                        icon: "fa fa-filter",
+                        name: r.queryName,
+                        details: (!r.advanced ? `${r.outputCount} columns displayed${r.filtersCount > 0 ? ` with ${r.filtersCount} filters` : ""} in table format` : "<no details available>")
+                    };
+                });
+
+                const gadgetList = [...GadgetList, ...list];
+                this.setState({ gadgetList });
+            }
+        });
     }
 
     UNSAFE_componentWillReceiveProps(props) {
@@ -23,11 +44,11 @@ class AddGadgetDialog extends BaseDialog {
 
     render() {
         const { addGadget, removeGadget } = this.props;
-        const { widgets } = this.state;
+        const { widgets, gadgetList } = this.state;
 
         return super.renderBase(
             <>
-                {GadgetList.map(g => {
+                {gadgetList.map(g => {
                     const added = widgets.some(w => w.name === g.id);
 
                     return (

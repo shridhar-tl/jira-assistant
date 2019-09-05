@@ -17,7 +17,7 @@ class MyReports extends BaseGadget {
 
     refreshData() {
         this.setState({ isLoading: true });
-        this.$report.getSavedFilters()
+        this.$report.getReportsList()
             .then((result) => {
                 result.forEach(r => {
                     r.displayDate = this.$userutils.formatDateTime(r.dateCreated);

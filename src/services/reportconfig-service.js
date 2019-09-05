@@ -25,7 +25,7 @@ export default class ReportConfigService {
             // eslint-disable-next-line no-new-func
             compiler: function (code, sandbox) { return Function(...sandbox, code)(); },
             subReports: (defn) => {
-                return this.$report.getSavedFilters().then((result) => {
+                return this.$report.getReportsList().then((result) => {
                     result = result.filter(q => q.advanced).map(q => { return { id: q.id, name: q.queryName }; });
                     if (defn && defn.id) {
                         result = result.filter(r => r.id !== defn.id);

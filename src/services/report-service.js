@@ -32,7 +32,7 @@ export default class ReportService {
         });
     }
 
-    getSavedFilters() {
+    getReportsList() {
         return this.$db.savedFilters.where("createdBy").equals(this.$session.userId).toArray()
             .then((qrys) => {
                 return qrys.map((q) => {

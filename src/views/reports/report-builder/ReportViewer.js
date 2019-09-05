@@ -1,9 +1,9 @@
 import React from 'react';
-import BaseGadget from './BaseGadget';
-import { inject } from '../services';
-import { Button } from '../controls';
+import BaseGadget from '../../../gadgets/BaseGadget';
+import { inject } from '../../../services';
+import { Button } from '../../../controls';
 import { ReportViewer as JSRViewer } from "jsd-report";
-import GroupEditor from '../dialogs/GroupEditor';
+import GroupEditor from '../../../dialogs/GroupEditor';
 
 class ReportViewer extends BaseGadget {
     constructor(props) {
