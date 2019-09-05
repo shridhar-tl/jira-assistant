@@ -48,7 +48,7 @@ export default class ReportService {
             });
     }
 
-    getSavedQuery(id) { return this.$db.savedFilters.where("id").equals(parseInt(id)).first(); }
+    getReportDefinition(id) { return this.$db.savedFilters.where("id").equals(parseInt(id)).first(); }
 
     saveQuery(query) {
         query.createdBy = this.$session.userId;

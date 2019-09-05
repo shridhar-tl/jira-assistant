@@ -34,7 +34,7 @@ export default class ReportConfigService {
                 });
             },
             resolveReportDefinition: (reportId) => {
-                return this.$report.getSavedQuery(reportId);
+                return this.$report.getReportDefinition(reportId);
             },
             resolveHttpRequest: (method, url, data, headers) => {
                 return this.$http.request(method, url, data, headers);

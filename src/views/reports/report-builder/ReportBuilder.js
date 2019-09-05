@@ -79,7 +79,7 @@ class ReportBuilder extends BaseGadget {
     }
 
     queryChanged = (selQueryId) => {
-        return this.$report.getSavedQuery(selQueryId)
+        return this.$report.getReportDefinition(selQueryId)
             .then(this.setReportDefinition);
     }
 

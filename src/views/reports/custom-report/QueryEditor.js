@@ -55,7 +55,7 @@ class QueryEditor extends BaseGadget {
         if (!this.props.builderOnly) {
             this.fillQueriesList();
         }
-        //this.$report.getSavedQuery(value).then( (result)=> {
+        //this.$report.getReportDefinition(value).then( (result)=> {
         //  this.reportRequest = result;
         //});
     }
@@ -386,7 +386,7 @@ class QueryEditor extends BaseGadget {
     }
 
     querySelected = (selReportId) => {
-        this.$report.getSavedQuery(selReportId).then(reportQuery => this.setState({ selReportId, reportQuery }));
+        this.$report.getReportDefinition(selReportId).then(reportQuery => this.setState({ selReportId, reportQuery }));
     }
 
     deleteQuery = () => {

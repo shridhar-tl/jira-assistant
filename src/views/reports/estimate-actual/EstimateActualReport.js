@@ -86,6 +86,7 @@ class EstimateActualReport extends BaseGadget {
         super(props, "Estimate vs Actual report", "fa fa-list-alt");
         inject(this, "SessionService", "JiraService", "UserGroup");
 
+        this.hideMenu = true;
         this.isGadget = false;
 
         this.chartOptions = {
