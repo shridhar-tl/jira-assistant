@@ -199,19 +199,26 @@ export default class JiraService {
         }, () => { console.log(`Failed fetching worklog for ${issue.key}`); return false; });
     }
 
+    getUserDetails(username) {
+        return this.$ajax.get(ApiUrls.getUserDetails, username).then(null, this.jiraErrorHandler);
+    }
+
+    jiraErrorHandler = (e) => {
+        if (e.status === 401) {
+            this.$message.warning("You must be authenticated in Jira to access this tool. Please authenticate in Jira and then retry.", "Unauthorized");
+        }
+        else if (e.error && e.error.errorMessages) {
+            this.$message.warning(e.error.errorMessages, "Server error");
+        }
+        else {
+            e = e.ref || e;
+            this.$message.warning(`${e.status}:- ${e.statusText}`, "Unknown error");
+        }
+        return Promise.reject(e);
+    }
+
     getCurrentUser() {
-        return this.$ajax.get(ApiUrls.mySelf).then(null, (e) => {
-            if (e.status === 401) {
-                this.$message.warning("You must be authenticated in Jira to access this tool. Please authenticate in Jira and then retry.", "Unauthorized");
-            }
-            else if (e.error && e.error.message) {
-                this.$message.warning(e.error.message, "Server error");
-            }
-            else {
-                this.$message.warning(`${e.status}:- ${e.statusText}`, "Unknown error");
-            }
-            return Promise.reject(e);
-        });
+        return this.$ajax.get(ApiUrls.mySelf).then(null, this.jiraErrorHandler);
     }
 
     getJAWorklog(worklogId, ticketNo) {

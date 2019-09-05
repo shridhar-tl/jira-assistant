@@ -7,7 +7,7 @@ import { inject } from '../services';
 class UserGroup extends PureComponent {
     constructor(props) {
         super(props);
-        inject(this, "SessionService", "MessageService", "UserGroupService");
+        inject(this, "SessionService", "MessageService", "UserGroupService", "JiraService");
         const { groups } = props;
 
         const timezones = moment.tz.names().map(t => { return { label: t, value: t }; });
@@ -134,6 +134,18 @@ class GroupRow extends PureComponent {
         this.setState({ users });
     }
 
+    usernameEntered = (username) => {
+        let { selectedUsers } = this.state;
+
+        if (!selectedUsers || !username || selectedUsers.some(u => u.name.toLowerCase() === username.toLowerCase())) { return; }
+
+        this.$jira.getUserDetails(username).then((user) => {
+            selectedUsers = [...selectedUsers];
+            selectedUsers.push(user);
+            this.setState({ selectedUsers });
+        }, () => { /* Nothing to do */ });
+    }
+
     onRemove = () => {
         this.props.onRemove(this.props.index);
     }
@@ -159,7 +171,7 @@ class GroupRow extends PureComponent {
                 <td colSpan={2}>
                     <AutoComplete value={selectedUsers} onChange={this.usersSelected}
                         displayField="displayName" multiple={true} minLength={2} forceselection={true}
-                        placeholder="Add one or more users"
+                        placeholder="Add one or more users" onCustomValue={this.usernameEntered}
                         dataset={this.searchUsers} style={{ 'width': '80%' }} />
                     <Button type="danger" icon="fa fa-close" onClick={this.clearSelection} />
                     <Button type="success" icon="fa fa-user-plus" onClick={() => this.addUsersToGroup(group)} />

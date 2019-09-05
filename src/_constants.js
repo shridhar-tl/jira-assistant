@@ -13,7 +13,7 @@ export const ApiUrls = {
     individualWorklog: "~/rest/api/2/issue/{0}/worklog/{1}",
     searchUser: "~/rest/api/2/user/search?maxResults={1}&startAt={2}&username={0}",
     getCustomFields: "~/rest/api/2/field",
-    getUserDetails: "~/rest/api/2/user?username=",
+    getUserDetails: "~/rest/api/2/user?username={0}",
     mySelf: "~/rest/api/2/myself",
     usersForPicker: "~/rest/api/2/user/picker?maxResults=10&showAvatar=true&query=",
     rapidSprintList: "~/rest/greenhopper/1.0/sprintquery/{0}",
