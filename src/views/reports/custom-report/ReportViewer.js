@@ -17,7 +17,7 @@ class ReportViewer extends BaseGadget {
         this.refreshData();
     }
 
-    componentWillReceiveProps(props) {
+    UNSAFE_componentWillReceiveProps(props) {
         if ((props.definition && props.definition !== this.state.reportDefinition) || props.reportId) {
             this.setState({ reportDefinition: props.definition }, this.refreshData);
         }

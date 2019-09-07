@@ -10,6 +10,7 @@ import FlatDataGrid from './FlatDataGrid';
 import GroupedDataGrid from './GroupedDataGrid';
 import WorklogReportInfo from './WorklogReportInfo';
 import "./WorklogGadget.scss";
+import UserProjectWiseSummary from './UserProjectWiseSummary';
 
 class WorklogGadget extends BaseGadget {
     constructor(props) {
@@ -162,6 +163,7 @@ class WorklogGadget extends BaseGadget {
                     .map(log => {
                         return {
                             groupName: groupName,
+                            username: usr.name,
                             userDisplay: userName,
                             parent: log.parent,
                             parentUrl: log.parent ? this.$userutils.getTicketUrl(log.parent) : null,
@@ -325,10 +327,12 @@ class WorklogGadget extends BaseGadget {
         const {
             months, dates, convertSecs, formatTime, formatDateTime,
             //props: { },
-            rawData, flatData,
-            state: { isLoading, showGroupsPopup, showSettings, groups, pageSettings }
+            rawData, flatData = [],
+            state: { isLoading, showGroupsPopup, showSettings, groups, pageSettings = {} }
         } = this;
+
         const { breakupMode } = pageSettings;
+        const flatDataUniqueKey = `${pageSettings._uniqueId}_${flatData._uniqueId}`;
 
         return super.renderBase(
             <div className="worklog-gadget-container">
@@ -342,8 +346,11 @@ class WorklogGadget extends BaseGadget {
                         {rawData && <GroupedDataGrid rawData={rawData} groups={groups} dates={dates} months={months} pageSettings={pageSettings}
                             convertSecs={convertSecs} formatTime={formatTime} breakupMode={breakupMode} getTicketUrl={this.$userutils.getTicketUrl} maxSecsPerDay={this.maxSecsPerDay} />}
                     </TabPanel>
+                    <TabPanel header="Summary - [User project wise]">
+                        {flatData && <UserProjectWiseSummary key={flatDataUniqueKey} groups={groups} flatData={flatData} formatDateTime={formatDateTime} convertSecs={convertSecs} />}
+                    </TabPanel>
                     <TabPanel header="Flat">
-                        {flatData && <FlatDataGrid flatData={flatData} formatDateTime={formatDateTime} convertSecs={convertSecs} />}
+                        {flatData && <FlatDataGrid key={flatDataUniqueKey} flatData={flatData} formatDateTime={formatDateTime} convertSecs={convertSecs} />}
                     </TabPanel>
                 </TabView>}
 

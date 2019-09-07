@@ -6,8 +6,24 @@ div.scroll-table-container {
     &.data-center > table.scroll-table {
         text-align: center;
 
-        td {
-            text-align: center;
+        td { text-align: center; }
+    }
+
+    table.scroll-table {
+        tr {
+            &.data-left td { text-align: left; } 
+            &.data-center td { text-align: center; } 
+            &.data-right td { text-align: right; } 
+
+            &.strong td { font-weight: bold; }
+
+            td {
+            &.data-left { text-align: left; } 
+            &.data-center { text-align: center; } 
+            &.data-right { text-align: right; }
+
+            &.strong { font-weight: bold; }
+            }
         }
     }
 
@@ -30,6 +46,10 @@ div.scroll-table-container {
                 left: 0;
 
                 tr {
+                    th:first-child {
+                        border-left: 0;
+                    }
+
                     th:last-child {
                         border-right: 0;
                     }
@@ -79,14 +99,6 @@ div.scroll-table-container {
                 td {
                     padding: 5px 8px 5px 10px;
 
-                    &.data-left {
-                        text-align: left;
-                    }
-
-                    &.data-center {
-                        text-align: center;
-                    }
-
                     i.fa-ellipsis-v {
                         cursor: pointer;
                     }
@@ -100,6 +112,18 @@ div.scroll-table-container {
 
         tfoot {
             background-color: #ebedf0;
+
+            tr {
+                td {
+                    padding: 5px 8px;
+                }
+
+                &:first-child {
+                    td {
+                        border-top: 2px solid #c8ced3;
+                    }
+                }
+            }
         }
     }
 }
