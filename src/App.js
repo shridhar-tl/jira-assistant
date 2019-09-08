@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react';
+import React, { PureComponent, createContext } from 'react';
 import { Route, Switch, withRouter } from 'react-router-dom';
 import 'moment-timezone/builds/moment-timezone-with-data.min.js';
 import registerServices, { inject } from './services';
@@ -31,12 +31,23 @@ const DefaultLayout = React.lazy(() => import('./layouts/DefaultLayout'));
 const Integrate = React.lazy(() => import('./views/pages/integrate/Integrate'));
 const Page401 = React.lazy(() => import('./views/pages/p401/Page401'));
 
+export const AppContext = createContext({});
+
 class App extends PureComponent {
   constructor(props) {
     super(props);
     registerServices();
     inject(this, "SessionService", "AuthService", "MessageService");
     this.state = { isLoading: true, needIntegration: false, authenticated: false };
+  }
+
+  contextProps = {
+    switchUser: (userId) => {
+      let url = document.location.hash.substring(2);
+      url = url.substring(url.indexOf("/"));
+      url = `/${userId}${url}`;
+      this.authenticateUser(url);
+    }
   }
 
   getMessanger = () => <Growl ref={(el) => this.messenger = el} baseZIndex={3000} />
@@ -46,18 +57,20 @@ class App extends PureComponent {
       if (this.messenger) { this.messenger.show(message); }
     });
 
-    const { pathname } = this.props.location;
+    this.authenticateUser(this.props.location.pathname);
+  }
+
+  authenticateUser(pathname) {
     const parts = pathname.split("/");
     let userId = parseInt(parts[1]);
     if (!userId || !isNumber(userId)) {
       userId = null;
     }
+
     if (parts[1] === "integrate") {
       this.setState({ isLoading: false });
     } else {
       this.$auth.authenticate(userId).then((result) => {
-        this.setState({ isLoading: false, authenticated: result, jiraUrl: this.$session.rootUrl });
-
         if (result) {
           if (!pathname || pathname === "/") {
             this.props.history.push(`/${this.$session.userId}/dashboard/0`);
@@ -69,6 +82,10 @@ class App extends PureComponent {
         else {
           this.props.history.push(this.$session.needIntegration ? "/integrate" : "/401");
         }
+
+        const sessionUser = this.$session.userId || null;
+        this.setState({ isLoading: false, authenticated: result, jiraUrl: this.$session.rootUrl, userId: sessionUser });
+
       }, () => {
         this.props.history.push(this.$session.needIntegration ? "/integrate" : "/401");
         this.setState({ isLoading: false, needIntegration: this.$session.needIntegration, jiraUrl: this.$session.rootUrl });
@@ -77,7 +94,7 @@ class App extends PureComponent {
   }
 
   render() {
-    const { isLoading } = this.state;
+    const { isLoading, userId } = this.state;
 
     if (isLoading) {
       return <>{this.getMessanger()}{loading()}</>;
@@ -87,13 +104,15 @@ class App extends PureComponent {
       <>
         {this.getMessanger()}
 
-        <React.Suspense fallback={loading()}>
-          <Switch>
-            <Route exact path="/integrate" name="Integrate Page" render={props => <Integrate {...props} />} />
-            <Route exact path="/401" name="Page 401" render={props => <Page401 {...props} jiraUrl={this.state.jiraUrl} />} />
-            <Route path="/:userId" name="Home" render={props => <DefaultLayout {...props} />} />
-          </Switch>
-        </React.Suspense>
+        <AppContext.Provider value={this.contextProps}>
+          <React.Suspense fallback={loading()}>
+            <Switch>
+              <Route exact path="/integrate" name="Integrate Page" render={props => <Integrate {...props} />} />
+              <Route exact path="/401" name="Page 401" render={props => <Page401 {...props} jiraUrl={this.state.jiraUrl} />} />
+              <Route key={userId} path="/:userId" name="Home" render={props => <DefaultLayout {...props} />} />
+            </Switch>
+          </React.Suspense>
+        </AppContext.Provider>
       </>
     );
   }

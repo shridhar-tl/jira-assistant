@@ -2,7 +2,7 @@ import React from 'react';
 import { inject } from '../../../services';
 import { ReportBuilder as JSReportBuilder } from 'jsd-report';
 import BaseGadget from '../../../gadgets/BaseGadget';
-import { ReportViewer } from '../../../gadgets';
+import ReportViewer from './ReportViewer';
 import { Button, SelectBox } from '../../../controls';
 import "./ReportBuilder.scss";
 import SaveReportDialog from '../../../dialogs/SaveReportDialog';
@@ -60,7 +60,7 @@ class ReportBuilder extends BaseGadget {
     }
 
     fillQueriesList() {
-        return this.$report.getSavedFilters().then((result) => {
+        return this.$report.getReportsList().then((result) => {
             const queryList = result.filter(q => q.advanced).map(q => { return { value: q.id, label: q.queryName }; });
             this.setState({ queryList });
         });
@@ -79,7 +79,7 @@ class ReportBuilder extends BaseGadget {
     }
 
     queryChanged = (selQueryId) => {
-        return this.$report.getSavedQuery(selQueryId)
+        return this.$report.getReportDefinition(selQueryId)
             .then(this.setReportDefinition);
     }
 

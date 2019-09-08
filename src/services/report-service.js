@@ -32,7 +32,7 @@ export default class ReportService {
         });
     }
 
-    getSavedFilters() {
+    getReportsList() {
         return this.$db.savedFilters.where("createdBy").equals(this.$session.userId).toArray()
             .then((qrys) => {
                 return qrys.map((q) => {
@@ -48,7 +48,7 @@ export default class ReportService {
             });
     }
 
-    getSavedQuery(id) { return this.$db.savedFilters.where("id").equals(parseInt(id)).first(); }
+    getReportDefinition(id) { return this.$db.savedFilters.where("id").equals(parseInt(id)).first(); }
 
     saveQuery(query) {
         query.createdBy = this.$session.userId;

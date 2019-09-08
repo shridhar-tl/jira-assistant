@@ -2,6 +2,7 @@ import React from 'react';
 import BaseGadget from "../../../gadgets/BaseGadget";
 import { inject } from "../../../services/injector-service";
 import { ScrollableTable, THead } from '../../../components/ScrollableTable';
+import "./Common.scss";
 
 class ReportViewer extends BaseGadget {
     constructor(props) {
@@ -13,33 +14,18 @@ class ReportViewer extends BaseGadget {
     }
 
     UNSAFE_componentWillMount() {
-        const { reportDefinition } = this.state;
+        this.refreshData();
+    }
 
-        if (reportDefinition) {
-            this.generateReport(reportDefinition);
+    UNSAFE_componentWillReceiveProps(props) {
+        if ((props.definition && props.definition !== this.state.reportDefinition) || props.reportId) {
+            this.setState({ reportDefinition: props.definition }, this.refreshData);
         }
     }
 
-    componentWillReceiveProps(props) {
-        if (props.definition || props.reportId) {
-            this.setState({ reportDefinition: props.definition });
-            this.generateReport(props.definition);
-        }
-        else {
-            this.state.reportDefinition = {};
-        }
-    }
-
-    generateReport(reportDefinition) {
-        if (reportDefinition) {
-            this.title = reportDefinition.queryName;
-        }
-        this.refreshReport();
-    }
-
-    refreshReport() {
-        if (this.queryId > 0) {
-            this.$report.getSavedQuery(this.queryId).then(qm => {
+    refreshData = () => {
+        if (this.props.reportId > 0) {
+            this.$report.getReportDefinition(this.props.reportId).then(qm => {
                 this.setState({ reportDefinition: qm }, this.fillReport);
             });
         }
@@ -50,6 +36,11 @@ class ReportViewer extends BaseGadget {
 
     fillReport = () => {
         const model = this.state.reportDefinition;
+
+        if (model) {
+            this.title = model.queryName;
+        }
+
         if (!model.jql || !model.outputFields || !model.outputFields.length) {
             return;
         }
@@ -89,6 +80,7 @@ class ReportViewer extends BaseGadget {
                 this.$analytics.trackEvent("Custom report viewed");
             });
     }
+
     // eslint-disable-next-line complexity
     genHtmlRow(arr, prepn) {
         prepn = prepn || "";
@@ -275,6 +267,7 @@ class ReportViewer extends BaseGadget {
         this.fieldOpts.worklogUsers = headObj.subCols;
     }
 
+    /* This functionality is taken care by Base Gadget
     renderCustomActions() {
         const {
             isGadget,
@@ -290,7 +283,7 @@ class ReportViewer extends BaseGadget {
             {this.getRefreshButton(this.fillReport)}
             {hasReportData && this.getExportButton(reportDefinition.queryName)}
         </>;
-    }
+    }*/
 
     render() {
         const {

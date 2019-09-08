@@ -15,6 +15,7 @@ class QueryEditor extends BaseGadget {
         super(props, "Query Editor", "fa-filter");
         this.className = "query-editor-gadget";
         this.isGadget = false;
+        this.hideMenu = true;
         inject(this, "ReportService", "JiraService", "MessageService", "AnalyticsService");
 
         //this.groupIgnore = ['issuekey', 'summary', 'description'];
@@ -54,13 +55,13 @@ class QueryEditor extends BaseGadget {
         if (!this.props.builderOnly) {
             this.fillQueriesList();
         }
-        //this.$report.getSavedQuery(value).then( (result)=> {
+        //this.$report.getReportDefinition(value).then( (result)=> {
         //  this.reportRequest = result;
         //});
     }
 
     fillQueriesList() {
-        this.$report.getSavedFilters().then((result) => {
+        this.$report.getReportsList().then((result) => {
             const reportsList = result.filter(q => !q.advanced).map(q => { return { value: q.id, label: q.queryName }; });
             this.setState({ reportsList });
             //this.state.selReportId = this.reportRequest.id //ToDo:|| reportsList.selectpicker('val');
@@ -385,7 +386,7 @@ class QueryEditor extends BaseGadget {
     }
 
     querySelected = (selReportId) => {
-        this.$report.getSavedQuery(selReportId).then(reportQuery => this.setState({ selReportId, reportQuery }));
+        this.$report.getReportDefinition(selReportId).then(reportQuery => this.setState({ selReportId, reportQuery }));
     }
 
     deleteQuery = () => {

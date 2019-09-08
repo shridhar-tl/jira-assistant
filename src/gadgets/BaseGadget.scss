@@ -5,6 +5,12 @@ body.fs-layout {
 div.gadget {
     float: left;
 
+    div.gadget-header {
+        padding: 4px 3px 0 5px;
+        height: 30px;
+        margin: -5px;
+    }
+
     &.full-screen {
         position: absolute;
         top: 0;
@@ -62,6 +68,18 @@ div.gadget {
             z-index: 20000;
             font-size: 56px;
             margin-top: 25%;
+        }
+    }
+
+    .report-viewer {
+        height: 100%;
+
+        .report-items {
+            height: 100%;
+
+            .report-item {
+                max-height: 100%;
+            }
         }
     }
 }

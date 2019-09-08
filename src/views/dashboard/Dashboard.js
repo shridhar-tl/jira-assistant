@@ -7,6 +7,8 @@ import AddGadgetDialog from './AddGadgetDialog';
 import AddWorklog from '../../dialogs/AddWorklog';
 import BaseGadget, { onDashboardEvent } from '../../gadgets/BaseGadget';
 import { TabView, TabPanel } from 'primereact/tabview';
+import CustomReport from '../reports/custom-report/ReportViewer';
+import AdvancedReport from '../reports/report-builder/ReportViewer';
 
 class Dashboard extends PureComponent {
     constructor(props) {
@@ -43,7 +45,7 @@ class Dashboard extends PureComponent {
 
     // ToDo: need to be removed
     showGadgets() {
-        this.$report.getSavedFilters()
+        this.$report.getReportsList()
             .then((result) => {
                 this.savedQueries = result;
                 this.setState({ showGadgetsPopup: true });
@@ -126,8 +128,10 @@ class Dashboard extends PureComponent {
             pendingWorklog: { title: "Worklog - [Pending upload]", control: PendingWorklog },
             ticketWiseWorklog: { title: "Ticketwise worklog", control: TicketWiseWorklog },
             myFilters: { title: "My reports", control: MyReports },
-            agendaDay: { title: "Calendar", control: Calendar, props: { viewMode: "timeGridDay" } },
-            agendaWeek: { title: "Calendar", control: Calendar, props: { viewMode: "timeGridWeek" } },
+            agendaDay: { title: "Calendar", control: Calendar, getProps: () => { return { viewMode: "timeGridDay" }; } },
+            agendaWeek: { title: "Calendar", control: Calendar, getProps: () => { return { viewMode: "timeGridWeek" }; } },
+            SQ: { title: "Custom report", control: CustomReport, getProps: (sett, opts) => { return { reportId: parseInt(opts[0]) }; } },
+            AR: { title: "Advanced report", control: AdvancedReport, getProps: (sett, opts) => { return { reportId: parseInt(opts[0]) }; } },
         };
         controls.myBookmarks = controls.bookmarksList;
         controls.dtWiseWL = controls.dateWiseWorklog;
@@ -136,11 +140,25 @@ class Dashboard extends PureComponent {
     }
 
     getControls = (w, i) => {
-        const { name, settings } = w;
+        let { name } = w;
+        const { settings } = w;
         const tabLayout = this.state.isTabView;
+        const nameOpts = name.split(":");
+        if (nameOpts.length > 1) {
+            name = nameOpts[0];
+            nameOpts.splice(0, 1);
+        }
+
         let gadgetRef = this.gadgetsList[name];
 
         if (!gadgetRef) { gadgetRef = { title: "Gadget Unavailable", control: BaseGadget }; } // ToDo: Need to remove once report gadgets are implemented
+
+
+        let addProps = null;
+
+        if (gadgetRef.getProps) {
+            addProps = gadgetRef.getProps(settings, nameOpts);
+        }
 
         const props = {
             key: name,
@@ -148,9 +166,10 @@ class Dashboard extends PureComponent {
             index: i,
             model: w,
             settings,
+            isGadget: true,
             layout: this.state.currentBoard.layout,
             onAction: this.widgetAction,
-            ...gadgetRef.props
+            ...addProps
         };
 
         const Gadget = gadgetRef.control;

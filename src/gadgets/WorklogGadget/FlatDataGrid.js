@@ -6,7 +6,7 @@ class FlatDataGrid extends PureComponent {
         const { props: { formatDateTime, convertSecs, flatData } } = this;
 
         return (
-            <ScrollableTable dataset={flatData}>
+            <ScrollableTable dataset={flatData} exportSheetName="Flat Worklogs">
                 <THead>
                     <TRow>
                         <Column sortBy="groupName">Group Name</Column>

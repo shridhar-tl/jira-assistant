@@ -1,9 +1,9 @@
 import React from 'react';
-import BaseGadget from './BaseGadget';
-import { inject } from '../services';
-import { Button } from '../controls';
+import BaseGadget from '../../../gadgets/BaseGadget';
+import { inject } from '../../../services';
+import { Button } from '../../../controls';
 import { ReportViewer as JSRViewer } from "jsd-report";
-import GroupEditor from '../dialogs/GroupEditor';
+import GroupEditor from '../../../dialogs/GroupEditor';
 
 class ReportViewer extends BaseGadget {
     constructor(props) {
@@ -14,17 +14,21 @@ class ReportViewer extends BaseGadget {
 
         this.$reportConfig.configureViewer();
 
-        this.setReportDefinition({});
-        this.viewerComponent = ReportViewer;
         this.$reportConfig.parameters.removeAllListeners();
         this.$reportConfig.parameters.on("click", this.parameterClicked.bind(this));
         const { definition } = props;
         this.state.definition = definition;
     }
 
+    UNSAFE_componentWillMount() {
+        this.refreshReport();
+    }
+
     UNSAFE_componentWillReceiveProps(props) {
-        if (props.queryModel || props.queryId) {
-            this.generateReport(this.queryModel);
+        if (props.definition) {
+            this.setReportDefinition(props.definition);
+        } else if (props.reportId) {
+            this.refreshReport();
         }
         else {
             this.setReportDefinition({});
@@ -42,19 +46,14 @@ class ReportViewer extends BaseGadget {
         this.setState({ showGroupsPopup: false, groups });
     }
 
-    generateReport(queryModel) {
-        this.setReportDefinition(queryModel);
-        if (queryModel) {
-            this.title = queryModel.queryName;
-        }
-        this.refreshReport();
-    }
-
     refreshReport() {
-        if (this.queryId > 0) {
-            this.$report.getSavedQuery(this.queryId).then(qm => {
+        if (this.props.reportId > 0) {
+            this.$report.getReportDefinition(this.props.reportId).then(qm => {
                 this.setReportDefinition(qm);
             });
+        }
+        else if (this.state.definition) {
+            this.title = this.state.definition.queryName;
         }
     }
 
@@ -66,13 +65,11 @@ class ReportViewer extends BaseGadget {
 
     renderCustomActions() {
         return <>
-            <div>
-                {!this.isGadget && <Button icon={this.isFullScreen ? 'fa fa-compress' : 'fa fa-expand'} onClick={this.toggleFullScreen} title="Toggle full screen" />}
-                {this.viewer.canShowParams && <Button icon="fa fa-plus-circle" oClick={this.viewer.showParameters} title="Change report params" />}
-                {/*!this.viewer.paramsMode && <Button icon="fa fa-refresh" onClick={() => fillReport(true)} title="Refresh data"></Button>*/}
-                {/*hasReportData && <div jaExport element={tbl} fileName={queryModel.queryName}></div>*/}
-                {!this.isGadget && <Button icon="fa fa-edit" onClick={this.props.onCancelView} title="Edit report" />}
-            </div>
+            {!this.isGadget && <Button icon={this.isFullScreen ? 'fa fa-compress' : 'fa fa-expand'} onClick={this.toggleFullScreen} title="Toggle full screen" />}
+            {this.viewer.canShowParams && <Button icon="fa fa-plus-circle" onClick={this.viewer.showParameters} title="Change report params" />}
+            {/*!this.viewer.paramsMode && <Button icon="fa fa-refresh" onClick={() => fillReport(true)} title="Refresh data"></Button>*/}
+            {/*hasReportData && <div jaExport element={tbl} fileName={queryModel.queryName}></div>*/}
+            {!this.isGadget && <Button icon="fa fa-edit" onClick={this.props.onCancelView} title="Edit report" />}
         </>;
     }
 

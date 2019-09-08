@@ -15,6 +15,7 @@ export default class Exporter {
         doc.lastModifiedBy = "Jira Assistant";
         this.document = doc;
     }
+
     addTable(table) {
         table = $(table);
         console.log('Exporting ', table.attr('exportSheetName'));
@@ -77,15 +78,18 @@ export default class Exporter {
         this.sheetOptions = null;
         this.curRowNum = null;
     }
+
     //rgb2hex(rgb) {
     //  rgb = rgb.match(/^rgba?[\s+]?\([\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?/i);
     //  return (rgb) ? ("0" + parseInt(rgb[1], 10).toString(16)).slice(-2) +
     //    ("0" + parseInt(rgb[2], 10).toString(16)).slice(-2) +
     //    ("0" + parseInt(rgb[3], 10).toString(16)).slice(-2) : '';
     //}
+
     trim(str) {
         return str.replace(/^\s+|\s+$/gm, '');
     }
+
     getFontSize(size) {
         if (!size) {
             return size;
@@ -100,6 +104,7 @@ export default class Exporter {
             return parseInt(size.replace('em', ''), 10) * 0.0833333;
         }
     }
+
     rgbaToHex(rgba) {
         if (!rgba) {
             return rgba;
@@ -109,7 +114,9 @@ export default class Exporter {
         const a = parseFloat(this.trim(parts[3].substring(0, parts[3].length - 1))).toFixed(2);
         return (this.fixSize(r.toString(16)) + this.fixSize(g.toString(16)) + this.fixSize(b.toString(16)) + this.fixSize((a * 255).toString(16).substring(0, 2)));
     }
+
     fixSize(val) { return (val.length === 1) ? `0${val}` : val; }
+
     prepareData(rows) {
         const worksheet = this.worksheet;
         const rowSpanInfo = [];
@@ -123,6 +130,7 @@ export default class Exporter {
             }
         });
     }
+
     getColArray(row, rowSpanInfo) {
         const cols = row.find("> th, > td");
         const dataArr = [];
@@ -194,6 +202,7 @@ export default class Exporter {
         });
         return dataArr;
     }
+
     export(fileName) {
         //this.document.xlsx.writeFile(fileName);
         this.document.xlsx.writeBuffer().then((data) => {
@@ -201,6 +210,7 @@ export default class Exporter {
             saveAs(blob, `${fileName}.xlsx`);
         });
     }
+
     charToNum(alpha) {
         //let index = 0;
         for (let i = 0, j = 1; i < j; i++ , j++) {
@@ -210,6 +220,7 @@ export default class Exporter {
             }
         }
     }
+
     numToChar(number) {
         const numeric = (number - 1) % 26;
         const letter = this.chr(65 + numeric);
@@ -222,6 +233,7 @@ export default class Exporter {
             return letter;
         }
     }
+
     chr(codePt) {
         if (codePt > 0xFFFF) {
             codePt -= 0x10000;
@@ -230,6 +242,7 @@ export default class Exporter {
         return String.fromCharCode(codePt);
     }
 }
+
 export const ExportFormat = {
     XLSX: "XLSX",
     CSV: "CSV"
@@ -242,6 +255,7 @@ export function saveAs(blob, fileName) {
     };
     reader.readAsBinaryString(blob);
 }
+
 export function saveStringAs(str, typeName, fileName) {
     const bdata = btoa(str);
     const datauri = `data:${typeName};base64,${bdata}`;

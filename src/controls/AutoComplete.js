@@ -38,10 +38,19 @@ class AC extends PureComponent {
         }
     }
 
+    onKeyUp = (e) => {
+        const { currentTarget, keyCode } = e;
+
+        if (keyCode === 13) {
+            const value = currentTarget.value.trim();
+            this.props.onCustomValue(value);
+        }
+    }
+
     render() {
         const {
             onChange, filterResult,
-            props: { multiple, dropdown, displayField, children, placeholder, title, className, style, size, maxlength, scrollHeight, disabled },
+            props: { multiple, dropdown, displayField, children, placeholder, title, className, style, size, maxlength, scrollHeight, disabled, onCustomValue },
             state: { value, list }
         } = this;
 
@@ -49,7 +58,7 @@ class AC extends PureComponent {
             <AutoComplete appendTo={document.body} multiple={multiple} itemTemplate={children} dropdown={dropdown}
                 field={displayField} placeholder={placeholder} tooltip={title} className={className} style={style}
                 size={size} maxlength={maxlength} scrollHeight={scrollHeight} disabled={disabled}
-                value={value} onChange={onChange} suggestions={list} completeMethod={filterResult} />
+                value={value} onChange={onChange} suggestions={list} completeMethod={filterResult} onKeyUp={onCustomValue ? this.onKeyUp : null} />
         );
     }
 }

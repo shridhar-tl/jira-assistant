@@ -94,7 +94,8 @@ export class THead extends PureComponent {
 
     componentDidMount() {
         this.cleanup = this.context.onScroll((scrollTop) => {
-            this.scrollTop = scrollTop;
+            this.scrollTop = parseInt(scrollTop) - 1;
+
             if (scrollTop > 0) {
                 if (!this.state.showOverlay) {
                     this.setState({ showOverlay: true });
@@ -141,7 +142,7 @@ export class THead extends PureComponent {
         const overlayStyle = { ...style, top: this.scrollTop };
 
         return (<>
-            {showOverlay && <thead ref={this.setOverLay} no-export className={`${className} scroll-overlay`} style={overlayStyle}>
+            {showOverlay && <thead ref={this.setOverLay} no-export="true" className={`${className} scroll-overlay`} style={overlayStyle}>
                 {children}
             </thead>}
             <thead ref={this.setHeaderEl} className={className} style={style}>
@@ -179,7 +180,6 @@ export class TBody extends PureComponent {
         }
 
         return (
-
             <tbody className={className} style={style}>{toRender}</tbody>
         );
     }
@@ -244,7 +244,7 @@ export class Column extends PureComponent {
 
     render() {
         const { sortBy, isDesc } = this.state;
-        const { style, sortBy: curField, children, noExport } = this.props;
+        const { style, sortBy: curField, children, noExport, rowSpan, colSpan } = this.props;
         let { className } = this.props;
 
         if (!className) {
@@ -256,7 +256,7 @@ export class Column extends PureComponent {
         }
 
         return (
-            <th className={className} style={style} onClick={this.onClick} no-export={noExport ? "true" : null}>
+            <th className={className} style={style} onClick={this.onClick} no-export={noExport ? "true" : null} rowSpan={rowSpan} colSpan={colSpan}>
                 {children} {curField ? (curField === sortBy ? (<i className={`fa fa-sort-${isDesc ? "desc" : "asc"}`}></i>) : <i className="fa fa-sort"></i>) : null}
             </th>
         );
