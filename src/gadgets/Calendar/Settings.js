@@ -85,13 +85,13 @@ class CalendarSettings extends BaseDialog {
             </div>
             <h3 className="control-sidebar-heading">Show / Hide Entries</h3>
             <div className="form-group">
-                <Checkbox checked={settings.showMeetings} onChange={(val) => this.setValue(val, "showMeetings")} label="Display entry for meetings integrated from calendar" />
+                <Checkbox checked={settings.showMeetings || false} onChange={(val) => this.setValue(val, "showMeetings")} label="Display entry for meetings integrated from calendar" />
             </div>
             <div className="form-group">
-                <Checkbox checked={settings.showWorklogs} onChange={(val) => this.setValue(val, "showWorklogs")} label="Display worklog added by you" />
+                <Checkbox checked={settings.showWorklogs || false} onChange={(val) => this.setValue(val, "showWorklogs")} label="Display worklog added by you" />
             </div>
             <div className="form-group">
-                <Checkbox checked={settings.showInfo} onChange={(val) => this.setValue(val, "showInfo")} label="Display information about total hours logged on daily basis" />
+                <Checkbox checked={settings.showInfo || false} onChange={(val) => this.setValue(val, "showInfo")} label="Display information about total hours logged on daily basis" />
             </div>
         </div>);
     }

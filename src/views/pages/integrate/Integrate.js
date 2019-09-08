@@ -28,7 +28,7 @@ class Integrate extends PureComponent {
     }
 
     integrate = () => {
-        const root = this.state.jiraUrl.trim().trimEnd('/').trimEnd('\\');
+        const root = this.state.jiraUrl.trim().clearEnd('/').clearEnd('\\');
         this.setState({ jiraUrl: root });
         this.$session.rootUrl = root;
         this.setState({ isLoading: true });
