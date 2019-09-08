@@ -1,19 +1,22 @@
 import React from 'react';
 import $ from 'jquery';
-import BaseGadget from './BaseGadget';
-import { inject } from '../services/injector-service';
-import { GadgetActionType } from '.';
+import BaseGadget from '../BaseGadget';
+import { inject } from '../../services/injector-service';
+import { GadgetActionType } from '..';
 import { FullCalendar } from 'primereact/fullcalendar';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import * as moment from 'moment';
 //import { toMoment, toDuration } from '@fullcalendar/moment';
-import Button from '../controls/Button';
-import SelectBox from '../controls/SelectBox';
-import { hideContextMenu, showContextMenu } from '../controls/ContextMenu';
-import AddWorklog from '../dialogs/AddWorklog';
+import Button from '../../controls/Button';
+import SelectBox from '../../controls/SelectBox';
+import { hideContextMenu, showContextMenu } from '../../controls/ContextMenu';
+import AddWorklog from '../../dialogs/AddWorklog';
+import { OverlayPanel } from 'primereact/overlaypanel';
 import './Calendar.scss';
+import MeetingDetails from './MeetingDetails';
+import CalendarSettings from './Settings';
 
 //var moment;
 const viewModes = [{ value: 'dayGridMonth', label: 'Month' }, { value: 'timeGridWeek', label: 'Week' }, { value: 'timeGridDay', label: 'Day' }];
@@ -21,22 +24,22 @@ const viewModes = [{ value: 'dayGridMonth', label: 'Month' }, { value: 'timeGrid
 class Calendar extends BaseGadget {
     constructor(props) {
         super(props, "Calendar", "fa-calendar");
-        inject(this, "SessionService", "WorklogService", "MessageService", "AnalyticsService", "CalendarService", "UtilsService", "ConfigService");
+        inject(this, "SessionService", "WorklogService", "MessageService", "AnalyticsService", "CalendarService", "UtilsService", "UserUtilsService", "ConfigService", "TicketService");
 
         this.hideMenu = !props.isGadget;
         this.hideExport = true;
 
         if (this.$session.pageSettings.calendar) {
-            this.settings = Object.assign({}, this.$session.pageSettings.calendar);
+            this.state.settings = Object.assign({ showMeetings: true, showWorklogs: true, showInfo: true }, this.$session.pageSettings.calendar);
         }
         else {
-            this.settings = { viewMode: 'timeGridWeek', showMeetings: true, showWorklogs: true, showInfo: true };
+            this.state.settings = { viewMode: 'timeGridWeek', showMeetings: true, showWorklogs: true, showInfo: true };
         }
 
         this.setMenuItems();
 
         this.CurrentUser = this.$session.CurrentUser;
-        //this.defaultView = this.settings.viewMode || "month";
+        //this.defaultView = this.state.settings.viewMode || "month";
         this.maxTime = this.CurrentUser.maxHours;
         if (this.maxTime) {
             this.maxTime = this.maxTime * 60 * 60;
@@ -51,7 +54,7 @@ class Calendar extends BaseGadget {
         this.refreshData();
     }
 
-    setMenuItems() {
+    async setMenuItems() {
         this.mnuWL_Upload = { label: "Upload worklog", icon: "fa fa-upload", command: () => this.uploadWorklog() };
 
         this.contextMenuItems = [
@@ -62,12 +65,18 @@ class Calendar extends BaseGadget {
         ];
 
         const meetingTicket = (this.$session.CurrentUser.meetingTicket || "").trim().split(',').select(t => t || null);
+        const ticketDetails = await this.$ticket.getTicketDetails(meetingTicket);
+
         const wlTickets = [];
         if (meetingTicket.length > 0) {
-            meetingTicket.forEach(t => wlTickets.push({
-                label: t, icon: "fa fa-ticket",
-                command: (e) => this.createWorklog(e.originalEvent, this.currentMeetingItem, t)
-            }));
+            meetingTicket.forEach(t => {
+                const { fields: { summary = "" } = {} } = ticketDetails[t.toUpperCase()] || {};
+
+                wlTickets.push({
+                    label: summary ? `${t}: ${this.$utils.cut(summary, 65, true)}` : t, icon: "fa fa-ticket",
+                    command: (e) => this.createWorklog(e.originalEvent, this.currentMeetingItem, t)
+                });
+            });
             if (meetingTicket.length === 1) {
                 this.defaultMeetingTicket = meetingTicket[0];
             }
@@ -83,7 +92,7 @@ class Calendar extends BaseGadget {
         this.mnuCal_OpenUrl = { label: "Open video call", icon: "fa fa-video-camera", command: () => this.openVideoCall(this.currentMeetingItem) };
         this.calMenuItems = [
             this.mnuCal_AddWL,
-            { label: "Show details", icon: "fa fa-info-circle", command: (e) => this.showCalendarDetails({ sourceObject: this.currentMeetingItem }, e.originalEvent, null) },
+            { label: "Show details", icon: "fa fa-info-circle", command: (e) => this.showCalendarDetails({ extendedProps: { sourceObject: this.currentMeetingItem } }, e.originalEvent, null) },
             this.mnuCal_OpenUrl
         ];
     }
@@ -93,16 +102,16 @@ class Calendar extends BaseGadget {
         let { viewMode } = this.props;
 
         if (!this.isGadget) {
-            viewMode = this.settings.viewMode;
+            viewMode = this.state.settings.viewMode;
 
             if (viewMode === "agendaWeek") {
                 viewMode = "timeGridWeek";
-                //ToDo: this.settings.viewMode = viewMode;
+                //ToDo: this.state.settings.viewMode = viewMode;
             }
 
             if (viewMode === "agendaDay") {
                 viewMode = "timeGridDay";
-                //ToDo: this.settings.viewMode = viewMode;
+                //ToDo: this.state.settings.viewMode = viewMode;
             }
         }
 
@@ -182,7 +191,7 @@ class Calendar extends BaseGadget {
 
     UNSAFE_componentWillReceiveProps(newProps) {
         if (newProps.viewMode && newProps.viewMode.currentValue) {
-            this.settings.viewMode = this.viewMode;
+            this.setState({ settings: { ...this.state.settings, viewMode: this.viewMode } });
             //this.viewModeChanged();
         }
         super.UNSAFE_componentWillReceiveProps(newProps);
@@ -193,20 +202,19 @@ class Calendar extends BaseGadget {
     }
 
     viewModeChanged = (viewMode) => {
-        this.settings.viewMode = viewMode;
         this.setState({ viewMode });
         this.fc.calendar.changeView(viewMode);
-        this.saveSettings();
+        this.saveSettings({ ...this.state.settings, viewMode });
     }
 
     createWorklog($event, m, mTicket) {
-        this.calMenu.hide();
+        hideContextMenu();
         if (!m.start.dateTime) {
             return;
         }
         $event.stopPropagation();
         $event.preventDefault();
-        this.calMenu.hide();
+
         const diff = moment.duration(moment(m.end.dateTime).diff(m.start.dateTime));
         const obj = {
             dateStarted: m.start.dateTime,
@@ -233,7 +241,7 @@ class Calendar extends BaseGadget {
         end = moment(end).endOf('day');
         const filter = (data) => {
             const types = [];
-            const ps = this.settings;
+            const ps = this.state.settings;
             if (ps.showMeetings) { types.push(2); }
             if (ps.showWorklogs) { types.push(1); }
             if (ps.showInfo) { types.push(3); }
@@ -251,8 +259,9 @@ class Calendar extends BaseGadget {
         };
 
         const req = [this.$worklog.getWorklogsEntry(start, end)];
-        if (this.CurrentUser.gIntegration && this.CurrentUser.hasGoogleCreds && this.settings.showMeetings) {
-            req.push(this.$calendar.getEvents(start, end).then((data) => { return data; }, (err) => {
+
+        if (this.CurrentUser.gIntegration && this.CurrentUser.hasGoogleCreds && this.state.settings.showMeetings) {
+            req.push(this.$calendar.getEvents(start, end).then((data) => { console.log("calendar data:", JSON.stringify(data)); return data; }, (err) => {
                 let msg = "Unable to fetch meetings!";
                 if (err.error && err.error.message) {
                     msg += `<br /><br />Reason:- ${err.error.message}`;
@@ -285,7 +294,7 @@ class Calendar extends BaseGadget {
         if (this.maxTime && obj.diff) {
             title += ` (${obj.diff > 0 ? "+" : "-"}${this.$utils.formatSecs(Math.abs(obj.diff))})`;
         }
-        this.setInfoColor(obj, this.settings);
+        this.setInfoColor(obj, this.state.settings);
         obj.title = title;
         return obj;
     }
@@ -327,9 +336,8 @@ class Calendar extends BaseGadget {
         this.performAction(GadgetActionType.WorklogModified);
     }
 
-    hideWorklogDialog = () => {
-        this.setState({ showAddWorklogPopup: false });
-    }
+    hideWorklogDialog = () => this.setState({ showAddWorklogPopup: false })
+    toggleSettingsDialog = () => this.setState({ showSettingsPopup: !this.state.showSettingsPopup })
 
     showWorklogPopup(obj) {
         hideContextMenu();
@@ -377,7 +385,7 @@ class Calendar extends BaseGadget {
         else if (result.added || result.edited) {
             const previousTime = result.previousTime;
             result = result.added || result.edited;
-            result.color = this.settings.worklogColor; // Set color for newely added worklog
+            result.color = this.state.settings.worklogColor; // Set color for newely added worklog
             events.removeAll((e) => e.id === result.id && e.entryType === 1);
             events.push(result);
             this.latestData.removeAll((e) => e.id === result.id && e.entryType === 1);
@@ -407,7 +415,7 @@ class Calendar extends BaseGadget {
     }
 
     setColors(data) {
-        const ps = this.settings;
+        const ps = this.state.settings;
         const wc = ps.worklogColor, ec = ps.eventColor;
         data.forEach((w) => {
             switch (w.entryType) {
@@ -426,7 +434,7 @@ class Calendar extends BaseGadget {
     }
 
     select({ start, end, allDay }) {
-        const isMonthMode = this.settings.viewMode === "dayGridMonth";
+        const isMonthMode = this.state.settings.viewMode === "dayGridMonth";
 
         if (!isMonthMode && allDay) {// start.hasTime() ==> allDay
             return false;
@@ -450,9 +458,10 @@ class Calendar extends BaseGadget {
             creator: item.creator,
             organizer: item.organizer
         };
+
         if (item.start) {
-            this.currentMeetingItem.date = this.$utils.formatDate(item.start.dateTime);
-            this.currentMeetingItem.startTime = this.$utils.formatTime(item.start.dateTime);
+            this.currentMeetingItem.date = this.$userutils.formatDate(item.start.dateTime);
+            this.currentMeetingItem.startTime = this.$userutils.formatTime(item.start.dateTime);
             let remaining = moment(item.start.dateTime).diff(moment());
             if (remaining < 0) {
                 if (item.end && item.end.dateTime && moment().diff(item.end.dateTime) < 0) {
@@ -467,9 +476,11 @@ class Calendar extends BaseGadget {
             }
             this.currentMeetingItem.remaining = remaining;
         }
+
         if (item.end && item.end.dateTime) {
-            this.currentMeetingItem.endTime = this.$utils.formatTime(item.end.dateTime);
+            this.currentMeetingItem.endTime = this.$userutils.formatTime(item.end.dateTime);
         }
+
         if (item.attendees) {
             this.currentMeetingItem.attendees = {
                 total: item.attendees.length,
@@ -480,6 +491,7 @@ class Calendar extends BaseGadget {
                 list: item.attendees
             };
         }
+
         if (item.hangoutLink) {
             let name = item.hangoutLink;
             if (name.lastIndexOf('/') > 0) {
@@ -487,6 +499,7 @@ class Calendar extends BaseGadget {
             }
             this.currentMeetingItem.videoCall = { url: item.hangoutLink, name: name };
         }
+
         if (this.$session.isQuickView) {
             const targetCtl = $('.app-header.navbar > button[appmobilesidebartoggler]').get(0);
             if (targetCtl) {
@@ -496,12 +509,15 @@ class Calendar extends BaseGadget {
         else if (this.currentMeetingViewItem) {
             jsEvent = { currentTarget: this.currentMeetingViewItem };
         }
+
         this.opEvent.show(jsEvent);
-        this.calMenu.hide();
+        this.setState({ showOpEvent: true });
     }
 
+    hideOPEvent = () => this.setState({ showOpEvent: false })
+
     openVideoCall(meeting) {
-        this.calMenu.hide();
+        hideContextMenu();
         if (meeting && meeting.hangoutLink) {
             window.open(meeting.hangoutLink);
         }
@@ -510,23 +526,24 @@ class Calendar extends BaseGadget {
     eventClick(e) {
         const { event, jsEvent, view } = e;
         this.currentMeetingViewItem = null;
+
         if (event.extendedProps.entryType === 1) {
             this.showWorklogPopup(event.extendedProps.sourceObject);
         }
-        else if (event.entryType === 2) {
+        else if (event.extendedProps.entryType === 2) {
             this.showCalendarDetails(event, jsEvent, view);
         }
+
         return false;
     }
 
     //dayClick: function (date) { console.log('dayClick', date.format()); },
     viewRender(event) {
         const { view } = event;
-        this.settings.viewMode = view.type;
         this.startDate = view.activeStart;
         this.endDate = view.activeEnd;
         this.title = `Calendar - [${view.title.replace(/[^a-zA-Z0-9, ]+/g, '-')}]`;
-        this.refreshData();
+        this.saveSettings({ ...this.state.settings, viewMode: view.type });
         //Revisit:check if this is required - $(this.calendar.el.nativeElement).find(".fc-header-toolbar").hide();
     }
 
@@ -631,11 +648,11 @@ class Calendar extends BaseGadget {
                 e.preventDefault();
                 e.currentTarget = icon.get(0);
                 this.currentMeetingItem = m;
-                this.calMenu.hide();
+                hideContextMenu();
                 this.currentMeetingViewItem = timeItem.find('i.fa').get(0);
                 this.mnuCal_AddWL.disabled = hasWorklog;
                 this.mnuCal_OpenUrl.disabled = !m.hangoutLink;
-                this.calMenu.toggle(e);
+                showContextMenu(e, this.calMenuItems);
             });
         }
     }
@@ -698,12 +715,15 @@ class Calendar extends BaseGadget {
         }
     }
 
-    saveSettings() {
+    saveSettings = (settings, noRefresh) => {
         if (this.isGadget) {
             return;
         }
-        this.$session.pageSettings.calendar = this.settings;
-        this.refreshData();
+        this.setState({ settings });
+        this.$session.pageSettings.calendar = settings;
+        if (noRefresh !== true) {
+            this.refreshData();
+        }
         this.$config.saveSettings('calendar');
     }
 
@@ -717,26 +737,31 @@ class Calendar extends BaseGadget {
             {!this.isGadget && <>
                 <Button icon="fa fa-arrow-left" onClick={() => this.calendar.prev()} />
                 <Button icon="fa fa-arrow-right" onClick={() => this.calendar.next()} />
-                <SelectBox dataset={viewModes} value={this.settings.viewMode} valueField="value" displayField="label" placeholder="Select a view mode" onChange={this.viewModeChanged} />
+                <SelectBox dataset={viewModes} value={this.state.settings.viewMode} valueField="value" displayField="label" placeholder="Select a view mode" onChange={this.viewModeChanged} />
             </>}
             <span className="info-badge" title={pendingWorklogCount ? `Upload ${pendingWorklogCount} pending worklog(s)` : 'No worklog pending to be uploaded'}>
                 {pendingWorklogCount > 0 && <span className="info btn-warning">{pendingWorklogCount}</span>}
                 <Button type="success" icon={uploading ? 'fa fa-spin fa-spinner' : 'fa fa-upload'} disabled={uploading || pendingWorklogCount < 1 || isLoading} onClick={() => this.uploadWorklog(true)} />
             </span>
             {!isGadget && <Button icon="fa fa-refresh" disabled={isLoading || uploading} onClick={this.refreshData} title="Refresh meetings and worklogs" />}
-            {!isGadget && <Button icon="fa fa-cogs" onClick={() => this.setState({ showSettings: true })} title="Show settings" />}
+            {!isGadget && <Button icon="fa fa-cogs" onClick={this.toggleSettingsDialog} title="Show settings" />}
         </>;
     }
 
     render() {
         const {
             hideWorklogDialog, addEvent,
-            state: { showAddWorklogPopup, worklogItem, events }
+            state: { showAddWorklogPopup, showSettingsPopup, worklogItem, events, showOpEvent }
         } = this;
 
         return super.renderBase(<>
             <FullCalendar ref={(el) => { if (!el) { return; } this.fc = el; this.calendar = el.calendar; }} events={events} options={this.fullCalendarOpts} />
             {showAddWorklogPopup && <AddWorklog worklog={worklogItem} onDone={addEvent} onHide={hideWorklogDialog} />}
+            {showSettingsPopup && <CalendarSettings settings={this.state.settings} onDone={this.saveSettings} onHide={this.toggleSettingsDialog} />}
+
+            <OverlayPanel className="op-event-details" ref={(el) => { this.opEvent = el; }} showCloseIcon={true} dismissable={true} appendTo={document.body} onHide={this.hideOPEvent}>
+                {showOpEvent && <MeetingDetails eventDetails={this.currentMeetingItem} cut={this.$utils.cut} />}
+            </OverlayPanel>
         </>
         );
     }
