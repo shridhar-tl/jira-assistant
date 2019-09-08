@@ -3,6 +3,10 @@ import { SHORT_MONTH_NAMES, FULL_MONTH_NAMES, TINY_DAY_NAMES, SHORT_DAY_NAMES, F
 
 export default class UtilsService {
     formatDate(date, format) {
+        if (!(date instanceof Date)) {
+            date = this.convertDate(date);
+        }
+
         const yyyy = date.getFullYear().toString();
         const mmInt = date.getMonth();
         const mm = mmInt < 9 ? `0${mmInt + 1}` : (mmInt + 1).toString(); // getMonth() is zero-based

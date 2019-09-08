@@ -1,5 +1,5 @@
 import { GadgetActionType } from './BaseGadget';
-import Calendar from './Calendar';
+import Calendar from './Calendar/Calendar';
 import DateWiseWorklog from './DateWiseWorklog';
 import WorklogGadget from './WorklogGadget/WorklogGadget';
 import MyBookmarks from './MyBookmarks';

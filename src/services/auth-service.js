@@ -55,7 +55,7 @@ export default class AuthService {
                         gridList: ["myTickets", "bookmarksList", "dtWiseWL", "pendingWL"]
                     }),
                     calendar: this.parseIfJson(settings.page_calendar, {
-                        viewMode: 'agendaWeek',
+                        viewMode: 'timeGridWeek',
                         showWorklogs: true,
                         showMeetings: true,
                         showInfo: true,
