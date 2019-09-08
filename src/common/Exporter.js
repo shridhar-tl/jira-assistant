@@ -134,11 +134,11 @@ export default class Exporter {
     getColArray(row, rowSpanInfo) {
         const cols = row.find("> th, > td");
         const dataArr = [];
-        const exportIgnore = row.attr("exportIgnore") != null;
+        const exportIgnore = !!row.attr("exportIgnore");
         if (exportIgnore) {
             this.sheetOptions.rowsToRemove.push(this.curRowNum);
         }
-        if (row.attr("exportHidden") != null) {
+        if (row.attr("exportHidden")) {
             this.sheetOptions.rowsToHide.push(this.curRowNum);
         }
         cols.each((colIdx, col) => {
@@ -148,10 +148,10 @@ export default class Exporter {
             }
             col = $(col);
             let value = col.attr('exportValue');
-            if (value == null) {
+            if (!value) {
                 value = col.text();
             }
-            if (value == null && !exportIgnore) {
+            if (value && !exportIgnore) {
                 value = value.trim();
             }
             if (value && !exportIgnore) {
