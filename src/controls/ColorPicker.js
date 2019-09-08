@@ -7,6 +7,9 @@ class ColorPicker extends PureComponent {
 
     colorTextChanged = (color) => {
         const { onChange, fieldName } = this.props;
+        if (color && !color.startsWith("#")) {
+            color = `#${color}`;
+        }
         onChange(color, fieldName);
     }
 
