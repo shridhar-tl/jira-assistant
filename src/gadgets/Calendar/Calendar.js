@@ -8,7 +8,6 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import * as moment from 'moment';
-//import { toMoment, toDuration } from '@fullcalendar/moment';
 import Button from '../../controls/Button';
 import SelectBox from '../../controls/SelectBox';
 import { hideContextMenu, showContextMenu } from '../../controls/ContextMenu';
@@ -109,7 +108,12 @@ class Calendar extends BaseGadget {
                 //ToDo: this.state.settings.viewMode = viewMode;
             }
 
-            if (viewMode === "agendaDay") {
+            else if (viewMode === "month") {
+                viewMode = "dayGridMonth";
+                //ToDo: this.state.settings.viewMode = viewMode;
+            }
+
+            else if (viewMode === "agendaDay") {
                 viewMode = "timeGridDay";
                 //ToDo: this.state.settings.viewMode = viewMode;
             }
@@ -190,8 +194,8 @@ class Calendar extends BaseGadget {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        if (newProps.viewMode && newProps.viewMode.currentValue) {
-            this.setState({ settings: { ...this.state.settings, viewMode: this.viewMode } });
+        if (newProps.viewMode) {
+            this.setState({ settings: { ...this.state.settings, viewMode: newProps.viewMode } });
             //this.viewModeChanged();
         }
         super.UNSAFE_componentWillReceiveProps(newProps);
@@ -204,7 +208,7 @@ class Calendar extends BaseGadget {
     viewModeChanged = (viewMode) => {
         this.setState({ viewMode });
         this.fc.calendar.changeView(viewMode);
-        this.saveSettings({ ...this.state.settings, viewMode });
+        this.saveSettings({ ...this.state.settings, viewMode }, true);
     }
 
     createWorklog($event, m, mTicket) {
@@ -254,6 +258,7 @@ class Calendar extends BaseGadget {
                     data = data.filter((e) => { return types.indexOf(e.entryType) > -1; });
                     break;
             }
+
             this.setColors(data);
             this.setEventsData(data);
         };
@@ -261,7 +266,7 @@ class Calendar extends BaseGadget {
         const req = [this.$worklog.getWorklogsEntry(start, end)];
 
         if (this.CurrentUser.gIntegration && this.CurrentUser.hasGoogleCreds && this.state.settings.showMeetings) {
-            req.push(this.$calendar.getEvents(start, end).then((data) => { console.log("calendar data:", JSON.stringify(data)); return data; }, (err) => {
+            req.push(this.$calendar.getEvents(start, end).then(null, (err) => {
                 let msg = "Unable to fetch meetings!";
                 if (err.error && err.error.message) {
                     msg += `<br /><br />Reason:- ${err.error.message}`;
@@ -274,14 +279,20 @@ class Calendar extends BaseGadget {
         else {
             this.hasCalendarData = false;
         }
+
         this.setState({ isLoading: true, uploading: false });
+
         Promise.all(req).then((arr) => {
+
             this.setState({ isLoading: false });
+
             const data = arr[0];
             const allDayEvents = data.filter((d) => { return d.entryType === 1; })
                 .groupBy((key) => { return moment(key.start).format("YYYY-MM-DD"); })
                 .map((d) => this.getAllDayObj(d));
+
             this.latestData = data;
+
             filter(data.addRange(allDayEvents).addRange(arr[1]));
         }, (err) => { this.setState({ isLoading: false }); return Promise.reject(err); });
     }
@@ -301,11 +312,12 @@ class Calendar extends BaseGadget {
 
     setInfoColor(obj, ps) {
         if (this.maxTime && obj.diff) {
-            obj.color = obj.diff > 0 ? ps.infoColor_high : ps.infoColor_less;
+            obj.backgroundColor = obj.diff > 0 ? ps.infoColor_high : ps.infoColor_less;
         }
         else {
-            obj.color = ps.infoColor_valid;
+            obj.backgroundColor = ps.infoColor_valid;
         }
+        obj.borderColor = obj.backgroundColor;
         //obj.textColor = "";
     }
 
@@ -385,7 +397,8 @@ class Calendar extends BaseGadget {
         else if (result.added || result.edited) {
             const previousTime = result.previousTime;
             result = result.added || result.edited;
-            result.color = this.state.settings.worklogColor; // Set color for newely added worklog
+            result.backgroundColor = this.state.settings.worklogColor; // Set color for newely added worklog
+            result.borderColor = result.backgroundColor;
             events.removeAll((e) => e.id === result.id && e.entryType === 1);
             events.push(result);
             this.latestData.removeAll((e) => e.id === result.id && e.entryType === 1);
@@ -417,13 +430,16 @@ class Calendar extends BaseGadget {
     setColors(data) {
         const ps = this.state.settings;
         const wc = ps.worklogColor, ec = ps.eventColor;
+
         data.forEach((w) => {
             switch (w.entryType) {
                 case 1:
-                    w.color = wc;
+                    w.backgroundColor = wc;
+                    w.borderColor = wc;
                     break; // Set color for worklogs
                 case 2:
-                    w.color = ec;
+                    w.backgroundColor = ec;
+                    w.borderColor = ec;
                     break; // Set color for events
                 case 3:
                     this.setInfoColor(w, ps);
@@ -544,7 +560,6 @@ class Calendar extends BaseGadget {
         this.endDate = view.activeEnd;
         this.title = `Calendar - [${view.title.replace(/[^a-zA-Z0-9, ]+/g, '-')}]`;
         this.saveSettings({ ...this.state.settings, viewMode: view.type });
-        //Revisit:check if this is required - $(this.calendar.el.nativeElement).find(".fc-header-toolbar").hide();
     }
 
     eventDrop(e) {
@@ -717,14 +732,14 @@ class Calendar extends BaseGadget {
 
     saveSettings = (settings, noRefresh) => {
         if (this.isGadget) {
+            super.saveSettings();
             return;
         }
-        this.setState({ settings });
+
         this.$session.pageSettings.calendar = settings;
-        if (noRefresh !== true) {
-            this.refreshData();
-        }
-        this.$config.saveSettings('calendar');
+        this.setState({ settings }, (noRefresh !== true ? this.refreshData : null));
+
+        this.$config.saveSettings('calendar', settings);
     }
 
     renderCustomActions() {
