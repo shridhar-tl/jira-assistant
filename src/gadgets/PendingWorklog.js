@@ -35,6 +35,7 @@ class PendingWorklog extends BaseGadget {
                 const { selAllChk } = this.state;
 
                 worklogs.forEach((w) => {
+                    w.ticketUrl = this.$userutils.getTicketUrl(w.ticketNo);
                     w.rowClass = this.$utils.getRowStatus(w);
                     w.displayDate = this.$userutils.formatDateTime(w.dateStarted);
                     w.selected = selAllChk;
@@ -61,8 +62,6 @@ class PendingWorklog extends BaseGadget {
     getRowStatus(d, index) {
         return d.rowClass;
     }
-
-    getTicketUrl(ticketNo) { return this.$userutils.getTicketUrl(ticketNo); }
 
     showContext(e, b) {
         this.selectedItem = b;
@@ -154,7 +153,7 @@ class PendingWorklog extends BaseGadget {
                                 {b.selected && <Checkbox checked={true} onChange={() => this.selectRowItem(b)} />}
                                 {!b.selected && <i className="fa fa-ellipsis-v" onClick={(e) => this.showContext(e, b)}></i>}
                             </td>
-                            <td><a href={b.ticketNo} rel="noopener noreferrer" className="link strike" target="_blank">{b.ticketNo}</a></td>
+                            <td><a href={b.ticketUrl} rel="noopener noreferrer" className="link strike" target="_blank">{b.ticketNo}</a></td>
                             <td>{b.summary}</td>
                             <td>{b.displayDate}</td>
                             <td>{b.timeSpent}</td>

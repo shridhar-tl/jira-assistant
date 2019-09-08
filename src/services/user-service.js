@@ -49,6 +49,8 @@ export default class UserService {
             gridList = ['myOpenTickets', 'myBookmarks', 'dateWiseWorklog', 'pendingWorklog'];
         }
 
+        currentUser.jiraUrl = currentUser.jiraUrl.clearEnd('/');
+
         //this.$session.authTokken = currentUser.dataStore;
         const sessionUser = {
             userId: currentUser.id,
@@ -59,7 +61,7 @@ export default class UserService {
             endOfDay: currentUser.endOfDay || "19:00",
             notifyWL: currentUser.notifyWL,
             jiraUrl: currentUser.jiraUrl,
-            ticketViewUrl: `${currentUser.jiraUrl.trimEnd('/')}/browse/`,
+            ticketViewUrl: `${currentUser.jiraUrl}/browse/`,
             profileUrl: `${currentUser.jiraUrl}/secure/ViewProfile.jspa`,
             maxHours: currentUser.maxHours || 8,
             meetingTicket: currentUser.meetingTicket,

@@ -97,8 +97,8 @@ if (!String.prototype.endsWith) {
     };
 }
 
-if (!String.prototype.trimEnd) {
-    String.prototype.trimEnd = function (str) {
+if (!String.prototype.clearEnd) {
+    String.prototype.clearEnd = function (str) {
         let s = this;
         while (s.endsWith(str)) {
             s = s.substring(0, s.length - str.length);
@@ -107,8 +107,8 @@ if (!String.prototype.trimEnd) {
     };
 }
 
-if (!String.prototype.trimStart) {
-    String.prototype.trimStart = function (str) {
+if (!String.prototype.clearStart) {
+    String.prototype.clearStart = function (str) {
         let s = this;
         while (s.startsWith(str)) {
             s = s.substring(str.length);

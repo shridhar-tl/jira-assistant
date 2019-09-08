@@ -47,7 +47,7 @@ class MyOpenTickets extends BaseGadget {
                         return <tr key={i} onContextMenu={(e) => this.showContext(e, b)}>
                             <td>
                                 <i className="fa fa-ellipsis-v margin-r-8" onClick={(e) => this.showContext(e, b)}></i>
-                                <a href={b.ticketNo} className="link strike" target="_blank" rel="noopener noreferrer">{b.ticketNo}</a>
+                                <a href={b.ticketUrl} className="link strike" target="_blank" rel="noopener noreferrer">{b.ticketNo}</a>
                             </td>
                             <td><img className="img-x16" src={b.issuetypeIcon} alt="" />{b.issuetype}</td>
                             <td>{b.summary}</td>
@@ -74,6 +74,7 @@ class MyOpenTickets extends BaseGadget {
                     const fields = t.fields;
                     return {
                         ticketNo: t.key,
+                        ticketUrl: this.$userutils.getTicketUrl(t.key),
                         issuetypeIcon: (fields.issuetype || {}).iconUrl,
                         issuetype: (fields.issuetype || {}).name,
                         summary: fields.summary,

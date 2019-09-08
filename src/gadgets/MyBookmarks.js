@@ -10,7 +10,7 @@ import AddBookmark from '../dialogs/AddBookmark';
 class MyBookmarks extends BaseGadget {
     constructor(props) {
         super(props, 'My Bookmarks', 'fa-bookmark');
-        inject(this, "JiraService", "BookmarkService", "UtilsService", "MessageService");
+        inject(this, "JiraService", "BookmarkService", "UtilsService", "UserUtilsService", "MessageService");
 
         this.contextMenu = [
             { label: "Select Bookmark", icon: "fa fa-check-square-o", command: () => this.selectTicket(this.selectedTicket) },
@@ -41,6 +41,7 @@ class MyBookmarks extends BaseGadget {
                 const { selAllChk } = this.state;
 
                 result.forEach(b => {
+                    b.ticketUrl = this.$userutils.getTicketUrl(b.ticketNo);
                     b.selected = selAllChk;
                     b.rowClass = this.$utils.getRowStatus(b);
                 });
@@ -137,7 +138,7 @@ class MyBookmarks extends BaseGadget {
                                 {!b.selected && <i className="fa fa-ellipsis-v" onClick={(e) => this.showContext(e, b)}></i>}
                             </td>
                             <td>
-                                <a href={b.ticketNo} rel="noopener noreferrer" className="link strike" target="_blank">{b.ticketNo}</a>
+                                <a href={b.ticketUrl} rel="noopener noreferrer" className="link strike" target="_blank">{b.ticketNo}</a>
                             </td>
                             <td>{b.issuetypeIcon && <img className="img-x16" src={b.issuetypeIcon} alt={b.issuetype} />}{b.issuetype}</td>
                             <td>{b.summary}</td>
