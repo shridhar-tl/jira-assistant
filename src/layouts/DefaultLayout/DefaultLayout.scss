@@ -27,6 +27,12 @@ body.quick-view {
             overflow: hidden;
         }
     }
+    
+    .main {
+        .container-fluid {
+            overflow-y: hidden;
+        }
+    }
 }
 
 .app-body {
