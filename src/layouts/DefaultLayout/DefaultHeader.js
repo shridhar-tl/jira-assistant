@@ -27,9 +27,6 @@ class DefaultHeader extends PureComponent {
   }
 
   UNSAFE_componentWillMount() {
-    this.selectedSkin = this.$cache.get('skin', true) || 'skin-blue';
-    this.skinClass = this.selectedSkin.replace('-light', '');
-    this.useLightTheme = this.selectedSkin.indexOf('-light') > -1;
     this.ratingUrl = this.$jaBrowserExtn.getStoreUrl(true);
     this.storeUrl = this.$jaBrowserExtn.getStoreUrl();
     const subj = encodeURIComponent('Check out "Jira Assistant" in web store');
