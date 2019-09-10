@@ -9,6 +9,9 @@
 .main {
     .container-fluid {
         padding: 0 0;
+        height: calc(100vh - 43px);
+        overflow-y: auto;
+        overflow-x: hidden;
     }
 }
 
@@ -22,6 +25,12 @@ body.quick-view {
             min-height: 550px;
             width: 800px;
             overflow: hidden;
+        }
+    }
+    
+    .main {
+        .container-fluid {
+            overflow-y: hidden;
         }
     }
 }
