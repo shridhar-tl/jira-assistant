@@ -72,50 +72,11 @@
   }
 }
 
-@mixin base-style-light {
-  $sidebar-link-color: #444;
-  $sidebar-title-color: #848484;
-  $sidebar-bg: #f9fafc;
-  $sidebar-bg-hi: #f4f4f5;
-
-  .sidebar {
-    color: $sidebar-link-color;
-    background: $sidebar-bg;
-
-    .sidebar-header .user-panel a {
-      color: #000 !important;
-    }
-  }
-
-  .sidebar .nav-link {
-    color: $sidebar-link-color;
-    font-weight: 600;
-  }
-
-  .sidebar .nav-title {
-    color: $sidebar-title-color;
-  }
-
-  .sidebar .nav-link:hover, .sidebar .nav-link.active, .sidebar .nav-link:hover i {
-    background: $sidebar-bg-hi;
-    color: $sidebar-link-color;
-  }
-}
-
 .skin-blue {
   $header-logo-bg: #367fa9;
   $header-bg: #3c8dbc;
 
   @include base-style($header-logo-bg,$header-bg);
-}
-
-.skin-blue-light {
-  //$header-logo-bg: #367fa9;
-  $header-bg: #3c8dbc;
-
-  @include base-style($header-bg,$header-bg);
-
-  @include base-style-light;
 }
 
 .skin-meadow {
@@ -125,29 +86,11 @@
   @include base-style($header-logo-bg,$header-bg);
 }
 
-.skin-meadow-light {
-  //$header-logo-bg: #1caf9a;
-  $header-bg: #8cc1a2;
-
-  @include base-style($header-bg,$header-bg);
-
-  @include base-style-light;
-}
-
 .skin-purple {
   $header-logo-bg: #555299;
   $header-bg: #605ca8;
 
   @include base-style($header-logo-bg,$header-bg);
-}
-
-.skin-purple-light {
-  //$header-logo-bg: #555299;
-  $header-bg: #605ca8;
-
-  @include base-style($header-bg,$header-bg);
-
-  @include base-style-light;
 }
 
 .skin-green {
@@ -157,29 +100,11 @@
   @include base-style($header-logo-bg,$header-bg);
 }
 
-.skin-green-light {
-  //$header-logo-bg: #008d4c;
-  $header-bg: #00a65a;
-
-  @include base-style($header-bg,$header-bg);
-
-  @include base-style-light;
-}
-
 .skin-red {
   $header-logo-bg: #d73925;
   $header-bg: #dd4b39;
 
   @include base-style($header-logo-bg,$header-bg);
-}
-
-.skin-red-light {
-  //$header-logo-bg: #d73925;
-  $header-bg: #dd4b39;
-
-  @include base-style($header-bg,$header-bg);
-
-  @include base-style-light;
 }
 
 .skin-yellow {
@@ -189,28 +114,10 @@
   @include base-style($header-logo-bg,$header-bg);
 }
 
-.skin-yellow-light {
-  //$header-logo-bg: #e08e0b;
-  $header-bg: #f39c12;
-
-  @include base-style($header-bg,$header-bg);
-
-  @include base-style-light;
-}
-
 .skin-violet {
   $header-logo-bg: #7a4889; //#724381
   $header-bg: #9055A2; //#9055A2
   @include base-style($header-logo-bg,$header-bg);
-}
-
-.skin-violet-light {
-  //$header-logo-bg: #7a4889;
-  $header-bg: #9055A2;
-
-  @include base-style($header-bg,$header-bg);
-
-  @include base-style-light;
 }
 
 .skin-pink {
@@ -219,28 +126,10 @@
   @include base-style($header-logo-bg,$header-bg);
 }
 
-.skin-pink-light {
-  //$header-logo-bg: #ec2f6c;
-  $header-bg: #ef5285;
-
-  @include base-style($header-bg,$header-bg);
-
-  @include base-style-light;
-}
-
 .skin-sea {
   $header-logo-bg: #2d7776; //#296e6d
   $header-bg: #379392;
   @include base-style($header-logo-bg,$header-bg);
-}
-
-.skin-sea-light {
-  //$header-logo-bg: #2d7776;
-  $header-bg: #379392;
-
-  @include base-style($header-bg,$header-bg);
-
-  @include base-style-light;
 }
 
 .skin-green2 {
@@ -249,28 +138,10 @@
   @include base-style($header-logo-bg,$header-bg);
 }
 
-.skin-green2-light {
-  //$header-logo-bg: #2d7776;
-  $header-bg: #33b35a;
-
-  @include base-style($header-bg,$header-bg);
-
-  @include base-style-light;
-}
-
 .skin-green3 {
   $header-logo-bg: #40561a;
   $header-bg: #729a2e;
   @include base-style($header-logo-bg,$header-bg);
-}
-
-.skin-green3-light {
-  //$header-logo-bg: #40561a;
-  $header-bg: #729a2e;
-
-  @include base-style($header-bg,$header-bg);
-
-  @include base-style-light;
 }
 
 
@@ -280,28 +151,10 @@
   @include base-style($header-logo-bg,$header-bg);
 }
 
-.skin-blue2-light {
-  //$header-logo-bg: #557a95;
-  $header-bg: #7395ae;
-
-  @include base-style($header-bg,$header-bg);
-
-  @include base-style-light;
-}
-
 .skin-blue3 {
   $header-logo-bg: #240090;
   $header-bg: #3500d3;
   @include base-style($header-logo-bg,$header-bg);
-}
-
-.skin-blue3-light {
-  //$header-logo-bg: #240090;
-  $header-bg: #3500d3;
-
-  @include base-style($header-bg,$header-bg);
-
-  @include base-style-light;
 }
 
 .skin-navy {
@@ -310,26 +163,10 @@
   @include base-style($header-logo-bg,$header-bg);
 }
 
-.skin-navy-light {
-  //$header-logo-bg: #0c0032;
-  $header-bg: #190061;
-
-  @include base-style($header-bg,$header-bg);
-
-  @include base-style-light;
-}
-
 .skin-cust1 {
   $header-logo-bg: #44318d;
   $header-bg: #e98074;
   @include base-style($header-logo-bg,$header-bg);
-}
-
-.skin-cust1-light {
-  //$header-logo-bg: #44318d;
-  $header-bg: #e98074;
-  @include base-style($header-bg,$header-bg);
-  @include base-style-light;
 }
 
 .skin-cust2 {
@@ -338,37 +175,16 @@
   @include base-style($header-logo-bg,$header-bg);
 }
 
-.skin-cust2-light {
-  //$header-logo-bg: #5d5c61;
-  $header-bg: #379683;
-  @include base-style($header-bg,$header-bg);
-  @include base-style-light;
-}
-
 .skin-cust3 {
   $header-logo-bg: #ffe400;
   $header-bg: #747474;
   @include base-style($header-logo-bg,$header-bg);
 }
 
-.skin-cust3-light {
-  //$header-logo-bg: #ffe400;
-  $header-bg: #747474;
-  @include base-style($header-bg,$header-bg);
-  @include base-style-light;
-}
-
 /*.skin-cust4 {
   $header-logo-bg: #c2b9b0;
   $header-bg: #c2cad0;
   @include base-style($header-logo-bg,$header-bg);
-}
-
-.skin-cust4-light {
-  //$header-logo-bg: #c2b9b0;
-  $header-bg: #c2cad0;
-  @include base-style($header-bg,$header-bg);
-  @include base-style-light;
 }*/
 
 .skin-cust5 {
@@ -377,24 +193,10 @@
   @include base-style($header-logo-bg,$header-bg);
 }
 
-.skin-cust5-light {
-  //$header-logo-bg: #7e685a;
-  $header-bg: #afd275;
-  @include base-style($header-bg,$header-bg);
-  @include base-style-light;
-}
-
 .skin-cust6 {
   $header-logo-bg: #2e1114;
   $header-bg: #501b1d;
   @include base-style($header-logo-bg,$header-bg);
-}
-
-.skin-cust6-light {
-  //$header-logo-bg: #2e1114;
-  $header-bg: #501b1d;
-  @include base-style($header-bg,$header-bg);
-  @include base-style-light;
 }
 
 .skin-cust7 {
@@ -403,24 +205,10 @@
   @include base-style($header-logo-bg,$header-bg);
 }
 
-.skin-cust7-light {
-  //$header-logo-bg: #2e151b;
-  $header-bg: #da7b93;
-  @include base-style($header-bg,$header-bg);
-  @include base-style-light;
-}
-
 .skin-cust8 {
   $header-logo-bg: #64485c;
   $header-bg: #83677b;
   @include base-style($header-logo-bg,$header-bg);
-}
-
-.skin-cust8-light {
-  //$header-logo-bg: #64485c;
-  $header-bg: #83677b;
-  @include base-style($header-bg,$header-bg);
-  @include base-style-light;
 }
 
 .skins {

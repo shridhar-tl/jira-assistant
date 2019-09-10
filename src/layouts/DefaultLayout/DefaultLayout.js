@@ -48,7 +48,7 @@ class DefaultLayout extends PureComponent {
     const isSideBarHidden = this.$cache.get('SideBarHidden');
 
     const body = $(document.body);
-    body.addClass(skinName);
+    body.addClass(skinName.replace('-light', '')); //ToDo: once old version is removed, need to permenently update skin color instead of replace
 
     if (isSideBarHidden) { body.addClass('sidebar-hidden brand-minimized'); }
     else if (isSideBarToggled) { body.addClass('sidebar-minimized brand-minimized'); }
