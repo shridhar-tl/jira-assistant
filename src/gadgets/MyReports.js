@@ -31,14 +31,17 @@ class MyReports extends BaseGadget {
         if (!items) {
             items = this.savedQueries.filter((w) => w.selected);
         }
+
         const ids = items.map((w) => w.id);
         if (ids.length === 0) {
             this.$message.info("Select the reports to be deleted!");
             return;
         }
-        this.isLoading = true;
+
+        this.setState({ isLoading: true });
+
         this.$report.deleteSavedQuery(ids).then(() => {
-            return this.fillSavedQuery();
+            return this.refreshData();
         });
     }
 

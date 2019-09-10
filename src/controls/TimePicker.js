@@ -21,7 +21,7 @@ class TimePicker extends PureComponent {
                 }
                 else {
                     value = value.toString().split('.');
-                    curDate.set({ h: value[0], m: (60 * (value[1] || 0)) / 100 });
+                    curDate.set({ h: value[0], m: parseInt(Math.round(60 * `.${(value[1] || 0)}`)) || 0 });
                 }
                 newState.timeValue = curDate;
             }

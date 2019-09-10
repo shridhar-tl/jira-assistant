@@ -62,11 +62,13 @@ class DateWiseWorklog extends BaseGadget {
         if (toUpload.length === 0) {
             return;
         }
+
         this.setState({ isLoading: true });
+
         this.$worklog.uploadWorklogs(toUpload).then(() => {
             this.refreshData();
             super.performAction(GadgetActionType.WorklogModified);
-        }, (err) => { this.isLoading = false; });
+        }, (err) => { this.setState({ isLoading: false }); });
     }
 
     addWorklog() {

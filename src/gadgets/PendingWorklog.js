@@ -4,6 +4,7 @@ import { ScrollableTable, THead, TBody, Column, NoDataRow } from '../components/
 import { inject } from '../services/injector-service';
 import { showContextMenu } from '../controls/ContextMenu';
 import { Button, Checkbox } from '../controls';
+import Dialog from '../dialogs';
 
 class PendingWorklog extends BaseGadget {
     //dateStarted
@@ -100,10 +101,14 @@ class PendingWorklog extends BaseGadget {
             this.$message.info("Select the worklogs to be deleted!");
             return;
         }
-        this.isLoading = true;
-        this.$worklog.deleteWorklogs(ids).then((result) => {
-            this.refreshData();
-            this.performAction(GadgetActionType.DeletedWorklog);
+
+        Dialog.confirmDelete("Are you sure to delete the selected worklog(s)?", "Confirm delete worklog(s)").then(() => {
+            this.setState({ isLoading: true });
+
+            this.$worklog.deleteWorklogs(ids).then((result) => {
+                this.refreshData();
+                this.performAction(GadgetActionType.DeletedWorklog);
+            });
         });
     }
 

@@ -6,6 +6,7 @@ import { showContextMenu } from '../controls/ContextMenu';
 import { inject } from '../services/injector-service';
 import { Button, Checkbox } from '../controls';
 import AddBookmark from '../dialogs/AddBookmark';
+import Dialog from '../dialogs';
 
 class MyBookmarks extends BaseGadget {
     constructor(props) {
@@ -79,9 +80,12 @@ class MyBookmarks extends BaseGadget {
             return;
         }
 
-        this.setState({ isLoading: true });
-        this.$bookmark.removeBookmark(ids).then((result) => {
-            this.setState({ bookmarksList: result, isLoading: false });
+        Dialog.confirmDelete("Are you sure to delete the selected bookmark(s)?", "Confirm delete bookmark(s)").then(() => {
+            this.setState({ isLoading: true });
+
+            this.$bookmark.removeBookmark(ids).then((result) => {
+                this.setState({ bookmarksList: result, isLoading: false });
+            });
         });
     }
 

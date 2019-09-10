@@ -15,14 +15,16 @@ class AddBookmark extends BaseDialog {
         const { ticketsList } = this.state;
 
         if (ticketsList.length > 0) {
-            this.isLoading = true;
+
+            this.setState({ isLoading: true });
+
             this.$bookmark.addBookmark(ticketsList)
                 .then((result) => {
                     if (result.length === 0) {
                         this.onHide(true);
                     }
                     else {
-                        this.setState({ ticketsList: result });
+                        this.setState({ isLoading: false, ticketsList: result });
 
                         if (ticketsList.length === result.length) {
                             this.$message.warning("None of the ticket numbers provided are valid.");
