@@ -82,8 +82,17 @@
     padding-top: 0 !important;
 }
 
+.no-pad {
+    padding: 0 !important;
+}
+
 .pad-b {
     padding-bottom: 8px;
+}
+
+.pad-h-8 {
+    padding-left: 8px !important;
+    padding-right: 8px !important;
 }
 
 .pad-15 {
@@ -99,9 +108,16 @@
 }
 
 /* #endregion */
+.hide {
+    display: none;
+}
 
 .link {
     cursor: pointer;
+}
+
+.no-min-width {
+    min-width: auto !important;
 }
 
 .pointer {

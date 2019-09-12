@@ -2,7 +2,9 @@ import React from 'react';
 import { inject } from '../services/injector-service';
 import { ScrollableTable, THead, TBody, Column, NoDataRow } from '../components/ScrollableTable';
 import BaseGadget from './BaseGadget';
-import { Button } from 'primereact/button';
+import { Button, TextBox, Checkbox } from '../controls';
+import BaseDialog from "../dialogs/BaseDialog";
+import Dialog from '../dialogs';
 
 class MyReports extends BaseGadget {
     constructor(props) {
@@ -17,88 +19,69 @@ class MyReports extends BaseGadget {
 
     refreshData() {
         this.setState({ isLoading: true });
+
         this.$report.getReportsList()
             .then((result) => {
+                const { selAllChk } = this.state;
+
                 result.forEach(r => {
+                    r.selected = selAllChk;
                     r.displayDate = this.$userutils.formatDateTime(r.dateCreated);
                     r.sortDate = r.dateCreated.getTime();
                 });
-                this.setState({ savedQueries: result, isLoading: false });
+
+                this.setState({ reportsList: result, isLoading: false });
             });
     }
 
-    deleteQuery(items) {
-        if (!items) {
-            items = this.savedQueries.filter((w) => w.selected);
-        }
-
-        const ids = items.map((w) => w.id);
+    deleteSelectedReports = () => {
+        const ids = this.state.reportsList.filter((w) => w.selected).map((w) => w.id);
         if (ids.length === 0) {
             this.$message.info("Select the reports to be deleted!");
             return;
         }
 
-        this.setState({ isLoading: true });
 
-        this.$report.deleteSavedQuery(ids).then(() => {
-            return this.refreshData();
+        Dialog.confirmDelete("Are you sure to delete the selected report(s)?", "Confirm delete report(s)").then(() => {
+            this.setState({ isLoading: true });
+
+            this.$report.deleteSavedQuery(ids).then(() => {
+                return this.refreshData();
+            });
         });
     }
 
     selectAll = () => {
-        let { savedQueries, selAllChk } = this.state;
+        let { reportsList, selAllChk } = this.state;
         selAllChk = !selAllChk;
-        savedQueries.forEach(wl => wl.selected = selAllChk);
-        savedQueries = [...savedQueries];
-        this.setState({ savedQueries, selAllChk });
+        reportsList.forEach(wl => wl.selected = selAllChk);
+        reportsList = [...reportsList];
+        this.setState({ reportsList, selAllChk });
     }
 
-    downloadReports() {
-        const items = this.savedQueries.filter((w) => w.selected);
+    downloadReports = () => {
+        const items = this.state.reportsList.filter((w) => w.selected);
         const ids = items.map((w) => w.id);
+
         if (ids.length === 0) {
             this.$message.info("Select the reports to be exported!");
             return;
         }
+
         this.$report.exportQueries(ids);
     }
 
-    importReports(save) {
-        if (!save) {
-            const selector = this.fileSelector.nativeElement;
-            selector.click();
-        }
-        else {
-            const selectedReports = this.reportsToImport.filter((r) => r.selected);
-            const saveAction = selectedReports.map((r) => {
-                const newObj = Object.assign({}, r);
-                delete newObj.selected;
-                delete newObj.id;
-                delete newObj.oldName;
-                delete newObj.status;
-                return this.$report.saveQuery(newObj).then(s => {
-                    r.selected = false;
-                    r.disabled = true;
-                    r.status = "Imported";
-                }, err => { r.status = "Duplicate name"; return Promise.reject(err); });
-            });
-            Promise.all(saveAction).then(() => {
-                this.$message.success(`${selectedReports.length} selected reports were imported`, "Reports imported");
-                this.refreshData();
-                this.reportsToImport = null;
-            }, () => { this.$message.error("Some of the reports were not import!", "Import failed"); this.updateSelReportCount(); });
-        }
-    }
-
-    fileSelected($event) {
-        const selector = this.fileSelector.nativeElement;
+    fileSelected = () => {
+        const selector = this.fileSelector;
         const file = selector.files[0];
+
         if (file) {
             if (!file.name.endsWith('.jrd')) {
                 this.$message.warning("Unknown file selected to import. Select a valid Jira Assist Report definition (*.jrd) file");
                 selector.value = '';
                 return;
             }
+
             const reader = new FileReader();
             reader.readAsText(file, "UTF-8");
             reader.onload = (evt) => {
@@ -115,9 +98,7 @@ class MyReports extends BaseGadget {
                         r.selected = true;
                         r.status = "Will import";
                     });
-                    this.reportsToImport = reports;
-                    this.updateSelReportCount();
-                    this.selAllRpts = true;
+                    this.setState({ reportsToImport: reports });
                 }
                 catch (err) {
                     this.$message.error("Selected file is invalid or is corrupted");
@@ -130,57 +111,42 @@ class MyReports extends BaseGadget {
         selector.value = '';
     }
 
-    reportSelected(report) {
-        if (!report.selected) {
-            if (!report.queryName) {
-                report.queryName = report.oldName;
-            }
-            report.status = "Will import";
-        }
-        else {
-            report.status = "Excluded";
-        }
-        this.updateSelReportCount();
-    }
-
-    updateSelReportCount() {
-        this.selReportsCount = this.reportsToImport.filter((r) => r.selected).length;
-    }
-
-    selAllReports() {
-        this.selAllRpts = !this.selAllRpts;
-        this.reportsToImport.forEach((r) => r.selected = !r.disabled && this.selAllRpts);
-        this.updateSelReportCount();
-    }
-
-    reportNameChanged(rpt) {
-        if (rpt.queryName) {
-            rpt.status = "Will import";
-        }
-        else {
-            rpt.status = "Name required";
-        }
-    }
-
-    editReport(rpt) {
+    editReport = (rpt) => {
         this.router.navigateByUrl(`/reports/${rpt.advanced ? "advanced" : "customgrouped"}/${rpt.id}`);
     }
 
     selectRowItem(item) {
         item.selected = !item.selected;
-        let { savedQueries } = this.state;
-        savedQueries = [...savedQueries];
-        this.setState({ savedQueries });
+        let { reportsList } = this.state;
+        reportsList = [...reportsList];
+        this.setState({ reportsList });
+    }
+
+    hideImportPopup = (refresh) => {
+        if (refresh) { this.refreshData(); }
+        this.setState({ reportsToImport: null });
+    }
+
+    setFileSelector = (f) => this.fileSelector = f
+    chooseFileForImport = () => this.fileSelector.click()
+
+    renderCustomActions() {
+        return <>
+            <input ref={this.setFileSelector} type="file" className="hide" accept=".jrd" onChange={this.fileSelected} />
+            <Button icon="fa fa-upload" onClick={this.chooseFileForImport} />
+            <Button icon="fa fa-download" onClick={this.downloadReports} />
+            <Button type="danger" icon="fa fa-trash-o" onClick={this.deleteSelectedReports} title="Delete selected report(s)" />
+        </>;
     }
 
     render() {
-        const { savedQueries, selAllChk } = this.state;
+        const { reportsList, selAllChk, reportsToImport } = this.state;
 
-        return super.renderBase(
-            <ScrollableTable dataset={savedQueries}>
+        return super.renderBase(<>
+            <ScrollableTable dataset={reportsList}>
                 <THead>
                     <tr>
-                        <Column className="w40"><input type="checkbox" checked={selAllChk} onChange={this.selectAll} /></Column>
+                        <Column className="w40"><Checkbox checked={selAllChk} onChange={this.selectAll} /></Column>
                         <Column sortBy="queryName">Report name</Column>
                         <Column sortBy="sortDate">Created On</Column>
                         <Column sortBy="advanced">Report type</Column>
@@ -190,10 +156,10 @@ class MyReports extends BaseGadget {
                     </tr>
                 </THead>
                 <TBody>
-                    {(b, i) => {
+                    {(b) => {
                         return <tr key={b.id}>
                             <td className="text-center">
-                                <input type="checkbox" checked={b.selected} onChange={() => this.selectRowItem(b)} />
+                                <Checkbox checked={b.selected} onChange={() => this.selectRowItem(b)} />
                             </td>
                             <td>{b.queryName}</td>
                             <td>{b.displayDate}</td>
@@ -206,8 +172,148 @@ class MyReports extends BaseGadget {
                 </TBody>
                 <NoDataRow span={7}>You have not yet created or imported any reports.</NoDataRow>
             </ScrollableTable>
-        );
+            {reportsToImport && <ImportReports reportsToImport={reportsToImport} onHide={this.hideImportPopup} />}
+        </>);
     }
 }
 
 export default MyReports;
+
+class ImportReports extends BaseDialog {
+    constructor(props) {
+        super(props, "Select reports to import");
+        inject(this, "UserUtilsService", "MessageService", "ReportService");
+
+        this.style = { width: "850px" };
+        this.state.selectAll = true;
+        this.state.reportsToImport = this.props.reportsToImport;
+        this.state.selReportsCount = this.getReportsCount();
+    }
+
+    selectAllReports = () => {
+        let { selectAll, reportsToImport } = this.state;
+        selectAll = !selectAll;
+        reportsToImport = [...reportsToImport];
+
+        reportsToImport.forEach((r) => {
+            r.selected = !r.disabled && selectAll;
+            this.updateReportStatus(r);
+        });
+
+        this.setState({
+            selectAll, reportsToImport,
+            selReportsCount: this.getReportsCount(reportsToImport)
+        });
+    }
+
+    reportSelected(report) {
+        report.selected = !report.selected;
+
+        this.updateReportStatus(report);
+
+        this.setState({ selReportsCount: this.getReportsCount() });
+    }
+
+    updateReportStatus(report) {
+        if (report.selected) {
+            if (!report.queryName) {
+                report.queryName = report.oldName;
+            }
+
+            report.status = "Will import";
+        }
+        else {
+            report.status = "Excluded";
+        }
+    }
+
+    getReportsCount = (reportsToImport) => (reportsToImport || this.state.reportsToImport).filter((r) => r.selected).length
+
+    reportNameChanged(rpt, newName) {
+        rpt.queryName = newName;
+
+        if (rpt.queryName) {
+            rpt.status = "Will import";
+        }
+        else {
+            rpt.status = "Name required";
+        }
+
+        this.forceUpdate();
+    }
+
+    importReports = () => {
+        const selectedReports = this.state.reportsToImport.filter((r) => r.selected);
+
+        const saveAction = selectedReports.map((r) => {
+            const newObj = { ...r };
+
+            delete newObj.selected;
+            delete newObj.id;
+            delete newObj.oldName;
+            delete newObj.status;
+
+            return this.$report.saveQuery(newObj).then(s => {
+                r.selected = false;
+                r.disabled = true;
+                r.status = "Imported";
+                return true;
+            }, () => {
+                r.status = "Duplicate name";
+                return false;
+            });
+        });
+
+        Promise.all(saveAction).then((result) => {
+            if (result.all(r => r)) {
+                this.$message.success(`${selectedReports.length} selected reports were imported`, "Reports imported");
+                this.onHide(true);
+            }
+            else {
+                this.$message.error("Some of the reports were not import!", "Import failed");
+                let { reportsToImport } = this.state;
+                reportsToImport = [...reportsToImport];
+                this.setState({ selReportsCount: this.getReportsCount(reportsToImport), reportsToImport });
+            }
+        });
+    }
+
+    getFooter() {
+        const { selReportsCount } = this.state;
+
+        return <>
+            <Button icon="fa fa-times" onClick={this.onHide} label="Cancel" type="default" />
+            <Button icon="fa fa-check" disabled={!selReportsCount} onClick={this.importReports} label="Import" type="primary" />
+        </>;
+    }
+
+    render() {
+        const { reportsToImport, selectAll } = this.state;
+
+        return super.renderBase(<div>
+            <ScrollableTable dataset={reportsToImport}>
+                <caption>Select all the reports which you would like to import and provide a name for the report to import.</caption>
+                <THead>
+                    <tr>
+                        <th className="no-min-width no-pad"><Checkbox checked={selectAll} onChange={this.selectAllReports} /></th>
+                        <th>Report name</th>
+                        <th>Report name (new)</th>
+                        <th>Created date</th>
+                        <th>Last modified date</th>
+                        <th>Status</th>
+                    </tr>
+                </THead>
+                <TBody>
+                    {(rpt, i) => (<tr key={`${i}_${rpt.status}`}>
+                        <td className="data-center"><Checkbox checked={rpt.selected} disabled={rpt.disabled} onChange={(val) => this.reportSelected(rpt, val)} /></td>
+                        <td>{rpt.oldName}</td>
+                        <td><TextBox value={rpt.queryName} disabled={rpt.disabled || !rpt.selected} onChange={(val) => this.reportNameChanged(rpt, val)} /></td>
+                        <td>{this.$userutils.formatDateTime(rpt.dateCreated)}</td>
+                        <td>{this.$userutils.formatDateTime(rpt.dateUpdated)}</td>
+                        <td>{rpt.status}</td>
+                    </tr>)}
+                </TBody>
+            </ScrollableTable>
+        </div >);
+    }
+}

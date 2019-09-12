@@ -40,18 +40,18 @@ class TextBox extends PureComponent {
 
     render() {
         const { value } = this.state;
-        const { keyfilter, style, className, maxLength, placeholder, multiline, rows, autoResize, readOnly } = this.props;
+        const { keyfilter, style, className, maxLength, placeholder, multiline, rows, autoResize, readOnly, disabled } = this.props;
 
         if (multiline) {
             return (
-                <InputTextarea rows={rows} value={value} autoResize={autoResize} keyfilter={keyfilter} style={style} maxLength={maxLength}
+                <InputTextarea rows={rows} value={value} autoResize={autoResize} keyfilter={keyfilter} style={style} maxLength={maxLength} disabled={disabled}
                     className={`w-p-100 ${className || ''}`} placeholder={placeholder} onChange={this.onChange} onKeyPress={this.keyPress} />
             );
         }
         else {
             return (
                 <InputText value={value} keyfilter={keyfilter} style={style} maxLength={maxLength} className={className} placeholder={placeholder}
-                    onChange={this.onChange} onKeyDown={this.keyPress} readOnly={readOnly} />
+                    onChange={this.onChange} onKeyDown={this.keyPress} readOnly={readOnly} disabled={disabled} />
             );
         }
     }

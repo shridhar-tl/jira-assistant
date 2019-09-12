@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import moment from 'moment';
-import { ScrollableTable, THead, NoDataRow, TBody } from '../../components/ScrollableTable';
+import { ScrollableTable, THead, TBody } from '../../components/ScrollableTable';
 
 class GroupedDataGrid extends PureComponent {
     constructor(props) {
