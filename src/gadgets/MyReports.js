@@ -17,7 +17,7 @@ class MyReports extends BaseGadget {
         this.refreshData();
     }
 
-    refreshData() {
+    refreshData = () => {
         this.setState({ isLoading: true });
 
         this.$report.getReportsList()

@@ -67,8 +67,6 @@ class ReportViewer extends BaseGadget {
         return <>
             {!this.isGadget && <Button icon={this.isFullScreen ? 'fa fa-compress' : 'fa fa-expand'} onClick={this.toggleFullScreen} title="Toggle full screen" />}
             {this.viewer.canShowParams && <Button icon="fa fa-plus-circle" onClick={this.viewer.showParameters} title="Change report params" />}
-            {/*!this.viewer.paramsMode && <Button icon="fa fa-refresh" onClick={() => fillReport(true)} title="Refresh data"></Button>*/}
-            {/*hasReportData && <div jaExport element={tbl} fileName={queryModel.queryName}></div>*/}
             {!this.isGadget && <Button icon="fa fa-edit" onClick={this.props.onCancelView} title="Edit report" />}
         </>;
     }

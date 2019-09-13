@@ -39,14 +39,14 @@ class SprintReport extends BaseGadget {
         this.exportFormat = ExportFormat.XLSX;
         inject(this, "JiraService", "UserUtilsService", "SessionService", "UserGroupService");
 
-        this.state = { selectedRapidViews: this.$session.CurrentUser.rapidViews, selectedSprints: null };
+        this.state = { disableRefresh: true, selectedRapidViews: this.$session.CurrentUser.rapidViews, selectedSprints: null };
     }
 
     UNSAFE_componentWillMount() {
         this.$usergroup.getUserGroups().then(groups => this.setState({ groups }));
     }
 
-    generateReport = () => {
+    refreshData = () => {
         const { selectedSprints } = this.state;
 
         if (selectedSprints && selectedSprints.length === 0) {
@@ -166,7 +166,7 @@ class SprintReport extends BaseGadget {
                     sprint.lastUserToClose = $("<div/>").append(link).html();
                 });
 
-                this.setState({ isLoading: false, worklogDetails: data.ticketDetails, selectedTab: 1, sprintDetails: result });
+                this.setState({ isLoading: false, disableRefresh: false, worklogDetails: data.ticketDetails, selectedTab: 1, sprintDetails: result });
             });
     }
 
@@ -182,22 +182,6 @@ class SprintReport extends BaseGadget {
     updateGroup = (groups) => this.setState({ groups });
 
     formatDateTime = (val) => this.$userutils.formatDateTime(val);
-
-    /* This functionality is taken care by BaseGadget
-    renderCustomActions() {
-        const {
-            state: { sprintDetails }
-        } = this;
-
-        const sprintCount = sprintDetails ? sprintDetails.length : 0;
-
-        const isReportDataReady = sprintDetails && sprintCount > 0;
-
-        return <>
-            {this.getFullScreenButton()}
-            {this.getExportButton(!isReportDataReady)}
-        </>;
-    }*/
 
     render() {
         const {
@@ -247,7 +231,7 @@ class SprintReport extends BaseGadget {
                             <div className="ui-g ui-fluid">
                                 <div className="ui-g-12 ui-md-3 ui-lg-3 ui-xl-2">
                                     <Button className="ui-button-primary" disabled={!selectedSprints || selectedSprints.length === 0}
-                                        icon="fa fa-play-circle" label="Generate report" onClick={this.generateReport} />
+                                        icon="fa fa-play-circle" label="Generate report" onClick={this.refreshData} />
                                 </div>
                             </div>
                         </div>

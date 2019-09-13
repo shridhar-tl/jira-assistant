@@ -28,7 +28,7 @@ class PendingWorklog extends BaseGadget {
         this.refreshData();
     }
 
-    refreshData() {
+    refreshData = () => {
         this.setState({ isLoading: true });
 
         return this.$worklog.getPendingWorklogs()

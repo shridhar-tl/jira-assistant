@@ -122,7 +122,7 @@ class EstimateActualReport extends BaseGadget {
 
         this.storyPointField = (this.$session.CurrentUser.storyPointField || {}).id;
 
-        this.state = { dateRange: {}, chartData: {}, estimationField: 'timeoriginalestimate', projects: this.$session.CurrentUser.projects };
+        this.state = { disableRefresh: true, dateRange: {}, chartData: {}, estimationField: 'timeoriginalestimate', projects: this.$session.CurrentUser.projects };
     }
 
     UNSAFE_componentWillMount() {
@@ -139,11 +139,7 @@ class EstimateActualReport extends BaseGadget {
             && (!this.state.projects || !this.state.projects.some(v => v.id === r.id)));
     }
 
-    generateReport = () => {
-        this.fetchData();
-    }
-
-    fetchData() {
+    refreshData = () => {
         this.setState({ isLoading: true, chartData: {} });
         const mfromDate = moment(this.state.dateRange.fromDate).startOf('day');
         const mtoDate = moment(this.state.dateRange.toDate).endOf('day');
@@ -354,7 +350,7 @@ class EstimateActualReport extends BaseGadget {
                     });
                 }
 
-                this.setState({ isLoading: false, chartData: { labels: chartLabels, datasets, colors: this.chartColours }, selectedTab: 1 });
+                this.setState({ disableRefresh: false, isLoading: false, chartData: { labels: chartLabels, datasets, colors: this.chartColours }, selectedTab: 1 });
             });
     }
 
@@ -471,7 +467,7 @@ class EstimateActualReport extends BaseGadget {
                         <div className="row">
                             <div className="col-sm-12 col-md-3 col-lg-3 col-xl-2">
                                 <Button className="col-button-primary" disabled={this.validateData()}
-                                    icon="fa fa-play-circle" label="Generate report" onClick={this.generateReport} />
+                                    icon="fa fa-play-circle" label="Generate report" onClick={this.refreshData} />
                             </div>
                         </div>
                     </div>

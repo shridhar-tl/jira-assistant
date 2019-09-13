@@ -19,7 +19,7 @@ class DateWiseWorklog extends BaseGadget {
         this.refreshData();
     }
 
-    refreshData() {
+    refreshData = () => {
         const selDate = this.settings.dateRange;
         if (!selDate || !selDate.fromDate) {
             return;

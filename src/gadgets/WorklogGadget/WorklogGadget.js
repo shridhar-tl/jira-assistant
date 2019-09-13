@@ -294,9 +294,6 @@ class WorklogGadget extends BaseGadget {
         return <>
             <DatePicker value={dateRange} range={true} onChange={this.dateSelected} style={{ marginRight: '35px' }} />
             <Button icon="fa fa-users" onClick={this.showGroupsPopup} title="Add users / groups to report" />
-            {/*super.getFullScreenButton()*/}
-            {/*!isGadget && <Button icon="fa fa-refresh" onClick={this.refreshData} title="Refresh data" />*/}
-            {/*(groupedData || flatData) && <div jaexport element="tblGrp || tblFlat || wldiv" filename="User Daywise Worklogs" />*/}
             <Button icon="fa fa-cogs" onClick={this.showSettings} title="Show settings" />
         </>;
     }
