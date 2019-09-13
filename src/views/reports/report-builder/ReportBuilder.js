@@ -14,6 +14,8 @@ class ReportBuilder extends BaseGadget {
         super(props, "Report Builder");
         inject(this, "JiraService", "MessageService", "ReportService", "ReportConfigService");
         this.isGadget = false;
+        this.hideRefresh = true;
+        this.hideMenu = true;
 
         this.$reportConfig.configureBuilder();
         this.$reportConfig.parameters.removeAllListeners();

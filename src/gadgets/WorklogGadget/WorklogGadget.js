@@ -40,11 +40,11 @@ class WorklogGadget extends BaseGadget {
         if (!date) { return; }
 
         if (date.fromDate && date.toDate) {
-            this.setState({ dateRange: date }, this.generateReport);
+            this.setState({ dateRange: date }, this.refreshData);
         }
     }
 
-    generateReport = () => {
+    refreshData = () => {
         const { groups } = this.state;
 
         if (!groups || groups.length === 0) {
@@ -252,7 +252,6 @@ class WorklogGadget extends BaseGadget {
         this.dates = dateArr;
         this.userDayWise = data;
         this.months = months;
-        //this.setContSize(); // ToDo
     }
 
     filterUserData(arr, date) {
@@ -295,9 +294,6 @@ class WorklogGadget extends BaseGadget {
         return <>
             <DatePicker value={dateRange} range={true} onChange={this.dateSelected} style={{ marginRight: '35px' }} />
             <Button icon="fa fa-users" onClick={this.showGroupsPopup} title="Add users / groups to report" />
-            {/*super.getFullScreenButton()*/}
-            {/*!isGadget && <Button icon="fa fa-refresh" onClick={this.generateReport} title="Refresh data" />*/}
-            {/*(groupedData || flatData) && <div jaexport element="tblGrp || tblFlat || wldiv" filename="User Daywise Worklogs" />*/}
             <Button icon="fa fa-cogs" onClick={this.showSettings} title="Show settings" />
         </>;
     }

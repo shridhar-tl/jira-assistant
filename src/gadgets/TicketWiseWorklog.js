@@ -17,11 +17,11 @@ class TicketWiseWorklog extends BaseGadget {
         ];
     }
 
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
         this.refreshData();
     }
 
-    refreshData() {
+    refreshData = () => {
         const selDate = this.settings.dateRange;
         if (!selDate || !selDate.fromDate) {
             return;

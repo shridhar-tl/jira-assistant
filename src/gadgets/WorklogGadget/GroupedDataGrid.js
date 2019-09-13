@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import moment from 'moment';
-import { ScrollableTable, THead, NoDataRow, TBody } from '../../components/ScrollableTable';
+import { ScrollableTable, THead, TBody } from '../../components/ScrollableTable';
 
 class GroupedDataGrid extends PureComponent {
     constructor(props) {
@@ -176,7 +176,6 @@ class GroupedDataGrid extends PureComponent {
                         {dates.map((day, i) => <th key={i} style={{ minWidth: 35 }}>{day.display}</th>)}
                     </tr>
                 </THead>
-                <NoDataRow span={9}>No records exists</NoDataRow>
                 <TBody>
                     {
                         groupedData.map((grp, i) => <GroupRow key={i} group={grp} dates={dates}

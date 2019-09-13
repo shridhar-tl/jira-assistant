@@ -16,6 +16,7 @@ class QueryEditor extends BaseGadget {
         this.className = "query-editor-gadget";
         this.isGadget = false;
         this.hideMenu = true;
+        this.hideRefresh = true;
         inject(this, "ReportService", "JiraService", "MessageService", "AnalyticsService");
 
         //this.groupIgnore = ['issuekey', 'summary', 'description'];
