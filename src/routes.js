@@ -4,9 +4,9 @@ import React from 'react';
 const CalendarViewComponent = React.lazy(() => import('./views/calendar-view/Calendar'));
 const DashboardComponent = React.lazy(() => import('./views/dashboard/Dashboard'));
 
-/*
-const BulkImportComponent = React.lazy(() => import('./views/'));
-*/
+// Bulk Import
+const ImportWorklogComponent = React.lazy(() => import('./views/bulk-import/worklog/ImportWorklog'));
+
 // reports
 const CustomReportComponent = React.lazy(() => import('./views/reports/custom-report/CustomReport'));
 const EstimateActualComponent = React.lazy(() => import('./views/reports/estimate-actual/EstimateActualReport'));
@@ -67,10 +67,10 @@ const sessionBasedRoute = [
         path: '/reports/advanced',
         component: ReportBuilderComponent
     },
-    /*{
-        path: '/bulkimport',
-        component: BulkImportComponent
-    },*/
+    {
+        path: '/import/worklog',
+        component: ImportWorklogComponent
+    },
     {
         path: '/settings/general',
         component: GeneralSettingsComponent

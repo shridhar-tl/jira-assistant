@@ -262,15 +262,3 @@ export class Column extends PureComponent {
         );
     }
 }
-
-export class TD extends PureComponent {
-    static contextType = TableContext;
-
-    render() {
-        return (
-            <td {...this.props}>
-
-            </td>
-        );
-    }
-}

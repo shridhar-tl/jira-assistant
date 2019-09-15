@@ -1,6 +1,7 @@
 /* eslint-disable no-eq-null */
 import * as $ from 'jquery';
 import Exporter, { ExportFormat } from './Exporter';
+import { exportCsv } from './utils';
 
 export class ExportHelper {
 
@@ -52,7 +53,7 @@ export class ExportHelper {
                 + genData(id.find("tbody:visible tr:not([no-export]):visible"), colInfo);
         }
 
-        this.exportCsv(content, fileName);
+        exportCsv(content, fileName);
 
         function getVal(td) {
             const defaultOpts = { encode: true, trim: true };
@@ -121,44 +122,6 @@ export class ExportHelper {
                 content += `${rowC.substring(1).replace(/\r?\n|\r/g, " ")}\r\n`;
             }
             return content;
-        }
-    }
-    /**
-    * Export the given content to CSV file.
-    *
-    * @constructor
-    *
-    * @param {string} content
-    *   The content to be exported.
-    * @param {string} fileName
-    *   The name of the file to be exported.
-    * @param {string} mimeType
-    *   (optional) The mime type of the file to be exported.
-    */
-    exportCsv(content, fileName, mimeType) {
-        const a = document.createElement('a');
-        mimeType = mimeType || 'application/octet-stream';
-        const ind = fileName.toLowerCase().lastIndexOf(".csv");
-        if (ind === -1 || ind === fileName.length - 4) { fileName += ".csv"; }
-        if (navigator.msSaveBlob) { // IE10
-            return navigator.msSaveBlob(new Blob([content], { type: mimeType }), fileName);
-        }
-        else if ('download' in a) { //html5 A[download]
-            a.href = `data:${mimeType},${encodeURIComponent(content)}`;
-            a.setAttribute('download', fileName);
-            document.body.appendChild(a);
-            setTimeout(function () {
-                a.click();
-                document.body.removeChild(a);
-            }, 66);
-            return true;
-        }
-        else { //do iframe dataURL download (old ch+FF):
-            const f = document.createElement('iframe');
-            document.body.appendChild(f);
-            f.src = `data:${mimeType},${encodeURIComponent(content)}`;
-            setTimeout(function () { document.body.removeChild(f); }, 333);
-            return true;
         }
     }
 }

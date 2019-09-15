@@ -1,0 +1,22 @@
+.import-worklog {
+    div.worklog-table {
+        height: calc(100vh - 140px);
+
+        table.worklog-table {
+            
+            thead {
+                tr {
+                    th:first-child { padding:2px 9px; width: 32px; min-width: auto !important; }
+                    th:nth-child(2) { max-width: 220px; }
+                    th:nth-child(3) { width: 130px; }
+                    th:nth-child(4) { width: 350px; }
+                    th:nth-child(5) { width: 200px; }
+                    th:nth-child(6) { width: 130px; }
+                    th:nth-child(7) { width: 350px; }
+                    th:nth-child(8) { width: 280px; }
+                    th:nth-child(9) { width: 120px; }
+                }
+            }
+        }
+    }
+}

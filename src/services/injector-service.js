@@ -51,8 +51,8 @@ export const injector = (function () {
         return instance;
     };
 
-    svc.injectable = function (type, serviceName, defaultName) {
-        svc.addService(serviceName, type, defaultName, type.dependencies);
+    svc.injectable = function (type, serviceName, defaultName, opts) {
+        svc.addService(serviceName, type, defaultName, type.dependencies, opts);
         return type;
     };
 
@@ -76,7 +76,8 @@ export const injector = (function () {
 
         name = name.trim();
 
-        opts = Object.assign(opts || {}, defaultOpts);
+        opts = { ...defaultOpts, ...opts };
+
         const svcRef = {
             isSingleton: opts.isSingleton,
             type: type,
@@ -93,8 +94,8 @@ export const injector = (function () {
 
 export function resolve(name) { return injector.resolve(name); }
 
-export function injectable(service, serviceName, defaultName) {
-    return injector.injectable(service, serviceName, defaultName);
+export function injectable(service, serviceName, defaultName, opts) {
+    return injector.injectable(service, serviceName, defaultName, opts);
 }
 
 export function inject(instance, ...dependencies) {
