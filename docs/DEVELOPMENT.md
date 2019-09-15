@@ -10,6 +10,7 @@ Please refer [contribution guidelines](CONTRIBUTE.md) prior to starting the deve
 - If you plan to develop a new module, please create an issue with all the details and start only after you get a go ahead from Shridhar TL.
 - Assign the appropriate issue in GitHub to your name before starting the development activity and have the status updated always in GitHub.
 - Create a branch out of develop and start the development and provide appropriate comment for each commits.
+- Always have your branch updated with the develop branch so that it would be easy at the time of merging back your changes and you will have all the fixes and services available from develop branch.
 
 ## Local development environment
 
@@ -21,9 +22,24 @@ npm install
 npm start
 ```
 
-At this point, a local development service will be started and your browser is loading the login page of the plugin.
+At this point, a local development service will be started and your browser is loading the login page of the plugin. Here you can integrate with any instance of Jira which is already available for your testing purpose. If you do not have one, your can consider using one of the option suggested below to quickly setup a working instance for you.
 
-### setup and prepare a local Jira instance
+### Setup a free for development cloud instance of Jira
+
+The easiest option is to use the Cloud version of Jira which is free for development purpose which can have max of 5 users.
+
+If you are an individual developer, then you can consider joining me with the instance of Jira which I already have for development purpose. We can share the instance and so that we would gain access to large data created by all of us which would help all of us in development. To get access to the instance of Jira I use, please mail me: shridhar.tl@gmail.com
+
+Follow the below url to know more about it or if you would like to create and maintain your own instance:
+
+To create a new account:
+http://go.atlassian.com/about-cloud-dev-instance
+
+To know more about this free instance:
+https://blog.developer.atlassian.com/cloud-ecosystem-dev-env/
+
+
+### Setup and prepare a local Jira instance (30 days trial)
 
 The best way is to have a local Jira for playing around. If you have Docker installed in your workstation, then run the following command to setup a docker container with Jira running on port 9090.
 
