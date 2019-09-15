@@ -5,7 +5,7 @@ export default class WorklogService {
     static dependencies = ["UserUtilsService", "JiraService", "SessionService", "DatabaseService", "TicketService", "AjaxService", "UtilsService", "MessageService"];
 
     //ToDo: FormatTsPipe is not a service
-    constructor($userutils, $jira, $session, $db, $ticket, $ajax, $utils, $message) {
+    constructor($userutils, $jira, $session, $db, $ticket, $ajax, $utils) {
         this.$userutils = $userutils;
         this.$jira = $jira;
         this.$session = $session;
@@ -13,7 +13,6 @@ export default class WorklogService {
         this.$ticket = $ticket;
         this.$ajax = $ajax;
         this.$utils = $utils;
-        this.$message = $message;
     } // format ts should be pipe
 
     getUploadedWorklogs(fromDate, toDate, userList, fields) {
@@ -108,24 +107,15 @@ export default class WorklogService {
 
     uploadWorklog(entry) {
         const timeSpent = entry.overrideTimeSpent || entry.timeSpent;
-        const request = {
-            comment: entry.description,
-            started: `${entry.dateStarted.toISOString().replace('Z', '').replace('z', '')}+0000`,
-            timeSpent: this.$utils.formatTs(timeSpent) //,
-            //visibility = new Visibility { type="group", value= "Deployment Team" }
-        };
-        let uploadRequest = null;
-        if (entry.worklogId > 0) {
-            uploadRequest = this.$ajax.put(ApiUrls.updateIndividualWorklog, request, entry.ticketNo, entry.worklogId);
-        }
-        else {
-            uploadRequest = this.$ajax.post(ApiUrls.addIssueWorklog, request, entry.ticketNo, entry.worklogId || 0);
-        }
+
+        const uploadRequest = this.upload(entry.ticketNo, entry.dateStarted, timeSpent, entry.description, entry.worklogId);
+
         return uploadRequest.then((result) => {
             entry.worklogId = result.id;
             entry.isUploaded = true;
             entry.timeSpent = timeSpent;
             delete entry.overrideTimeSpent;
+
             if (entry.parentId) {
                 return this.$db.worklogs.put(entry).then(() => entry);
             }
@@ -137,11 +127,31 @@ export default class WorklogService {
                     return entry;
                 }
             }
-        }, (err) => {
+        });
+    }
+
+    upload(ticketNo, dateStarted, timeSpent, comment, worklogId) {
+        const request = {
+            comment,
+            started: `${dateStarted.toISOString().replace('Z', '').replace('z', '')}+0000`,
+            timeSpent: this.$utils.formatTs(timeSpent) //,
+            //visibility = new Visibility { type="group", value= "Deployment Team" }
+        };
+
+        let uploadRequest = null;
+
+        if (worklogId > 0) {
+            uploadRequest = this.$ajax.put(ApiUrls.updateIndividualWorklog, request, ticketNo, worklogId);
+        }
+        else {
+            uploadRequest = this.$ajax.post(ApiUrls.addIssueWorklog, request, ticketNo, worklogId || 0);
+        }
+
+        return uploadRequest.then(null, (err) => {
             if (err.status === 400) {
                 const errors = (err.error || {}).errorMessages || [];
                 if (errors.some((e) => e.indexOf("non-editable") > -1)) {
-                    return Promise.reject({ message: `${entry.ticketNo} is already closed and cannot upload worklog` });
+                    return Promise.reject({ message: `${ticketNo} is already closed and cannot upload worklog` });
                 }
             }
             return Promise.reject(err);
@@ -292,14 +302,11 @@ export default class WorklogService {
     saveWorklog(worklog, upload) {
         return this.$ticket.getTicketDetails(worklog.ticketNo).then((ticket) => {
             if (!ticket) {
-                this.$message.error(`${worklog.ticketNo} is not a valid Jira Key`);
                 return Promise.reject(`${worklog.ticketNo} is not a valid Jira Key`);
             }
             if (!this.$session.CurrentUser.allowClosedTickets) {
                 if (ticket.fields.status.name.toLowerCase() === "closed") {
-                    const msg = `${ticket.key} is already closed. Cannot add worklog for closed ticket!`;
-                    this.$message.error(msg);
-                    return Promise.reject(msg);
+                    return Promise.reject(`${ticket.key} is already closed. Cannot add worklog for closed ticket!`);
                 }
             }
             const wl = {

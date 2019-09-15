@@ -34,6 +34,7 @@ export default class TicketService {
     fetchTicketDetails(tickets, fields) {
         const result = [];
         const toFetch = [];
+        tickets = tickets.distinct(t => t);
         tickets.forEach((t) => {
             if (!this.ticketsCache[t]) {
                 toFetch.push(t);

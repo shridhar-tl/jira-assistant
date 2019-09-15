@@ -9,7 +9,7 @@ import { GadgetActionType } from '../gadgets';
 class AddWorklog extends BaseDialog {
     constructor(props) {
         super(props, "Add worklog", { width: '550px' });
-        inject(this, "SessionService", "SuggestionService", "WorklogService");
+        inject(this, "SessionService", "SuggestionService", "WorklogService", "MessageService");
 
         this.displayDateFormat = "yyyy-MM-dd HH:mm";
         this.minCommentLength = this.$session.CurrentUser.commentLength || 0;
@@ -143,7 +143,14 @@ class AddWorklog extends BaseDialog {
         }, upload).then((result) => {
             this.props.onDone(worklog.id > 0 ? { type: GadgetActionType.WorklogModified, edited: result, previousTime: this.previousTime } : { type: GadgetActionType.WorklogModified, added: result });
             this.onHide();
-        }, (e) => { console.error(e); this.setState({ loading: false }); });
+        }, (e) => {
+            this.setState({ loading: false });
+            if (typeof e === "string") {
+                this.$message.error(e);
+            } else {
+                console.error(e);
+            }
+        });
     }
 
     getTicketNo(worklog) {

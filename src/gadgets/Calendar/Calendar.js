@@ -231,6 +231,12 @@ class Calendar extends BaseGadget {
             this.$worklog.saveWorklog(obj).then((entry) => {
                 this.addEvent({ added: entry });
                 $($event.currentTarget).remove();
+            }, e => {
+                if (typeof e === "string") {
+                    this.$message.error(e);
+                } else {
+                    console.error(e);
+                }
             });
             this.$analytics.trackEvent("Quick add WL");
         }
