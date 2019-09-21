@@ -60,10 +60,6 @@ class PendingWorklog extends BaseGadget {
         this.setState({ worklogs: [...worklogs], selAllChk });
     }
 
-    getRowStatus(d, index) {
-        return d.rowClass;
-    }
-
     showContext(e, b) {
         this.selectedItem = b;
         showContextMenu(e, this.contextMenu);
@@ -153,7 +149,7 @@ class PendingWorklog extends BaseGadget {
                 </THead>
                 <TBody>
                     {b => {
-                        return <tr key={b.id} onContextMenu={(e) => this.showContext(e, b)}>
+                        return <tr key={b.id} onContextMenu={(e) => this.showContext(e, b)} className={b.rowClass}>
                             <td className="text-center">
                                 {b.selected && <Checkbox checked={true} onChange={() => this.selectRowItem(b)} />}
                                 {!b.selected && <i className="fa fa-ellipsis-v" onClick={(e) => this.showContext(e, b)}></i>}

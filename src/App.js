@@ -43,7 +43,6 @@ class App extends PureComponent {
 
   contextProps = {
     switchUser: (userId) => {
-      debugger;
       let url = document.location.hash.substring(2);
       url = url.substring(url.indexOf("/"));
       url = `/${userId}${url}`;

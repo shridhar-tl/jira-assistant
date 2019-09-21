@@ -53,10 +53,6 @@ class DateWiseWorklog extends BaseGadget {
         }
     }
 
-    getRowStatus(d, index) {
-        return d.rowClass;
-    }
-
     uploadWorklog() {
         const toUpload = this.selectedDay.ticketList.filter(t => !t.worklogId).map(t => t.id);
         if (toUpload.length === 0) {
@@ -112,7 +108,7 @@ class DateWiseWorklog extends BaseGadget {
                 </THead>
                 <TBody>
                     {(b) => {
-                        return <tr key={b.dateLogged} onContextMenu={(e) => this.showContext(e, b)}>
+                        return <tr key={b.dateLogged} onContextMenu={(e) => this.showContext(e, b)} className={b.rowClass}>
                             <td>{this.$userutils.formatDate(b.dateLogged)}</td>
                             <td>{this.$utils.formatTs(b.totalHours)}</td>
                             <td>{this.$utils.formatTs(b.uploaded)}</td>

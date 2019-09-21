@@ -71,12 +71,13 @@ Array.prototype.count = function (clause) {
     return this.where(clause).length;
   }
 };
-Array.prototype.distinct = function (clause) {
+Array.prototype.distinct = function (clause, excludeNulls) {
   let item;
   const dict = {};
   const retVal = [];
   for (let i = 0; i < this.length; i++) {
     item = clause ? clause(this[i]) : this[i];
+    if (excludeNulls && item === null) { continue; }
     if (!dict[item]) {
       dict[item] = true;
       retVal.push(item);
@@ -461,6 +462,13 @@ Array.prototype.remove = function (func) {
 Array.prototype.contains = function (val) {
   return this.indexOf(val) > -1;
 };
+
+Array.prototype.asyncForEach = async function (callback) {
+  for (let index = 0; index < this.length; index++) {
+    await callback(this[index], index);
+  }
+};
+
 Array.prototype.containsAny = function (arr) {
   const $this = this;
   if (arr && Array.isArray(arr)) {
@@ -526,6 +534,21 @@ Array.prototype.toKeyValuePair = function (clause, filter) {
     result[`${item.key}`] = item.values;
   }
   return result;
+};
+
+
+Array.prototype.findIndex = function (clause, maxItems) {
+  const source = this;
+  const newArray = [];
+
+  // The clause was passed in as a Method that return a Boolean
+  // eslint-disable-next-line no-unmodified-loop-condition
+  for (let index = 0; index < source.length && (!maxItems || maxItems > newArray.length); index++) {
+    if (clause(source[index], index)) {
+      newArray[newArray.length] = index;
+    }
+  }
+  return newArray;
 };
 
 // Array flattening related methods

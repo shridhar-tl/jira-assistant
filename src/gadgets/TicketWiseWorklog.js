@@ -57,10 +57,6 @@ class TicketWiseWorklog extends BaseGadget {
         return this.$utils.getWorklogUrl(ticketNo, worklogId);
     }
 
-    getRowStatus(d, index) {
-        return d.rowClass;
-    }
-
     getTicketUrl(ticketNo) { return this.$userutils.getTicketUrl(ticketNo); }
     uploadWorklog() { Dialog.alert("This functionality is not yet implemented!", "Unimplemented functionality!"); }
     addWorklog() { Dialog.alert("This functionality is not yet implemented!", "Unimplemented functionality!"); }
@@ -84,7 +80,7 @@ class TicketWiseWorklog extends BaseGadget {
                 </THead>
                 <TBody>
                     {(b) => {
-                        return <tr key={b.ticketNo} onContextMenu={(e) => this.showContext(e, b)}>
+                        return <tr key={b.ticketNo} onContextMenu={(e) => this.showContext(e, b)} className={b.rowClass}>
                             <td><a href={b.ticketUrl} rel="noopener noreferrer" className="link strike" target="_blank">{b.ticketNo}</a></td>
                             <td>{b.summary}</td>
                             <td>{b.totalHours}</td>

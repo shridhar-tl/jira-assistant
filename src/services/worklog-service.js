@@ -133,7 +133,7 @@ export default class WorklogService {
     upload(ticketNo, dateStarted, timeSpent, comment, worklogId) {
         const request = {
             comment,
-            started: `${dateStarted.toISOString().replace('Z', '').replace('z', '')}+0000`,
+            started: this.$utils.formatDateTimeForJira(dateStarted), // `${dateStarted.toISOString().replace('Z', '').replace('z', '')}+0000`,
             timeSpent: this.$utils.formatTs(timeSpent) //,
             //visibility = new Visibility { type="group", value= "Deployment Team" }
         };

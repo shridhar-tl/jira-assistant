@@ -160,3 +160,7 @@ tr.log-high {
 td.col-holiday {
     background-color: #d3d3d3 !important;
 }
+
+tr.closed .strike {
+    text-decoration: line-through;
+}
