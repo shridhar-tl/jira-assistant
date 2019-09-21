@@ -397,7 +397,7 @@ export default class TicketService {
 
                 if (errors && errors.length > 0) {
                     errors.forEach(e => {
-                        const { status, failedElementNumber, elementErrors: { errors: itemErrors, errorMessages } } = e;
+                        const { failedElementNumber, elementErrors: { errors: itemErrors, errorMessages } } = e;
 
                         itemsWithErrors.push(failedElementNumber);
 
