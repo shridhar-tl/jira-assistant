@@ -13,14 +13,12 @@
   },
   "description": "Help to track & upload work done on a Jira Ticket on timely basis and generate report.",
   "icons": {
-    "16": "/assets/icon_16.png",
     "24": "/assets/icon_24.png",
     "32": "/assets/icon_32.png",
     "48": "/assets/icon_48.png"
   },
   "browser_action": {
     "default_icon": {
-      "16": "/assets/icon_16.png",
       "24": "/assets/icon_24.png",
       "32": "/assets/icon_32.png",
       "48": "/assets/icon_48.png"

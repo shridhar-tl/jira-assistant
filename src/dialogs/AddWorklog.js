@@ -34,7 +34,7 @@ class AddWorklog extends BaseDialog {
     }
 
     getState(obj) {
-        const newState = { showDialog: true, vald: {}, ctlClass: {}, loading: false, log: obj };
+        const newState = { showDialog: true, vald: {}, ctlClass: {}, isLoading: false, log: obj };
 
         if (!obj.id) {
             newState.log = {
@@ -125,10 +125,11 @@ class AddWorklog extends BaseDialog {
 
     saveWorklog = (worklog, vald, upload) => {
         if (!this.validateData(worklog, vald, this.state.ctlClass)) {
+            this.$message.warning("Please provide value for all the mandatory fields", "Incomplete worklog details");
             return false;
         }
 
-        this.setState({ loading: true });
+        this.setState({ isLoading: true });
 
         this.$worklog.saveWorklog({
             ticketNo: this.getTicketNo(worklog),
@@ -144,7 +145,8 @@ class AddWorklog extends BaseDialog {
             this.props.onDone(worklog.id > 0 ? { type: GadgetActionType.WorklogModified, edited: result, previousTime: this.previousTime } : { type: GadgetActionType.WorklogModified, added: result });
             this.onHide();
         }, (e) => {
-            this.setState({ loading: false });
+            this.setState({ isLoading: false });
+
             if (typeof e === "string") {
                 this.$message.error(e);
             } else {
@@ -161,22 +163,17 @@ class AddWorklog extends BaseDialog {
     }
 
     deleteWorklog(log) {
-        this.loading = true;
+        this.setState({ isLoading: true });
         const prevTicketNo = log.ticketNo;
         log.ticketNo = prevTicketNo.value || prevTicketNo;
         this.$worklog.deleteWorklog(log).then((result) => {
-            this.loading = false;
+            this.setState({ isLoading: false });
             this.showPopup = false;
             this.props.onDone({
                 type: GadgetActionType.DeletedWorklog, removed: log.id,
                 deleted: log.id, deletedObj: log
             });
         }, () => { log.ticketNo = prevTicketNo; });
-    }
-
-    modelOnDone($event) {
-        this.showPopup = false;
-        this.props.onDone({ type: GadgetActionType.None });
     }
 
     setValue = (field, value) => {
@@ -190,21 +187,22 @@ class AddWorklog extends BaseDialog {
         }
 
         log = { ...log };
+
         this.setState({ log });
     }
 
     getFooter() {
         const {
-            loading,
+            isLoading,
             state: { log, vald, uploadImmediately }
         } = this;
 
         return <>
             {!log.id && <Checkbox checked={uploadImmediately} className="pull-left" label="Upload immediately to Jira" onChange={(chk) => this.setState({ uploadImmediately: chk })} />}
-            {log.id > 0 && <Button type="danger" icon="fa fa-trash-o" label="Delete" className="pull-left" disabled={loading} onClick={() => this.deleteWorklog(log)} />}
-            {log.id > 0 && !log.worklogId && <Button type="success" icon="fa fa-upload" label="Save & Upload" className="pull-left" disabled={loading}
+            {log.id > 0 && <Button type="danger" icon="fa fa-trash-o" label="Delete" className="pull-left" disabled={isLoading} onClick={() => this.deleteWorklog(log)} />}
+            {log.id > 0 && !log.worklogId && <Button type="success" isLoading={isLoading} icon="fa fa-upload" label="Save & Upload" className="pull-left" disabled={isLoading}
                 onClick={() => this.saveWorklog(log, vald, true)} />}
-            <Button type="primary" icon="fa fa-save" label="Save" disabled={loading} onClick={() => this.saveWorklog(log, vald, uploadImmediately && !(log.id > 0))} />
+            <Button type="primary" icon="fa fa-save" label="Save" isLoading={isLoading} disabled={isLoading} onClick={() => this.saveWorklog(log, vald, uploadImmediately && !(log.id > 0))} />
             <Button type="secondary" icon="fa fa-times" label="Cancel" onClick={this.onHide} />
         </>;
     }

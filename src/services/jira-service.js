@@ -84,10 +84,10 @@ export default class JiraService {
     }
 
     async getRapidViews() {
-        let result = this.$jaCache.session.getPromise("rapidViews");
+        let result = await this.$jaCache.session.getPromise("rapidViews");
 
         if (result) {
-            return await result;
+            return result;
         }
 
         result = await this.$ajax.get(ApiUrls.rapidViews);

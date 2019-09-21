@@ -204,7 +204,11 @@ class Dashboard extends PureComponent {
         this.saveDashboardInfo();
     }
 
-    worklogAdded = (e) => this.hideWorklog();
+    worklogAdded = (e) => {
+        this.emitToChildren(e);
+        this.hideWorklog();
+    }
+
     hideWorklog = () => this.setState({ showWorklogPopup: false });
 
     render() {
