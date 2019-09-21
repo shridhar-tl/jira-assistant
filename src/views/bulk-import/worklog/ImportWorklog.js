@@ -1,10 +1,8 @@
 import React from 'react';
 import { ScrollableTable, THead, TRow, TBody, Column, NoDataRow } from '../../../components/ScrollableTable';
-import BaseGadget from '../../../gadgets/BaseGadget';
-import Button from '../../../controls/Button';
-import Papa from "papaparse";
+import BaseImport from '../BaseImport';
 import { inject } from '../../../services/injector-service';
-import { Checkbox } from '../../../controls';
+import { Button, Checkbox } from '../../../controls';
 import "./ImportWorklog.scss";
 import { parseTimespent, exportCsv } from '../../../common/utils';
 //import { EditableGrid, THead, TBody, Column } from '../../../components/EditableGrid/EditableGrid';
@@ -21,7 +19,9 @@ const fieldComment = "comment";
 
 const fieldMapping = {
     ticketno: fieldTicketNo,
+    ticket: fieldTicketNo,
     issuekey: fieldTicketNo,
+    issue: fieldTicketNo,
     key: fieldTicketNo,
     id: fieldTicketNo,
 
@@ -45,12 +45,10 @@ const fieldMapping = {
     details: fieldComment
 };
 
-class ImportWorklog extends BaseGadget {
+class ImportWorklog extends BaseImport {
     constructor(props) {
-        super(props, "Bulk import - [Worklog]", "fa fa-import");
+        super(props, "Worklog", "fa fa-clock-o");
         inject(this, "UtilsService", "UserUtilsService", "TicketService", "QueueService", "WorklogService", "SessionService", "MessageService");
-        this.isGadget = false;
-        this.hideRefresh = true;
 
         this.maxHrsToLog = this.$session.CurrentUser.maxHours;
         const autoUpload = this.$session.CurrentUser.autoUpload || false;
@@ -62,34 +60,7 @@ class ImportWorklog extends BaseGadget {
         });
     }
 
-    fileSelected = () => {
-        const selector = this.fileSelector;
-        const file = selector.files[0];
-
-        if (file) {
-            if (!file.name.endsWith('.csv')) {
-                this.$message.warning("Unknown file selected to import. Select a valid file to import");
-                selector.value = '';
-                return;
-            }
-
-            Papa.parse(file, {
-                header: true,
-                transformHeader: (c) => fieldMapping[c.replace(/ /g, '').toLowerCase()] || null,
-                skipEmptyLines: true,
-                complete: (result) => {
-                    const { data } = result;
-
-                    if (!data || data.length <= 1) {
-                        this.$message.warning("No rows found to import", "No records exists");
-                    }
-
-                    this.processData(data);
-                }
-            });
-        }
-        selector.value = '';
-    }
+    transformHeader = (c) => fieldMapping[c.replace(/ /g, '').toLowerCase()] || null;
 
     processData(data) {
         const worklogData = data.map(w => {
@@ -298,18 +269,6 @@ class ImportWorklog extends BaseGadget {
         this.setState(({ worklogData }) => { return { worklogData: [...worklogData] }; });
     }
 
-    setFileSelector = (f) => this.fileSelector = f
-    chooseFileForImport = () => this.fileSelector.click()
-
-    formatDate(value) {
-        if (value instanceof Date) {
-            return this.$userutils.formatDateTime(value);
-        }
-        else {
-            return value;
-        }
-    }
-
     formatTimespent(value) {
         if (typeof value === "number") {
             return this.$utils.formatSecs(value);
@@ -378,17 +337,6 @@ class ImportWorklog extends BaseGadget {
                     label={autoUpload ? `Upload ${selectedCount} worklogs` : `Import ${selectedCount} worklogs`} onClick={this.importWorklogs} />
             </div>
         </div>;
-    }
-
-    renderCustomActions() {
-        return <>
-            <input ref={this.setFileSelector} type="file" className="hide" accept=".csv,.json, .xlsx" onChange={this.fileSelected} />
-            <Button icon="fa fa-upload" onClick={this.chooseFileForImport} />
-        </>;
-    }
-
-    getTicketLink(ticketNo) {
-        return <a className="link" href={this.$userutils.getTicketUrl(ticketNo)} target="_blank" rel="noopener noreferrer">{ticketNo}</a>;
     }
 
     getWorklogLink(row) {

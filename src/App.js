@@ -47,6 +47,9 @@ class App extends PureComponent {
       url = url.substring(url.indexOf("/"));
       url = `/${userId}${url}`;
       this.authenticateUser(url, true);
+    },
+    navigate: (url, userbased) => {
+      this.props.history.push(userbased ? `/${this.$session.userId}${url}` : url);
     }
   }
 

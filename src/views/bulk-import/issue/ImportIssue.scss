@@ -1,0 +1,26 @@
+.import-issue {
+    div.issue-table {
+        height: calc(100vh - 140px);
+
+        table.issue-table {
+            
+            thead {
+                tr {
+                    th:first-child { padding:2px 9px; width: 32px; min-width: auto !important; }
+                    th:nth-child(2) { padding:2px 9px; width: 32px; min-width: auto !important; }
+                    th:nth-child(3) { max-width: 220px; }
+                }
+            }
+
+            tbody {
+                td.error-row {
+                    background-color: lightpink;
+                }
+
+                td.valid-row {
+                    background-color: greenyellow;
+                }
+            }
+        }
+    }
+}

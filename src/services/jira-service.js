@@ -116,8 +116,54 @@ export default class JiraService {
             .then((issuetypes) => { this.$jaCache.session.set("issuetypes", issuetypes, 10); return issuetypes; });
     }
 
+    getProjectImportMetadata(projects) {
+        let onlyOne = false;
+        if (typeof projects === "string") {
+            projects = [projects];
+            onlyOne = true;
+        }
+
+        projects = projects.map(p => p.toUpperCase());
+
+        return new Promise((success, fail) => {
+            let result = {};
+            const projectsToPull = [];
+            projects.forEach(p => {
+                const project = this.$jaCache.session.get(`projectMetadata_${p}`);
+                if (project) {
+                    result[p] = project;
+                } else {
+                    projectsToPull.push(p);
+                }
+            });
+
+            if (projectsToPull.length === 0) {
+                success(onlyOne ? result[projects[0]] : result);
+            }
+            else {
+                return this.$ajax.get(ApiUrls.getProjectImportMetadata + projectsToPull.join(","))
+                    .then((metadata) => {
+                        result = metadata.projects.reduce((r, prj) => {
+                            r[prj.key] = prj;
+                            return r;
+                        }, {});
+
+                        success(onlyOne ? result[projects[0]] : result);
+                    }, fail);
+            }
+        });
+    }
+
+    getIssueMetadata(issuekey) {
+        return this.$ajax.get(ApiUrls.getIssueMetadata, issuekey);
+    }
+
     createIssue(issue) {
         return this.$ajax.post(ApiUrls.getIssue, { fields: issue });
+    }
+
+    bulkImportIssues(issueUpdates) {
+        return this.$ajax.post(ApiUrls.bulkImportIssue, { issueUpdates });
     }
 
     updateIssue(key, issue) {
