@@ -26,17 +26,20 @@ const getClientEnvironment = require('./env');
 const ModuleNotFoundPlugin = require('react-dev-utils/ModuleNotFoundPlugin');
 const ForkTsCheckerWebpackPlugin = require('react-dev-utils/ForkTsCheckerWebpackPlugin');
 const typescriptFormatter = require('react-dev-utils/typescriptFormatter');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 //Modified: const eslint = require('eslint');
+
+const analyzeBundles = false; // Set it to true to analyze bundles and generate report
 
 const postcssNormalize = require('postcss-normalize');
 
 const appPackageJson = require(paths.appPackageJson);
 
 // Source maps are resource heavy and can cause out of memory issue for large source files.
-const shouldUseSourceMap = false; // Modified: process.env.GENERATE_SOURCEMAP !== 'false';
+const shouldUseSourceMap = process.env.GENERATE_SOURCEMAP === 'true';
 // Some apps do not need the benefits of saving a web request, so not inlining the chunk
 // makes for a smoother build process.
-const shouldInlineRuntimeChunk = false; // Modified: process.env.INLINE_RUNTIME_CHUNK !== 'false';
+const shouldInlineRuntimeChunk = process.env.ANALYZE_BUNDLES === "true"; // Modified: process.env.INLINE_RUNTIME_CHUNK !== 'false';
 
 const imageInlineSizeLimit = parseInt(
   process.env.IMAGE_INLINE_SIZE_LIMIT || '10000'
@@ -590,6 +593,14 @@ module.exports = function (webpackEnv) {
             : undefined
         )
       ),
+
+      // Modified: Added to analyze the size of the package
+      analyzeBundles && new BundleAnalyzerPlugin({
+        analyzerMode: "static",
+        generateStatsFile: true,
+        openAnalyzer: false
+      }),
+
       // Inlines the webpack runtime script. This script is too small to warrant
       // a network request.
       isEnvProduction &&
