@@ -38,6 +38,22 @@ export default class UtilsService {
         else { return "".concat(yyyy).concat(mm).concat(dd).concat(hh).concat(min).concat(ss); }
     }
 
+    formatDateTimeForJira(datetime) {
+        if (!(datetime instanceof Date)) {
+            datetime = this.convertDate(datetime);
+        }
+
+        return `${datetime.toISOString().replace('Z', '').replace('z', '')}+0000`;
+    }
+
+    formatDateForJira(date) {
+        if (!(date instanceof Date)) {
+            date = this.convertDate(date);
+        }
+
+        return date.format("dd/MMM/yy");
+    }
+
     getRowStatus(d) {
         let classNames = "";
         if (d.status) {
@@ -259,8 +275,8 @@ export default class UtilsService {
         switch (fields) {
             case "EM": return obj.emailAddress;
             case "LG": return obj.name;
-            case "NE": return `${obj.displayName}(${obj.emailAddress})`;
-            case "NL": return `${obj.displayName}(${obj.name})`;
+            case "NE": return `${obj.displayName} (${obj.emailAddress})`;
+            case "NL": return `${obj.displayName} (${obj.name})`;
             default: return obj.displayName;
         }
     }

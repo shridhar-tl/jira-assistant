@@ -54,6 +54,10 @@
     margin: 0 !important;
 }
 
+.margin-r-5 {
+    margin-right: 5px !important;
+}
+
 .margin-r-8 {
     margin-right: 8px;
 }
@@ -133,6 +137,10 @@
     width: 16px;
 }
 
+.fs-16 {
+    font-size: 16px;
+}
+
 /* #endregion*/
 
 /* #region Form styles */
@@ -147,7 +155,9 @@
 .msg-error {
     color: red;
 }
-
+.msg-warning {
+    color: #ffc107;
+}
 /* #endregion */
 
 /* #region Badge styles*/

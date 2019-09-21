@@ -9,6 +9,7 @@ export default class JiraService {
         this.$jaCache = $jaCache;
         this.$message = $message;
         this.$session = $session;
+        this.runningRequests = {};
     }
 
     searchTickets(jql, fields, startAt) {
@@ -67,23 +68,34 @@ export default class JiraService {
         return this.$ajax.get(ApiUrls.issueWorklog, jiraKey);
     }
 
-    getCustomFields() {
-        return this.$jaCache.session.getPromise("customFields").then((value) => {
-            if (value) {
-                return value;
-            }
-            return this.$ajax.get(ApiUrls.getCustomFields)
-                .then((result) => { this.$jaCache.session.set("customFields", result, 10); return result; });
-        });
+    async getCustomFields() {
+        let result = await this.$jaCache.session.getPromise("customFields");
+
+        if (result) {
+            return result;
+        }
+
+        result = await this.$ajax.get(ApiUrls.getCustomFields);
+
+        this.$jaCache.session.set("customFields", result, 10);
+
+        return result;
+
     }
 
-    getRapidViews() {
-        const value = this.$jaCache.session.get("rapidViews");
-        if (value) {
-            return new Promise((resolve, reject) => resolve(value));
+    async getRapidViews() {
+        let result = this.$jaCache.session.getPromise("rapidViews");
+
+        if (result) {
+            return await result;
         }
-        return this.$ajax.get(ApiUrls.rapidViews)
-            .then((result) => { this.$jaCache.session.set("rapidViews", result.views, 10); return result.views; });
+
+        result = await this.$ajax.get(ApiUrls.rapidViews);
+        result = result.views;
+
+        this.$jaCache.session.set("rapidViews", result, 10);
+
+        return result;
     }
 
     getProjects() {
@@ -104,8 +116,54 @@ export default class JiraService {
             .then((issuetypes) => { this.$jaCache.session.set("issuetypes", issuetypes, 10); return issuetypes; });
     }
 
+    getProjectImportMetadata(projects) {
+        let onlyOne = false;
+        if (typeof projects === "string") {
+            projects = [projects];
+            onlyOne = true;
+        }
+
+        projects = projects.map(p => p.toUpperCase());
+
+        return new Promise((success, fail) => {
+            let result = {};
+            const projectsToPull = [];
+            projects.forEach(p => {
+                const project = this.$jaCache.session.get(`projectMetadata_${p}`);
+                if (project) {
+                    result[p] = project;
+                } else {
+                    projectsToPull.push(p);
+                }
+            });
+
+            if (projectsToPull.length === 0) {
+                success(onlyOne ? result[projects[0]] : result);
+            }
+            else {
+                return this.$ajax.get(ApiUrls.getProjectImportMetadata + projectsToPull.join(","))
+                    .then((metadata) => {
+                        result = metadata.projects.reduce((r, prj) => {
+                            r[prj.key] = prj;
+                            return r;
+                        }, {});
+
+                        success(onlyOne ? result[projects[0]] : result);
+                    }, fail);
+            }
+        });
+    }
+
+    getIssueMetadata(issuekey) {
+        return this.$ajax.get(ApiUrls.getIssueMetadata, issuekey);
+    }
+
     createIssue(issue) {
         return this.$ajax.post(ApiUrls.getIssue, { fields: issue });
+    }
+
+    bulkImportIssues(issueUpdates) {
+        return this.$ajax.post(ApiUrls.bulkImportIssue, { issueUpdates });
     }
 
     updateIssue(key, issue) {
@@ -200,7 +258,36 @@ export default class JiraService {
     }
 
     getUserDetails(username) {
-        return this.$ajax.get(ApiUrls.getUserDetails, username).then(null, this.jiraErrorHandler);
+        const keyName = `userdetail_${username}`;
+
+        return this.fetchCachedData(keyName, () => {
+            return this.$ajax.get(ApiUrls.getUserDetails, username)
+                .then((user) => { this.$jaCache.session.set(keyName, user, 10); return user; }, this.jiraErrorHandler);
+        });
+    }
+
+    async fetchCachedData(keyName, http) {
+        const value = this.getCachedData(keyName);
+        if (value) { return value; }
+
+        const runningRequest = this.runningRequests[keyName];
+
+        if (runningRequest) {
+            await runningRequest;
+            return this.getCachedData(keyName);
+        }
+
+        const request = http();
+        this.runningRequests[keyName] = request;
+        return request;
+    }
+
+    getCachedData(keyName) {
+        const value = this.$jaCache.session.get(keyName);
+
+        if (value) {
+            return Promise.resolve(value);
+        }
     }
 
     jiraErrorHandler = (e) => {

@@ -56,10 +56,6 @@ class MyBookmarks extends BaseGadget {
         showContextMenu($event, this.contextMenu);
     }
 
-    getRowStatus(d, index) {
-        return d.rowClass;
-    }
-
     selectAll = (selAllChk) => {
         let { bookmarksList } = this.state;
         bookmarksList = [...bookmarksList];
@@ -136,7 +132,7 @@ class MyBookmarks extends BaseGadget {
                 </THead>
                 <TBody>
                     {(b, i) => {
-                        return <tr key={b.ticketNo} onContextMenu={(e) => this.showContext(e, b)}>
+                        return <tr key={b.ticketNo} onContextMenu={(e) => this.showContext(e, b)} className={b.rowClass}>
                             <td className="text-center">
                                 {b.selected && <Checkbox checked={true} onChange={() => this.selectTicket(b)} />}
                                 {!b.selected && <i className="fa fa-ellipsis-v" onClick={(e) => this.showContext(e, b)}></i>}

@@ -40,10 +40,20 @@ export const navigation = [
         icon: 'fa fa-calendar'
     },
     {
-        name: 'Bulk import',
+        name: 'Import worklog',
         id: 'IMW',
         url: '/import/worklog',
-        icon: 'fa fa-table',
+        icon: 'fa fa-clock-o',
+        badge: {
+            variant: 'info',
+            text: 'BETA'
+        }
+    },
+    {
+        name: 'Import issue',
+        id: 'IMI',
+        url: '/import/issue',
+        icon: 'fa fa-ticket',
         badge: {
             variant: 'info',
             text: 'BETA'

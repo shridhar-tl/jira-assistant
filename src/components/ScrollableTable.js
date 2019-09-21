@@ -38,10 +38,12 @@ export class ScrollableTable extends PureComponent {
 
             if (sortBy) {
                 let { dataset } = this.state;
-                dataset = dataset.sortBy(sortBy, isDesc);
+                if (dataset) {
+                    dataset = dataset.sortBy(sortBy, isDesc);
 
-                this.setState({ dataset, sortBy, isDesc });
-                this.eventEmitter.emit(sortChangedEvent, sortBy, isDesc);
+                    this.setState({ dataset, sortBy, isDesc });
+                    this.eventEmitter.emit(sortChangedEvent, sortBy, isDesc);
+                }
             }
             else {
                 return this.state.sortBy;
