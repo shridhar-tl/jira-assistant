@@ -14,7 +14,7 @@ const buttonTypes = {
 
 class Button extends PureComponent {
     render() {
-        const { type, rounded, label } = this.props;
+        const { type, rounded, label, isLoading, icon, onClick, disabled, title, style } = this.props;
         let { className } = this.props;
 
         let btnClass = `rb-button ${buttonTypes[type] || ""}`;
@@ -25,7 +25,11 @@ class Button extends PureComponent {
             btnClass += " ui-button-icon-only ";
         }
         className = className || "";
-        const props = { ...this.props, className: `${btnClass} ${className}` };
+
+        const props = { label, icon, onClick, disabled, title, style, className: `${btnClass} ${className}` };
+        if (isLoading) {
+            props.icon = "fa fa-spinner fa-spin";
+        }
         return <PrimeButton {...props} />;
     }
 }

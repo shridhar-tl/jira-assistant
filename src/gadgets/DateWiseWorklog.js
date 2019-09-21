@@ -4,6 +4,7 @@ import { inject } from '../services';
 import moment from 'moment';
 import { DatePicker } from '../controls';
 import { ScrollableTable, THead, Column, TBody, NoDataRow } from '../components/ScrollableTable';
+import { showContextMenu } from '../controls/ContextMenu';
 
 class DateWiseWorklog extends BaseGadget {
     constructor(props) {
@@ -38,9 +39,9 @@ class DateWiseWorklog extends BaseGadget {
         return this.$userutils.getWorklogUrl(ticketNo, worklogId);
     }
 
-    showContext($event, b, menu) {
+    showContext(e, b) {
         this.selectedDay = b;
-        menu.toggle($event);
+        showContextMenu(e, this.contextMenu);
     }
 
     dateSelected(date) {
@@ -117,10 +118,10 @@ class DateWiseWorklog extends BaseGadget {
                                 <ul className="tags">
                                     {b.ticketList.map((ld, x) => <li key={x}>
                                         {ld.worklogId && <a className="link badge badge-pill skin-bg-font" href={this.getWorklogUrl(ld.ticketNo, ld.worklogId)}
-                                            target="_blank" rel="noopener noreferrer" title={ld.comments}>
+                                            target="_blank" rel="noopener noreferrer" title={ld.comment}>
                                             <span className="fa fa-clock-o" /> {ld.ticketNo}: {ld.uploaded}
                                         </a>}
-                                        {!ld.worklogId && <span className="link badge badge-pill skin-bg-font" onClick={() => this.editWorklog(ld.id)} title={ld.comments}>
+                                        {!ld.worklogId && <span className="link badge badge-pill skin-bg-font" onClick={() => this.editWorklog(ld.id)} title={ld.comment}>
                                             <span className="fa fa-clock-o" /> {ld.ticketNo}: {ld.uploaded}
                                         </span>}
                                     </li>)}

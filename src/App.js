@@ -70,6 +70,12 @@ class App extends PureComponent {
       userId = null;
     }
 
+    // For existing users who uses old UI have the menu saved as /dashboard
+    if (pathname.endsWith("/dashboard")) {
+      forceNavigate = true;
+      pathname += "/0";
+    }
+
     if (parts[1] === "integrate") {
       this.setState({ isLoading: false });
     } else {
