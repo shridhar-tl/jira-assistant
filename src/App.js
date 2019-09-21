@@ -43,10 +43,11 @@ class App extends PureComponent {
 
   contextProps = {
     switchUser: (userId) => {
+      debugger;
       let url = document.location.hash.substring(2);
       url = url.substring(url.indexOf("/"));
       url = `/${userId}${url}`;
-      this.authenticateUser(url);
+      this.authenticateUser(url, true);
     }
   }
 
@@ -60,7 +61,7 @@ class App extends PureComponent {
     this.authenticateUser(this.props.location.pathname);
   }
 
-  authenticateUser(pathname) {
+  authenticateUser(pathname, forceNavigate) {
     const parts = pathname.split("/");
     let userId = parseInt(parts[1]);
     if (!userId || !isNumber(userId)) {
@@ -74,6 +75,9 @@ class App extends PureComponent {
         if (result) {
           if (!pathname || pathname === "/") {
             this.props.history.push(`/${this.$session.userId}/dashboard/0`);
+          }
+          else if (forceNavigate) {
+            this.props.history.push(pathname);
           }
           else if (!userId) {
             this.props.history.push(`/${this.$session.userId}${pathname}`);
