@@ -76,6 +76,10 @@ class App extends PureComponent {
       pathname += "/0";
     }
 
+    if (pathname.startsWith("/dashboard")) {
+      forceNavigate = true;
+    }
+
     if (parts[1] === "integrate") {
       this.setState({ isLoading: false });
     } else {
@@ -85,6 +89,9 @@ class App extends PureComponent {
             this.props.history.push(`/${this.$session.userId}/dashboard/0`);
           }
           else if (forceNavigate) {
+            if (pathname.startsWith("/dashboard")) {
+              pathname = `/${this.$session.userId}${pathname}`;
+            }
             this.props.history.push(pathname);
           }
           else if (!userId) {
