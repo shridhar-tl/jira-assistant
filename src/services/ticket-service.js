@@ -387,53 +387,69 @@ export default class TicketService {
         const importableData = await this.prepareIssuesForImport(importData);
         const issuesToImport = importableData.map(i => { return { fields: i.fields }; });
 
-        const result = await this.$jira.bulkImportIssues(issuesToImport).then(result => {
-            return importData;
-        }, err => {
-            const { error: { errors, issues, errorMessages } } = err;
+        const result = await this.$jira.bulkImportIssues(issuesToImport)
+            .then(null, (err) => err.error)
+            .then(result => {
+                const { errors, issues, errorMessages } = result;
 
-            let hasIndividualStatus = false;
+                let hasIndividualStatus = false;
+                const itemsWithErrors = [];
 
-            if (errors && errors.length > 0) {
-                errors.forEach(e => {
-                    const { status, failedElementNumber, elementErrors: { errors: itemErrors, errorMessages } } = e;
+                if (errors && errors.length > 0) {
+                    errors.forEach(e => {
+                        const { status, failedElementNumber, elementErrors: { errors: itemErrors, errorMessages } } = e;
 
-                    const importItem = { ...importData[failedElementNumber] };
-                    importData[failedElementNumber] = importItem;
+                        itemsWithErrors.push(failedElementNumber);
 
-                    const { options } = importItem;
+                        const importItem = { ...importData[failedElementNumber] };
+                        importData[failedElementNumber] = importItem;
 
-                    Object.keys(itemErrors).forEach(field => {
-                        const option = this.getOptionField(options, field);
-                        option.errors.push(itemErrors[field]);
-                    });
+                        const { options } = importItem;
 
-                    if (errorMessages && errorMessages.length) {
-                        if (!importItem.statusErrors) {
-                            importItem.statusErrors = [];
+                        Object.keys(itemErrors).forEach(field => {
+                            const option = this.getOptionField(options, field);
+                            option.errors.push(itemErrors[field]);
+                        });
+
+                        if (errorMessages && errorMessages.length) {
+                            if (!importItem.statusErrors) {
+                                importItem.statusErrors = [];
+                            }
+
+                            importItem.statusErrors.addRange(errorMessages);
                         }
 
-                        importItem.statusErrors.addRange(errorMessages);
+                        importItem.hasError = true;
+                        importItem.status = "Import Error";
+                    });
+
+                    hasIndividualStatus = true;
+                }
+
+                if (issues && issues.length > 0) {
+                    let curItem = -1;
+                    for (let i = 0; i < importData.length; i++) {
+                        if (!itemsWithErrors.contains(i)) {
+                            let issue = importData[i];
+                            issue = { ...issue };
+                            curItem++;
+                            issue.raw.issuekey = issues[curItem].key;
+                            issue.status = "Imported";
+                            issue.disabled = true;
+                            issue.selected = false;
+                            importData[i] = issue;
+                        }
                     }
 
-                    importItem.hasError = true;
-                    importItem.status = "Import Error";
-                });
+                    hasIndividualStatus = true;
+                }
 
-                hasIndividualStatus = true;
-            }
-
-            if (issues && issues.length > 0) {
-
-                hasIndividualStatus = true;
-            }
-
-            if (hasIndividualStatus) {
-                return importData;
-            } else {
-                return Promise.reject(errorMessages);
-            }
-        });
+                if (hasIndividualStatus) {
+                    return importData;
+                } else {
+                    return Promise.reject(errorMessages);
+                }
+            });
 
         return result;
     }
