@@ -3,13 +3,7 @@ import BaseImport from '../BaseImport';
 import { ScrollableTable, THead, TRow, TBody, Column, NoDataRow } from '../../../components/ScrollableTable';
 import { Checkbox, Button } from '../../../controls';
 import { inject } from '../../../services/injector-service';
-import classNames from "classnames";
 import "./ImportIssue.scss";
-
-const status_WillImport = "Will Import";
-const status_Invalid = "Invalid";
-const status_Error = "Error";
-const status_Excluded = "Excluded";
 
 const fieldTicketNo = "issuekey";
 const parentKey = "parent";
@@ -269,7 +263,7 @@ class IssueField extends PureComponent {
     }
 
     render() {
-        const { field, value, option, metadata } = this.props;
+        const { option } = this.props;
         const { errors, warnings, displayValue } = option || {};
 
         return <td>{displayValue} {getFieldStatusIcon(errors, warnings)}</td>;
