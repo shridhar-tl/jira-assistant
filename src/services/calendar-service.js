@@ -47,6 +47,7 @@ export default class CalendarService {
                                 url: e.hangoutLink,
                                 entryType: 2,
                                 sourceObject: e,
+                                source: "google",
                                 editable: false,
                                 allDay: !e.start.dateTime
                             };
@@ -79,5 +80,5 @@ export default class CalendarService {
             }
         });
     }
-    
+
 }

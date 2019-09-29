@@ -22,9 +22,15 @@ export default class ContextMenu extends PureComponent {
                 this.contextMenu.hide();
                 return;
             }
+            const isContextMenu = event.type === "contextmenu";
+
+            if (!isContextMenu) {
+                contextItems = contextItems.filter(c => !c.disabled || !c.items || c.items.length === 0);
+            }
 
             this.setState({ contextItems });
-            if (event.type === "contextmenu") {
+
+            if (isContextMenu) {
                 this.menu.hide();
                 this.contextMenu.show(event);
             }

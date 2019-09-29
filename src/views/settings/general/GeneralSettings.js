@@ -206,6 +206,7 @@ class GeneralSettings extends PureComponent {
             if (!(this.settings.startOfWeek > 0)) {
                 delete this.settings.startOfWeek;
             }
+
             this.$config.saveUserSettings(this.settings).then(res => {
                 this.$cache.set("menuAction", launchSetting, false, true);
                 this.parseSettings(res);
@@ -237,7 +238,6 @@ class GeneralSettings extends PureComponent {
         console.log("launchAction", launchAction);
     }
 
-    menusChanged = (val) => this.selectedMenu = val
     dashboardChanged = (val) => {
         const launchAction = {};
         launchAction.action = 3;
@@ -254,9 +254,11 @@ class GeneralSettings extends PureComponent {
         cUser.timeFormat = sett.timeFormat;
         cUser.workingDays = sett.workingDays;
         cUser.gIntegration = sett.googleIntegration;
+        cUser.oIntegration = sett.outlookIntegration;
         cUser.maxHours = sett.maxHours;
         cUser.meetingTicket = sett.meetingTicket;
         cUser.hasGoogleCreds = sett.hasGoogleCredentials;
+        cUser.hasOutlookCreds = sett.hasOutlookCredentials;
         cUser.allowClosedTickets = sett.allowClosedTickets;
         cUser.pruneInterval = parseInt(sett.pruneInterval || 4);
         cUser.projects = sett.projects;
@@ -267,6 +269,7 @@ class GeneralSettings extends PureComponent {
         cUser.startOfWeek = parseInt(sett.startOfWeek || 0);
         this.noDonations = cUser.noDonations;
         cUser.hideDonateMenu = this.noDonations || sett.hideDonateMenu;
+
         if (cUser.hideDonateMenu) {
             $('body').addClass('no-donation');
         }
@@ -286,6 +289,7 @@ class GeneralSettings extends PureComponent {
         sett.notifyBefore = (sett.notifyBefore || 0);
         sett.checkUpdates = (sett.checkUpdates || 15);
         cUser.team = sett.teamMembers;
+
         if (sett.startOfDay) {
             const temp = sett.startOfDay.split(':');
             cUser.startOfDay = `${temp[0]}:${temp[1]}`;
@@ -297,18 +301,20 @@ class GeneralSettings extends PureComponent {
 
         this.fillMenus();
 
-        this.setState({ removedIntg: false, settings: this.settings });
+        this.setState({ removedIntg: false, removedOIntg: false, settings: this.settings });
     }
 
+    menusChanged = (val) => this.selectedMenu = val
     tabChanged = (e) => this.setState({ currentTabIndex: e.index })
     settingsChanged = (settings) => this.setState({ settings })
     intgStatusChanged = (removedIntg) => this.setState({ removedIntg })
+    outlookIntgStatusChanged = (removedOIntg) => this.setState({ removedOIntg })
 
     render() {
         const {
             settings, noDonations,
             //props: { },
-            state: { currentTabIndex, removedIntg, numericFields, stringFields, projects, rapidViews }
+            state: { currentTabIndex, removedIntg, removedOIntg, numericFields, stringFields, projects, rapidViews }
         } = this;
 
         return (<>
@@ -325,7 +331,9 @@ class GeneralSettings extends PureComponent {
                     />
                 </TabPanel >
                 <TabPanel header="Meetings" lefticon="fa-calendar">
-                    <MeetingsTab settings={settings} onChange={this.settingsChanged} removedIntg={removedIntg} intgStatusChanged={this.intgStatusChanged} />
+                    <MeetingsTab settings={settings} onChange={this.settingsChanged}
+                        removedIntg={removedIntg} intgStatusChanged={this.intgStatusChanged}
+                        removedOIntg={removedOIntg} outlookIntgStatusChanged={this.outlookIntgStatusChanged} />
                 </TabPanel >
                 <TabPanel header="Menu options" lefticon="fa-calendar">
                     <MenuOptionsTab key={settings._uniqueId} ref={(r) => this.menuActionsTab = r} settings={settings}

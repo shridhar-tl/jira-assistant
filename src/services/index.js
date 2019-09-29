@@ -11,6 +11,7 @@ import DashboardService from './dashboard-service';
 import DatabaseService from './database-service';
 import JiraService from './jira-service';
 import MessageService from './message-service';
+import OutlookCalendar from './outlook-service';
 import QueueService from './queue-service';
 import ReportService from './report-service';
 import ReportConfigService from './reportconfig-service';
@@ -38,6 +39,7 @@ export default function injectServices() {
     injectable(DatabaseService, "DatabaseService", "$db");
     injectable(JiraService, "JiraService", "$jira");
     injectable(MessageService, "MessageService", "$message");
+    injectable(OutlookCalendar, "OutlookService", "$outlook");
     injectable(QueueService, "QueueService", "$q", { isSingleton: false });
     injectable(ReportService, "ReportService", "$report");
     injectable(ReportConfigService, "ReportConfigService", "$reportConfig");

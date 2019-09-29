@@ -37,7 +37,7 @@ const launchList = [
 class MeetingsTab extends TabControlBase {
     constructor(props) {
         super(props);
-        inject(this, "CalendarService", "AnalyticsService", "MessageService", "SessionService");
+        inject(this, "CalendarService", "AnalyticsService", "MessageService", "SessionService", "OutlookService");
     }
 
     googleSignIn = () => {
@@ -47,6 +47,20 @@ class MeetingsTab extends TabControlBase {
             this.$analytics.trackEvent("Signedin to Google Calendar");
             this.$message.success("Successfully integrated with google account.");
         }, (err) => { this.$message.warning("Unable to integrate with Google Calendar!"); });
+    }
+
+    outlookSignIn = () => {
+        this.$outlook.authenticate(true).then(async result => {
+            this.setValue("hasOutlookCredentials", true);
+            this.setValue("outlookStore", result);
+            this.$session.CurrentUser.hasOutlookCreds = true;
+            this.$analytics.trackEvent("Signedin to Outlook Calendar");
+            this.$message.success("Successfully integrated with outlook account.");
+        }, (err) => {
+            console.log("Outlook integration failed with error: ");
+            console.error(err);
+            this.$message.warning("Unable to integrate with Outlook Calendar!");
+        });
     }
 
     removeIntegration = () => {
@@ -59,20 +73,61 @@ class MeetingsTab extends TabControlBase {
         this.props.intgStatusChanged(false); //removedIntg
     }
 
+    removeOutlookIntegration = () => {
+        this.setValue("hasOutlookCredentials", false);
+        this.props.outlookIntgStatusChanged(true); //removedIntg
+    }
+
+    undoOutlookSignout = () => {
+        this.setValue("hasOutlookCredentials", true);
+        this.props.outlookIntgStatusChanged(false); //removedIntg
+    }
+
     render() {
         const {
-            props: { settings, removedIntg },
+            props: { settings, removedIntg, removedOIntg },
         } = this;
 
         return (
             <div>
                 <p>
-                    This page allows you to integrate your calendar from external sources like Google. Worklog will be automatically created
+                    This page allows you to integrate your calendar from external sources like Outlook & Google. Worklog will be automatically created
                     for the events in your calendar based on your preferences
                 </p>
                 <div className="block">
-                    <h4>Google Calendar</h4>
                     <div className="ui-g ui-fluid">
+                        <div><span className="badge badge-info pull-left">BETA</span><h4>Outlook Calendar</h4></div>
+                        <div className="form-label ui-g-12 ui-md-3 ui-lg-3 ui-xl-2">
+                            <strong>Enable Outlook calendar</strong>
+                        </div>
+                        <div className="ui-g-12 ui-md-9 ui-lg-9 ui-xl-10">
+                            <div className="form-group">
+                                <Checkbox checked={settings.outlookIntegration}
+                                    onChange={(val) => this.setValue("outlookIntegration", val)} label="Allow integration" />
+                                <span className="help-block">Select this checkbox if you would wish to view meetings in your outlook calendar</span>
+                            </div>
+                        </div>
+                        <div className="form-label ui-g-12 ui-md-3 ui-lg-3 ui-xl-2">
+                            <strong>Integration Status</strong>
+                        </div>
+                        <div className="ui-g-12 ui-md-9 ui-lg-9 ui-xl-10">
+                            {!settings.hasOutlookCredentials && !removedOIntg && <div className="form-group">
+                                <label className="link" onClick={this.outlookSignIn}>Click here to sign in with your microsoft account</label>
+                                <span className="help-block">You will have to sign-in to with your microsoft account to use the calendar.</span>
+                            </div>}
+                            {settings.hasOutlookCredentials && !removedOIntg && <div className="form-group">
+                                <label>(Already integrated with an account)</label>
+                                <label className="link" onClick={this.removeOutlookIntegration}>Remove integration</label>
+                            </div>}
+                            {removedOIntg && <div className="form-group">
+                                <label>(You will be signed out from Outlook once you save your changes)</label>
+                                <label className="link" onClick={this.undoOutlookSignout}> Undo signout</label>
+                                <span className="help-block">Note: You will have to authenticate with microsoft again to use the calendar</span>
+                            </div>}
+                        </div>
+                    </div>
+                    <div className="ui-g ui-fluid">
+                        <h4>Google Calendar</h4>
                         <div className="form-label ui-g-12 ui-md-3 ui-lg-3 ui-xl-2">
                             <strong>Enable Google calendar</strong>
                         </div>
@@ -101,6 +156,9 @@ class MeetingsTab extends TabControlBase {
                                 <span className="help-block">Note: You will have to authenticate with google again to use the calendar</span>
                             </div>}
                         </div>
+                    </div>
+                    <div>
+                        <h4>General settings</h4>
                         <div className="form-label ui-g-12 ui-md-3 ui-lg-3 ui-xl-2">
                             <strong>Check for updates</strong>
                         </div>
