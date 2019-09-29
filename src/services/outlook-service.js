@@ -6,7 +6,6 @@ import { parseJwt } from "../common/utils";
 
 const client_id = "a8efd8fc-0657-490e-a622-7b2aaa4f4f46";
 const scope = "Calendars.Read profile offline_access openid"; //"User.Read"
-const redirect_uri = "http://localhost:8080";
 
 const authApiBasePath = "https://login.microsoftonline.com/common/oauth2/v2.0/";
 const authEndPoint = `${authApiBasePath}authorize`;
@@ -27,6 +26,17 @@ export default class OutlookCalendar {
         this.$analytics = $analytics;
         this.$message = $message;
         this.$cache = $cache;
+        let redirect_uri = document.location.href;
+        const tildIndex = redirect_uri.indexOf("#");
+
+        if (~tildIndex) {
+            redirect_uri = redirect_uri.substring(0, tildIndex);
+        }
+
+        const qmIndex = redirect_uri.indexOf("?");
+        if (~qmIndex) {
+            redirect_uri = redirect_uri.substring(0, qmIndex);
+        }
 
         this.oauth = new OAuthClient({
             authEndPoint,
