@@ -23,7 +23,7 @@ const viewModes = [{ value: 'dayGridMonth', label: 'Month' }, { value: 'timeGrid
 class Calendar extends BaseGadget {
     constructor(props) {
         super(props, "Calendar", "fa-calendar");
-        inject(this, "SessionService", "WorklogService", "MessageService", "AnalyticsService", "CalendarService", "UtilsService", "UserUtilsService", "ConfigService", "TicketService");
+        inject(this, "SessionService", "WorklogService", "MessageService", "AnalyticsService", "OutlookService", "CalendarService", "UtilsService", "UserUtilsService", "ConfigService", "TicketService");
 
         this.hideMenu = !props.isGadget;
         this.hideExport = true;
@@ -47,10 +47,6 @@ class Calendar extends BaseGadget {
         this.fullCalendarOpts = this.getCalendarOptions();
 
         //moment = (date) => toMoment(date, this.fc.calendar)
-    }
-
-    UNSAFE_componentWillMount() {
-        this.refreshData();
     }
 
     async setMenuItems() {
@@ -213,19 +209,23 @@ class Calendar extends BaseGadget {
 
     createWorklog($event, m, mTicket) {
         hideContextMenu();
+
         if (!m.start.dateTime) {
             return;
         }
+
         $event.stopPropagation();
         $event.preventDefault();
 
         const diff = moment.duration(moment(m.end.dateTime).diff(m.start.dateTime));
+
         const obj = {
             dateStarted: m.start.dateTime,
             timeSpent: `${diff.hours().pad(2)}:${diff.minutes().pad(2)}`,
             description: m.summary,
             parentId: m.id
         };
+
         if (mTicket) {
             obj.ticketNo = mTicket;
             this.$worklog.saveWorklog(obj).then((entry) => {
@@ -243,6 +243,7 @@ class Calendar extends BaseGadget {
         else {
             this.showWorklogPopup(obj);
         }
+
         return false;
     }
 
@@ -273,17 +274,24 @@ class Calendar extends BaseGadget {
 
         if (this.CurrentUser.gIntegration && this.CurrentUser.hasGoogleCreds && this.state.settings.showMeetings) {
             req.push(this.$calendar.getEvents(start, end).then(null, (err) => {
-                let msg = "Unable to fetch meetings!";
+                let msg = "Unable to fetch Google meetings!";
                 if (err.error && err.error.message) {
                     msg += `<br /><br />Reason:- ${err.error.message}`;
                 }
                 this.$message.warning(msg);
                 return [];
             }));
-            this.hasCalendarData = true;
         }
-        else {
-            this.hasCalendarData = false;
+
+        if (this.CurrentUser.oIntegration && this.CurrentUser.hasOutlookCreds && this.state.settings.showMeetings) {
+            req.push(this.$outlook.getEvents(start, end).then(null, (err) => {
+                let msg = "Unable to fetch Outlook meetings!";
+                if (err.error && err.error.message) {
+                    msg += `<br /><br />Reason:- ${err.error.message}`;
+                }
+                this.$message.warning(msg);
+                return [];
+            }));
         }
 
         this.setState({ isLoading: true, uploading: false });
@@ -471,55 +479,12 @@ class Calendar extends BaseGadget {
         jsEvent.stopPropagation();
         const item = event.extendedProps.sourceObject;
 
-        this.currentMeetingItem = {
-            summary: item.summary,
-            htmlLink: item.htmlLink,
-            location: item.location,
-            description: item.description,
-            descrLimit: 350,
-            creator: item.creator,
-            organizer: item.organizer
-        };
-
-        if (item.start) {
-            this.currentMeetingItem.date = this.$userutils.formatDate(item.start.dateTime);
-            this.currentMeetingItem.startTime = this.$userutils.formatTime(item.start.dateTime);
-            let remaining = moment(item.start.dateTime).diff(moment());
-            if (remaining < 0) {
-                if (item.end && item.end.dateTime && moment().diff(item.end.dateTime) < 0) {
-                    remaining = "(now ongoing)";
-                }
-                else {
-                    remaining = "";
-                }
-            }
-            else {
-                remaining = `(in ${this.$utils.formatTs(remaining)})`;
-            }
-            this.currentMeetingItem.remaining = remaining;
+        if (event.extendedProps.source === "goolge") {
+            this.currentMeetingItem = this.getGoogleEventView(item);
         }
-
-        if (item.end && item.end.dateTime) {
-            this.currentMeetingItem.endTime = this.$userutils.formatTime(item.end.dateTime);
-        }
-
-        if (item.attendees) {
-            this.currentMeetingItem.attendees = {
-                total: item.attendees.length,
-                yes: item.attendees.count(a => a.responseStatus === 'accepted'),
-                no: item.attendees.count(a => a.responseStatus === 'notAccepted'),
-                awaiting: item.attendees.count(a => a.responseStatus === 'needsAction'),
-                tentative: item.attendees.count(a => a.responseStatus === 'tentative'),
-                list: item.attendees
-            };
-        }
-
-        if (item.hangoutLink) {
-            let name = item.hangoutLink;
-            if (name.lastIndexOf('/') > 0) {
-                name = name.substring(name.lastIndexOf('/') + 1);
-            }
-            this.currentMeetingItem.videoCall = { url: item.hangoutLink, name: name };
+        else if (event.extendedProps.source === "outlook") {
+            this.currentMeetingItem = this.getOutlookEventView(item);
+            return;
         }
 
         if (this.$session.isQuickView) {
@@ -534,6 +499,120 @@ class Calendar extends BaseGadget {
 
         this.opEvent.show(jsEvent);
         this.setState({ showOpEvent: true });
+    }
+
+    getGoogleEventView(item) {
+        const currentMeetingItem = {
+            summary: item.summary,
+            htmlLink: item.htmlLink,
+            location: item.location,
+            description: item.description,
+            descrLimit: 350,
+            creator: item.creator,
+            organizer: item.organizer
+        };
+
+        if (item.start) {
+            currentMeetingItem.date = this.$userutils.formatDate(item.start.dateTime);
+            currentMeetingItem.startTime = this.$userutils.formatTime(item.start.dateTime);
+            let remaining = moment(item.start.dateTime).diff(moment());
+            if (remaining < 0) {
+                if (item.end && item.end.dateTime && moment().diff(item.end.dateTime) < 0) {
+                    remaining = "(now ongoing)";
+                }
+                else {
+                    remaining = "";
+                }
+            }
+            else {
+                remaining = `(in ${this.$utils.formatTs(remaining)})`;
+            }
+            currentMeetingItem.remaining = remaining;
+        }
+
+        if (item.end && item.end.dateTime) {
+            currentMeetingItem.endTime = this.$userutils.formatTime(item.end.dateTime);
+        }
+
+        if (item.attendees) {
+            currentMeetingItem.attendees = {
+                total: item.attendees.length,
+                yes: item.attendees.count(a => a.responseStatus === 'accepted'),
+                no: item.attendees.count(a => a.responseStatus === 'notAccepted'),
+                awaiting: item.attendees.count(a => a.responseStatus === 'needsAction'),
+                tentative: item.attendees.count(a => a.responseStatus === 'tentative'),
+                list: item.attendees
+            };
+        }
+
+        if (item.hangoutLink) {
+            let name = item.hangoutLink;
+            if (name.lastIndexOf('/') > 0) {
+                name = name.substring(name.lastIndexOf('/') + 1);
+            }
+            currentMeetingItem.videoCall = { url: item.hangoutLink, name: name };
+        }
+
+        return currentMeetingItem;
+    }
+
+    getOutlookEventView(item) {
+        const currentMeetingItem = {
+            summary: item.subject,
+            htmlLink: item.webLink,//Verify
+            location: (item.location || {}).displayName,
+            description: item.bodyPreview,
+            descrLimit: 350,
+            creator: item.creator,
+            organizer: ((item.organizer || {}).emailAddress || {}).name
+        };
+
+        if (item.start) {
+            currentMeetingItem.date = this.$userutils.formatDate(item.start.dateTime);
+            currentMeetingItem.startTime = this.$userutils.formatTime(item.start.dateTime);
+            let remaining = moment(item.start.dateTime).diff(moment());
+            if (remaining < 0) {
+                if (item.end && item.end.dateTime && moment().diff(item.end.dateTime) < 0) {
+                    remaining = "(now ongoing)";
+                }
+                else {
+                    remaining = "";
+                }
+            }
+            else {
+                remaining = `(in ${this.$utils.formatTs(remaining)})`;
+            }
+            currentMeetingItem.remaining = remaining;
+        }
+
+        if (item.end && item.end.dateTime) {
+            currentMeetingItem.endTime = this.$userutils.formatTime(item.end.dateTime);
+        }
+
+        if (item.attendees) {
+            currentMeetingItem.attendees = {
+                total: item.attendees.length,
+                yes: item.attendees.count(a => (a.status || {}).response === 'accepted'),
+                no: item.attendees.count(a => (a.status || {}).response === 'notAccepted'),
+                awaiting: item.attendees.count(a => (a.status || {}).response === 'needsAction'),
+                tentative: item.attendees.count(a => (a.status || {}).response === 'tentative'),
+                list: item.attendees.map(a => {
+                    const { emailAddress: { address: email, name: displayName } } = a;
+
+                    return { email, displayName };
+                })
+            };
+        }
+
+        if (item.onlineMeetingUrl) {
+            let name = item.onlineMeetingUrl;
+            if (name.lastIndexOf('/') > 0) {
+                name = name.substring(name.lastIndexOf('/') + 1);
+            }
+            currentMeetingItem.videoCall = { url: item.onlineMeetingUrl, name: name };
+        }
+
+        return currentMeetingItem;
     }
 
     hideOPEvent = () => this.setState({ showOpEvent: false })
@@ -654,27 +733,32 @@ class Calendar extends BaseGadget {
             let icon = null;
             const m = srcObj;
             const hasWorklog = this.latestData.some((e) => { return e.parentId === event.id && e.entryType === 1; });
+
+            const contextMenuEvent = (e) => {
+                //hideContextMenu();
+                e.stopPropagation();
+                e.preventDefault();
+
+                e.currentTarget = icon.get(0);
+                this.currentMeetingItem = m;
+
+                this.currentMeetingViewItem = timeItem.find('i.fa').get(0);
+                this.mnuCal_AddWL.disabled = hasWorklog;
+                this.mnuCal_OpenUrl.disabled = !m.hangoutLink;
+                showContextMenu(e, this.calMenuItems);
+            };
+
             if (!hasWorklog) {
                 icon = $('<i class="fa fa-clock-o pull-left" title="Create worklog for this meeting"></i>')
                     .on('click', (e) => { e.stopPropagation(); this.createWorklog(e, m, this.defaultMeetingTicket); });
             }
             else {
                 icon = $('<i class="fa fa-ellipsis-v pull-left" title="Show options"></i>')
-                    .on('click', (e) => { e.stopPropagation(); element.trigger('contextmenu'); });
+                    .on('click', contextMenuEvent);
             }
             const timeItem = element.find(".fc-time");
             timeItem.prepend(icon);
-            element.bind('contextmenu', (e) => {
-                e.stopPropagation();
-                e.preventDefault();
-                e.currentTarget = icon.get(0);
-                this.currentMeetingItem = m;
-                hideContextMenu();
-                this.currentMeetingViewItem = timeItem.find('i.fa').get(0);
-                this.mnuCal_AddWL.disabled = hasWorklog;
-                this.mnuCal_OpenUrl.disabled = !m.hangoutLink;
-                showContextMenu(e, this.calMenuItems);
-            });
+            element.bind('contextmenu', contextMenuEvent);
         }
     }
 

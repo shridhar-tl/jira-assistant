@@ -76,7 +76,11 @@ Date.prototype.addDays = function (days) {
     return dat;
 };
 
-String.prototype.format = function (args) {
+String.prototype.format = function (...args) {
+    if (args && args.length === 1 && Array.isArray(args[0])) {
+        args = args[0];
+    }
+
     if (args && !Array.isArray(args)) { args = [args]; }
     let str = this;
     for (let i = 0; i < args.length; i++) {

@@ -34,7 +34,7 @@ class MeetingDetails extends PureComponent {
                 {currentMeetingItem.videoCall && <div className="detail">
                     <div className="title"><i className="fa fa-video-camera" /></div>
                     <div className="info">
-                        <a href={currentMeetingItem.videoCall.url} target="_blank" rel="noopener noreferrer">Join Hangouts: {currentMeetingItem.videoCall.name}</a>
+                        <a href={currentMeetingItem.videoCall.url} target="_blank" rel="noopener noreferrer">Join meeting: {currentMeetingItem.videoCall.name}</a>
                     </div>
                 </div>}
                 {currentMeetingItem.attendees && <div className="detail pointer">

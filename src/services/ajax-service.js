@@ -1,4 +1,5 @@
 import $ from 'jquery';
+import { prepareUrlWithQueryString } from '../common/utils';
 
 export default class AjaxService {
     static dependencies = ["SessionService", "MessageService"];
@@ -30,15 +31,22 @@ export default class AjaxService {
         if (!this._basePath.endsWith('/')) {
             this._basePath += '/';
         }
+
         let urlStr = url.toString();
-        if (params && params.length > 0) {
+        if (params && Array.isArray(params) && params.length > 0) {
             urlStr = urlStr.format(params);
         }
+        else if (params && typeof params === "object") {
+            urlStr = prepareUrlWithQueryString(urlStr, params);
+        }
+
         if (urlStr.startsWith('~/')) {
             return this._basePath + urlStr.substring(2);
         }
+
         return urlStr;
     }
+
     handler(req) {
         return req.then(null, (e) => {
             if (e.status === 0) {
@@ -49,18 +57,20 @@ export default class AjaxService {
         });
     }
 
-    request(method, url, body, headers) {
-        return this.handler(this.execute(method, this.prepareUrl(url, []), body, headers));
+    request(method, url, params, headers) {
+        return this.handler(this.execute(method, this.prepareUrl(url, params), params, headers));
     }
 
-    async execute(method, url, params) {
+    async execute(method, url, params, customHeaders) {
         let body = params;
+
         if ((method || "GET").toUpperCase() === "GET") {
             body = undefined;
         }
         else {
             params = undefined;
         }
+
         return new Promise((resolve, reject) => {
             $.ajax({
                 type: method,
@@ -74,7 +84,9 @@ export default class AjaxService {
                 },
                 beforeSend: (request) => {
                     const { headers } = this.httpOptions;
-                    Object.keys(headers).forEach(h => request.setRequestHeader(h, headers[h]));
+                    const allHeaders = { ...headers, ...customHeaders };
+
+                    Object.keys(allHeaders).forEach(h => request.setRequestHeader(h, allHeaders[h]));
                 }
             });
         });

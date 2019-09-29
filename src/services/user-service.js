@@ -76,7 +76,9 @@ export default class UserService {
             settings: settings,
             autoUpload: currentUser.autoUpload,
             gIntegration: currentUser.googleIntegration,
+            oIntegration: currentUser.outlookIntegration,
             hasGoogleCreds: !!currentUser.dataStore,
+            hasOutlookCreds: !!currentUser.outlookStore,
             feedbackUrl: `${feedbackUrl}&embedded=true`,
             dashboards: currentUser.dashboards || [
                 {

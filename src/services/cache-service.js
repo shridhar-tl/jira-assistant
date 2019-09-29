@@ -125,7 +125,7 @@ export default class CacheService {
             data = this.parse(data);
             if (data.expires) {
                 const exp = moment(data.expires);
-                if (exp.diff(moment()) > 0) {
+                if (exp.isBefore(new Date())) {
                     data.value = null;
                 }
             }
