@@ -235,7 +235,6 @@ class GeneralSettings extends PureComponent {
 
         this.selectedLaunchPage = val;
         this.setValue("launchAction", launchAction);
-        console.log("launchAction", launchAction);
     }
 
     dashboardChanged = (val) => {
