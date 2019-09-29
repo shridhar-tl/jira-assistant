@@ -196,6 +196,18 @@ export default class AppBrowserService {
             }).then((tokken) => { return this.extractAccessToken(tokken); });
         }
     }
+    getRedirectUrl(endpoint) {
+        if (this.isChrome) {
+            return this.chrome.identity.getRedirectURL(endpoint);
+        }
+    }
+
+    launchWebAuthFlow(options) {
+        return new Promise((resolve) => {
+            this.chrome.identity.launchWebAuthFlow(options, resolve);
+        });
+    }
+
     removeAuthTokken(authToken) {
         if (this.isChrome) {
             this.chrome.identity.removeCachedAuthToken({ 'token': authToken }, () => { /* Nothing to implement */ });
