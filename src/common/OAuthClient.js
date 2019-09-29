@@ -6,11 +6,11 @@ import { prepareUrlWithQueryString } from "./utils";
 class OAuthClient {
     constructor(settings) {
         this.settings = settings;
-        inject(this, "AjaxService");
+        inject(this, "AjaxService", "AppBrowserService");
     }
 
     authenticate(params) {
-        return new Promise((resolve) => {
+        return new Promise(async (resolve) => {
             const { client_id, redirect_uri, scope } = this.settings;
 
             const authParams = {
@@ -22,12 +22,18 @@ class OAuthClient {
 
             const url = prepareUrlWithQueryString(this.settings.authEndPoint, authParams);
 
-            window["oAuthHandler"] = (result) => {
-                window["oAuthHandler"] = null;
+            if (process.env.NODE_ENV === "production") {
+                let result = await this.$jaBrowserExtn.launchWebAuthFlow({ interactive: true, url });
+                result = new URL(result).hash;
                 resolve(this.parseQueryString(result.clearStart("#")));
-            };
+            } else {
+                window["oAuthHandler"] = (result) => {
+                    window["oAuthHandler"] = null;
+                    resolve(this.parseQueryString(result.clearStart("#")));
+                };
 
-            window.open(url, "oAuthHandler", "height=610,width=500");
+                window.open(url, "oAuthHandler", "height=610,width=500");
+            }
         });
     }
 

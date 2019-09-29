@@ -19,23 +19,31 @@ const calendarUrl = `${apiBasePath}/calendar/calendarView?startDateTime={0}&endD
 //const groupEventsListUrl = `${apiBasePath}/calendarGroup/calendars/{0}/events`;
 
 export default class OutlookCalendar {
-    static dependencies = ["AjaxService", "AnalyticsService", "MessageService", "CacheService"];
+    static dependencies = ["AjaxService", "AnalyticsService", "MessageService", "CacheService", "AppBrowserService"];
 
-    constructor($ajax, $analytics, $message, $cache) {
+    constructor($ajax, $analytics, $message, $cache, $jaBrowserExtn) {
         this.$ajax = $ajax;
         this.$analytics = $analytics;
         this.$message = $message;
         this.$cache = $cache;
-        let redirect_uri = document.location.href;
-        const tildIndex = redirect_uri.indexOf("#");
+        this.$jaBrowserExtn = $jaBrowserExtn;
 
-        if (~tildIndex) {
-            redirect_uri = redirect_uri.substring(0, tildIndex);
+        let redirect_uri = null;
+        if (process.env.NODE_ENV === "production") {
+            redirect_uri = this.$jaBrowserExtn.getRedirectUrl('outlook-auth');
         }
+        else {
+            redirect_uri = document.location.href;
+            const tildIndex = redirect_uri.indexOf("#");
 
-        const qmIndex = redirect_uri.indexOf("?");
-        if (~qmIndex) {
-            redirect_uri = redirect_uri.substring(0, qmIndex);
+            if (~tildIndex) {
+                redirect_uri = redirect_uri.substring(0, tildIndex);
+            }
+
+            const qmIndex = redirect_uri.indexOf("?");
+            if (~qmIndex) {
+                redirect_uri = redirect_uri.substring(0, qmIndex);
+            }
         }
 
         this.oauth = new OAuthClient({
