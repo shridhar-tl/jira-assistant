@@ -36,7 +36,7 @@ class SelectBox extends PureComponent {
 
         if (value !== subValue) {
             subValue = value;
-            if (value && valueField) {
+            if ((value || (!multiselect && value === "")) && valueField) {
                 if (multiselect) {
                     value = dataset.filter(d => value.indexOf(d[valueField]) >= 0);
                 }

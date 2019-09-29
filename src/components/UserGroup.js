@@ -1,4 +1,4 @@
-import React, { PureComponent, Fragment } from 'react';
+import React, { PureComponent } from 'react';
 import { TextBox, Button, AutoComplete, SelectBox } from '../controls';
 import { ScrollableTable, TBody, THead, NoDataRow } from './ScrollableTable';
 import moment from 'moment';
@@ -103,7 +103,7 @@ class GroupRow extends PureComponent {
         super(props);
         inject(this, "JiraService");
         const { group: { users = [], timeZone } } = props;
-        this.state = { selectedUsers: [], users, timeZone };
+        this.state = { selectedUsers: [], users, timeZone: timeZone || "" };
     }
 
     usersSelected = (users) => this.setState({ selectedUsers: users, users: this.props.group.users })
@@ -163,7 +163,7 @@ class GroupRow extends PureComponent {
             state: { selectedUsers, users, timeZone }
         } = this;
 
-        return <Fragment>
+        return <>
             <tr>
                 <td>
                     <GroupNameComponent group={group} hasGroupWithName={hasGroupWithName} />
@@ -177,15 +177,15 @@ class GroupRow extends PureComponent {
                     <Button type="success" icon="fa fa-user-plus" onClick={() => this.addUsersToGroup(group)} />
                 </td>
                 <td>
-                    <SelectBox dataset={groupTimezones} value={timeZone || ''} onChange={setTimezone} className="width-perc-100"
-                        filter="true" appendto="body" /></td>
+                    <SelectBox dataset={groupTimezones} displayField="label" valueField="value" value={timeZone || ''}
+                        onChange={setTimezone} className="width-perc-100" filter={true} /></td>
                 <td><Button type="danger" icon="fa fa-trash" label="Delete group" onClick={onRemove} /></td>
             </tr>
 
             {(!users || users.length === 0) && <tr><td colSpan={5}>No users were available under this group</td></tr >}
 
             {users && users.map((user, i) => <UserRow key={user.name} user={user} index={i} userTimezones={userTimezones} onRemove={this.removeUser} />)}
-        </Fragment>;
+        </>;
     }
 }
 
@@ -193,7 +193,7 @@ class UserRow extends PureComponent {
     constructor(props) {
         super(props);
         const { user: { timeZone } } = props;
-        this.state = { timeZone };
+        this.state = { timeZone: timeZone || "" };
     }
 
     timeZoneChanged = (timeZone) => {
@@ -221,8 +221,8 @@ class UserRow extends PureComponent {
             </td>
             <td>{user.emailAddress}</td>
             <td>{user.name}</td>
-            <td><SelectBox dataset={userTimezones} value={user.timeZone} onChange={timeZoneChanged}
-                className="width-perc-100" filter="true" appendto="body" /></td>
+            <td><SelectBox dataset={userTimezones} value={user.timeZone} displayField="label" valueField="value"
+                onChange={timeZoneChanged} className="width-perc-100" filter={true} /></td>
             <td><Button type="danger" icon="fa fa-times" onClick={onRemove} style={{ marginTop: 0 }} /></td>
         </tr>
         );
