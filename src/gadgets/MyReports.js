@@ -5,8 +5,11 @@ import BaseGadget from './BaseGadget';
 import { Button, TextBox, Checkbox } from '../controls';
 import BaseDialog from "../dialogs/BaseDialog";
 import Dialog from '../dialogs';
+import { AppContext } from "../App";
 
 class MyReports extends BaseGadget {
+    static contextType = AppContext;
+
     constructor(props) {
         super(props, 'My Reports', 'fa-filter');
         inject(this, "ReportService", "MessageService", "UserUtils");
@@ -112,7 +115,7 @@ class MyReports extends BaseGadget {
     }
 
     editReport = (rpt) => {
-        this.router.navigateByUrl(`/reports/${rpt.advanced ? "advanced" : "customgrouped"}/${rpt.id}`);
+        this.context.navigate(`/reports/${rpt.advanced ? "advanced" : "customgrouped"}/${rpt.id}`, true);
     }
 
     selectRowItem(item) {

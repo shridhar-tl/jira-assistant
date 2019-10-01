@@ -54,6 +54,7 @@ class ReportBuilder extends BaseGadget {
         }
 
         const processedData = this.$reportConfig.processSearchData(data);
+
         this.resolveJQLEvent.schema.resolve(query);
         this.resolveJQLEvent.data.resolve(processedData);
         this.resolveJQLEvent = null;
