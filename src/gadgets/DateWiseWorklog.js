@@ -5,6 +5,7 @@ import moment from 'moment';
 import { DatePicker } from '../controls';
 import { ScrollableTable, THead, Column, TBody, NoDataRow } from '../components/ScrollableTable';
 import { showContextMenu } from '../controls/ContextMenu';
+import { getQuickDateValue } from '../controls/DatePicker';
 
 class DateWiseWorklog extends BaseGadget {
     constructor(props) {
@@ -22,7 +23,17 @@ class DateWiseWorklog extends BaseGadget {
 
     refreshData = () => {
         const selDate = this.settings.dateRange;
-        if (!selDate || !selDate.fromDate) {
+        if (!selDate) {
+            return;
+        }
+
+        const [fromDate, toDate] = getQuickDateValue(selDate.quickDate) || [];
+        if (fromDate) {
+            selDate.fromDate = fromDate;
+            selDate.toDate = toDate;
+        }
+
+        if (!selDate.fromDate) {
             return;
         }
 
