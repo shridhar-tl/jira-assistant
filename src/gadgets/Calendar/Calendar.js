@@ -823,6 +823,11 @@ class Calendar extends BaseGadget {
     saveSettings = (settings, noRefresh) => {
         if (this.isGadget) {
             super.saveSettings();
+
+            if (noRefresh !== true) {
+                this.refreshData();
+            }
+
             return;
         }
 

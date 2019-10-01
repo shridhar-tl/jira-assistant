@@ -7,25 +7,35 @@ import Button from './Button';
 
 const labelText = ['This month', 'Last one month', 'Last month', 'This week', 'Last one week', 'Last week'];
 
+export function getRange() {
+    return {
+        'This month': [moment().startOf('month').toDate(), moment().endOf('month').toDate()],
+        'Last one month': [moment().subtract(1, 'months').toDate(), moment().toDate()],
+        'Last month': [moment().subtract(1, 'months').startOf('month').toDate(), moment().subtract(1, 'months').endOf('month').toDate()],
+        'This week': [moment().startOf('week').toDate(), moment().endOf('week').toDate()],
+        'Last one week': [moment().subtract(6, 'days').toDate(), moment().toDate()],
+        'Last week': [moment().subtract(1, 'weeks').startOf('week').toDate(), moment().subtract(1, 'weeks').endOf('week').toDate()]
+    };
+}
+
+export function getQuickDateValue(quickDate, asMoment) {
+    if (quickDate === 0 || quickDate > 0) {
+        const dateRange = getRange();
+        const key = labelText[quickDate];
+        const value = key ? dateRange[key] || [] : [];
+        return asMoment ? value.map(d => moment(d)) : value;
+    }
+}
+
 class DatePicker extends PureComponent {
     constructor(props) {
         super(props);
         const { value, range, showTime } = props;
-        this.dateRange = this.getRange();
+        this.dateRange = getRange();
         this.displayFormat = props.dateFormat || `DD-MMM-YYYY${showTime ? " hh:mm" : ""}`;
         this.state = this.getDateValue(value, range);
     }
 
-    getRange() {
-        return {
-            'This month': [moment().startOf('month').toDate(), moment().endOf('month').toDate()],
-            'Last one month': [moment().subtract(1, 'months').toDate(), moment().toDate()],
-            'Last month': [moment().subtract(1, 'months').startOf('month').toDate(), moment().subtract(1, 'months').endOf('month').toDate()],
-            'This week': [moment().startOf('week').toDate(), moment().endOf('week').toDate()],
-            'Last one week': [moment().subtract(6, 'days').toDate(), moment().toDate()],
-            'Last week': [moment().subtract(1, 'weeks').startOf('week').toDate(), moment().subtract(1, 'weeks').endOf('week').toDate()]
-        };
-    }
 
     UNSAFE_componentWillReceiveProps(newProps) {
         const { value, range } = newProps;
@@ -67,10 +77,17 @@ class DatePicker extends PureComponent {
 
         if (value) {
             if (range) {
-                value = typeof value === "object" && value.fromDate ? [moment(value.fromDate), moment(value.toDate) || null] : [];
-                newState.value = value;
-                if (value[0] && value[1]) {
-                    newState.displayDate = `${value[0].format(this.displayFormat)} - ${value[1].format(this.displayFormat)}`;
+                if (typeof value === "object") {
+                    if (value.quickDate >= 0) {
+                        value = getQuickDateValue(value.quickDate, true);
+                    } else {
+                        value = typeof value === "object" && value.fromDate ? [moment(value.fromDate), moment(value.toDate) || null] : [];
+                    }
+
+                    newState.value = value;
+                    if (value[0] && value[1]) {
+                        newState.displayDate = `${value[0].format(this.displayFormat)} - ${value[1].format(this.displayFormat)}`;
+                    }
                 }
             }
             else {
