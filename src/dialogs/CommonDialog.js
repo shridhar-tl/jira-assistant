@@ -24,7 +24,7 @@ class CommonDialog extends BaseDialog {
     render() {
         const { body } = this;
 
-        return super.renderBase(<div className="pad-22">{body}</div>);
+        return super.renderBase(<div className="pad-22" dangerouslySetInnerHTML={{ __html: body }}></div>);
     }
 }
 
@@ -36,6 +36,9 @@ class DialogConfig {
     }
 
     custom(message, title, footer) {
+        if (message) {
+            message = message.replace(/\n/g, "<br />");
+        }
         const then = ((confirm, cancel) => {
             if (typeof footer === "function") {
                 footer = footer(

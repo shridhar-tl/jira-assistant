@@ -13,6 +13,7 @@ import YoutubeVideo from '../../dialogs/YoutubeVideo';
 import SkinPicker from './SkinPicker';
 import SwitchAccountMenu from './SwitchAccountMenu';
 import { getHostFromUrl } from '../../common/utils';
+import Dialog from '../../dialogs';
 
 const propTypes = {
   children: PropTypes.node,
@@ -62,6 +63,15 @@ class DefaultHeader extends PureComponent {
     window.location.href = "/index.html";
   }
 
+  switchToOldVersion = () => {
+    Dialog.yesNo("Are you sure to switch back to old version of Jira Assistant?"
+      + "\n\n"
+      + "Note: Soon the old version will be removed. So if you face any issue with new version, we suggest you to report it immediately",
+      "Confirm Switchback to old version").then(() => {
+        document.location.href = "/old/index.html";
+      });
+  }
+
   render() {
     const {
       ratingUrl, gMailShare, gPlusShare, linkedInShare, fackbookShare, twitterShare,
@@ -93,7 +103,7 @@ class DefaultHeader extends PureComponent {
             </UncontrolledDropdown>
           </Nav>
           <NavItem className="d-md-down-none">
-            <a className="btn btn-warning" href="/old/index.html">Switch back to old version</a>
+            <span className="btn btn-warning pointer" onClick={this.switchToOldVersion}>Switch back to old version</span>
           </NavItem>
           <NavItem className="d-md-down-none">
             <span className="nav-link" onClick={this.showYoutubeHelp}><i className="fa fa-youtube-play"></i></span>
