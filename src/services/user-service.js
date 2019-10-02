@@ -79,6 +79,7 @@ export default class UserService {
             oIntegration: currentUser.outlookIntegration,
             hasGoogleCreds: !!currentUser.dataStore,
             hasOutlookCreds: !!currentUser.outlookStore,
+            outlookStore: currentUser.outlookStore,
             feedbackUrl: `${feedbackUrl}&embedded=true`,
             dashboards: currentUser.dashboards || [
                 {

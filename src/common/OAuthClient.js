@@ -47,10 +47,21 @@ class OAuthClient {
             scope,
         };
 
-        const url = this.settings.tokenEndPoint.clearEnd("?");
+        let url = this.settings.tokenEndPoint;
 
-        const result = await this.$ajax.request(useGetRequest ? "GET" : "POST", url, data);
-        console.log("Result from token request for outlook", result);
+        let result = null;
+        if (useGetRequest) {
+            url = prepareUrlWithQueryString(url, data);
+            result = await this.$jaBrowserExtn.launchWebAuthFlow({ interactive: false, url });
+        }
+        else {
+            result = await this.$ajax.request(useGetRequest ? "GET" : "POST", url, data);
+        }
+
+        console.log("Client:getToken:Access Token response: ", result);
+
+        result = new URL(result).hash;
+        result = this.parseQueryString(result.clearStart("#"));
         return result;
     }
 

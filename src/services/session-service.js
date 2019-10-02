@@ -17,7 +17,7 @@ export default class SessionService {
         }
         return userId;
     }
-
+    /*
     canActivate() {
         console.log('Checking if the user is authenticated');
         if (!this.authenticated) {
@@ -30,5 +30,5 @@ export default class SessionService {
     canActivateChild() {
         console.log('Checking if the user is authenticated - Child modules');
         return this.authenticated;
-    }
+    }*/
 }
