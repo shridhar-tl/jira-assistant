@@ -19,14 +19,15 @@ const calendarUrl = `${apiBasePath}/calendar/calendarView?startDateTime={0}&endD
 //const groupEventsListUrl = `${apiBasePath}/calendarGroup/calendars/{0}/events`;
 
 export default class OutlookCalendar {
-    static dependencies = ["AjaxService", "AnalyticsService", "MessageService", "CacheService", "AppBrowserService"];
+    static dependencies = ["AjaxService", "AnalyticsService", "MessageService", "CacheService", "AppBrowserService", "SessionService"];
 
-    constructor($ajax, $analytics, $message, $cache, $jaBrowserExtn) {
+    constructor($ajax, $analytics, $message, $cache, $jaBrowserExtn, $session) {
         this.$ajax = $ajax;
         this.$analytics = $analytics;
         this.$message = $message;
         this.$cache = $cache;
         this.$jaBrowserExtn = $jaBrowserExtn;
+        this.$session = $session;
 
         let redirect_uri = null;
         if (process.env.NODE_ENV === "production") {
@@ -68,7 +69,22 @@ export default class OutlookCalendar {
 
         const result = await this.oauth.authenticate(addlParam);
 
-        const { token_type, access_token, expires_in, id_token } = result || {};
+        const { access_token, id_token } = result || {};
+
+        if (access_token && this.setAuthToken(result)) {
+            const outlookInfo = parseJwt(id_token);
+            console.log("Outlook: ID Token Value: ", outlookInfo);
+            const { name, preferred_username, tid, oid } = outlookInfo || {};
+
+            return { name, preferred_username, tid, oid, access_token };
+        }
+        else {
+            return Promise.reject(result);
+        }
+    }
+
+    setAuthToken(result) {
+        const { token_type, access_token, expires_in } = result || {};
 
         if (access_token) {
             if (token_type === "bearer") {
@@ -77,15 +93,9 @@ export default class OutlookCalendar {
 
             this.tokenExpiresAt = moment().add(expires_in - 10, "seconds");
 
-            const outlookInfo = parseJwt(id_token);
-            const { name, preferred_username, tid, oid } = outlookInfo || {};
-
             this.$cache.set("olbt", access_token, this.tokenExpiresAt);
 
-            return { name, preferred_username, tid, oid, access_token };
-        }
-        else {
-            return Promise.reject(result);
+            return access_token;
         }
     }
 
@@ -100,9 +110,23 @@ export default class OutlookCalendar {
         this.bearerToken = null;
         this.tokenExpiresAt = null;
 
-        const addlParam = this.getAddlProps('token');
+        const addlParam = { ...this.getAddlProps('token'), prompt: "none", ...this.getOptionalHints() };
 
-        return await this.oauth.getToken(addlParam, true);
+        const result = await this.oauth.getToken(addlParam, true);
+        console.log("getToken:Access Token response: ", result);
+        return this.setAuthToken(result);
+    }
+
+    getOptionalHints() {
+        const { preferred_username, tid } = this.$session.CurrentUser.outlookStore || {};
+
+        const result = { login_hint: preferred_username || "" };
+
+        if (tid) {
+            result.domain_hint = tid === "9188040d-6c67-4c5b-b112-36a304b66dad" ? "consumers" : "organizations";
+        }
+
+        return result;
     }
 
     async getEvents(startDate, endDate, options) {
