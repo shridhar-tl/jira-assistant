@@ -146,7 +146,7 @@ class ReportBuilder extends BaseGadget {
         if (!queryList || !queryList.length) { return null; }
 
         return <>
-            <SelectBox dataset={queryList} value={selQueryId} placeholder="Select a query to edit" onChange={this.queryChanged} />
+            <SelectBox dataset={queryList} value={selQueryId} valueField="value" placeholder="Select a query to edit" onChange={this.queryChanged} />
             <Button icon="fa fa-plus" onClick={this.initModel} label="New query" />
         </>;
     }
