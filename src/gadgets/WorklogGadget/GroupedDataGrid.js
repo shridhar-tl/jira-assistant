@@ -54,9 +54,27 @@ class GroupedDataGrid extends PureComponent {
                 else if (timezoneSetting === 3) {
                     curTimeZone = usr.timeZone || grp.timeZone;
                 }
+
+                if (curTimeZone && typeof curTimeZone === "object") { // ToDo: Temp code to solve timezone issue. Need to remove after some time.
+                    if (typeof curTimeZone.value === "string") {
+                        curTimeZone = curTimeZone.value;
+                    } else {
+                        curTimeZone = "";
+                    }
+                }
+
                 if (curTimeZone === "GRP_TZ") {
                     curTimeZone = grp.timeZone;
                 }
+
+                if (curTimeZone && typeof curTimeZone === "object") { // ToDo: Temp code to solve timezone issue. Need to remove after some time.
+                    if (typeof curTimeZone.value === "string") {
+                        curTimeZone = curTimeZone.value;
+                    } else {
+                        curTimeZone = "";
+                    }
+                }
+
                 const usrInfo = {
                     name: usr.name,
                     displayName: usr.displayName,
