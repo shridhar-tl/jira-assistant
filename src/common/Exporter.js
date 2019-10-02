@@ -245,7 +245,8 @@ export default class Exporter {
 
 export const ExportFormat = {
     XLSX: "XLSX",
-    CSV: "CSV"
+    CSV: "CSV",
+    PDF: "PDF",
 };
 
 export function saveAs(blob, fileName) {

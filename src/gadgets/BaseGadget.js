@@ -38,7 +38,8 @@ export class BaseGadget extends PureComponent {
         const exportOpts = this.hideExport ? [] : [
             { separator: true },
             { label: "Export to CSV", icon: "fa fa-file-text-o", disabled: !this.exportData, command: () => this.exportData(ExportFormat.CSV) },
-            { label: "Export to Excel", icon: "fa fa-file-excel-o", disabled: !this.exportData, command: () => this.exportData(ExportFormat.XLSX) }
+            { label: "Export to Excel", icon: "fa fa-file-excel-o", disabled: !this.exportData, command: () => this.exportData(ExportFormat.XLSX) },
+            { label: "Export to PDF", icon: "fa fa-file-pdf-o", disabled: !this.exportData, command: () => this.exportData(ExportFormat.PDF) }
         ];
 
         return [

@@ -1,5 +1,7 @@
 /* eslint-disable no-eq-null */
 import * as $ from 'jquery';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 import Exporter, { ExportFormat } from './Exporter';
 import { exportCsv } from './utils';
 
@@ -8,6 +10,9 @@ export class ExportHelper {
     export() {
         if (this.format && this.format.toUpperCase() === "XLSX") {
             this.exportToXlsx();
+        }
+        else if (this.format && this.format === ExportFormat.PDF) {
+            this.exportToPDF();
         }
         else {
             this.exportToCsv();
@@ -30,6 +35,19 @@ export class ExportHelper {
 
         this.exportTable(el, el.attr("export-sheet-name") || this.fileName || 'download');
     }
+
+    exportToPDF() {
+        const el = $(this.element).find('table.exportable:first-child');
+        const fileName = el.attr("export-sheet-name") || this.fileName || 'download';
+        const doc = new jsPDF({
+            orientation: 'landscape',
+            unit: 'in',
+            format: "a3"
+        });
+        doc.autoTable({ html: el.get(0) });
+        doc.save(`${fileName}.pdf`);
+    }
+
     /**
     * Export the table.
     *
