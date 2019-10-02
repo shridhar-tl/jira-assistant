@@ -18,8 +18,9 @@ export default class Exporter {
 
     addTable(table) {
         table = $(table);
-        console.log('Exporting ', table.attr('exportSheetName'));
-        this.worksheet = this.document.addWorksheet(table.attr('exportSheetName'));
+        const sheetName = this.normalizeSheetName(table.attr('export-sheet-name'));
+        console.log('Exporting ', sheetName);
+        this.worksheet = this.document.addWorksheet(sheetName);
         this.sheetOptions = {
             mergeCells: [],
             width: {},
@@ -77,6 +78,15 @@ export default class Exporter {
         this.worksheet = null;
         this.sheetOptions = null;
         this.curRowNum = null;
+    }
+
+    normalizeSheetName(name) {
+        if (!name) { return name; }
+        return name
+            .replace(/\[/g, "(")
+            .replace(/\]/g, ")")
+            .replace(/:/g, "-")
+            .replace(/[?/\\]/g, "");
     }
 
     //rgb2hex(rgb) {
