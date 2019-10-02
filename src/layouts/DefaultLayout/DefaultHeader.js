@@ -11,6 +11,8 @@ import './DefaultHeader.scss';
 import { inject } from '../../services/injector-service';
 import YoutubeVideo from '../../dialogs/YoutubeVideo';
 import SkinPicker from './SkinPicker';
+import SwitchAccountMenu from './SwitchAccountMenu';
+import { getHostFromUrl } from '../../common/utils';
 
 const propTypes = {
   children: PropTypes.node,
@@ -23,6 +25,7 @@ class DefaultHeader extends PureComponent {
     super(props);
     inject(this, "AppBrowserService", "CacheService", "SessionService");
     this.userId = this.$session.CurrentUser.userId;
+    this.currentJiraInstance = getHostFromUrl(this.$session.CurrentUser.jiraUrl);
     this.state = {};
   }
 
@@ -78,12 +81,17 @@ class DefaultHeader extends PureComponent {
           title="Would you like to contribute / compensate us for the effort we put in development of this tool? Click to know more">
           <img src="/assets/donate.png" width="145" className="Donate us" alt="Donate us" />
         </NavLink>
-        {/*<Nav className="d-md-down-none" navbar>
-          <NavItem className="px-3">
-            <NavLink to="/dashboard" className="nav-link" >Dashboard</NavLink>
-          </NavItem>
-        </Nav>*/}
         <Nav className="ml-auto" navbar>
+          <Nav className="d-md-down-none margin-r-5" navbar>
+            <UncontrolledDropdown nav direction="down">
+              <DropdownToggle nav>
+                <span className="nav-link pointer" title={`Currently connected to ${this.currentJiraInstance}. Click to see more options.`}> <span className="fa fa-exchange" /> <strong>{this.currentJiraInstance}</strong></span>
+              </DropdownToggle>
+              <DropdownMenu left>
+                <SwitchAccountMenu onLogout={this.props.onLogout} />
+              </DropdownMenu>
+            </UncontrolledDropdown>
+          </Nav>
           <NavItem className="d-md-down-none">
             <a className="btn btn-warning" href="/old/index.html">Switch back to old version</a>
           </NavItem>

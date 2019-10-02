@@ -132,3 +132,7 @@ export function parseJwt(token) {
         return false;
     }
 }
+
+export function getHostFromUrl(url) {
+    return new URL(url).host;
+}
