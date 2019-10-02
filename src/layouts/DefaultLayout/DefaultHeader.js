@@ -88,7 +88,7 @@ class DefaultHeader extends PureComponent {
             <a className="btn btn-warning" href="/old/index.html">Switch back to old version</a>
           </NavItem>
           <NavItem className="d-md-down-none">
-            <NavLink className="nav-link" onClick={this.showYoutubeHelp}><i className="fa fa-youtube-play"></i></NavLink>
+            <span className="nav-link" onClick={this.showYoutubeHelp}><i className="fa fa-youtube-play"></i></span>
           </NavItem>
           <UncontrolledDropdown nav direction="down">
             <DropdownToggle nav>
