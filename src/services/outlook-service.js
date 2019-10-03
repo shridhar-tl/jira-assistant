@@ -114,7 +114,14 @@ export default class OutlookCalendar {
 
         const result = await this.oauth.getToken(addlParam, true);
         console.log("getToken:Access Token response: ", result);
-        return this.setAuthToken(result);
+        const access_token = this.setAuthToken(result);
+
+        if (!access_token) {
+            console.log("getToken:Access token request params: ", addlParam);
+            this.$cache.remove("olbt");
+        }
+
+        return access_token;
     }
 
     getOptionalHints() {
@@ -132,6 +139,11 @@ export default class OutlookCalendar {
     async getEvents(startDate, endDate, options) {
         options = options || {};
         const authToken = await this.getToken();
+
+        if (!authToken) {
+            this.$message.warning("Unable to authenticate with Outlook. You will have to reauthenticate from settings page.");
+            return [];
+        }
 
         if (!startDate) {
             startDate = moment().startOf('month').add(-1, "days");
@@ -178,8 +190,7 @@ export default class OutlookCalendar {
         } catch (error) {
             this.$analytics.trackEvent(`Authentication error :-${(error || "").status || ""}`);
             if (error && error.status === 401) {
-                this.$message.warning("Authenticated session with the Google Calendar has expired. You will have to reauthenticate.");
-                this.$jaBrowserExtn.removeAuthTokken(authToken);
+                this.$message.warning("Authenticated session with the Outlook Calendar has expired. You will have to reauthenticate.");
                 //return svc.getEvents(startDate, endDate, options);
             }
             else {

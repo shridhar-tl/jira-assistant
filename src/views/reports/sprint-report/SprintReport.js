@@ -178,8 +178,8 @@ class SprintReport extends BaseGadget {
     rapidViewSelected = (val) => this.setState({ selectedRapidViews: val });
     sprintSelected = (val) => this.setState({ selectedSprints: val });
     incWorklogChanged = (val) => this.setState({ includeWorklogs: val });
-    showGroupsDialog = (val) => this.setState({ showGroupsPopup: val });
-    updateGroup = (groups) => this.setState({ groups });
+    showGroupsDialog = () => this.setState({ showGroupsPopup: true });
+    updateGroup = (groups) => this.setState({ groups, showGroupsPopup: false });
 
     formatDateTime = (val) => this.$userutils.formatDateTime(val);
 
