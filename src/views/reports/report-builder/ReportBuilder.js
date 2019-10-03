@@ -188,7 +188,7 @@ class ReportBuilder extends BaseGadget {
                 {reportDefinition && <JSReportBuilder api={this.getApi} definition={reportDefinition} />}
                 {showSaveDialog && <SaveReportDialog queryName={reportDefinition.queryName} allowCopy={isEditing}
                     onHide={this.hideSaveDialog} onChange={this.saveQuery} />}
-                {selectedDatasetType === 'JQL' && <JQLEditorDialog onHide={this.hideDatasetPopup} onResolve={this.saveDataset_JQL} />}
+                {selectedDatasetType === 'JQL' && <JQLEditorDialog filterQuery={this.filterQuery} onHide={this.hideDatasetPopup} onResolve={this.saveDataset_JQL} />}
             </>
             );
         }
