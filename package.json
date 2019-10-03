@@ -57,6 +57,8 @@
     "jest-watch-typeahead": "0.3.1",
     "jquery": "^3.4.1",
     "jsd-report": "^0.1.6",
+    "jspdf": "^1.5.3",
+    "jspdf-autotable": "^3.2.4",
     "mini-css-extract-plugin": "0.5.0",
     "moment": "^2.24.0",
     "moment-timezone": "^0.5.26",

@@ -42,7 +42,7 @@ class JQLEditorDialog extends BaseDialog {
         const { state: { filterQuery } } = this;
 
         return super.renderBase(
-            <QueryEditor ref={this.getRef} builderOnly={true} query={filterQuery} onChange={this.queryChanged} />
+            <QueryEditor ref={this.getRef} builderOnly={true} reportQuery={filterQuery} onChange={this.queryChanged} />
         );
     }
 }
