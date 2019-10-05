@@ -166,9 +166,13 @@ export class BaseGadget extends PureComponent {
         return <Button icon="fa fa-download" disabled={disabled} onClick={this.exportData} title={this.exportFormat === ExportFormat.XLSX ? "Export to Excel" : "Export to csv"} />;
     }
 
+    showGadgetGontextMenu = (e) => showContextMenu(e, this.getContextMenu())
+
     getHeader = () => {
-        const { title, subTitle, isGadget } = this;
-        return <div className="gadget-header" onContextMenu={!isGadget ? null : (e) => showContextMenu(e, this.getContextMenu())} onDoubleClick={this.toggleFullScreen}>
+        const { title, subTitle, isGadget, props: { draggableHandle } } = this;
+        const className = `gadget-header${draggableHandle ? " movable" : ""}`;
+
+        return <div ref={draggableHandle} className={className} onContextMenu={!isGadget ? null : this.showGadgetGontextMenu} onDoubleClick={this.toggleFullScreen}>
             <i className={`fa ${this.iconClass}`}></i> {title} {subTitle && <span> - {subTitle}</span>}
             <div className="pull-right">
                 {this.renderCustomActions && this.renderCustomActions()}
@@ -176,6 +180,15 @@ export class BaseGadget extends PureComponent {
                 {!this.hideMenu && <Button icon="fa fa-wrench" onClick={e => showContextMenu(e, this.getContextMenu())} />}
             </div>
         </div>;
+    }
+
+    setRef = (el) => {
+        this.el = el;
+        const { dropProps: { dropConnector } = {} } = this.props;
+
+        if (dropConnector) {
+            dropConnector(el);
+        }
     }
 
     renderBase(childern) {
@@ -203,7 +216,7 @@ export class BaseGadget extends PureComponent {
             "full-screen": isFullScreen
         });
 
-        return (<div ref={el => this.el = el} className={className}>
+        return (<div ref={this.setRef} className={className}>
             {isLoading && <div className="data-loader"><i className="fa fa-refresh fa-spin"></i></div>}
             <Panel header={this.getHeader()}>
                 {childern}
@@ -213,7 +226,7 @@ export class BaseGadget extends PureComponent {
     }
 
     render() {
-        return (<div ref={el => this.el = el} className="gadget half-width half-height">
+        return (<div ref={this.setRef} className="gadget half-width half-height">
             <Panel header="Gadget Unavailable">
                 <div className="pad-22">
                     This section contains an un-known gadget.
