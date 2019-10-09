@@ -11,7 +11,7 @@ import BaseGadget, { onDashboardEvent } from '../../gadgets/BaseGadget';
 import { TabView, TabPanel } from 'primereact/tabview';
 import CustomReport from '../reports/custom-report/ReportViewer';
 import AdvancedReport from '../reports/report-builder/ReportViewer';
-import Sortable from '../../components/DragDrop/Sortable';
+import { Sortable } from 'jsd-report';
 
 class Dashboard extends PureComponent {
     constructor(props) {
@@ -77,7 +77,8 @@ class Dashboard extends PureComponent {
             case GadgetActionType.RemoveGadget:
                 let { currentBoard } = this.state;
                 currentBoard = { ...currentBoard };
-                const { widgets } = currentBoard;
+                const widgets = [...currentBoard.widgets];
+                currentBoard.widgets = widgets;
                 widgets.splice(widgetIndex, 1);
                 this.setState({ currentBoard }, this.saveDashboardInfo);
                 this.emitToChildren($event, widgetIndex);
