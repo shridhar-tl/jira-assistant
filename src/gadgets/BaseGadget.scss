@@ -91,10 +91,10 @@ div.full-width {
 
 div.full-height {
     &:not(.docked) {
-        height: calc(100vh - 83px);
+        height: calc(100vh - 84px);
 
         div.p-panel-content {
-            height: calc(100vh - 130px);
+            height: calc(100vh - 126px);
             padding: 0;
             overflow: auto;
         }

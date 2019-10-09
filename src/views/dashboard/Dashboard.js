@@ -1,4 +1,6 @@
 import React, { PureComponent } from 'react';
+import { DndProvider } from 'react-dnd';
+import HTML5Backend from 'react-dnd-html5-backend';
 import './Dashboard.scss';
 import { inject } from '../../services/injector-service';
 import { GadgetActionType, Calendar, DateWiseWorklog, MyBookmarks, MyOpenTickets, MyReports, PendingWorklog, TicketWiseWorklog } from '../../gadgets';
@@ -9,6 +11,7 @@ import BaseGadget, { onDashboardEvent } from '../../gadgets/BaseGadget';
 import { TabView, TabPanel } from 'primereact/tabview';
 import CustomReport from '../reports/custom-report/ReportViewer';
 import AdvancedReport from '../reports/report-builder/ReportViewer';
+import { Sortable } from 'jsd-report';
 
 class Dashboard extends PureComponent {
     constructor(props) {
@@ -74,7 +77,8 @@ class Dashboard extends PureComponent {
             case GadgetActionType.RemoveGadget:
                 let { currentBoard } = this.state;
                 currentBoard = { ...currentBoard };
-                const { widgets } = currentBoard;
+                const widgets = [...currentBoard.widgets];
+                currentBoard.widgets = widgets;
                 widgets.splice(widgetIndex, 1);
                 this.setState({ currentBoard }, this.saveDashboardInfo);
                 this.emitToChildren($event, widgetIndex);
@@ -93,8 +97,10 @@ class Dashboard extends PureComponent {
         onDashboardEvent.emit("change", $event, widgetIndex);
     }
 
-    gadgetReordered($event) {
-        this.saveDashboardInfo();
+    gadgetReordered = (widgets) => {
+        let { currentBoard } = this.state;
+        currentBoard = { ...currentBoard, widgets };
+        this.setState({ currentBoard }, this.saveDashboardInfo);
     }
 
     /* Rewisit: Not sure where this is used
@@ -130,7 +136,7 @@ class Dashboard extends PureComponent {
         this.gadgetsList = controls;
     }
 
-    getControls = (w, i) => {
+    getControls = (w, i, dropProps) => {
         let { name } = w;
         const { settings } = w;
         const tabLayout = this.state.isTabView;
@@ -165,8 +171,6 @@ class Dashboard extends PureComponent {
 
         const Gadget = gadgetRef.control;
 
-        const gHtml = <Gadget {...props} />;
-
         if (tabLayout) {
             let title = gadgetRef.title;
             if (!title) {
@@ -177,23 +181,22 @@ class Dashboard extends PureComponent {
                     title = "Unknown Gadget";
                 }
             }
-            return <TabPanel key={name} header={title}>{gHtml}</TabPanel>;
+            return <TabPanel key={name} header={title}><Gadget {...props} /></TabPanel>;
         }
         else {
-            return gHtml;
+            return (h) => <Gadget {...props} draggableHandle={h} dropProps={dropProps} />;
         }
     }
+
 
     getGadgets(widgets) {
         if (!widgets || !widgets.length) { return null; }
 
-        const gadgets = widgets.map(this.getControls);
-
         if (this.state.isTabView) {
-            return <TabView className="no-padding tab-gadgets">{gadgets}</TabView>;
+            return <TabView className="no-padding tab-gadgets">{widgets.map(this.getControls)}</TabView>;
         }
         else {
-            return <div>{gadgets}</div>;
+            return <Sortable items={widgets} itemType="gadget" onChange={this.gadgetReordered}>{this.getControls}</Sortable>;
         }
     }
 
@@ -221,8 +224,9 @@ class Dashboard extends PureComponent {
             <div>
                 <Header {...this.props} config={currentBoard} index={dashboardIndex} userId={this.$session.userId}
                     onShowGadgets={this.onShowGadgets} tabViewChanged={this.tabViewChanged} isQuickView={this.isQuickView} />
-                {this.getGadgets(widgets)}
-
+                <DndProvider backend={HTML5Backend}>
+                    {this.getGadgets(widgets)}
+                </DndProvider>
                 {(!widgets || widgets.length === 0) && <div className="no-widget-div">
                     You haven't added any gadgets to this dashboard. Click on "Add gadgets" button above to start adding a cool one and personalize your experience.
                     </div>
