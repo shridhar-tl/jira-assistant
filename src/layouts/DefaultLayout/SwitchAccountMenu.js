@@ -11,7 +11,7 @@ class SwitchAccountMenu extends PureComponent {
     constructor(props) {
         super(props);
         inject(this, "SessionService", "UserService", "UserUtilsService");
-        this.currentJiraUrl = this.$session.CurrentUser.jiraUrl.toString();
+        this.currentUserId = this.$session.CurrentUser.userId;
         this.state = {
             profileUrl: this.$userutils.getProfileUrl()
         };
@@ -19,7 +19,7 @@ class SwitchAccountMenu extends PureComponent {
 
     UNSAFE_componentWillMount() {
         this.$user.getUsersList().then(users => {
-            this.setState({ users: users.filter(u => u.jiraUrl !== this.currentJiraUrl) });
+            this.setState({ users: users.filter(u => u.id !== this.currentUserId) });
         });
     }
 

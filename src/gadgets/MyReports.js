@@ -59,7 +59,7 @@ class MyReports extends BaseGadget {
         selAllChk = !selAllChk;
         reportsList.forEach(wl => wl.selected = selAllChk);
         reportsList = [...reportsList];
-        this.setState({ reportsList, selAllChk });
+        this.setState({ reportsList, selAllChk, selReportsCount: selAllChk ? reportsList.length : null });
     }
 
     downloadReports = () => {
@@ -122,7 +122,8 @@ class MyReports extends BaseGadget {
         item.selected = !item.selected;
         let { reportsList } = this.state;
         reportsList = [...reportsList];
-        this.setState({ reportsList });
+        const selReportsCount = reportsList.count(r => r.selected);
+        this.setState({ reportsList, selReportsCount });
     }
 
     hideImportPopup = (refresh) => {
@@ -136,8 +137,8 @@ class MyReports extends BaseGadget {
     renderCustomActions() {
         return <>
             <input ref={this.setFileSelector} type="file" className="hide" accept=".jrd" onChange={this.fileSelected} />
-            <Button icon="fa fa-upload" onClick={this.chooseFileForImport} />
-            <Button icon="fa fa-download" onClick={this.downloadReports} />
+            <Button icon="fa fa-upload" onClick={this.chooseFileForImport} title="Import reports shared by others" />
+            <Button icon="fa fa-download" disabled={!this.state.selReportsCount} onClick={this.downloadReports} title="Export reports to share with others" />
             <Button type="danger" icon="fa fa-trash-o" onClick={this.deleteSelectedReports} title="Delete selected report(s)" />
         </>;
     }

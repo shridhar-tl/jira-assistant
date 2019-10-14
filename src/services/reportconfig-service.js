@@ -55,6 +55,10 @@ export default class ReportConfigService {
                 getRapidSprintDetails: { value: (rapidViewId, sprintId) => this.$jira.getRapidSprintDetails(rapidViewId, sprintId) },
                 searchUsers: { value: (text, maxResult = 10, startAt = 0) => this.$jira.searchUsers(text, maxResult, startAt) },
                 getWorklogs: { value: (jiraKey) => this.$jira.getWorklogs(jiraKey) },
+                bookmarkTicket: { value: (jiraKey) => {/*ToDo: Yet to implement */ } },
+                formatDate: { value: this.$userutils.formatDate },
+                formatTime: { value: this.$userutils.formatTime },
+                formatDateTime: { value: this.$userutils.formatDateTime },
             }
         };
         initReportBuilder(defaultConfig);

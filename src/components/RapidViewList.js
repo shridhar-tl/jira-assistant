@@ -15,6 +15,14 @@ class RapidViewList extends PureComponent {
             const rapidViews = views.orderBy((d) => { return d.name; }).map((d) => {
                 return { name: d.name, id: d.id };
             });
+
+            let { value } = this.props;
+            if (value && Array.isArray(value) && value.length) {
+                const valIds = value.map(v => v.id);
+                value = rapidViews.filter(r => !!~valIds.indexOf(r.id));
+            }
+
+            this.setValue(value);
             this.setState({ rapidViews });
         });
     }
