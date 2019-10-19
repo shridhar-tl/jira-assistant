@@ -34,24 +34,20 @@ class SwitchAccountMenu extends PureComponent {
 
         return (
             <>
-                {users && users.length > 0 && <>
-                    <DropdownItem header tag="div" className="text-center"><strong>Switch Instance</strong></DropdownItem>
+                <DropdownItem header tag="div" className="text-center"><strong>Switch Instance</strong></DropdownItem>
+                {users && users.length > 0 && users.map(u => <DropdownItem key={u.id} tag="span" user-id={u.id} onClick={this.switchUser} title={u.email}>
+                    <i className="fa fa-external-link icon-extl" />
+                    <div className="inline pointer">
+                        <div>{getHostFromUrl(u.jiraUrl)}</div>
+                        <div>({u.userId})</div>
+                    </div>
+                </DropdownItem>)}
 
-                    {users.map(u => <DropdownItem key={u.id} tag="span" user-id={u.id} onClick={this.switchUser} title={u.email}>
-                        <i className="fa fa-external-link icon-extl" />
-                        <div className="inline">
-                            <div>{getHostFromUrl(u.jiraUrl)}</div>
-                            <div>({u.userId})</div>
-                        </div>
-                    </DropdownItem>)}
-
-                    <DropdownItem tag="a" href="/index.html#/integrate" title="Integrate with new instance of Jira">
-                        <i className="fa fa-plug"></i> Integrate</DropdownItem>
-                    {/*<DropdownItem><i className="fa fa-envelope-o"></i> Messages<Badge color="success">42</Badge></DropdownItem>
-                            <DropdownItem><i className="fa fa-tasks"></i> Tasks<Badge color="danger">42</Badge></DropdownItem>
-                            <DropdownItem><i className="fa fa-comments"></i> Comments<Badge color="warning">42</Badge></DropdownItem>*/}
-                </>
-                }
+                <DropdownItem tag="a" href="/index.html#/integrate" title="Integrate with new instance of Jira">
+                    <i className="fa fa-plug"></i> Integrate</DropdownItem>
+                {/*<DropdownItem><i className="fa fa-envelope-o"></i> Messages<Badge color="success">42</Badge></DropdownItem>
+                        <DropdownItem><i className="fa fa-tasks"></i> Tasks<Badge color="danger">42</Badge></DropdownItem>
+                        <DropdownItem><i className="fa fa-comments"></i> Comments<Badge color="warning">42</Badge></DropdownItem>*/}
 
                 <DropdownItem header tag="div" className="text-center"><strong>Settings</strong></DropdownItem>
                 <DropdownItem tag="a" href={profileUrl} target="_blank"><i className="fa fa-user"></i> Jira Profile</DropdownItem>

@@ -2,7 +2,7 @@ import React from 'react';
 import BaseGadget from './BaseGadget';
 import { GadgetActionType } from '.';
 import { ScrollableTable, THead, TBody, Column, NoDataRow } from '../components/ScrollableTable';
-import { showContextMenu } from '../controls/ContextMenu';
+import { showContextMenu } from 'jsd-report';
 import { inject } from '../services/injector-service';
 import { Button, Checkbox } from '../controls';
 import AddBookmark from '../dialogs/AddBookmark';

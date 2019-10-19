@@ -153,7 +153,7 @@ export default class AppBrowserService {
         }
     }
     getAppVersion() {
-        return this.getAppInfo().then((info) => { return info.version; });
+        return this.getAppInfo().then(info => info.version, () => '1.0');
     }
     getAppLongName() {
         if (this.isChrome) {

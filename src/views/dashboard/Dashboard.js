@@ -1,6 +1,4 @@
 import React, { PureComponent } from 'react';
-import { DndProvider } from 'react-dnd';
-import HTML5Backend from 'react-dnd-html5-backend';
 import './Dashboard.scss';
 import { inject } from '../../services/injector-service';
 import { GadgetActionType, Calendar, DateWiseWorklog, MyBookmarks, MyOpenTickets, MyReports, PendingWorklog, TicketWiseWorklog } from '../../gadgets';
@@ -224,9 +222,7 @@ class Dashboard extends PureComponent {
             <div>
                 <Header {...this.props} config={currentBoard} index={dashboardIndex} userId={this.$session.userId}
                     onShowGadgets={this.onShowGadgets} tabViewChanged={this.tabViewChanged} isQuickView={this.isQuickView} />
-                <DndProvider backend={HTML5Backend}>
-                    {this.getGadgets(widgets)}
-                </DndProvider>
+                {this.getGadgets(widgets)}
                 {(!widgets || widgets.length === 0) && <div className="no-widget-div">
                     You haven't added any gadgets to this dashboard. Click on "Add gadgets" button above to start adding a cool one and personalize your experience.
                     </div>

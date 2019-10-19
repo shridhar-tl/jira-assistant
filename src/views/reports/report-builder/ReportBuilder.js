@@ -8,6 +8,7 @@ import "./ReportBuilder.scss";
 import SaveReportDialog from '../../../dialogs/SaveReportDialog';
 import JQLEditorDialog from './JQLEditorDialog';
 import Dialog from '../../../dialogs';
+import AddWorklog from '../../../dialogs/AddWorklog';
 
 class ReportBuilder extends BaseGadget {
     constructor(props) {
@@ -19,7 +20,8 @@ class ReportBuilder extends BaseGadget {
 
         this.$reportConfig.configureBuilder();
         this.$reportConfig.parameters.removeAllListeners();
-        this.$reportConfig.datasets.on("resolveSchema_JQL", this.resolveSchema_JQL.bind(this));
+        this.$reportConfig.eventPipe.on("resolveSchema_JQL", this.resolveSchema_JQL.bind(this));
+        this.$reportConfig.eventPipe.on("addWorklog", this.addWorklog.bind(this));
         this.state = { reportDefinition: this.getEmptyDefinition() };
     }
 
@@ -171,11 +173,25 @@ class ReportBuilder extends BaseGadget {
         </div>;
     }
 
+    addWorklog(data) {
+        this.worklogItem = data;
+        this.setState({ showWorklogPopup: true });
+    }
+
+    worklogAdded = (result) => {
+        // ToDo:
+        this.hideWorklog();
+    }
+
+    hideWorklog = () => {
+        this.setState({ showWorklogPopup: false });
+    }
+
     hideDatasetPopup = () => this.setState({ selectedDatasetType: null })
 
     render() {
         const {
-            state: { reportDefinition, reportMode, showSaveDialog, selectedDatasetType }
+            state: { reportDefinition, reportMode, showSaveDialog, selectedDatasetType, showWorklogPopup }
         } = this;
 
         const isEditing = reportDefinition.id > 0;
@@ -189,6 +205,7 @@ class ReportBuilder extends BaseGadget {
                 {showSaveDialog && <SaveReportDialog queryName={reportDefinition.queryName} allowCopy={isEditing}
                     onHide={this.hideSaveDialog} onChange={this.saveQuery} />}
                 {selectedDatasetType === 'JQL' && <JQLEditorDialog filterQuery={this.filterQuery} onHide={this.hideDatasetPopup} onResolve={this.saveDataset_JQL} />}
+                {showWorklogPopup && <AddWorklog worklog={this.worklogItem} onDone={this.worklogAdded} onHide={this.hideWorklog} />}
             </>
             );
         }

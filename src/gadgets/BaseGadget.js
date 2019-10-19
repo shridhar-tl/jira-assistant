@@ -4,7 +4,7 @@ import $ from 'jquery';
 import { EventEmitter } from 'events';
 import Button from '../controls/Button';
 import classNames from "classnames";
-import { showContextMenu } from '../controls/ContextMenu';
+import { showContextMenu } from 'jsd-report';
 import "./BaseGadget.scss";
 import { ExportHelper } from '../common/ExportHelper';
 import { ExportFormat } from '../common/Exporter';

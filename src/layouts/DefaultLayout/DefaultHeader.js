@@ -13,7 +13,6 @@ import YoutubeVideo from '../../dialogs/YoutubeVideo';
 import SkinPicker from './SkinPicker';
 import SwitchAccountMenu from './SwitchAccountMenu';
 import { getHostFromUrl } from '../../common/utils';
-import Dialog from '../../dialogs';
 
 const propTypes = {
   children: PropTypes.node,
@@ -27,12 +26,13 @@ class DefaultHeader extends PureComponent {
     inject(this, "AppBrowserService", "CacheService", "SessionService");
     this.userId = this.$session.CurrentUser.userId;
     this.currentJiraInstance = getHostFromUrl(this.$session.CurrentUser.jiraUrl);
-    this.state = {};
+    this.state = { versionNumber: "1.0" };
   }
 
   UNSAFE_componentWillMount() {
     this.ratingUrl = this.$jaBrowserExtn.getStoreUrl(true);
     this.storeUrl = this.$jaBrowserExtn.getStoreUrl();
+    this.$jaBrowserExtn.getAppVersion().then(v => this.setState({ versionNumber: v }));
     const subj = encodeURIComponent('Check out "Jira Assistant" in web store');
     const body = encodeURIComponent(`${'Check out "Jira Assistant" extension / add-on for your browser from below url:'
       + '\n\nChrome users: '}${CHROME_WS_URL}?utm_source%3Dgmail#`
@@ -63,19 +63,10 @@ class DefaultHeader extends PureComponent {
     window.location.href = "/index.html";
   }
 
-  switchToOldVersion = () => {
-    Dialog.yesNo("Are you sure to switch back to old version of Jira Assistant?"
-      + "\n\n"
-      + "Note: Soon the old version will be removed. So if you face any issue with new version, we suggest you to report it immediately",
-      "Confirm Switchback to old version").then(() => {
-        document.location.href = "/old/index.html";
-      });
-  }
-
   render() {
     const {
       ratingUrl, gMailShare, gPlusShare, linkedInShare, fackbookShare, twitterShare,
-      state: { showYoutubeVideo }
+      state: { versionNumber, showYoutubeVideo }
       //REVISIT: props: { children, ...attributes }
     } = this;
 
@@ -84,7 +75,7 @@ class DefaultHeader extends PureComponent {
         <AppSidebarToggler className="d-lg-none" display="md" mobile><span className="fa fa-bars" /></AppSidebarToggler>
         <a href={this.storeUrl} className="navbar-brand" target="_blank" rel="noopener noreferrer">
           <img src={logo} width="24" height="24" alt="Jira Assistant" className="navbar-brand-minimized" />
-          <span className="navbar-brand-full">Jira Assistant <span className="v-info badge badge-warning">BETA</span></span>
+          <span className="navbar-brand-full">Jira Assistant <span className="v-info badge badge-success">v {versionNumber}</span></span>
         </a>
         <AppSidebarToggler className="d-md-down-none" display="lg"><span className="fa fa-bars" /></AppSidebarToggler>
         <NavLink to={`/${this.userId}/contribute`} className="btn-donate"
@@ -102,9 +93,6 @@ class DefaultHeader extends PureComponent {
               </DropdownMenu>
             </UncontrolledDropdown>
           </Nav>
-          <NavItem className="d-md-down-none">
-            <span className="btn btn-warning pointer" onClick={this.switchToOldVersion}>Switch back to old version</span>
-          </NavItem>
           <NavItem className="d-md-down-none">
             <span className="nav-link" onClick={this.showYoutubeHelp}><i className="fa fa-youtube-play"></i></span>
           </NavItem>

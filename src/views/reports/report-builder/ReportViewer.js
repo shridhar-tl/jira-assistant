@@ -4,6 +4,7 @@ import { inject } from '../../../services';
 import { Button } from '../../../controls';
 import { ReportViewer as JSRViewer } from "jsd-report";
 import GroupEditor from '../../../dialogs/GroupEditor';
+import "./ReportViewer.scss";
 
 class ReportViewer extends BaseGadget {
     constructor(props) {
@@ -21,14 +22,14 @@ class ReportViewer extends BaseGadget {
     }
 
     UNSAFE_componentWillMount() {
-        this.refreshReport();
+        this.refreshData();
     }
 
     UNSAFE_componentWillReceiveProps(props) {
         if (props.definition) {
             this.setReportDefinition(props.definition);
         } else if (props.reportId) {
-            this.refreshReport();
+            this.refreshData();
         }
         else {
             this.setReportDefinition({});
@@ -46,7 +47,7 @@ class ReportViewer extends BaseGadget {
         this.setState({ showGroupsPopup: false, groups });
     }
 
-    refreshReport() {
+    refreshData = () => {
         if (this.props.reportId > 0) {
             this.$report.getReportDefinition(this.props.reportId).then(qm => {
                 this.setReportDefinition(qm);
@@ -58,6 +59,9 @@ class ReportViewer extends BaseGadget {
     }
 
     setReportDefinition(definition) {
+        if (definition && definition.queryName) {
+            this.title = definition.queryName;
+        }
         this.setState({ definition });
     }
 

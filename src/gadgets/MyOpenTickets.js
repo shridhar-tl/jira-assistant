@@ -2,7 +2,7 @@ import React from 'react';
 import { inject } from '../services/injector-service';
 import BaseGadget, { GadgetActionType } from './BaseGadget';
 import { ScrollableTable, THead, TBody, Column, NoDataRow } from '../components/ScrollableTable';
-import { showContextMenu } from '../controls/ContextMenu';
+import { showContextMenu } from 'jsd-report';
 import { Dialog } from '../dialogs/CommonDialog';
 
 class MyOpenTickets extends BaseGadget {

@@ -14,7 +14,7 @@ export default class ReportConfigService {
         this.$userutils = $userutils;
 
         this.parameters = new EventEmitter();
-        this.datasets = new EventEmitter();
+        this.eventPipe = new EventEmitter();
     }
 
     configureReport() {
@@ -24,6 +24,7 @@ export default class ReportConfigService {
         const defaultConfig = {
             // eslint-disable-next-line no-new-func
             compiler: function (code, sandbox) { return Function(...sandbox, code)(); },
+            useExternalDnDProvider: true,
             subReports: (defn) => {
                 return this.$report.getReportsList().then((result) => {
                     result = result.filter(q => q.advanced).map(q => { return { id: q.id, name: q.queryName }; });
@@ -54,8 +55,9 @@ export default class ReportConfigService {
                 getProjectSprintList: { value: (projects) => this.$jira.getSprintList(projects) },
                 getRapidSprintDetails: { value: (rapidViewId, sprintId) => this.$jira.getRapidSprintDetails(rapidViewId, sprintId) },
                 searchUsers: { value: (text, maxResult = 10, startAt = 0) => this.$jira.searchUsers(text, maxResult, startAt) },
+                addWorklog: { value: (obj) => this.eventPipe.emit("addWorklog", typeof obj === "string" ? { ticketNo: obj } : obj) },
                 getWorklogs: { value: (jiraKey) => this.$jira.getWorklogs(jiraKey) },
-                bookmarkTicket: { value: (jiraKey) => {/*ToDo: Yet to implement */ } },
+                bookmarkTicket: { value: (jiraKey) => this.$bookmark.addBookmark([jiraKey]) },
                 formatDate: { value: this.$userutils.formatDate },
                 formatTime: { value: this.$userutils.formatTime },
                 formatDateTime: { value: this.$userutils.formatDateTime },
@@ -71,7 +73,7 @@ export default class ReportConfigService {
                 label: "JQL search result",
                 resolveSchema: (datasetTypes.JQL || ((name, props, data) => {
                     return new Promise((resolve, reject) => {
-                        this.datasets.emit("resolveSchema_JQL", { name, props, data, schema: { resolve, reject } });
+                        this.eventPipe.emit("resolveSchema_JQL", { name, props, data, schema: { resolve, reject } });
                     });
                 })),
                 resolveData: (qry, parametersValues, { parameterTemplate }) => {

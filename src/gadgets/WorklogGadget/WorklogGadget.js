@@ -298,7 +298,11 @@ class WorklogGadget extends BaseGadget {
         </>;
     }
 
-    groupsChanged = (groups) => this.setState({ showGroupsPopup: false, groups })
+    groupsChanged = (groups) => {
+        const newState = { showGroupsPopup: false };
+        if (groups && Array.isArray(groups)) { newState.groups = groups; }
+        this.setState(newState);
+    }
 
     settingsChanged = (pageSettings) => {
         if (!pageSettings) {
