@@ -1,6 +1,8 @@
 import React, { PureComponent, Suspense } from 'react';
 import { Route, Switch } from 'react-router-dom';
 import * as router from 'react-router-dom';
+import { DndProvider } from 'react-dnd';
+import HTML5Backend from 'react-dnd-html5-backend';
 import { Container } from 'reactstrap';
 import { CustomDialog } from "../../dialogs";
 
@@ -19,7 +21,7 @@ import navigation, { getDashboardMenu } from '../../_nav';
 // routes config
 import routes from '../../routes';
 import { inject } from '../../services/injector-service';
-import ContextMenu from '../../controls/ContextMenu';
+import { ContextMenu } from 'jsd-report';
 import $ from 'jquery';
 import AsideUserInfo from './AsideUserInfo';
 
@@ -103,25 +105,27 @@ class DefaultLayout extends PureComponent {
             <AppSidebarMinimizer />
           </AppSidebar>
           <main className="main">
-            <Container fluid>
-              <Suspense fallback={this.loading()}>
-                <Switch>
-                  {routes.map((route, idx) => {
-                    return route.component ? (
-                      <Route
-                        key={idx}
-                        path={`/${userId}${route.path}`}
-                        exact={route.exact}
-                        name={route.name}
-                        render={props => (
-                          <route.component {...props} />
-                        )} />
-                    ) : (null);
-                  })}
-                  {/*<Redirect from="/" to="/dashboard/0" />*/}
-                </Switch>
-              </Suspense>
-            </Container>
+            <DndProvider backend={HTML5Backend}>
+              <Container fluid>
+                <Suspense fallback={this.loading()}>
+                  <Switch>
+                    {routes.map((route, idx) => {
+                      return route.component ? (
+                        <Route
+                          key={idx}
+                          path={`/${userId}${route.path}`}
+                          exact={route.exact}
+                          name={route.name}
+                          render={props => (
+                            <route.component {...props} />
+                          )} />
+                      ) : (null);
+                    })}
+                    {/*<Redirect from="/" to="/dashboard/0" />*/}
+                  </Switch>
+                </Suspense>
+              </Container>
+            </DndProvider>
           </main>
           {/*<AppAside fixed>
             <Suspense fallback={this.loading()}>

@@ -1,0 +1,17 @@
+.gadget.half-height {
+    .report-viewer {
+        .report-items {
+            .scroll-table-container {
+                max-height: calc(50vh - 86px);
+
+                .scroll-table {
+                    td, th {
+                        .fa {
+                            margin-right: 8px;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

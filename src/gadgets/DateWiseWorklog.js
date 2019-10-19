@@ -4,7 +4,7 @@ import { inject } from '../services';
 import moment from 'moment';
 import { DatePicker } from '../controls';
 import { ScrollableTable, THead, Column, TBody, NoDataRow } from '../components/ScrollableTable';
-import { showContextMenu } from '../controls/ContextMenu';
+import { showContextMenu } from 'jsd-report';
 import { getQuickDateValue } from '../controls/DatePicker';
 
 class DateWiseWorklog extends BaseGadget {
