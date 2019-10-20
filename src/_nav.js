@@ -43,11 +43,7 @@ export const navigation = [
         name: 'Import worklog',
         id: 'IMW',
         url: '/import/worklog',
-        icon: 'fa fa-clock-o',
-        badge: {
-            variant: 'info',
-            text: 'BETA'
-        }
+        icon: 'fa fa-clock-o'
     },
     {
         name: 'Import issue',

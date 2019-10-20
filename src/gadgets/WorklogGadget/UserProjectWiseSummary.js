@@ -126,12 +126,14 @@ class UserProjectWiseSummary extends PureComponent {
                         {projects.map((project) => <Column key={project.key} colSpan={project.issueTypes.length + 1}>{project.name}</Column>)}
                         <Column rowSpan={2}>Grand Total</Column>
                     </TRow>
-                    {projects.map((project, pi) => {
-                        return (<TRow key={pi}>
-                            {project.issueTypes.map((it, iti) => <Column key={iti}>{it}</Column>)}
-                            <Column>Total</Column>
-                        </TRow>);
-                    })}
+                    <TRow>
+                        {projects.map((project, pi) => {
+                            return <Fragment key={pi}>
+                                {project.issueTypes.map((it, iti) => <Column key={iti}>{it}</Column>)}
+                                <Column>Total</Column>
+                            </Fragment>;
+                        })}
+                    </TRow>
                 </THead>
                 <TBody>
                     {(group, g) => (<Fragment key={g}>

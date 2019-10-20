@@ -133,7 +133,8 @@ class ImportWorklog extends BaseImport {
 
         this.$ticket.getTicketDetails(ticketList, true).then(list => {
             const ticketSummary = list.reduce((obj, t) => {
-                const { key, fields: { summary, assignee: { displayName } = {}, issuetype: { iconUrl, name } = {} } } = t;
+                const { key, fields: { summary, assignee, issuetype: { iconUrl, name } = {} } } = t;
+                const { displayName } = assignee || {};
 
                 obj[key] = {
                     summary,
@@ -355,12 +356,12 @@ class ImportWorklog extends BaseImport {
                         <TRow>
                             <Column><Checkbox checked={selectAll} onChange={this.toggleAllRows} /></Column>
                             <Column sortBy="ticketNo">Ticket No</Column>
-                            <Column sortBy="issueType">Issue Type</Column>
+                            <Column>Issue Type</Column>
                             <Column>Summary</Column>
                             <Column sortBy="startDate">Log Date</Column>
                             <Column sortBy="timespent">Timespent</Column>
                             <Column>Comment</Column>
-                            <Column sortBy="assignee">Assignee</Column>
+                            <Column>Assignee</Column>
                             <Column sortBy="status">Status</Column>
                         </TRow>
                     </THead>
