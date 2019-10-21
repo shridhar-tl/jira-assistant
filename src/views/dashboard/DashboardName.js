@@ -1,6 +1,8 @@
 import React, { PureComponent } from 'react';
 import Button from '../../controls/Button';
 import TextBox from '../../controls/TextBox';
+import { OverlayPanel } from 'primereact/overlaypanel';
+import { DASHBOARD_ICONS } from '../../_constants';
 import './DashboardName.scss';
 
 class DashboardName extends PureComponent {
@@ -27,25 +29,36 @@ class DashboardName extends PureComponent {
     }
 
     onChange = (value) => this.setState({ value })
+    onIconChange = (icon) => this.setState({ icon })
 
     cancelEdit = () => this.setState({ isEditMode: false, value: this.props.value })
+
+    showIcons = (e) => this.op.show(e)
+    setRef = (el) => this.op = el
 
     render() {
         const { value, icon, isEditMode } = this.state;
 
         if (isEditMode) {
-            return (
+            return <>
                 <div className="p-inputgroup dashboard-name-edit">
-                    <Button icon={`fa ${icon}`} />
+                    <Button icon={`fa ${icon}`} onClick={this.showIcons} />
                     <TextBox value={value} maxLength={18} onChange={this.onChange} />
                     <Button icon="fa fa-check" type="success" onClick={this.saveName} disabled={!value || value.length <= 2} />
                     <Button icon="fa fa-undo" onClick={this.cancelEdit} />
                 </div>
-            );
+
+                <OverlayPanel ref={this.setRef}>
+                    <div className="dashboard-icons">
+                        {DASHBOARD_ICONS.map((icon, i) => <div key={i} className="d-icon" onClick={() => this.onIconChange(icon)}><span className={icon} /></div>)}
+                        <div className="clear-fix" />
+                    </div>
+                </OverlayPanel>
+            </>;
         } else {
             return (
                 <div className="dashboard-name" title="Click to edit the name or change the icon" onClick={() => this.setState({ isEditMode: true })}>
-                    <i className={`board-icon fa ${icon}`}></i>
+                    <span className={`board-icon fa ${icon}`} />
                     <span className="lev-1">Dashboards</span>
                     <i className="fa fa-arrow-right"></i>
                     <span className="lev-2">{value}</span>

@@ -18,14 +18,20 @@ export default class DashboardService {
         return this.$session.CurrentUser.dashboards;
     }
 
-    async saveDashboardInfo(index, dashboard, updateMenu) {
+    saveDashboardInfo = async (index, dashboard, updateMenu) => {
         return await this.$user.getUser(this.$session.userId).then(u => {
+            if (!dashboard) {
+                console.error("Unable to save dashboard: ", index, dashboard, updateMenu);
+                return null;
+            }
+
             if (!u.dashboards) {
-                u.dashboards = [this.currentBoard];
+                u.dashboards = [dashboard];
             }
             else {
                 u.dashboards[index] = dashboard;
             }
+
             return this.saveUserDashboards(u, updateMenu !== true);
         });
     }
@@ -40,11 +46,11 @@ export default class DashboardService {
         });
     }
 
-    async createDashboard() {
+    async createDashboard(currentBoard) {
         return await this.$user.getUser(this.$session.userId).then(u => {
             u.dashboards = this.$session.CurrentUser.dashboards;
             if (!u.dashboards) {
-                u.dashboards = [this.currentBoard];
+                u.dashboards = [currentBoard];
             }
             const iconIdx = this.rand(0, DASHBOARD_ICONS.length - 1);
             u.dashboards.push({ icon: DASHBOARD_ICONS[iconIdx], layout: 1, name: `New Dashboard ${u.dashboards.length + 1}`, widgets: [], isQuickView: false });
