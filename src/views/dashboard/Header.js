@@ -19,7 +19,7 @@ class Header extends PureComponent {
         const { config, index } = props;
 
         const contextMenu = [
-            { label: "Create dashboard", icon: "fa fa-plus", command: () => this.$dashboard.createDashboard() },
+            { label: "Create dashboard", icon: "fa fa-plus", command: () => this.$dashboard.createDashboard(this.state.config) },
             { label: "Delete dashboard", icon: "fa fa-trash-o", command: () => this.deleteDashboard(), disabled: index === 0 }
         ];
 
@@ -45,7 +45,7 @@ class Header extends PureComponent {
 
     deleteDashboard() {
         this.$dashboard.deleteDashboard(this.state.index).then(uid => {
-            this.props.history.push(`/${this.props.userId}/dashboard/1`);
+            this.props.history.push(`/${this.props.userId}/dashboard/0`);
         });
     }
 

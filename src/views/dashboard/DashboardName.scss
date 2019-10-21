@@ -17,3 +17,19 @@
         margin: auto 5px;
     }
 }
+
+.dashboard-icons{
+    width: 290px;
+
+    & > div.d-icon {
+        float: left;
+        padding: 3px;
+        width: 32px;
+        height: 32px;
+        cursor: pointer;
+
+        span.fa {
+            font-size: 23px;
+        }
+    }
+}
