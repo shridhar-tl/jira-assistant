@@ -146,3 +146,9 @@
 .p-contextmenu .p-submenu-list {
     width: 22.5em;
 }
+
+.calendar-view {
+  .p-panel-content {
+      overflow: hidden !important;
+  }
+}

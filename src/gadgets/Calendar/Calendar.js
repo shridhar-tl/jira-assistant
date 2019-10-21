@@ -27,6 +27,9 @@ class Calendar extends BaseGadget {
 
         this.hideMenu = !props.isGadget;
         this.hideExport = true;
+        if (props.isGadget) {
+            this.className = "calendar-view";
+        }
 
         if (this.$session.pageSettings.calendar) {
             this.state.settings = Object.assign({ showMeetings: true, showWorklogs: true, showInfo: true }, this.$session.pageSettings.calendar);
@@ -864,7 +867,7 @@ class Calendar extends BaseGadget {
             state: { showAddWorklogPopup, showSettingsPopup, worklogItem, events, showOpEvent }
         } = this;
 
-        return super.renderBase(<div>
+        return super.renderBase(<>
             <FullCalendar ref={(el) => { if (!el) { return; } this.fc = el; this.calendar = el.calendar; }} events={events} options={this.fullCalendarOpts} />
             {showAddWorklogPopup && <AddWorklog worklog={worklogItem} onDone={addEvent} onHide={hideWorklogDialog} />}
             {showSettingsPopup && <CalendarSettings settings={this.state.settings} onDone={this.saveSettings} onHide={this.toggleSettingsDialog} />}
@@ -872,7 +875,7 @@ class Calendar extends BaseGadget {
             <OverlayPanel className="op-event-details" ref={(el) => { this.opEvent = el; }} showCloseIcon={true} dismissable={true} appendTo={document.body} onHide={this.hideOPEvent}>
                 {showOpEvent && <MeetingDetails eventDetails={this.currentMeetingItem} cut={this.$utils.cut} />}
             </OverlayPanel>
-        </div>
+        </>
         );
     }
 }
