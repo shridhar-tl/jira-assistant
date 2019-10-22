@@ -54,3 +54,5 @@ Jira Assistant is a free software and anyone is free to use it for personal or c
 
 ## Features available in "Jira Assist"
 To know about the list of features available in Jira Assistant refer the [features list](docs/FEATURES.md).
+
+You can also watch the [youtube playlist](https://www.youtube.com/watch?list=PLxDBQLgpBhsDGppYrDqARYULukk7XFJPV&v=HsWq7cT3Qq0) with few videos showing how to use individual features.
