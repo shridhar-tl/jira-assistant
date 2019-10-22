@@ -295,7 +295,7 @@ class UserRow extends PureComponent {
                                 title="Click to toggle ticket details" />
                             <img src={u.imageUrl} height={40} width={40} className="pull-left" alt={u.displayName} />
                             <span className="name">{u.displayName}</span>
-                            <span className="email">({u.emailAddress}{u.timeZone && <span>, time zone: {u.timeZone}</span>})</span>
+                            <span className="email">({u.emailAddress || u.name}{u.timeZone && <span>, time zone: {u.timeZone}</span>})</span>
                         </div>
                     </td>
                     {dates.map((day, i) => <td key={i} className={u.logClass[day.prop]}>{convertSecs(u.total[day.prop])}</td>)}
