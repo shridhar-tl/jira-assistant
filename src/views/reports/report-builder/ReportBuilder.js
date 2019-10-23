@@ -21,7 +21,6 @@ class ReportBuilder extends BaseGadget {
         this.$reportConfig.configureBuilder();
         this.$reportConfig.parameters.removeAllListeners();
         this.$reportConfig.eventPipe.on("resolveSchema_JQL", this.resolveSchema_JQL.bind(this));
-        this.$reportConfig.eventPipe.on("addWorklog", this.addWorklog.bind(this));
         this.state = { reportDefinition: this.getEmptyDefinition() };
     }
 
@@ -34,9 +33,9 @@ class ReportBuilder extends BaseGadget {
     UNSAFE_componentWillMount() {
         const { match: { params } } = this.props;
 
-        const queryId = parseInt(params['queryId'] || 0) || null;
-        if (queryId) {
-            this.queryChanged(queryId);
+        const reportId = parseInt(params['reportId'] || 0) || null;
+        if (reportId) {
+            this.queryChanged(reportId);
         }
         this.fillQueriesList();
     }
@@ -83,8 +82,8 @@ class ReportBuilder extends BaseGadget {
         };
     }
 
-    queryChanged = (selQueryId) => {
-        return this.$report.getReportDefinition(selQueryId)
+    queryChanged = (reportId) => {
+        return this.$report.getReportDefinition(reportId)
             .then(this.setReportDefinition);
     }
 
@@ -173,25 +172,11 @@ class ReportBuilder extends BaseGadget {
         </div>;
     }
 
-    addWorklog(data) {
-        this.worklogItem = data;
-        this.setState({ showWorklogPopup: true });
-    }
-
-    worklogAdded = (result) => {
-        // ToDo:
-        this.hideWorklog();
-    }
-
-    hideWorklog = () => {
-        this.setState({ showWorklogPopup: false });
-    }
-
     hideDatasetPopup = () => this.setState({ selectedDatasetType: null })
 
     render() {
         const {
-            state: { reportDefinition, reportMode, showSaveDialog, selectedDatasetType, showWorklogPopup }
+            state: { reportDefinition, reportMode, showSaveDialog, selectedDatasetType }
         } = this;
 
         const isEditing = reportDefinition.id > 0;
@@ -205,7 +190,6 @@ class ReportBuilder extends BaseGadget {
                 {showSaveDialog && <SaveReportDialog queryName={reportDefinition.queryName} allowCopy={isEditing}
                     onHide={this.hideSaveDialog} onChange={this.saveQuery} />}
                 {selectedDatasetType === 'JQL' && <JQLEditorDialog filterQuery={this.filterQuery} onHide={this.hideDatasetPopup} onResolve={this.saveDataset_JQL} />}
-                {showWorklogPopup && <AddWorklog worklog={this.worklogItem} onDone={this.worklogAdded} onHide={this.hideWorklog} />}
             </>
             );
         }

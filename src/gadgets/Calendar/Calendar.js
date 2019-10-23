@@ -2,7 +2,7 @@ import React from 'react';
 import $ from 'jquery';
 import BaseGadget from '../BaseGadget';
 import { inject } from '../../services/injector-service';
-import { GadgetActionType } from '..';
+import { GadgetActionType } from '../_constants';
 import { FullCalendar } from 'primereact/fullcalendar';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';

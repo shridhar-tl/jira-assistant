@@ -1,17 +1,19 @@
 import React from 'react';
 import { initReportBuilder } from 'jsd-report';
 import EventEmitter from 'events';
+import { GadgetActionType } from '../gadgets/_constants';
 
 export default class ReportConfigService {
-    static dependencies = ["ReportService", "SessionService", "JiraService", "AjaxService", "UserGroup", "UserUtilsService"];
+    static dependencies = ["ReportService", "SessionService", "JiraService", "AjaxService", "UserGroup", "UserUtilsService", "BookmarkService"];
 
-    constructor($report, $session, $jira, $http, $usergroup, $userutils) {
+    constructor($report, $session, $jira, $http, $usergroup, $userutils, $bookmark) {
         this.$report = $report;
         this.$session = $session;
         this.$jira = $jira;
         this.$http = $http;
         this.$usergroup = $usergroup;
         this.$userutils = $userutils;
+        this.$bookmark = $bookmark;
 
         this.parameters = new EventEmitter();
         this.eventPipe = new EventEmitter();
@@ -57,7 +59,11 @@ export default class ReportConfigService {
                 searchUsers: { value: (text, maxResult = 10, startAt = 0) => this.$jira.searchUsers(text, maxResult, startAt) },
                 addWorklog: { value: (obj) => this.eventPipe.emit("addWorklog", typeof obj === "string" ? { ticketNo: obj } : obj) },
                 getWorklogs: { value: (jiraKey) => this.$jira.getWorklogs(jiraKey) },
-                bookmarkTicket: { value: (jiraKey) => this.$bookmark.addBookmark([jiraKey]) },
+                bookmarkTicket: {
+                    value: (jiraKey) => this.$bookmark.addBookmark([jiraKey]).then(() => {
+                        this.eventPipe.emit("gadgetAction", GadgetActionType.TicketBookmarked);
+                    })
+                },
                 formatDate: { value: this.$userutils.formatDate },
                 formatTime: { value: this.$userutils.formatTime },
                 formatDateTime: { value: this.$userutils.formatDateTime },
