@@ -53,7 +53,7 @@ const sessionBasedRoute = [
         component: SprintReportComponent
     },
     {
-        path: '/reports/customgrouped/:queryId',
+        path: '/reports/customgrouped/:reportId',
         component: CustomReportComponent
     },
     {
@@ -61,7 +61,7 @@ const sessionBasedRoute = [
         component: CustomReportComponent
     },
     {
-        path: '/reports/advanced/:queryId',
+        path: '/reports/advanced/:reportId',
         component: ReportBuilderComponent
     },
     {

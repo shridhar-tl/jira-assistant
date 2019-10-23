@@ -1,16 +1,46 @@
+.report-viewer {
+    .report-items {
+        .scroll-table-container {
+            .scroll-table {
+                td, th {
+                    .fa {
+                        margin-right: 8px;
+                    }
+
+                    .fa-ellipsis-v {
+                        cursor: pointer;
+                    }
+                }
+            }
+        }
+    }
+}
+
 .gadget.half-height {
     .report-viewer {
         .report-items {
             .scroll-table-container {
                 max-height: calc(50vh - 86px);
+            }
+        }
+    }
+}
 
-                .scroll-table {
-                    td, th {
-                        .fa {
-                            margin-right: 8px;
-                        }
-                    }
-                }
+.gadget:not(.docked).full-height {
+    .report-viewer {
+        .report-item {
+            .scroll-table-container {
+                max-height: calc(100vh - 128px);
+            }
+        }
+    }
+}
+
+.gadget.docked.full-height {
+    .report-viewer {
+        .report-item {
+            .scroll-table-container {
+                max-height: calc(100vh - 88px);
             }
         }
     }

@@ -1,4 +1,4 @@
-import { GadgetActionType } from './BaseGadget';
+import { GadgetActionType } from './_constants';
 import Calendar from './Calendar/Calendar';
 import DateWiseWorklog from './DateWiseWorklog';
 import WorklogGadget from './WorklogGadget/WorklogGadget';

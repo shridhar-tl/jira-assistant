@@ -177,14 +177,14 @@ class ReportViewer extends BaseGadget {
         const group = groups[0];
         const field = group.id;
         const func = group.functions;
-        groups.RemoveAt(0);
+        groups.removeAt(0);
         const isAggGrp = func.useArray;
         const selectFunc = (grp) => {
             const val = { name: grp.key };
             const values = grp.values;
             if (groups.length > 0) {
                 val.subGroups = this.groupData(values, Array.from(groups));
-                val.issueCount = val.subGroups.Sum((tm) => { return tm.issueCount; });
+                val.issueCount = val.subGroups.sum((tm) => { return tm.issueCount; });
             }
             else {
                 val.issues = values;
@@ -254,7 +254,7 @@ class ReportViewer extends BaseGadget {
                         subCols.push(gr.key);
                         tmpUserIds.push(keyId);
                     } // Store it in header if it is not available in temp list
-                    obj[keyId] = { timespent: gr.values.Sum((v) => { return v.timeSpentSeconds; }) };
+                    obj[keyId] = { timespent: gr.values.sum((v) => { return v.timeSpentSeconds; }) };
                 }
                 fields.worklogs_proc = obj;
             }
@@ -266,24 +266,6 @@ class ReportViewer extends BaseGadget {
         headObj.subCols = subCols.orderBy((c) => { return c.text; }); // Object for storing the user details to show in header
         this.fieldOpts.worklogUsers = headObj.subCols;
     }
-
-    /* This functionality is taken care by Base Gadget
-    renderCustomActions() {
-        const {
-            isGadget,
-            state: { hasReportData, reportDefinition }
-        } = this;
-
-        if (isGadget) {
-            return null;
-        }
-
-        return <>
-            {this.getFullScreenButton()}
-            {this.getRefreshButton(this.fillReport)}
-            {hasReportData && this.getExportButton(reportDefinition.queryName)}
-        </>;
-    }*/
 
     render() {
         const {

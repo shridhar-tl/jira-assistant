@@ -41,7 +41,7 @@ class QueryEditor extends BaseGadget {
         }
 
         if (props.reportId > 0) {
-            this.querySelected(props.reportId);
+            this.querySelected(parseInt(props.reportId));
         }
 
         return { reportQuery, selReportId: null };
@@ -434,7 +434,6 @@ class QueryEditor extends BaseGadget {
 
     renderCustomActions() {
         const {
-
             state: { reportsList, selReportId }
         } = this;
 
