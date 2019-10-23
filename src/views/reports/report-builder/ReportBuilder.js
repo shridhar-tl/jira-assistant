@@ -8,7 +8,6 @@ import "./ReportBuilder.scss";
 import SaveReportDialog from '../../../dialogs/SaveReportDialog';
 import JQLEditorDialog from './JQLEditorDialog';
 import Dialog from '../../../dialogs';
-import AddWorklog from '../../../dialogs/AddWorklog';
 
 class ReportBuilder extends BaseGadget {
     constructor(props) {
