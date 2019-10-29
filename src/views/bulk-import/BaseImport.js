@@ -2,10 +2,12 @@ import React from 'react';
 import BaseGadget from '../../gadgets/BaseGadget';
 import Papa from "papaparse";
 import { Button } from '../../controls';
+import { inject } from '../../services/injector-service';
 
 class BaseImport extends BaseGadget {
     constructor(props, importType, icon) {
         super(props, `Bulk import - [${importType}]`, icon);
+        inject(this, "UserUtilsService");
         this.isGadget = false;
         this.hideRefresh = true;
     }
@@ -48,7 +50,7 @@ class BaseImport extends BaseGadget {
         }
     }
 
-    getTicketLink(ticketNo) {
+    getTicketLink = (ticketNo) => {
         return <a className="link" href={this.$userutils.getTicketUrl(ticketNo)} target="_blank" rel="noopener noreferrer">{ticketNo}</a>;
     }
 

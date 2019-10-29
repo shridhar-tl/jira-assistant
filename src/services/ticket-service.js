@@ -57,25 +57,26 @@ export default class TicketService {
     }
 
     async processIssuesForImport(issues) {
-        const importData = issues.map(this.updateIssueBasicFields);
+        const importData = issues.map(this.prepareParentAndProjectFields);
         const projectListToPull = importData.distinct(i => i.project, true);
 
         const metadata = await this.$jira.getProjectImportMetadata(projectListToPull);
 
         const issueKeys = importData.distinct(i => i.issuekey || null, true);
-        const ticketDetails = this.getTicketDetails(issueKeys, false);
+        const ticketDetails = await this.getTicketDetails(issueKeys, false);
 
         const importFields = await this.getFieldsToImport(metadata, issues);
 
         const processedIssues = await Promise.all(importData.map(async issue => {
-            return await this.prepareIssue(issue, metadata, importFields);
+            const ticketFields = issue.issuekey && ticketDetails && (ticketDetails[issue.issuekey] || {}).fields;
+            return await this.prepareIssue(issue, metadata, importFields, ticketFields);
         }));
 
         return { importFields, metadata, importData: processedIssues, ticketDetails };
     }
 
-    async prepareIssue(issue, metadata, importFields) {
-        const result = await this.validateBasicFields(issue, metadata);
+    async prepareIssue(issue, metadata, importFields, ticketFields) {
+        const result = await this.validateBasicFields(issue, metadata, ticketFields);
 
         const { raw, options, fields, issuetype } = result;
 
@@ -87,7 +88,7 @@ export default class TicketService {
 
             const fieldOption = this.getOptionField(options, f);
 
-            await this.prepareField(f, fieldMetadata, raw, fieldOption, issuetype);
+            await this.prepareField(f, fieldMetadata, raw, fieldOption, issuetype, ticketFields);
 
             if (!hasError) {
                 hasError = fieldOption.errors.length > 0;
@@ -96,17 +97,21 @@ export default class TicketService {
 
         if (importFieldKeys.length > 0) {
             Object.keys(raw).forEach((f) => {
-                if ((fields[f] || f === "issuekey") && raw[f]) { return; }
+                const fieldOption = this.getOptionField(options, f, true);
+                const importValue = this.assignExistingValuesWhenEmpty(f, raw, fieldOption, ticketFields);
+
+                if ((fields[f] || f === "issuekey") && importValue) { return; }
 
                 const fieldMetadata = importFields.first(cf => cf.key === f);
-                const fieldOption = this.getOptionField(options, f, true);
 
-                fieldOption.displayValue = raw[f];
+                fieldOption.displayValue = importValue;
 
                 if (fieldMetadata) {
                     if (raw.issuekey) {
-                        fieldOption.errors.push("This field is not editable");
-                        hasError = true;
+                        if (this.isValueChanged(f, raw, ticketFields)) {
+                            fieldOption.errors.push("This field is not editable");
+                            hasError = true;
+                        }
                     }
                     else {
                         fieldOption.warnings.push("Not an allowed field while creation of issue. Will try to update after issue is created.");
@@ -129,6 +134,50 @@ export default class TicketService {
         return result;
     }
 
+    assignExistingValuesWhenEmpty(field, issue, option, ticketFields) {
+        let value = (issue[field] || "").trim();
+
+        // If the value given is null then remove the value while updating
+        const setValueToNull = value.toLowerCase() === "null";
+        if (setValueToNull) {
+            value = "";
+            issue[field] = "";
+        }
+
+        const existingValue = ticketFields && ticketFields[field];
+
+        if (existingValue && !value && !setValueToNull) {
+            if (typeof existingValue === "object") {
+                value = existingValue.name || existingValue.id;
+            }
+            else {
+                value = existingValue;
+            }
+
+            issue[field] = value;
+            option.displayValue = value;
+        }
+
+        return value;
+    }
+
+    isValueChanged(field, issue, ticketFields) {
+        const value = (issue[field] || "").trim().toLowerCase();
+
+        const existingValue = ticketFields && ticketFields[field];
+
+        if (existingValue) {
+            if (typeof existingValue === "object") {
+                // eslint-disable-next-line eqeqeq
+                return existingValue.id != value && (existingValue.name || "").toLowerCase() !== value;
+            } else {
+                return (`${existingValue}`).toLowerCase() !== value;
+            }
+        }
+
+        return false;
+    }
+
     getOptionField(options, field, includeWarning) {
         const fieldOption = options[field] || { errors: [] };
         options[field] = fieldOption;
@@ -138,9 +187,12 @@ export default class TicketService {
         return fieldOption;
     }
 
-    async validateBasicFields(raw, metadata) {
-        const { project, issuetype } = raw;
+    async validateBasicFields(raw, metadata, ticketFields) {
         const options = { project: { errors: [] }, issuetype: { errors: [] } };
+
+        const project = this.assignExistingValuesWhenEmpty("project", raw, options.project, ticketFields);
+        const issuetype = this.assignExistingValuesWhenEmpty("issuetype", raw, options.issuetype, ticketFields);
+
         let hasError = false;
 
         if (!project) {
@@ -237,9 +289,9 @@ export default class TicketService {
         return hasError;
     }
 
-    async prepareField(field, metadata, issue, option, issuetype) {
+    async prepareField(field, metadata, issue, option, issuetype, ticketFields) {
         const { required, schema, allowedValues } = metadata;
-        const value = issue[field];
+        const value = this.assignExistingValuesWhenEmpty(field, issue, option, ticketFields);
 
         if (required && !value) {
             option.errors.push("Value is required");
@@ -349,7 +401,7 @@ export default class TicketService {
         return importFields;
     }
 
-    updateIssueBasicFields = (issue) => {
+    prepareParentAndProjectFields = (issue) => {
         const ticket = { ...issue };
 
         Object.keys(ticket).forEach(f => {
@@ -361,12 +413,12 @@ export default class TicketService {
         let { issuekey, project } = issue;
 
         if (issuekey) {
-            issuekey = issuekey.toUpperCase();
+            issuekey = issuekey.trim().toUpperCase();
             ticket.issuekey = issuekey;
         }
 
         if (project) {
-            project = project.toUpperCase();
+            project = project.trim().toUpperCase();
             ticket.project = project;
         }
 
@@ -375,7 +427,7 @@ export default class TicketService {
         }
 
         if (ticket.parent) {
-            ticket.parent = ticket.parent.toUpperCase();
+            ticket.parent = ticket.parent.trim().toUpperCase();
         }
 
         return ticket;
