@@ -3,7 +3,7 @@
 import * as $ from 'jquery';
 //import Excel from "exceljs/dist/es5/exceljs.browser";
 //Working:import * as Excel from "exceljs/dist/exceljs.min.js";
-import Excel from "exceljs/modern.browser";
+import Excel from "exceljs";
 //https://github.com/guyonroche/exceljs/issues/511#issuecomment-391140701
 //import { saveAs } from 'file-saver';
 
