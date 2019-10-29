@@ -27,6 +27,9 @@ class YoutubeVideo extends BaseDialog {
         else if (~route.indexOf("import/worklog")) {
             videoId = "6hAOtUm1lUk";
         }
+        else if (~route.indexOf("import/issue")) {
+            videoId = "EFgXFqrGuTI";
+        }
         else if (~route.indexOf("advanced")) {
             videoId = "HMyBkaZ09Xw";
         }
