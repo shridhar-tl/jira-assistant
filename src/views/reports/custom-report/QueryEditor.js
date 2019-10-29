@@ -47,8 +47,8 @@ class QueryEditor extends BaseGadget {
         return { reportQuery, selReportId: null };
     }
 
-    initModel(clear, props) {
-        this.setState(this.getClearState(!!clear, props));
+    initModel = (clear) => {
+        this.setState(this.getClearState(!!clear, this.props));
     }
 
     UNSAFE_componentWillMount() {

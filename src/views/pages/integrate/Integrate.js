@@ -8,6 +8,8 @@ class Integrate extends PureComponent {
         super(props);
         inject(this, "AjaxService", "DatabaseService", "MessageService", "CacheService", "AppBrowserService", "SessionService");
 
+        this.year = new Date().getFullYear();
+
         this.browser = navigator.userAgent;
         this.state = {};
     }
@@ -123,18 +125,18 @@ class Integrate extends PureComponent {
                                 <div className="card-footer p-4">
                                     <div className="row">
                                         <div className="col-6">
-                                            <span>© 2019 Jira Assistant</span>
+                                            <span>© {this.year} Jira Assistant</span>
                                         </div>
                                         <div className="col-6" style={{ textAlign: 'right' }}>
                                             <span>
                                                 <i className="fa fa-youtube" />
-                                                <a href="https://www.youtube.com/embed/f2aBSXzbYuA?rel=0&autoplay=1&showinfo=0&cc_load_policy=1&start=34" target="_blank" rel="noopener noreferrer"
-                                                    title="Click to open youtube video guiding you to setup Jira Assistant">Help setup</a>
+                                                <a href="https://www.youtube.com/embed/HsWq7cT3Qq0?rel=0&autoplay=1&showinfo=0&cc_load_policy=1" target="_blank" rel="noopener noreferrer"
+                                                    title="Click to open youtube video guiding you to setup Jira Assistant"> Help setup</a>
                                             </span> |
                                             <span>
                                                 <i className="fa fa-phone" />
                                                 <a href={`https://docs.google.com/forms/d/e/1FAIpQLScJvQtHZI_yZr1xd4Z8TwWgvtFss33hW5nJp4gePCgI2ScNvg/viewform?entry.1426640786=${version}&entry.972533768=${browser}`}
-                                                    target="_blank" rel="noopener noreferrer" title="Click to report about any issues or ask a question">Contact us</a>
+                                                    target="_blank" rel="noopener noreferrer" title="Click to report about any issues or ask a question"> Contact us</a>
                                             </span>
                                         </div>
                                     </div>

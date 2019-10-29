@@ -221,7 +221,13 @@ export default class ReportConfigService {
 
     getParamValue(parameters, parameterTemplate, name) {
         const parts = name.split('.');
-        let curPath = parameters[parts[0]];
+        const paramName = parts[0];
+        let curPath = parameters[paramName];
+        if (curPath === undefined) {
+            console.error(`Value for parameter "${paramName}" does not exists`);
+            return curPath;
+        }
+
         for (let i = 1; curPath && i < parts.length; i++) {
             curPath = curPath[parts[i]];
         }
@@ -229,8 +235,10 @@ export default class ReportConfigService {
             if (curPath instanceof Date) {
                 curPath = curPath.format('yyyy-MM-dd');
             }
+            else if (Array.isArray(curPath)) {
+                curPath = curPath.join('","');
+            }
             else if (typeof curPath === "object") {
-                const paramName = parts[0];
                 const template = parameterTemplate[paramName];
                 switch (template.type) {
                     case "UG":
