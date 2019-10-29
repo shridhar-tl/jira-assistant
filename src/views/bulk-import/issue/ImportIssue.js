@@ -151,6 +151,10 @@ class ImportIssue extends BaseImport {
 
     }
 
+    clearImportData = () => {
+        this.setState({ importFields: [], ticketDetails: {}, importData: null, selectedCount: null });
+    }
+
     renderFooter() {
         const {
             state: { isLoading, selectedCount }
