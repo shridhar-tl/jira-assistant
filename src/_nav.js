@@ -49,11 +49,7 @@ export const navigation = [
         name: 'Import issue',
         id: 'IMI',
         url: '/import/issue',
-        icon: 'fa fa-ticket',
-        badge: {
-            variant: 'info',
-            text: 'BETA'
-        }
+        icon: 'fa fa-ticket'
     },
     {
         title: true,

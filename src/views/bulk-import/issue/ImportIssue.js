@@ -177,7 +177,7 @@ class ImportIssue extends BaseImport {
                         <TRow>
                             <Column>#</Column>
                             <Column><Checkbox checked={selectAll} onChange={this.toggleAllRows} /></Column>
-                            <Column sortBy="issuekey">Ticket No</Column>
+                            <Column>Ticket No</Column>
                             {importFields.map((f, i) => <Column key={i}>{f.name}</Column>)}
                             <Column sortBy="status">Status</Column>
                         </TRow>
@@ -208,13 +208,13 @@ class IssueRow extends PureComponent {
     render() {
         const { row, ticketDetails, importFields, index } = this.props;
         const { raw, options, fields, hasError, disabled, selected, statusErrors } = row;
-        const rawTicket = ticketDetails[row.issuekey] || null;
+        const rawTicket = ticketDetails[raw.issuekey] || null;
 
         return (
             <tr className={row.error ? "row-error" : ""}>
                 <td className={hasError ? "error-row" : "valid-row"}>{index + 1}</td>
                 <td><Checkbox checked={selected} disabled={disabled} onChange={this.toggleSelection} /></td>
-                <IssueKeyField rawTicket={rawTicket} issuekey={raw["issuekey"]} option={options["issuekey"]} />
+                <IssueKeyField rawTicket={rawTicket} issuekey={raw["issuekey"]} option={options["issuekey"]} getTicketLink={this.props.getTicketLink} />
                 {importFields.map((f, i) => {
                     const fieldName = f.key;
 
@@ -222,7 +222,7 @@ class IssueRow extends PureComponent {
                     const option = options[fieldName];
                     const field = fields[fieldName];
 
-                    return <IssueField key={i} index={i} row={row} field={f} value={value} option={option} metadata={field} />;
+                    return <IssueField key={i} index={i} row={row} field={f} value={value} option={option} metadata={field} rawTicket={rawTicket} />;
                 })}
                 <td title="One or more errors exists">{hasError && <span title={statusErrors} className="fa fa-exclamation-triangle msg-error" />} {row.status}</td>
             </tr>
@@ -235,7 +235,8 @@ function getFieldStatusIcon(errors, warnings) {
     const hasWarnings = warnings && warnings.length > 0;
 
     if (hasErrors || hasWarnings) {
-        return <span title={hasErrors ? errors : warnings} className={`fa fa-exclamation-triangle ${hasErrors ? "msg-error" : "msg-warning"}`} />;
+        const className = `fa fa-exclamation-triangle ${hasErrors ? "msg-error" : "msg-warning"}`;
+        return <span title={hasErrors ? errors : warnings} className={className} />;
     }
 }
 
@@ -263,8 +264,20 @@ class IssueField extends PureComponent {
     }
 
     render() {
-        const { option } = this.props;
-        const { errors, warnings, displayValue } = option || {};
+        const { option, rawTicket, field: { key } = {} } = this.props;
+        const { fields } = rawTicket || {};
+        const { errors, warnings } = option || {};
+        let { displayValue } = option || {};
+
+        if (!displayValue && fields && key) {
+            const value = fields[key];
+            if (value && typeof value === "object") {
+                displayValue = value.name || value.key || value.id;
+            }
+            else if (value) {
+                displayValue = value;
+            }
+        }
 
         return <td>{displayValue} {getFieldStatusIcon(errors, warnings)}</td>;
     }
