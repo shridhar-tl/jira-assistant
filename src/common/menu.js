@@ -1,8 +1,7 @@
 const chrome = window["chrome"];
 const browser = window["browser"];
-const useNewUI = (localStorage.getItem("useNewUI") || false);
 
-const indexPageUrl = useNewUI ? "/index.html" : "/old/index.html";
+const indexPageUrl = "/index.html";
 
 if (!localStorage.getItem('CurrentJiraUrl') || !localStorage.getItem('CurrentUserId')) { document.location.href = `${indexPageUrl}#/pages/integrate`; }
 else {
