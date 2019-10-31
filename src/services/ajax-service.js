@@ -1,17 +1,20 @@
 import $ from 'jquery';
 import { prepareUrlWithQueryString } from '../common/utils';
+import browser from '../common/browsers';
 
 export default class AjaxService {
-    static dependencies = ["SessionService", "MessageService"];
+    static dependencies = ["SessionService", "MessageService", "AppBrowserService"];
 
     constructor($session, $message) {
         this.$session = $session;
         this.$message = $message;
 
-        // Jira has issue with some user agent. Hence always customize it
         const headerObj = { 'Content-Type': 'application/json' };
 
-        //headerObj["User-Agent"] = "Chrome"; //ToDo: Add it only for firefox browser.
+        // Jira has issue with some user agent. Hence always customize it for Firefox
+        if (browser.isFirefox) {
+            headerObj["User-Agent"] = "Chrome";
+        }
 
         this.httpOptions = {
             headers: headerObj
