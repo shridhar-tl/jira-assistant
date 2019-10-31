@@ -1,10 +1,10 @@
 const chrome = window["chrome"];
 const browser = window["browser"];
-const useNewUI = (localStorage.getItem("useNewUI") || false);
 
-const indexPageUrl = useNewUI ? "/index.html" : "/old/index.html";
+const indexPageUrl = "/index.html";
+const currentUserId = localStorage.getItem('CurrentUserId');
 
-if (!localStorage.getItem('CurrentJiraUrl') || !localStorage.getItem('CurrentUserId')) { document.location.href = `${indexPageUrl}#/pages/integrate`; }
+if (!localStorage.getItem('CurrentJiraUrl') || !currentUserId) { document.location.href = `${indexPageUrl}#/pages/integrate`; }
 else {
   const isFirefox = typeof InstallTrigger !== 'undefined';
   const isChrome = !!chrome && (!!chrome.webstore || !!chrome.identity) && !isFirefox;

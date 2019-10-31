@@ -1,7 +1,10 @@
 import { injectable, inject } from './injector-service';
 import AjaxService from './ajax-service';
 import AnalyticsService from './analytics-service';
-import AppBrowserService from './appbrowser-service';
+import ChromeService from './browser-chrome-service';
+import FirefoxService from './browser-firefox-service';
+import EdgeService from './browser-edge-service';
+import DevService from './browser-dev-service';
 import AuthService from './auth-service';
 import BookmarkService from './bookmark-service';
 import CacheService from './cache-service';
@@ -23,13 +26,31 @@ import UserGroupService from './usergroups-service';
 import UserUtilsService from './userutils-service';
 import UtilsService from './utils-service';
 import WorklogService from './worklog-service';
+import browsers from '../common/browsers';
 
 export { inject };
 
 export default function injectServices() {
     injectable(AjaxService, "AjaxService", "$ajax");
     injectable(AnalyticsService, "AnalyticsService", "$analytics");
-    injectable(AppBrowserService, "AppBrowserService", "$jaBrowserExtn");
+    if (process.env.NODE_ENV === "production") {
+        if (browsers.isChrome) {
+            console.log("Chrome Browser service injected");
+            injectable(ChromeService, "AppBrowserService", "$jaBrowserExtn");
+        }
+        else if (browsers.isFirefox) {
+            console.log("Firefox Browser service injected");
+            injectable(FirefoxService, "AppBrowserService", "$jaBrowserExtn");
+        }
+        else if (browsers.isEdge) {
+            console.log("Edge Browser service injected");
+            injectable(EdgeService, "AppBrowserService", "$jaBrowserExtn");
+        }
+    }
+    else {
+        console.log("Browser service running in Dev mode");
+        injectable(DevService, "AppBrowserService", "$jaBrowserExtn");
+    }
     injectable(AuthService, "AuthService", "$auth");
     injectable(BookmarkService, "BookmarkService", "$bookmark");
     injectable(CacheService, "CacheService", "$cache");
