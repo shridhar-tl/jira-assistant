@@ -24,21 +24,6 @@ class GeneralSettings extends PureComponent {
     }
 
     UNSAFE_componentWillMount() {
-        /*this.$jaBrowserExtn.getStorageInfo().then((info) => {
-            this.spaceInfo = info;
-            const progressClass = 'progress-bar-';
-            if (info.usedSpacePerc < 50) {
-                progressClass += 'green';
-            }
-            else if (info.usedSpacePerc <= 75) {
-                progressClass += 'yellow';
-            }
-            else {
-                progressClass += 'red';
-            }
-            this.spaceInfo.progressClass = progressClass;
-        });*/
-
         this.$jira.getRapidViews().then((rapidViews) => {
             rapidViews = rapidViews.orderBy((d) => { return d.name; }).map((d) => {
                 return { name: d.name, id: d.id };

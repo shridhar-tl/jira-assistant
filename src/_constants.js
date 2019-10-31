@@ -37,8 +37,11 @@ export const dateFormats = [
     "MMM dd, yyyy", "ddd, MMM dd, yyyy"
 ];
 export const timeFormats = [" HH:mm:ss", " hh:mm:ss tt", " HH.mm.ss", " hh.mm.ss tt"];
+
 export const CHROME_WS_URL = "https://chrome.google.com/webstore/detail/jira-assistant/momjbjbjpbcbnepbgkkiaofkgimihbii";
 export const FF_STORE_URL = "https://addons.mozilla.org/en-US/firefox/addon/jira-assistant/";
+export const EDGE_STORE_URL = "https://addons.mozilla.org/en-US/firefox/addon/jira-assistant/";
+
 export const DASHBOARD_ICONS = [
     'fa fa-tachometer',
     'fa fa-info-circle',
