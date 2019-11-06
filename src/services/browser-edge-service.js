@@ -7,9 +7,9 @@ export default class AppBrowserService {
                 if (this.notSetting.curShowing) {
                     return;
                 }
-                this.chrome.notifications.onButtonClicked.addListener(this.notSetting.buttonClicked);
-                this.chrome.notifications.onClicked.addListener(this.notSetting.onClicked);
-                this.chrome.notifications.onClosed.addListener(this.notSetting.onClosed);
+                this.browser.notifications.onButtonClicked.addListener(this.notSetting.buttonClicked);
+                this.browser.notifications.onClicked.addListener(this.notSetting.onClicked);
+                this.browser.notifications.onClosed.addListener(this.notSetting.onClosed);
                 this.notSetting.curShowing = {};
             },
             buttonClicked: (id, index) => {
@@ -23,7 +23,7 @@ export default class AppBrowserService {
                         // eslint-disable-next-line no-alert
                         alert("This functionality is not yet implemented!");
                     }
-                    this.chrome.notifications.clear(id);
+                    this.browser.notifications.clear(id);
                 }
             },
             onClicked: (id, byUser) => {
@@ -60,31 +60,30 @@ export default class AppBrowserService {
                 if (opts.buttons) {
                     msgObj.buttons = opts.buttons.map((b) => { return { title: b.title }; });
                 }
-                this.chrome.notifications.create(id, msgObj, (notId) => {
+                this.browser.notifications.create(id, msgObj, (notId) => {
                     this.notSetting.curShowing[id] = opts;
                 });
             }
         };
         this.$window = window;
-        this.chrome = this.$window['chrome'];
+        this.browser = this.$window['browser'];
         //https://stackoverflow.com/questions/9847580/how-to-detect-safari-chrome-ie-firefox-and-opera-browser?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
     }
+
     getCurrentUrl() {
-        return new Promise((resolve, reject) => {
-            this.chrome.tabs.query({ 'active': true, 'lastFocusedWindow': true }, (tabs) => {
-                if (tabs && tabs[0] && tabs[0].url) {
-                    resolve(tabs[0].url);
-                }
-                else {
-                    reject("Unable to fetch the url");
-                }
-            });
+        return this.getCurrentTab().then((tab) => {
+            if (tab && tab.url) {
+                return tab.url;
+            }
+            else {
+                return Promise.reject("Unable to fetch the url");
+            }
         });
     }
 
     getCurrentTab() {
         return new Promise((resolve, reject) => {
-            this.chrome.tabs.query({ 'active': true, 'lastFocusedWindow': true }, (tabs) => {
+            this.browser.tabs.query({ 'active': true, 'lastFocusedWindow': true }, (tabs) => {
                 if (tabs && tabs[0]) {
                     resolve(tabs[0]);
                 }
@@ -97,16 +96,16 @@ export default class AppBrowserService {
 
     replaceTabUrl(url) {
         return this.getCurrentTab().then((tab) => {
-            this.chrome.tabs.update(tab.id, { url: url });
+            this.browser.tabs.update(tab.id, { url: url });
         });
     }
 
     openTab(url) {
-        window.open(url); // need to change
+        this.browser.tabs.create({ url, active: true });
     }
 
     getStorage() {
-        return this.chrome.storage ? this.chrome.storage.local : localStorage;
+        return this.browser.storage ? this.browser.storage.local : localStorage;
     }
 
     getStorageInfo() {
@@ -124,11 +123,11 @@ export default class AppBrowserService {
 
     getAppInfo() { // need to change
         return new Promise((resolve, reject) => {
-            const { management } = this.chrome;
+            const { management } = this.browser;
             if (management) {
                 management.getSelf((info) => {
                     if (info) {
-                        info.isDevelopment = info.installType === this.chrome.management.ExtensionInstallType.DEVELOPMENT;
+                        info.isDevelopment = info.installType === this.browser.management.ExtensionInstallType.DEVELOPMENT;
                         resolve(info);
                     }
                     else {
@@ -144,7 +143,7 @@ export default class AppBrowserService {
     }
 
     getAppLongName() { // need to change
-        return this.chrome.app.getDetails().name;
+        return this.browser.app.getDetails().name;
     }
 
     notify(id, title, message, ctxMsg, opts) {
@@ -152,14 +151,14 @@ export default class AppBrowserService {
         this.notSetting.show(id, title, message, ctxMsg, opts);
     }
 
-    addCmdListener(callback) { this.chrome.commands.onCommand.addListener(callback); }
+    addCmdListener(callback) { this.browser.commands.onCommand.addListener(callback); }
 
     getAuthToken(options) { // need to change
         return new Promise((resolve, reject) => {
-            this.chrome.identity.getAuthToken(options, (accessToken) => {
-                if (this.chrome.runtime.lastError || !accessToken) {
-                    console.error('GCalendar intergation failed', accessToken, this.chrome.runtime.lastError.message);
-                    reject({ error: this.chrome.runtime.lastError, tokken: accessToken });
+            this.browser.identity.getAuthToken(options, (accessToken) => {
+                if (this.browser.runtime.lastError || !accessToken) {
+                    console.error('GCalendar intergation failed', accessToken, this.browser.runtime.lastError.message);
+                    reject({ error: this.browser.runtime.lastError, tokken: accessToken });
                 }
                 else {
                     resolve(accessToken);
@@ -169,17 +168,18 @@ export default class AppBrowserService {
     }
 
     getRedirectUrl(endpoint) { // need to change
-        return this.chrome.identity.getRedirectURL(endpoint);
+        return "";
+        //return this.browser.identity.getRedirectURL(endpoint);
     }
 
     launchWebAuthFlow(options) {
         return new Promise((resolve) => {
-            this.chrome.identity.launchWebAuthFlow(options, resolve);
+            this.browser.identity.launchWebAuthFlow(options, resolve);
         });
     }
 
     removeAuthTokken(authToken) { // need to change
-        this.chrome.identity.removeCachedAuthToken({ 'token': authToken }, () => { /* Nothing to implement */ });
+        this.browser.identity.removeCachedAuthToken({ 'token': authToken }, () => { /* Nothing to implement */ });
     }
 
     getStoreUrl(forRating) { // need to change

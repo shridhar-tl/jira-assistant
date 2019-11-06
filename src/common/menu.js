@@ -1,14 +1,16 @@
-const chrome = window["chrome"];
-const browser = window["browser"];
+import injectServices, { inject } from "../services";
+
+injectServices();
+const svc = {};
+inject(svc, "AppBrowserService");
+
+const $jaBrowserExtn = svc.$jaBrowserExtn;
 
 const indexPageUrl = "/index.html";
 const currentUserId = localStorage.getItem('CurrentUserId');
 
 if (!localStorage.getItem('CurrentJiraUrl') || !currentUserId) { document.location.href = `${indexPageUrl}#/pages/integrate`; }
 else {
-  const isFirefox = typeof InstallTrigger !== 'undefined';
-  const isChrome = !!chrome && (!!chrome.webstore || !!chrome.identity) && !isFirefox;
-
   const replacePattern = ['chrome://newtab/', 'chrome://tabs', 'about:newtab', 'about:tabs', 'about:blank'];
 
   function menuClicked(event) {
@@ -18,23 +20,14 @@ else {
   function openUrl(url) {
     url = `${indexPageUrl}#${url}`;
 
-    chrome.tabs.query({ 'active': true, 'lastFocusedWindow': true }, function (tabs) {
-      if (tabs && tabs[0] && tabs[0].url) {
-        const tab = tabs[0];
-        const curUrl = tab.url;
+    $jaBrowserExtn.getCurrentUrl().then(curUrl => {
+      if (!curUrl || replacePattern.indexOf(curUrl.toLowerCase()) > -1) {
+        $jaBrowserExtn.replaceTabUrl(url);
+        window.close();
+        return;
+      }
 
-        if (!curUrl || replacePattern.indexOf(curUrl.toLowerCase()) > -1) {
-          chrome.tabs.update(tab.id, { url: url });
-          window.close();
-          return;
-        }
-      }
-      if (isChrome) {
-        window.open(url);
-      }
-      else {
-        browser.tabs.create({ url: url });
-      }
+      $jaBrowserExtn.openTab(url);
       window.close();
     });
   }

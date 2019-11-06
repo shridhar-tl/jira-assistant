@@ -12,7 +12,7 @@ export default class AjaxService {
         const headerObj = { 'Content-Type': 'application/json' };
 
         // Jira has issue with some user agent. Hence always customize it for Firefox
-        if (browser.isFirefox) {
+        if (browser.isFirefox || browser.isEdge) {
             headerObj["User-Agent"] = "Chrome";
         }
 
