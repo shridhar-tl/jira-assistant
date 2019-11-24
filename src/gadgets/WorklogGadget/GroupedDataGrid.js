@@ -100,6 +100,7 @@ class GroupedDataGrid extends PureComponent {
                             epicDisplay: firstTkt.epicDisplay,
                             epicUrl: firstTkt.epicUrl,
                             issueType: firstTkt.issueType,
+                            statusName: firstTkt.statusName,
                             summary: firstTkt.summary,
                             url: firstTkt.url,
                             logs: logs,
@@ -309,6 +310,7 @@ class UserRow extends PureComponent {
                                 {t.parent && <a href={t.parentUrl} className="link" target="_blank" rel="noopener noreferrer">{t.parent} - </a>}
                                 <a href={t.url} className="link" target="_blank" rel="noopener noreferrer">{t.ticketNo}</a> -
                                 <span>{t.summary}</span>
+                                <strong> ({t.statusName})</strong>
                             </td>
                             {dates.map((day, j) => <td key={j}>
                                 {breakupMode !== '2' && <span title={this.getComments(t.logs[day.prop])}>{convertSecs(this.getTotalTime(t.logs[day.prop]))}</span>}
