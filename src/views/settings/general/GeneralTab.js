@@ -5,7 +5,6 @@ import WeekDaysSelector from './WeekDaysSelector';
 import { inject } from '../../../services';
 import { dateFormats, timeFormats } from '../../../_constants';
 import TabControlBase from './TabControlBase';
-import Dialog from '../../../dialogs';
 
 const WeekDaysArray = [
     { val: 0, label: 'Default' },
