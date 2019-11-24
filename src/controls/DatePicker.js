@@ -33,9 +33,11 @@ class DatePicker extends PureComponent {
         super(props);
         const { value, range, showTime } = props;
         inject(this, "SessionService");
-        this.timePicker24Hour = (this.$session.CurrentUser.timeFormat || "").indexOf("tt") === -1;
+        let timeFormat = this.$session.CurrentUser.timeFormat || " hh:mm tt";
+        this.timePicker24Hour = timeFormat.indexOf("tt") === -1;
+        timeFormat = timeFormat.replace("tt", "A").replace(".ss", "").replace(":ss", "");
         this.dateRange = getRange();
-        this.displayFormat = props.dateFormat || `DD-MMM-YYYY${showTime ? " hh:mm" : ""}`;
+        this.displayFormat = props.dateFormat || `DD-MMM-YYYY${showTime ? timeFormat : ""}`;
         this.state = this.getDateValue(value, range);
     }
 
