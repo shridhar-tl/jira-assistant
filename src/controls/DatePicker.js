@@ -4,6 +4,7 @@ import 'bootstrap-daterangepicker/daterangepicker.css';
 import TextBox from './TextBox';
 import moment from 'moment';
 import Button from './Button';
+import { inject } from '../services';
 
 const labelText = ['This month', 'Last one month', 'Last month', 'This week', 'Last one week', 'Last week'];
 
@@ -31,8 +32,12 @@ class DatePicker extends PureComponent {
     constructor(props) {
         super(props);
         const { value, range, showTime } = props;
+        inject(this, "SessionService");
+        let timeFormat = this.$session.CurrentUser.timeFormat || " hh:mm tt";
+        this.timePicker24Hour = timeFormat.indexOf("tt") === -1;
+        timeFormat = timeFormat.replace("tt", "A").replace(".ss", "").replace(":ss", "");
         this.dateRange = getRange();
-        this.displayFormat = props.dateFormat || `DD-MMM-YYYY${showTime ? " hh:mm" : ""}`;
+        this.displayFormat = props.dateFormat || `DD-MMM-YYYY${showTime ? timeFormat : ""}`;
         this.state = this.getDateValue(value, range);
     }
 
@@ -133,7 +138,7 @@ class DatePicker extends PureComponent {
         }
         else {
             return <DateRangePicker style={style} className={className} disabled={disabled} startDate={value} endDate={value} showDropdowns={true}
-                timePicker={showTime || false} alwaysShowCalendars={false} maxSpan={6} autoApply={true}
+                timePicker={showTime || false} timePicker24Hour={this.timePicker24Hour} alwaysShowCalendars={false} maxSpan={6} autoApply={true}
                 linkedCalendars={false} autoUpdateInput={false} singleDatePicker={!range} onApply={onChange}>
                 <TextBox className="date-range-ctl" value={displayDate} readOnly={true} placeholder={placeholder} />
                 <Button icon="fa fa-calendar" className="icon" />

@@ -96,7 +96,7 @@ class WorklogGadget extends BaseGadget {
         const jql = `worklogAuthor in ('${userList.join("','")}') and worklogDate >= '${
             mfromDate.clone().add(-1, 'days').format("YYYY-MM-DD")}' and worklogDate < '${mtoDate.clone().add(1, 'days').format("YYYY-MM-DD")}'${
             additionalJQL}`;
-        const fieldsToFetch = ["summary", "worklog", "issuetype", "parent", "project"];
+        const fieldsToFetch = ["summary", "worklog", "issuetype", "parent", "project", "status"];
         const epicNameField = this.epicNameField;
         if (epicNameField) {
             fieldsToFetch.push(epicNameField);
@@ -131,6 +131,7 @@ class WorklogGadget extends BaseGadget {
                                     logTime: startedTime,
                                     comment: worklog.comment,
                                     projectName: fields.project.name,
+                                    statusName: (fields.status || {}).name,
                                     projectKey: fields.project.key,
                                     totalHours: worklog.timeSpentSeconds
                                 };
@@ -175,6 +176,7 @@ class WorklogGadget extends BaseGadget {
                             summary: log.summary,
                             projectKey: log.projectKey,
                             projectName: log.projectName,
+                            statusName: log.statusName,
                             logTime: log.logTime,
                             timeSpent: log.totalHours,
                             comment: log.comment

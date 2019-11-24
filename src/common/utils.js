@@ -1,3 +1,4 @@
+import moment from 'moment';
 
 export function saveAs(blob, fileName) {
     const reader = new FileReader();
@@ -135,4 +136,9 @@ export function parseJwt(token) {
 
 export function getHostFromUrl(url) {
     return new URL(url).host;
+}
+
+export function setStartOfWeek(startOfWeek) {
+    if (!startOfWeek || startOfWeek < 1) { startOfWeek = 1; }
+    moment.locale(moment.locale(), { week: { dow: startOfWeek - 1 } });
 }

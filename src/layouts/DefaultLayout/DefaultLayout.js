@@ -24,6 +24,7 @@ import { inject } from '../../services/injector-service';
 import { ContextMenu } from 'jsd-report';
 import $ from 'jquery';
 import AsideUserInfo from './AsideUserInfo';
+import { setStartOfWeek } from '../../common/utils';
 
 //const DefaultAside = React.lazy(() => import('./DefaultAside'));
 const DefaultHeader = React.lazy(() => import('./DefaultHeader'));
@@ -38,6 +39,8 @@ class DefaultLayout extends PureComponent {
 
   UNSAFE_componentWillMount() {
     const { userId } = this.state;
+    setStartOfWeek(this.$session.CurrentUser.startOfWeek);
+
     this.$dashboard.onChange(() => this.setState({ menus: this.getMenus(userId) }));
     this.initBody();
 

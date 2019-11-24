@@ -4,6 +4,7 @@ import { ScrollableTable, THead, TRow, TBody, Column, NoDataRow } from '../../..
 import { Checkbox, Button } from '../../../controls';
 import { inject } from '../../../services/injector-service';
 import "./ImportIssue.scss";
+import { exportCsv } from '../../../common/utils';
 
 const fieldTicketNo = "issuekey";
 const parentKey = "parent";
@@ -149,6 +150,16 @@ class ImportIssue extends BaseImport {
             this.setState({ isLoading: false, uploading: false });
         });
 
+    }
+
+    downloadTemplate = () => {
+        const lines = [
+            "Ticket No,Project,Parent ticket,IssueType,Summary,Assignee,Reporter,Priority,Status,Resolution",
+            ",JAS,,Story,Sample template to be downloaded for Issues import,admin",
+            ",JAS,,Bug,Summary of Bug to be imported,admin",
+            ",JAS,,Task,Third task to be imported,admin"
+        ];
+        exportCsv(lines.join("\n"), "sample_issues");
     }
 
     clearImportData = () => {

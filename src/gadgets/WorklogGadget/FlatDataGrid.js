@@ -15,6 +15,7 @@ class FlatDataGrid extends PureComponent {
                         <Column sortBy="epicDisplay">Epic</Column>
                         <Column sortBy="parent">Parent</Column>
                         <Column sortBy="ticketNo">Ticket No</Column>
+                        <Column sortBy="statusName">Status</Column>
                         <Column sortBy="summary">Summary</Column>
                         <Column sortBy="logTime">Log Date & Time</Column>
                         <Column sortBy="userDisplay">User</Column>
@@ -30,6 +31,7 @@ class FlatDataGrid extends PureComponent {
                         <td>{row.epicDisplay && <a href={row.epicUrl} className="link" target="_blank" rel="noopener noreferrer">{row.epicDisplay}</a>}</td>
                         <td>{row.parent && <a href={row.parentUrl} className="link" target="_blank" rel="noopener noreferrer">{row.parent}</a>}</td>
                         <td><a href={row.ticketUrl} className="link" target="_blank" rel="noopener noreferrer">{row.ticketNo}</a></td>
+                        <td>{row.statusName}</td>
                         <td>{row.summary}</td>
                         <td>{formatDateTime(row.logTime)}</td>
                         <td>{row.userDisplay}</td>

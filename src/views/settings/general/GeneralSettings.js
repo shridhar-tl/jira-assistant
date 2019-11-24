@@ -10,6 +10,7 @@ import WorklogTab from './WorklogTab';
 import DefaultValuesTab from './DefaultValuesTab';
 import MeetingsTab from './MeetingsTab';
 import MenuOptionsTab from './MenuOptionsTab';
+import { setStartOfWeek } from '../../../common/utils';
 
 class GeneralSettings extends PureComponent {
     constructor(props) {
@@ -251,6 +252,7 @@ class GeneralSettings extends PureComponent {
         cUser.epicNameField = sett.epicNameField;
         cUser.commentLength = parseInt(sett.commentLength || 0);
         cUser.startOfWeek = parseInt(sett.startOfWeek || 0);
+        setStartOfWeek(cUser.startOfWeek);
         this.noDonations = cUser.noDonations;
         cUser.hideDonateMenu = this.noDonations || sett.hideDonateMenu;
 

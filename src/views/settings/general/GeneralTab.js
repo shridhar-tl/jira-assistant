@@ -5,7 +5,6 @@ import WeekDaysSelector from './WeekDaysSelector';
 import { inject } from '../../../services';
 import { dateFormats, timeFormats } from '../../../_constants';
 import TabControlBase from './TabControlBase';
-import Dialog from '../../../dialogs';
 
 const WeekDaysArray = [
     { val: 0, label: 'Default' },
@@ -44,15 +43,6 @@ class GeneralTab extends TabControlBase {
             this.spaceInfo.progressClass = progressClass;
         });
     }*/
-
-    switchToOldVersion = () => {
-        Dialog.yesNo("Are you sure to switch back to old version of Jira Assistant?"
-            + "\n\n"
-            + "Note: Soon the old version will be removed. So if you face any issue with new version, we suggest you to report it immediately",
-            "Confirm Switchback to old version").then(() => {
-                document.location.href = "/old/index.html";
-            });
-    }
 
     render() {
         const {
@@ -127,17 +117,6 @@ class GeneralTab extends TabControlBase {
                         </span>
                     </div>
                 </div>}
-                <div className="ui-g-12 ui-md-9 ui-lg-9 ui-xl-10" >
-                    <div className="form-group">
-                        <div>
-                            <span className="btn btn-danger pointer" onClick={this.switchToOldVersion}>Switch back to old version</span>
-                        </div>
-                        <span className="help-block">
-                            Click this button to switch back to old version of Jira Assistant.
-                            Soon the old version will be removed. So if you face any issue with new version, we suggest you to report it immediately.
-                        </span>
-                    </div>
-                </div>
                 {/*<div className="form-label ui-g-12 ui-md-3 ui-lg-3 ui-xl-2">
                     <strong>Space consumed</strong>
                 </div>

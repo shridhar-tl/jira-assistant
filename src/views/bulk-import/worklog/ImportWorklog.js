@@ -169,20 +169,10 @@ class ImportWorklog extends BaseImport {
                 wl.disabled = true;
 
                 const { ticketNo, startDate, timespent, comment } = wl;
-                let ts = (timespent / 60 / 60);
+                const hour = Math.floor(timespent / (60 * 60));
+                const mins = Math.floor((timespent % (60 * 60)) / 60);
 
-                if (ts > this.maxHrsToLog) {
-                    wl.status = wlStatus_Error;
-                    wl.error = `Timespent cannot be more than ${this.maxHrsToLog.toFixed(2)} hours per day.`;
-                    return null;
-                }
-
-                ts = ts.toString().split(".");
-
-                ts[0] = parseInt(ts[0]) || 0;
-                ts[1] = parseInt(60 * (parseInt(ts[1]) || 0 / 100));
-
-                ts = `${ts[0].pad(2)}:${ts[1].pad(2)}`;
+                const ts = `${hour.pad(2)}:${mins.pad(2)}`;
 
                 const entry = { ticketNo, dateStarted: startDate, timeSpent: ts, description: comment };
 
@@ -281,6 +271,8 @@ class ImportWorklog extends BaseImport {
 
     toggleAllRows = () => {
         let { selectAll, worklogData } = this.state;
+        if (!worklogData) { return; }
+
         selectAll = !selectAll;
         const status = selectAll ? wlStatus_WillImport : wlStatus_Excluded;
         worklogData = [...worklogData];
