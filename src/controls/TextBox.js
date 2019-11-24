@@ -18,7 +18,9 @@ class TextBox extends PureComponent {
     }
 
     onChange = (e) => {
-        const { filter, onChange } = this.props;
+        const { filter, onChange, readOnly } = this.props;
+        if (readOnly === true) { return; }
+
         const { value: oldValue } = this.state;
         let { target: { value } } = e;
         if (filter) {

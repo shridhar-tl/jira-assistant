@@ -1,4 +1,5 @@
 import React from 'react';
+import GlobalSettings from './views/settings/global/GlobalSettings';
 
 // common
 const CalendarViewComponent = React.lazy(() => import('./views/calendar-view/Calendar'));
@@ -83,6 +84,10 @@ const sessionBasedRoute = [
     {
         path: '/settings/usergroups',
         component: UserGroupsComponent
+    },
+    {
+        path: '/settings/global',
+        component: GlobalSettings
     },
     {
         path: '/contribute',

@@ -147,3 +147,9 @@ export const FULL_MONTH_NAMES = ['January', 'Febraury', 'March', 'April', 'May',
 export const TINY_DAY_NAMES = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
 export const SHORT_DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 export const FULL_DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+export const defaultJiraFields = ["issuetype", "summary", "reporter", "priority", "status", "resolution", "created", "updated"];
+
+export const defaultSettings = {
+    openTicketsJQL: "assignee=currentUser() AND resolution=Unresolved and status != Closed"
+};

@@ -1,4 +1,4 @@
-import { ApiUrls, DummyWLId } from '../_constants';
+import { ApiUrls, DummyWLId, defaultSettings, defaultJiraFields } from '../_constants';
 import * as moment from 'moment';
 
 export default class JiraService {
@@ -212,8 +212,30 @@ export default class JiraService {
                 return new Promise(resolve => resolve(value));
             }
         }
-        return this.searchTickets("assignee=currentUser() AND resolution=Unresolved and status != Closed", ["issuetype", "summary", "reporter", "priority", "status", "resolution", "created", "updated"])
+
+        const jql = this.$session.CurrentUser.openTicketsJQL || defaultSettings.openTicketsJQL;
+
+        return this.searchTickets(jql, defaultJiraFields)
             .then((result) => { this.$jaCache.session.set("myOpenTickets", result); return result; });
+    }
+
+    getTicketSuggestion(refresh) {
+        const jql = this.$session.CurrentUser.suggestionJQL;
+
+        if (!jql) {
+            return this.getOpenTickets(refresh);
+        }
+        else {
+            if (!refresh) {
+                const value = this.$jaCache.session.get("mySuggestionTickets");
+                if (value) {
+                    return new Promise(resolve => resolve(value));
+                }
+            }
+
+            return this.searchTickets(jql, defaultJiraFields)
+                .then((result) => { this.$jaCache.session.set("mySuggestionTickets", result); return result; });
+        }
     }
 
     searchUsers(text, maxResult = 10, startAt = 0) { return this.$ajax.get(ApiUrls.searchUser, text, maxResult, startAt); }
