@@ -17,8 +17,12 @@ This repository is created to track bugs of Jira Assist browser extension. In fu
 **How to install Jira Assist?**
 You can install Jira Assist to your browser within few seconds from the below Url:
 - For Chrome: https://chrome.google.com/webstore/detail/jira-assistant/momjbjbjpbcbnepbgkkiaofkgimihbii
-- For Firefox: https://github.com/shridhar-tl/jira-assistant/raw/master/release/firefox/JiraAssist_Latest.xpi
-Earlier addon for firefox was available in the following link: https://addons.mozilla.org/en-US/firefox/addon/jira-assistant/. But I was not able to maintain it due to some limitations with addon store. So currently it is being distrubuted from the following link. To know more about it, go through the following link: https://github.com/shridhar-tl/jira-assistant/issues/43
+
+- For Firefox: https://addons.mozilla.org/en-US/firefox/addon/jira-assistant/
+
+- For Edge: [Comming Soon]
+
+- For Opera: [Comming Soon]
 
 - For Other browsers: Currently not available. But if popularity is more then will be released soon. Have a look at the Issues tab and +1 on appropriate issue, if you need it for other browsers.
 
@@ -52,5 +56,14 @@ We use Google analytics to capture which module of the tool is being used much b
 ## Licence Aggrement
 Jira Assistant is a free software and anyone is free to use it for personal or commercial purpose. But you are authorized only to use this software. Any kind of changes or distribution of this software is not allowed. This software is provided as is without any warrenty and developer of this software is not responsible for any kind of loss incurred while using or mis-using this software.
 
+## Shared Reports
+Their are few set of reports which are available in-built with Jira Assistant. Other than those reports their are few more reports / Gadgets available [here](docs/SHARED_REPORTS.md) which can be download and imported into Jira Assist. You can also develop a new report using Report Builder module in Jira Assist and share it with others through this page. You can watch the youtube videos in playlist below which will help you understand the Report Builder module.
+
+[Download reports from here](docs/SHARED_REPORTS.md)
+
+Youtube playlist: [Report Builder Tutorials](https://www.youtube.com/playlist?list=PLxDBQLgpBhsB_4Q2CGsViLCvfulmVuLAL)
+
 ## Features available in "Jira Assist"
 To know about the list of features available in Jira Assistant refer the [features list](docs/FEATURES.md).
+
+You can also watch the [youtube playlist](https://www.youtube.com/watch?list=PLxDBQLgpBhsDGppYrDqARYULukk7XFJPV&v=HsWq7cT3Qq0) with few videos showing how to use individual features.
