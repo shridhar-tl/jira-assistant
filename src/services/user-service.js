@@ -16,6 +16,37 @@ export default class UserService {
         return user;
     }
 
+    getAllUsers() {
+        return this.$db.users.toArray();
+    }
+
+    async saveGlobalSettings(users) {
+        await Promise.all(users.map(async u => {
+            let user = await this.getUser(u.id);
+            user = { ...user };
+
+            user.jiraUrl = u.jiraUrl;
+            user.userId = u.userId;
+            user.email = u.email;
+
+            if (u.openTicketsJQL) {
+                user.openTicketsJQL = u.openTicketsJQL;
+            }
+            else {
+                delete user.openTicketsJQL;
+            }
+
+            if (u.suggestionJQL) {
+                user.suggestionJQL = u.suggestionJQL;
+            }
+            else {
+                delete user.suggestionJQL;
+            }
+
+            await this.$db.users.put(user);
+        }));
+    }
+
     async saveUser(user) {
         return this.$db.users.put(user);
     }
@@ -86,7 +117,11 @@ export default class UserService {
                     isQuickView: true, layout: 1, name: 'Default', icon: 'fa fa-tachometer',
                     widgets: gridList.map(g => { return { name: g }; })
                 }
-            ]
+            ],
+
+            // Advanced settings
+            openTicketsJQL: currentUser.openTicketsJQL,
+            suggestionJQL: currentUser.suggestionJQL
         };
         const jiraUrlLower = currentUser.jiraUrl.toLowerCase();
 

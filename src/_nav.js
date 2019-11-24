@@ -106,6 +106,12 @@ export const navigation = [
         icon: 'fa fa-users'
     },
     {
+        name: 'Advanced',
+        id: 'S-UG',
+        url: '/settings/global',
+        icon: 'fa fa-cogs'
+    },
+    {
         title: true,
         name: 'Other'
     },

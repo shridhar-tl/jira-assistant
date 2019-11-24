@@ -9,7 +9,7 @@ export default class SuggestionService {
     getTicketSuggestion() {
         return Promise.all([
             this.$bookmark.getBookmarks(),
-            this.$jira.getOpenTickets()
+            this.$jira.getTicketSuggestion()
         ]).then((result) => {
             return result[1].map((t) => { return { value: t.key, label: `${t.key} - ${t.fields.summary}` }; })
                 .addRange(result[0].map((t) => { return { value: t.ticketNo, label: `${t.ticketNo} - ${t.summary}` }; }));
