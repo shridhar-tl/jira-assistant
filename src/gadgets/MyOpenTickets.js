@@ -78,7 +78,7 @@ class MyOpenTickets extends BaseGadget {
                         issuetypeIcon: (fields.issuetype || {}).iconUrl,
                         issuetype: (fields.issuetype || {}).name,
                         summary: fields.summary,
-                        reporter: fields.reporter.displayName,
+                        reporter: (fields.reporter || {}).displayName,
                         priorityIcon: (fields.priority || {}).iconUrl,
                         priority: (fields.priority || {}).name,
                         statusIcon: (fields.status || {}).iconUrl,
