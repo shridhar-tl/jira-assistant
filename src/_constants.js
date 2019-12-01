@@ -158,7 +158,10 @@ export const EventCategory = {
     Temporary: "Temporary actions",
     Instance: "Instance actions",
     DbOperations: "Db operations",
+    GadgetActions: "Gadget actions",
     UserActions: "User actions",
+    HeaderActions: "Header actions",
     ClickEvents: "Click events",
+    DialogEvents: "Popup events",
     DataFetch: "Data fetch operations"
 };
