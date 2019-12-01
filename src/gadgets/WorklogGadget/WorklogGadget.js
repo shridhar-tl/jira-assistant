@@ -93,7 +93,7 @@ class WorklogGadget extends BaseGadget {
         if (additionalJQL) {
             additionalJQL = ` AND (${additionalJQL})`;
         }
-        const jql = `worklogAuthor in ('${userList.join("','")}') and worklogDate >= '${
+        const jql = `worklogAuthor in ("${userList.join('","')}") and worklogDate >= '${
             mfromDate.clone().add(-1, 'days').format("YYYY-MM-DD")}' and worklogDate < '${mtoDate.clone().add(1, 'days').format("YYYY-MM-DD")}'${
             additionalJQL}`;
         const fieldsToFetch = ["summary", "worklog", "issuetype", "parent", "project", "status"];
