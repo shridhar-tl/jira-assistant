@@ -1,11 +1,8 @@
-import { JsonFeedEventSource } from "fullcalendar";
-
 export default class AnalyticsService {
     static dependencies = ["AppBrowserService"];
 
-    // ToDo: implement router related changes
     constructor($jaBrowserExtn) {
-        window['_gaq'] = window['_gaq'] || [];
+        window['_gaq'] = window['_gaq'] || []; // Need to check if this line is required or not
 
         $jaBrowserExtn.getAppVersion().then((version) => {
             this.versionNumber = version || 0;
