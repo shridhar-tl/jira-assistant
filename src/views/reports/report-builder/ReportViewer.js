@@ -6,6 +6,7 @@ import { ReportViewer as JSRViewer } from "jsd-report";
 import GroupEditor from '../../../dialogs/GroupEditor';
 import "./ReportViewer.scss";
 import AddWorklog from '../../../dialogs/AddWorklog';
+import { EventCategory } from '../../../_constants';
 
 class ReportViewer extends BaseGadget {
     constructor(props) {
@@ -63,10 +64,12 @@ class ReportViewer extends BaseGadget {
         if (this.props.reportId > 0) {
             this.$report.getReportDefinition(this.props.reportId).then(qm => {
                 this.setReportDefinition(qm);
+                this.$analytics.trackEvent("Advanced report viewed", EventCategory.UserActions);
             });
         }
         else if (this.state.definition) {
             this.title = this.state.definition.queryName;
+            this.$analytics.trackEvent("Advanced report viewed", EventCategory.UserActions);
         }
     }
 
@@ -74,6 +77,7 @@ class ReportViewer extends BaseGadget {
         if (definition && definition.queryName) {
             this.title = definition.queryName;
         }
+
         this.setState({ definition });
     }
 

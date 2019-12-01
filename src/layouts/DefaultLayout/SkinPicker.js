@@ -1,11 +1,12 @@
 import React, { PureComponent } from 'react';
 import $ from "jquery";
 import { inject } from '../../services/injector-service';
+import { EventCategory } from '../../_constants';
 
 class SkinPicker extends PureComponent {
     constructor(props) {
         super(props);
-        inject(this, "CacheService");
+        inject(this, "CacheService", "AnalyticsService");
         this.selectedSkin = this.$cache.get('skin', true) || 'skin-blue';
     }
 
@@ -32,6 +33,7 @@ class SkinPicker extends PureComponent {
         this.selectedSkin = skin;
         this.$cache.set('skin', skin, false, true);
         body.addClass(this.selectedSkin);
+        this.$analytics.trackEvent("Skin changed", EventCategory.HeaderActions, skin);
     }
 
     render() {

@@ -153,3 +153,12 @@ export const defaultJiraFields = ["issuetype", "summary", "reporter", "priority"
 export const defaultSettings = {
     openTicketsJQL: "assignee=currentUser() AND resolution=Unresolved and status != Closed"
 };
+
+export const EventCategory = {
+    Temporary: "Temporary actions",
+    Instance: "Instance actions",
+    DbOperations: "Db operations",
+    UserActions: "User actions",
+    ClickEvents: "Click events",
+    DataFetch: "Data fetch operations"
+};

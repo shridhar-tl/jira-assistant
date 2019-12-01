@@ -1,6 +1,7 @@
 import moment from "moment";
 import OAuthClient from '../common/OAuthClient';
 import { parseJwt } from "../common/utils";
+import { EventCategory } from "../_constants";
 
 // https://docs.microsoft.com/en-us/graph/api/resources/calendar?view=graph-rest-1.0
 
@@ -159,7 +160,7 @@ export default class OutlookCalendar {
         try {
             // https://docs.microsoft.com/en-us/graph/api/resources/event?view=graph-rest-1.0
             const result = await this.$ajax.request("GET", calendarUrl.format(startDate, endDate), {}, { 'Authorization': `Bearer ${authToken}` });
-            this.$analytics.trackEvent("Outlook - fetched data");
+            this.$analytics.trackEvent("Outlook - fetched data", EventCategory.DataFetch);
 
             const events = result.value.map((e) => {
                 if (e.start.dateTime) {
@@ -188,7 +189,7 @@ export default class OutlookCalendar {
 
             return events;
         } catch (error) {
-            this.$analytics.trackEvent(`Authentication error :-${(error || "").status || ""}`);
+            this.$analytics.trackEvent(`Authentication error :-${(error || "").status || ""}`, EventCategory.DataFetch);
             if (error && error.status === 401) {
                 this.$message.warning("Authenticated session with the Outlook Calendar has expired. You will have to reauthenticate.");
                 //return svc.getEvents(startDate, endDate, options);

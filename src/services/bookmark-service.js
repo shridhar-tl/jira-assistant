@@ -1,12 +1,15 @@
-export default class BookmarkService {
-    static dependencies = ["UserService", "SessionService", "MessageService", "TicketService", "UserUtilsService"];
+import { EventCategory } from "../_constants";
 
-    constructor($user, $session, $message, $ticket, $userutils) {
+export default class BookmarkService {
+    static dependencies = ["UserService", "SessionService", "MessageService", "TicketService", "UserUtilsService", "AnalyticsService"];
+
+    constructor($user, $session, $message, $ticket, $userutils, $analytics) {
         this.$user = $user;
         this.$session = $session;
         this.$message = $message;
         this.$ticket = $ticket;
         this.$userutils = $userutils;
+        this.$analytics = $analytics;
     }
 
     addBookmark(ticketNo) {
@@ -14,6 +17,8 @@ export default class BookmarkService {
             this.$message.warning("No ticket number specified to bookmark");
             return Promise.reject("No ticket number specified to bookmark");
         }
+
+        this.$analytics.trackEvent("Bookmark ticket", EventCategory.UserActions);
 
         return this.$user.getUser(this.$session.userId).then((u) => {
             let favTickets = u.favTicketList;
@@ -42,6 +47,8 @@ export default class BookmarkService {
         if (typeof (tickets) === 'string') {
             tickets = [tickets];
         }
+
+        this.$analytics.trackEvent("Remove bookmark", EventCategory.UserActions);
 
         return this.$user.getUser(this.$session.userId).then((u) => {
             let favTickets = u.favTicketList;

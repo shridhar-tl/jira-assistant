@@ -5,6 +5,7 @@ import { inject } from '../services/injector-service';
 import { Button, Checkbox, DatePicker, AutoComplete, TextBox } from '../controls';
 import moment from 'moment';
 import { GadgetActionType } from '../gadgets';
+import { EventCategory } from '../_constants';
 
 class AddWorklog extends BaseDialog {
     constructor(props) {
@@ -83,6 +84,7 @@ class AddWorklog extends BaseDialog {
             }
 
             if (copy) {
+                this.$analytics.trackEvent("Worklog copy", EventCategory.UserActions, (d.isUploaded ? "Uploaded worklog" : "Pending worklog"));
                 delete d.id;
                 delete d.isUploaded;
                 delete d.worklogId;
@@ -91,6 +93,7 @@ class AddWorklog extends BaseDialog {
             }
             else {
                 this.previousTime = d.dateStarted;
+                this.$analytics.trackEvent("Worklog view", EventCategory.UserActions, (d.isUploaded ? "Uploaded worklog" : "Pending worklog"));
             }
 
             const newState = { log: d, vald: this.state.vald, ctlClass: this.state.ctlClass };
@@ -168,11 +171,11 @@ class AddWorklog extends BaseDialog {
         log.ticketNo = prevTicketNo.value || prevTicketNo;
         this.$worklog.deleteWorklog(log).then((result) => {
             this.setState({ isLoading: false });
-            this.showPopup = false;
             this.props.onDone({
                 type: GadgetActionType.DeletedWorklog, removed: log.id,
                 deleted: log.id, deletedObj: log
             });
+            this.onHide();
         }, () => { log.ticketNo = prevTicketNo; });
     }
 

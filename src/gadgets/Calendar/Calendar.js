@@ -16,6 +16,7 @@ import { OverlayPanel } from 'primereact/overlaypanel';
 import './Calendar.scss';
 import MeetingDetails from './MeetingDetails';
 import CalendarSettings from './Settings';
+import { EventCategory } from '../../_constants';
 
 //var moment;
 const viewModes = [{ value: 'dayGridMonth', label: 'Month' }, { value: 'timeGridWeek', label: 'Week' }, { value: 'timeGridDay', label: 'Day' }];
@@ -241,7 +242,7 @@ class Calendar extends BaseGadget {
                     console.error(e);
                 }
             });
-            this.$analytics.trackEvent("Quick add WL");
+            this.$analytics.trackEvent("Quick add WL", EventCategory.UserActions);
         }
         else {
             this.showWorklogPopup(obj);
@@ -472,6 +473,9 @@ class Calendar extends BaseGadget {
         if (!isMonthMode && allDay) {// start.hasTime() ==> allDay
             return false;
         }
+
+        this.$analytics.trackEvent("Worklog drag", EventCategory.UserActions);
+
         this.showWorklogPopup({ isMonthMode: isMonthMode, start: moment(start), end: moment(end) });
         return false;
     }
@@ -481,6 +485,8 @@ class Calendar extends BaseGadget {
         jsEvent.preventDefault();
         jsEvent.stopPropagation();
         const item = event.extendedProps.sourceObject;
+
+        this.$analytics.trackEvent("View event details", EventCategory.UserActions, event.extendedProps.source);
 
         if (event.extendedProps.source === "goolge") {
             this.currentMeetingItem = this.getGoogleEventView(item);
@@ -664,11 +670,15 @@ class Calendar extends BaseGadget {
                 //.add(this.$utils.getTotalSecs(srcObj.overrideTimeSpent || srcObj.timeSpent), 'seconds').toDate();
             }
             this.$worklog.copyWorklog(event.extendedProps.sourceObject, event.start)
-                .then((result) => { this.addEvent({ added: result }); });
+                .then((result) => {
+                    this.addEvent({ added: result });
+                    this.$analytics.trackEvent("Worklog quick copied", EventCategory.UserActions, event.extendedProps.sourceObject.isUploaded ? "Uploaded worklog" : "Pending worklog");
+                });
         }
         else {
             const oldDate = event.extendedProps.sourceObject.dateStarted;
             this.$worklog.changeWorklogDate(event.extendedProps.sourceObject, event.start).then((entry) => {
+                this.$analytics.trackEvent("Worklog moved", EventCategory.UserActions, event.extendedProps.sourceObject.isUploaded ? "Uploaded worklog" : "Pending worklog");
                 //this.updateAllDayEvent({ start: oldDate }); // This is to update the info of previous date
                 //event.extendedProps.sourceObject.dateStarted = event.start.toDate();
                 //var evnt = this.latestData.first((e) => { return e.id === event.id && e.entryType === 1; });
@@ -684,6 +694,7 @@ class Calendar extends BaseGadget {
         const { event } = e;
         this.$worklog.changeWorklogTS(event.extendedProps.sourceObject, this.getEventDuration(event)).then((entry) => {
             this.addEvent({ edited: entry });
+            this.$analytics.trackEvent("Worklog resized", EventCategory.UserActions, event.extendedProps.sourceObject.isUploaded ? "Uploaded worklog" : "Pending worklog");
             //this.updateAllDayEvent(event);
         });
     }
@@ -780,13 +791,14 @@ class Calendar extends BaseGadget {
                 });
         }
         else {
-            this.$worklog.uploadWorklogs([this.currentWLItem.id])
-                .then(() => this.$worklog.getWorklog(this.currentWLItem.id))
+            this.$worklog.uploadWorklogs([this.currentWLItem.id], true)
                 .then((wl) => {
                     this.setState({ uploading: false });
                     this.$message.success("Worklog uploaded successfully!");
                     // ToDo: update latestData collection also for is uploaded flag
-                    this.addEvent({ added: this.$worklog.getWLCalendarEntry(wl) });
+                    const { events } = this;
+                    events.removeAll(w => w.entryType === 1 && w.id.toString() === this.currentWLItem.id.toString());
+                    this.addEvent({ added: this.$worklog.getWLCalendarEntry(wl[0]) });
                 }, () => this.setState({ uploading: false }));
         }
     }
@@ -794,6 +806,7 @@ class Calendar extends BaseGadget {
     deleteWorklog() {
         hideContextMenu();
         this.$worklog.deleteWorklog(this.currentWLItem).then(() => {
+            this.$analytics.trackEvent("Worklog deleted", EventCategory.UserActions, this.currentWLItem.isUploaded ? "Uploaded worklog" : "Pending worklog");
             this.addEvent({
                 removed: this.currentWLItem.id,
                 deletedObj: this.currentWLItem

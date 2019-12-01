@@ -1,12 +1,13 @@
-import { UUID } from "../_constants";
+import { UUID, EventCategory } from "../_constants";
 import { saveStringAs } from '../common/utils';
 
 export default class ReportService {
-    static dependencies = ["DatabaseService", "SessionService"];
+    static dependencies = ["DatabaseService", "SessionService", "AnalyticsService"];
 
-    constructor($db, $session) {
+    constructor($db, $session, $analytics) {
         this.$db = $db;
         this.$session = $session;
+        this.$analytics = $analytics;
     }
 
     deleteSavedQuery(ids) { return this.getSavedQueries(ids).delete(); }
@@ -27,6 +28,7 @@ export default class ReportService {
                     let fileName = qrys.length === 1 ? qrys[0].queryName : "JA_Reports";
                     fileName = `${fileName}_${new Date().format('yyyyMMdd')}.jrd`;
                     saveStringAs(json, "jrd", fileName);
+                    this.$analytics.trackEvent("Report definition exported", EventCategory.UserActions);
                     return true;
                 });
         });
@@ -71,7 +73,10 @@ export default class ReportService {
                             query.updateId = UUID.generate();
                         }
                         query.dateUpdated = new Date();
-                        return this.$db.savedFilters.put(query).then(() => { return query.id; });
+                        return this.$db.savedFilters.put(query).then(() => {
+                            this.$analytics.trackEvent("Report modified", EventCategory.UserActions, query.advanced ? "Report builder" : "Custom report");
+                            return query.id;
+                        });
                     }
                 });
         }
@@ -83,7 +88,10 @@ export default class ReportService {
                         return Promise.reject({ message: `The query with the name "${query.queryName}" already exists!` });
                     }
                     else {
-                        return this.$db.savedFilters.add(query).then((newQueryId) => { return newQueryId; });
+                        return this.$db.savedFilters.add(query).then((newQueryId) => {
+                            this.$analytics.trackEvent("Report created", EventCategory.UserActions, query.advanced ? "Report builder" : "Custom report");
+                            return newQueryId;
+                        });
                     }
                 });
         }

@@ -11,11 +11,12 @@ import GroupedDataGrid from './GroupedDataGrid';
 import WorklogReportInfo from './WorklogReportInfo';
 import "./WorklogGadget.scss";
 import UserProjectWiseSummary from './UserProjectWiseSummary';
+import { EventCategory } from '../../_constants';
 
 class WorklogGadget extends BaseGadget {
     constructor(props) {
         super(props, 'Worklog Report', 'fa-list-alt');
-        inject(this, "SessionService", "CacheService", "UtilsService", "UserUtilsService", "JiraService", "MessageService", "ConfigService", "UserGroupService");
+        inject(this, "SessionService", "CacheService", "UtilsService", "UserUtilsService", "JiraService", "MessageService", "ConfigService", "UserGroupService", "AnalyticsService");
 
         //$facade.getUserGroups().then(grps => this.state.groups = grps);
         const pageSettings = this.$session.pageSettings.reports_UserDayWise;
@@ -64,6 +65,7 @@ class WorklogGadget extends BaseGadget {
         this.setState({ isLoading: true });
 
         this.getDayWiseReportData(req).then(res => {
+            this.$analytics.trackEvent("Worklog report viewed", EventCategory.UserActions);
             //this.processReportData(res);
             this.rawData = res;
             this.generateFlatData(res);
@@ -93,7 +95,7 @@ class WorklogGadget extends BaseGadget {
         if (additionalJQL) {
             additionalJQL = ` AND (${additionalJQL})`;
         }
-        const jql = `worklogAuthor in ('${userList.join("','")}') and worklogDate >= '${
+        const jql = `worklogAuthor in ("${userList.join('","')}") and worklogDate >= '${
             mfromDate.clone().add(-1, 'days').format("YYYY-MM-DD")}' and worklogDate < '${mtoDate.clone().add(1, 'days').format("YYYY-MM-DD")}'${
             additionalJQL}`;
         const fieldsToFetch = ["summary", "worklog", "issuetype", "parent", "project", "status"];

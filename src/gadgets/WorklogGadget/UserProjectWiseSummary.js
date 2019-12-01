@@ -93,7 +93,7 @@ class UserProjectWiseSummary extends PureComponent {
             grand.grandTotal = (grand.grandTotal || 0) + grandTotal;
 
             projects.forEach((p) => {
-                const grpdProject = groupProjects[p.key];
+                const grpdProject = groupProjects[p.key] || {};
                 const projectGrand = grand[p.key] || { total: 0 };
                 grand[p.key] = projectGrand;
                 projectGrand.total += grpdProject.total || 0;
