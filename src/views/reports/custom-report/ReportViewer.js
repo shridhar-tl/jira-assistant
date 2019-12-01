@@ -3,6 +3,7 @@ import BaseGadget from "../../../gadgets/BaseGadget";
 import { inject } from "../../../services/injector-service";
 import { ScrollableTable, THead } from '../../../components/ScrollableTable';
 import "./Common.scss";
+import { EventCategory } from '../../../_constants';
 
 class ReportViewer extends BaseGadget {
     constructor(props) {
@@ -77,7 +78,7 @@ class ReportViewer extends BaseGadget {
                 const hasReportData = groupedData.length > 0;
 
                 this.setState({ hasReportData, displayFields, isLoading: false });
-                this.$analytics.trackEvent("Custom report viewed");
+                this.$analytics.trackEvent("Custom report viewed", EventCategory.UserActions);
             });
     }
 

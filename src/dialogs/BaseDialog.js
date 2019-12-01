@@ -1,12 +1,16 @@
 import React, { PureComponent } from 'react';
 import { Dialog } from 'primereact/dialog';
+import { inject } from '../services';
+import { EventCategory } from '../_constants';
 
 class BaseDialog extends PureComponent {
     constructor(props, title) {
         super(props);
+        inject(this, "AnalyticsService");
         this.title = title;
         this.style = { width: "50vw" };
         this.state = { showDialog: true };
+        this.$analytics.trackEvent("Dialog opened", EventCategory.DialogEvents, title);
     }
 
     onHide = (prop) => {

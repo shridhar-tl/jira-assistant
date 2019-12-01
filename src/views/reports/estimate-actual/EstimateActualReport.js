@@ -8,6 +8,7 @@ import { AutoComplete, TextBox, Button, DatePicker, RadioButton } from '../../..
 import { Chart } from 'primereact/chart';
 import GroupEditor from '../../../dialogs/GroupEditor';
 import "./EstimateActualReport.scss";
+import { EventCategory } from '../../../_constants';
 
 const defaultChartColors = [
     {
@@ -84,7 +85,7 @@ const defaultChartColors = [
 class EstimateActualReport extends BaseGadget {
     constructor(props) {
         super(props, "Estimate vs Actual report", "fa fa-list-alt");
-        inject(this, "SessionService", "JiraService", "UserGroup");
+        inject(this, "SessionService", "JiraService", "UserGroup", "AnalyticsService");
 
         this.hideMenu = true;
         this.isGadget = false;
@@ -183,6 +184,8 @@ class EstimateActualReport extends BaseGadget {
 
         return this.$jira.searchTickets(jql, ["worklog", "project", "parent", this.state.estimationField]) //, "status", "assignee"
             .then((issues) => {
+                this.$analytics.trackEvent("Estimate report viewed", EventCategory.UserActions);
+
                 const flatData = issues.flattern({
                     'key': true,
                     'projectName': 'fields.project.name',

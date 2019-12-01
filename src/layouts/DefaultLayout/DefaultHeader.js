@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 
 import { AppSidebarToggler } from '@coreui/react';
 import logo from '../../img/logo-symbol.png';
-import { CHROME_WS_URL, FF_STORE_URL } from '../../_constants';
+import { CHROME_WS_URL, FF_STORE_URL, EventCategory } from '../../_constants';
 
 import './DefaultHeader.scss';
 import { inject } from '../../services/injector-service';
@@ -23,7 +23,7 @@ const defaultProps = {};
 class DefaultHeader extends PureComponent {
   constructor(props) {
     super(props);
-    inject(this, "AppBrowserService", "CacheService", "SessionService");
+    inject(this, "AppBrowserService", "CacheService", "SessionService", "AnalyticsService");
     this.userId = this.$session.CurrentUser.userId;
     this.currentJiraInstance = getHostFromUrl(this.$session.CurrentUser.jiraUrl);
     this.state = { versionNumber: "1.0" };
@@ -51,6 +51,10 @@ class DefaultHeader extends PureComponent {
     if (this.$session.CurrentUser.hideDonateMenu) { // When this settings is changed, below class will be removed from body in settings page
       document.body.classList.add('no-donation');
     }
+  }
+
+  trackShare = () => {
+    this.$analytics.trackEvent("Share option viewed", EventCategory.HeaderActions);
   }
 
   showYoutubeHelp = () => this.setState({ showYoutubeVideo: true });
@@ -104,7 +108,7 @@ class DefaultHeader extends PureComponent {
               <SkinPicker />
             </DropdownMenu>
           </UncontrolledDropdown>
-          <UncontrolledDropdown nav direction="down">
+          <UncontrolledDropdown nav direction="down" onClick={this.trackShare}>
             <DropdownToggle nav>
               <i className="fa fa-share-alt"></i>
             </DropdownToggle>

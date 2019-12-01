@@ -4,13 +4,14 @@ import { inject } from '../../services';
 import $ from "jquery";
 import { AppContext } from '../../App';
 import { getHostFromUrl } from "../../common/utils";
+import { EventCategory } from '../../_constants';
 
 class SwitchAccountMenu extends PureComponent {
     static contextType = AppContext;
 
     constructor(props) {
         super(props);
-        inject(this, "SessionService", "UserService", "UserUtilsService");
+        inject(this, "SessionService", "UserService", "UserUtilsService", "AnalyticsService");
         this.currentUserId = this.$session.CurrentUser.userId;
         this.state = {
             profileUrl: this.$userutils.getProfileUrl()
@@ -27,6 +28,7 @@ class SwitchAccountMenu extends PureComponent {
         const el = $(e.currentTarget);
         const userId = parseInt(el.attr("user-id"));
         this.context.switchUser(userId);
+        this.$analytics.trackEvent("Instance switched", EventCategory.Instance);
     }
 
     render() {

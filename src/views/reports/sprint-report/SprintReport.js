@@ -13,6 +13,7 @@ import "./Common.scss";
 import VelocityChart from './VelocityChart';
 import BaseGadget from "../../../gadgets/BaseGadget";
 import { ExportFormat } from '../../../common/Exporter';
+import { EventCategory } from '../../../_constants';
 
 const notes = <div className="padding-15">
     <strong>Experimental:</strong> This report is experimental and development / bug fixes are in progress. If you encounter any issues or have any
@@ -37,7 +38,7 @@ class SprintReport extends BaseGadget {
         super(props, "Sprint report", "fa fa-list-alt");
         this.isGadget = false;
         this.exportFormat = ExportFormat.XLSX;
-        inject(this, "JiraService", "UserUtilsService", "SessionService", "UserGroupService");
+        inject(this, "JiraService", "UserUtilsService", "SessionService", "UserGroupService", "AnalyticsService");
 
         this.state = { disableRefresh: true, selectedRapidViews: this.$session.CurrentUser.rapidViews, selectedSprints: null };
     }
@@ -63,6 +64,8 @@ class SprintReport extends BaseGadget {
         });
         Promise.all(arr)
             .then((result) => {
+                this.$analytics.trackEvent("Sprint report viewed", EventCategory.UserActions);
+
                 if (this.state.includeWorklogs) {
                     const ticketsList = result.union(spr => spr.contents.completedIssues).distinct(t => t.key);
                     ticketsList.addDistinctRange(result.union(spr => spr.contents.puntedIssues).distinct(t => t.key));

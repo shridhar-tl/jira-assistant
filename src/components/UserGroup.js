@@ -3,11 +3,12 @@ import { TextBox, Button, AutoComplete, SelectBox } from '../controls';
 import { ScrollableTable, TBody, THead, NoDataRow } from './ScrollableTable';
 import moment from 'moment';
 import { inject } from '../services';
+import { EventCategory } from '../_constants';
 
 class UserGroup extends PureComponent {
     constructor(props) {
         super(props);
-        inject(this, "SessionService", "MessageService", "UserGroupService", "JiraService");
+        inject(this, "SessionService", "MessageService", "UserGroupService", "JiraService", "AnalyticsService");
         const { groups } = props;
 
         const timezones = moment.tz.names().map(t => { return { label: t, value: t }; });
@@ -56,12 +57,14 @@ class UserGroup extends PureComponent {
         //this.state.groups.forEach(g => delete g.editMode);
         this.$usergroup.saveUserGroups(this.state.groups).then(u => {
             this.setState({ saveInProg: false });
+            this.$analytics.trackEvent("User groups saved", EventCategory.UserActions);
             this.$message.success("Changes saved successfully!", "Group saved");
         });
     }
 
     done = () => {
         if (this.props.onDone) {
+            this.$analytics.trackEvent("User groups modified", EventCategory.UserActions);
             this.props.onDone(this.state.groups);
         }
     }

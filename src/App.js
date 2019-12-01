@@ -37,8 +37,13 @@ class App extends PureComponent {
   constructor(props) {
     super(props);
     registerServices();
-    inject(this, "SessionService", "AuthService", "MessageService");
+    inject(this, "AnalyticsService", "SessionService", "AuthService", "MessageService", "AnalyticsService");
     this.state = { isLoading: true, needIntegration: false, authenticated: false };
+    this.props.history.listen(this.routeChanged.bind(this));
+  }
+
+  routeChanged(location) {
+    this.$analytics.trackPageView(location.pathname);
   }
 
   contextProps = {
@@ -84,6 +89,9 @@ class App extends PureComponent {
       this.setState({ isLoading: false });
     } else {
       this.$auth.authenticate(userId).then((result) => {
+
+        this.$analytics.trackPageView();
+
         if (result) {
           if (!pathname || pathname === "/") {
             this.props.history.push(`/${this.$session.userId}/dashboard/0`);

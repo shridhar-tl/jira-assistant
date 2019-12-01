@@ -1,11 +1,13 @@
 import Dexie from 'dexie';
+import { UUID, EventCategory } from '../_constants';
 
 class DatabaseService extends Dexie {
-    static dependencies = ["MessageService"];
+    static dependencies = ["AnalyticsService", "MessageService"];
 
-    constructor($message) {
+    constructor($analytics, $message) {
         super("JiraAssist");
         this.$message = $message;
+        this.$analytics = $analytics;
 
         this.version(1).stores({
             users: '++id,jiraUrl,userId',
@@ -18,15 +20,36 @@ class DatabaseService extends Dexie {
 
         // Open the database
         this.open().catch((error) => {
+            this.$analytics.trackError(error, true);
             console.error(error);
         });
 
         // Database is being initialized for the first time
         this.users.get(1).then((user) => {
             if (!user) {
+                const instId = UUID.generate();
+
                 this.transaction('rw', this.users, () => {
-                    this.users.add({ jiraUrl: 'SystemUser', userId: 'SystemUser', dateCreated: new Date() });
+                    this.users.add({ jiraUrl: 'SystemUser', userId: 'SystemUser', dateCreated: new Date(), instId }).then(() => {
+                        this.users.put(user).then(() => {
+                            this.$analytics.setUserId(instId);
+                            this.$analytics.trackEvent("New installation", EventCategory.Instance);
+                        });
+                    });
                 }).catch((e) => { console.error(`Unable to initialize the database:-${e.stack}`); });
+            }
+            else {
+                let instId = user.instId;
+
+                // ToDo: Temp. Temp fix for existing users. Need to be removed once all user will have this.
+                if (!instId) {
+                    instId = UUID.generate();
+                    user.instId = instId;
+                    this.users.put(user).then(() => { this.$analytics.trackEvent("User Inst ID added", EventCategory.Temporary); });
+                }
+                // ToDo ends
+
+                this.$analytics.setUserId(instId);
             }
         });
 
@@ -35,11 +58,13 @@ class DatabaseService extends Dexie {
         window.addEventListener('unhandledrejection', (event) => this.handleError(event));
         window.addEventListener("rejectionhandled", (event) => this.handleError(event)); // For firefox
         window.onerror = (msg, url, line, col, error) => {
+            this.$analytics.trackError({ msg, url, line, col, error }, true);
             this.$message.error("An unknown error occured while processing your request", "Unhandled error", true);
             console.error(msg, url, line, col, error);
         };
 
         window.addEventListener("error", (e) => {
+            this.$analytics.trackError(e, true);
             this.$message.error("An unknown error occured while processing your request", "Unhandled error", true);
             console.error("Global handler:-", e);
         });
@@ -47,6 +72,7 @@ class DatabaseService extends Dexie {
 
     handleError(event) {
         const detail = event.detail || event;
+        this.$analytics.trackError(detail, false);
         this.$message.error("One or more of the actions failed", "Action error", true);
         console.error('Unhandled rejection (promise: ', detail.promise || event.promise, ', reason: ', detail.reason || event.reason, ').');
     }

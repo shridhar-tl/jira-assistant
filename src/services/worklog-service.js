@@ -86,7 +86,7 @@ export default class WorklogService {
         });
     }
 
-    uploadWorklogs(ids) {
+    uploadWorklogs(ids, sameObjects) {
         return this.$db.worklogs.where("id").anyOf(ids).toArray().then((worklogs) => {
             const promises = worklogs.groupBy(wl => wl.ticketNo).map(grp => {
                 let promise = null;
@@ -100,9 +100,9 @@ export default class WorklogService {
                 });
                 return promise;
             });
-            return Promise.all(promises);
+            return Promise.all(promises).then(() => worklogs);
             //return Promise.all(worklogs.map((wl) => { return this.uploadWorklog(wl); }));
-        }).then(res => this.getPendingWorklogs());
+        }).then(res => (sameObjects ? res : this.getPendingWorklogs()));
     }
 
     uploadWorklog(entry) {

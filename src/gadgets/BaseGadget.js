@@ -9,12 +9,16 @@ import "./BaseGadget.scss";
 import { ExportHelper } from '../common/ExportHelper';
 import { ExportFormat } from '../common/Exporter';
 import { GadgetActionType } from './_constants';
+import { inject } from '../services';
+import { EventCategory } from '../_constants';
 
 export const onDashboardEvent = new EventEmitter();
 
 export class BaseGadget extends PureComponent {
     constructor(props, title, iconClass) {
         super(props);
+        inject(this, "AnalyticsService");
+
         this.title = title;
         this.iconClass = iconClass;
         this.isGadget = props.isGadget !== false;
@@ -54,6 +58,7 @@ export class BaseGadget extends PureComponent {
     componentDidMount() {
         if (this.isGadget) {
             onDashboardEvent.on("change", this.eventReceived);
+            this.$analytics.trackEvent("Gadget loaded", EventCategory.GadgetActions, this.title);
         }
         this.widgetCtl = $(this.el).closest('.widget-cntr');
         this.widgetHdrCtl = this.widgetCtl.find('div.ui-panel-titlebar.ui-widget-header');
@@ -99,6 +104,7 @@ export class BaseGadget extends PureComponent {
     toggleFullScreen = () => {
         let { isFullScreen } = this.state;
         isFullScreen = !isFullScreen;
+        this.$analytics.trackEvent("Toggle full screen", EventCategory.GadgetActions, this.title, isFullScreen);
         if (isFullScreen) {
             this.bodyTag.addClass('fs-layout');
         }
@@ -128,6 +134,7 @@ export class BaseGadget extends PureComponent {
     }
 
     removeGadget = () => {
+        this.$analytics.trackEvent("Gadget removed", EventCategory.GadgetActions, this.title);
         this.performAction(GadgetActionType.RemoveGadget);
     }
 
@@ -144,7 +151,7 @@ export class BaseGadget extends PureComponent {
     getFullScreenButton() {
         if (this.isGadget) { return null; }
         const { state: { isFullScreen } } = this;
-        return <Button icon={isFullScreen ? 'fa fa-compress' : 'fa fa-expand'} onClick={super.toggleFullScreen} title="Toggle full screen" />;
+        return <Button icon={isFullScreen ? 'fa fa-compress' : 'fa fa-expand'} onClick={this.toggleFullScreen} title="Toggle full screen" />;
     }
 
     getRefreshButton(callback) {
@@ -158,6 +165,7 @@ export class BaseGadget extends PureComponent {
         exportHelper.fileName = this.title;
         exportHelper.format = exportFormat || this.exportFormat;
         exportHelper.element = this.el;
+        this.$analytics.trackEvent("Export data", EventCategory.GadgetActions, exportHelper.format);
         exportHelper.export();
     }
 
