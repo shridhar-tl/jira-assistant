@@ -20,7 +20,7 @@ You can install Jira Assist to your browser within few seconds from the below Ur
 
 - For Firefox: https://addons.mozilla.org/en-US/firefox/addon/jira-assistant/
 
-- For Edge: [Comming Soon]
+- For Edge: https://microsoftedge.microsoft.com/addons/detail/aoenpdbabcjnjbjpegeenodfknllmaoi
 
 - For Opera: [Comming Soon]
 

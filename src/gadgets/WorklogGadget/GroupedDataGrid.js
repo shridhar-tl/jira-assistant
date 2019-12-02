@@ -87,7 +87,7 @@ class GroupedDataGrid extends PureComponent {
                     logClass: {},
                     grandTotal: 0
                 };
-                const logData = (data.first(d => d.userName === usr.name.toLowerCase()) || {}).logData;
+                const logData = (data.first(d => d.userName === usr.name.toLowerCase()) || {}).logData || [];
                 usrInfo.tickets = logData.groupBy(lGrp => lGrp.ticketNo)
                     .map(tGrp => {
                         const items = tGrp.values;
