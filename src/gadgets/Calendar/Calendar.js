@@ -785,6 +785,7 @@ class Calendar extends BaseGadget {
             this.$worklog.uploadWorklogs(worklogs)
                 .then(() => {
                     this.$message.success(`${worklogs.length} worklog(s) uploaded successfully!`);
+                    this.$analytics.trackEvent("Worklog uploaded: All", EventCategory.UserActions);
                     this.refreshData();
                 }, () => {
                     this.refreshData();
@@ -799,6 +800,7 @@ class Calendar extends BaseGadget {
                     const { events } = this;
                     events.removeAll(w => w.entryType === 1 && w.id.toString() === this.currentWLItem.id.toString());
                     this.addEvent({ added: this.$worklog.getWLCalendarEntry(wl[0]) });
+                    this.$analytics.trackEvent("Worklog uploaded: Individual", EventCategory.UserActions);
                 }, () => this.setState({ uploading: false }));
         }
     }

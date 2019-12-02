@@ -18,6 +18,7 @@ class AddWorklog extends BaseDialog {
         const { worklog } = props;
         this.state = this.getState(worklog);
         this.state.uploadImmediately = this.$session.CurrentUser.autoUpload || false;
+        this.allTicketList = [];
     }
 
     UNSAFE_componentWillMount() {

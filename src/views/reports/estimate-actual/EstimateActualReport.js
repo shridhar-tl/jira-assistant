@@ -123,11 +123,11 @@ class EstimateActualReport extends BaseGadget {
 
         this.storyPointField = (this.$session.CurrentUser.storyPointField || {}).id;
 
-        this.state = { disableRefresh: true, dateRange: {}, chartData: {}, estimationField: 'timeoriginalestimate', projects: this.$session.CurrentUser.projects };
+        this.state = { groups: [], disableRefresh: true, dateRange: {}, chartData: {}, estimationField: 'timeoriginalestimate', projects: this.$session.CurrentUser.projects };
     }
 
     UNSAFE_componentWillMount() {
-        this.$usergroup.getUserGroups().then(groups => this.setState({ groups }));
+        this.$usergroup.getUserGroups().then(groups => this.setState({ groups: groups || [] }));
         this.$jira.getProjects().then((projectsList) => {
             projectsList = projectsList.map((d) => { return { name: d.name, key: d.key, id: d.id }; }).orderBy((d) => { return d.name; });
             this.setState({ projectsList });
@@ -375,7 +375,7 @@ class EstimateActualReport extends BaseGadget {
     }
 
     showGroupsPopup = () => this.setState({ showGroupsPopup: true });
-    groupsChanged = (groups) => this.setState({ showGroupsPopup: false, groups })
+    groupsChanged = (groups) => this.setState({ showGroupsPopup: false, groups: groups || this.state.groups || [] })
     onDateChange = (e) => this.setState({ dateRange: e.date })
     validateData() {
         const { dateRange, groups } = this.state;
