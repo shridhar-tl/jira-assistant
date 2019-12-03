@@ -8,7 +8,10 @@ class SprintList extends PureComponent {
         inject(this, "JiraService");
 
         this.state = {};
-        this.pullSprintList(props);
+    }
+
+    UNSAFE_componentWillMount() {
+        this.pullSprintList(this.props);
     }
 
     UNSAFE_componentWillReceiveProps(props) {

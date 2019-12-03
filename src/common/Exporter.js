@@ -30,11 +30,11 @@ export default class Exporter {
         };
         this.curRowNum = 1;
         //const sheetOptions = {};
-        const headerRows = table.find("> thead:not([exportIgnore]) > tr:not([exportIgnore])");
+        const headerRows = table.find("> thead:not([exportignore]) > tr:not([exportignore])");
         //let headerRows = head.find("tr");
         this.prepareData(headerRows);
         console.log("header rows", headerRows.length);
-        const bodyRows = table.find("> tbody:not([exportIgnore]) > tr:not([exportIgnore])");
+        const bodyRows = table.find("> tbody:not([exportignore]) > tr:not([exportignore])");
         this.prepareData(bodyRows); //body.find("tr"));
         console.log("bodyRows rows", bodyRows.length);
         this.worksheet.views = [{ state: 'frozen', xSplit: 0, ySplit: headerRows.length }]; //, topLeftCell: 'G10', activeCell: 'A1'
@@ -144,11 +144,11 @@ export default class Exporter {
     getColArray(row, rowSpanInfo) {
         const cols = row.find("> th, > td");
         const dataArr = [];
-        const exportIgnore = !!row.attr("exportIgnore");
+        const exportIgnore = !!row.attr("exportignore");
         if (exportIgnore) {
             this.sheetOptions.rowsToRemove.push(this.curRowNum);
         }
-        if (row.attr("exportHidden")) {
+        if (row.attr("exporthidden")) {
             this.sheetOptions.rowsToHide.push(this.curRowNum);
         }
         cols.each((colIdx, col) => {

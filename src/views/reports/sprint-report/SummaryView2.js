@@ -78,7 +78,7 @@ class SprintDetails extends PureComponent {
                     <td>{formatDateTime(sprint.sprint.startDate)}</td>
                     <td>{formatDateTime(sprint.sprint.completeDate)}</td>
                     <td>{sprint.sprint.state}</td>
-                    <td innerhtml={sprint.lastUserToClose} />
+                    <td dangerouslySetInnerHTML={{ __html: sprint.lastUserToClose }} />
                     <td className="data-center">{sprint.estimateIssuesSPOld && <span>{sprint.estimateIssuesSPOld} <i className="fa fa-arrow-right" /></span>}{sprint.estimateIssuesSP}</td>
                     <td className="data-center">
                         {sprint.estimateIssuesCount && <span>
