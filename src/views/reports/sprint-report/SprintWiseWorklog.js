@@ -313,7 +313,7 @@ class SprintWiseWorklog extends PureComponent {
                             </th>)}
                             <th rowSpan="3" style={{ minWidth: "70px" }}>Grand total</th>
                         </tr>
-                        <tr exportHidden={true}>
+                        <tr exporthidden>
                             {groups.map((grp, i) => <Fragment key={i}>
                                 {grp.users.map((user, j) => <th key={j} className="data-center" style={{ width: "100px" }}>
                                     <Checkbox checked={user.include} onChange={(chk) => this.toggleUserSelection(user, chk)}

@@ -40,12 +40,23 @@ export class BaseGadget extends PureComponent {
             { label: "Remove", icon: "fa fa-remove", command: () => this.removeGadget() }
         ];
 
-        const exportOpts = this.hideExport ? [] : [
-            { separator: true },
-            { label: "Export to CSV", icon: "fa fa-file-text-o", disabled: !this.exportData, command: () => this.exportData(ExportFormat.CSV) },
-            { label: "Export to Excel", icon: "fa fa-file-excel-o", disabled: !this.exportData, command: () => this.exportData(ExportFormat.XLSX) },
-            { label: "Export to PDF", icon: "fa fa-file-pdf-o", disabled: !this.exportData, command: () => this.exportData(ExportFormat.PDF) }
-        ];
+        const exportOpts = [];
+
+        if (!this.hideExport) {
+            exportOpts.push({ separator: true });
+
+            if (!this.hideCSVExport) {
+                exportOpts.push({ label: "Export to CSV", icon: "fa fa-file-text-o", disabled: !this.exportData, command: () => this.exportData(ExportFormat.CSV) });
+            }
+
+            if (!this.hideXLSXExport) {
+                exportOpts.push({ label: "Export to Excel", icon: "fa fa-file-excel-o", disabled: !this.exportData, command: () => this.exportData(ExportFormat.XLSX) });
+            }
+
+            if (!this.hidePDFExport) {
+                exportOpts.push({ label: "Export to PDF", icon: "fa fa-file-pdf-o", disabled: !this.exportData, command: () => this.exportData(ExportFormat.PDF) });
+            }
+        }
 
         return [
             //{ label: "Refresh", icon: "fa fa-refresh", disabled: !this.refreshData || this.state.isLoading, command: () => this.refreshData(true) },
@@ -167,12 +178,6 @@ export class BaseGadget extends PureComponent {
         exportHelper.element = this.el;
         this.$analytics.trackEvent("Export data", EventCategory.GadgetActions, exportHelper.format);
         exportHelper.export();
-    }
-
-    getExportButton(disabled) {
-        if (this.isGadget) { return null; }
-
-        return <Button icon="fa fa-download" disabled={disabled} onClick={this.exportData} title={this.exportFormat === ExportFormat.XLSX ? "Export to Excel" : "Export to csv"} />;
     }
 
     showGadgetGontextMenu = (e) => showContextMenu(e, this.getContextMenu())

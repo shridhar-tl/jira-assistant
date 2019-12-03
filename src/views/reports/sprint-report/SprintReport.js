@@ -38,6 +38,7 @@ class SprintReport extends BaseGadget {
         super(props, "Sprint report", "fa fa-list-alt");
         this.isGadget = false;
         this.exportFormat = ExportFormat.XLSX;
+        this.hideCSVExport = true;
         inject(this, "JiraService", "UserUtilsService", "SessionService", "UserGroupService", "AnalyticsService");
 
         this.state = { disableRefresh: true, selectedRapidViews: this.$session.CurrentUser.rapidViews, selectedSprints: null };
