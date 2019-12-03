@@ -35,8 +35,8 @@ export default class AnalyticsService {
         if (err) {
             if (typeof err === "object") {
                 if (err.promise && err.reason) {
-                    const { response, status } = err.reason;
-                    err = { response, status };
+                    const { status, response } = err.reason;
+                    err = { status, response };
                 }
 
                 try {
