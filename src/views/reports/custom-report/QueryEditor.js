@@ -500,7 +500,7 @@ class QueryEditor extends BaseGadget {
                             </tr>
                         </THead>
                         <tbody model={reportQuery.outputFields} onDrop={this.columnReordered}>
-                            {reportQuery.outputFields.map((row, $index) => <tr key={row._uniqueId} style={{ cursor: 'move' }} ngxdraggable model={row}>
+                            {reportQuery.outputFields.map((row, $index) => <tr key={row._uniqueId} style={{ cursor: 'move' }} model={row}>
                                 <td className="data-center">{$index + 1}</td>
                                 <td>{row.name}</td>
                                 <td>{row.type} {row.isArray ? '(multiple)' : ''}</td>
