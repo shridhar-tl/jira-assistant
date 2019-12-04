@@ -58,6 +58,7 @@ class AddWorklog extends BaseDialog {
             }
             else {
                 newState.log.overrideTimeSpent = '01:00';
+                newState.log.allowOverride = true;
             }
 
             this.validateData(newState.log, newState.vald, newState.ctlClass);
@@ -244,7 +245,7 @@ class AddWorklog extends BaseDialog {
                     <AutoComplete value={log.ticketNo} displayField="value" className="w-p-100"
                         placeholder="Enter the ticket number or start typing the summary to get suggestion"
                         dataset={this.searchTickets} disabled={log.isUploaded} maxlength={20}
-                        onChange={(val) => this.setValue("ticketNo", val)}>
+                        onChange={(val) => this.setValue("ticketNo", val)} autoFocus>
                         {(ticket) => <span style={{ fontSize: 12, margin: '10px 10px 0 0' }}>{ticket.value} - {ticket.label}</span>}
                     </AutoComplete>
                     <span className={`help-block ${vald.ticketNo ? '' : 'msg-error'}`}>Provide the ticket no on which you had to log your work</span>
