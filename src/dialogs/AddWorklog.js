@@ -216,13 +216,28 @@ class AddWorklog extends BaseDialog {
         return val;
     }
 
+    handleKeyPress = (e) => {
+        const { ctrlKey, charCode } = e;
+
+        if (ctrlKey && charCode === 13) {
+            const {
+                isLoading,
+                state: { log, vald, uploadImmediately }
+            } = this;
+
+            if (!isLoading) {
+                this.saveWorklog(log, vald, uploadImmediately && !(log.id > 0));
+            }
+        }
+    }
+
     render() {
         const {
             minCommentLength,
             state: { log, vald }
         } = this;
 
-        return super.renderBase(<div className="pad-22">
+        return super.renderBase(<div className="pad-22" onKeyPress={this.handleKeyPress}>
             <div className="row pad-b">
                 <div className="col-sm-3">
                     <strong>Log time</strong>
