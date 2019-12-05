@@ -37,6 +37,7 @@ const appPackageJson = require(paths.appPackageJson);
 
 // Source maps are resource heavy and can cause out of memory issue for large source files.
 const shouldUseSourceMap = process.env.GENERATE_SOURCEMAP === 'true';
+const shouldUseSourceMap_CSS = process.env.GENERATE_CSS_SOURCEMAP === 'true';
 // Some apps do not need the benefits of saving a web request, so not inlining the chunk
 // makes for a smoother build process.
 const shouldInlineRuntimeChunk = process.env.ANALYZE_BUNDLES === "true"; // Modified: process.env.INLINE_RUNTIME_CHUNK !== 'false';
@@ -113,7 +114,7 @@ module.exports = function (webpackEnv) {
             // which in turn let's users customize the target behavior as per their needs.
             postcssNormalize(),
           ],
-          sourceMap: isEnvProduction && shouldUseSourceMap,
+          sourceMap: isEnvProduction && shouldUseSourceMap_CSS,
         },
       },
     ].filter(Boolean);
@@ -122,7 +123,7 @@ module.exports = function (webpackEnv) {
         {
           loader: require.resolve('resolve-url-loader'),
           options: {
-            sourceMap: isEnvProduction && shouldUseSourceMap,
+            sourceMap: isEnvProduction && shouldUseSourceMap_CSS,
           },
         },
         {
@@ -254,7 +255,7 @@ module.exports = function (webpackEnv) {
         new OptimizeCSSAssetsPlugin({
           cssProcessorOptions: {
             parser: safePostCssParser,
-            map: shouldUseSourceMap
+            map: shouldUseSourceMap_CSS
               ? {
                 // `inline: false` forces the sourcemap to be output into a
                 // separate file
@@ -434,7 +435,7 @@ module.exports = function (webpackEnv) {
               exclude: cssModuleRegex,
               use: getStyleLoaders({
                 importLoaders: 1,
-                sourceMap: isEnvProduction && shouldUseSourceMap,
+                sourceMap: isEnvProduction && shouldUseSourceMap_CSS,
               }),
               // Don't consider CSS imports dead code even if the
               // containing package claims to have no side effects.
@@ -448,7 +449,7 @@ module.exports = function (webpackEnv) {
               test: cssModuleRegex,
               use: getStyleLoaders({
                 importLoaders: 1,
-                sourceMap: isEnvProduction && shouldUseSourceMap,
+                sourceMap: isEnvProduction && shouldUseSourceMap_CSS,
                 modules: true,
                 getLocalIdent: getCSSModuleLocalIdent,
               }),
@@ -462,7 +463,7 @@ module.exports = function (webpackEnv) {
               use: getStyleLoaders(
                 {
                   importLoaders: 2,
-                  sourceMap: isEnvProduction && shouldUseSourceMap,
+                  sourceMap: isEnvProduction && shouldUseSourceMap_CSS,
                 },
                 'sass-loader'
               ),
@@ -479,7 +480,7 @@ module.exports = function (webpackEnv) {
               use: getStyleLoaders(
                 {
                   importLoaders: 2,
-                  sourceMap: isEnvProduction && shouldUseSourceMap,
+                  sourceMap: isEnvProduction && shouldUseSourceMap_CSS,
                   modules: true,
                   getLocalIdent: getCSSModuleLocalIdent,
                 },
