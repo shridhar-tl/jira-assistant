@@ -15,6 +15,12 @@ class AC extends PureComponent {
         }
     }
 
+    componentDidMount() {
+        if (this.props.autoFocus) {
+            setTimeout(() => this.ac.inputEl.focus(), 100);
+        }
+    }
+
     onChange = ({ value }) => {
         this.setState({ value });
         this.props.onChange(value);
@@ -33,9 +39,9 @@ class AC extends PureComponent {
                 result.then(list => this.setState({ list }));
             }
         }
-        else if (Array.isArray(dataset)) {
-            // ToDo: need to implement when needed
-        }
+        // else if (Array.isArray(dataset)) {
+        //    // ToDo: need to implement when needed
+        //}
     }
 
     onKeyUp = (e) => {
@@ -47,18 +53,20 @@ class AC extends PureComponent {
         }
     }
 
+    setRef = e => this.ac = e
+
     render() {
         const {
             onChange, filterResult,
-            props: { multiple, dropdown, displayField, children, placeholder, title, className, style, size, maxlength, scrollHeight, disabled, onCustomValue },
+            props: { multiple, dropdown, displayField, children, placeholder, title, className, style, size, maxlength, scrollHeight, disabled, onCustomValue, autoFocus },
             state: { value, list }
         } = this;
 
         return (
-            <AutoComplete appendTo={document.body} multiple={multiple} itemTemplate={children} dropdown={dropdown}
+            <AutoComplete ref={this.setRef} appendTo={document.body} multiple={multiple} itemTemplate={children} dropdown={dropdown}
                 field={displayField} placeholder={placeholder} tooltip={title} className={className} style={style}
                 size={size} maxlength={maxlength} scrollHeight={scrollHeight} disabled={disabled}
-                value={value} onChange={onChange} suggestions={list} completeMethod={filterResult} onKeyUp={onCustomValue ? this.onKeyUp : null} />
+                value={value} onChange={onChange} suggestions={list} completeMethod={filterResult} onKeyUp={onCustomValue ? this.onKeyUp : null} autoFocus={autoFocus} />
         );
     }
 }

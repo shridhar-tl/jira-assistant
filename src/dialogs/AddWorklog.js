@@ -58,6 +58,7 @@ class AddWorklog extends BaseDialog {
             }
             else {
                 newState.log.overrideTimeSpent = '01:00';
+                newState.log.allowOverride = true;
             }
 
             this.validateData(newState.log, newState.vald, newState.ctlClass);
@@ -215,13 +216,28 @@ class AddWorklog extends BaseDialog {
         return val;
     }
 
+    handleKeyPress = (e) => {
+        const { ctrlKey, charCode } = e;
+
+        if (ctrlKey && charCode === 13) {
+            const {
+                isLoading,
+                state: { log, vald, uploadImmediately }
+            } = this;
+
+            if (!isLoading) {
+                this.saveWorklog(log, vald, uploadImmediately && !(log.id > 0));
+            }
+        }
+    }
+
     render() {
         const {
             minCommentLength,
             state: { log, vald }
         } = this;
 
-        return super.renderBase(<div className="pad-22">
+        return super.renderBase(<div className="pad-22" onKeyPress={this.handleKeyPress}>
             <div className="row pad-b">
                 <div className="col-sm-3">
                     <strong>Log time</strong>
@@ -244,7 +260,7 @@ class AddWorklog extends BaseDialog {
                     <AutoComplete value={log.ticketNo} displayField="value" className="w-p-100"
                         placeholder="Enter the ticket number or start typing the summary to get suggestion"
                         dataset={this.searchTickets} disabled={log.isUploaded} maxlength={20}
-                        onChange={(val) => this.setValue("ticketNo", val)}>
+                        onChange={(val) => this.setValue("ticketNo", val)} autoFocus>
                         {(ticket) => <span style={{ fontSize: 12, margin: '10px 10px 0 0' }}>{ticket.value} - {ticket.label}</span>}
                     </AutoComplete>
                     <span className={`help-block ${vald.ticketNo ? '' : 'msg-error'}`}>Provide the ticket no on which you had to log your work</span>

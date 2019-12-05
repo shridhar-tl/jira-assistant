@@ -69,7 +69,7 @@ class ReportViewer extends BaseGadget {
                         f.colspan = f.subCols.length + 1;
                         f.rowspan = 1;
                     });
-                this.subFields = subHeads;
+
                 const groupList = model.outputFields.filter((f) => { return f.groupBy; });
                 const groupedData = groupList.length > 0 ? this.groupData(issues, Array.from(groupList)) : issues;
                 this.dataFields = model.outputFields.filter((f) => { return !f.groupBy; });
@@ -77,7 +77,7 @@ class ReportViewer extends BaseGadget {
                 //var tbody = $("#tbody").html(this.genHtmlRow(groupedData));
                 const hasReportData = groupedData.length > 0;
 
-                this.setState({ hasReportData, displayFields, isLoading: false });
+                this.setState({ subFields: subHeads, hasReportData, displayFields, isLoading: false });
                 this.$analytics.trackEvent("Custom report viewed", EventCategory.UserActions);
             });
     }
@@ -177,6 +177,7 @@ class ReportViewer extends BaseGadget {
         }
         const group = groups[0];
         const field = group.id;
+
         const func = group.functions;
         groups.removeAt(0);
         const isAggGrp = func.useArray;
