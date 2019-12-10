@@ -184,7 +184,7 @@ class SprintWiseWorklog extends PureComponent {
             reportData = this.state.reportData;
         }
 
-        if (!groups) {
+        if (!groups && this.state.groups) {
             groups = [...this.state.groups];
         }
 
