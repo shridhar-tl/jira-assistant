@@ -31,12 +31,13 @@ class DatabaseService extends Dexie {
 
                 this.transaction('rw', this.users, () => {
                     this.users.add({ jiraUrl: 'SystemUser', userId: 'SystemUser', dateCreated: new Date(), instId }).then(() => {
-                        this.users.put(user).then(() => {
-                            this.$analytics.setUserId(instId);
-                            this.$analytics.trackEvent("New installation", EventCategory.Instance);
-                        });
+                        this.$analytics.setUserId(instId);
+                        this.$analytics.trackEvent("New installation", EventCategory.Instance);
                     });
-                }).catch((e) => { console.error(`Unable to initialize the database:-${e.stack}`); });
+                }).catch((e) => {
+                    this.reportError(e.message, "database-service.js", 32, 0, e.stack);
+                    console.error("Unable to initialize the database:-", e);
+                });
             }
             else {
                 let instId = user.instId;

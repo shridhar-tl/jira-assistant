@@ -14,6 +14,10 @@ class MeetingDetails extends PureComponent {
             state: { showAttendees, showFullDesc }
         } = this;
 
+        if (!currentMeetingItem) {
+            return null;
+        }
+
         return (<div className="event-details">
             <div className="header">
                 <div className="controls" />

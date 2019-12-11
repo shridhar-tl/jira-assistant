@@ -888,7 +888,7 @@ class Calendar extends BaseGadget {
             {showSettingsPopup && <CalendarSettings settings={this.state.settings} onDone={this.saveSettings} onHide={this.toggleSettingsDialog} />}
 
             <OverlayPanel className="op-event-details" ref={(el) => { this.opEvent = el; }} showCloseIcon={true} dismissable={true} appendTo={document.body} onHide={this.hideOPEvent}>
-                {showOpEvent && <MeetingDetails eventDetails={this.currentMeetingItem} cut={this.$utils.cut} />}
+                {showOpEvent && this.currentMeetingItem && <MeetingDetails eventDetails={this.currentMeetingItem} cut={this.$utils.cut} />}
             </OverlayPanel>
         </>
         );

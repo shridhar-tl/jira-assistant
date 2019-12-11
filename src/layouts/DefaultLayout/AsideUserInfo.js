@@ -9,7 +9,7 @@ class AsideUserInfo extends PureComponent {
         super(props);
         inject(this, "SessionService");
 
-        const { jiraUser: { displayName, emailAddress, key, avatarUrls } } = this.$session.CurrentUser;
+        const { jiraUser: { displayName, emailAddress, key, avatarUrls } = {} } = this.$session.CurrentUser;
         this.state = {
             name: displayName,
             login: key,
