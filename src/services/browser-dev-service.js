@@ -1,6 +1,7 @@
 import { CHROME_WS_URL } from '../_constants';
+import BrowserBase from '../common/BrowserBase';
 // ToDo: need to pull url
-export default class DevBrowserService {
+export default class DevBrowserService extends BrowserBase {
     constructor() {
         this.notSetting = {
             init: () => {

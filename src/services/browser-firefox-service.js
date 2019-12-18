@@ -1,6 +1,7 @@
 import { FF_STORE_URL } from '../_constants';
+import BrowserBase from '../common/BrowserBase';
 // ToDo: need to pull url
-export default class FirefoxBrowserService {
+export default class FirefoxBrowserService extends BrowserBase {
     constructor() {
         this.notSetting = {
             init: () => {

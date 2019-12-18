@@ -139,6 +139,15 @@ export function getHostFromUrl(url) {
     return new URL(url).host;
 }
 
+export function getOriginFromUrl(url) {
+    if (url && typeof url !== "string") { url = url.toString(); }
+    let origin = new URL(url).origin;
+    if (!origin.endsWith("/")) {
+        origin += "/";
+    }
+    return origin;
+}
+
 export function setStartOfWeek(startOfWeek) {
     if (!startOfWeek || startOfWeek < 1) { startOfWeek = 1; }
     moment.locale(moment.locale(), { week: { dow: startOfWeek - 1 } });
