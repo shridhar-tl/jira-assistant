@@ -1,8 +1,10 @@
 import { CHROME_WS_URL } from '../_constants';
 import { getOriginFromUrl } from '../common/utils';
+import BrowserBase from '../common/BrowserBase';
 
-export default class ChromeBrowserService {
+export default class ChromeBrowserService extends BrowserBase {
     constructor() {
+        super();
         this.notSetting = {
             init: () => {
                 if (this.notSetting.curShowing) {

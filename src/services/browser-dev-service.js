@@ -3,6 +3,7 @@ import BrowserBase from '../common/BrowserBase';
 // ToDo: need to pull url
 export default class DevBrowserService extends BrowserBase {
     constructor() {
+        super();
         this.notSetting = {
             init: () => {
                 if (this.notSetting.curShowing) {

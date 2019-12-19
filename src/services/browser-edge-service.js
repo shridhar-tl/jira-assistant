@@ -3,6 +3,7 @@ import BrowserBase from '../common/BrowserBase';
 
 export default class AppBrowserService extends BrowserBase {
     constructor() {
+        super();
         this.notSetting = {
             init: () => {
                 if (this.notSetting.curShowing) {
