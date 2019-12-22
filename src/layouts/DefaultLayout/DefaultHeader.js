@@ -13,6 +13,7 @@ import YoutubeVideo from '../../dialogs/YoutubeVideo';
 import SkinPicker from './SkinPicker';
 import SwitchAccountMenu from './SwitchAccountMenu';
 import { getHostFromUrl } from '../../common/utils';
+import Notifications from './Notifications';
 
 const propTypes = {
   children: PropTypes.node,
@@ -97,6 +98,7 @@ class DefaultHeader extends PureComponent {
               </DropdownMenu>
             </UncontrolledDropdown>
           </Nav>
+          <Notifications />
           <NavItem className="d-md-down-none">
             <span className="nav-link" onClick={this.showYoutubeHelp}><i className="fa fa-youtube-play"></i></span>
           </NavItem>

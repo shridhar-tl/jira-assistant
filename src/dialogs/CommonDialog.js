@@ -8,7 +8,9 @@ class CommonDialog extends BaseDialog {
         this.state = { showDialog: false };
         this.style = { width: "485px" };
 
-        DialogConfig.onChange((body, title, footer) => {
+        DialogConfig.onChange((body, title, footer, onClose) => {
+            this.onClose = onClose;
+
             if (body) {
                 this.title = title;
                 this.body = body;
@@ -21,10 +23,21 @@ class CommonDialog extends BaseDialog {
         });
     }
 
+    onHide = () => {
+        if (this.onClose) {
+            this.onClose();
+        }
+    }
+
     render() {
         const { body } = this;
 
-        return super.renderBase(<div className="pad-22" dangerouslySetInnerHTML={{ __html: body }}></div>);
+        if (typeof body === "string") {
+            return super.renderBase(<div className="pad-22" dangerouslySetInnerHTML={{ __html: body }}></div>);
+        }
+        else {
+            return super.renderBase(<div className="pad-22">{body}</div>);
+        }
     }
 }
 
@@ -36,29 +49,31 @@ class DialogConfig {
     }
 
     custom(message, title, footer) {
-        if (message) {
+        if (message && typeof message === "string") {
             message = message.replace(/\n/g, "<br />");
         }
         const then = ((confirm, cancel) => {
+            const whenHide = () => {
+                this.hide();
+                if (cancel) {
+                    cancel(this.scope);
+                }
+            };
+
             if (typeof footer === "function") {
                 footer = footer(
                     () => {
                         this.hide();
                         if (confirm) { confirm(this.scope); }
                     },
-                    () => {
-                        this.hide();
-                        if (cancel) {
-                            cancel(this.scope);
-                        }
-                    }
+                    whenHide
                 );
             }
 
             this.scope = this.tmpScope;
             this.tmpScope = null;
 
-            DialogConfig.changeEvent(message, title, footer);
+            DialogConfig.changeEvent(message, title, footer, whenHide);
         });
 
         return { then };
@@ -77,8 +92,8 @@ class DialogConfig {
             title = "Info";
         }
 
-        const footer = (ok) => <Button type="danger" icon="fa fa-check" label="Delete" onClick={ok} />;
-        return this.custom(message, footer);
+        const footer = (ok) => <Button type="success" icon="fa fa-check" label="Ok" onClick={ok} />;
+        return this.custom(message, title, footer);
     }
 
     confirmDelete(message, title) {
