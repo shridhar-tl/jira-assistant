@@ -6,7 +6,7 @@ import Dialog from '../../dialogs';
 class Notifications extends PureComponent {
     constructor(props) {
         super(props);
-        inject(this, "NotificationService", "AnalyticsService", "UserUtilsService");
+        inject(this, "NotificationService", "AnalyticsService", "UserUtilsService", "UtilsService");
         this.state = {};
     }
 
@@ -74,7 +74,7 @@ class Notifications extends PureComponent {
                     <DropdownItem header tag="div">
                         <div className="text-center"><strong>You have {unread || total} {unread ? "unread" : ""} messages</strong></div>
                     </DropdownItem>
-                    {list.map((msg, i) => (<Message key={i} message={msg} onOpen={this.readMessage} onRead={this.markRead} />))}
+                    {list.map((msg, i) => (<Message key={i} message={msg} onOpen={this.readMessage} onRead={this.markRead} cut={this.$utils.cut} />))}
                 </DropdownMenu>
             </UncontrolledDropdown>
         );
@@ -88,7 +88,7 @@ class Message extends PureComponent {
     markRead = () => this.props.onRead(this.props.message)
 
     render() {
-        const { message: msg } = this.props;
+        const { message: msg, cut } = this.props;
 
         return (
             <DropdownItem tag="div" title="Click to view this message">
@@ -97,7 +97,7 @@ class Message extends PureComponent {
                 <div className={`text-truncate${msg.read ? "" : " font-weight-bold"}`} onClick={this.readMessage}>
                     {msg.important && <span className="fa fa-exclamation text-danger"></span>} {msg.title}
                 </div>
-                <div className="small text-muted message" onClick={this.readMessage}>{msg.message}</div>
+                <div className="small text-muted message" onClick={this.readMessage}>{cut(msg.message, 175, true)}</div>
             </DropdownItem>
         );
     }
