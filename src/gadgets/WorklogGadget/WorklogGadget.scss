@@ -3,6 +3,10 @@
     height: calc(100vh - 121px);
     overflow: auto;
   }
+
+  span.estimate {
+    padding-left: 5px;
+  }
 }
 
 td .user-info {

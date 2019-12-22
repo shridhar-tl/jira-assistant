@@ -1,6 +1,6 @@
 import React from 'react';
 import BaseDialog from '../../dialogs/BaseDialog';
-import { Button, TextBox } from '../../controls';
+import { Button, TextBox, Checkbox } from '../../controls';
 import { TabView, TabPanel } from 'primereact/tabview';
 import { inject } from '../../services';
 
@@ -12,6 +12,7 @@ class WorklogSettings extends BaseDialog {
 
         const { pageSettings } = props;
         this.state = { showDialog: true, pageSettings: { ...pageSettings } };
+        this.hideEstimate = pageSettings.hideEstimate;
     }
 
     getFooter() {
@@ -31,7 +32,7 @@ class WorklogSettings extends BaseDialog {
     }
 
     render() {
-        const { setValue, state: { pageSettings: { logFormat, breakupMode, timeZone, jql } } } = this;
+        const { setValue, state: { pageSettings: { logFormat, breakupMode, timeZone, jql, hideEstimate } } } = this;
 
         return super.renderBase(
             <TabView styleclass="query-tab">
@@ -91,6 +92,14 @@ class WorklogSettings extends BaseDialog {
                                     Use individual users timezone
                                 </label>
                             </div>
+                        </div>
+                    </div>
+                    <div className="form-group row">
+                        <div className="form-check">
+                            <label className="form-check-label">
+                                <Checkbox checked={hideEstimate} onChange={(e) => setValue("hideEstimate", e)} label="Hide estimate related fields" />
+                                {this.hideEstimate && !hideEstimate && <span className="pad-left-15"> ( <i className="fa fa-exclamation-triangle" /> Change will take effect only after report is refreshed )</span>}
+                            </label>
                         </div>
                     </div>
                 </TabPanel>

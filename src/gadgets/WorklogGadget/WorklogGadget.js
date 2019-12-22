@@ -91,6 +91,7 @@ class WorklogGadget extends BaseGadget {
             };
         });
         this.months = dateArr.groupBy((d) => d.format("MMM, yyyy")).map(grp => { return { monthName: grp.key, days: grp.values.length }; });
+        const hideEstimate = this.state.pageSettings.hideEstimate;
         let additionalJQL = (this.state.pageSettings.jql || '').trim();
         if (additionalJQL) {
             additionalJQL = ` AND (${additionalJQL})`;
@@ -99,6 +100,11 @@ class WorklogGadget extends BaseGadget {
             mfromDate.clone().add(-1, 'days').format("YYYY-MM-DD")}' and worklogDate < '${mtoDate.clone().add(1, 'days').format("YYYY-MM-DD")}'${
             additionalJQL}`;
         const fieldsToFetch = ["summary", "worklog", "issuetype", "parent", "project", "status"];
+        if (!hideEstimate) {
+            fieldsToFetch.push("timeoriginalestimate");
+            fieldsToFetch.push("timeestimate");
+        }
+
         const epicNameField = this.epicNameField;
         if (epicNameField) {
             fieldsToFetch.push(epicNameField);
@@ -107,6 +113,7 @@ class WorklogGadget extends BaseGadget {
             .then((issues) => {
                 const arr = userList.map((u) => { return { logData: [], userName: u.toLowerCase() }; });
                 const report = {};
+
                 for (let x = 0; x < arr.length; x++) {
                     const a = arr[x];
                     report[a.userName] = a;
@@ -115,6 +122,11 @@ class WorklogGadget extends BaseGadget {
                     const issue = issues[iss];
                     const fields = issue.fields || {};
                     const worklogs = (fields.worklog || {}).worklogs || [];
+                    const totalLogged = worklogs.sum(wl => wl.timeSpentSeconds);
+                    const originalestimate = fields.timeoriginalestimate || 0;
+                    const remainingestimate = fields.timeestimate || 0;
+                    const estVariance = originalestimate > 0 ? (remainingestimate + totalLogged) - originalestimate : 0;
+
                     for (let i = 0; i < worklogs.length; i++) {
                         const worklog = worklogs[i];
                         const startedTime = moment(worklog.started).toDate();
@@ -130,6 +142,10 @@ class WorklogGadget extends BaseGadget {
                                     issueType: (fields.issuetype || "").name,
                                     parent: (fields.parent || "").key,
                                     summary: fields.summary,
+                                    originalestimate,
+                                    remainingestimate,
+                                    totalLogged,
+                                    estVariance,
                                     logTime: startedTime,
                                     comment: worklog.comment,
                                     projectName: fields.project.name,
@@ -181,6 +197,10 @@ class WorklogGadget extends BaseGadget {
                             statusName: log.statusName,
                             logTime: log.logTime,
                             timeSpent: log.totalHours,
+                            originalestimate: log.originalestimate,
+                            remainingestimate: log.remainingestimate,
+                            totalLogged: log.totalLogged,
+                            estVariance: log.estVariance,
                             comment: log.comment
                         };
                     });
@@ -354,7 +374,7 @@ class WorklogGadget extends BaseGadget {
                         {flatData && <UserProjectWiseSummary key={flatDataUniqueKey} groups={groups} flatData={flatData} formatDateTime={formatDateTime} convertSecs={convertSecs} />}
                     </TabPanel>
                     <TabPanel header="Flat">
-                        {flatData && <FlatDataGrid key={flatDataUniqueKey} flatData={flatData} formatDateTime={formatDateTime} convertSecs={convertSecs} />}
+                        {flatData && <FlatDataGrid key={flatDataUniqueKey} flatData={flatData} formatDateTime={formatDateTime} convertSecs={convertSecs} pageSettings={pageSettings} />}
                     </TabPanel>
                 </TabView>}
 

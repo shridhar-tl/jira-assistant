@@ -3,7 +3,7 @@ import { ScrollableTable, THead, TRow, Column, TBody, NoDataRow } from '../../co
 
 class FlatDataGrid extends PureComponent {
     render() {
-        const { props: { formatDateTime, convertSecs, flatData } } = this;
+        const { props: { formatDateTime, convertSecs, flatData, pageSettings: { hideEstimate } } } = this;
 
         return (
             <ScrollableTable dataset={flatData} exportSheetName="Flat Worklogs">
@@ -20,6 +20,10 @@ class FlatDataGrid extends PureComponent {
                         <Column sortBy="logTime">Log Date & Time</Column>
                         <Column sortBy="userDisplay">User</Column>
                         <Column sortBy="timeSpent">Hr. Spent</Column>
+                        {!hideEstimate && <Column sortBy="originalestimate">Ori. Estm.</Column>}
+                        {!hideEstimate && <Column sortBy="totalLogged">Total Worklogs</Column>}
+                        {!hideEstimate && <Column sortBy="remainingestimate">Rem. Estm.</Column>}
+                        {!hideEstimate && <Column sortBy="estVariance">Estm. Variance</Column>}
                         <Column sortBy="comment">Comment</Column>
                     </TRow>
                 </THead>
@@ -36,6 +40,10 @@ class FlatDataGrid extends PureComponent {
                         <td>{formatDateTime(row.logTime)}</td>
                         <td>{row.userDisplay}</td>
                         <td>{convertSecs(row.timeSpent)}</td>
+                        {!hideEstimate && <td>{convertSecs(row.originalestimate)}</td>}
+                        {!hideEstimate && <td>{convertSecs(row.totalLogged)}</td>}
+                        {!hideEstimate && <td>{convertSecs(row.remainingestimate)}</td>}
+                        {!hideEstimate && <td>{row.estVariance > 0 ? "+" : null}{convertSecs(row.estVariance)}</td>}
                         <td>{row.comment}</td>
                     </tr>}
                 </TBody>
