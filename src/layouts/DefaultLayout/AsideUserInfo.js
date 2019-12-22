@@ -14,7 +14,7 @@ class AsideUserInfo extends PureComponent {
             name: displayName,
             login: key,
             emailAddress,
-            imageUrl: avatarUrls["24x24"]
+            imageUrl: (avatarUrls || {})["24x24"]
         };
     }
 
