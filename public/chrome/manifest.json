@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "Jira Assistant",
   "short_name": "Jira Assist",
-  "version": "0.92",
+  "version": "0.93",
   "description": "Help to track & upload work done on a Jira Ticket on timely basis and generate report.",
   "icons": {
     "24": "/assets/icon_24.png",
@@ -40,10 +40,8 @@
   "content_security_policy": "script-src 'self' 'unsafe-eval' https://apis.google.com https://calendar.google.com https://ssl.google-analytics.com https://www.google-analytics.com https://login.microsoftonline.com https://graph.microsoft.com ; object-src 'self';",
   "offline_enabled": true,
   "permissions": [
-    "tabs",
+    "activeTab",
     "identity",
-    "http://*/",
-    "https://*/",
     "storage",
     "background",
     "notifications",
@@ -53,8 +51,10 @@
     "https://graph.microsoft.com/v1.0/me/*"
   ],
   "optional_permissions": [
-    "activeTab",
-    "unlimitedStorage"
+    "unlimitedStorage",
+    "tabs",
+    "http://*/",
+    "https://*/"
   ],
   "author": "Shridhar",
   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAqubtoyFP8J36QWUHoe0K3rsvSc347uAaMaxjwhPj9Hu68BEH85tuqp4LM92MVu7TPXx30JCBUBqDpo4PUaQqVwSmIAjnlDrJ7ZB8+jw5Sm7vLTztex/24wcF6Qtbsz9bXj8yLtVKHi2claEENLItrTx/uJH0c8KzDPu0Vr3f3H7xAzh2i+6GJhyNDI4l0SNjJ3n/CyGvuo6aNs8Q4zxoGPsqZrWH4eG98ozvPgGMrxTa0oDgpah/LPrKulMDQmYRnwpgTw4lSyznrC6ydvcarkGebi6YajInmKm5dieL6rS8YPMyHBySu2l22ANIHz7jqHrbXaChw1ykMd7Er6slYQIDAQAB"

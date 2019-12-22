@@ -83,3 +83,48 @@ body.no-donation .btn-donate {
 .badge.v-info {
     font-size: 10px;
 }
+
+.messages {
+    max-width: 450px;
+
+    .dropdown-item {
+        cursor: pointer;
+        max-height: 92px;
+        min-width: 350px;
+        width: 100%;
+        max-width: 100%;
+
+        .mark-read {
+            font-size: 14px;
+            color: #ffc107;
+        }
+
+        .message {
+            white-space: pre-wrap !important;
+            max-height: 50px;
+            overflow: hidden;
+        }
+    }
+}
+
+.release-history {
+
+    .release {
+        &:not(:first-child) {
+            border-top: 1px solid gray;
+            padding-top: 5px;
+        }
+
+        .version-no {
+            font-weight: bold;
+            font-size: 20px;
+        }
+
+        .changelog-header {
+            display: block;
+            font-weight: bold;
+            margin-top: 4px;
+            text-indent: 8px;
+        }
+    }
+}

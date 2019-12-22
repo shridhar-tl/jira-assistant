@@ -62,7 +62,7 @@ class ImportIssue extends BaseImport {
         inject(this, "JiraService", "TicketService", "MessageService");
 
         this.metadata = {};
-        this.state = { importFields: [], ticketDetails: {} };
+        this.state = { importData: [], importFields: [], ticketDetails: {} };
     }
 
     UNSAFE_componentWillMount() {

@@ -1,5 +1,5 @@
 // Opera 8.0+
-// const isOpera = (!!window.opr && !!window.opr.addons) || !!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0;
+const isOpera = (!!window.opr && !!window.opr.addons) || !!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0;
 
 // Firefox 1.0+
 const isFirefox = typeof InstallTrigger !== 'undefined';
@@ -20,5 +20,22 @@ const isChrome = !!window.chrome && (!!window.chrome.webstore || !!window.chrome
 //const isBlink = (isChrome || isOpera) && !!window.CSS;
 
 export default {
-    isChrome, isFirefox, isEdge //, isOpera, isSafari, isBlink
+    isChrome, isFirefox, isEdge, isOpera //, isSafari, isBlink
 };
+
+export const BROWSER_NAME = getName();
+
+function getName() {
+    if (isChrome) {
+        return "chrome";
+    }
+    else if (isFirefox) {
+        return "firefox";
+    }
+    else if (isEdge) {
+        return "edge";
+    }
+    else if (isOpera) {
+        return "opera";
+    }
+}

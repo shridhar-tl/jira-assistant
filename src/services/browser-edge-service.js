@@ -1,7 +1,9 @@
 import { EDGE_STORE_URL } from '../_constants';
+import BrowserBase from '../common/BrowserBase';
 
-export default class AppBrowserService {
+export default class AppBrowserService extends BrowserBase {
     constructor() {
+        super();
         this.notSetting = {
             init: () => {
                 if (this.notSetting.curShowing) {

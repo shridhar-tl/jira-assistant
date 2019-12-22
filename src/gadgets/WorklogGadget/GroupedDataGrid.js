@@ -102,6 +102,10 @@ class GroupedDataGrid extends PureComponent {
                             issueType: firstTkt.issueType,
                             statusName: firstTkt.statusName,
                             summary: firstTkt.summary,
+                            originalestimate: firstTkt.originalestimate,
+                            remainingestimate: firstTkt.remainingestimate,
+                            totalLogged: firstTkt.totalLogged,
+                            estVariance: firstTkt.estVariance,
                             url: firstTkt.url,
                             logs: logs,
                             totalHours: 0
@@ -180,7 +184,7 @@ class GroupedDataGrid extends PureComponent {
 
     render() {
         const { state: { groupedData },
-            props: { months, dates, convertSecs, formatTime, breakupMode }
+            props: { months, dates, convertSecs, formatTime, breakupMode, pageSettings }
         } = this;
 
         return (
@@ -198,7 +202,7 @@ class GroupedDataGrid extends PureComponent {
                 <TBody>
                     {
                         groupedData.map((grp, i) => <GroupRow key={i} group={grp} dates={dates}
-                            convertSecs={convertSecs} formatTime={formatTime} breakupMode={breakupMode} />)
+                            convertSecs={convertSecs} formatTime={formatTime} breakupMode={breakupMode} pageSettings={pageSettings} />)
                     }
 
                     <tr className="grouped-row right auto-wrap">
@@ -221,7 +225,7 @@ class GroupRow extends PureComponent {
 
     render() {
         const {
-            props: { group: grp, dates, convertSecs, formatTime, breakupMode },
+            props: { group: grp, dates, convertSecs, formatTime, breakupMode, pageSettings },
             state: { hidden }
         } = this;
 
@@ -235,7 +239,7 @@ class GroupRow extends PureComponent {
                 </tr>}
 
                 {!hidden && grp.users.map((u, i) => <UserRow key={i} user={u} dates={dates} breakupMode={breakupMode}
-                    convertSecs={convertSecs} formatTime={formatTime} />)}
+                    convertSecs={convertSecs} formatTime={formatTime} pageSettings={pageSettings} />)}
 
                 <tr className="grouped-row right auto-wrap" onClick={hidden ? this.toggleDisplay : null}>
                     <td>
@@ -283,7 +287,7 @@ class UserRow extends PureComponent {
 
     render() {
         const {
-            props: { user: u, dates, convertSecs, breakupMode },
+            props: { user: u, dates, convertSecs, breakupMode, pageSettings: { hideEstimate } },
             state: { expanded }
         } = this;
 
@@ -304,21 +308,31 @@ class UserRow extends PureComponent {
                 </tr>
 
                 {expanded &&
-                    u.tickets.map((t, i) => (
-                        <tr key={i} className="auto-wrap">
-                            <td className="data-left">
-                                {t.parent && <a href={t.parentUrl} className="link" target="_blank" rel="noopener noreferrer">{t.parent} - </a>}
-                                <a href={t.url} className="link" target="_blank" rel="noopener noreferrer">{t.ticketNo}</a> -
+                    u.tickets.map((t, i) => {
+                        const oe = convertSecs(t.originalestimate);
+                        const re = convertSecs(t.remainingestimate);
+                        const logged = convertSecs(t.totalLogged) || 0;
+                        const variance = (t.estVariance > 0 ? "+" : "") + (convertSecs(t.estVariance) || (t.originalestimate > 0 ? 0 : "NA"));
+                        const estTitle = `Original Estimate: ${oe || 0}\nRemaining: ${re || 0}\nTotal Logged: ${logged}\nEstimate Variance: ${variance}`;
+
+                        return (
+                            <tr key={i} className="auto-wrap">
+                                <td className="data-left">
+                                    {t.parent && <a href={t.parentUrl} className="link" target="_blank" rel="noopener noreferrer">{t.parent} - </a>}
+                                    <a href={t.url} className="link" target="_blank" rel="noopener noreferrer">{t.ticketNo}</a> -
                                 <span>{t.summary}</span>
-                                <strong> ({t.statusName})</strong>
-                            </td>
-                            {dates.map((day, j) => <td key={j}>
-                                {breakupMode !== '2' && <span title={this.getComments(t.logs[day.prop])}>{convertSecs(this.getTotalTime(t.logs[day.prop]))}</span>}
-                                {breakupMode === '2' && <div> {this.getLogEntries(t.logs[day.prop])}</div>}
-                            </td>)}
-                            <td>{convertSecs(t.totalHours)}</td>
-                        </tr>
-                    ))
+                                    <strong> ({t.statusName})</strong>
+                                    {!hideEstimate && !!(oe || re) && <span className="estimate" title={estTitle}>
+                                        (est: {oe || 0} / rem: {re || 0} / log: {logged} / var: {variance})</span>}
+                                </td>
+                                {dates.map((day, j) => <td key={j}>
+                                    {breakupMode !== '2' && <span title={this.getComments(t.logs[day.prop])}>{convertSecs(this.getTotalTime(t.logs[day.prop]))}</span>}
+                                    {breakupMode === '2' && <div> {this.getLogEntries(t.logs[day.prop])}</div>}
+                                </td>)}
+                                <td>{convertSecs(t.totalHours)}</td>
+                            </tr>
+                        );
+                    })
                 }
             </>
         );

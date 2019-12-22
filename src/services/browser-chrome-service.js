@@ -1,7 +1,10 @@
 import { CHROME_WS_URL } from '../_constants';
+import { getOriginFromUrl } from '../common/utils';
+import BrowserBase from '../common/BrowserBase';
 
-export default class ChromeBrowserService {
+export default class ChromeBrowserService extends BrowserBase {
     constructor() {
+        super();
         this.notSetting = {
             init: () => {
                 if (this.notSetting.curShowing) {
@@ -94,6 +97,39 @@ export default class ChromeBrowserService {
                 }
             });
         });
+    }
+
+    hasPermission(url) {
+        url = getOriginFromUrl(url);
+
+        return new Promise((resolve) => {
+            this.chrome.permissions.contains({
+                permissions: ['tabs'],
+                origins: [url]
+            }, resolve);
+        });
+    }
+
+    async requestPermission(url) {
+        try {
+            url = getOriginFromUrl(url);
+            const result = await this.hasPermission(url);
+
+            if (result) {
+                return true;
+            } else {
+                console.log(`Requesting permission for ${url}.`);
+                return new Promise((resolve) => {
+                    this.chrome.permissions.request({
+                        permissions: ['tabs'],
+                        origins: [url]
+                    }, resolve);
+                });
+            }
+        }
+        catch (err) {
+            return Promise.reject(err);
+        }
     }
 
     replaceTabUrl(url) {

@@ -1,0 +1,35 @@
+.video-help {
+    .nav-icon {
+        position: absolute;
+        height: 59px;
+        width: 59px;
+        border-radius: 50%;
+        background-color: #fff;
+        cursor: pointer;
+        opacity: 0.85;
+
+        &:hover {
+            box-shadow: 0 1px 3px 1px rgba(60,64,67,0.149);
+            opacity: 1;
+        }
+
+        .fa {
+            color: black;
+            font-size: 35px;
+            padding: 12px 22px;
+            font-weight: bold;
+        }
+
+        &.left {
+            top: 50%;
+            float: left;
+            left: -20px;
+        }
+
+        &.right {
+            top: 50%;
+            float: right;
+            right: -15px;
+        }
+    }
+}

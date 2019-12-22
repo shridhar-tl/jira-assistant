@@ -29,6 +29,8 @@ export const ApiUrls = {
     outlookLogoutUrl: "https://login.microsoftonline.com/common/oauth2/v2.0/logout"
 };
 
+export const messagesUrl = "https://drive.google.com/uc?export=download&id=1aDFOfa5z5W5rP4ErvhMeAkYsq7-2_vk9";
+
 export const dateFormats = [
     "dd-MMM-yyyy", "dd/MMM/yyyy",
     "dd-MM-yyyy", "dd/MM/yyyy",

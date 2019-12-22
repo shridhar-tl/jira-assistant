@@ -5,9 +5,10 @@ import browser from '../common/browsers';
 export default class AjaxService {
     static dependencies = ["SessionService", "MessageService", "AppBrowserService"];
 
-    constructor($session, $message) {
+    constructor($session, $message, $browser) {
         this.$session = $session;
         this.$message = $message;
+        this.$browser = $browser;
 
         const headerObj = { 'Content-Type': 'application/json' };
 
@@ -72,6 +73,10 @@ export default class AjaxService {
         }
         else {
             params = undefined;
+        }
+
+        if (!await this.$browser.requestPermission(url)) {
+            console.error(`Permission not granted for ${url}.`);
         }
 
         return new Promise((resolve, reject) => {
