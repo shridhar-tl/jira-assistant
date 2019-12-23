@@ -25,6 +25,10 @@
         {
           "version": "0.65",
           "update_link": "https://github.com/shridhar-tl/jira-assistant/raw/master/release/firefox/JiraAssist_20181001_0_65.xpi"
+        },
+        {
+          "version": "0.93",
+          "update_link": "https://github.com/shridhar-tl/jira-assistant/raw/master/release/firefox/JiraAssist_20191223_0_93.xpi"
         }
       ]
     }
