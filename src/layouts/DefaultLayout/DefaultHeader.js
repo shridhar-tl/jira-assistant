@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 
 import { AppSidebarToggler } from '@coreui/react';
 import logo from '../../img/logo-symbol.png';
-import { CHROME_WS_URL, FF_STORE_URL, EventCategory } from '../../_constants';
+import { CHROME_WS_URL, FF_STORE_URL, EventCategory, EDGE_STORE_URL, GITHUB_HOME_URL, OPERA_STORE_URL } from '../../_constants';
 
 import './DefaultHeader.scss';
 import { inject } from '../../services/injector-service';
@@ -35,19 +35,19 @@ class DefaultHeader extends PureComponent {
     this.storeUrl = this.$jaBrowserExtn.getStoreUrl();
     this.$jaBrowserExtn.getAppVersion().then(v => this.setState({ versionNumber: v }));
     const subj = encodeURIComponent('Check out "Jira Assistant" in web store');
-    const body = encodeURIComponent(`${'Check out "Jira Assistant" extension / add-on for your browser from below url:'
-      + '\n\nChrome users: '}${CHROME_WS_URL}?utm_source%3Dgmail#`
-      + `\n\nFirefox users: ${FF_STORE_URL
-      //+ '\n\nEdge users: <<Not available yet>>'
-      //+ '\n\nSafari users: <<Not available yet>>'
-      }\n\n\n\nThis would help you to track your worklog and generate reports from Jira easily with lots of customizations. `
-      + `Also has lot more features like Google Calendar integration, Jira comment & meeting + worklog notifications, Worklog and custom report generations, etc..`);
+    const body = encodeURIComponent('Check out "Jira Assistant", a open source extension / add-on for your browser from below url:'
+      + `\n\nChrome users: ${CHROME_WS_URL}?utm_source%3Dgmail#`
+      + `\n\nFirefox users: ${FF_STORE_URL}`
+      + `\n\nEdge users: ${EDGE_STORE_URL}`
+      + `\n\nOpera users: ${OPERA_STORE_URL}`
+      + `\n\nFor source code or to know more about the extension visit: ${GITHUB_HOME_URL}`
+      + `\n\n\nThis would help you to track your worklog and generate reports from Jira easily with lots of customizations. `
+      + `Also has lot more features like Google Calendar integration, Jira comment & meeting + worklog notifications, Worklog, Sprint and custom report generations, etc..`);
     const storeUrl = encodeURIComponent(this.storeUrl);
     this.gMailShare = `https://mail.google.com/mail/u/0/?view=cm&tf=1&fs=1&su=${subj}&body=${body}`;
-    this.gPlusShare = `https://plus.google.com/share?app=110&url=${storeUrl}`;
     this.linkedInShare = `https://www.linkedin.com/shareArticle?mini=true&url=${storeUrl}&title=${subj}&summary=${body}&source=`;
-    this.fackbookShare = `https://www.facebook.com/sharer/sharer.php?u=${storeUrl}`;
-    this.twitterShare = `https://twitter.com/home?status=${storeUrl}`;
+    this.fackbookShare = `https://www.facebook.com/sharer/sharer.php?u=${this.storeUrl}&title=${subj}&description=${body}`;
+    this.twitterShare = `https://twitter.com/intent/tweet?text=${body}`;
 
     if (this.$session.CurrentUser.hideDonateMenu) { // When this settings is changed, below class will be removed from body in settings page
       document.body.classList.add('no-donation');
@@ -70,7 +70,7 @@ class DefaultHeader extends PureComponent {
 
   render() {
     const {
-      ratingUrl, gMailShare, gPlusShare, linkedInShare, fackbookShare, twitterShare,
+      ratingUrl, gMailShare, linkedInShare, fackbookShare, twitterShare,
       state: { versionNumber, showYoutubeVideo }
       //REVISIT: props: { children, ...attributes }
     } = this;
@@ -124,9 +124,6 @@ class DefaultHeader extends PureComponent {
                 </a>
                 <a href={gMailShare} target="_blank" rel="noopener noreferrer" title="Share with GMail">
                   <i className="fa fa-envelope pull-left"></i>
-                </a>
-                <a href={gPlusShare} target="_blank" rel="noopener noreferrer" title="Share with Google+">
-                  <i className="fa fa-google-plus-square pull-left"></i>
                 </a>
                 <a href={linkedInShare} target="_blank" rel="noopener noreferrer" title="Share with Linked in">
                   <i className="fa fa-linkedin-square pull-left"></i>

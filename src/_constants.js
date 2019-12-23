@@ -42,7 +42,12 @@ export const timeFormats = [" HH:mm:ss", " hh:mm:ss tt", " HH.mm.ss", " hh.mm.ss
 
 export const CHROME_WS_URL = "https://chrome.google.com/webstore/detail/jira-assistant/momjbjbjpbcbnepbgkkiaofkgimihbii";
 export const FF_STORE_URL = "https://addons.mozilla.org/en-US/firefox/addon/jira-assistant/";
-export const EDGE_STORE_URL = "https://addons.mozilla.org/en-US/firefox/addon/jira-assistant/";
+export const EDGE_STORE_URL = "https://microsoftedge.microsoft.com/addons/detail/aoenpdbabcjnjbjpegeenodfknllmaoi";
+export const OPERA_STORE_URL = "https://chrome.google.com/webstore/detail/jira-assistant/momjbjbjpbcbnepbgkkiaofkgimihbii";
+
+export const GITHUB_HOME_URL = "https://github.com/shridhar-tl/jira-assistant";
+
+export const ATLASSIAN_MARKETPLACE_URL = "https://marketplace.atlassian.com/apps/1221570/jassistant";
 
 export const DASHBOARD_ICONS = [
     'fa fa-tachometer',
