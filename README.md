@@ -22,7 +22,7 @@ You can install Jira Assist to your browser within few seconds from the below Ur
 
 - For Edge: https://microsoftedge.microsoft.com/addons/detail/aoenpdbabcjnjbjpegeenodfknllmaoi
 
-- For Opera: [Comming Soon. (Currently in review by Opera)]
+- For Opera: https://addons.opera.com/en/extensions/details/jira-assistant/ (Currently in review by Opera moderators. Hence only available for Developer / Beta version of Opera)
 
 - For Other browsers: Currently not available. But if popularity is more then will be released soon. Have a look at the Issues tab and +1 on appropriate issue, if you need it for other browsers.
 
