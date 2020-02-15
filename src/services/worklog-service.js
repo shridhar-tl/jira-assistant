@@ -1,5 +1,6 @@
 import * as moment from 'moment';
 import { ApiUrls, DummyWLId } from '../_constants';
+import { getUserName } from '../common/utils';
 
 export default class WorklogService {
     static dependencies = ["UserUtilsService", "JiraService", "SessionService", "DatabaseService", "TicketService", "AjaxService", "UtilsService", "MessageService"];
@@ -23,7 +24,7 @@ export default class WorklogService {
         toDate = mtoDate.toDate();
 
         if (!userList || userList.length === 0) {
-            userList = [this.$session.CurrentUser.name];
+            userList = [getUserName(this.$session.CurrentUser)];
         }
         const jql = `worklogAuthor in ("${userList.join("\", \"")}") and worklogDate >= '${
             mfromDate.clone().add(-1, 'days').format("YYYY-MM-DD")}' and worklogDate < '${
@@ -48,7 +49,7 @@ export default class WorklogService {
                         const startedTime = moment(worklog.started).toDate();
                         const startedDate = moment(worklog.started).startOf("day").toDate();
                         if (startedDate.getTime() >= fromDate.getTime() && startedDate.getTime() <= toDate.getTime()) {
-                            const reportUser = report[((worklog.author || {}).name || '').toLowerCase()];
+                            const reportUser = report[getUserName(worklog.author, true)];
                             if (reportUser) {
                                 const mins = worklog.timeSpentSeconds / 60;
                                 reportUser.logData.push({

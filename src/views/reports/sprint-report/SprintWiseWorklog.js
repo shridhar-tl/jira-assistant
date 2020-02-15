@@ -2,6 +2,7 @@ import React, { PureComponent, Fragment } from 'react';
 import { ScrollableTable, THead, TBody } from "../../../components/ScrollableTable";
 import { Checkbox } from '../../../controls';
 import { inject } from '../../../services';
+import { getUserName } from '../../../common/utils';
 
 class SprintWiseWorklog extends PureComponent {
     constructor(props) {
@@ -34,7 +35,7 @@ class SprintWiseWorklog extends PureComponent {
     }
 
     processTicketData(groups) {
-        const userList = groups.union(grp => grp.users.map(u => u.name)).distinct();
+        const userList = groups.union(grp => grp.users.map(u => getUserName(u))).distinct();
         const reportData = this.props.sprintDetails.map(curSprint => {
             const sprintInfo = curSprint.sprint;
             const sprintWorklogs = {};
@@ -113,7 +114,7 @@ class SprintWiseWorklog extends PureComponent {
         const worklogs = {};
         const worklogList = (fields.worklog || {}).worklogs;
         worklogList.forEach(wl => {
-            const author = wl.author.name;
+            const author = getUserName(wl.author);
             let wlObj = worklogs[author];
             if (!wlObj) {
                 wlObj = { total: 0, allTotal: 0 };
@@ -221,10 +222,11 @@ class SprintWiseWorklog extends PureComponent {
                             if (!user.include) {
                                 return;
                             }
-                            const userTotalAll = (issue.worklogs[user.name] || {}).allTotal || 0;
-                            const userTotal = (issue.worklogs[user.name] || {}).total || 0;
-                            issueTypeWorklogs[user.name] = (issueTypeWorklogs[user.name] || 0) + userTotalAll;
-                            sprintWorklogs[user.name] = (sprintWorklogs[user.name] || 0) + userTotalAll;
+                            const uName = getUserName(user);
+                            const userTotalAll = (issue.worklogs[uName] || {}).allTotal || 0;
+                            const userTotal = (issue.worklogs[uName] || {}).total || 0;
+                            issueTypeWorklogs[uName] = (issueTypeWorklogs[uName] || 0) + userTotalAll;
+                            sprintWorklogs[uName] = (sprintWorklogs[uName] || 0) + userTotalAll;
                             grpTotalAll += userTotalAll;
                             grpTotal += userTotal;
                         }); // End of user loop
@@ -351,7 +353,7 @@ class SprintDetails extends PureComponent {
                     <td exportType="number" className="data-center"><strong>{sprint.completedSP + (showIncomplete ? sprint.incompleteSP : 0)}</strong></td>
                     <td exportType="number" className="data-center"><strong>{convertSecs(sprint.estimate)}</strong></td>
                     {groups.map((grp, i) => <Fragment key={i}>
-                        {grp.users.map((user, j) => <td key={j} className="data-center" exportType="number">{convertSecs(sprint.worklogs[user.name])}</td>)}
+                        {grp.users.map((user, j) => <td key={j} className="data-center" exportType="number">{convertSecs(sprint.worklogs[getUserName(user)])}</td>)}
                         <td exportType="number" className="data-center"><strong>{convertSecs(sprint.groupTotal[i])}</strong></td>
                     </Fragment>)}
                     <td exportType="number" className="data-center"><strong>{convertSecs(sprint.grandTotal)}</strong></td>
@@ -373,7 +375,7 @@ class IssueTypesList extends PureComponent {
                 <td exportType="number" className="data-center"><strong>{convertSecs(type.estimate)}</strong></td>
                 {groups.map((grp, i) => <Fragment key={i}>
                     {grp.users.map((user, j) => <td key={j} className="data-center" exportType="number">
-                        {convertSecs(type.worklogs[user.name])}
+                        {convertSecs(type.worklogs[getUserName(user)])}
                     </td>)}
                     <td exportType="number" className="data-center"><strong>{convertSecs(type.groupTotal[i])}</strong></td>
                 </Fragment>)}
@@ -403,7 +405,7 @@ class IssueList extends PureComponent {
                             groups.map((grp, i) => <Fragment key={i}>
                                 {
                                     grp.users.map((user, j) => <td key={j} className="data-center" exportType="number">
-                                        {grp.include && user.include ? convertSecs(showSubtask ? (issue.worklogs[user.name] || 0).total : (issue.worklogs[user.name] || 0).allTotal) : null}
+                                        {grp.include && user.include ? convertSecs(showSubtask ? (issue.worklogs[getUserName(user)] || 0).total : (issue.worklogs[getUserName(user)] || 0).allTotal) : null}
                                     </td>)
                                 }
                                 <td exportType="number"><strong>{convertSecs(showSubtask ? (issue.groupTotal || {})[i] : (issue.groupTotalAll || {})[i])}</strong></td>
@@ -432,7 +434,7 @@ class SubtaskList extends PureComponent {
                 <td exportType="number" className="data-center">{task.storyPoint}</td>
                 <td exportType="number" className="data-center">{convertSecs(task.estimate)}</td>
                 {groups.map((grp, i) => <Fragment key={i}>
-                    {grp.users.map((user, j) => <td key={j} className="data-center">{grp.include && user.include ? convertSecs((task.worklogs[user.name] || 0).total) : null}</td>)}
+                    {grp.users.map((user, j) => <td key={j} className="data-center">{grp.include && user.include ? convertSecs((task.worklogs[getUserName(user)] || 0).total) : null}</td>)}
                     <td exportType="number"><strong>{convertSecs((issue.groupTotal || {})[i])}</strong></td>
                 </Fragment>)}
                 <td exportType="number"><strong>{convertSecs(task.grandTotal)}</strong></td>

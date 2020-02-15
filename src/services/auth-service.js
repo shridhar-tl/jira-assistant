@@ -1,4 +1,5 @@
 import * as moment from 'moment';
+import { getUserName } from '../common/utils';
 
 export default class AuthService {
     static dependencies = ["UserService", "CacheService", "SessionService", "JiraService"];
@@ -39,7 +40,7 @@ export default class AuthService {
                 return this.$jira.getCurrentUser().then(jiraUser => {
                     userDetails.jiraUser = jiraUser;
                     userDetails.displayName = jiraUser.displayName || "(not available)";
-                    userDetails.name = jiraUser.name || "(not available)";
+                    userDetails.name = getUserName(jiraUser) || "(not available)";
                     userDetails.emailAddress = jiraUser.emailAddress || "(not available)";
 
                     this.$session.authenticated = true;

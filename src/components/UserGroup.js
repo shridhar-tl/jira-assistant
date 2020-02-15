@@ -4,6 +4,7 @@ import { ScrollableTable, TBody, THead, NoDataRow } from './ScrollableTable';
 import moment from 'moment';
 import { inject } from '../services';
 import { EventCategory } from '../_constants';
+import { getUserName } from '../common/utils';
 
 class UserGroup extends PureComponent {
     constructor(props) {
@@ -121,8 +122,8 @@ class GroupRow extends PureComponent {
         } = this;
         const { users } = group;
 
-        const existingUsers = users.map(u => u.name.toLowerCase());
-        selectedUsers.removeAll(u => existingUsers.indexOf(u.name.toLowerCase()) > -1);
+        const existingUsers = users.map(u => getUserName(u, true));
+        selectedUsers.removeAll(u => existingUsers.indexOf(getUserName(u, true)) > -1);
         users.addRange(selectedUsers);
         group.users = users.orderBy(u => u.displayName);
         this.clearSelection();
@@ -140,7 +141,7 @@ class GroupRow extends PureComponent {
     usernameEntered = (username) => {
         let { selectedUsers } = this.state;
 
-        if (!selectedUsers || !username || selectedUsers.some(u => u.name.toLowerCase() === username.toLowerCase())) { return; }
+        if (!selectedUsers || !username || selectedUsers.some(u => getUserName(u, true) === username.toLowerCase())) { return; }
 
         this.$jira.getUserDetails(username).then((user) => {
             selectedUsers = [...selectedUsers];
@@ -187,7 +188,7 @@ class GroupRow extends PureComponent {
 
             {(!users || users.length === 0) && <tr><td colSpan={5}>No users were available under this group</td></tr >}
 
-            {users && users.map((user, i) => <UserRow key={user.name} user={user} index={i} userTimezones={userTimezones} onRemove={this.removeUser} />)}
+            {users && users.map((user, i) => <UserRow key={getUserName(user)} user={user} index={i} userTimezones={userTimezones} onRemove={this.removeUser} />)}
         </>;
     }
 }
@@ -223,7 +224,7 @@ class UserRow extends PureComponent {
                 </div>
             </td>
             <td>{user.emailAddress}</td>
-            <td>{user.name}</td>
+            <td>{getUserName(user)}</td>
             <td><SelectBox dataset={userTimezones} value={user.timeZone} displayField="label" valueField="value"
                 onChange={timeZoneChanged} className="width-perc-100" filter={true} /></td>
             <td><Button type="danger" icon="fa fa-times" onClick={onRemove} style={{ marginTop: 0 }} /></td>

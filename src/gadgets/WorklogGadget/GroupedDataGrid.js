@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react';
 import moment from 'moment';
 import { ScrollableTable, THead, TBody } from '../../components/ScrollableTable';
+import { getUserName } from '../../common/utils';
 
 class GroupedDataGrid extends PureComponent {
     constructor(props) {
@@ -76,7 +77,7 @@ class GroupedDataGrid extends PureComponent {
                 }
 
                 const usrInfo = {
-                    name: usr.name,
+                    name: getUserName(usr),
                     displayName: usr.displayName,
                     emailAddress: usr.emailAddress,
                     timeZone: curTimeZone,
@@ -87,7 +88,7 @@ class GroupedDataGrid extends PureComponent {
                     logClass: {},
                     grandTotal: 0
                 };
-                const logData = (data.first(d => d.userName === usr.name.toLowerCase()) || {}).logData || [];
+                const logData = (data.first(d => d.userName === getUserName(usr, true)) || {}).logData || [];
                 usrInfo.tickets = logData.groupBy(lGrp => lGrp.ticketNo)
                     .map(tGrp => {
                         const items = tGrp.values;

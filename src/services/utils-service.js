@@ -1,5 +1,6 @@
 import * as moment from 'moment';
 import { SHORT_MONTH_NAMES, FULL_MONTH_NAMES, TINY_DAY_NAMES, SHORT_DAY_NAMES, FULL_DAY_NAMES } from '../_constants';
+import { getUserName } from '../common/utils';
 
 export default class UtilsService {
     formatDate(date, format) {
@@ -274,9 +275,9 @@ export default class UtilsService {
         }
         switch (fields) {
             case "EM": return obj.emailAddress;
-            case "LG": return obj.name;
+            case "LG": return getUserName(obj);
             case "NE": return `${obj.displayName} (${obj.emailAddress})`;
-            case "NL": return `${obj.displayName} (${obj.name})`;
+            case "NL": return `${obj.displayName} (${getUserName(obj)})`;
             default: return obj.displayName;
         }
     }

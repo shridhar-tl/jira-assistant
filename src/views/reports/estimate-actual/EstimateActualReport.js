@@ -9,6 +9,7 @@ import { Chart } from 'primereact/chart';
 import GroupEditor from '../../../dialogs/GroupEditor';
 import "./EstimateActualReport.scss";
 import { EventCategory } from '../../../_constants';
+import { getUserName } from '../../../common/utils';
 
 const defaultChartColors = [
     {
@@ -152,8 +153,8 @@ class EstimateActualReport extends BaseGadget {
             grps.users.forEach(gu => gu.groupName = grps.name);
             return grps.users;
         });
-        const uniqueUsers = users.distinctObj(u => { return { name: u.name.toLowerCase(), display: u.displayName }; });
-        const userList = uniqueUsers.map(u => u.name);
+        const uniqueUsers = users.distinctObj(u => { return { name: getUserName(u, true), display: u.displayName }; });
+        const userList = uniqueUsers.map(u => getUserName(u));
         const chartLabels = uniqueUsers.map(u => u.display);
 
         const { projects } = this.state;
@@ -205,7 +206,7 @@ class EstimateActualReport extends BaseGadget {
                         field: 'fields.worklog.worklogs',
                         spread: false,
                         props: {
-                            '...author': function (obj) { return obj.author.name.toLowerCase(); },
+                            '...author': function (obj) { return getUserName(obj.author, true); },
                             //'author': 'author.name',
                             //'authorDisplay': 'author.displayName',
                             'date': function (obj) { return obj.started ? new Date(obj.started) : null; },
