@@ -12,6 +12,7 @@ import WorklogReportInfo from './WorklogReportInfo';
 import "./WorklogGadget.scss";
 import UserProjectWiseSummary from './UserProjectWiseSummary';
 import { EventCategory } from '../../_constants';
+import { getUserName } from '../../common/utils';
 
 class WorklogGadget extends BaseGadget {
     constructor(props) {
@@ -57,7 +58,7 @@ class WorklogGadget extends BaseGadget {
             return grps.users;
         });
         const req = {
-            userList: this.userList.map(u => u.name.toLowerCase()),
+            userList: this.userList.map(u => getUserName(u, true)),
             fromDate: this.state.dateRange.fromDate,
             toDate: this.state.dateRange.toDate
         };
@@ -132,7 +133,7 @@ class WorklogGadget extends BaseGadget {
                         const startedTime = moment(worklog.started).toDate();
                         const startedDate = moment(worklog.started).startOf("day").toDate();
                         if (startedDate.getTime() >= fromDate.getTime() && startedDate.getTime() <= toDate.getTime()) {
-                            const reportUser = report[worklog.author.name.toLowerCase()];
+                            const reportUser = report[getUserName(worklog.author, true)];
                             if (reportUser) {
                                 const obj = {
                                     ticketNo: issue.key,
@@ -178,11 +179,11 @@ class WorklogGadget extends BaseGadget {
             const groupName = grp.name;
             return grp.users.union(usr => {
                 const userName = usr.displayName;
-                return data.first(d => d.userName === usr.name.toLowerCase()).logData
+                return data.first(d => d.userName === getUserName(usr, true)).logData
                     .map(log => {
                         return {
                             groupName: groupName,
-                            username: usr.name,
+                            username: getUserName(usr),
                             userDisplay: userName,
                             parent: log.parent,
                             parentUrl: log.parent ? this.$userutils.getTicketUrl(log.parent) : null,
@@ -211,8 +212,8 @@ class WorklogGadget extends BaseGadget {
     processReportData(data) {
         const param = { fromDate: this.state.dateRange.fromDate, toDate: this.state.dateRange.toDate, dateArr: [] };
         data.forEach((d) => {
-            const usr = this.userList.first((u) => u.name.toLowerCase() === d.userName.toLowerCase());
-            d.userName = usr.name;
+            const usr = this.userList.first((u) => getUserName(u, true) === d.userName.toLowerCase());
+            d.userName = getUserName(usr);
             d.displayName = usr.displayName;
             d.userEmail = usr.emailAddress;
             d.groupName = usr.groupName;

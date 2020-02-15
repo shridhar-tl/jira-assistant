@@ -4,6 +4,7 @@ import { inject } from "../../../services/injector-service";
 import { ScrollableTable, THead } from '../../../components/ScrollableTable';
 import "./Common.scss";
 import { EventCategory } from '../../../_constants';
+import { getUserName } from '../../../common/utils';
 
 class ReportViewer extends BaseGadget {
     constructor(props) {
@@ -246,7 +247,7 @@ class ReportViewer extends BaseGadget {
             if (fields.worklog && fields.worklog.worklogs.length > 0) {
                 const worklogs = fields.worklog.worklogs;
                 const grp = worklogs.groupBy((w) => {
-                    return { id: w.author.name, text: w.author.displayName };
+                    return { id: getUserName(w.author), text: w.author.displayName };
                 });
                 const obj = {};
                 for (let g = 0; g < grp.length; g++) {

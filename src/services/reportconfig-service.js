@@ -2,6 +2,7 @@ import React from 'react';
 import { initReportBuilder } from 'jsd-report';
 import EventEmitter from 'events';
 import { GadgetActionType } from '../gadgets/_constants';
+import { getUserName } from '../common/utils';
 
 export default class ReportConfigService {
     static dependencies = ["ReportService", "SessionService", "JiraService", "AjaxService", "UserGroup", "UserUtilsService", "BookmarkService"];
@@ -242,7 +243,7 @@ export default class ReportConfigService {
                 const template = parameterTemplate[paramName];
                 switch (template.type) {
                     case "UG":
-                        curPath = curPath.union(grp => grp.users.map(u => u.name)).join('","');
+                        curPath = curPath.union(grp => grp.users.map(u => getUserName(u))).join('","');
                         break;
                     default:
                         // Nothing to do

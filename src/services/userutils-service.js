@@ -1,3 +1,5 @@
+import { getUserName } from "../common/utils";
+
 export default class UserUtilsService {
     static dependencies = ["SessionService", "UtilsService"];
 
@@ -38,7 +40,7 @@ export default class UserUtilsService {
             return user.avatarUrls["48x48"] || user.avatarUrls["32x32"];
         }
         else {
-            return `${this.$session.rootUrl}/secure/useravatar?ownerId=${user.name.toLowerCase()}`;
+            return `${this.$session.rootUrl}/secure/useravatar?ownerId=${getUserName(user, true)}`;
         }
         ///Security/ProfilePic / {{userInfo.name }}
     }
@@ -52,7 +54,7 @@ export default class UserUtilsService {
             if (user.jiraUser) {
                 user = user.jiraUser;
             }
-            user = user.name;
+            user = getUserName(user);
         }
         else if (typeof user !== "string") {
             user = "";

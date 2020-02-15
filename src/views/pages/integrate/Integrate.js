@@ -2,6 +2,7 @@ import React, { PureComponent } from 'react';
 import { inject } from '../../../services';
 import { Button, TextBox } from '../../../controls';
 import { ApiUrls } from '../../../_constants';
+import { getUserName } from '../../../common/utils';
 
 class Integrate extends PureComponent {
     constructor(props) {
@@ -36,7 +37,7 @@ class Integrate extends PureComponent {
         this.setState({ isLoading: true });
 
         this.$ajax.get(ApiUrls.mySelf).then((data) => {
-            const name = data.name;
+            const name = getUserName(data);
             const email = data.emailAddress;
             this.$db.users.where("userId").equalsIgnoreCase(name)
                 .and((u) => { return u.jiraUrl.toLowerCase() === root.toLowerCase(); }).first()

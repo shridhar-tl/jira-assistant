@@ -137,7 +137,7 @@ export default class NotificationService {
         return new Promise((success) => {
             setTimeout(() => {
                 success(data);
-            }, 1000);
+            }, 500);
         });
     }
 }

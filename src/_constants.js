@@ -23,6 +23,7 @@ export const ApiUrls = {
     rapidSprintDetails: "~/rest/greenhopper/1.0/rapid/charts/sprintreport?rapidViewId={0}&sprintId={1}",
     sprintListAll: "~/rest/greenhopper/1.0/integration/teamcalendars/sprint/list?jql=project+in+({0})",
     sprintListOpen: "~/rest/greenhopper/1.0/integration/teamcalendars/sprint/list?jql=project+in+({0})+and+Sprint+not+in+closedSprints()",
+    getSprintIssues: "~/rest/agile/1.0/sprint/{0}/issue",
     rapidViews: "~/rest/greenhopper/1.0/rapidview",
     burndownChart: "~/rest/greenhopper/1.0/rapid/charts/scopechangeburndownchart.json?rapidViewId={0}&sprintId={1}",
     googleLogoutUrl: "https://accounts.google.com/o/oauth2/revoke?token={0}",
@@ -42,7 +43,12 @@ export const timeFormats = [" HH:mm:ss", " hh:mm:ss tt", " HH.mm.ss", " hh.mm.ss
 
 export const CHROME_WS_URL = "https://chrome.google.com/webstore/detail/jira-assistant/momjbjbjpbcbnepbgkkiaofkgimihbii";
 export const FF_STORE_URL = "https://addons.mozilla.org/en-US/firefox/addon/jira-assistant/";
-export const EDGE_STORE_URL = "https://addons.mozilla.org/en-US/firefox/addon/jira-assistant/";
+export const EDGE_STORE_URL = "https://microsoftedge.microsoft.com/addons/detail/aoenpdbabcjnjbjpegeenodfknllmaoi";
+export const OPERA_STORE_URL = "https://addons.opera.com/en/extensions/details/jira-assistant/";
+
+export const GITHUB_HOME_URL = "https://github.com/shridhar-tl/jira-assistant";
+
+export const ATLASSIAN_MARKETPLACE_URL = "https://marketplace.atlassian.com/apps/1221570/jassistant";
 
 export const DASHBOARD_ICONS = [
     'fa fa-tachometer',

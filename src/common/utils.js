@@ -152,3 +152,14 @@ export function setStartOfWeek(startOfWeek) {
     if (!startOfWeek || startOfWeek < 1) { startOfWeek = 1; }
     moment.locale(moment.locale(), { week: { dow: startOfWeek - 1 } });
 }
+
+export function getUserName(userObj, convertToLower) {
+    let name = null;
+    if (typeof userObj === "object") {
+        return userObj.name || userObj.emailAddress;
+    }
+
+    if (convertToLower && name) {
+        name = name.toLowerCase();
+    }
+}
