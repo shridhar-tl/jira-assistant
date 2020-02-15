@@ -30,6 +30,18 @@ class Integrate extends PureComponent {
         return url.replace(/^(.*\/\/[^/?#]*).*$/, "$1");
     }
 
+    async getUserFromDB(root, name, email) {
+        let user = await this.$db.users.where("userId").equalsIgnoreCase(name)
+            .and((u) => { return u.jiraUrl.toLowerCase() === root.toLowerCase(); }).first();
+
+        if (!user) {
+            user = await this.$db.users.where("email").equalsIgnoreCase(email)
+                .and((u) => { return u.jiraUrl.toLowerCase() === root.toLowerCase(); }).first();
+        }
+
+        return user;
+    }
+
     integrate = () => {
         const root = this.state.jiraUrl.trim().clearEnd('/').clearEnd('\\');
         this.setState({ jiraUrl: root });
@@ -39,8 +51,8 @@ class Integrate extends PureComponent {
         this.$ajax.get(ApiUrls.mySelf).then((data) => {
             const name = getUserName(data);
             const email = data.emailAddress;
-            this.$db.users.where("userId").equalsIgnoreCase(name)
-                .and((u) => { return u.jiraUrl.toLowerCase() === root.toLowerCase(); }).first()
+
+            this.getUserFromDB(root, name, email)
                 .then((user) => {
                     if (!user) {
                         user = {
