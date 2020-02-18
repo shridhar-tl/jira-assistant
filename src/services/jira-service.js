@@ -19,7 +19,7 @@ export default class JiraService {
             if (startAt > 0) {
                 postData.startAt = startAt;
             }
-            this.$ajax.post(ApiUrls.search, postData)
+            this.$ajax.get(ApiUrls.search, postData)
                 .then((result) => {
                     const issues = result.issues;
                     //if (result.maxResults < result.total) {

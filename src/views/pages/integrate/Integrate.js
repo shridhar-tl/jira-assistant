@@ -34,9 +34,11 @@ class Integrate extends PureComponent {
         let user = await this.$db.users.where("userId").equalsIgnoreCase(name)
             .and((u) => { return u.jiraUrl.toLowerCase() === root.toLowerCase(); }).first();
 
-        if (!user) {
-            user = await this.$db.users.where("email").equalsIgnoreCase(email)
-                .and((u) => { return u.jiraUrl.toLowerCase() === root.toLowerCase(); }).first();
+        if (!user && email) {
+            email = email.toLowerCase();
+            user = await this.$db.users
+                .filter((u) => (u.email || "").toLowerCase() === email && u.jiraUrl.toLowerCase() === root.toLowerCase())
+                .first();
         }
 
         return user;
