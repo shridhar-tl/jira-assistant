@@ -1,5 +1,6 @@
 import { ApiUrls, DummyWLId, defaultSettings, defaultJiraFields } from '../_constants';
 import * as moment from 'moment';
+import { prepareUrlWithQueryString } from '../common/utils';
 
 export default class JiraService {
     static dependencies = ["AjaxService", "CacheService", "MessageService", "SessionService"];
@@ -19,7 +20,7 @@ export default class JiraService {
             if (startAt > 0) {
                 postData.startAt = startAt;
             }
-            this.$ajax.get(ApiUrls.search, postData)
+            this.$ajax.get(prepareUrlWithQueryString(ApiUrls.search, postData))
                 .then((result) => {
                     const issues = result.issues;
                     //if (result.maxResults < result.total) {
