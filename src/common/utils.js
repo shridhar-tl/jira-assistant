@@ -156,10 +156,11 @@ export function setStartOfWeek(startOfWeek) {
 export function getUserName(userObj, convertToLower) {
     let name = null;
     if (typeof userObj === "object") {
-        return userObj.name || userObj.emailAddress || userObj.accountId;
+        name = (userObj.name || userObj.emailAddress || userObj.accountId);
     }
 
     if (convertToLower && name) {
         name = name.toLowerCase();
     }
+    return name;
 }
