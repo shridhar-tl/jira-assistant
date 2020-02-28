@@ -22,12 +22,14 @@ You can install Jira Assist to your browser within few seconds from the below Ur
 
 - For Edge: https://microsoftedge.microsoft.com/addons/detail/aoenpdbabcjnjbjpegeenodfknllmaoi
 
-- For Opera: [Comming Soon]
+- For Opera: https://addons.opera.com/en/extensions/details/jira-assistant/ (Currently in review by Opera moderators. Hence only available for Developer / Beta version of Opera)
 
 - For Other browsers: Currently not available. But if popularity is more then will be released soon. Have a look at the Issues tab and +1 on appropriate issue, if you need it for other browsers.
 
 **Rate and comment**
 If you like Jira Assistant then kindly spend a minute to rate it in web store from the above respective url's. Your rating would help this tool to reach more people and encourage the developers to provide a even better tool for you.
+
+Link to Atlassian Marketplace: https://marketplace.atlassian.com/apps/1221570/jassistant
 
 ## Would like to contribute in development and maintainence?
 You are very much welcome if you would wish to contribute in the development of Jira Assistant and keep it free and open source for ever. Your contributions would encourage me to actively enhance the features in Jira Assistant.
