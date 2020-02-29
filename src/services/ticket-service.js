@@ -310,7 +310,7 @@ export default class TicketService {
         if (allowedValues && value) {
             const valueItem = this.getField(value, allowedValues);
             if (valueItem) {
-                option.displayValue = valueItem.name;
+                option.displayValue = valueItem.name || valueItem.value;
                 issue[field] = valueItem.id || valueItem.key || valueItem.name;
             }
             else {
@@ -321,7 +321,7 @@ export default class TicketService {
 
     getField(value, allowedValues) {
         const strForCompare = prepareForCompare(value);
-        const valueItem = allowedValues.filter(v => v.id === value || prepareForCompare(v.key) === strForCompare || prepareForCompare(v.name) === strForCompare)[0];
+        const valueItem = allowedValues.filter(v => v.id === value || prepareForCompare(v.key) === strForCompare || prepareForCompare(v.name) === strForCompare || prepareForCompare(v.value) === strForCompare)[0];
         return valueItem;
     }
 
