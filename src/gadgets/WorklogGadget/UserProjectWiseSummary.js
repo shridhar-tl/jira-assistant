@@ -1,5 +1,6 @@
 import React, { PureComponent, Fragment } from 'react';
 import { ScrollableTable, THead, TRow, Column, TBody, NoDataRow } from '../../components/ScrollableTable';
+import { getUserName } from '../../common/utils';
 
 class UserProjectWiseSummary extends PureComponent {
     constructor(props) {
@@ -30,7 +31,9 @@ class UserProjectWiseSummary extends PureComponent {
             const overallGroupTotal = { grandTotal: 0, projects: {} };
             const group = { name, overallTotal: overallGroupTotal };
 
-            group.users = users.map(({ name, emailAddress, displayName }) => {
+            group.users = users.map((usr) => {
+                const name = getUserName(usr);
+                const { emailAddress, displayName } = usr;
                 const user = { name, emailAddress, displayName }; // User object to return
 
                 user.projects = projects.reduce((r_project, project) => { // User project wise data

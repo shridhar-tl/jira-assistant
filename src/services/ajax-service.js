@@ -88,11 +88,12 @@ export default class AjaxService {
                 error: reject,
                 dataType: "json",
                 xhrFields: {
-                    withCredentials: true
+                    withCredentials: (customHeaders || {}).withCredentials !== false
                 },
                 beforeSend: (request) => {
                     const { headers } = this.httpOptions;
                     const allHeaders = { ...headers, ...customHeaders };
+                    delete allHeaders.withCredentials;
 
                     Object.keys(allHeaders).forEach(h => request.setRequestHeader(h, allHeaders[h]));
                 }

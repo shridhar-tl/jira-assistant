@@ -34,7 +34,7 @@ export default class AuthService {
             .then(userDetails => {
                 this.$session.CurrentUser = userDetails;
                 this.$session.userId = userDetails.userId;
-                this.$session.rootUrl = userDetails.jiraUrl;
+                this.$session.rootUrl = (userDetails.jiraUrl || "").toString();
                 //ToDo:
 
                 return this.$jira.getCurrentUser().then(jiraUser => {

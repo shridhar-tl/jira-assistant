@@ -408,10 +408,10 @@ class IssueList extends PureComponent {
                                         {grp.include && user.include ? convertSecs(showSubtask ? (issue.worklogs[getUserName(user)] || 0).total : (issue.worklogs[getUserName(user)] || 0).allTotal) : null}
                                     </td>)
                                 }
-                                <td exportType="number"><strong>{convertSecs(showSubtask ? (issue.groupTotal || {})[i] : (issue.groupTotalAll || {})[i])}</strong></td>
+                                <td exportType="number" className="data-center"><strong>{convertSecs(showSubtask ? (issue.groupTotal || {})[i] : (issue.groupTotalAll || {})[i])}</strong></td>
                             </Fragment>)
                         }
-                        <td exportType="number"><strong>{convertSecs(showSubtask ? issue.grandTotal : issue.grandTotalAll)}</strong></td>
+                        <td exportType="number" className="data-center"><strong>{convertSecs(showSubtask ? issue.grandTotal : issue.grandTotalAll)}</strong></td>
                     </tr>
 
                     {showSubtask && <SubtaskList issue={issue} groups={groups} convertSecs={convertSecs} />}
@@ -435,9 +435,9 @@ class SubtaskList extends PureComponent {
                 <td exportType="number" className="data-center">{convertSecs(task.estimate)}</td>
                 {groups.map((grp, i) => <Fragment key={i}>
                     {grp.users.map((user, j) => <td key={j} className="data-center">{grp.include && user.include ? convertSecs((task.worklogs[getUserName(user)] || 0).total) : null}</td>)}
-                    <td exportType="number"><strong>{convertSecs((issue.groupTotal || {})[i])}</strong></td>
+                    <td exportType="number" className="data-center"><strong>{convertSecs((issue.groupTotal || {})[i])}</strong></td>
                 </Fragment>)}
-                <td exportType="number"><strong>{convertSecs(task.grandTotal)}</strong></td>
+                <td exportType="number" className="data-center"><strong>{convertSecs(task.grandTotal)}</strong></td>
             </tr>)
         );
     }

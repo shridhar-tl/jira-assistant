@@ -125,7 +125,7 @@ export default class NotificationService {
         let data = this.$cache.get("messages");
 
         if (!data) {
-            data = await this.$ajax.get(messagesUrl);
+            data = await this.$ajax.execute("GET", messagesUrl, null, { withCredentials: false });
 
             if (data) {
                 this.$cache.set("messages", data, moment().add(4, 'hours'));

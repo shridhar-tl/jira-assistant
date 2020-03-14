@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "Jira Assistant",
   "short_name": "Jira Assist",
-  "version": "0.94",
+  "version": "0.98",
   "updateURL": "https://raw.githubusercontent.com/shridhar-tl/jira-assistant/master/release/firefox/update_manifest.json",
   "updateLink": "https://github.com/shridhar-tl/jira-assistant/raw/master/release/firefox/JiraAssist_Latest.xpi",
   "applications": {

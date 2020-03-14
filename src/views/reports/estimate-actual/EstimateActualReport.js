@@ -11,6 +11,8 @@ import "./EstimateActualReport.scss";
 import { EventCategory } from '../../../_constants';
 import { getUserName } from '../../../common/utils';
 
+const STORYPOINT_ENABLE_HELP = 'Select an appropriate field for story point in Settings -> General -> Default values tab -> Story point field to enable this option.';
+
 const defaultChartColors = [
     {
         backgroundColor: '#f1c40f4a',
@@ -454,8 +456,9 @@ class EstimateActualReport extends BaseGadget {
                                         defaultValue="timeoriginalestimate" value={estimationField} label="Time estimate" />
 
                                     <RadioButton name="estimateType" defaultValue={storyPointField} value={estimationField} label="Story Point"
-                                        title={storyPointField ? '' : 'Select an appropriate field for story point in Settings -> General -> Default values tab -> Story point field to enable this option.'}
+                                        title={storyPointField ? '' : STORYPOINT_ENABLE_HELP}
                                         onChange={(val) => this.setState({ estimationField: val })} disabled={!storyPointField} />
+                                    {!storyPointField && <span className="fa fa-question-circle" title={STORYPOINT_ENABLE_HELP}></span>}
                                 </div>
                             </div>
                             {estimationField === storyPointField && <div className="col-sm-12 col-md-2 col-lg-2">
