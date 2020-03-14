@@ -36,7 +36,9 @@ class Notifications extends PureComponent {
                 </div>))}
             </div>);
         }
-        Dialog.alert(message, msg.title).then(() => this.markRead(msg, true), () => this.trackAnalytics(msg, "Viewed and closed"));
+
+        const onClosed = () => this.markRead(msg, true);
+        Dialog.alert(message, msg.title).then(onClosed, onClosed);
     }
 
     markRead = (msg, viewed) => {
