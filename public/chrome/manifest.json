@@ -37,7 +37,7 @@
       "https://www.googleapis.com/auth/calendar.readonly"
     ]
   },
-  "content_security_policy": "script-src 'self' 'unsafe-eval' https://apis.google.com https://calendar.google.com https://ssl.google-analytics.com https://www.google-analytics.com https://login.microsoftonline.com https://graph.microsoft.com ; object-src 'self';",
+  "content_security_policy": "script-src 'self' 'unsafe-eval' https://apis.google.com https://calendar.google.com https://ssl.google-analytics.com https://www.google-analytics.com https://login.microsoftonline.com https://graph.microsoft.com https://drive.google.com ; object-src 'self';",
   "offline_enabled": true,
   "permissions": [
     "activeTab",
@@ -48,7 +48,8 @@
     "http://calendar.google.com/calendar/*",
     "https://calendar.google.com/calendar/*",
     "https://login.microsoftonline.com/common/oauth2/v2.0/*",
-    "https://graph.microsoft.com/v1.0/me/*"
+    "https://graph.microsoft.com/v1.0/me/*",
+    "https://drive.google.com/*"
   ],
   "optional_permissions": [
     "unlimitedStorage",
