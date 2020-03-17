@@ -350,11 +350,33 @@ export default class TicketService {
     }
 
     validateIfValidUser(value, option) {
-        return this.$jira.getUserDetails(value).then((u) => {
-            option.displayValue = u.displayName;
-        }, (e) => {
-            option.errors.push("Not a valid jira user name");
-        });
+        return this.$jira.searchUsers(value)
+            .then((users) => {
+                if (users.length > 1) {
+                    const filteredUsers = users.filter(u => compareIgnoreCase(u.accountId, value)
+                        || compareIgnoreCase(u.emailAddress, value)
+                        || compareIgnoreCase(u.displayName, value)
+                        || compareIgnoreCase(u.name, value)
+                    );
+
+                    if (filteredUsers.length) {
+                        return filteredUsers[0];
+                    }
+                }
+
+                return users[0];
+            })
+            .then(u => {
+                if (!u) {
+                    return Promise.reject();
+                }
+                return u;
+            })
+            .then((u) => {
+                option.displayValue = u.displayName;
+            }, (e) => {
+                option.errors.push("Not a valid jira user name");
+            });
     }
 
     async getFieldsToImport(metadata, rawissues) {
@@ -631,6 +653,13 @@ export default class TicketService {
 
         return returnValue;
     }
+}
+
+function compareIgnoreCase(str1, str2) {
+    str1 = (str1 || "").toLowerCase();
+    str2 = (str1 || "").toLowerCase();
+
+    return str1 === str2;
 }
 
 const comparisonCharsRegex = / -_/g;

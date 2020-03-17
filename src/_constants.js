@@ -14,7 +14,7 @@ export const ApiUrls = {
     issueWorklog: "~/rest/api/2/issue/{0}/worklog",
     updateIndividualWorklog: "~/rest/api/2/issue/{0}/worklog/{1}?adjustEstimate=AUTO",
     individualWorklog: "~/rest/api/2/issue/{0}/worklog/{1}",
-    searchUser: "~/rest/api/2/user/search?maxResults={1}&startAt={2}&username={0}",
+    searchUser: "~/rest/api/2/user/search?maxResults={1}&startAt={2}&query={0}",
     getCustomFields: "~/rest/api/2/field",
     getUserDetails: "~/rest/api/2/user?username={0}",
     mySelf: "~/rest/api/2/myself",
