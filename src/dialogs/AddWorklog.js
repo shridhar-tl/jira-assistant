@@ -69,7 +69,7 @@ class AddWorklog extends BaseDialog {
 
     searchTickets = (query) => {
         query = (query || "").toLowerCase();
-        return this.allTicketList.filter(t => t.value.toLowerCase().indexOf(query) > -1 || t.label.toLowerCase().indexOf(query) > -1);
+        return this.allTicketList.filter(t => t.label.toLowerCase().indexOf(query) > -1);
     }
 
     fillWorklog(worklog, copy) {
@@ -261,7 +261,7 @@ class AddWorklog extends BaseDialog {
                         placeholder="Enter the ticket number or start typing the summary to get suggestion"
                         dataset={this.searchTickets} disabled={log.isUploaded} maxlength={20}
                         onChange={(val) => this.setValue("ticketNo", val)} autoFocus>
-                        {(ticket) => <span style={{ fontSize: 12, margin: '10px 10px 0 0' }}>{ticket.value} - {ticket.label}</span>}
+                        {(ticket) => <span style={{ fontSize: 12, margin: '10px 10px 0 0' }}>{ticket.label}</span>}
                     </AutoComplete>
                     <span className={`help-block ${vald.ticketNo ? '' : 'msg-error'}`}>Provide the ticket no on which you had to log your work</span>
                 </div>
