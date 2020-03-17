@@ -57,6 +57,8 @@ export default class TicketService {
     }
 
     async processIssuesForImport(issues) {
+        issues = this.repeatIssuesWithMultipleParent(issues);
+
         const importData = issues.map(this.prepareParentAndProjectFields);
         const projectListToPull = importData.distinct(i => i.project, true);
 
@@ -73,6 +75,24 @@ export default class TicketService {
         }));
 
         return { importFields, metadata, importData: processedIssues, ticketDetails };
+    }
+
+    repeatIssuesWithMultipleParent(issues) {
+        const result = [];
+        issues.forEach(issue => {
+            if (issue.parent) {
+                const parents = (issue.parent || "").trim().toUpperCase().split(/[ ;,]/gi).filter(p => !!p).distinct();
+
+                if (parents.length > 1) {
+                    parents.forEach(parent => result.push({ ...issue, parent }));
+                    return;
+                }
+            }
+
+            result.push(issue);
+        });
+
+        return result;
     }
 
     async prepareIssue(issue, metadata, importFields, ticketFields) {
@@ -445,11 +465,16 @@ export default class TicketService {
         }
 
         if (!project && issuekey) {
-            ticket.project = issuekey.split("-")[0].toUpperCase();
+            project = issuekey.split("-")[0].toUpperCase();
+            ticket.project = project;
         }
 
         if (ticket.parent) {
             ticket.parent = ticket.parent.trim().toUpperCase();
+            if (!project) {
+                project = ticket.parent.split("-")[0].toUpperCase();
+                ticket.project = project;
+            }
         }
 
         return ticket;

@@ -77,7 +77,7 @@ Array.prototype.distinct = function (clause, excludeNulls) {
   const retVal = [];
   for (let i = 0; i < this.length; i++) {
     item = clause ? clause(this[i]) : this[i];
-    if (excludeNulls && item === null) { continue; }
+    if (excludeNulls && (item === null || item === undefined)) { continue; }
     if (!dict[item]) {
       dict[item] = true;
       retVal.push(item);
