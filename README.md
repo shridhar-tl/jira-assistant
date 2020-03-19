@@ -18,7 +18,9 @@ This repository is created to track bugs of Jira Assist browser extension. In fu
 You can install Jira Assist to your browser within few seconds from the below Url:
 - For Chrome: https://chrome.google.com/webstore/detail/jira-assistant/momjbjbjpbcbnepbgkkiaofkgimihbii
 
-- For Firefox: https://addons.mozilla.org/en-US/firefox/addon/jira-assistant/
+- For Firefox: https://addons.mozilla.org/en-US/firefox/addon/jira-assistant/.
+
+- For Firefox (Self distributed): If you were not able to find the addon in above webstore url, you can also use the following url to download the package and install it your self, which is self distributed version and not verified by Firefox addon store: https://github.com/shridhar-tl/jira-assistant/raw/master/release/firefox/JiraAssist_Latest.xpi
 
 - For Edge: https://microsoftedge.microsoft.com/addons/detail/aoenpdbabcjnjbjpegeenodfknllmaoi
 
