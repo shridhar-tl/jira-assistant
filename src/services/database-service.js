@@ -51,6 +51,8 @@ class DatabaseService extends Dexie {
                 // ToDo ends
 
                 this.$analytics.setUserId(instId);
+
+                this.$analytics.setIfEnabled(user.enableAnalyticsLogging, user.enableExceptionLogging);
             }
         });
 

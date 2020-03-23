@@ -9,6 +9,11 @@ export default class AnalyticsService {
         }, () => this.versionNumber = 0.88);
     }
 
+    setIfEnabled(enableLogging, enableException) {
+        window.enableLogging = enableLogging;
+        window.enableExceptionLogging = enableException;
+    }
+
     setUserId(uid) {
         if (uid) {
             window.JAInstId = uid;
@@ -17,6 +22,10 @@ export default class AnalyticsService {
     }
 
     trackEvent(event, category, label, value) {
+        if (!window.enableLogging) {
+            return false;
+        }
+
         window.ga('send', 'event', category, event, label || this.getCurrentRouteUrl(), value);
 
         ////_gaq.push(['_trackPageView', $location.url()]);
@@ -25,6 +34,10 @@ export default class AnalyticsService {
     }
 
     trackError(err, fatal) {
+        if (!window.enableExceptionLogging) {
+            return false;
+        }
+
         window.ga('send', 'exception', {
             'exDescription': this.getExceptionDetails(err),
             'exFatal': fatal || false
@@ -93,6 +106,10 @@ export default class AnalyticsService {
     }
 
     trackPageView(page) {
+        if (!window.enableLogging) {
+            return false;
+        }
+
         if (!page) {
             page = this.getCurrentRouteUrl();
         }

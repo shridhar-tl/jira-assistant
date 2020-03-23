@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { ScrollableTable, THead, TBody, TRow, Column } from '../../../components/ScrollableTable';
 import { inject } from '../../../services';
 import { getHostFromUrl } from '../../../common/utils';
-import { TextBox, Button } from '../../../controls';
+import { TextBox, Button, Checkbox } from '../../../controls';
 import { defaultSettings } from '../../../_constants';
 import './GlobalSettings.scss';
 
@@ -32,7 +32,12 @@ class GlobalSettings extends PureComponent {
         }
 
         if (value) {
-            user[field] = value.trim();
+            if (typeof value === "string") {
+                user[field] = value.trim();
+            }
+            else {
+                user[field] = value;
+            }
         }
         else {
             delete user[field];
@@ -100,10 +105,24 @@ class GlobalSettings extends PureComponent {
                                 value={u.id === 1 ? defaultSettings.openTicketsJQL : (u.suggestionJQL || "")}
                                 onChange={(val) => this.setValue(val, "suggestionJQL", u)} /></td>)}
                         </TRow>
+                        {!!users[0] && <TRow>
+                            <td>Enable tracking user actions (Anynmous, Google Analytics)</td>
+                            <td colSpan={intgUsers.length + 1}><Checkbox checked={users[0].enableAnalyticsLogging}
+                                onChange={(val) => this.setValue(val, "enableAnalyticsLogging", users[0])}
+                                label="Help developers to identify what features are being used much" />
+                            </td>
+                        </TRow>}
+                        {!!users[0] && <TRow>
+                            <td>Enable tracking exceptions (Anynmous)</td>
+                            <td colSpan={intgUsers.length + 1}><Checkbox checked={users[0].enableExceptionLogging}
+                                onChange={(val) => this.setValue(val, "enableExceptionLogging", users[0])}
+                                label="Help developers to identify what errors occur for users and would help in fixing it soon" />
+                            </td>
+                        </TRow>}
                     </TBody>
                 </ScrollableTable>
                 <div className="footer">
-                    <strong>Note:</strong> Changing these settings may cause application stability issues or lose in data. Be cautious with the changes you make.
+                    <strong>Note:</strong> Changing these settings may cause application stability issues or lose in data. Be cautious with the changes you make. Some settings would take effect only the next time when you revisit.
                     <Button className="pull-right" icon="fa fa-save" label="Save settings" type="success" onClick={this.saveSettings} />
                 </div>
             </div>

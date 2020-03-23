@@ -43,6 +43,20 @@ export default class UserService {
                 delete user.suggestionJQL;
             }
 
+            if (u.enableAnalyticsLogging) {
+                user.enableAnalyticsLogging = u.enableAnalyticsLogging;
+            }
+            else {
+                delete user.enableAnalyticsLogging;
+            }
+
+            if (u.enableExceptionLogging) {
+                user.enableExceptionLogging = u.enableExceptionLogging;
+            }
+            else {
+                delete user.enableExceptionLogging;
+            }
+
             await this.$db.users.put(user);
         }));
     }
