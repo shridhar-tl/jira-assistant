@@ -4,6 +4,7 @@ import { Accordion, AccordionTab } from 'primereact/accordion';
 import faqArray from './faqdata.json';
 import { AutoComplete, Button } from '../../controls/index.js';
 import './FaqView.scss';
+import { parseHTML } from '../../common/utils';
 
 class FaqView extends PureComponent {
     constructor(props) {
@@ -71,7 +72,7 @@ class FaqView extends PureComponent {
             }
         });
         // .replace(/(\n)/g, "<br />");
-        return result;
+        return parseHTML(result); // ToDo: need to modify the approach to return JSX instead of html
     }
 
     getLineOpts(str) {
@@ -145,7 +146,7 @@ class FaqView extends PureComponent {
 
                     <Accordion styleclass="search-results">
                         {searchResults && searchResults.map(res => <AccordionTab key={res.id} header={res.strand} contentClassName="result">
-                            <div className="descr" dangerouslySetInnerHTML={{ __html: this.getDescription(res) }} />
+                            <div className="descr">{this.getDescription(res)}</div>
                             {res.links && res.links.length > 0 && <div className="interests">
                                 <span>You may also need to look at:</span>
                                 <ul className="tags">

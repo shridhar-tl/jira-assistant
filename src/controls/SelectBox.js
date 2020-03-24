@@ -36,7 +36,7 @@ class SelectBox extends PureComponent {
 
         if (value !== subValue) {
             subValue = value;
-            if ((value || (!multiselect && value === "")) && valueField) {
+            if ((value || (!multiselect && value === "")) && (valueField && typeof value === "object")) {
                 if (multiselect) {
                     value = dataset.filter(d => value.indexOf(d[valueField]) >= 0);
                 }
@@ -58,7 +58,7 @@ class SelectBox extends PureComponent {
 
         const { multiselect, valueField } = this.props;
 
-        if (valueField) {
+        if (valueField && typeof value === "object") {
             if (multiselect) {
                 subValue = value.map(v => v[valueField]);
             }

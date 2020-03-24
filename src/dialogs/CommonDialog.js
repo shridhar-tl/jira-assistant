@@ -1,6 +1,7 @@
 import React from 'react';
 import BaseDialog from './BaseDialog';
 import { Button } from '../controls';
+import { parseHTML } from '../common/utils';
 
 class CommonDialog extends BaseDialog {
     constructor(props) {
@@ -29,15 +30,18 @@ class CommonDialog extends BaseDialog {
         }
     }
 
+    parseMarkupString(body) {
+        if (typeof body === "string") {
+            return parseHTML(body); // ToDo: Will have to parse string in a different way to support markup
+        }
+
+        return body;
+    }
+
     render() {
         const { body } = this;
 
-        if (typeof body === "string") {
-            return super.renderBase(<div className="pad-22" dangerouslySetInnerHTML={{ __html: body }}></div>);
-        }
-        else {
-            return super.renderBase(<div className="pad-22">{body}</div>);
-        }
+        return super.renderBase(<div className="pad-22">{this.parseMarkupString(body)}</div>);
     }
 }
 

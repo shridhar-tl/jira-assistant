@@ -1,4 +1,5 @@
 import moment from 'moment';
+import $ from 'jquery';
 
 export function saveAs(blob, fileName) {
     const reader = new FileReader();
@@ -163,4 +164,8 @@ export function getUserName(userObj, convertToLower) {
         name = name.toLowerCase();
     }
     return name;
+}
+
+export function parseHTML(html) {
+    return $(`<div>${html}</div>`).text(); // ToDo: Parse HTML and return JSX with alternate option
 }

@@ -37,7 +37,7 @@ class ReportViewer extends BaseGadget {
     }
 
     fillReport = () => {
-        const model = this.state.reportDefinition;
+        const model = this.state.reportDefinition || {};
 
         if (model) {
             this.title = model.queryName;
@@ -75,7 +75,6 @@ class ReportViewer extends BaseGadget {
                 const groupedData = groupList.length > 0 ? this.groupData(issues, Array.from(groupList)) : issues;
                 this.dataFields = model.outputFields.filter((f) => { return !f.groupBy; });
                 this.reportHtml = this.genHtmlRow(groupedData);
-                //var tbody = $("#tbody").html(this.genHtmlRow(groupedData));
                 const hasReportData = groupedData.length > 0;
 
                 this.setState({ subFields: subHeads, hasReportData, displayFields, isLoading: false });
@@ -86,69 +85,77 @@ class ReportViewer extends BaseGadget {
     // eslint-disable-next-line complexity
     genHtmlRow(arr, prepn) {
         prepn = prepn || "";
-        let html = "";
+
+        const formRowJSX = (i, j, obj, issues) => {
+            const html = [];
+            if (i === 0 && j === 0) {
+                html.push(prepn);
+            }
+            if (j === 0 && obj.issues) {
+                html.push(this.getGroupedTD(obj.name, issues.length));
+            }
+            const issue = issues[j];
+            const issFields = issue.fields;
+            for (let z = 0; z < this.dataFields.length; z++) {
+                const df = this.dataFields[z];
+                if (df.functions && df.functions.useArray) {
+                    if (j === 0) {
+                        if (df.id === "issuekey") {
+                            html.push(this.getAggregateTD(issues.map((iss) => iss.key), df.functions));
+                        }
+                        else {
+                            html.push(this.getAggregateTD(issues.map((iss) => iss.fields[df.id]), df.functions));
+                        }
+                    }
+                }
+                else {
+                    if (df.id === "worklog") {
+                        const hdrLst = this.fieldOpts.worklogUsers;
+                        const wls = issFields.worklogs_proc;
+                        let totalTimeSpent = 0;
+                        for (let hi = 0; hi < hdrLst.length; hi++) {
+                            if (wls) {
+                                const wl = wls[hdrLst[hi].id];
+                                if (wl) {
+                                    totalTimeSpent += wl.timespent;
+                                    html.push(this.getTD(wl.timespent, df.functions));
+                                    continue;
+                                }
+                            }
+                            else {
+                                html.push(this.getTD("#Error"));
+                                continue;
+                            }
+                            html.push(this.getTD());
+                        }
+                        if (totalTimeSpent) {
+                            html.push(this.getTD(totalTimeSpent, df.functions));
+                        }
+                        else {
+                            html.push(this.getTD());
+                        }
+                    }
+                    else {
+                        html.push(this.getTD(df.id !== "issuekey" ? issFields[df.id] : issue.key, df.functions));
+                    }
+                }
+            }
+
+            return html;
+        };
+
+        const html = [];
+
         for (let i = 0; i < arr.length; i++) {
             const obj = arr[i];
             if (obj.subGroups) {
-                html += this.genHtmlRow(obj.subGroups, (i === 0 ? prepn : "") + this.getGroupedTD(obj.name, obj.issueCount));
+                html.addRange(this.genHtmlRow(obj.subGroups, (i === 0 ? prepn : "")));
+                html.push(this.getGroupedTD(obj.name, obj.issueCount));
             }
             else {
                 const issues = obj.issues || [obj];
                 for (let j = 0; j < issues.length; j++) {
-                    html += "<tr>";
-                    if (i === 0 && j === 0) {
-                        html += prepn;
-                    }
-                    if (j === 0 && obj.issues) {
-                        html += this.getGroupedTD(obj.name, issues.length);
-                    }
-                    const issue = issues[j];
-                    const issFields = issue.fields;
-                    for (let z = 0; z < this.dataFields.length; z++) {
-                        const df = this.dataFields[z];
-                        if (df.functions && df.functions.useArray) {
-                            if (j === 0) {
-                                if (df.id === "issuekey") {
-                                    html += this.getAggregateTD(issues.map((iss) => iss.key), df.functions);
-                                }
-                                else {
-                                    html += this.getAggregateTD(issues.map((iss) => iss.fields[df.id]), df.functions);
-                                }
-                            }
-                        }
-                        else {
-                            if (df.id === "worklog") {
-                                const hdrLst = this.fieldOpts.worklogUsers;
-                                const wls = issFields.worklogs_proc;
-                                let totalTimeSpent = 0;
-                                for (let hi = 0; hi < hdrLst.length; hi++) {
-                                    if (wls) {
-                                        const wl = wls[hdrLst[hi].id];
-                                        if (wl) {
-                                            totalTimeSpent += wl.timespent;
-                                            html += this.getTD(wl.timespent, df.functions);
-                                            continue;
-                                        }
-                                    }
-                                    else {
-                                        html += this.getTD("#Error");
-                                        continue;
-                                    }
-                                    html += this.getTD();
-                                }
-                                if (totalTimeSpent) {
-                                    html += this.getTD(totalTimeSpent, df.functions);
-                                }
-                                else {
-                                    html += this.getTD();
-                                }
-                            }
-                            else {
-                                html += this.getTD(df.id !== "issuekey" ? issFields[df.id] : issue.key, df.functions);
-                            }
-                        }
-                    }
-                    html += "</tr>";
+                    html.push(<tr>{formRowJSX(i, j, obj, issues)}</tr>);
                 }
             }
         }
@@ -157,19 +164,19 @@ class ReportViewer extends BaseGadget {
 
     getTD(obj, funcInfo) {
         if (!obj) {
-            return '<td>&nbsp;</td>';
+            return <td>&nbsp;</td>;
         }
-        return `<td>${this.execute(obj, funcInfo)}</td>`;
+        return <td>{this.execute(obj, funcInfo)}</td>;
     }
 
     getAggregateTD(arr, funcInfo) {
-        return `<td class="bold" rowspan="${arr.length}">${this.execute(arr, funcInfo)}</td>`;
+        return <td className="bold" rowSpan={arr.length}>${this.execute(arr, funcInfo)}</td>;
     }
 
     getGroupedTD(text, len) {
         text += ` (${len})`;
         const rotate = len > 4 || (text.length / len) < 2.5;
-        return `<td class="${rotate ? 'rotateM90' : 'bold'}" rowspan="${len}">&nbsp;<div>${text}</div></td>`;
+        return <td className={rotate ? 'rotateM90' : 'bold'} rowSpan={len}>&nbsp;<div>${text}</div></td>;
     }
 
     groupData(issues, groups) {
@@ -283,14 +290,14 @@ class ReportViewer extends BaseGadget {
                         <tr className="data-center">
                             {displayFields.map((g, i) => <th key={i} rowSpan={g.rowspan} colSpan={g.colspan}>{g.text}</th>)}
                         </tr>
-                        {subFields && subFields.length && <tr className="data-center">
+                        {!!subFields && subFields.length > 0 && <tr className="data-center">
                             {subFields.map((g, i) => <th key={i}>{g.text}</th>)}
                         </tr>}
                     </THead>
                     {!hasReportData && !isLoading && <tbody>
                         <tr><td colSpan={displayFields && displayFields.length}>No records exists</td></tr>
                     </tbody>}
-                    {hasReportData && <tbody dangerouslySetInnerHTML={{ __html: reportHtml }} />}
+                    {hasReportData && <tbody>{reportHtml}</tbody>}
                 </ScrollableTable>}
             </div>
         );

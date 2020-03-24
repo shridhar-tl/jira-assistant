@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react';
 import { ScrollableTable, THead, TBody } from "../../../components/ScrollableTable";
+import { parseHTML } from '../../../common/utils';
 
 const notes = <div style={{ paddingLeft: 15 }}>
     <strong>Notes:</strong>
@@ -78,53 +79,53 @@ class SprintDetails extends PureComponent {
                     <td>{formatDateTime(sprint.sprint.startDate)}</td>
                     <td>{formatDateTime(sprint.sprint.completeDate)}</td>
                     <td>{sprint.sprint.state}</td>
-                    <td dangerouslySetInnerHTML={{ __html: sprint.lastUserToClose }} />
+                    <td>{parseHTML(sprint.lastUserToClose)}</td>
                     <td className="data-center">{sprint.estimateIssuesSPOld && <span>{sprint.estimateIssuesSPOld} <i className="fa fa-arrow-right" /></span>}{sprint.estimateIssuesSP}</td>
                     <td className="data-center">
                         {sprint.estimateIssuesCount && <span>
                             {sprint.estimateIssuesWithSP} +
-            {sprint.estimateIssuesCount - sprint.estimateIssuesWithSP} =
-            {sprint.estimateIssuesCount}
+                            {sprint.estimateIssuesCount - sprint.estimateIssuesWithSP} =
+                            {sprint.estimateIssuesCount}
                         </span>}
                     </td>
                     <td className="data-center">{sprint.totalIssuesSPOld && <span>{sprint.totalIssuesSPOld} <i className="fa fa-arrow-right" /></span>}{sprint.totalIssuesSP}</td>
                     <td className="data-center">
                         {sprint.totalIssuesCount && <span>
                             {sprint.totalIssuesWithSP} +
-            {sprint.totalIssuesCount - sprint.totalIssuesWithSP} =
-            {sprint.totalIssuesCount}
+                            {sprint.totalIssuesCount - sprint.totalIssuesWithSP} =
+                            {sprint.totalIssuesCount}
                         </span>}
                     </td>
                     <td className="data-center">{sprint.completedSPOld && <span>{sprint.completedSPOld} <i className="fa fa-arrow-right" /></span>}{sprint.completedSP}</td>
                     <td className="data-center">
                         {sprint.CompletedTotal && <span>
                             {sprint.completedWithSP} +
-            {sprint.CompletedTotal - sprint.completedWithSP} =
-            {sprint.CompletedTotal}
+                            {sprint.CompletedTotal - sprint.completedWithSP} =
+                            {sprint.CompletedTotal}
                         </span>}
                     </td>
                     <td className="data-center">{sprint.incompletedSPOld && <span>{sprint.incompletedSPOld} <i className="fa fa-arrow-right" /></span>}{sprint.incompletedSP}</td>
                     <td className="data-center">
                         {sprint.incompletedTotal && <span>
                             {sprint.incompletedWithSP} +
-            {sprint.incompletedTotal - sprint.incompletedWithSP} =
-            {sprint.incompletedTotal}
+                            {sprint.incompletedTotal - sprint.incompletedWithSP} =
+                            {sprint.incompletedTotal}
                         </span>}
                     </td>
                     <td className="log-less data-center">{sprint.addedSPOld && <span>{sprint.addedSPOld} <i className="fa fa-arrow-right" /></span>}{sprint.addedSP}</td>
                     <td className="log-less data-center">
                         {sprint.addedIssues && <span>
                             {sprint.addedWithSP} +
-            {sprint.addedIssues - sprint.addedWithSP} =
-            {sprint.addedIssues}
+                            {sprint.addedIssues - sprint.addedWithSP} =
+                            {sprint.addedIssues}
                         </span>}
                     </td>
                     <td className="data-center">{sprint.removedSPOld && <span>{sprint.removedSPOld} <i className="fa fa-arrow-right" /></span>}{sprint.removedSP}</td>
                     <td className="data-center">
                         {sprint.removedTotal && <span>
                             {sprint.removedWithSP} +
-            {sprint.removedTotal - sprint.removedWithSP} =
-            {sprint.removedTotal}
+                            {sprint.removedTotal - sprint.removedWithSP} =
+                            {sprint.removedTotal}
                         </span>}
                     </td>
                 </tr>

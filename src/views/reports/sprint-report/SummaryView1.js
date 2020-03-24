@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react';
 import { ScrollableTable, THead, TBody } from "../../../components/ScrollableTable";
+import { parseHTML } from '../../../common/utils';
 
 class SummaryView1 extends PureComponent {
     render() {
@@ -31,7 +32,7 @@ class SummaryView1 extends PureComponent {
                     </tr>
                     <tr>
                         <td colSpan={2} className="data-left">Closed by</td>
-                        {sprintDetails.map((sprint, i) => <td key={i} dangerouslySetInnerHTML={{ __html: sprint.lastUserToClose }}></td>)}
+                        {sprintDetails.map((sprint, i) => <td key={i}>{parseHTML(sprint.lastUserToClose)}</td>)}
                     </tr>
                     <tr>
                         <td rowSpan={4} className="brdr-btm-dbl">Estimated</td>

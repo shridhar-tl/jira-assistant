@@ -1,4 +1,5 @@
 import React, { PureComponent } from 'react';
+import { parseHTML } from '../../common/utils';
 
 const desc_len = 350;
 
@@ -64,7 +65,7 @@ class MeetingDetails extends PureComponent {
                 </div>}
                 {currentMeetingItem.description && <div className="detail">
                     <div className="title"><i className="fa fa-align-justify" /></div>
-                    <div className="info" dangerouslySetInnerHTML={{ __html: (showFullDesc ? currentMeetingItem.description : cut(currentMeetingItem.description, desc_len)) }} />
+                    <div className="info">{parseHTML(showFullDesc ? currentMeetingItem.description : cut(currentMeetingItem.description, desc_len))}</div>
                     {currentMeetingItem.description.length > desc_len && <div style={{ textAlign: 'center' }}>
                         <span className="link" onClick={this.toggleShowDesc}>{showFullDesc ? "show less" : "show all"}</span>
                     </div>}
