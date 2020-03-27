@@ -24,6 +24,8 @@ npm start
 
 At this point, a local development service will be started and your browser is loading the login page of the plugin. Here you can integrate with any instance of Jira which is already available for your testing purpose. If you do not have one, your can consider using one of the option suggested below to quickly setup a working instance for you.
 
+After development is completed, refer to [publishing guidelines](PUBLISH.md) document for the steps to build the package which can be used for final round of testing and publishing to webstore.
+
 ### Setup a free for development cloud instance of Jira
 
 The easiest option is to use the Cloud version of Jira which is free for development purpose which can have max of 5 users.
