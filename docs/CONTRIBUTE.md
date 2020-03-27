@@ -50,4 +50,6 @@ If you are planning to start with development / bug fix activity, then please fo
 - I suggest you to create a unit test cases for your module and have a good coverage for all the scenarious. This is not necessary. Do it only if your timelines permits.
 
 ### Setup Environment
-Please refer [development support](DEVELOPMENT.md) document to setup your local environment and starting the development. 
+Please refer [development support](DEVELOPMENT.md) document to setup your local environment and starting the development.
+
+Please refer [publishing guidelines](PUBLISH.md) document for the steps to build the package which can be used for final round of testing and publishing to webstore.
