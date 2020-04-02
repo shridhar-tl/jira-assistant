@@ -27,7 +27,7 @@
         "jquery": "^3.4.1",
         "jsd-report": "^0.1.8",
         "jspdf": "^1.5.3",
-        "jspdf-autotable": "^3.3.1",
+        "jspdf-autotable": "^3.3.2",
         "moment": "^2.24.0",
         "moment-timezone": "^0.5.28",
         "node-sass": "^4.13.1",
