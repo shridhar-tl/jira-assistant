@@ -93,9 +93,11 @@
     "ts-pnp": "1.1.6",
     "url-loader": "2.3.0",
     "webpack": "4.42.0",
+    "webpack-bundle-analyzer": "^3.6.1",
     "webpack-dev-server": "3.10.3",
     "webpack-manifest-plugin": "2.2.0",
-    "workbox-webpack-plugin": "4.3.1"
+    "workbox-webpack-plugin": "4.3.1",
+    "write-file-webpack-plugin": "^4.5.1"
   },
   "scripts": {
     "start": "node scripts/start.js",
