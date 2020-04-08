@@ -97,7 +97,7 @@ class Calendar extends BaseGadget {
     }
 
     getCalendarOptions() {
-        const { startOfWeek, startOfDay, endOfDay, workingDays } = this.CurrentUser;
+        const { startOfWeek, startOfDay, endOfDay, workingDays, timeFormat } = this.CurrentUser;
         let { viewMode } = this.props;
 
         if (!this.isGadget) {
@@ -126,6 +126,9 @@ class Calendar extends BaseGadget {
         else {
             firstDay = null;
         }
+
+        const hour12 = (timeFormat || "").indexOf("tt") > -1;
+        const meridiem = hour12 ? "short" : false;
 
         return {
             plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
@@ -181,6 +184,11 @@ class Calendar extends BaseGadget {
                 start: startOfDay || "10:00",
                 end: endOfDay || "19:00",
             },
+
+            // Reference - https://fullcalendar.io/docs/date-formatting
+            //columnHeaderFormat: { weekday: 'short', month: 'numeric', day: 'numeric', omitCommas: true },
+            slotLabelFormat: { hour: 'numeric', minute: '2-digit', omitZeroMinute: hour12, meridiem, hour12 },
+            eventTimeFormat: { hour: 'numeric', minute: '2-digit', omitZeroMinute: hour12, meridiem, hour12 },
 
             // Functions
             select: this.select.bind(this),
