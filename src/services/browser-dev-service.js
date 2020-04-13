@@ -73,7 +73,7 @@ export default class DevBrowserService extends BrowserBase {
 
     getCurrentUrl() {
         return new Promise((resolve, reject) => {
-            resolve("http://jira-ja.atlassian.net");
+            resolve("https://jira-ja.atlassian.net");
         });
     }
 

@@ -17,14 +17,20 @@ export class ScrollableTable extends PureComponent {
         this.eventEmitter.setMaxListeners(40);
 
         this.actualDataset = props.dataset;
-        this.state = { dataset: props.dataset };
+        this.state = { dataset: props.dataset, sortBy: props.sortBy, isDesc: props.isDesc };
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        if (newProps.dataset !== this.actualDataset) {
-            this.actualDataset = newProps.dataset;
-            this.setState({ dataset: newProps.dataset });
+        const { dataset, sortBy, isDesc } = newProps;
+        if (dataset !== this.actualDataset) {
+            this.actualDataset = dataset;
+            this.setState({ dataset, sortBy, isDesc });
             this.eventEmitter.emit(dataChangedEvent, newProps.dataset);
+        }
+
+        if (sortBy !== this.state.sortBy || isDesc !== this.state.isDesc) {
+            this.setState({ dataset, sortBy, isDesc });
+            this.eventEmitter.emit(sortChangedEvent, sortBy, isDesc);
         }
     }
 
@@ -38,11 +44,20 @@ export class ScrollableTable extends PureComponent {
 
             if (sortBy) {
                 let { dataset } = this.state;
-                if (dataset) {
-                    dataset = dataset.sortBy(sortBy, isDesc);
 
-                    this.setState({ dataset, sortBy, isDesc });
-                    this.eventEmitter.emit(sortChangedEvent, sortBy, isDesc);
+                if (dataset) {
+                    let sortApplied = false;
+
+                    if (this.props.onSort) {
+                        sortApplied = this.props.onSort(sortBy, isDesc);
+                    }
+
+                    if (!sortApplied) {
+                        dataset = dataset.sortBy(sortBy, isDesc);
+
+                        this.setState({ dataset, sortBy, isDesc });
+                        this.eventEmitter.emit(sortChangedEvent, sortBy, isDesc);
+                    }
                 }
             }
             else {
@@ -246,7 +261,7 @@ export class Column extends PureComponent {
 
     render() {
         const { sortBy, isDesc } = this.state;
-        const { style, sortBy: curField, children, noExport, rowSpan, colSpan } = this.props;
+        const { style, sortBy: curField, children, noExport, rowSpan, colSpan, dragConnector } = this.props;
         let { className } = this.props;
 
         if (!className) {
@@ -258,7 +273,7 @@ export class Column extends PureComponent {
         }
 
         return (
-            <th className={className} style={style} onClick={this.onClick} no-export={noExport ? "true" : null} rowSpan={rowSpan} colSpan={colSpan}>
+            <th ref={dragConnector} className={className} style={style} onClick={this.onClick} no-export={noExport ? "true" : null} rowSpan={rowSpan} colSpan={colSpan}>
                 {children} {curField ? (curField === sortBy ? (<i className={`fa fa-sort-${isDesc ? "desc" : "asc"}`}></i>) : <i className="fa fa-sort"></i>) : null}
             </th>
         );

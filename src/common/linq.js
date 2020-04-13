@@ -1,6 +1,25 @@
 /*eslint-disable no-extend-native, no-loop-func*/
 
 //Array.prototype.ToArray= function() { return this; };
+
+Array.prototype.init = function (val, count, start = 0) {
+  if (count === undefined || count === null) {
+    count = this.length;
+  }
+  if (typeof val === "function") {
+    while (start < count) {
+      this[start] = val(this[start], start);
+      start++;
+    }
+  }
+  else {
+    while (start < count) {
+      this[start++] = val;
+    }
+  }
+  return this;
+};
+
 Array.prototype.where = function (clause, maxItems) {
   const newArray = [];
 

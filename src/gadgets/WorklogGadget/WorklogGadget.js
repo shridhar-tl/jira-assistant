@@ -336,6 +336,15 @@ class WorklogGadget extends BaseGadget {
         this.setState({ showSettings: false, pageSettings });
     }
 
+    groupSettingsChanged = (grpSet) => {
+        const { groupBy, groupFoldable, displayColumns, sortField, isDesc } = grpSet;
+        let { pageSettings } = this.state;
+        pageSettings = { ...pageSettings, flatTableSettings: { groupBy, groupFoldable, displayColumns, sortField, isDesc } };
+
+        this.$config.saveSettings('reports_UserDayWise', pageSettings);
+        this.settingsChanged(pageSettings);
+    }
+
     convertSecs = (val) => {
         return this.$utils.convertSecs(val, { format: this.state.pageSettings.logFormat === "1" });
     }
@@ -375,7 +384,9 @@ class WorklogGadget extends BaseGadget {
                         {flatData && <UserProjectWiseSummary key={flatDataUniqueKey} groups={groups} flatData={flatData} formatDateTime={formatDateTime} convertSecs={convertSecs} />}
                     </TabPanel>
                     <TabPanel header="Flat">
-                        {flatData && <FlatDataGrid key={flatDataUniqueKey} flatData={flatData} formatDateTime={formatDateTime} convertSecs={convertSecs} pageSettings={pageSettings} />}
+                        {flatData && <FlatDataGrid key={flatDataUniqueKey} flatData={flatData}
+                            formatDateTime={formatDateTime} convertSecs={convertSecs} pageSettings={pageSettings}
+                            onChange={this.groupSettingsChanged} />}
                     </TabPanel>
                 </TabView>}
 
