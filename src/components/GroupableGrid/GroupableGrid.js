@@ -4,6 +4,7 @@ import { Draggable } from 'jsd-report';
 import { ScrollableTable, THead, TRow, Column, TBody, NoDataRow } from '../ScrollableTable';
 import GroupedColumnList from './GroupedColumnList';
 import './GroupableGrid.scss';
+import ColumnList from './ColumnList';
 
 const itemTarget = ["column"];
 
@@ -22,7 +23,8 @@ export class GroupableGrid extends PureComponent {
         const newState = { groupFoldable };
 
         if (this.columns !== columns || this.groupBy !== groupBy || this.dataset !== dataset) {
-            newState.columns = this.getColumnSchema(props);
+            newState.allColumns = this.getColumnSchema(props);
+            newState.columns = newState.allColumns;
             this.columns = columns;
 
             if (this.groupBy !== groupBy) {
@@ -34,7 +36,8 @@ export class GroupableGrid extends PureComponent {
 
             if (groupBy && groupBy.length) {
                 const groupByFields = groupBy.map(g => (typeof g === "string" ? g : g.field));
-                newState.columns.removeAll(c => !c.visible || ~groupByFields.indexOf(c.id));
+
+                newState.columns = newState.columns.filter(c => c.visible && !~groupByFields.indexOf(c.id));
             }
 
             newState.data = this.prepareDataForRendering(dataset, newState.groupBy, sortField, isDesc);
@@ -78,17 +81,12 @@ export class GroupableGrid extends PureComponent {
 
     getColumnSchema(props) {
         const { columns, allowSorting: globalSort = true, allowGrouping: globalGrouping = true } = props;
-        let { visibleColumns } = props;
+        let { displayColumns } = props;
 
-        let isColumnVisible = (field) => {
-            //if(visibleColumns.contains(field) || )
-            return true; // ToDo: implementation based on visible columns
-        };
-
-        if (!Array.isArray(visibleColumns)) {
-            visibleColumns = null;
-            isColumnVisible = null;
+        if (!Array.isArray(displayColumns)) {
+            displayColumns = null;
         }
+        const isColsToRemove = !!displayColumns && displayColumns.any(c => c.startsWith("-"));
 
         const result = columns.map(c => {
             const { field,
@@ -101,7 +99,7 @@ export class GroupableGrid extends PureComponent {
                 id,
                 field: c.field,
                 displayText: c.displayText || field,
-                visible: !isColumnVisible || isColumnVisible(id),
+                visible: !displayColumns || (isColsToRemove ? !displayColumns.contains(`-${id}`) : displayColumns.contains(id)),
                 allowSorting,
                 allowGrouping,
                 format, sortValueFun, groupValueFunc
@@ -243,7 +241,7 @@ export class GroupableGrid extends PureComponent {
     }
 
     sortColumnChanged = (sortField, isDesc) => {
-        const { groupBy, state: { groupFoldable, data } } = this;
+        const { groupBy, state: { groupFoldable, data }, props: { displayColumns } } = this;
         const newState = { groupFoldable };
 
         if (groupBy && groupBy.length) {
@@ -251,7 +249,7 @@ export class GroupableGrid extends PureComponent {
         }
 
         this.setState(newState);
-        this.props.onChange({ groupBy, groupFoldable, sortField, isDesc });
+        this.props.onChange({ groupBy, groupFoldable, displayColumns, sortField, isDesc });
 
         return newState.data;
     }
@@ -259,7 +257,7 @@ export class GroupableGrid extends PureComponent {
     onGroupChanged = (groupBy, groupFoldable, type) => {
         const { data } = this.state;
         const newState = { data, groupFoldable };
-        const { sortField, isDesc } = this.props;
+        const { displayColumns, sortField, isDesc } = this.props;
 
         if (type === "sort") {
             newState.data = this.sortGroupedData(data, groupBy, sortField, isDesc);
@@ -270,7 +268,7 @@ export class GroupableGrid extends PureComponent {
         }
 
         this.setState(newState);
-        this.props.onChange({ groupBy: this.groupBy, groupFoldable, sortField, isDesc });
+        this.props.onChange({ groupBy: this.groupBy, displayColumns, groupFoldable, sortField, isDesc });
     }
 
     sortGroupedData(data, groups, sortField, isDesc, prefix) {
@@ -288,13 +286,26 @@ export class GroupableGrid extends PureComponent {
         }));
     }
 
+    toggleColumns = () => {
+        this.setState({ showColumns: !this.state.showColumns });
+    }
+
+    columnSelectionChanged = (displayColumns) => {
+        const { groupBy, groupFoldable, sortField, isDesc } = this.props;
+        this.setState({ showColumns: null });
+        this.props.onChange({ groupBy, displayColumns, groupFoldable, sortField, isDesc });
+    }
+
     render() {
-        const { exportSheetName, noRowsMessage, sortField, isDesc } = this.props;
-        const { columns, groupBy, groupFoldable, data } = this.state;
+        const { exportSheetName, noRowsMessage, sortField, isDesc, displayColumns } = this.props;
+        const { allColumns, columns, groupBy, groupFoldable, data, showColumns } = this.state;
 
         return (
             <div className="groupable-grid">
-                <GroupedColumnList groupBy={groupBy || []} foldable={groupFoldable} onChange={this.onGroupChanged} />
+                {showColumns && <ColumnList onChange={this.columnSelectionChanged} columns={allColumns}
+                    displayColumns={displayColumns} />}
+                <GroupedColumnList groupBy={groupBy || []} foldable={groupFoldable}
+                    onChange={this.onGroupChanged} showColumns={showColumns} toggleColumns={this.toggleColumns} />
                 <ScrollableTable dataset={data} exportSheetName={exportSheetName}
                     sortBy={sortField} isDesc={isDesc} onSort={this.sortColumnChanged}>
                     <THead>

@@ -1,3 +1,37 @@
+div.columns-list-container {
+    position: relative;
+
+    div.columns-list {
+        right: 0;
+        position: absolute;
+        z-index: 8;
+        height: 500px;
+        width: 300px;
+        background-color: #f8f8f8;
+        border: 1px solid #c8ced3;
+        
+        div.column-list-title{
+            height: 46px;
+            border-bottom: 1px solid #c8ced3;
+            padding: 12px 15px 8px 15px;
+            font-size: 15px;
+            font-weight: bold;
+
+            .fa {
+                float: right;
+                font-size: 18px;
+                cursor: pointer;
+            }
+        }
+
+        div.columns-list-items {
+            padding: 12px;
+            overflow: auto;
+            height: calc(100% - 46px);
+        }
+    }
+}
+
 th.group-header {
     &.foldable {
         min-width: 20px !important;

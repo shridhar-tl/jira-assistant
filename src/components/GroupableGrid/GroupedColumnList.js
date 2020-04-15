@@ -35,10 +35,13 @@ class GroupedColumnList extends PureComponent {
     }
 
     render() {
-        const { groupBy, foldable } = this.props;
+        const { groupBy, foldable, toggleColumns, showColumns } = this.props;
 
         return (
             <div className="group-bar">
+                <span className={`fa group-mode-icon fa-columns${showColumns ? " active" : ""}`}
+                    onClick={toggleColumns} title="Click to choose what column to display" />
+
                 {groupBy.length > 0 && <span className={`fa group-mode-icon fa-th-list${foldable ? "" : " active"}`}
                     onClick={() => this.toggleMode(false)} title="Display group values in columns" />}
                 {groupBy.length > 0 && <span className={`fa group-mode-icon fa-indent${foldable ? " active" : ""}`}
