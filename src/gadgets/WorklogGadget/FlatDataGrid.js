@@ -1,6 +1,8 @@
 import React, { PureComponent } from 'react';
 import GroupableGrid from '../../components/GroupableGrid/GroupableGrid';
 
+const estimateFieldsToBeHidden = ["-originalestimate", "-totalLogged", "-remainingestimate", "-estVariance"];
+
 class FlatDataGrid extends PureComponent {
     constructor(props) {
         super(props);
@@ -32,27 +34,27 @@ class FlatDataGrid extends PureComponent {
     }
 
     getColumnSettings(props) {
-        const { formatDateTime, convertSecs } = props; //ToDo: , pageSettings: { hideEstimate }
+        const { formatDateTime, convertSecs } = props;
 
         //displayFormat: null, sortValueFun: null, groupValueFunc: null
         //, allowSorting: true, allowGrouping: true
 
         return [
-            { field: "groupName", displayText: "Group Name" },
-            { field: "projectName", displayText: "Project Name" },
-            { field: "issueType", displayText: "Issue Type" },
-            { field: "epicDisplay", displayText: "Epic", format: (text, row) => this.formatTicket(text, row.epicUrl) },
-            { field: "parent", displayText: "Parent", format: (text, row) => this.formatTicket(text, row.parentUrl) },
-            { field: "ticketNo", displayText: "Ticket No", format: (text, row) => this.formatTicket(text, row.ticketUrl) },
-            { field: "statusName", displayText: "Status" },
-            { field: "summary", displayText: "Summary" },
-            { field: "logTime", displayText: "Log Date & Time", format: formatDateTime },
-            { field: "userDisplay", displayText: "User" },
-            { field: "timeSpent", displayText: "Hr. Spent", format: convertSecs },
-            { field: "originalestimate", displayText: "Ori. Estm.", format: convertSecs },
-            { field: "totalLogged", displayText: "Total Worklogs", format: convertSecs },
-            { field: "remainingestimate", displayText: "Rem. Estm.", format: convertSecs },
-            { field: "estVariance", displayText: "Estm. Variance", format: (value) => (value > 0 ? "+" : "") + convertSecs(value) },
+            { field: "groupName", displayText: "Group Name", type: "string" },
+            { field: "projectName", displayText: "Project Name", type: "string" },
+            { field: "issueType", displayText: "Issue Type", type: "string" },
+            { field: "epicDisplay", displayText: "Epic", type: "string", format: (text, row) => this.formatTicket(text, row.epicUrl) },
+            { field: "parent", displayText: "Parent", type: "string", format: (text, row) => this.formatTicket(text, row.parentUrl) },
+            { field: "ticketNo", displayText: "Ticket No", type: "string", format: (text, row) => this.formatTicket(text, row.ticketUrl) },
+            { field: "statusName", displayText: "Status", type: "string" },
+            { field: "summary", displayText: "Summary", type: "string" },
+            { field: "logTime", displayText: "Log Date & Time", type: "datetime", format: formatDateTime },
+            { field: "userDisplay", displayText: "User", type: "string" },
+            { field: "timeSpent", displayText: "Hr. Spent", type: "number", format: convertSecs },
+            { field: "originalestimate", displayText: "Ori. Estm.", type: "number", format: convertSecs },
+            { field: "totalLogged", displayText: "Total Worklogs", type: "number", format: convertSecs },
+            { field: "remainingestimate", displayText: "Rem. Estm.", type: "number", format: convertSecs },
+            { field: "estVariance", displayText: "Estm. Variance", type: "number", format: (value) => (value > 0 ? "+" : "") + convertSecs(value) },
             { field: "comment", displayText: "Comment" },
         ];
     }
@@ -70,9 +72,10 @@ class FlatDataGrid extends PureComponent {
             props: {
                 flatData,
                 pageSettings: {
+                    hideEstimate,
                     flatTableSettings: {
                         groupBy, groupFoldable, displayColumns, sortField, isDesc
-                    } = {}
+                    } = { displayColumns: hideEstimate ? estimateFieldsToBeHidden : null }
                 } = {}
             },
             state: { columns } } = this;
