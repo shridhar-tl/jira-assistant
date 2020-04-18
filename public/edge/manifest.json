@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "Jira Assistant",
   "short_name": "Jira Assist",
-  "version": "0.99",
+  "version": "1.0",
   "description": "Help to track & upload work done on a Jira Ticket on timely basis and generate report.",
   "icons": {
     "24": "assets/icon_24.png",
