@@ -131,7 +131,7 @@ export class GroupableGrid extends PureComponent {
     }
 
     renderColumn = (c, i) => {
-        if (!c.visible) { return "null"; }
+        if (!c.visible) { return null; }
 
         return <Draggable key={i} itemType="column" item={c} itemTarget={itemTarget}>
             {(connectDragSource, isDragging) => <Column
