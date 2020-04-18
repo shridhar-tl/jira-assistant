@@ -57,11 +57,11 @@ class GeneralTab extends TabControlBase {
                 </div>
                 <div className="ui-g-12 ui-md-9 ui-lg-9 ui-xl-10">
                     <div className="form-group">
-                        <SelectBox className="form-control select" dataset={dateFormats} value={settings.dateFormat} valueField="format" displayField="text"
-                            propName="dateFormat" onChange={(val) => this.setValue('dateFormat', val)}
+                        <SelectBox className="form-control select" dataset={dateFormats} value={settings.dateFormat} valueField="format"
+                            displayField="text" propName="dateFormat" onChange={(val) => this.setValue('dateFormat', val)}
                             style={{ width: '180px', display: 'inline-block' }} />
-                        <SelectBox className="form-control select" dataset={timeFormats} value={settings.timeFormat} valueField="format" displayField="text"
-                            propName="timeFormat" onChange={(val) => this.setValue('timeFormat', val)}
+                        <SelectBox className="form-control select" dataset={timeFormats} value={settings.timeFormat} valueField="format"
+                            displayField="text" propName="timeFormat" onChange={(val) => this.setValue('timeFormat', val)}
                             style={{ width: '150px', display: 'inline-block' }} />
                         <span className="help-block">Select your preferred date and time format to be displayed throughout the application</span>
                     </div>

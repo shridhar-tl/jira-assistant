@@ -117,15 +117,17 @@ export class GroupableGrid extends PureComponent {
         return this.groupData(data, groupBy, sortField, isDesc);
     }
 
-    groupData(data, groupBy, sortField, isDesc) {
+    groupData(data, groupBy, sortField, isDesc, prefix) {
+        prefix = prefix ? `${prefix}_` : "";
         if (!groupBy.length) { return sortField ? data.sortBy(sortField, isDesc) : data; }
         const { 0: { field, sortDesc } } = groupBy;
         groupBy = groupBy.slice(1);
-        return data.groupBy(field).map(row => ({
+        return data.groupBy(field).sortBy("key", sortDesc).map((row, i) => ({
             key: row.key,
+            path: prefix + i,
             rowSpan: row.values.length,
-            values: this.groupData(row.values, groupBy, sortField, isDesc)
-        })).sortBy("key", sortDesc);
+            values: this.groupData(row.values, groupBy, sortField, isDesc, prefix + i)
+        }));
     }
 
     renderColumn = (c, i) => {
@@ -272,7 +274,7 @@ export class GroupableGrid extends PureComponent {
     }
 
     sortGroupedData(data, groups, sortField, isDesc, prefix) {
-        prefix = prefix ? (`_${prefix}`) : "";
+        prefix = prefix ? (`${prefix}_`) : "";
         if (groups.length === 0) {
             return sortField ? data.sortBy(sortField, isDesc) : data;
         }
