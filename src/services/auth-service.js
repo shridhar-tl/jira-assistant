@@ -31,21 +31,20 @@ export default class AuthService {
 
     async authenticate(userId) {
         return await this.getUserDetails(userId)
-            .then(userDetails => {
+            .then(async userDetails => {
                 this.$session.CurrentUser = userDetails;
                 this.$session.userId = userDetails.userId;
                 this.$session.rootUrl = (userDetails.jiraUrl || "").toString();
                 //ToDo:
 
-                return this.$jira.getCurrentUser().then(jiraUser => {
-                    userDetails.jiraUser = jiraUser;
-                    userDetails.displayName = jiraUser.displayName || "(not available)";
-                    userDetails.name = getUserName(jiraUser) || "(not available)";
-                    userDetails.emailAddress = jiraUser.emailAddress || "(not available)";
+                const jiraUser = await this.$jira.getCurrentUser();
+                userDetails.jiraUser = jiraUser;
+                userDetails.displayName = jiraUser.displayName || "(not available)";
+                userDetails.name = getUserName(jiraUser) || "(not available)";
+                userDetails.emailAddress = jiraUser.emailAddress || "(not available)";
 
-                    this.$session.authenticated = true;
-                    return userDetails;
-                });
+                this.$session.authenticated = true;
+                return userDetails;
             })
             .then(userDetails => {
                 const settings = userDetails.settings;

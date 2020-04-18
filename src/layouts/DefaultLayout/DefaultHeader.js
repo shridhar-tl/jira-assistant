@@ -25,8 +25,10 @@ class DefaultHeader extends PureComponent {
   constructor(props) {
     super(props);
     inject(this, "AppBrowserService", "CacheService", "SessionService", "AnalyticsService");
-    this.userId = this.$session.CurrentUser.userId;
-    this.currentJiraInstance = getHostFromUrl(this.$session.CurrentUser.jiraUrl);
+    const cUser = this.$session.CurrentUser;
+    this.disableNotification = cUser.disableDevNotification;
+    this.userId = cUser.userId;
+    this.currentJiraInstance = getHostFromUrl(cUser.jiraUrl);
     this.state = { versionNumber: "1.0" };
   }
 
@@ -98,7 +100,7 @@ class DefaultHeader extends PureComponent {
               </DropdownMenu>
             </UncontrolledDropdown>
           </Nav>
-          <Notifications />
+          {!this.disableNotification && <Notifications />}
           <NavItem className="d-md-down-none">
             <span className="nav-link" onClick={this.showYoutubeHelp}><i className="fa fa-youtube-play"></i></span>
           </NavItem>

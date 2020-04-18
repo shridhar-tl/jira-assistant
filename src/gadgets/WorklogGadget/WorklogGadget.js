@@ -383,7 +383,7 @@ class WorklogGadget extends BaseGadget {
                     <TabPanel header="Summary - [User project wise]">
                         {flatData && <UserProjectWiseSummary key={flatDataUniqueKey} groups={groups} flatData={flatData} formatDateTime={formatDateTime} convertSecs={convertSecs} />}
                     </TabPanel>
-                    <TabPanel header="Flat">
+                    <TabPanel header="Flat (Groupable)">
                         {flatData && <FlatDataGrid key={flatDataUniqueKey} flatData={flatData}
                             formatDateTime={formatDateTime} convertSecs={convertSecs} pageSettings={pageSettings}
                             onChange={this.groupSettingsChanged} />}

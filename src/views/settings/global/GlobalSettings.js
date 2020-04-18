@@ -119,11 +119,20 @@ class GlobalSettings extends PureComponent {
                                 label="Help developers to identify what errors occur for users and would help in fixing it soon" />
                             </td>
                         </TRow>}
+                        {!!users[0] && <TRow>
+                            <td>Disable notifications from developer</td>
+                            <td colSpan={intgUsers.length + 1}><Checkbox checked={users[0].disableDevNotification}
+                                onChange={(val) => this.setValue(val, "disableDevNotification", users[0])}
+                                label="Do not show important informations and bug notifications from developer" />
+                            </td>
+                        </TRow>}
                     </TBody>
                 </ScrollableTable>
                 <div className="footer">
-                    <strong>Note:</strong> Changing these settings may cause application stability issues or lose in data. Be cautious with the changes you make. Some settings would take effect only the next time when you revisit.
                     <Button className="pull-right" icon="fa fa-save" label="Save settings" type="success" onClick={this.saveSettings} />
+                    <strong>Note:</strong>
+                    <br />Changing these settings may cause application stability issues or lose in data. Be cautious with the changes you make.
+                    <br />Some settings would take effect only the next time when you revisit.
                 </div>
             </div>
         );

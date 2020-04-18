@@ -21,6 +21,15 @@ export default class UserService {
     }
 
     async saveGlobalSettings(users) {
+        const changeSetting = (sett, user, prop) => {
+            if (sett[prop]) {
+                user[prop] = sett[prop];
+            }
+            else {
+                delete user[prop];
+            }
+        };
+
         await Promise.all(users.map(async u => {
             let user = await this.getUser(u.id);
             user = { ...user };
@@ -29,33 +38,11 @@ export default class UserService {
             user.userId = u.userId;
             user.email = u.email;
 
-            if (u.openTicketsJQL) {
-                user.openTicketsJQL = u.openTicketsJQL;
-            }
-            else {
-                delete user.openTicketsJQL;
-            }
-
-            if (u.suggestionJQL) {
-                user.suggestionJQL = u.suggestionJQL;
-            }
-            else {
-                delete user.suggestionJQL;
-            }
-
-            if (u.enableAnalyticsLogging) {
-                user.enableAnalyticsLogging = u.enableAnalyticsLogging;
-            }
-            else {
-                delete user.enableAnalyticsLogging;
-            }
-
-            if (u.enableExceptionLogging) {
-                user.enableExceptionLogging = u.enableExceptionLogging;
-            }
-            else {
-                delete user.enableExceptionLogging;
-            }
+            changeSetting(u, user, "openTicketsJQL");
+            changeSetting(u, user, "suggestionJQL");
+            changeSetting(u, user, "enableAnalyticsLogging");
+            changeSetting(u, user, "enableExceptionLogging");
+            changeSetting(u, user, "disableDevNotification");
 
             await this.$db.users.put(user);
         }));
@@ -137,6 +124,15 @@ export default class UserService {
             openTicketsJQL: currentUser.openTicketsJQL,
             suggestionJQL: currentUser.suggestionJQL
         };
+
+        // Assign system defaults to current user settings
+        if (userId > 1) {
+            const sysUser = await this.getUser(1);
+            if (sysUser) {
+                sessionUser.disableDevNotification = sysUser.disableDevNotification;
+            }
+        }
+
         const jiraUrlLower = currentUser.jiraUrl.toLowerCase();
 
         if (jiraUrlLower.indexOf('pearson') >= 0 || jiraUrlLower.indexOf('emoneyadv') >= 0) {

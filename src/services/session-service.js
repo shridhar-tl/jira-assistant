@@ -17,18 +17,4 @@ export default class SessionService {
         }
         return userId;
     }
-    /*
-    canActivate() {
-        console.log('Checking if the user is authenticated');
-        if (!this.authenticated) {
-            const redirectUrl = `/index.html#/pages/${this.needIntegration ? 'integrate' : 'p401'}`;
-            console.log('Access forbidden to module. Navigating to:-', redirectUrl);
-            window.location.replace(redirectUrl);
-        }
-        return this.authenticated;
-    }
-    canActivateChild() {
-        console.log('Checking if the user is authenticated - Child modules');
-        return this.authenticated;
-    }*/
 }
