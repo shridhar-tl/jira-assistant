@@ -9,6 +9,34 @@
   }
 }
 
+td.day-wl-block {
+  &:hover {
+    position: relative;
+
+    span.add-wl {
+      position: absolute;
+      display: block;
+    }
+  }
+
+  span.add-wl {
+    background-color: green;
+    border: 1px solid white;
+    float: right;
+    padding: 4px;
+    top: 0;
+    right: 0;
+    cursor: pointer;
+    color: white;
+    border-radius: 20%;
+    display: none;
+  }
+
+  span.add-wl:hover {
+    opacity: 0.6;
+  }
+}
+
 td .user-info {
     min-height: 42px;
     padding: 5px 15px;

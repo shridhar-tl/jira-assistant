@@ -101,20 +101,6 @@ class Dashboard extends PureComponent {
         this.setState({ currentBoard }, this.saveDashboardInfo);
     }
 
-    /* Rewisit: Not sure where this is used
-        getGadgetName(idx) {
-            if (this.gadgetsList && this.gadgetsList.length > 0) {
-                const gadget = this.gadgetsList.toArray()[idx];
-                return gadget ? gadget.title : '';
-            }
-        }
-        getGadgetIcon(idx) {
-            if (this.gadgetsList && this.gadgetsList.length > 0) {
-                const gadget = this.gadgetsList.toArray()[idx];
-                return gadget ? gadget.iconClass : '';
-            }
-        }*/
-
     setGadgetsList() {
         const controls = {
             myOpenTickets: { title: "My open tickets", control: MyOpenTickets },

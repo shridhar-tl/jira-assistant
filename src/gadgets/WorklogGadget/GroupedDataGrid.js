@@ -88,7 +88,14 @@ class GroupedDataGrid extends PureComponent {
                     logClass: {},
                     grandTotal: 0
                 };
-                const logData = (data.first(d => d.userName === getUserName(usr, true)) || {}).logData || [];
+
+                const usrDta = data.first(d => d.userName === getUserName(usr, true)) || {};
+
+                if (usrDta.isCurrentUser) {
+                    usrInfo.isCurrentUser = true;
+                }
+
+                const logData = usrDta.logData || [];
                 usrInfo.tickets = logData.groupBy(lGrp => lGrp.ticketNo)
                     .map(tGrp => {
                         const items = tGrp.values;
@@ -185,7 +192,7 @@ class GroupedDataGrid extends PureComponent {
 
     render() {
         const { state: { groupedData },
-            props: { months, dates, convertSecs, formatTime, breakupMode, pageSettings }
+            props: { months, dates, convertSecs, formatTime, breakupMode, pageSettings, addWorklog }
         } = this;
 
         return (
@@ -202,7 +209,7 @@ class GroupedDataGrid extends PureComponent {
                 </THead>
                 <TBody>
                     {
-                        groupedData.map((grp, i) => <GroupRow key={i} group={grp} dates={dates}
+                        groupedData.map((grp, i) => <GroupRow key={i} group={grp} dates={dates} addWorklog={addWorklog}
                             convertSecs={convertSecs} formatTime={formatTime} breakupMode={breakupMode} pageSettings={pageSettings} />)
                     }
 
@@ -226,7 +233,7 @@ class GroupRow extends PureComponent {
 
     render() {
         const {
-            props: { group: grp, dates, convertSecs, formatTime, breakupMode, pageSettings },
+            props: { group: grp, dates, convertSecs, formatTime, breakupMode, pageSettings, addWorklog },
             state: { hidden }
         } = this;
 
@@ -239,7 +246,7 @@ class GroupRow extends PureComponent {
                     </td>
                 </tr>}
 
-                {!hidden && grp.users.map((u, i) => <UserRow key={i} user={u} dates={dates} breakupMode={breakupMode}
+                {!hidden && grp.users.map((u, i) => <UserRow key={i} user={u} dates={dates} breakupMode={breakupMode} addWorklog={addWorklog}
                     convertSecs={convertSecs} formatTime={formatTime} pageSettings={pageSettings} />)}
 
                 <tr className="grouped-row right auto-wrap" onClick={hidden ? this.toggleDisplay : null}>
@@ -286,6 +293,12 @@ class UserRow extends PureComponent {
         }
     }
 
+    addWorklog = (ticketNo, day) => {
+        const { user, addWorklog } = this.props;
+        const { date, prop } = day;
+        addWorklog(user, ticketNo, date, user.total[prop]);
+    }
+
     render() {
         const {
             props: { user: u, dates, convertSecs, breakupMode, pageSettings: { hideEstimate } },
@@ -304,7 +317,9 @@ class UserRow extends PureComponent {
                             <span className="email">({u.emailAddress || u.name}{u.timeZone && <span>, time zone: {u.timeZone}</span>})</span>
                         </div>
                     </td>
-                    {dates.map((day, i) => <td key={i} className={u.logClass[day.prop]}>{convertSecs(u.total[day.prop])}</td>)}
+                    {dates.map((day, i) => <td key={i} className={`${u.logClass[day.prop]} day-wl-block`}>
+                        {u.isCurrentUser && <span className="fa fa-clock-o add-wl" title="Click to add worklog" onClick={() => this.addWorklog(null, day)} />}
+                        {convertSecs(u.total[day.prop])}</td>)}
                     <td>{convertSecs(u.grandTotal)}</td>
                 </tr>
 
@@ -326,7 +341,8 @@ class UserRow extends PureComponent {
                                     {!hideEstimate && !!(oe || re) && <span className="estimate" title={estTitle}>
                                         (est: {oe || 0} / rem: {re || 0} / log: {logged} / var: {variance})</span>}
                                 </td>
-                                {dates.map((day, j) => <td key={j}>
+                                {dates.map((day, j) => <td key={j} className="day-wl-block">
+                                    {u.isCurrentUser && <span className="fa fa-clock-o add-wl" title="Click to add worklog" onClick={() => this.addWorklog(t.ticketNo, day)} />}
                                     {breakupMode !== '2' && <span title={this.getComments(t.logs[day.prop])}>{convertSecs(this.getTotalTime(t.logs[day.prop]))}</span>}
                                     {breakupMode === '2' && <div> {this.getLogEntries(t.logs[day.prop])}</div>}
                                 </td>)}

@@ -13,6 +13,7 @@ import "./WorklogGadget.scss";
 import UserProjectWiseSummary from './UserProjectWiseSummary';
 import { EventCategory } from '../../_constants';
 import { getUserName } from '../../common/utils';
+import AddWorklog from '../../dialogs/AddWorklog';
 
 class WorklogGadget extends BaseGadget {
     constructor(props) {
@@ -27,7 +28,8 @@ class WorklogGadget extends BaseGadget {
 
         this.state.dateRange = {};
         this.state.pageSettings = pageSettings;
-        const { maxHours, epicNameField } = this.$session.CurrentUser;
+        const { maxHours, epicNameField, name } = this.$session.CurrentUser;
+        this.currentUserName = name.toLowerCase();
 
         this.maxSecsPerDay = (maxHours || 8) * 60 * 60;
         this.epicNameField = (epicNameField || {}).id;
@@ -112,7 +114,13 @@ class WorklogGadget extends BaseGadget {
         }
         return this.$jira.searchTickets(jql, fieldsToFetch) //, "status", "assignee"
             .then((issues) => {
-                const arr = userList.map((u) => { return { logData: [], userName: u.toLowerCase() }; });
+                const arr = userList.map((u) => {
+                    const usr = { logData: [], userName: u.toLowerCase() };
+                    if (usr.userName === this.currentUserName) {
+                        usr.isCurrentUser = true;
+                    }
+                    return usr;
+                });
                 const report = {};
 
                 for (let x = 0; x < arr.length; x++) {
@@ -209,6 +217,7 @@ class WorklogGadget extends BaseGadget {
         });
     }
 
+    /*
     processReportData(data) {
         const param = { fromDate: this.state.dateRange.fromDate, toDate: this.state.dateRange.toDate, dateArr: [] };
         data.forEach((d) => {
@@ -298,6 +307,7 @@ class WorklogGadget extends BaseGadget {
             return groupdUsers.sum(d => d.totalHours);
         }
     }
+    */
 
     getDateArray(startDate, endDate) {
         const interval = 1;
@@ -345,6 +355,26 @@ class WorklogGadget extends BaseGadget {
         this.settingsChanged(pageSettings);
     }
 
+    addWorklog = (user, ticketNo, dateStarted, logged) => {
+        let timeSpent = (this.maxSecsPerDay || 0) - (logged || 0);
+        if (timeSpent < 60) {
+            timeSpent = "01:00";
+        }
+
+        // ToDo: need to support adding worklog for different user
+        this.worklogItem = { ticketNo, dateStarted, timeSpent };
+        this.setState({ showWorklogPopup: true });
+    }
+
+    worklogAdded = ({ added: { sourceObject: worklog } }) => {
+        console.log("Worklog added: ", worklog);
+    }
+
+    hideWorklog = () => {
+        this.worklogItem = null;
+        this.setState({ showWorklogPopup: false });
+    }
+
     convertSecs = (val) => {
         return this.$utils.convertSecs(val, { format: this.state.pageSettings.logFormat === "1" });
     }
@@ -362,7 +392,7 @@ class WorklogGadget extends BaseGadget {
             months, dates, convertSecs, formatTime, formatDateTime,
             //props: { },
             rawData, flatData = [],
-            state: { isLoading, showGroupsPopup, showSettings, groups, pageSettings = {} }
+            state: { isLoading, showGroupsPopup, showWorklogPopup, showSettings, groups, pageSettings = {} }
         } = this;
 
         const { breakupMode } = pageSettings;
@@ -378,7 +408,8 @@ class WorklogGadget extends BaseGadget {
                 {rawData && <TabView className="no-padding" renderActiveOnly={false}>
                     <TabPanel header="Grouped - [User daywise]" contentClassName="no-padding">
                         {rawData && <GroupedDataGrid rawData={rawData} groups={groups} dates={dates} months={months} pageSettings={pageSettings}
-                            convertSecs={convertSecs} formatTime={formatTime} breakupMode={breakupMode} getTicketUrl={this.$userutils.getTicketUrl} maxSecsPerDay={this.maxSecsPerDay} />}
+                            convertSecs={convertSecs} formatTime={formatTime} breakupMode={breakupMode}
+                            getTicketUrl={this.$userutils.getTicketUrl} maxSecsPerDay={this.maxSecsPerDay} addWorklog={this.addWorklog} />}
                     </TabPanel>
                     <TabPanel header="Summary - [User project wise]">
                         {flatData && <UserProjectWiseSummary key={flatDataUniqueKey} groups={groups} flatData={flatData} formatDateTime={formatDateTime} convertSecs={convertSecs} />}
@@ -392,6 +423,8 @@ class WorklogGadget extends BaseGadget {
 
                 {showGroupsPopup && <GroupEditor groups={groups} onHide={this.groupsChanged} />}
                 {showSettings && <WorklogSettings pageSettings={pageSettings} onHide={this.settingsChanged} />}
+                {showWorklogPopup && <AddWorklog worklog={this.worklogItem} onDone={this.worklogAdded}
+                    onHide={this.hideWorklog} uploadImmediately={true} />}
             </div>
         );
     }

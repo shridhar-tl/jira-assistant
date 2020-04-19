@@ -10,14 +10,15 @@ import { EventCategory } from '../_constants';
 class AddWorklog extends BaseDialog {
     constructor(props) {
         super(props, "Add worklog", { width: '550px' });
-        inject(this, "SessionService", "SuggestionService", "WorklogService", "MessageService");
+        inject(this, "SessionService", "SuggestionService", "WorklogService", "MessageService", "UtilsService");
 
         this.displayDateFormat = "yyyy-MM-dd HH:mm";
-        this.minCommentLength = this.$session.CurrentUser.commentLength || 0;
+        const { commentLength, autoUpload } = this.$session.CurrentUser;
+        this.minCommentLength = commentLength || 0;
 
-        const { worklog } = props;
+        const { worklog, uploadImmediately } = props;
         this.state = this.getState(worklog);
-        this.state.uploadImmediately = this.$session.CurrentUser.autoUpload || false;
+        this.state.uploadImmediately = typeof uploadImmediately === "boolean" ? uploadImmediately : (autoUpload || false);
         this.allTicketList = [];
     }
 
@@ -49,12 +50,18 @@ class AddWorklog extends BaseDialog {
                 newState.log.parentId = obj.parentId;
             }
 
-            if (!obj.allowOverride && obj.timeSpent) {
-                newState.log.timeSpent = obj.timeSpent;
+            let { timeSpent } = obj;
+
+            if (typeof timeSpent === "number") {
+                timeSpent = this.$utils.formatSecs(timeSpent, false, true);
             }
 
-            if (obj.timeSpent) {
-                newState.log.overrideTimeSpent = obj.timeSpent;
+            if (!obj.allowOverride && timeSpent) {
+                newState.log.timeSpent = timeSpent;
+            }
+
+            if (timeSpent) {
+                newState.log.overrideTimeSpent = timeSpent;
             }
             else {
                 newState.log.overrideTimeSpent = '01:00';
