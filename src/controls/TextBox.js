@@ -47,13 +47,14 @@ class TextBox extends PureComponent {
         if (multiline) {
             return (
                 <InputTextarea rows={rows} value={value} autoResize={autoResize} keyfilter={keyfilter} style={style} maxLength={maxLength} disabled={disabled}
-                    className={`w-p-100 ${className || ''}`} placeholder={placeholder} onChange={this.onChange} onKeyPress={this.keyPress} />
+                    className={`w-p-100 ${className || ''}`} placeholder={placeholder} onChange={this.onChange} onKeyPress={this.keyPress}
+                    onBlur={this.props.onBlur} />
             );
         }
         else {
             return (
                 <InputText value={value} keyfilter={keyfilter} style={style} maxLength={maxLength} className={className} placeholder={placeholder}
-                    onChange={this.onChange} onKeyDown={this.keyPress} readOnly={readOnly} disabled={disabled} />
+                    onChange={this.onChange} onKeyDown={this.keyPress} readOnly={readOnly} disabled={disabled} onBlur={this.props.onBlur} />
             );
         }
     }

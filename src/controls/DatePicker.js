@@ -48,6 +48,7 @@ class DatePicker extends PureComponent {
     }
 
     onChange = (e, picker) => {
+        this.manuallyEdited = false;
         //let { value } = e;
         const { range } = this.props;
         let value = picker.startDate;
@@ -107,6 +108,25 @@ class DatePicker extends PureComponent {
         return newState;
     }
 
+    setDate = (e) => {
+        if (this.manuallyEdited) {
+            let { target: { value } } = e;
+            value = value.trim();
+
+            let startDate = moment(value, this.displayFormat);
+
+            if (startDate.format(this.displayFormat) !== value) {
+                startDate = this.state.value;
+            }
+
+            this.onChange(null, { startDate });
+        }
+    }
+
+    dateEdited = (e) => {
+        this.manuallyEdited = true;
+    }
+
     render() {
         const {
             onChange, dateRange,
@@ -140,7 +160,7 @@ class DatePicker extends PureComponent {
             return <DateRangePicker style={style} className={className} disabled={disabled} startDate={value} endDate={value} showDropdowns={true}
                 timePicker={showTime || false} timePicker24Hour={this.timePicker24Hour} alwaysShowCalendars={false} maxSpan={6} autoApply={true}
                 linkedCalendars={false} autoUpdateInput={false} singleDatePicker={!range} onApply={onChange}>
-                <TextBox className="date-range-ctl" value={displayDate} readOnly={true} placeholder={placeholder} />
+                <TextBox className="date-range-ctl" value={displayDate} placeholder={placeholder} onChange={this.dateEdited} onBlur={this.setDate} />
                 <Button icon="fa fa-calendar" className="icon" />
             </DateRangePicker>;
         }
