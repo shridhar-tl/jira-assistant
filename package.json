@@ -21,13 +21,14 @@
         "chart.js": "^2.8.0",
         "classnames": "^2.2.6",
         "dexie": "^2.0.4",
+        "espree": "^6.2.1",
         "exceljs": "^3.8.2",
         "font-awesome": "^4.7.0",
         "fullcalendar": "^3.10.1",
         "jquery": "^3.5.0",
-        "jsd-report": "^0.1.8",
+        "jsd-report": "^0.1.9",
         "jspdf": "^1.5.3",
-        "jspdf-autotable": "^3.4.3",
+        "jspdf-autotable": "^3.4.4",
         "moment": "^2.24.0",
         "moment-timezone": "^0.5.28",
         "node-sass": "^4.13.1",
@@ -44,7 +45,8 @@
         "react-dom": "^16.13.1",
         "react-router-dom": "^5.1.2",
         "react-scripts": "^3.4.1",
-        "reactstrap": "^8.0.1"
+        "reactstrap": "^8.0.1",
+        "static-eval": "^2.0.5"
     },
     "scripts": {
         "start": "react-scripts start",

@@ -3,6 +3,7 @@ import { initReportBuilder } from 'jsd-report';
 import EventEmitter from 'events';
 import { GadgetActionType } from '../gadgets/_constants';
 import { getUserName } from '../common/utils';
+import exec from '../common/jsExec';
 
 export default class ReportConfigService {
     static dependencies = ["ReportService", "SessionService", "JiraService", "AjaxService", "UserGroup", "UserUtilsService", "BookmarkService"];
@@ -20,13 +21,32 @@ export default class ReportConfigService {
         this.eventPipe = new EventEmitter();
     }
 
+    hasScriptExecPermission() {
+        try {
+            // eslint-disable-next-line no-new-func
+            return !!Function("return true")();
+        } catch {
+            // eslint-disable-next-line no-console
+            console.error("Jira Assistant is not granted permission for executing expressions. Hence some of the expressions in Report builder will not work.");
+            return false;
+        }
+    }
+
     configureReport() {
         if (this.isConfigured) {
             return;
         }
+
+        const selfHandleScriptExecution = !this.hasScriptExecPermission();
+
+        const compiler = selfHandleScriptExecution ? exec :
+            function (code, sandbox) {
+                // eslint-disable-next-line no-new-func
+                return Function(...sandbox, code)();
+            };
+
         const defaultConfig = {
-            // eslint-disable-next-line no-new-func
-            compiler: function (code, sandbox) { return Function(...sandbox, code)(); },
+            selfHandleScriptExecution, compiler,
             useExternalDnDProvider: true,
             subReports: (defn) => {
                 return this.$report.getReportsList().then((result) => {
