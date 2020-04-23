@@ -27,7 +27,7 @@ export default class ReportConfigService {
             return !!Function("return true")();
         } catch {
             // eslint-disable-next-line no-console
-            console.error("Jira Assistant is not granted permission for executing expressions. Hence some of the expressions in Report builder will not work.");
+            console.error("Jira Assistant is not granted permission for executing expressions. Hence some dynamic expressions in Report Builder will not work.");
             return false;
         }
     }
@@ -48,6 +48,7 @@ export default class ReportConfigService {
         const defaultConfig = {
             selfHandleScriptExecution, compiler,
             useExternalDnDProvider: true,
+            customFunctions: !selfHandleScriptExecution,
             subReports: (defn) => {
                 return this.$report.getReportsList().then((result) => {
                     result = result.filter(q => q.advanced).map(q => { return { id: q.id, name: q.queryName }; });
