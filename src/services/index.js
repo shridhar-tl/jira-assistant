@@ -31,6 +31,7 @@ import browsers from '../common/browsers';
 
 export { inject };
 
+// Any new classes injected should be added in index.d.ts file as well to support intellisense in VS Code.
 export default function injectServices() {
     injectable(AjaxService, "AjaxService", "$ajax");
     injectable(AnalyticsService, "AnalyticsService", "$analytics");
