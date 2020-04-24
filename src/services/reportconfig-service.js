@@ -27,7 +27,7 @@ export default class ReportConfigService {
             return !!Function("return true")();
         } catch {
             // eslint-disable-next-line no-console
-            console.error("Jira Assistant is not granted permission for executing expressions. Hence some dynamic expressions in Report Builder will not work.");
+            console.log("Jira Assistant is not granted permission for executing expressions. Hence some dynamic expressions in Report Builder will not work.");
             return false;
         }
     }
