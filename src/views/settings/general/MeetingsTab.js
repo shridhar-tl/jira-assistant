@@ -37,7 +37,7 @@ const launchList = [
 class MeetingsTab extends TabControlBase {
     constructor(props) {
         super(props);
-        inject(this, "CalendarService", "AnalyticsService", "MessageService", "SessionService", "OutlookService");
+        inject(this, "CalendarService", "AnalyticsService", "MessageService", "SessionService", "OutlookService", "AppBrowserService");
     }
 
     enableIntegration(key, val) {
