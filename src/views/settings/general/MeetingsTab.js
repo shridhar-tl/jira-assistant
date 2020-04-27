@@ -40,6 +40,23 @@ class MeetingsTab extends TabControlBase {
         inject(this, "CalendarService", "AnalyticsService", "MessageService", "SessionService", "OutlookService");
     }
 
+    enableIntegration(key, val) {
+        if (val) {
+            this.$jaBrowserExtn.requestPermission(["identity"]).then(result => {
+                if (result) {
+                    this.setValue(key, val);
+                } else {
+                    this.$message.warning("Permission was not granted to enable this integration. Please grant permission to enable it.", "Permission not granted");
+                }
+            });
+        } else {
+            this.setValue(key, val);
+        }
+    }
+
+    enableGIntegration = (val) => this.enableIntegration("googleIntegration", val);
+    enableOIntegration = (val) => this.enableIntegration("outlookIntegration", val);
+
     googleSignIn = () => {
         this.$calendar.authenticate(true).then((result) => {
             this.setValue("hasGoogleCredentials", true);
@@ -103,7 +120,7 @@ class MeetingsTab extends TabControlBase {
                         <div className="ui-g-12 ui-md-9 ui-lg-9 ui-xl-10">
                             <div className="form-group">
                                 <Checkbox checked={settings.outlookIntegration}
-                                    onChange={(val) => this.setValue("outlookIntegration", val)} label="Allow integration" />
+                                    onChange={this.enableOIntegration} label="Allow integration" />
                                 <span className="help-block">Select this checkbox if you would wish to view meetings in your outlook calendar</span>
                             </div>
                         </div>
@@ -134,7 +151,7 @@ class MeetingsTab extends TabControlBase {
                         <div className="ui-g-12 ui-md-9 ui-lg-9 ui-xl-10">
                             <div className="form-group">
                                 <Checkbox checked={settings.googleIntegration}
-                                    onChange={(val) => this.setValue("googleIntegration", val)} label="Allow integration" />
+                                    onChange={this.enableGIntegration} label="Allow integration" />
                                 <span className="help-block">Select this checkbox if you would wish to view meetings in your calendar</span>
                             </div>
                         </div>

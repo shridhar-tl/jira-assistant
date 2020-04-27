@@ -99,37 +99,43 @@ export default class ChromeBrowserService extends BrowserBase {
         });
     }
 
-    hasPermission(url) {
-        url = getOriginFromUrl(url);
-
+    hasPermission(permissions) {
         return new Promise((resolve) => {
-            this.chrome.permissions.contains({
-                permissions: ['tabs'],
-                origins: [url]
-            }, resolve);
+            this.chrome.permissions.contains(permissions, resolve);
         });
     }
 
-    async requestPermission(url) {
+    async requestPermission(permissions, url) {
         try {
-            url = getOriginFromUrl(url);
-            const result = await this.hasPermission(url);
+            const pObj = this.getPermissionObj(permissions, url);
+            const result = await this.hasPermission(pObj);
 
             if (result) {
                 return true;
             } else {
                 console.log(`Requesting permission for ${url}.`);
                 return new Promise((resolve) => {
-                    this.chrome.permissions.request({
-                        permissions: ['tabs'],
-                        origins: [url]
-                    }, resolve);
+                    this.chrome.permissions.request(pObj, resolve);
                 });
             }
         }
         catch (err) {
             return Promise.reject(err);
         }
+    }
+
+    getPermissionObj(permissions, url) {
+        if (!permissions) {
+            permissions = ['tabs'];
+        }
+
+        const result = { permissions };
+
+        if (url) {
+            result.origins = [getOriginFromUrl(url)];
+        }
+
+        return result;
     }
 
     replaceTabUrl(url) {
