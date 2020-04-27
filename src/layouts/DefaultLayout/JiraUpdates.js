@@ -36,7 +36,7 @@ class JiraUpdates extends PureComponent {
         return (
             <UncontrolledDropdown nav direction="down">
                 <DropdownToggle nav onClick={this.trackViewList}>
-                    <i className="fa fa-bell"></i>{total > 0 && <span className="badge badge-danger">{total}</span>}
+                    <i className="fa fa-comments"></i>{total > 0 && <span className="badge badge-warning">{total}</span>}
                 </DropdownToggle>
                 <DropdownMenu right className="jira-notifications">
                     <DropdownItem header tag="div">
