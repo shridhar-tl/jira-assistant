@@ -137,7 +137,7 @@ export function parseJwt(token) {
 
 export function getHostFromUrl(url) {
     if (url && typeof url !== "string") { url = url.toString(); }
-    return new URL(url).host;
+    return url && new URL(url).host;
 }
 
 export function getOriginFromUrl(url) {

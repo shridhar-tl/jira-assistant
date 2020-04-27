@@ -161,7 +161,9 @@ export const FULL_DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thur
 export const defaultJiraFields = ["issuetype", "summary", "reporter", "priority", "status", "resolution", "created", "updated"];
 
 export const defaultSettings = {
-    openTicketsJQL: "assignee=currentUser() AND resolution=Unresolved and status != Closed"
+    openTicketsJQL: "assignee=currentUser() AND resolution=Unresolved and status != Closed",
+    jiraUpdatesJQL: `(comment ~ currentUser() or summary ~ currentUser() or description ~ currentUser() or assignee = currentUser() `
+        + `or reporter = currentUser()) and updatedDate >= $date$ and (lastViewed is null or lastViewed <= $date$) order by lastViewed`
 };
 
 export const EventCategory = {

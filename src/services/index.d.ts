@@ -12,6 +12,7 @@ import CalendarService from './calendar-service';
 import ConfigService from './config-service';
 import DashboardService from './dashboard-service';
 import DatabaseService from './database-service';
+import JiraUpdatesService from './jira-updates-service';
 import JiraService from './jira-service';
 import MessageService from './message-service';
 import NotificationService from './notification-service';
@@ -40,6 +41,7 @@ declare module 'react' {
         $dashboard: DashboardService
         $db: DatabaseService
         $jaBrowserExtn: ChromeService | FirefoxService | EdgeService | DevService
+        $jupdates: JiraUpdatesService
         $jira: JiraService
         $message: MessageService
         $noti: NotificationService

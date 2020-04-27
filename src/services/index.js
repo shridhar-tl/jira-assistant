@@ -12,6 +12,7 @@ import CalendarService from './calendar-service';
 import ConfigService from './config-service';
 import DashboardService from './dashboard-service';
 import DatabaseService from './database-service';
+import JiraUpdatesService from './jira-updates-service';
 import JiraService from './jira-service';
 import MessageService from './message-service';
 import NotificationService from './notification-service';
@@ -61,6 +62,7 @@ export default function injectServices() {
     injectable(DashboardService, "DashboardService", "$dashboard");
     injectable(DatabaseService, "DatabaseService", "$db");
     injectable(JiraService, "JiraService", "$jira");
+    injectable(JiraUpdatesService, "JiraUpdatesService", "$jupdates");
     injectable(MessageService, "MessageService", "$message");
     injectable(NotificationService, "NotificationService", "$noti");
     injectable(OutlookCalendar, "OutlookService", "$outlook");

@@ -14,6 +14,7 @@ import SkinPicker from './SkinPicker';
 import SwitchAccountMenu from './SwitchAccountMenu';
 import { getHostFromUrl } from '../../common/utils';
 import Notifications from './Notifications';
+import JiraUpdates from './JiraUpdates';
 
 const propTypes = {
   children: PropTypes.node,
@@ -27,6 +28,7 @@ class DefaultHeader extends PureComponent {
     inject(this, "AppBrowserService", "CacheService", "SessionService", "AnalyticsService");
     const cUser = this.$session.CurrentUser;
     this.disableNotification = cUser.disableDevNotification;
+    this.disableJiraUpdates = cUser.disableJiraUpdates;
     this.userId = cUser.userId;
     this.currentJiraInstance = getHostFromUrl(cUser.jiraUrl);
     this.state = { versionNumber: "1.0" };
@@ -100,6 +102,7 @@ class DefaultHeader extends PureComponent {
               </DropdownMenu>
             </UncontrolledDropdown>
           </Nav>
+          {!this.disableJiraUpdates && <JiraUpdates />}
           {!this.disableNotification && <Notifications />}
           <NavItem className="d-md-down-none">
             <span className="nav-link" onClick={this.showYoutubeHelp}><i className="fa fa-youtube-play"></i></span>

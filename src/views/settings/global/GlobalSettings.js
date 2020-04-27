@@ -67,43 +67,58 @@ class GlobalSettings extends PureComponent {
                         </TRow>
                         <TRow>
                             <Column>Default</Column>
-                            {intgUsers.map(u => <Column>{getHostFromUrl(u.jiraUrl)}</Column>)}
+                            {intgUsers.map(u => <Column key={u.id}>{getHostFromUrl(u.jiraUrl)}</Column>)}
                         </TRow>
                     </THead>
                     <TBody>
                         <TRow>
                             <td>Integrated on</td>
                             <td>N/A</td>
-                            {intgUsers.map(u => <td>{u.lastLogin.format("dd-MMM-yyyy HH:mm:ss")}</td>)}
+                            {intgUsers.map(u => <td key={u.id}>{u.lastLogin.format("dd-MMM-yyyy HH:mm:ss")}</td>)}
                         </TRow>
                         <TRow>
                             <td>Jira Server Url</td>
                             <td>N/A</td>
-                            {intgUsers.map(u => <td>
-                                <TextBox placeholder={defaultSettings.openTicketsJQL} value={u.jiraUrl} onChange={(val) => this.setValue(val, "jiraUrl", u)} />
+                            {intgUsers.map(u => <td key={u.id}>
+                                <TextBox placeholder="e.g. https://jira.example.com" value={u.jiraUrl?.toString()} onChange={(val) => this.setValue(val, "jiraUrl", u)} />
                             </td>)}
                         </TRow>
                         <TRow>
                             <td>Jira User id</td>
                             <td>N/A</td>
-                            {intgUsers.map(u => <td><TextBox placeholder="User id of Jira" value={u.userId} onChange={(val) => this.setValue(val, "userId", u)} /></td>)}
+                            {intgUsers.map(u => <td key={u.id}><TextBox placeholder="User id of Jira" value={u.userId} onChange={(val) => this.setValue(val, "userId", u)} /></td>)}
                         </TRow>
                         <TRow>
                             <td>Email id</td>
                             <td>N/A</td>
-                            {intgUsers.map(u => <td><TextBox placeholder="User id of Jira" value={u.email} onChange={(val) => this.setValue(val, "email", u)} /></td>)}
+                            {intgUsers.map(u => <td key={u.id}><TextBox placeholder="Email id of Jira" value={u.email} onChange={(val) => this.setValue(val, "email", u)} /></td>)}
                         </TRow>
                         <TRow>
                             <td>Open tickets JQL</td>
-                            {users.map(u => <td><TextBox multiline placeholder={defaultSettings.openTicketsJQL} readOnly={u.id === 1}
+                            {users.map(u => <td key={u.id}><TextBox multiline placeholder={defaultSettings.openTicketsJQL} readOnly={u.id === 1}
                                 value={u.id === 1 ? defaultSettings.openTicketsJQL : (u.openTicketsJQL || "")}
                                 onChange={(val) => this.setValue(val, "openTicketsJQL", u)} /></td>)}
                         </TRow>
                         <TRow>
                             <td>Ticket suggestions JQL</td>
-                            {users.map(u => <td><TextBox multiline placeholder={defaultSettings.openTicketsJQL} readOnly={u.id === 1}
+                            {users.map(u => <td key={u.id}><TextBox multiline placeholder={defaultSettings.openTicketsJQL} readOnly={u.id === 1}
                                 value={u.id === 1 ? defaultSettings.openTicketsJQL : (u.suggestionJQL || "")}
                                 onChange={(val) => this.setValue(val, "suggestionJQL", u)} /></td>)}
+                        </TRow>
+                        <TRow>
+                            <td>Disable Jira issue updates</td>
+                            {users.map(u => <td key={u.id}><Checkbox checked={u.disableJiraUpdates}
+                                onChange={(val) => this.setValue(val, "disableJiraUpdates", u)}
+                                label="Disable Jira issue updates"
+                                title="Do not show updates about changes for any issues happend in Jira" />
+                            </td>)}
+                        </TRow>
+                        <TRow>
+                            <td>Jira updates JQL (used to fetch updates from Jira)</td>
+                            {users.map(u => <td key={u.id}><TextBox multiline placeholder={defaultSettings.jiraUpdatesJQL} readOnly={u.id === 1}
+                                disabled={u.disableJiraUpdates}
+                                value={u.id === 1 ? defaultSettings.jiraUpdatesJQL : (u.jiraUpdatesJQL || "")}
+                                onChange={(val) => this.setValue(val, "jiraUpdatesJQL", u)} /></td>)}
                         </TRow>
                         {!!users[0] && <TRow>
                             <td>Enable tracking user actions (Anynmous, Google Analytics)</td>

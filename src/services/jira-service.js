@@ -13,10 +13,14 @@ export default class JiraService {
         this.runningRequests = {};
     }
 
-    searchTickets(jql, fields, startAt) {
+    searchTickets(jql, fields, startAt, opts) {
         startAt = startAt || 0;
         return new Promise((resolve, reject) => {
-            const postData = { jql: jql, fields: fields, maxResults: 1000 };
+            const postData = { jql, fields, maxResults: opts?.maxResults || 1000 };
+            if (opts?.expand?.length) {
+                postData.expand = opts.expand;
+            }
+
             if (startAt > 0) {
                 postData.startAt = startAt;
             }
@@ -204,6 +208,10 @@ export default class JiraService {
 
     getRapidSprintDetails(rapidViewId, sprintId) {
         return this.$ajax.get(ApiUrls.rapidSprintDetails, rapidViewId, sprintId);
+    }
+
+    getSprintIssues(sprintId) {
+        return this.$ajax.get(ApiUrls.getSprintIssues, sprintId);
     }
 
     getOpenTickets(refresh) {

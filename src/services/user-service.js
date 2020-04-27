@@ -40,6 +40,8 @@ export default class UserService {
 
             changeSetting(u, user, "openTicketsJQL");
             changeSetting(u, user, "suggestionJQL");
+            changeSetting(u, user, "disableJiraUpdates");
+            changeSetting(u, user, "jiraUpdatesJQL");
             changeSetting(u, user, "enableAnalyticsLogging");
             changeSetting(u, user, "enableExceptionLogging");
             changeSetting(u, user, "disableDevNotification");
@@ -122,7 +124,9 @@ export default class UserService {
 
             // Advanced settings
             openTicketsJQL: currentUser.openTicketsJQL,
-            suggestionJQL: currentUser.suggestionJQL
+            suggestionJQL: currentUser.suggestionJQL,
+            disableJiraUpdates: currentUser.disableJiraUpdates,
+            jiraUpdatesJQL: currentUser.jiraUpdatesJQL
         };
 
         // Assign system defaults to current user settings
@@ -130,6 +134,10 @@ export default class UserService {
             const sysUser = await this.getUser(1);
             if (sysUser) {
                 sessionUser.disableDevNotification = sysUser.disableDevNotification;
+
+                if (sysUser.disableJiraUpdates) {
+                    sessionUser.disableJiraUpdates = sysUser.disableJiraUpdates;
+                }
             }
         }
 

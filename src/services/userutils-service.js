@@ -1,4 +1,5 @@
 import { getUserName } from "../common/utils";
+import moment from "moment";
 
 export default class UserUtilsService {
     static dependencies = ["SessionService", "UtilsService"];
@@ -71,7 +72,11 @@ export default class UserUtilsService {
             if (utc === true) {
                 date = date.toUTCDate();
             }
-            return date.format(format);
+            if (format?.toLowerCase() === "quick") {
+                return moment(date).fromNow();
+            } else {
+                return date.format(format);
+            }
         }
         return date;
     }
