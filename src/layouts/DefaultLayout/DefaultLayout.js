@@ -43,8 +43,6 @@ class DefaultLayout extends PureComponent {
 
     this.$dashboard.onChange(() => this.setState({ menus: this.getMenus(userId) }));
     this.initBody();
-
-    this.$cache.set("useNewUI", true, null, true);
   }
 
   initBody() {

@@ -63,7 +63,7 @@ class Message extends PureComponent {
                 <div className={"text-truncate font-weight-bold"} title={msg.summary}>
                     {msg.key} - {cut(msg.summary, 100, true)}
                 </div>
-                {msg.updates.map(({ date, author, field, fromString, toString }) => <div className="small text-muted message">
+                {msg.updates.map(({ date, author, field, fromString, toString }, i) => <div key={i} className="small text-muted message">
                     <UserDisplay className="user-display" user={author} />
                     <span> updated {field} from {fromString} to {toString} </span>
                     <DateDisplay className="date-display" date={date} quick={true} />
