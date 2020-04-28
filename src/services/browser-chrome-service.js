@@ -113,7 +113,7 @@ export default class ChromeBrowserService extends BrowserBase {
             if (result) {
                 return true;
             } else {
-                console.log(`Requesting permission for ${url}.`);
+                console.log("Requesting permission for: ", pObj);
                 return new Promise((resolve) => {
                     this.chrome.permissions.request(pObj, resolve);
                 });
