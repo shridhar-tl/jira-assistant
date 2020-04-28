@@ -44,7 +44,7 @@ class SelectBox extends PureComponent {
                     value = dataset.filter(d => d[valueField] === value)[0];
                 }
             }
-            else if (valueField && typeof value !== "object" && typeof dataset[0] === "object") {
+            else if (valueField && valueField !== "value" && typeof value !== "object" && typeof dataset[0] === "object") {
                 if (!multiselect) {
                     value = dataset.first(d => d[valueField] === value) || value;
                 }
