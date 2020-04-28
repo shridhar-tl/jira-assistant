@@ -30,31 +30,43 @@ export default class OutlookCalendar {
         this.$jaBrowserExtn = $jaBrowserExtn;
         this.$session = $session;
 
-        let redirect_uri = null;
-        if (process.env.NODE_ENV === "production") {
-            redirect_uri = this.$jaBrowserExtn.getRedirectUrl('outlook-auth');
-        }
-        else {
-            redirect_uri = document.location.href;
-            const tildIndex = redirect_uri.indexOf("#");
+        this.initConfigs();
+    }
 
-            if (~tildIndex) {
-                redirect_uri = redirect_uri.substring(0, tildIndex);
+    async initConfigs() {
+        if (!this.oauth && this.$session.CurrentUser?.oIntegration) {
+            let redirect_uri = null;
+            if (process.env.NODE_ENV === "production") {
+                if (!await this.$jaBrowserExtn.requestPermission(["identity"])) {
+                    return false;
+                }
+                redirect_uri = this.$jaBrowserExtn.getRedirectUrl('outlook-auth');
+            }
+            else {
+                redirect_uri = document.location.href;
+                const tildIndex = redirect_uri.indexOf("#");
+
+                if (~tildIndex) {
+                    redirect_uri = redirect_uri.substring(0, tildIndex);
+                }
+
+                const qmIndex = redirect_uri.indexOf("?");
+                if (~qmIndex) {
+                    redirect_uri = redirect_uri.substring(0, qmIndex);
+                }
             }
 
-            const qmIndex = redirect_uri.indexOf("?");
-            if (~qmIndex) {
-                redirect_uri = redirect_uri.substring(0, qmIndex);
-            }
+            this.oauth = new OAuthClient({
+                authEndPoint,
+                tokenEndPoint,
+                client_id,
+                redirect_uri,
+                scope
+            });
+            return true;
         }
 
-        this.oauth = new OAuthClient({
-            authEndPoint,
-            tokenEndPoint,
-            client_id,
-            redirect_uri,
-            scope
-        });
+        return !!this.oauth;
     }
 
     getAddlProps(response_type) {
@@ -65,6 +77,7 @@ export default class OutlookCalendar {
     }
 
     async authenticate() { // ToDo:implement interactive param
+        await this.initConfigs();
 
         const addlParam = this.getAddlProps('id_token token'); //'code'
 
@@ -111,6 +124,8 @@ export default class OutlookCalendar {
         this.bearerToken = null;
         this.tokenExpiresAt = null;
 
+        await this.initConfigs();
+
         const addlParam = { ...this.getAddlProps('token'), prompt: "none", ...this.getOptionalHints() };
 
         const result = await this.oauth.getToken(addlParam, true);
@@ -138,6 +153,7 @@ export default class OutlookCalendar {
     }
 
     async getEvents(startDate, endDate, options) {
+        await this.initConfigs();
         options = options || {};
         const authToken = await this.getToken();
 

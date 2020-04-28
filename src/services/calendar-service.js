@@ -14,13 +14,18 @@ export default class CalendarService {
         //var API_KEY = "AIzaSyC6BS-Z_7E7ejv-nfJgq1KmrJ146xneenI";
         this.CALENDAR_EVENTS_API_URL = "https://www.googleapis.com/calendar/v3/calendars/{calendarId}/events?";
     }
-    authenticate(interactive) {
+
+    async authenticate(interactive) {
+        if (!await this.$jaBrowserExtn.requestPermission(["identity"])) {
+            return false;
+        }
         return this.$jaBrowserExtn.getAuthToken({ 'interactive': interactive === true }).then((accessToken) => {
             return this.$config.updateAuthCode({
                 access_token: accessToken
             }).then(() => { return accessToken; });
         });
     }
+
     getEvents(startDate, endDate, options) {
         options = options || {};
         let reAuth = false; // eslint-disable-line no-unused-vars
