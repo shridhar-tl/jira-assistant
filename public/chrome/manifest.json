@@ -37,11 +37,11 @@
   "offline_enabled": true,
   "permissions": [
     "activeTab",
-    "identity",
     "storage"
   ],
   "optional_permissions": [
     "unlimitedStorage",
+    "identity",
     "tabs",
     "http://*/",
     "https://*/"
