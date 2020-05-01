@@ -9,7 +9,18 @@ const $jaBrowserExtn = svc.$jaBrowserExtn;
 const indexPageUrl = "/index.html";
 const currentUserId = localStorage.getItem('CurrentUserId');
 
-if (!localStorage.getItem('CurrentJiraUrl') || !currentUserId) { document.location.href = `${indexPageUrl}#/pages/integrate`; }
+if (!localStorage.getItem('CurrentJiraUrl') || !currentUserId) {
+  // Check and see if browser has activeTab permission. If not then redirect to integrate page
+  $jaBrowserExtn.hasPermission({ permissions: ["activeTab"] }).then(hasPermission => {
+    const integrateUrl = `${indexPageUrl}#/pages/integrate`;
+    if (hasPermission) {
+      document.location.href = integrateUrl;
+    } else {
+      $jaBrowserExtn.openTab(integrateUrl);
+      window.close();
+    }
+  });
+}
 else {
   const replacePattern = ['chrome://newtab/', 'chrome://tabs', 'about:newtab', 'about:tabs', 'about:blank'];
 
