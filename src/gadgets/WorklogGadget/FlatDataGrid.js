@@ -80,7 +80,7 @@ class FlatDataGrid extends PureComponent {
             },
             state: { columns } } = this;
 
-        return (<GroupableGrid dataset={flatData} exportSheetName="Flat Worklogs"
+        return (<GroupableGrid className="flat-data-grid" dataset={flatData} exportSheetName="Flat Worklogs"
             columns={columns} allowSorting={true} onChange={this.settingsChanged}
             displayColumns={displayColumns} groupBy={groupBy} groupFoldable={groupFoldable} sortField={sortField} isDesc={isDesc}
             noRowsMessage="No worklog details available"

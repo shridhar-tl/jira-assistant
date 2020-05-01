@@ -134,7 +134,7 @@ export class ExportHelper {
                 let rowC = "";
                 const rowD = header[r];
                 for (let c = 0; c < rowD.length; c++) {
-                    if (colInfo[c].noExport) { continue; }
+                    if (colInfo[c]?.noExport) { continue; }
                     rowC += `,${rowD[c] || ""}`;
                 }
                 content += `${rowC.substring(1).replace(/\r?\n|\r/g, " ")}\r\n`;

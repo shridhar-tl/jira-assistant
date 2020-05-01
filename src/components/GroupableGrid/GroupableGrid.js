@@ -307,7 +307,7 @@ export class GroupableGrid extends PureComponent {
     }
 
     render() {
-        const { exportSheetName, noRowsMessage, sortField, isDesc, displayColumns } = this.props;
+        const { exportSheetName, noRowsMessage, sortField, isDesc, displayColumns, className } = this.props;
         const { allColumns, columns, groupBy, groupFoldable, data, showColumns } = this.state;
 
         return (
@@ -316,7 +316,7 @@ export class GroupableGrid extends PureComponent {
                     displayColumns={displayColumns} />}
                 <GroupedColumnList groupBy={groupBy || []} foldable={groupFoldable}
                     onChange={this.onGroupChanged} showColumns={showColumns} toggleColumns={this.toggleColumns} />
-                <ScrollableTable dataset={data} exportSheetName={exportSheetName}
+                <ScrollableTable className={className} dataset={data} exportSheetName={exportSheetName}
                     sortBy={sortField} isDesc={isDesc} onSort={this.sortColumnChanged}>
                     <THead>
                         <TRow>

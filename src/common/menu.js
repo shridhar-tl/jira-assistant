@@ -8,10 +8,11 @@ const $jaBrowserExtn = svc.$jaBrowserExtn;
 
 const indexPageUrl = "/index.html";
 const currentUserId = localStorage.getItem('CurrentUserId');
+const hasTabAccess = () => $jaBrowserExtn.hasPermission({ permissions: ["activeTab"] });
 
 if (!localStorage.getItem('CurrentJiraUrl') || !currentUserId) {
   // Check and see if browser has activeTab permission. If not then redirect to integrate page
-  $jaBrowserExtn.hasPermission({ permissions: ["activeTab"] }).then(hasPermission => {
+  hasTabAccess().then(hasPermission => {
     const integrateUrl = `${indexPageUrl}#/pages/integrate`;
     if (hasPermission) {
       document.location.href = integrateUrl;
@@ -31,15 +32,22 @@ else {
   function openUrl(url) {
     url = `${indexPageUrl}#${url}`;
 
-    $jaBrowserExtn.getCurrentUrl().then(curUrl => {
-      if (!curUrl || replacePattern.indexOf(curUrl.toLowerCase()) > -1) {
-        $jaBrowserExtn.replaceTabUrl(url);
-        window.close();
-        return;
-      }
+    hasTabAccess().then(hasAccess => {
+      if (hasAccess) {
+        $jaBrowserExtn.getCurrentUrl().then(curUrl => {
+          if (!curUrl || replacePattern.indexOf(curUrl.toLowerCase()) > -1) {
+            $jaBrowserExtn.replaceTabUrl(url);
+            window.close();
+            return;
+          }
 
-      $jaBrowserExtn.openTab(url);
-      window.close();
+          $jaBrowserExtn.openTab(url);
+          window.close();
+        });
+      } else {
+        $jaBrowserExtn.openTab(url);
+        window.close();
+      }
     });
   }
 

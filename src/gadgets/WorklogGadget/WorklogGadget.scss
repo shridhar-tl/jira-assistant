@@ -1,7 +1,11 @@
 .worklog-gadget-container {
   .scroll-table-container {
-    height: calc(100vh - 167px);
+    height: calc(100vh - 121px);
     overflow: auto;
+
+    &.flat-data-grid {
+      height: calc(100vh - 167px);
+    }
   }
 
   span.estimate {
