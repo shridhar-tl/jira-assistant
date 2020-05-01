@@ -73,7 +73,13 @@ export default class ChromeBrowserService extends BrowserBase {
         //https://stackoverflow.com/questions/9847580/how-to-detect-safari-chrome-ie-firefox-and-opera-browser?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
     }
 
-    getCurrentUrl() {
+    async getCurrentUrl() {
+        const hasPermission = await this.hasPermission({ permissions: ["activeTab"] });
+        if (!hasPermission) {
+            console.log("Jira Assistant do not have access to retrive the current url");
+            return "";
+        }
+
         return new Promise((resolve, reject) => {
             this.chrome.tabs.query({ 'active': true, 'lastFocusedWindow': true }, (tabs) => {
                 if (tabs && tabs[0] && tabs[0].url) {
@@ -89,8 +95,8 @@ export default class ChromeBrowserService extends BrowserBase {
     async getCurrentTab() {
         const hasPermission = await this.hasPermission({ permissions: ["activeTab"] });
         if (!hasPermission) {
-            console.log("Jira Assistant do not have access to retrive the current url");
-            return "";
+            console.log("Jira Assistant do not have access to retrive current tab");
+            return null;
         }
 
         return new Promise((resolve, reject) => {
