@@ -10,7 +10,7 @@ export default class JiraUpdatesService {
         this.$session = $session;
     }
 
-    async getRescentUpdates(from = 300) {
+    async getRescentUpdates(from = 7) {
         if (!from) {
             from = "-3d";
         }
