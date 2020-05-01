@@ -129,31 +129,3 @@ export const navigation = [
     }
 ];
 export default { items: navigation };
-/*
-REVISIT: Check if this would be needed anymore
-export function updateDashboard(dashboards) {
-    const toRemove = navigation.filter(m => m.isDashboard).forEach(item => {
-        delete item.name;
-        item.url = '';
-        delete item.icon;
-        delete item.badge;
-    });
-    //navigation.removeAll(toRemove);
-    dashboards.forEach((d, i) => {
-        const item = navigation.splice(i + 1, 0, {
-            name: d.name,
-            id: 'D-' + i,
-            url: '/dashboard' + (i ? '/' + i : ''),
-            icon: d.icon,
-            //badge: {
-            //  variant: 'info',
-            //  text: 'NEW'
-            //},
-            isDashboard: true
-        });
-        if (i === 0) {
-            item.routeUrl = item.url + '/0';
-        }
-    });
-}
-*/

@@ -1,5 +1,7 @@
 /*eslint-disable no-extend-native, no-loop-func*/
 
+import { getPathValue } from "./utils";
+
 //Array.prototype.ToArray= function() { return this; };
 
 Array.prototype.init = function (val, count, start = 0) {
@@ -341,7 +343,7 @@ Array.prototype.groupBy = function (clause, filter) {
   const isClauseString = typeof clause === 'string';
   if (isClauseString) {
     const tmp = clause;
-    clause = function (obj) { return obj[tmp]; };
+    clause = tmp.indexOf(".") > -1 ? function (obj) { return getPathValue(obj, tmp); } : function (obj) { return obj[tmp]; };
   }
 
   for (let i = 0; i < this.length; i++) {

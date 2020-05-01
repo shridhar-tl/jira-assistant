@@ -5,6 +5,7 @@ import { ScrollableTable, THead, TRow, Column, TBody, NoDataRow } from '../Scrol
 import GroupedColumnList from './GroupedColumnList';
 import './GroupableGrid.scss';
 import ColumnList from './ColumnList';
+import { getPathValue } from '../../common/utils';
 
 const itemTarget = ["column"];
 
@@ -91,18 +92,19 @@ export class GroupableGrid extends PureComponent {
         const result = columns.map(c => {
             const { field,
                 allowSorting = globalSort, allowGrouping = globalGrouping,
-                format, sortValueFun, groupValueFunc } = c;
+                format, viewComponent, props: pr, sortValueFun, groupValueFunc } = c;
 
             const id = c.id || field;
 
             return {
                 id,
                 field: c.field,
+                hasPath: field?.indexOf(".") > 0,
                 displayText: c.displayText || field,
                 visible: !displayColumns || (isColsToRemove ? !displayColumns.contains(`-${id}`) : displayColumns.contains(id)),
                 allowSorting,
                 allowGrouping,
-                format, sortValueFun, groupValueFunc
+                format, viewComponent, props: pr, sortValueFun, groupValueFunc
             };
         });
 
@@ -162,8 +164,8 @@ export class GroupableGrid extends PureComponent {
     getCellRenderer = (row) => (c, ci) => {
         if (!c.visible) { return null; }
 
-        const { field, format } = c;
-        let value = row[field];
+        const { field, hasPath, format, viewComponent: Component, props } = c;
+        let value = hasPath ? getPathValue(row, field) : row[field];
 
         if (format) {
             if (typeof format === "function") {
@@ -174,7 +176,12 @@ export class GroupableGrid extends PureComponent {
             }
         }
 
-        return <td key={ci}>{value}</td>;
+        if (!Component) {
+            return <td key={ci}>{value}</td>;
+        }
+        else {
+            return <td key={ci}><Component value={value} {...props} /></td>;
+        }
     }
 
     getGroupRenderer(columns, groupBy) {
@@ -246,14 +253,15 @@ export class GroupableGrid extends PureComponent {
         const { groupBy, state: { groupFoldable, data }, props: { displayColumns } } = this;
         const newState = { groupFoldable };
 
-        if (groupBy && groupBy.length) {
+        const hasGroup = groupBy?.length;
+        if (hasGroup) {
             newState.data = this.sortGroupedData(data, groupBy, sortField, isDesc);
         }
 
         this.setState(newState);
         this.props.onChange({ groupBy, groupFoldable, displayColumns, sortField, isDesc });
 
-        return newState.data;
+        return hasGroup ? newState.data : undefined;
     }
 
     onGroupChanged = (groupBy, groupFoldable, type) => {

@@ -2,6 +2,9 @@ import * as moment from 'moment';
 import { SHORT_MONTH_NAMES, FULL_MONTH_NAMES, TINY_DAY_NAMES, SHORT_DAY_NAMES, FULL_DAY_NAMES } from '../_constants';
 import { getUserName } from '../common/utils';
 
+const secsPerDay = 86400;
+const secsPerHour = 3600;
+
 export default class UtilsService {
     formatDate(date, format) {
         if (!(date instanceof Date)) {
@@ -243,7 +246,7 @@ export default class UtilsService {
         }
         return value + (tail || '...'); //$('<span>&hellip;</span>').text() // ToDo: need to find alternate approach
     }
-    formatSecs(d, showZeroSecs, simple) {
+    formatSecs(d, showZeroSecs, simple, days) {
         if (d === 0) {
             return showZeroSecs ? "0s" : "";
         }
@@ -256,14 +259,26 @@ export default class UtilsService {
             prefix = "-";
             d = Math.abs(d);
         }
-        const h = Math.floor(d / 3600);
-        const m = Math.floor(d % 3600 / 60);
-        const s = Math.floor(d % 3600 % 60);
-        if (simple) {
-            return `${prefix + (h > 0 ? h.pad(2) : "00")}:${m > 0 ? m.pad(2) : "00"}`;
+
+        let day, h, m, s;
+        if (days) {
+            day = Math.floor(d / secsPerDay);
+            d = d % secsPerDay;
+            h = Math.floor(d / secsPerHour);
+            m = Math.floor(d % secsPerHour / 60);
+            s = Math.floor(d % secsPerHour % 60);
         }
         else {
-            return prefix + ((h > 0 ? `${h}h ` : "") + (m > 0 ? `${m}m ` : "") + (s > 0 ? `${s}s` : "")).trim();
+            h = Math.floor(d / secsPerHour);
+            m = Math.floor(d % secsPerHour / 60);
+            s = Math.floor(d % secsPerHour % 60);
+        }
+
+        if (simple) {
+            return `${prefix}${(day > 0 ? `${day.pad(2)}:` : "")}${(h > 0 ? h.pad(2) : "00")}:${m > 0 ? m.pad(2) : "00"}`;
+        }
+        else {
+            return prefix + ((day > 0 ? `${day}d ` : "") + (h > 0 ? `${h}h ` : "") + (m > 0 ? `${m}m ` : "") + (s > 0 ? `${s}s` : "")).trim();
         }
     }
     formatTs(d, simple) {

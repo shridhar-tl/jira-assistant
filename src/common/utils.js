@@ -169,3 +169,17 @@ export function getUserName(userObj, convertToLower) {
 export function parseHTML(html) {
     return $(`<div>${html}</div>`).text(); // ToDo: Parse HTML and return JSX with alternate option
 }
+
+export function getPathValue(obj, path) {
+    if (!path || !obj) { return obj; }
+
+    let value = obj[path];
+    if (!value) {
+        const paths = path.split(".");
+        if (paths.length > 1) {
+            value = paths.reduce((val, path) => val && val[path], obj);
+        }
+    }
+
+    return value;
+}
