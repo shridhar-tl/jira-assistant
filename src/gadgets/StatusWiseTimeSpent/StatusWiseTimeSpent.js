@@ -106,10 +106,6 @@ class StatusWiseTimeSpent extends PureComponent {
         return list;
     }
 
-    formatTicket(text, url) {
-        return text && <a href={url} className="link" target="_blank" rel="noopener noreferrer">{text}</a>;
-    }
-
     async getStatuses(projectList) {
         const sList = await this.$jira.getProjectStatuses(projectList);
         const ids = [];
