@@ -8,7 +8,7 @@ class DateDisplay extends PureComponent {
     }
 
     render() {
-        const { tag: Tag = "span", className, date, quick } = this.props;
+        const { tag: Tag = "span", className, value, date = value, quick } = this.props;
 
         return (
             <Tag className={className} title={quick ? this.$userutils.formatDateTime(date) : null}>

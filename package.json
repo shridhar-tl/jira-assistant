@@ -8,6 +8,7 @@
         "email": "shridhar.tl@gmail.com"
     },
     "private": true,
+    "types": "./src/services/index.d.ts",
     "dependencies": {
         "@coreui/coreui": "^2.1.16",
         "@coreui/react": "^2.5.7",
@@ -20,7 +21,7 @@
         "bootstrap-daterangepicker": "^3.0.5",
         "chart.js": "2.8.0",
         "classnames": "^2.2.6",
-        "dexie": "^2.0.4",
+        "dexie": "^3.0.0",
         "espree": "^6.2.1",
         "exceljs": "^3.9.0",
         "font-awesome": "^4.7.0",
@@ -29,7 +30,7 @@
         "jsd-report": "^0.1.9",
         "jspdf": "^1.5.3",
         "jspdf-autotable": "^3.5.3",
-        "moment": "^2.24.0",
+        "moment": "^2.25.1",
         "moment-timezone": "^0.5.28",
         "node-sass": "^4.14.0",
         "papaparse": "^5.2.0",

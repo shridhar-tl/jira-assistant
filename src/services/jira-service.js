@@ -159,6 +159,30 @@ export default class JiraService {
         });
     }
 
+    async getProjectStatuses(projects) {
+        let onlyOne = false;
+        if (typeof projects === "string") {
+            projects = [projects];
+            onlyOne = true;
+        }
+
+        projects = projects.map(p => p.toUpperCase());
+
+        const result = await Promise.all(projects.map(async p => {
+            const cacheKey = `projectStatuses_${p}`;
+            let project = this.$jaCache.session.get();
+
+            if (!project) {
+                project = await this.$ajax.get(ApiUrls.getProjectStatuses, p);
+                this.$jaCache.session.set(cacheKey, project);
+            }
+
+            return project;
+        }));
+
+        return onlyOne ? result[0] : result;
+    }
+
     getIssueMetadata(issuekey) {
         return this.$ajax.get(ApiUrls.getIssueMetadata, issuekey);
     }

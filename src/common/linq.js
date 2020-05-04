@@ -72,7 +72,7 @@ Array.prototype.orderByDescending = function (clause) {
 Array.prototype.sortBy = function (clause, desc) {
   if (clause && typeof clause === "string") {
     const tmpSort = clause;
-    clause = (b) => b[tmpSort];
+    clause = tmpSort.indexOf('.') > -1 ? (b) => getPathValue(b, tmpSort) : (b) => b[tmpSort];
   }
   return desc ? this.orderByDescending(clause) : this.orderBy(clause);
 };

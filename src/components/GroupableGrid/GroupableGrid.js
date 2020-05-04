@@ -20,29 +20,33 @@ export class GroupableGrid extends PureComponent {
     }
 
     getNewState(props) {
-        const { groupBy, columns, dataset, groupFoldable, sortField, isDesc } = props;
-        const newState = { groupFoldable };
+        const { groupBy, columns, displayColumns, dataset, groupFoldable, sortField, isDesc, } = props;
+        const newState = { ...this.state, groupFoldable };
 
-        if (this.columns !== columns || this.groupBy !== groupBy || this.dataset !== dataset) {
+        if (this.columns !== columns || displayColumns !== this.displayColumns) {
             newState.allColumns = this.getColumnSchema(props);
             newState.columns = newState.allColumns;
             this.columns = columns;
+            this.displayColumns = displayColumns;
+        }
 
-            if (this.groupBy !== groupBy) {
-                newState.groupBy = this.getGroupedColumnSchema(groupBy, newState.columns);
-                this.groupBy = groupBy;
-            } else if (this.state && this.state.groupBy) {
-                newState.groupBy = this.state.groupBy;
-            }
+        const groupChanged = this.groupBy !== groupBy;
+        if (groupChanged) {
+            newState.groupBy = this.getGroupedColumnSchema(groupBy, newState.allColumns);
+            this.groupBy = groupBy;
 
             if (groupBy && groupBy.length) {
                 const groupByFields = groupBy.map(g => (typeof g === "string" ? g : g.field));
 
-                newState.columns = newState.columns.filter(c => c.visible && !~groupByFields.indexOf(c.id));
+                newState.columns = newState.allColumns.filter(c => c.visible && !~groupByFields.indexOf(c.id));
             }
+        }
 
+        if (groupChanged || this.isDesc !== isDesc || this.sortField !== sortField || this.dataset !== dataset) {
             newState.data = this.prepareDataForRendering(dataset, newState.groupBy, sortField, isDesc);
             this.dataset = dataset;
+            this.sortField = sortField;
+            this.isDesc = isDesc;
         }
 
         return newState;
@@ -274,11 +278,11 @@ export class GroupableGrid extends PureComponent {
         }
 
         if (type !== "mode") {
-            this.groupBy = groupBy.map(({ field, sortDesc }) => ({ field, sortDesc }));
+            groupBy = groupBy.map(({ field, sortDesc }) => ({ field, sortDesc }));
         }
 
         this.setState(newState);
-        this.props.onChange({ groupBy: this.groupBy, displayColumns, groupFoldable, sortField, isDesc });
+        this.props.onChange({ groupBy, displayColumns, groupFoldable, sortField, isDesc });
     }
 
     sortGroupedData(data, groups, sortField, isDesc, prefix) {
@@ -302,8 +306,8 @@ export class GroupableGrid extends PureComponent {
 
     columnSelectionChanged = (displayColumns) => {
         const { groupBy, groupFoldable, sortField, isDesc } = this.props;
-        this.setState({ showColumns: null });
-        this.props.onChange({ groupBy, displayColumns, groupFoldable, sortField, isDesc });
+        this.setState({ showColumns: null },
+            () => this.props.onChange({ groupBy, displayColumns, groupFoldable, sortField, isDesc }));
     }
 
     render() {

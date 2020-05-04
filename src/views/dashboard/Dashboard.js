@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import './Dashboard.scss';
 import { inject } from '../../services/injector-service';
-import { GadgetActionType, Calendar, DateWiseWorklog, MyBookmarks, MyOpenTickets, MyReports, PendingWorklog, TicketWiseWorklog } from '../../gadgets';
+import { GadgetActionType, Calendar, DateWiseWorklog, MyBookmarks, MyOpenTickets, MyReports, PendingWorklog, TicketWiseWorklog, StatusWiseTimeSpentGadget } from '../../gadgets';
 import Header from './Header';
 import AddGadgetDialog from './AddGadgetDialog';
 import AddWorklog from '../../dialogs/AddWorklog';
@@ -108,6 +108,7 @@ class Dashboard extends PureComponent {
             dateWiseWorklog: { title: "Daywise worklog", control: DateWiseWorklog },
             pendingWorklog: { title: "Worklog - [Pending upload]", control: PendingWorklog },
             ticketWiseWorklog: { title: "Ticketwise worklog", control: TicketWiseWorklog },
+            sWiseTSpent: { title: "Status Wise Time Spent", control: StatusWiseTimeSpentGadget },
             myFilters: { title: "My reports", control: MyReports },
             agendaDay: { title: "Calendar", control: Calendar, getProps: () => { return { viewMode: "timeGridDay" }; } },
             agendaWeek: { title: "Calendar", control: Calendar, getProps: () => { return { viewMode: "timeGridWeek" }; } },

@@ -76,7 +76,7 @@ export default class AjaxService {
         }
 
         if (!await this.$browser.requestPermission(null, url)) {
-            console.error(`Permission not granted for ${url}.`);
+            console.warn(`Permission not granted for ${url}.`);
         }
 
         return new Promise((resolve, reject) => {

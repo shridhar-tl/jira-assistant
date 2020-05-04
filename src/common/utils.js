@@ -177,7 +177,7 @@ export function getPathValue(obj, path) {
     if (!value) {
         const paths = path.split(".");
         if (paths.length > 1) {
-            value = paths.reduce((val, path) => val && val[path], obj);
+            value = paths.reduce((val, path) => (val || undefined) && val[path], obj);
         }
     }
 

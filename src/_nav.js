@@ -107,7 +107,7 @@ export const navigation = [
     },
     {
         name: 'Advanced',
-        id: 'S-UG',
+        id: 'S-AD',
         url: '/settings/global',
         icon: 'fa fa-cogs'
     },

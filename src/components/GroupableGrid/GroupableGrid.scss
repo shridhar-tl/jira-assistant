@@ -1,3 +1,11 @@
+.groupable-grid {
+    height: 100%;
+
+    .scroll-table-container {
+        height: calc(100% - 47px);
+    }
+}
+
 div.columns-list-container {
     position: relative;
 

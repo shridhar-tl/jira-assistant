@@ -1,12 +1,13 @@
 import * as moment from 'moment';
 
 export const ApiUrls = {
-    authentication: "~/rest/auth/1/session",
+    //authentication: "~/rest/auth/1/session",
     getAllProjects: "~/rest/api/2/project",
     search: "~/rest/api/2/search",
     getIssue: "~/rest/api/2/issue/",
     bulkImportIssue: "~/rest/api/2/issue/bulk",
     getProjectImportMetadata: "~/rest/api/2/issue/createmeta?expand=projects.issuetypes.fields&projectKeys=",
+    getProjectStatuses: "~/rest/api/3/project/{0}/statuses",
     getIssueMetadata: "~/rest/api/2/issue/{0}/editmeta",
     individualIssue: "~/rest/api/2/issue/{0}",
     getAllIssueTypes: "~/rest/api/2/issuetype",
@@ -18,7 +19,7 @@ export const ApiUrls = {
     getCustomFields: "~/rest/api/2/field",
     getUserDetails: "~/rest/api/2/user?username={0}",
     mySelf: "~/rest/api/2/myself",
-    usersForPicker: "~/rest/api/2/user/picker?maxResults=10&showAvatar=true&query=",
+    //usersForPicker: "~/rest/api/2/user/picker?maxResults=10&showAvatar=true&username={0}&query={0}",
     rapidSprintList: "~/rest/greenhopper/1.0/sprintquery/{0}",
     rapidSprintDetails: "~/rest/greenhopper/1.0/rapid/charts/sprintreport?rapidViewId={0}&sprintId={1}",
     sprintListAll: "~/rest/greenhopper/1.0/integration/teamcalendars/sprint/list?jql=project+in+({0})",
