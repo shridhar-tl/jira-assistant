@@ -271,7 +271,19 @@ export default class JiraService {
         }
     }
 
-    searchUsers(text, maxResult = 10, startAt = 0) { return this.$ajax.get(ApiUrls.searchUser, text, maxResult, startAt); }
+    async searchUsers(text, maxResult = 10, startAt = 0) {
+        let result = null;
+
+        try {
+            result = await this.$ajax.get(ApiUrls.searchUser, text, maxResult, startAt);
+        }
+        catch (err) {
+            console.error("User search failed. Using alternate search mechanism.", err);
+            result = await this.$ajax.get(ApiUrls.searchUser_Alt, text, maxResult, startAt);
+        }
+
+        return result;
+    }
 
     fillWorklogs(issues, callback) {
         issues = issues.filter((iss) => !(iss.fields || {}).worklog || (((iss.fields || {}).worklog || {}).worklogs || []).length < iss.fields.worklog.total);
