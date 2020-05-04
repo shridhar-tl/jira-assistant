@@ -95,8 +95,8 @@ class StatusWiseTimeSpent extends PureComponent {
             { field: "parent.key", displayText: "Parent", type: "string", viewComponent: TicketDisplay },
             { field: "status.name", displayText: "Status", type: "string" },
             { field: "created", displayText: "Created", type: "datetime", viewComponent: DateDisplay },
-            { field: "assignee", displayText: "Assignee", type: "string", viewComponent: UserDisplay },
-            { field: "reporter", displayText: "Reporter", type: "string", viewComponent: UserDisplay },
+            { field: "assignee", groupKey: "assignee.displayName", displayText: "Assignee", type: "string", viewComponent: UserDisplay },
+            { field: "reporter", groupKey: "reporter.displayName", displayText: "Reporter", type: "string", viewComponent: UserDisplay },
             ...statusList.map(status => ({
                 field: `statusData.${status.name}`, displayText: `Spent on ${status.name}`,
                 type: "number", viewComponent: TimeSpentDisplay, props: { inputType: "ticks", days: true }

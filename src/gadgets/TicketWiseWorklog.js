@@ -4,6 +4,8 @@ import { inject } from '../services';
 import { showContextMenu } from 'jsd-report';
 import { ScrollableTable, THead, TBody, NoDataRow, Column } from '../components/ScrollableTable';
 import { Dialog } from '../dialogs/CommonDialog';
+import { DatePicker } from '../controls';
+import { DateDisplay } from '../display-controls';
 
 class TicketWiseWorklog extends BaseGadget {
     constructor(props) {
@@ -45,16 +47,22 @@ class TicketWiseWorklog extends BaseGadget {
         showContextMenu(e, this.contextMenu);
     }
 
-    dateSelected($event) {
-        this.settings.dateRange = $event.date;
-        this.refreshData();
-        if (!$event.auto) {
-            this.saveSettings();
+    dateSelected = (date) => {
+        this.settings.dateRange = date;
+        if (date.toDate) {
+            if (!date.auto) {
+                this.saveSettings();
+            }
+            this.refreshData();
         }
     }
 
+    renderCustomActions() {
+        return <DatePicker range={true} value={this.settings.dateRange} onChange={this.dateSelected} style={{ marginRight: "35px" }} />;
+    }
+
     getWorklogUrl(ticketNo, worklogId) {
-        return this.$utils.getWorklogUrl(ticketNo, worklogId);
+        return this.$userutils.getWorklogUrl(ticketNo, worklogId);
     }
 
     getTicketUrl(ticketNo) { return this.$userutils.getTicketUrl(ticketNo); }
@@ -90,12 +98,12 @@ class TicketWiseWorklog extends BaseGadget {
                             <td>
                                 <ul className="tags">
                                     {b.logData.map((ld, x) => <li key={x}>
-                                        {ld.worklogId && <a className="link badge badge-pill skin-bg-font" href="{{ getWorklogUrl(w.ticketNo, ld.worklogId)}}"
+                                        {ld.worklogId && <a className="link badge badge-pill skin-bg-font" href={this.getWorklogUrl(b.ticketNo, ld.worklogId)}
                                             target="_blank" rel="noopener noreferrer" title={ld.comments}>
-                                            <span className="fa fa-clock-o" /> {ld.dateLogged} {ld.uploaded}
+                                            <span className="fa fa-clock-o" />  <DateDisplay value={ld.dateLogged} />: {ld.uploaded}
                                         </a>}
                                         {!ld.worklogId && <span className="link badge badge-pill skin-bg-font" onClick={() => this.editWorklog(ld.id)} title={ld.comments}>
-                                            <span className="fa fa-clock-o" /> {ld.dateLogged}: {ld.uploaded}
+                                            <span className="fa fa-clock-o" /> <DateDisplay value={ld.dateLogged} />: {ld.uploaded}
                                         </span>}
                                     </li>)}
                                 </ul>
@@ -104,7 +112,7 @@ class TicketWiseWorklog extends BaseGadget {
                         </tr>;
                     }}
                 </TBody>
-                <NoDataRow span={7}>No records exists</NoDataRow>
+                <NoDataRow span={8}>No records exists</NoDataRow>
             </ScrollableTable>
         );
     }

@@ -60,10 +60,12 @@ export class GroupableGrid extends PureComponent {
 
             result = groupBy.map(g => {
                 let field = g;
+                let groupKey = field;
                 let sortDesc = false;
 
                 if (typeof g === "object") {
                     field = g.field;
+                    groupKey = g.groupKey || field;
                     sortDesc = g.sortDesc;
                 }
 
@@ -73,7 +75,7 @@ export class GroupableGrid extends PureComponent {
 
                 const { id, displayText, allowSorting } = g;
 
-                return { id, field, displayText, allowSorting, sortDesc, visible: true };
+                return { id, field, groupKey, displayText, allowSorting, sortDesc, visible: true };
             }).filter(Boolean);
 
             if (!result.length) {
@@ -94,7 +96,7 @@ export class GroupableGrid extends PureComponent {
         const isColsToRemove = !!displayColumns && displayColumns.any(c => c.startsWith("-"));
 
         const result = columns.map(c => {
-            const { field,
+            const { field, groupKey = field,
                 allowSorting = globalSort, allowGrouping = globalGrouping,
                 format, viewComponent, props: pr, sortValueFun, groupValueFunc } = c;
 
@@ -103,6 +105,7 @@ export class GroupableGrid extends PureComponent {
             return {
                 id,
                 field: c.field,
+                groupKey,
                 hasPath: field?.indexOf(".") > 0,
                 displayText: c.displayText || field,
                 visible: !displayColumns || (isColsToRemove ? !displayColumns.contains(`-${id}`) : displayColumns.contains(id)),
@@ -126,9 +129,9 @@ export class GroupableGrid extends PureComponent {
     groupData(data, groupBy, sortField, isDesc, prefix) {
         prefix = prefix ? `${prefix}_` : "";
         if (!groupBy.length) { return sortField ? data.sortBy(sortField, isDesc) : data; }
-        const { 0: { field, sortDesc } } = groupBy;
+        const { 0: { field, groupKey, sortDesc } } = groupBy;
         groupBy = groupBy.slice(1);
-        return data.groupBy(field).sortBy("key", sortDesc).map((row, i) => ({
+        return data.groupBy(groupKey || field).sortBy("key", sortDesc).map((row, i) => ({
             key: row.key,
             path: prefix + i,
             rowSpan: row.values.length,
@@ -278,7 +281,7 @@ export class GroupableGrid extends PureComponent {
         }
 
         if (type !== "mode") {
-            groupBy = groupBy.map(({ field, sortDesc }) => ({ field, sortDesc }));
+            groupBy = groupBy.map(({ field, groupKey, sortDesc }) => ({ field, groupKey, sortDesc }));
         }
 
         this.setState(newState);
