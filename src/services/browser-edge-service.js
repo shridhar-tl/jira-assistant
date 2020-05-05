@@ -137,11 +137,19 @@ export default class AppBrowserService extends BrowserBase {
                     }
                 });
             }
+            else {
+                reject("Extension do not have access to management api");
+            }
         });
     }
 
-    getAppVersion() {
-        return this.getAppInfo().then(info => info.version, () => '1.0');
+    async getAppVersion() {
+        try {
+            return this.browser?.runtime?.getManifest()?.version || '1.5';
+        }
+        catch{
+            return this.getAppInfo().then(info => info?.version, () => '1.5');
+        }
     }
 
     getAppLongName() { // need to change
