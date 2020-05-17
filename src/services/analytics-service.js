@@ -34,7 +34,7 @@ export default class AnalyticsService {
             ...obj
         };
 
-        this.$ajax.get(AnalyticsUrl, data).catch((err) => console.log("Google analytics call failed", err));
+        this.$ajax.request("GET", AnalyticsUrl, data, { json: false }).catch((err) => console.log("Google analytics call failed", err));
     }
 
     getPageView(path) {

@@ -91,7 +91,7 @@ export default class AjaxService {
                 data: JSON.stringify(body),
                 success: resolve,
                 error: reject,
-                dataType: "json",
+                dataType: customHeaders?.json !== false ? "json" : undefined,
                 xhrFields: {
                     withCredentials: (customHeaders || {}).withCredentials !== false
                 },
@@ -99,6 +99,7 @@ export default class AjaxService {
                     const { headers } = this.httpOptions;
                     const allHeaders = { ...headers, ...customHeaders };
                     delete allHeaders.withCredentials;
+                    delete allHeaders.json;
 
                     Object.keys(allHeaders).forEach(h => request.setRequestHeader(h, allHeaders[h]));
                 }

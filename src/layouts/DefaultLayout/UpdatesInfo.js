@@ -7,6 +7,17 @@ class UpdatesInfo extends PureComponent {
         inject(this, "UserUtilsService");
     }
 
+    getDescription(desc, i) {
+        let id, text = desc;
+
+        if (typeof desc === "object") {
+            id = desc.id;
+            text = desc.text;
+        }
+
+        return <li key={i}>{!!id && <a href={`https://github.com/shridhar-tl/jira-assistant/issues/${id}`} target="_blank" rel="noopener noreferrer">#{id} - </a>}{text}</li>
+    }
+
     render() {
         const { updates } = this.props;
 
@@ -18,12 +29,12 @@ class UpdatesInfo extends PureComponent {
                     {!u.publishDate && u.expectedOn && <span> (expected: <b>{this.$userutils.formatDate(u.expectedOn)}</b>)</span>}
                     <span className="changelog-header">Changelog:</span>
                     <ul className="changelogs">
-                        {u.whatsnew.map((n, j) => <li key={j}>{n}</li>)}
+                        {u.whatsnew.map(this.getDescription)}
                     </ul>
                     {u.bugs && u.bugs.length > 0 && <>
                         <span className="changelog-header">Bugs:</span>
                         <ul className="changelogs">
-                            {u.bugs.map((n, j) => <li key={j}>{n}</li>)}
+                            {u.bugs.map(this.getDescription)}
                         </ul></>
                     }
                 </div>))}
