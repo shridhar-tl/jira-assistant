@@ -1,4 +1,4 @@
-import { CHROME_WS_URL } from '../_constants';
+import { CHROME_WS_URL, AppVersionNo } from '../_constants';
 import BrowserBase from '../common/BrowserBase';
 // ToDo: need to pull url
 export default class DevBrowserService extends BrowserBase {
@@ -98,7 +98,7 @@ export default class DevBrowserService extends BrowserBase {
     }
 
     getAppInfo() { // This function is for private use
-        return Promise.resolve({ isDevelopment: true, version: '1.0' });
+        return Promise.resolve({ isDevelopment: true, version: AppVersionNo.toString() });
     }
 
     getAppVersion() {

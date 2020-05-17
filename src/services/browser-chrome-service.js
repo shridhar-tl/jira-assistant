@@ -1,4 +1,4 @@
-import { CHROME_WS_URL } from '../_constants';
+import { CHROME_WS_URL, AppVersionNo } from '../_constants';
 import { getOriginFromUrl } from '../common/utils';
 import BrowserBase from '../common/BrowserBase';
 
@@ -195,7 +195,7 @@ export default class ChromeBrowserService extends BrowserBase {
     }
 
     getAppVersion() {
-        return this.getAppInfo().then(info => info.version, () => '1.0');
+        return this.getAppInfo().then(info => info.version, () => AppVersionNo.toString());
     }
 
     getAppLongName() { // need to change

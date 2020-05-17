@@ -37,6 +37,11 @@ export default class AjaxService {
         }
 
         let urlStr = url.toString();
+
+        if (params && Array.isArray(params) && params.length === 1 && typeof params[0] === "object") {
+            params = params[0];
+        }
+
         if (params && Array.isArray(params) && params.length > 0) {
             urlStr = urlStr.format(params);
         }

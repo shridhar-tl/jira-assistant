@@ -36,6 +36,8 @@ export const ApiUrls = {
 //export const messagesUrl = "https://onedrive.live.com/download?cid=1E579D4F3D2F2078&resid=1E579D4F3D2F2078%217441&authkey=ACLAWbvhYgNCAM8";
 export const messagesUrl = "http://jiraassistant.com.s3-website.ap-south-1.amazonaws.com/shared/messages.json";
 
+export const AnalyticsUrl = "https://www.google-analytics.com/collect";
+
 export const dateFormats = [
     "dd-MMM-yyyy", "dd/MMM/yyyy",
     "dd-MM-yyyy", "dd/MM/yyyy",
@@ -161,6 +163,16 @@ export const SHORT_DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 export const FULL_DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
 export const defaultJiraFields = ["issuetype", "summary", "reporter", "priority", "status", "resolution", "created", "updated"];
+
+export const AppVersionNo = 1.6;
+
+let AnalyticsTrackingId = "UA-108841109-1"; // This is for public tracking id
+
+if (process.env.NODE_ENV !== "production") { // While doing local development, this 
+    AnalyticsTrackingId = "UA-108841109-2";
+}
+
+export { AnalyticsTrackingId };
 
 export const defaultSettings = {
     openTicketsJQL: "assignee=currentUser() AND resolution=Unresolved and status != Closed",

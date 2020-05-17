@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react';
 import { inject } from '../../services';
+import { AppVersionNo } from '../../_constants';
 
 const style = { minWidth: 'calc(100% + 16px)', minHeight: '100%', marginLeft: '-8px', height: 1650, overflow: 'auto', border: 0 };
 
@@ -13,7 +14,7 @@ class FeedbackView extends PureComponent {
     UNSAFE_componentWillMount() {
         const cUser = this.$session.CurrentUser;
         this.$jaBrowserExtn.getAppVersion().then((version) => {
-            const siteVersionNumber = (version || '0.80');
+            const siteVersionNumber = (version || AppVersionNo);
             const feedbackUrl = cUser.feedbackUrl.format([cUser.displayName, cUser.emailAddress, siteVersionNumber, navigator.userAgent]);
             this.setState({ feedbackUrl });
         });

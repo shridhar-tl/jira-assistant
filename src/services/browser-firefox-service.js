@@ -1,4 +1,4 @@
-import { FF_STORE_URL } from '../_constants';
+import { FF_STORE_URL, AppVersionNo } from '../_constants';
 import BrowserBase from '../common/BrowserBase';
 // ToDo: need to pull url
 export default class FirefoxBrowserService extends BrowserBase {
@@ -137,7 +137,7 @@ export default class FirefoxBrowserService extends BrowserBase {
     }
 
     getAppVersion() {
-        return this.getAppInfo().then(info => info.version, () => '1.0');
+        return this.getAppInfo().then(info => info.version, () => AppVersionNo.toString());
     }
 
     getAppLongName() {

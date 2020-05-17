@@ -1,47 +1,93 @@
+import { AppVersionNo, AnalyticsTrackingId, AnalyticsUrl } from "../_constants";
+
 export default class AnalyticsService {
-    static dependencies = ["AppBrowserService"];
+    static dependencies = ["AppBrowserService", "AjaxService"];
 
-    constructor($jaBrowserExtn) {
-        window['_gaq'] = window['_gaq'] || []; // Need to check if this line is required or not
-
+    constructor($jaBrowserExtn, $ajax) {
         $jaBrowserExtn.getAppVersion().then((version) => {
-            this.versionNumber = version || 0;
-        }, () => this.versionNumber = 0.88);
+            this.versionNumber = version || AppVersionNo;
+        }, () => this.versionNumber = AppVersionNo);
+        this.$ajax = $ajax;
+    }
+
+    send(obj) {
+        //const vw = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+        //const vh = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+        const origin = document.location.origin;
+        const { availHeight, availWidth, height, width, pixelDepth } = window.screen;
+
+        const data = {
+            v: 1,
+            tid: AnalyticsTrackingId,
+            uid: this.JAInstId,
+            //cid: "",// need to check
+            //je: 0,
+            ul: navigator?.language?.toLowerCase(),
+            de: document.charset,
+            sd: `${pixelDepth}-bit`,
+            td: document.title,
+            dh: origin,
+            dl: origin,
+            sr: `${availWidth}x${availHeight}`,
+            vp: `${width}x${height}`,
+            ...this.getPageView(this.currentPage),
+            ...obj
+        };
+
+        this.$ajax.get(AnalyticsUrl, data).catch((err) => console.log("Google analytics call failed", err));
+    }
+
+    getPageView(path) {
+        return { t: "pageview", dp: path };
+    }
+
+    getEventObject(category, action, label, value) {
+        const obj = { t: "event", ec: category, ea: action };
+        if (value) {
+            obj.el = label;
+        }
+        if (value) {
+            obj.ev = value;
+        }
+        return obj;
     }
 
     setIfEnabled(enableLogging, enableException) {
-        window.enableLogging = enableLogging;
-        window.enableExceptionLogging = enableException;
+        this.enableLogging = enableLogging;
+        this.enableExceptionLogging = enableException;
     }
 
     setUserId(uid) {
         if (uid) {
-            window.JAInstId = uid;
+            this.JAInstId = uid;
             window.ga('set', 'userId', uid);
         }
     }
 
     trackEvent(event, category, label, value) {
-        if (!window.enableLogging) {
+        if (!this.enableLogging) {
             return false;
         }
 
-        window.ga('send', 'event', category, event, label || this.getCurrentRouteUrl(), value);
+        label = label || this.getCurrentRouteUrl();
 
-        ////_gaq.push(['_trackPageView', $location.url()]);
-        //window['_gaq'].push(['_trackEvent', page, event]);
-        ////ga('send', 'pageview', $location.path());
+        window.ga('send', 'event', category, event, label, value);
+        this.send(this.getEventObject(category, event, label, value));
     }
 
     trackError(err, fatal) {
-        if (!window.enableExceptionLogging) {
+        if (!this.enableExceptionLogging) {
             return false;
         }
 
+        const exd = this.getExceptionDetails(err);
+
         window.ga('send', 'exception', {
-            'exDescription': this.getExceptionDetails(err),
+            'exDescription': exd,
             'exFatal': fatal || false
         });
+
+        this.send({ t: "exception", exd, exf: fatal ? 1 : 0 });
     }
 
     getExceptionDetails(err) {
@@ -106,7 +152,7 @@ export default class AnalyticsService {
     }
 
     trackPageView(page) {
-        if (!window.enableLogging) {
+        if (!this.enableLogging) {
             return false;
         }
 
@@ -124,9 +170,10 @@ export default class AnalyticsService {
         }
 
         page = `v${this.versionNumber}/index.html${page}`;
+        this.currentPage = page;
 
         window.ga('set', 'page', page);
         window.ga('send', 'pageview', page);
-        //window['_gaq'].push(['_trackPageview', `v${this.versionNumber}/index.html${page}`]);
+        this.send(this.getPageView(page));
     }
 }

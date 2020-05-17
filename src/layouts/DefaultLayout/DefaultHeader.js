@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 
 import { AppSidebarToggler } from '@coreui/react';
 import logo from '../../img/logo-symbol.png';
-import { CHROME_WS_URL, FF_STORE_URL, EventCategory, EDGE_STORE_URL, GITHUB_HOME_URL, OPERA_STORE_URL } from '../../_constants';
+import { CHROME_WS_URL, FF_STORE_URL, EventCategory, EDGE_STORE_URL, GITHUB_HOME_URL, OPERA_STORE_URL, AppVersionNo } from '../../_constants';
 
 import './DefaultHeader.scss';
 import { inject } from '../../services/injector-service';
@@ -33,7 +33,7 @@ class DefaultHeader extends PureComponent {
     this.disableJiraUpdates = cUser.disableJiraUpdates;
     this.userId = cUser.userId;
     this.currentJiraInstance = getHostFromUrl(cUser.jiraUrl);
-    this.state = { versionNumber: "1.0" };
+    this.state = { versionNumber: AppVersionNo.toString() };
   }
 
   UNSAFE_componentWillMount() {

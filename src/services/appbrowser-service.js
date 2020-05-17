@@ -1,4 +1,4 @@
-import { CHROME_WS_URL, FF_STORE_URL } from '../_constants';
+import { CHROME_WS_URL, FF_STORE_URL, AppVersionNo } from '../_constants';
 // ToDo: need to pull url
 export default class AppBrowserService {
     constructor() {
@@ -157,7 +157,7 @@ export default class AppBrowserService {
         }
     }
     getAppVersion() {
-        return this.getAppInfo().then(info => info.version, () => '1.0');
+        return this.getAppInfo().then(info => info.version, () => AppVersionNo.toString());
     }
     getAppLongName() {
         if (this.isChrome) {
