@@ -135,7 +135,7 @@ class PendingWorklog extends BaseGadget {
         const { worklogs, selAllChk } = this.state;
 
         return super.renderBase(
-            <ScrollableTable dataset={worklogs}>
+            <ScrollableTable dataset={worklogs} exportSheetName="Pending worklogs">
                 <THead>
                     <tr>
                         <Column className="w40" noExport={true}><Checkbox checked={selAllChk} onChange={this.selectAll} /></Column>

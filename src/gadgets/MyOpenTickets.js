@@ -28,7 +28,7 @@ class MyOpenTickets extends BaseGadget {
         const { ticketList } = this.state;
 
         return super.renderBase(
-            <ScrollableTable dataset={ticketList}>
+            <ScrollableTable dataset={ticketList} exportSheetName="My open tickets">
                 <THead>
                     <tr>
                         <Column sortBy="ticketNo">Ticket No</Column>

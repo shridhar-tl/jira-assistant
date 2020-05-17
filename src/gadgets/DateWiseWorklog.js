@@ -108,7 +108,7 @@ class DateWiseWorklog extends BaseGadget {
         } = this;
 
         return super.renderBase(
-            <ScrollableTable dataset={worklogs}>
+            <ScrollableTable dataset={worklogs} exportSheetName="Datewise worklog">
                 <THead>
                     <tr>
                         <Column sortBy="dateLogged" style={{ width: '100px' }}>Logged Date</Column>

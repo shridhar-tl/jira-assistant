@@ -114,7 +114,7 @@ class MyBookmarks extends BaseGadget {
         const { bookmarksList, selAllChk, showAddPopup } = this.state;
 
         return super.renderBase(<>
-            <ScrollableTable dataset={bookmarksList}>
+            <ScrollableTable dataset={bookmarksList} exportSheetName="My bookmarks">
                 <THead>
                     <tr>
                         <Column className="w40" noExport={true}><Checkbox checked={selAllChk} onChange={this.selectAll} /></Column>

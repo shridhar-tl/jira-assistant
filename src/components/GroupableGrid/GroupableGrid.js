@@ -95,10 +95,11 @@ export class GroupableGrid extends PureComponent {
         }
         const isColsToRemove = !!displayColumns && displayColumns.any(c => c.startsWith("-"));
 
+        // Map all the known properties for column schema
         const result = columns.map(c => {
             const { field, groupKey = field,
                 allowSorting = globalSort, allowGrouping = globalGrouping,
-                format, viewComponent, props: pr, sortValueFun, groupValueFunc } = c;
+                format, type, viewComponent, props: pr, sortValueFun, groupValueFunc } = c;
 
             const id = c.id || field;
 
@@ -111,7 +112,7 @@ export class GroupableGrid extends PureComponent {
                 visible: !displayColumns || (isColsToRemove ? !displayColumns.contains(`-${id}`) : displayColumns.contains(id)),
                 allowSorting,
                 allowGrouping,
-                format, viewComponent, props: pr, sortValueFun, groupValueFunc
+                format, type, viewComponent, props: pr, sortValueFun, groupValueFunc
             };
         });
 
@@ -171,7 +172,7 @@ export class GroupableGrid extends PureComponent {
     getCellRenderer = (row) => (c, ci) => {
         if (!c.visible) { return null; }
 
-        const { field, hasPath, format, viewComponent: Component, props } = c;
+        const { field, hasPath, format, type, viewComponent: Component, props } = c;
         let value = hasPath ? getPathValue(row, field) : row[field];
 
         if (format) {
@@ -184,7 +185,7 @@ export class GroupableGrid extends PureComponent {
         }
 
         if (!Component) {
-            return <td key={ci}>{value}</td>;
+            return <td key={ci} exportType={type}>{value}</td>;
         }
         else {
             return <td key={ci}><Component value={value} {...props} /></td>;

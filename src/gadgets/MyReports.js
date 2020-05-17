@@ -147,7 +147,7 @@ class MyReports extends BaseGadget {
         const { reportsList, selAllChk, reportsToImport } = this.state;
 
         return super.renderBase(<>
-            <ScrollableTable dataset={reportsList}>
+            <ScrollableTable dataset={reportsList} exportSheetName="My reports">
                 <THead>
                     <tr>
                         <Column className="w40"><Checkbox checked={selAllChk} onChange={this.selectAll} /></Column>

@@ -195,6 +195,8 @@ class GroupedDataGrid extends PureComponent {
             props: { months, dates, convertSecs, formatTime, breakupMode, pageSettings, addWorklog }
         } = this;
 
+        const timeExportFormat = pageSettings?.logFormat === "2" ? "float" : undefined;
+
         return (
             <ScrollableTable exportSheetName="Grouped - [User daywise]">
                 <THead>
@@ -210,13 +212,13 @@ class GroupedDataGrid extends PureComponent {
                 <TBody>
                     {
                         groupedData.map((grp, i) => <GroupRow key={i} group={grp} dates={dates} addWorklog={addWorklog}
-                            convertSecs={convertSecs} formatTime={formatTime} breakupMode={breakupMode} pageSettings={pageSettings} />)
+                            convertSecs={convertSecs} timeExportFormat={timeExportFormat} formatTime={formatTime} breakupMode={breakupMode} pageSettings={pageSettings} />)
                     }
 
                     <tr className="grouped-row right auto-wrap">
                         <td>Grand Total <i className="fa fa-arrow-right" /></td>
-                        {dates.map((day, i) => <td key={i}>{convertSecs(groupedData.total[day.prop])}</td>)}
-                        <td>{convertSecs(groupedData.grandTotal)}</td>
+                        {dates.map((day, i) => <td key={i} exportType={timeExportFormat}>{convertSecs(groupedData.total[day.prop])}</td>)}
+                        <td exportType={timeExportFormat}>{convertSecs(groupedData.grandTotal)}</td>
                     </tr>
                 </TBody>
             </ScrollableTable>
@@ -233,7 +235,7 @@ class GroupRow extends PureComponent {
 
     render() {
         const {
-            props: { group: grp, dates, convertSecs, formatTime, breakupMode, pageSettings, addWorklog },
+            props: { group: grp, dates, convertSecs, formatTime, breakupMode, pageSettings, addWorklog, timeExportFormat },
             state: { hidden }
         } = this;
 
@@ -246,7 +248,7 @@ class GroupRow extends PureComponent {
                     </td>
                 </tr>}
 
-                {!hidden && grp.users.map((u, i) => <UserRow key={i} user={u} dates={dates} breakupMode={breakupMode} addWorklog={addWorklog}
+                {!hidden && grp.users.map((u, i) => <UserRow key={i} user={u} dates={dates} breakupMode={breakupMode} addWorklog={addWorklog} timeExportFormat={timeExportFormat}
                     convertSecs={convertSecs} formatTime={formatTime} pageSettings={pageSettings} />)}
 
                 <tr className="grouped-row right auto-wrap" onClick={hidden ? this.toggleDisplay : null}>
@@ -257,8 +259,8 @@ class GroupRow extends PureComponent {
                         </div>}
                         {!hidden && <div>{grp.name} <i className="fa fa-arrow-right" /> Total <i className="fa fa-arrow-right" /></div>}
                     </td>
-                    {dates.map((day, i) => <td key={i}>{convertSecs(grp.total[day.prop])}</td>)}
-                    <td>{convertSecs(grp.grandTotal)}</td>
+                    {dates.map((day, i) => <td key={i} exportType={timeExportFormat}>{convertSecs(grp.total[day.prop])}</td>)}
+                    <td exportType={timeExportFormat}>{convertSecs(grp.grandTotal)}</td>
                 </tr>
             </>
         );
@@ -289,7 +291,8 @@ class UserRow extends PureComponent {
 
     getLogEntries(entries) {
         if (Array.isArray(entries) && entries.length > 0) {
-            return entries.map((d, i) => <span key={i} title={`${this.props.formatTime(d.logTime)} - ${d.comment}`}> {this.props.convertSecs(d.totalHours)}; </span>);
+            const seperator = entries.length > 1 ? ";" : "";
+            return entries.map((d, i) => <span key={i} title={`${this.props.formatTime(d.logTime)} - ${d.comment}`}>{this.props.convertSecs(d.totalHours) + seperator}</span>);
         }
     }
 
@@ -301,7 +304,7 @@ class UserRow extends PureComponent {
 
     render() {
         const {
-            props: { user: u, dates, convertSecs, breakupMode, pageSettings: { hideEstimate } },
+            props: { user: u, dates, convertSecs, breakupMode, pageSettings: { hideEstimate }, timeExportFormat },
             state: { expanded }
         } = this;
 
@@ -317,10 +320,10 @@ class UserRow extends PureComponent {
                             <span className="email">({u.emailAddress || u.name}{u.timeZone && <span>, time zone: {u.timeZone}</span>})</span>
                         </div>
                     </td>
-                    {dates.map((day, i) => <td key={i} className={`${u.logClass[day.prop]} day-wl-block`}>
+                    {dates.map((day, i) => <td key={i} className={`${u.logClass[day.prop]} day-wl-block`} exportType={timeExportFormat}>
                         {u.isCurrentUser && <span className="fa fa-clock-o add-wl" title="Click to add worklog" onClick={() => this.addWorklog(null, day)} />}
                         {convertSecs(u.total[day.prop])}</td>)}
-                    <td>{convertSecs(u.grandTotal)}</td>
+                    <td exportType={timeExportFormat}>{convertSecs(u.grandTotal)}</td>
                 </tr>
 
                 {expanded &&
@@ -341,12 +344,12 @@ class UserRow extends PureComponent {
                                     {!hideEstimate && !!(oe || re) && <span className="estimate" title={estTitle}>
                                         (est: {oe || 0} / rem: {re || 0} / log: {logged} / var: {variance})</span>}
                                 </td>
-                                {dates.map((day, j) => <td key={j} className="day-wl-block">
+                                {dates.map((day, j) => <td key={j} className="day-wl-block" exportType={timeExportFormat}>
                                     {u.isCurrentUser && <span className="fa fa-clock-o add-wl" title="Click to add worklog" onClick={() => this.addWorklog(t.ticketNo, day)} />}
                                     {breakupMode !== '2' && <span title={this.getComments(t.logs[day.prop])}>{convertSecs(this.getTotalTime(t.logs[day.prop]))}</span>}
                                     {breakupMode === '2' && <div> {this.getLogEntries(t.logs[day.prop])}</div>}
                                 </td>)}
-                                <td>{convertSecs(t.totalHours)}</td>
+                                <td exportType={timeExportFormat}>{convertSecs(t.totalHours)}</td>
                             </tr>
                         );
                     })

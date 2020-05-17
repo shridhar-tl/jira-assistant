@@ -4,7 +4,10 @@
         "strand": "Jira Assistant features",
         "module": "Common",
         "submodule": "Features",
-        "questions": ["What are the features available in Jira Assistant?", "What Jira Assistant can do for me?"],
+        "questions": [
+            "What are the features available in Jira Assistant?",
+            "What Jira Assistant can do for me?"
+        ],
         "description": "Jira Assistant helps to track your worklog on daily basis and generate multiple reports with lots of customizations. Following are some of the high level features available in Jira Assistant:\n* Track your worklog easily and upload it to Jira\n* Integrate with calendar to view meetings.\n* Automatically create worklog with single click for meetings\n* Generate multiple reports based on your needs\n* Create and customize dashboard with widgets and different layouts\n* Single click quick view option on JA icon in browser\n* Customize what happens when JA icon is clicked in browser\n* Set custom theme to personalize the look of Jira Assistant",
         "links": [],
         "keywords": []
@@ -14,9 +17,15 @@
         "strand": "About dashboards",
         "module": "Dashboards",
         "submodule": "Dashboard",
-        "questions": ["What is a dashboard?"],
+        "questions": [
+            "What is a dashboard?"
+        ],
         "description": "Dashboard is a page which provides you with an overview of multiple different things which you may need a glands of. This also provides you with a wide customization option to personalize your experience.",
-        "links": ["DB-FE", "DB-CUST", "DB-GD-AR"],
+        "links": [
+            "DB-FE",
+            "DB-CUST",
+            "DB-GD-AR"
+        ],
         "keywords": []
     },
     {
@@ -24,9 +33,15 @@
         "strand": "Features of dashboard",
         "module": "Dashboards",
         "submodule": "Dashboard",
-        "questions": ["What are the features available in Dashboard?", "What a dashboard can do?"],
+        "questions": [
+            "What are the features available in Dashboard?",
+            "What a dashboard can do?"
+        ],
         "description": "Following features are available in dashboard module\n* Create your own dashboard\n* Rename the default or custom dashboard\n* Add gadgets to dashboard\n* Change the icon of the dashboard\n* Set dashboard as Quick view\n* Customize the layout of dashboard",
-        "links": ["DB-CUST", "DB-E-L"],
+        "links": [
+            "DB-CUST",
+            "DB-E-L"
+        ],
         "keywords": []
     },
     {
@@ -34,9 +49,15 @@
         "strand": "Custom Dashboard",
         "module": "Dashboards",
         "submodule": "Custom Dashboard",
-        "questions": ["How can I create a new dashboard?"],
+        "questions": [
+            "How can I create a new dashboard?"
+        ],
         "description": "To create a custom dashboard follow the below steps:\n- Navigate to the default dashboard\n- Click on the drop / menu icon available near the Add Gadgets button on top right corner of the dashboard\n- Click \"Create dashboard\" menu which will create a dashboard for you with a default name and icon.\n- Now you can go ahead with changing the default icon, name, layout and add gadgets to customize it.",
-        "links": ["DB-E-NI", "DB-E-L", "DB-GD-RA"],
+        "links": [
+            "DB-E-NI",
+            "DB-E-L",
+            "DB-GD-RA"
+        ],
         "keywords": []
     },
     {
@@ -59,9 +80,14 @@
         "strand": "Change dashboard layout",
         "module": "Dashboards",
         "submodule": "Layouts",
-        "questions": ["How can I change the layout of dashboard?", "How can I customize the layout of dashboard?"],
+        "questions": [
+            "How can I change the layout of dashboard?",
+            "How can I customize the layout of dashboard?"
+        ],
         "description": "To change the layout of the dashboard follow the below steps:\n- Navigate to the dashboard for which you would like to change the layout.\n- Click on the drop / menu icon available near the \"Add Gadgets\" button on top right corner of the dashboard\n- Click \"Edit layout\" menu which will open a popup with set of available layout.\n- You can select the appropriate layout of your choice and click on the Done button which will change the layout of your current dashboard.",
-        "links": ["DB-GD-RA"],
+        "links": [
+            "DB-GD-RA"
+        ],
         "keywords": []
     },
     {
@@ -69,9 +95,15 @@
         "strand": "Add / remove gadgets",
         "module": "Dashboards",
         "submodule": "Gadgets",
-        "questions": ["How can I add a gadget to dashboard", "How can I add a custom gadget to dashboard"],
+        "questions": [
+            "How can I add a gadget to dashboard",
+            "How can I add a custom gadget to dashboard"
+        ],
         "description": "You can add / remove any inbuilt gadget or your custom gadget to your dashboard to customize it. To add or remove a gadget follow the below steps:\n- Navigate to dashboard where you would like to add or remove a gadget\n- Click on \"Add gadgets\" button on top right corner of your dashboard which will open a popup with a list of inbuilt and custom gadgets.\n- Click on \"Add gadget\" button against appropriate gadget to add it to current dashboard\n- Click on \"Remove gadget\" button against appropriate gadget to remove it from current dashboard\n- Alternatively as a quick option to remove a gadget, you can just click remove icon (~fa-times~) available on top right corner of each gadget.",
-        "links": ["DB-GD-RA", "DB-GD-CG"],
+        "links": [
+            "DB-GD-RA",
+            "DB-GD-CG"
+        ],
         "keywords": []
     },
     {
@@ -79,7 +111,10 @@
         "strand": "Rearrange gadgets in dashboard",
         "module": "Dashboards",
         "submodule": "Gadgets",
-        "questions": ["How can I rearrange my gadgets", "How can I order by gadgets"],
+        "questions": [
+            "How can I rearrange my gadgets",
+            "How can I order by gadgets"
+        ],
         "description": "Dashboard allows you to order the gadgets the way you would like to have it. This would be more useful in some of the layouts. To rearrange the gadgets in dashboard follow the below steps:\n- Navigate to the dashboard where you would like the gadgets to be rearranged\n- Now to rearrange the gadgets, just click on the header of the gadget, hold it and move the gadget to the appropriate place where you would like to be placed.\n- Once you drop the gadget it will be placed accordingly based on the layout.\nNote: You are allowed to rearrange your gadgets only in line with the layout you had choosen.",
         "links": [],
         "keywords": []
@@ -89,14 +124,18 @@
         "strand": "Custom gadgets",
         "module": "Dashboards",
         "submodule": "Gadgets",
-        "questions": ["What is a custom gadget?", "How to make use of a custom gadget?", "How can I create a custom gadget?"],
+        "questions": [
+            "What is a custom gadget?",
+            "How to make use of a custom gadget?",
+            "How can I create a custom gadget?"
+        ],
         "description": "A custom gadget is nothing but an output of saved query displayed in table format added as gadget in your dashboard.\n* All saved queries are displayed as custom gadget in your gadget store.\nNote: You should never add a custom gadget which has complex query or query which returns huge data to your dashboard. That may affect the performance of the tool and your Jira server if you keep accessing the dashboard frequently. Also note that dashboard is just a place where you should have a quick overview of your activities and custom reports is a place where you should use your complex queries.",
         "links": [],
         "keywords": []
     },
     {
         "id": "RP-CR",
-        "strand": "Saved query / custom report",
+        "strand": "Saved reports / custom report",
         "module": "Reports",
         "submodule": "Custom reports",
         "questions": [
@@ -106,17 +145,21 @@
             "How do I generate a query report?"
         ],
         "description": "The custom report is a place where you can generate a report with custom filters and columns. This report also allows you to group the data based on a set of fields and display the data in different formats. This filters / fields used to generate this report can be saved with a unique name for future use.\n\nTo generate a custom report follow the below steps:\n- Navigate to \"Custom report\" under reports section which will open a page where you can see a tabbed layout to create / save a query for report generation.\n- You would see 3 tabs in this page.\n- Go to filters tab and choose the columns and provide values based on which you would like to fetch data from Jira server.\n- If you would need to filter data based on some complex query which cannot fit in this filters section, then switch to Advanced filters tab, where you can write JQL query of your own to filter the data\n- Then go to Display settings tab and add the list of fields which you would like to view.\n- You can also select a custom format for each field from the dropdown under the format functions columns.\n- Optionally, while adding the fields you also have an option to group the report based on top most set of fields in order.\n- Once you are done, you can click on View report button.\n- You can save this query with a unique name for future use.\n- Once you have a saved query available, you will see a dropdown on top right corner with the list of saved query to quick view the report.\n- In furure you can select the saved query from that dropdown and click on View report button to view the report or modify it.\n- For deleting a saved query or for other additional management options you can add a Saved query gadget in your dashboard.",
-        "links": ["DB-GD-SQ"],
+        "links": [
+            "DB-GD-SQ"
+        ],
         "keywords": []
     },
     {
         "id": "DB-GD-SQ",
-        "strand": "Manage saved query",
+        "strand": "Manage saved reports",
         "module": "Dashboard",
         "submodule": "Gadgets",
         "questions": [],
         "description": "The Saved query gadget is a place where you can manage the list of saved queries (query generated form custom report). You can use this gadget to view the list of saved queries, remove the query which is no more required, etc.. This is provided as a gadget, so that the users have more control on where and when to show it or remove it from UI when it is not necessary.",
-        "links": ["RP-CR"],
+        "links": [
+            "RP-CR"
+        ],
         "keywords": []
     },
     {
@@ -124,10 +167,17 @@
         "strand": "User daywise report",
         "module": "Reports",
         "submodule": "User daywise",
-        "questions": ["Where can I see worklog added by my team?", "Where can I view the hours logged by my team?"],
+        "questions": [
+            "Where can I see worklog added by my team?",
+            "Where can I view the hours logged by my team?"
+        ],
         "description": "User daywise report is a place where you can view the worklog report for you and your team members in different formats. To view the report follow the below steps:\n- Navigate to User - Daywise report under Reports section in menu.\n- Click on the (~fa-users~) icon in right corner of header section which will open a popup with the list of users to view the report.\n- This list is auto populated based on the saved user groups. \n- Any changes done in this popup like adding a new user / group or removing an existing user / group will not be persistant and will be only for current report generation. Next time you visit the page again it will be reset with the defaults.\n- If you want to view the report for set of users regularly or if you want the users list to be persistant, you can add them under user groups.\n- Click on config icon (~fa-cogs~) will open a config popup to change the configuration of this report.\n- You can use this config popup, if you want to change the type for report rendering to grouped or flat format and the format of hours displayed.\n- If their are worklogs added by same user for same ticket on same day more than once, you can group the entries to gether and display the summed up hours using the \"Log breakup\" option in configuration popup.\n- This report will highlight individual day with the following color code:\n>* Green - If the user has logged sufficient hours for this day\n>* Yellow - If the user has logged lesser than the hours required to be logged.\n>* Red - If the user has logged higher than what need to be logged.sufficient hours or not\n- The above highlighting will happen based on the configuration of max hours to log.\n- The non working days will be greyed out based on working days configuration.",
-        "links": ["SET-UG"],
-        "keywords": ["billing"]
+        "links": [
+            "SET-UG"
+        ],
+        "keywords": [
+            "billing"
+        ]
     },
     {
         "id": "SET-UG",
@@ -143,6 +193,14 @@
         ],
         "description": "",
         "links": [],
-        "keywords": ["user list", "users", "team", "team members", "my team", "not saved", "persistant"]
+        "keywords": [
+            "user list",
+            "users",
+            "team",
+            "team members",
+            "my team",
+            "not saved",
+            "persistant"
+        ]
     }
 ]

@@ -73,7 +73,7 @@ class TicketWiseWorklog extends BaseGadget {
         const { worklogs } = this.state;
 
         return super.renderBase(
-            <ScrollableTable dataset={worklogs}>
+            <ScrollableTable dataset={worklogs} exportSheetName="Ticketwise worklog">
                 <THead>
                     <tr>
                         <Column sortBy="ticketNo" style={{ width: '100px' }}>Ticket No</Column>

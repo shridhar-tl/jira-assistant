@@ -163,18 +163,20 @@ export default class Exporter {
             }
             if (value && !exportIgnore) {
                 value = value.trim();
-            }
-            if (value && !exportIgnore) {
                 const exportType = col.attr('exportType');
                 switch (exportType) {
                     case 'int':
-                        value = parseInt(value, 10);
+                        value = toInt(value);
                         break;
                     case 'float':
-                        value = parseFloat(value);
-                        break;
                     case 'number':
-                        value = Number(value);
+                        value = toFloat(value);
+                        break;
+                    case 'date':
+                        value = toDate(value, true);
+                        break;
+                    case 'datetime':
+                        value = toDate(value, false);
                         break;
                     default: break;
                 }
@@ -223,7 +225,7 @@ export default class Exporter {
 
     charToNum(alpha) {
         //let index = 0;
-        for (let i = 0, j = 1; i < j; i++ , j++) {
+        for (let i = 0, j = 1; i < j; i++, j++) {
             if (alpha == this.numToChar(i)) {
                 //index = i;
                 j = i;
@@ -283,4 +285,22 @@ export function saveStringAs(str, typeName, fileName) {
     else {
         document.location.href = datauri;
     }
+}
+
+function toInt(value) {
+    if (!value) { return value; }
+    const val = parseInt(value, 10);
+    return isNaN(val) ? value : val;
+}
+
+function toFloat(value) {
+    if (!value) { return value; }
+    const val = parseFloat(value);
+    return isNaN(val) ? value : val;
+}
+
+function toDate(value, onlyDate) {
+    if (!value) { return value; }
+    const val = new Date(value);
+    return isNaN(val.getTime()) ? value : val;
 }

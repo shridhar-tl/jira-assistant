@@ -151,13 +151,13 @@ class UserProjectWiseSummary extends PureComponent {
                                         return <Fragment key={pid}>
                                             {project.issueTypes.map((it, iti) => {
                                                 const projIssueTypeData = userProject[it];
-                                                return <td key={iti} className="data-center">{(projIssueTypeData ? convertSecs(projIssueTypeData.total) : null)}</td>;
+                                                return <td key={iti} className="data-center" exportType="float">{(projIssueTypeData ? convertSecs(projIssueTypeData.total) : null)}</td>;
                                             })}
-                                            <td className="strong data-center">{userProject.grandTotal ? convertSecs(userProject.grandTotal.total) : null}</td>
+                                            <td className="strong data-center" exportType="float">{userProject.grandTotal ? convertSecs(userProject.grandTotal.total) : null}</td>
                                         </Fragment>;
                                     })
                                 }
-                                <td className="strong data-center">{convertSecs(user.grandTotal.total)}</td>
+                                <td className="strong data-center" exportType="float">{convertSecs(user.grandTotal.total)}</td>
                             </tr>
                         ))}
                         <tr className="strong data-center">
@@ -167,12 +167,12 @@ class UserProjectWiseSummary extends PureComponent {
                                     const projectOverallTotal = group.overallTotal.projects[project.key] || {};
 
                                     return <Fragment key={pid}>
-                                        {project.issueTypes.map((it, iti) => <td key={iti}>{convertSecs(projectOverallTotal[it])}</td>)}
-                                        <td>{convertSecs(projectOverallTotal.total)}</td>
+                                        {project.issueTypes.map((it, iti) => <td key={iti} exportType="float">{convertSecs(projectOverallTotal[it])}</td>)}
+                                        <td exportType="float">{convertSecs(projectOverallTotal.total)}</td>
                                     </Fragment>;
                                 })
                             }
-                            <td>{convertSecs(group.overallTotal.grandTotal)}</td>
+                            <td exportType="float">{convertSecs(group.overallTotal.grandTotal)}</td>
                         </tr>
                     </Fragment>)
                     }
@@ -183,11 +183,11 @@ class UserProjectWiseSummary extends PureComponent {
 
                         {projects.map((project, pi) => {
                             return (<Fragment key={pi}>
-                                {project.issueTypes.map((it, iti) => <td key={iti}>{convertSecs(grandTotal[project.key][it])}</td>)}
-                                <td>{convertSecs(grandTotal[project.key].total)}</td>
+                                {project.issueTypes.map((it, iti) => <td key={iti} exportType="float">{convertSecs(grandTotal[project.key][it])}</td>)}
+                                <td exportType="float">{convertSecs(grandTotal[project.key].total)}</td>
                             </Fragment>);
                         })}
-                        <td>{convertSecs(grandTotal.grandTotal)}</td>
+                        <td exportType="float">{convertSecs(grandTotal.grandTotal)}</td>
                     </tr>
                 </tfoot>
                 <NoDataRow span={11}>No worklog details available</NoDataRow>
