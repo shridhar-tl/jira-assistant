@@ -15,6 +15,8 @@ import SwitchAccountMenu from './SwitchAccountMenu';
 import { getHostFromUrl } from '../../common/utils';
 import Notifications from './Notifications';
 import JiraUpdates from './JiraUpdates';
+import Dialog from '../../dialogs';
+import UpdatesInfo from './UpdatesInfo';
 
 const propTypes = {
   children: PropTypes.node,
@@ -25,7 +27,7 @@ const defaultProps = {};
 class DefaultHeader extends PureComponent {
   constructor(props) {
     super(props);
-    inject(this, "AppBrowserService", "CacheService", "SessionService", "AnalyticsService");
+    inject(this, "AppBrowserService", "CacheService", "SessionService", "NotificationService", "AnalyticsService");
     const cUser = this.$session.CurrentUser;
     this.disableNotification = cUser.disableDevNotification;
     this.disableJiraUpdates = cUser.disableJiraUpdates;
@@ -35,6 +37,10 @@ class DefaultHeader extends PureComponent {
   }
 
   UNSAFE_componentWillMount() {
+    this.$noti.getNotifications().then(notifications => this.setState({ notifications }),
+      (err) => { console.log("Error fetching notifications: ", err); });
+
+    this.siteUrl = "http://www.jiraassistant.com";
     this.ratingUrl = this.$jaBrowserExtn.getStoreUrl(true);
     this.storeUrl = this.$jaBrowserExtn.getStoreUrl();
     this.$jaBrowserExtn.getAppVersion().then(v => this.setState({ versionNumber: v }));
@@ -72,19 +78,27 @@ class DefaultHeader extends PureComponent {
     window.location.href = "/index.html";
   }
 
+  showVersionInfo = (e) => {
+    e.preventDefault();
+    const updates = this.state.notifications?.updates_info;
+    if (!updates) { return; }
+
+    Dialog.alert(<UpdatesInfo updates={updates} />, "Updates info", { width: "600px" }).then();
+  }
+
   render() {
     const {
       ratingUrl, gMailShare, linkedInShare, fackbookShare, twitterShare,
-      state: { versionNumber, showYoutubeVideo }
+      state: { versionNumber, showYoutubeVideo, notifications }
       //REVISIT: props: { children, ...attributes }
     } = this;
 
     return (
       <React.Fragment>
         <AppSidebarToggler className="d-lg-none" display="md" mobile><span className="fa fa-bars" /></AppSidebarToggler>
-        <a href={this.storeUrl} className="navbar-brand" target="_blank" rel="noopener noreferrer">
+        <a href={this.siteUrl} className="navbar-brand" target="_blank" rel="noopener noreferrer">
           <img src={logo} width="24" height="24" alt="Jira Assistant" className="navbar-brand-minimized" />
-          <span className="navbar-brand-full">Jira Assistant <span className="v-info badge badge-success">v {versionNumber}</span></span>
+          <span className="navbar-brand-full" onClick={this.showVersionInfo}>Jira Assistant <span className="v-info badge badge-success">v {versionNumber}</span></span>
         </a>
         <AppSidebarToggler className="d-md-down-none" display="lg"><span className="fa fa-bars" /></AppSidebarToggler>
         <NavLink to={`/${this.userId}/contribute`} className="btn-donate"
@@ -103,7 +117,7 @@ class DefaultHeader extends PureComponent {
             </UncontrolledDropdown>
           </Nav>
           {!this.disableJiraUpdates && <JiraUpdates />}
-          {!this.disableNotification && <Notifications />}
+          {!this.disableNotification && notifications && <Notifications notifications={notifications} />}
           <NavItem className="d-md-down-none">
             <span className="nav-link" onClick={this.showYoutubeHelp}><i className="fa fa-youtube-play"></i></span>
           </NavItem>

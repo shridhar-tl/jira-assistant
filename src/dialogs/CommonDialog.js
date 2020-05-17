@@ -9,8 +9,10 @@ class CommonDialog extends BaseDialog {
         this.state = { showDialog: false };
         this.style = { width: "485px" };
 
-        DialogConfig.onChange((body, title, footer, onClose) => {
+        DialogConfig.onChange((body, title, footer, onClose, style) => {
+            style = style || {};
             this.onClose = onClose;
+            this.style = { ...this.style, ...style };
 
             if (body) {
                 this.title = title;
@@ -28,6 +30,7 @@ class CommonDialog extends BaseDialog {
         if (this.onClose) {
             this.onClose();
         }
+        this.style = { width: "485px" };
     }
 
     parseMarkupString(body) {
@@ -52,7 +55,7 @@ class DialogConfig {
         DialogConfig.changeEvent = e;
     }
 
-    custom(message, title, footer) {
+    custom(message, title, footer, styles) {
         if (message && typeof message === "string") {
             message = message.replace(/\n/g, "<br />");
         }
@@ -77,7 +80,7 @@ class DialogConfig {
             this.scope = this.tmpScope;
             this.tmpScope = null;
 
-            DialogConfig.changeEvent(message, title, footer, whenHide);
+            DialogConfig.changeEvent(message, title, footer, whenHide, styles);
         });
 
         return { then };
@@ -91,16 +94,16 @@ class DialogConfig {
         DialogConfig.changeEvent();
     }
 
-    alert(message, title) {
+    alert(message, title, styles) {
         if (!title) {
             title = "Info";
         }
 
         const footer = (ok) => <Button type="success" icon="fa fa-check" label="Ok" onClick={ok} />;
-        return this.custom(message, title, footer);
+        return this.custom(message, title, footer, styles);
     }
 
-    confirmDelete(message, title) {
+    confirmDelete(message, title, styles) {
         if (!title) {
             title = "Confirm delete";
         }
@@ -110,10 +113,10 @@ class DialogConfig {
             <Button type="danger" icon="fa fa-trash" label="Delete" onClick={confirm} />
         </>;
 
-        return this.custom(message, title, footer);
+        return this.custom(message, title, footer, styles);
     }
 
-    yesNo(message, title) {
+    yesNo(message, title, styles) {
         if (!title) {
             title = "Confirm";
         }
@@ -123,10 +126,10 @@ class DialogConfig {
             <Button type="danger" icon="fa fa-check" label="Yes" onClick={yes} />
         </>;
 
-        return this.custom(message, title, footer);
+        return this.custom(message, title, footer, styles);
     }
 
-    okCancel(message, title) {
+    okCancel(message, title, styles) {
         if (!title) {
             title = "Confirm";
         }
@@ -136,7 +139,7 @@ class DialogConfig {
             <Button type="danger" icon="fa fa-check" label="Ok" onClick={ok} />
         </>;
 
-        return this.custom(message, title, footer);
+        return this.custom(message, title, footer, styles);
     }
 }
 

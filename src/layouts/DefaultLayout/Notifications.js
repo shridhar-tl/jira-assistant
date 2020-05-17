@@ -2,43 +2,26 @@ import React, { PureComponent } from 'react';
 import { UncontrolledDropdown, DropdownItem, DropdownMenu, DropdownToggle } from 'reactstrap';
 import { inject } from '../../services';
 import Dialog from '../../dialogs';
+import UpdatesInfo from './UpdatesInfo';
 
 class Notifications extends PureComponent {
     constructor(props) {
         super(props);
         inject(this, "NotificationService", "AnalyticsService", "UserUtilsService", "UtilsService");
-        this.state = {};
-    }
-
-    UNSAFE_componentWillMount() {
-        this.$noti.getNotifications().then(({ updates_info, list, total, unread }) => this.setState({ updates_info, list, total, unread }));
+        const { updates_info, list, total, unread } = props.notifications;
+        this.state = { updates_info, list, total, unread };
     }
 
     readMessage = (msg) => {
         let message = msg.message;
+        let styles = null;
         if (msg.type === "versionInfo") {
-            const { updates_info } = this.state;
-            message = (<div className="release-history">
-                {updates_info.map((u, i) => (<div key={i} className="release">
-                    <span className="version-no">{u.version}</span>
-                    {u.publishDate && <span> (published: <b>{this.$userutils.formatDate(u.publishDate)}</b>)</span>}
-                    {!u.publishDate && u.expectedOn && <span> (expected: <b>{this.$userutils.formatDate(u.expectedOn)}</b>)</span>}
-                    <span className="changelog-header">Changelog:</span>
-                    <ul className="changelogs">
-                        {u.whatsnew.map((n, j) => <li key={j}>{n}</li>)}
-                    </ul>
-                    {u.bugs && u.bugs.length > 0 && <>
-                        <span className="changelog-header">Bugs:</span>
-                        <ul className="changelogs">
-                            {u.bugs.map((n, j) => <li key={j}>{n}</li>)}
-                        </ul></>
-                    }
-                </div>))}
-            </div>);
+            styles = { width: "600px" };
+            message = <UpdatesInfo updates={this.state.updates_info} />;
         }
 
         const onClosed = () => this.markRead(msg, true);
-        Dialog.alert(message, msg.title).then(onClosed, onClosed);
+        Dialog.alert(message, msg.title, styles).then(onClosed, onClosed);
     }
 
     markRead = (msg, viewed) => {
