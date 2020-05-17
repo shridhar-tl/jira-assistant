@@ -9,10 +9,15 @@ class StatusWiseTimeSpent extends PureComponent {
     constructor(props) {
         super(props);
         inject(this, "JiraService", "SessionService");
-        const { epicNameField } = this.$session.CurrentUser;
+        const { epicNameField, storyPointField } = this.$session.CurrentUser;
         this.epicNameField = epicNameField?.id;
-        const fieldNames = ["key", "summary", "project", "status", "parent", "assignee", "issuetype", "reporter", "created", "changeLog"];
+        this.storyPointField = storyPointField?.id;
+        const fieldNames = [
+            "key", "summary", "project", "status", "parent", "assignee", "issuetype", "reporter", "created", "changeLog",
+            "timeestimate", "aggregatetimeestimate", "timeoriginalestimate", "aggregatetimeoriginalestimate"
+        ];
         if (this.epicNameField) { fieldNames.push(this.epicNameField); }
+        if (this.storyPointField) { fieldNames.push(this.storyPointField); }
         this.fieldNames = fieldNames;
         this.state = {};
     }
@@ -43,7 +48,10 @@ class StatusWiseTimeSpent extends PureComponent {
         const currentTime = new Date().getTime();
 
         const reportData = tickets.map(t => {
-            const { key, changelog: { histories } = {}, fields: { summary, status, issuetype, assignee, reporter, created, project, parent, [this.epicNameField]: epic } } = t;
+            const { key, changelog: { histories } = {}, fields: {
+                summary, status, issuetype, assignee, reporter, created, project, parent,
+                timeestimate, aggregatetimeestimate, timeoriginalestimate, aggregatetimeoriginalestimate,
+                [this.epicNameField]: epic, [this.storyPointField]: storyPoint } } = t;
             const changelog = [];
             let ix = histories.length;
             while (--ix >= 0) {
@@ -74,7 +82,11 @@ class StatusWiseTimeSpent extends PureComponent {
                 }
             });
 
-            return { key, summary, status, issuetype, assignee, reporter, created, project, parent, statusData, changelog, epic };
+            return {
+                key, summary, status, issuetype, assignee, reporter, created, project, parent,
+                timeestimate, aggregatetimeestimate, timeoriginalestimate, aggregatetimeoriginalestimate,
+                statusData, changelog, epic, storyPoint
+            };
         });
 
         const projectList = reportData.distinct(t => t.project.key);
@@ -92,6 +104,11 @@ class StatusWiseTimeSpent extends PureComponent {
             { field: "project", displayText: "Project", type: "string", viewComponent: ProjectDisplay },
             { field: "issuetype.name", displayText: "Issue Type", type: "string" },
             { field: "epic", displayText: "Epic", type: "string", viewComponent: TicketDisplay },
+            { field: "storyPoint", displayText: "Story Points", type: "number" },
+            { field: "timeestimate", displayText: "Time Estimate", type: "number", viewComponent: TimeSpentDisplay },
+            { field: "aggregatetimeestimate", displayText: "Σ Time Estimate", type: "number", viewComponent: TimeSpentDisplay },
+            { field: "timeoriginalestimate", displayText: "Original Estimate", type: "number", viewComponent: TimeSpentDisplay },
+            { field: "aggregatetimeoriginalestimate", displayText: "Σ Original Estimate", type: "number", viewComponent: TimeSpentDisplay },
             { field: "parent.key", displayText: "Parent", type: "string", viewComponent: TicketDisplay },
             { field: "status.name", displayText: "Status", type: "string" },
             { field: "created", displayText: "Created", type: "datetime", viewComponent: DateDisplay },
