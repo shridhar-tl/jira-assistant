@@ -38,10 +38,6 @@ class BindFunction extends PureComponent {
     }
 
     selectionChanged = (func) => {
-        if (func === emptyValueHolder) {
-            func = "";
-        }
-
         this.setState(this.setFunction(func));
     }
 
@@ -52,6 +48,10 @@ class BindFunction extends PureComponent {
 
         if (funcId === "" && !this.state.applFuncs.some(f => f.value === funcId)) {
             funcId = this.state.applFuncs.first().value;
+        }
+
+        if (funcId === emptyValueHolder) {
+            funcId = "";
         }
 
         let func = functions.first((f) => f.name === funcId);
@@ -67,7 +67,7 @@ class BindFunction extends PureComponent {
 
         const selFunction = funcId;
         const funcName = func.name.split("?")[0];
-        const params = !func.params ? null : func.params.map((p) => { return p.value ? p.value : p.default; });
+        const params = !func.params ? null : func.params.map((p) => { return p.value !== undefined ? p.value : p.default; });
 
         this.props.onChange({ id: func.name, name: funcName, params: params, useArray: func.aggregate, header: func.header });
         return { selFunction };

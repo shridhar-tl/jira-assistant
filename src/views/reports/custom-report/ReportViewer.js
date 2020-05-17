@@ -84,12 +84,10 @@ class ReportViewer extends BaseGadget {
 
     // eslint-disable-next-line complexity
     genHtmlRow(arr, prepn) {
-        prepn = prepn || "";
-
         const formRowJSX = (i, j, obj, issues) => {
             const html = [];
-            if (i === 0 && j === 0) {
-                html.push(prepn);
+            if (prepn && i === 0 && j === 0) {
+                html.addRange(prepn);
             }
             if (j === 0 && obj.issues) {
                 html.push(this.getGroupedTD(obj.name, issues.length));
@@ -149,8 +147,8 @@ class ReportViewer extends BaseGadget {
         for (let i = 0; i < arr.length; i++) {
             const obj = arr[i];
             if (obj.subGroups) {
-                html.addRange(this.genHtmlRow(obj.subGroups, (i === 0 ? prepn : "")));
-                html.push(this.getGroupedTD(obj.name, obj.issueCount));
+                const groupCol = this.getGroupedTD(obj.name, obj.issueCount);
+                html.addRange(this.genHtmlRow(obj.subGroups, (i === 0 ? [prepn, groupCol] : [groupCol])));
             }
             else {
                 const issues = obj.issues || [obj];
@@ -170,13 +168,14 @@ class ReportViewer extends BaseGadget {
     }
 
     getAggregateTD(arr, funcInfo) {
-        return <td className="bold" rowSpan={arr.length}>${this.execute(arr, funcInfo)}</td>;
+        return <td className="bold" rowSpan={arr.length}>{this.execute(arr, funcInfo)}</td>;
     }
 
     getGroupedTD(text, len) {
+        if (!text) { text = '<No Value>'; }
         text += ` (${len})`;
         const rotate = len > 4 || (text.length / len) < 2.5;
-        return <td className={rotate ? 'rotateM90' : 'bold'} rowSpan={len}>&nbsp;<div>${text}</div></td>;
+        return <td className={rotate ? 'rotateM90' : 'bold'} rowSpan={len}>&nbsp;<div>{text}</div></td>;
     }
 
     groupData(issues, groups) {
@@ -221,10 +220,17 @@ class ReportViewer extends BaseGadget {
         }
         let value = "#Error";
         try {
+            let scopeObj = this.$utils;
             let func = this.$utils[funcInfo.name];
 
             if (!func || !func.apply) {
                 func = this.$userutils[funcInfo.name];
+                scopeObj = this.$userutils;
+            }
+
+            if (!func || !func.apply) {
+                func = functions[funcInfo.name];
+                scopeObj = obj;
             }
 
             if (!func || !func.apply) {
@@ -232,7 +238,7 @@ class ReportViewer extends BaseGadget {
             }
 
             const params = [obj].addRange(funcInfo.params);
-            value = func.apply(this.$utils, params);
+            value = func.apply(scopeObj, params);
         }
         catch (err) {
             console.error(err);
@@ -305,3 +311,14 @@ class ReportViewer extends BaseGadget {
 }
 
 export default ReportViewer;
+
+const functions = {
+    last: function (arr) {
+        if (!arr?.length) { return null; }
+        return arr[arr.length - 1];
+    },
+    first: function (arr) {
+        if (!arr?.length) { return null; }
+        return arr[0];
+    }
+};

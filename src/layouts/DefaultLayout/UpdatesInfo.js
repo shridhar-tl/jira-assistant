@@ -15,7 +15,7 @@ class UpdatesInfo extends PureComponent {
             text = desc.text;
         }
 
-        return <li key={i}>{!!id && <a href={`https://github.com/shridhar-tl/jira-assistant/issues/${id}`} target="_blank" rel="noopener noreferrer">#{id} - </a>}{text}</li>
+        return <li key={i}>{!!id && <a href={`https://github.com/shridhar-tl/jira-assistant/issues/${id}`} target="_blank" rel="noopener noreferrer">#{id} - </a>}{text}</li>;
     }
 
     render() {
