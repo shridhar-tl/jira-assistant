@@ -2,7 +2,7 @@ import React, { PureComponent, Suspense } from 'react';
 import { Route, Switch } from 'react-router-dom';
 import * as router from 'react-router-dom';
 import { DndProvider } from 'react-dnd';
-import HTML5Backend from 'react-dnd-html5-backend';
+import { HTML5Backend } from 'react-dnd-html5-backend';
 import { Container } from 'reactstrap';
 import { CustomDialog } from "../../dialogs";
 

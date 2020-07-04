@@ -133,8 +133,11 @@ class ReportViewer extends BaseGadget {
                             html.push(this.getTD());
                         }
                     }
+                    else if (df.id === 'issuekey') {
+                        html.push(this.getIssueKeyTD(issue.key, df.functions));
+                    }
                     else {
-                        html.push(this.getTD(df.id !== "issuekey" ? issFields[df.id] : issue.key, df.functions));
+                        html.push(this.getTD(issFields[df.id], df.functions));
                     }
                 }
             }
@@ -165,6 +168,15 @@ class ReportViewer extends BaseGadget {
             return <td>&nbsp;</td>;
         }
         return <td>{this.execute(obj, funcInfo)}</td>;
+    }
+
+    getIssueKeyTD(obj, funcInfo) {
+        if (typeof obj === 'string') {
+            return <td><a href={this.$userutils.getTicketUrl(obj)} target="_blank" rel="noopener noreferrer">{this.execute(obj, funcInfo)}</a></td>;
+        }
+        else {
+            return this.getTD(obj, funcInfo);
+        }
     }
 
     getAggregateTD(arr, funcInfo) {
