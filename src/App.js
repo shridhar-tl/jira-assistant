@@ -62,6 +62,11 @@ class App extends PureComponent {
 
   UNSAFE_componentWillMount() {
     this.$message.onNewMessage((message) => {
+      let { detail } = message;
+      if (detail && typeof detail !== 'string') {
+        detail = detail.toString();
+        message = { ...message, detail };
+      }
       if (this.messenger) { this.messenger.show(message); }
     });
 

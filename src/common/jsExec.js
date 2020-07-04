@@ -119,7 +119,7 @@ export default function compileExpression(expression, props, { array, getObjVal,
             eVariables.setValue(Variables);
             const Field = function ({ value } = {}) {
                 const val = getObjVal(Fields, value);
-                debugger;
+
                 return val;
             };
             eField.setValue(env.objectFactory.createFunction(Field));

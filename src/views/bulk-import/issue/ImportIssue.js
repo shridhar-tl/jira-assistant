@@ -29,7 +29,9 @@ const fieldMapping = {
     parent: parentKey,
     parentkey: parentKey,
     parentticket: parentKey,
+    parentticketno: parentKey,
     parentissue: parentKey,
+    parentid: parentKey,
 
     status: "status",
     issuestatus: "status",
@@ -41,8 +43,10 @@ const fieldMapping = {
 
     estimate: originalEstimate,
     originalestimate: originalEstimate,
+    initialestimate: originalEstimate,
     remaining: remainingEstimate,
     remainingestimate: remainingEstimate,
+    currentestimate: remainingEstimate,
 
     assignee: fieldAssignee,
     assignto: fieldAssignee,
@@ -53,7 +57,9 @@ const fieldMapping = {
     reportedby: fieldReporter,
 
     issuetype: fieldIssueType,
-    type: fieldIssueType
+    type: fieldIssueType,
+
+    label: "labels"
 };
 
 class ImportIssue extends BaseImport {

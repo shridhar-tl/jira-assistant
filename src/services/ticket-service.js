@@ -355,7 +355,8 @@ export default class TicketService {
                 isValid = typeof value === type;
                 break;
             case "array":
-                isValid = Array.isArray(value);
+                isValid = true;
+                // isValid = Array.isArray(value); // ToDo: need to check how to validate array
                 break;
             case "user":
                 isValid = true;
