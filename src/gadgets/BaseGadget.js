@@ -136,7 +136,7 @@ export class BaseGadget extends PureComponent {
         this.performAction(GadgetActionType.AddWorklog, data);
     }
 
-    addWorklogOn(ticketNo) {
+    addWorklogOn = (ticketNo) => {
         this.addWorklog({ ticketNo: ticketNo });
     }
 

@@ -1,20 +1,15 @@
-import React from 'react';
+import React, { PureComponent } from 'react';
 import { inject } from '../services/injector-service';
 import BaseGadget, { GadgetActionType } from './BaseGadget';
 import { ScrollableTable, THead, TBody, Column, NoDataRow } from '../components/ScrollableTable';
 import { showContextMenu } from 'jsd-report';
 import { Dialog } from '../dialogs/CommonDialog';
+import { TicketDisplay } from '../display-controls';
 
 class MyOpenTickets extends BaseGadget {
     constructor(props) {
         super(props, "My open tickets", "fa-eye");
         inject(this, "JiraService", "BookmarkService", "UserUtilsService");
-
-        this.contextMenu = [
-            { label: "Add worklog", icon: "fa fa-clock-o", command: () => this.addWorklogOn(this.selectedTicket.ticketNo) },
-            { label: "Bookmark", icon: "fa fa-bookmark", command: () => this.addBookmark() }
-            //{ label: "Start progress", icon: "fa fa-play", command: () => this.startProgress() } //ToDo: Add option for move to progress, show in tree view
-        ];
 
         this.state.isLoading = true;
         this.state.ticketList = [];
@@ -43,22 +38,7 @@ class MyOpenTickets extends BaseGadget {
                     </tr>
                 </THead>
                 <TBody>
-                    {(b, i) => {
-                        return <tr key={i} onContextMenu={(e) => this.showContext(e, b)}>
-                            <td>
-                                <i className="fa fa-ellipsis-v margin-r-8" onClick={(e) => this.showContext(e, b)}></i>
-                                <a href={b.ticketUrl} className="link strike" target="_blank" rel="noopener noreferrer">{b.ticketNo}</a>
-                            </td>
-                            <td><img className="img-x16" src={b.issuetypeIcon} alt="" />{b.issuetype}</td>
-                            <td>{b.summary}</td>
-                            <td>{b.reporter}</td>
-                            <td><img className="img-x16" src={b.priorityIcon} alt="" />{b.priority}</td>
-                            <td><img className="img-x16" src={b.statusIcon} alt="" />{b.status}</td>
-                            <td>{b.resolutionIcon && <img className="img-x16" src={b.resolutionIcon} alt="" />}{b.resolution}</td>
-                            <td>{b.created}</td>
-                            <td>{b.updated}</td>
-                        </tr>;
-                    }}
+                    {(b, i) => <TicketRow key={i} ticket={b} onAddWorklog={this.addWorklogOn} onBookmark={this.bookmarkAdded} />}
                 </TBody>
                 <NoDataRow span={9}>No open tickets were assigned to you. Enjoy your day!</NoDataRow>
             </ScrollableTable>
@@ -101,15 +81,28 @@ class MyOpenTickets extends BaseGadget {
         showContextMenu($event, this.contextMenu);
     }
 
-    startProgress() { Dialog.alert("This functionality is not yet implemented!", "Unimplemented functionality!"); }
+    bookmarkAdded = () => this.performAction(GadgetActionType.TicketBookmarked);
+}
 
-    addBookmark() {
-        this.$bookmark.addBookmark([this.selectedTicket.ticketNo])
-            .then((result) => {
-                //if (result.length > 0) {
-                //}
-                this.performAction(GadgetActionType.TicketBookmarked);
-            });
+class TicketRow extends PureComponent {
+    setRef = (ref) => this.keyCtr = ref;
+
+    render() {
+        const { ticket: b, onAddWorklog, onBookmark } = this.props;
+
+        return (
+            <tr onContextMenu={(e) => this.keyCtr.showContext(e)}>
+                <TicketDisplay ref={this.setRef} value={b.ticketNo} onAddWorklog={onAddWorklog} onBookmark={onBookmark} />
+                <td><img className="img-x16" src={b.issuetypeIcon} alt="" />{b.issuetype}</td>
+                <td>{b.summary}</td>
+                <td>{b.reporter}</td>
+                <td><img className="img-x16" src={b.priorityIcon} alt="" />{b.priority}</td>
+                <td><img className="img-x16" src={b.statusIcon} alt="" />{b.status}</td>
+                <td>{b.resolutionIcon && <img className="img-x16" src={b.resolutionIcon} alt="" />}{b.resolution}</td>
+                <td>{b.created}</td>
+                <td>{b.updated}</td>
+            </tr>
+        );
     }
 }
 

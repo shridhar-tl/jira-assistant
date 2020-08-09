@@ -12,7 +12,7 @@ export default class BookmarkService {
         this.$analytics = $analytics;
     }
 
-    addBookmark(ticketNo) {
+    addBookmark(ticketNo, showMessage) {
         if (!ticketNo || ticketNo.length === 0) {
             this.$message.warning("No ticket number specified to bookmark");
             return Promise.reject("No ticket number specified to bookmark");
@@ -38,7 +38,12 @@ export default class BookmarkService {
                 }
                 issues.forEach((i) => { return favTickets.push(i.key); });
                 u.favTicketList = favTickets;
-                return this.$user.saveUser(u).then(() => { return ticketNo.filter((t) => { return !favTickets.some((k) => { return k.toUpperCase() === t.toUpperCase(); }); }); });
+                return this.$user.saveUser(u).then(() => {
+                    if (showMessage) {
+                        this.$message.success("Ticket(s) bookmarked successfully!");
+                    }
+                    return ticketNo.filter((t) => { return !favTickets.some((k) => { return k.toUpperCase() === t.toUpperCase(); }); });
+                });
             });
         });
     }

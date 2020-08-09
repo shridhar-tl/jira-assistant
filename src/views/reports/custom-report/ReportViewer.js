@@ -5,6 +5,8 @@ import { ScrollableTable, THead } from '../../../components/ScrollableTable';
 import "./Common.scss";
 import { EventCategory } from '../../../_constants';
 import { getUserName } from '../../../common/utils';
+import { TicketDisplay } from '../../../display-controls';
+import AddWorklog from '../../../dialogs/AddWorklog';
 
 class ReportViewer extends BaseGadget {
     constructor(props) {
@@ -172,7 +174,8 @@ class ReportViewer extends BaseGadget {
 
     getIssueKeyTD(obj, funcInfo) {
         if (typeof obj === 'string') {
-            return <td><a href={this.$userutils.getTicketUrl(obj)} target="_blank" rel="noopener noreferrer">{this.execute(obj, funcInfo)}</a></td>;
+            return <TicketDisplay value={obj} onAddWorklog={this.addWorklog} />;
+            //return <td><a href={this.$userutils.getTicketUrl(obj)} target="_blank" rel="noopener noreferrer">{this.execute(obj, funcInfo)}</a></td>;
         }
         else {
             return this.getTD(obj, funcInfo);
@@ -295,10 +298,19 @@ class ReportViewer extends BaseGadget {
         this.fieldOpts.worklogUsers = headObj.subCols;
     }
 
+    addWorklog = (ticketNo) => {
+        const worklogItem = { ticketNo };
+        this.setState({ showWorklogPopup: true, worklogItem });
+    }
+
+    hideWorklog = () => {
+        this.setState({ showWorklogPopup: false });
+    }
+
     render() {
         const {
             reportHtml,
-            state: { isLoading, hasReportData, displayFields, subFields }
+            state: { isLoading, hasReportData, displayFields, subFields, showWorklogPopup, worklogItem }
         } = this;
 
         return super.renderBase(
@@ -317,6 +329,7 @@ class ReportViewer extends BaseGadget {
                     </tbody>}
                     {hasReportData && <tbody>{reportHtml}</tbody>}
                 </ScrollableTable>}
+                {showWorklogPopup && <AddWorklog worklog={worklogItem} onDone={this.hideWorklog} onHide={this.hideWorklog} />}
             </div>
         );
     }
