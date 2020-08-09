@@ -58,6 +58,7 @@ class Calendar extends BaseGadget {
 
         this.contextMenuItems = [
             { label: "Edit worklog", icon: "fa fa-edit", command: () => this.showWorklogPopup(this.currentWLItem) },
+            { label: "Open ticket", icon: "fa fa-external-link", command: () => this.openTicket(this.currentWLItem) },
             { label: "Copy worklog", icon: "fa fa-copy", command: () => this.copyWorklog() },
             this.mnuWL_Upload,
             { label: "Delete worklog", icon: "fa fa-times", command: () => this.deleteWorklog() }
@@ -376,6 +377,11 @@ class Calendar extends BaseGadget {
 
     hideWorklogDialog = () => this.setState({ showAddWorklogPopup: false })
     toggleSettingsDialog = () => this.setState({ showSettingsPopup: !this.state.showSettingsPopup })
+
+    openTicket(obj) {
+        const url = this.$userutils.getTicketUrl(obj.ticketNo);
+        window.open(url);
+    }
 
     showWorklogPopup(obj) {
         hideContextMenu();
