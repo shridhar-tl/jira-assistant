@@ -1,14 +1,15 @@
-import React, { PureComponent } from 'react';
+import React from 'react';
 import { inject } from '../services/injector-service';
+import BaseControl from './BaseControl';
 
-class TimeSpentDisplay extends PureComponent {
+class TimeSpentDisplay extends BaseControl {
     constructor(props) {
         super(props);
         inject(this, "UtilsService");
     }
 
-    render() {
-        const { tag: Tag = "span", className, value, inputType = "secs", days } = this.props;
+    renderControl() {
+        const { value, inputType = "secs", days } = this.props;
         let { timespent = value } = this.props;
 
         if (!timespent) { return null; }
@@ -18,7 +19,7 @@ class TimeSpentDisplay extends PureComponent {
         }
 
         return (
-            <Tag className={className}>{this.$utils.formatSecs(timespent, undefined, undefined, days)} </Tag>
+            <span>{this.$utils.formatSecs(timespent, undefined, undefined, days)} </span>
         );
     }
 }

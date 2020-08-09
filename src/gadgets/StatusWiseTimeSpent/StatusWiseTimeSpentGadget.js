@@ -51,7 +51,8 @@ class StatusWiseTimeSpentGadget extends BaseGadget {
                 {!jql && <div className="no-jql">
                     No JQL was set to fetch the data. Click on <span className="fa fa-cogs" /> icon from top right corner of the gadget and modify the JQL to fetch data from Jira.
                 </div>}
-                {jql && <StatusWiseTimeSpent key={gridKey} setLoader={this.setLoader} jql={jql} settings={gridSettings} settingsChanged={this.settingsChanged} />}
+                {jql && <StatusWiseTimeSpent key={gridKey} setLoader={this.setLoader} jql={jql}
+                    settings={gridSettings} settingsChanged={this.settingsChanged} onAddWorklog={this.addWorklogOn} />}
                 {showSettings && <SettingsDialog pageSettings={this.settings} onHide={this.pageSettingsChanged} />}
             </div>
         );

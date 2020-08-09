@@ -1,13 +1,14 @@
-import React, { PureComponent } from 'react';
+import React from 'react';
+import BaseControl from './BaseControl';
 
-class ProjectDisplay extends PureComponent {
-    render() {
-        const { tag: Tag = "span", className, value, project = value } = this.props;
+class ProjectDisplay extends BaseControl {
+    renderControl() {
+        const { value, project = value } = this.props;
 
         if (!project) { return null; }
 
         return (
-            <Tag className={className}>{project.key} </Tag>
+            <span>{project.key} </span>
         );
     }
 }

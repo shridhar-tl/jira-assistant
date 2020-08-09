@@ -188,7 +188,7 @@ export class GroupableGrid extends PureComponent {
             return <td key={ci} exportType={type}>{value}</td>;
         }
         else {
-            return <td key={ci}><Component value={value} {...props} /></td>;
+            return <Component key={ci} value={value} {...props} />;
         }
     }
 

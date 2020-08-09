@@ -98,18 +98,20 @@ class StatusWiseTimeSpent extends PureComponent {
     }
 
     getFieldList(statusList) {
+        const { onAddWorklog } = this.props;
+
         const list = [
-            { field: "key", displayText: "Ticket No", type: "string", viewComponent: TicketDisplay },
+            { field: "key", displayText: "Ticket No", type: "string", viewComponent: TicketDisplay, props: { onAddWorklog } },
             { field: "summary", displayText: "Summary", type: "string" },
             { field: "project", displayText: "Project", type: "string", viewComponent: ProjectDisplay },
             { field: "issuetype.name", displayText: "Issue Type", type: "string" },
-            { field: "epic", displayText: "Epic", type: "string", viewComponent: TicketDisplay },
+            { field: "epic", displayText: "Epic", type: "string", viewComponent: TicketDisplay, props: { onAddWorklog, hideWorklog: true } },
             { field: "storyPoint", displayText: "Story Points", type: "number" },
             { field: "timeestimate", displayText: "Time Estimate", type: "number", viewComponent: TimeSpentDisplay },
             { field: "aggregatetimeestimate", displayText: "Σ Time Estimate", type: "number", viewComponent: TimeSpentDisplay },
             { field: "timeoriginalestimate", displayText: "Original Estimate", type: "number", viewComponent: TimeSpentDisplay },
             { field: "aggregatetimeoriginalestimate", displayText: "Σ Original Estimate", type: "number", viewComponent: TimeSpentDisplay },
-            { field: "parent.key", displayText: "Parent", type: "string", viewComponent: TicketDisplay },
+            { field: "parent.key", displayText: "Parent", type: "string", viewComponent: TicketDisplay, props: { onAddWorklog } },
             { field: "status.name", displayText: "Status", type: "string" },
             { field: "created", displayText: "Created", type: "datetime", viewComponent: DateDisplay },
             { field: "assignee", groupKey: "assignee.displayName", displayText: "Assignee", type: "string", viewComponent: UserDisplay },

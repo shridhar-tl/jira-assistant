@@ -1,19 +1,20 @@
-import React, { PureComponent } from 'react';
+import React from 'react';
 import { inject } from '../services';
+import BaseControl from './BaseControl';
 
-class DateDisplay extends PureComponent {
+class DateDisplay extends BaseControl {
     constructor(props) {
         super(props);
         inject(this, "UserUtilsService");
     }
 
-    render() {
-        const { tag: Tag = "span", className, value, date = value, quick } = this.props;
+    renderControl() {
+        const { value, date = value, quick } = this.props;
 
         return (
-            <Tag className={className} title={quick ? this.$userutils.formatDateTime(date) : null}>
+            <span title={quick ? this.$userutils.formatDateTime(date) : null}>
                 {quick && "about "} {this.$userutils.formatDateTime(date, quick ? "quick" : null)}
-            </Tag>
+            </span>
         );
     }
 }
