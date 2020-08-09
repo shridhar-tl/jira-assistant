@@ -5,6 +5,7 @@ import TextBox from './TextBox';
 import moment from 'moment';
 import Button from './Button';
 import { inject } from '../services';
+import classnames from 'classnames';
 
 const labelText = ['This month', 'Last one month', 'Last month', 'This week', 'Last one week', 'Last week'];
 
@@ -119,6 +120,9 @@ class DatePicker extends PureComponent {
                 startDate = this.state.value;
             }
 
+            this.picker.setStartDate(startDate);
+            this.picker.setEndDate(startDate);
+
             this.onChange(null, { startDate });
         }
     }
@@ -127,11 +131,13 @@ class DatePicker extends PureComponent {
         this.manuallyEdited = true;
     }
 
+    setPicker = (picker) => this.picker = picker;
+
     render() {
         const {
-            onChange, dateRange,
-            props: { showTime, multiselect, range, disabled, style, className },
-            state: { value, displayDate }
+            onChange,
+            props: { multiselect, range, disabled, style, className },
+            state: { displayDate }
         } = this;
         let { placeholder } = this.props;
 
@@ -147,35 +153,61 @@ class DatePicker extends PureComponent {
 
         placeholder = placeholder || "Select a date";
 
+        return <div className={classnames('react-bootstrap-daterangepicker-container', className)}>
+            <DateRangePicker ref={this.setPicker} style={style} className={className}
+                disabled={disabled} initialSettings={this.getPickerSettings()}
+                onApply={onChange}>
+                <span>
+                    <TextBox className="date-range-ctl" value={displayDate}
+                        readOnly={range} placeholder={placeholder}
+                        onChange={range ? undefined : this.dateEdited}
+                        onBlur={range ? undefined : this.setDate}
+                    />
+                    <Button icon="fa fa-calendar" className="icon" />
+                </span>
+            </DateRangePicker>
+        </div>;
+    }
+
+    getPickerSettings() {
+        const {
+            dateRange,
+            props: { showTime, range, },
+            state: { value }
+        } = this;
+
+        const defaultProps = {
+            showDropdowns: true,
+            timePicker: showTime || false,
+            alwaysShowCalendars: false,
+            maxSpan: 6,
+            autoApply: true,
+            linkedCalendars: false,
+            autoUpdateInput: false
+        };
+
+        let result = null;
+
         if (range) {
-            return <DateRangePicker style={style} className={className} disabled={disabled} startDate={value[0]} endDate={value[1]} showDropdowns={true}
-                timePicker={showTime || false}
-                ranges={range ? dateRange : null} showCustomRangeLabel={true} alwaysShowCalendars={false} maxSpan={6} autoApply={true}
-                linkedCalendars={false} autoUpdateInput={false} singleDatePicker={!range} onApply={onChange}>
-                <TextBox className="date-range-ctl" value={displayDate} readOnly={true} placeholder={placeholder} />
-                <Button icon="fa fa-calendar" className="icon" />
-            </DateRangePicker>;
-        }
-        else {
-            return <DateRangePicker style={style} className={className} disabled={disabled} startDate={value} endDate={value} showDropdowns={true}
-                timePicker={showTime || false} timePicker24Hour={this.timePicker24Hour} alwaysShowCalendars={false} maxSpan={6} autoApply={true}
-                linkedCalendars={false} autoUpdateInput={false} singleDatePicker={!range} onApply={onChange}>
-                <TextBox className="date-range-ctl" value={displayDate} placeholder={placeholder} onChange={this.dateEdited} onBlur={this.setDate} />
-                <Button icon="fa fa-calendar" className="icon" />
-            </DateRangePicker>;
+            result = {
+                ...defaultProps,
+                startDate: value[0],
+                endDate: value[1],
+                ranges: dateRange,
+                singleDatePicker: false,
+                showCustomRangeLabel: true,
+            };
+        } else {
+            result = {
+                ...defaultProps,
+                singleDatePicker: true,
+                startDate: value,
+                endDate: value,
+                timePicker24Hour: this.timePicker24Hour,
+            };
         }
 
-        /*
-        if (range) {
-        }
-        else {
-            return (
-                <Calendar appendTo={document.body} value={value} disabled={disabled} tooltip={title} style={style}
-                    className={className} showIcon={true} showSeconds={true} showTime={showTime} placeholder={placeholder}
-                    selectionMode={selectionMode} monthNavigator={navigator} yearNavigator={navigator} readonlyInput={true} hourFormat="12"
-                    onChange={onChange} />
-            );
-        }*/
+        return result;
     }
 }
 

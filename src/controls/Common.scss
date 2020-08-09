@@ -37,6 +37,8 @@
 }
 
 .react-bootstrap-daterangepicker-container {
+    display: inline-block;
+    
     input.date-range-ctl {
         width: 250px;
         height: 27px;
