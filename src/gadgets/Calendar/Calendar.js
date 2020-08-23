@@ -482,7 +482,7 @@ class Calendar extends BaseGadget {
     }
 
     select({ start, end, allDay }) {
-        const isMonthMode = this.state.settings.viewMode === "dayGridMonth";
+        const isMonthMode = this.state.settings.viewMode === "dayGridMonth" && !this.isGadget;
 
         if (!isMonthMode && allDay) {// start.hasTime() ==> allDay
             return false;
