@@ -103,7 +103,7 @@ class StatusWiseTimeSpent extends PureComponent {
         const list = [
             { field: "key", displayText: "Ticket No", type: "string", viewComponent: TicketDisplay, props: { onAddWorklog } },
             { field: "summary", displayText: "Summary", type: "string" },
-            { field: "project", displayText: "Project", type: "string", viewComponent: ProjectDisplay },
+            { field: "project", groupKey: "project.key", displayText: "Project", type: "string", viewComponent: ProjectDisplay },
             { field: "issuetype.name", displayText: "Issue Type", type: "string" },
             { field: "epic", displayText: "Epic", type: "string", viewComponent: TicketDisplay, props: { onAddWorklog, hideWorklog: true } },
             { field: "storyPoint", displayText: "Story Points", type: "number" },

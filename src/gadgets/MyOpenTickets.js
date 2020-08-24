@@ -3,7 +3,6 @@ import { inject } from '../services/injector-service';
 import BaseGadget, { GadgetActionType } from './BaseGadget';
 import { ScrollableTable, THead, TBody, Column, NoDataRow } from '../components/ScrollableTable';
 import { showContextMenu } from 'jsd-report';
-import { Dialog } from '../dialogs/CommonDialog';
 import { TicketDisplay } from '../display-controls';
 
 class MyOpenTickets extends BaseGadget {

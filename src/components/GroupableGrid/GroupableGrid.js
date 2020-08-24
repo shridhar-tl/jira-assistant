@@ -73,9 +73,9 @@ export class GroupableGrid extends PureComponent {
 
                 if (!g) { return null; }
 
-                const { id, displayText, allowSorting } = g;
+                const { id, displayText, allowSorting, viewComponent } = g;
 
-                return { id, field, groupKey, displayText, allowSorting, sortDesc, visible: true };
+                return { id, field, viewComponent, groupKey, displayText, allowSorting, sortDesc, visible: true };
             }).filter(Boolean);
 
             if (!result.length) {
@@ -234,7 +234,9 @@ export class GroupableGrid extends PureComponent {
     }
 
     renderGroupRow(g, i, columns, groupBy, prepend = null) {
-        let groupKeyCell = groupBy.length > 0 && <td rowSpan={g.rowSpan}>{g.key}</td>;
+        const Component = groupBy[0]?.viewComponent;
+
+        let groupKeyCell = groupBy.length > 0 && <td rowSpan={g.rowSpan}>{Component ? <Component tag='span' value={g.key} /> : (g.key || '')}</td>;
         if (prepend && groupKeyCell) {
             groupKeyCell = <Fragment>{prepend}{groupKeyCell}</Fragment>;
         }

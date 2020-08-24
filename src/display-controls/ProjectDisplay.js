@@ -7,9 +7,7 @@ class ProjectDisplay extends BaseControl {
 
         if (!project) { return null; }
 
-        return (
-            <span>{project.key} </span>
-        );
+        return (typeof project === 'string') ? project : project?.key;
     }
 }
 
