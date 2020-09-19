@@ -4,7 +4,7 @@ import { GadgetActionType } from '.';
 import { ScrollableTable, THead, TBody, Column, NoDataRow } from '../components/ScrollableTable';
 import { showContextMenu } from 'jsd-report';
 import { inject } from '../services/injector-service';
-import { Button, Checkbox } from '../controls';
+import { Button, Checkbox, Image } from '../controls';
 import AddBookmark from '../dialogs/AddBookmark';
 import Dialog from '../dialogs';
 
@@ -140,13 +140,13 @@ class MyBookmarks extends BaseGadget {
                             <td>
                                 <a href={b.ticketUrl} rel="noopener noreferrer" className="link strike" target="_blank">{b.ticketNo}</a>
                             </td>
-                            <td>{b.issuetypeIcon && <img className="img-x16" src={b.issuetypeIcon} alt={b.issuetype} />}{b.issuetype}</td>
+                            <td>{b.issuetypeIcon && <Image src={b.issuetypeIcon} />}{b.issuetype}</td>
                             <td>{b.summary}</td>
                             <td>{b.assigneeName}</td>
                             <td>{b.reporterName}</td>
-                            <td>{b.priorityIcon && <img className="img-x16" src={b.priorityIcon} alt={b.priority} />}{b.priority}</td>
-                            <td>{b.statusIcon && <img className="img-x16" src={b.statusIcon} alt={b.status} />}{b.status}</td>
-                            <td>{b.resolutionIcon && <img className="img-x16" src={b.resolutionIcon} alt={b.resolution} />}{b.resolution}</td>
+                            <td>{b.priorityIcon && <Image src={b.priorityIcon} />}{b.priority}</td>
+                            <td>{b.statusIcon && <Image src={b.statusIcon} />}{b.status}</td>
+                            <td>{b.resolutionIcon && <Image src={b.resolutionIcon} />}{b.resolution}</td>
                             <td>{b.created}</td>
                             <td>{b.updated}</td>
                         </tr>;

@@ -43,8 +43,8 @@ export default class ReportService {
                         queryName: q.queryName,
                         dateCreated: q.dateCreated,
                         advanced: q.advanced,
-                        filtersCount: q.advanced ? null : q.filterFields.length,
-                        outputCount: q.advanced ? null : q.outputFields.length
+                        outputCount: q.advanced ? null : (q.outputFields?.length || q.fields?.length),
+                        isNew: !q.advanced && Array.isArray(q.fields)
                     };
                 });
             });

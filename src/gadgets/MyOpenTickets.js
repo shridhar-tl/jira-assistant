@@ -4,6 +4,7 @@ import BaseGadget, { GadgetActionType } from './BaseGadget';
 import { ScrollableTable, THead, TBody, Column, NoDataRow } from '../components/ScrollableTable';
 import { showContextMenu } from 'jsd-report';
 import { TicketDisplay } from '../display-controls';
+import { Image } from '../controls';
 
 class MyOpenTickets extends BaseGadget {
     constructor(props) {
@@ -92,12 +93,12 @@ class TicketRow extends PureComponent {
         return (
             <tr onContextMenu={(e) => this.keyCtr.showContext(e)}>
                 <TicketDisplay ref={this.setRef} value={b.ticketNo} onAddWorklog={onAddWorklog} onBookmark={onBookmark} />
-                <td><img className="img-x16" src={b.issuetypeIcon} alt="" />{b.issuetype}</td>
+                <td><Image src={b.issuetypeIcon} />{b.issuetype}</td>
                 <td>{b.summary}</td>
                 <td>{b.reporter}</td>
-                <td><img className="img-x16" src={b.priorityIcon} alt="" />{b.priority}</td>
-                <td><img className="img-x16" src={b.statusIcon} alt="" />{b.status}</td>
-                <td>{b.resolutionIcon && <img className="img-x16" src={b.resolutionIcon} alt="" />}{b.resolution}</td>
+                <td><Image src={b.priorityIcon} />{b.priority}</td>
+                <td><Image src={b.statusIcon} />{b.status}</td>
+                <td>{b.resolutionIcon && <Image src={b.resolutionIcon} />}{b.resolution}</td>
                 <td>{b.created}</td>
                 <td>{b.updated}</td>
             </tr>
