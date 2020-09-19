@@ -22,13 +22,16 @@ export default class WorklogService {
 
         fromDate = mfromDate.toDate();
         toDate = mtoDate.toDate();
+        let listForQuery = '';
 
         if (!userList || userList.length === 0) {
+            listForQuery = 'currentUser()';
             userList = [getUserName(this.$session.CurrentUser)];
+        } else {
+            listForQuery = `"${userList.join("\", \"")}"`;
         }
-        const jql = `worklogAuthor in ("${userList.join("\", \"")}") and worklogDate >= '${
-            mfromDate.clone().add(-1, 'days').format("YYYY-MM-DD")}' and worklogDate < '${
-            mtoDate.clone().add(1, 'days').format("YYYY-MM-DD")}'`;
+
+        const jql = `worklogAuthor in (${listForQuery}) and worklogDate >= '${mfromDate.clone().add(-1, 'days').format("YYYY-MM-DD")}' and worklogDate < '${mtoDate.clone().add(1, 'days').format("YYYY-MM-DD")}'`;
         if (!fields || fields.length === 0) {
             fields = ["worklog"];
         } //, "summary", "issuetype", "parent", "status", "assignee"
