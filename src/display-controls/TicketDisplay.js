@@ -16,12 +16,12 @@ class TicketDisplay extends BaseControl {
     }
 
     renderControl() {
-        const { value, url = this.$userutils.getTicketUrl(value) } = this.props;
+        const { value, url = this.$userutils.getTicketUrl(value), hideContext } = this.props;
 
         if (!value) { return null; }
 
         return (<>
-            <i className="fa fa-ellipsis-v margin-r-8" onClick={this.showContext}></i>
+            {!hideContext && <i className="fa fa-ellipsis-v margin-r-8" onClick={this.showContext}></i>}
             <a href={url} className="link strike" target="_blank" rel="noopener noreferrer">{value}</a>
         </>);
     }

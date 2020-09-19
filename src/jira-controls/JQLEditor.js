@@ -12,7 +12,9 @@ class JQLEditor extends PureComponent {
 
         return (
             <div className="jql-editor">
-                <TextBox className="jql-query" multiline={true} placeholder="JQL query to fetch data" value={jql} onChange={this.onChange} />
+                <TextBox className="jql-query" multiline={true}
+                    placeholder="JQL query to fetch data"
+                    value={jql} onChange={this.onChange} />
             </div>
         );
     }

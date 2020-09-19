@@ -1,4 +1,3 @@
-import React from 'react';
 import BaseControl from './BaseControl';
 
 class ProjectDisplay extends BaseControl {
@@ -7,7 +6,7 @@ class ProjectDisplay extends BaseControl {
 
         if (!project) { return null; }
 
-        return (typeof project === 'string') ? project : project?.key;
+        return (typeof project === 'string') ? project : project.key;
     }
 }
 
