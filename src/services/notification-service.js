@@ -1,6 +1,6 @@
 import { messagesUrl } from "../_constants";
 import { BROWSER_NAME } from "../common/browsers";
-import { moment } from "fullcalendar";
+import * as moment from 'moment';
 
 export default class NotificationService {
     static dependencies = ["AjaxService", "CacheService", "AppBrowserService", "UtilsService", "MessageService"];

@@ -14,7 +14,7 @@ export class ScrollableTable extends PureComponent {
     constructor(props) {
         super(props);
         this.eventEmitter = new EventEmitter();
-        this.eventEmitter.setMaxListeners(40);
+        this.eventEmitter.setMaxListeners(400);
 
         this.actualDataset = props.dataset;
         this.state = { dataset: props.dataset, sortBy: props.sortBy, isDesc: props.isDesc };

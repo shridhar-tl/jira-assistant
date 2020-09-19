@@ -88,6 +88,8 @@ div.scroll-table-container {
             tr:not(.auto-wrap) {
                 td {
                     white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
                 }
             }
 

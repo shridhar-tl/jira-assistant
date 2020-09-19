@@ -138,7 +138,7 @@ class ImportIssue extends BaseImport {
     importIssues = () => {
         let { importData } = this.state;
 
-        const selectedRowsIndex = importData.findIndex(t => t.selected);
+        const selectedRowsIndex = importData.findAllIndex(t => t.selected);
         const selectedRows = selectedRowsIndex.map(i => importData[i]);
 
         this.setState({ isLoading: true, uploading: true });

@@ -11,10 +11,10 @@ class ColumnList extends PureComponent {
         const { displayColumns } = props;
 
         return {
-            columns: this.props.columns.map(({ field, displayText }) => (
+            columns: this.props.columns.map(({ id, displayText }) => (
                 {
-                    field, displayText,
-                    selected: !displayColumns || !!~displayColumns.indexOf(field)
+                    id, displayText,
+                    selected: !displayColumns || !!~displayColumns.indexOf(id)
                 }
             ))
         };
@@ -24,7 +24,7 @@ class ColumnList extends PureComponent {
         let { columns } = this.state;
 
         let displayColumns = columns.filter(c => c.selected);
-        displayColumns = (displayColumns.length === columns.length) ? null : displayColumns.map(c => c.field);
+        displayColumns = (displayColumns.length === columns.length) ? null : displayColumns.map(c => c.id);
         columns = null;
         this.props.onChange(displayColumns);
     }

@@ -103,7 +103,7 @@ class StatusWiseTimeSpent extends PureComponent {
         const list = [
             { field: "key", displayText: "Ticket No", type: "string", viewComponent: TicketDisplay, props: { onAddWorklog } },
             { field: "summary", displayText: "Summary", type: "string" },
-            { field: "project", groupKey: "project.key", displayText: "Project", type: "string", viewComponent: ProjectDisplay },
+            { field: "project", fieldKey: "project.key", displayText: "Project", type: "string", viewComponent: ProjectDisplay },
             { field: "issuetype.name", displayText: "Issue Type", type: "string" },
             { field: "epic", displayText: "Epic", type: "string", viewComponent: TicketDisplay, props: { onAddWorklog, hideWorklog: true } },
             { field: "storyPoint", displayText: "Story Points", type: "number" },
@@ -114,8 +114,8 @@ class StatusWiseTimeSpent extends PureComponent {
             { field: "parent.key", displayText: "Parent", type: "string", viewComponent: TicketDisplay, props: { onAddWorklog } },
             { field: "status.name", displayText: "Status", type: "string" },
             { field: "created", displayText: "Created", type: "datetime", viewComponent: DateDisplay },
-            { field: "assignee", groupKey: "assignee.displayName", displayText: "Assignee", type: "string", viewComponent: UserDisplay },
-            { field: "reporter", groupKey: "reporter.displayName", displayText: "Reporter", type: "string", viewComponent: UserDisplay },
+            { field: "assignee", fieldKey: "assignee.displayName", displayText: "Assignee", type: "string", viewComponent: UserDisplay },
+            { field: "reporter", fieldKey: "reporter.displayName", displayText: "Reporter", type: "string", viewComponent: UserDisplay },
             ...statusList.map(status => ({
                 field: `statusData.${status.name}`, displayText: `Spent on ${status.name}`,
                 type: "number", viewComponent: TimeSpentDisplay, props: { inputType: "ticks", days: true }

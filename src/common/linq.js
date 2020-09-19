@@ -341,14 +341,11 @@ Array.prototype.addDistinctRange = function (items) {
   }
   return this;
 };
-Array.prototype.groupBy = function (clause, filter) {
+Array.prototype.groupBy = function (clause, filter, keyObj) {
   const result = [];
   const valObj = {};
-  const isClauseString = typeof clause === 'string';
-  if (isClauseString) {
-    const tmp = clause;
-    clause = tmp.indexOf(".") > -1 ? function (obj) { return getPathValue(obj, tmp); } : function (obj) { return obj[tmp]; };
-  }
+  clause = parseClause(clause);
+  keyObj = parseClause(keyObj);
 
   for (let i = 0; i < this.length; i++) {
     const item = this[i];
@@ -358,6 +355,9 @@ Array.prototype.groupBy = function (clause, filter) {
     let obj = valObj[keyStr || key];
     if (!obj) {
       obj = { key: key, values: [] };
+      if (keyObj) {
+        obj.keyObj = keyObj(item);
+      }
       result.push(valObj[keyStr || key] = obj);
     }
     if (!filter || filter(item)) {
@@ -366,6 +366,14 @@ Array.prototype.groupBy = function (clause, filter) {
   }
   return result;
 };
+function parseClause(clause) {
+  const isClauseString = typeof clause === 'string';
+  if (isClauseString) {
+    const tmp = clause;
+    clause = tmp.indexOf(".") > -1 ? function (obj) { return getPathValue(obj, tmp); } : function (obj) { return obj[tmp]; };
+  }
+  return clause;
+}
 Array.prototype.replace = function (item, newItem) {
   const idx = this.indexOf(item);
   if (idx !== -1) { this[idx] = newItem; }
@@ -562,7 +570,7 @@ Array.prototype.toKeyValuePair = function (clause, filter) {
 };
 
 
-Array.prototype.findIndex = function (clause, maxItems) {
+Array.prototype.findAllIndex = function (clause, maxItems) {
   const source = this;
   const newArray = [];
 
