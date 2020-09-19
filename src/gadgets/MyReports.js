@@ -154,7 +154,6 @@ class MyReports extends BaseGadget {
                         <Column sortBy="queryName">Report name</Column>
                         <Column sortBy="sortDate">Created On</Column>
                         <Column sortBy="advanced">Report type</Column>
-                        <Column sortBy="filtersCount">Filter Fields</Column>
                         <Column sortBy="outputCount">Output fields</Column>
                         <Column>Options</Column>
                     </tr>
@@ -168,7 +167,6 @@ class MyReports extends BaseGadget {
                             <td>{b.queryName}</td>
                             <td>{b.displayDate}</td>
                             <td>{b.advanced ? 'Advanced report' : 'Custom Report'}</td>
-                            <td>{b.filtersCount}</td>
                             <td>{b.outputCount}</td>
                             <td className="text-center"><Button icon="fa fa-edit" onClick={() => this.editReport(b)} title="Click to edit this report" /></td>
                         </tr>;

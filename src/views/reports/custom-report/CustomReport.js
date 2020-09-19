@@ -12,11 +12,6 @@ class CustomReport extends PureComponent {
         this.state = { reportId };
     }
 
-    generateReport($event) {
-        this.queryAvailable = true;
-        this.report.generateReport($event.queryModel);
-    }
-
     viewReport = (reportDefinition) => {
         this.setState({ viewReport: true, reportDefinition });
     }

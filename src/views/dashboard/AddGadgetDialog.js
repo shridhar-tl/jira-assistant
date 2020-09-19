@@ -22,7 +22,7 @@ class AddGadgetDialog extends BaseDialog {
                         id: (r.advanced ? "AR:" : "SQ:") + r.id,
                         icon: "fa fa-filter",
                         name: r.queryName,
-                        details: (!r.advanced ? `${r.outputCount} columns displayed${r.filtersCount > 0 ? ` with ${r.filtersCount} filters` : ""} in table format` : "<no details available>")
+                        details: (!r.advanced ? `${r.outputCount} columns displayed in table format` : "<no details available>")
                     };
                 });
 
