@@ -1,0 +1,31 @@
+.query-editor-gadget {
+    height: auto !important;
+    max-height: 405px;
+}
+
+.query-editor {
+    .display-fields {
+        max-height: 260px;
+
+        table.scroll-table {
+            thead{
+                tr{
+                    th:nth-child(1) { cursor: pointer; width: 70px; }
+                    th:nth-child(4) { width: 50px; }
+                }
+            }
+        }
+    }
+}
+
+.custom-report {
+    .groupable-grid {
+        .scroll-table-container {
+            max-height: calc(100vh - 134px);
+
+            table > thead:not(.scroll-overlay) th, table > tbody td {
+                max-width: 700px;
+            }
+        }
+    }
+}
