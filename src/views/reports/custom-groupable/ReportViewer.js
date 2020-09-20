@@ -6,24 +6,45 @@ import { loadReportData } from './actions';
 
 class ReportViewer extends BaseGadget {
     constructor(props) {
-        super(props, props.query?.queryName || 'Custom report viewer', 'fa-clock-o');
+        const { query, reportId } = props;
+        super(props, query?.queryName || 'Custom report viewer', 'fa-clock-o');
         inject(this, 'AnalyticsService', 'ReportService', 'JiraService', 'UtilsService', 'UserUtilsService');
-        this.loadReportData(props.query);
+        this.state.isLoading = true;
+
+        if (reportId) {
+            this.loadReportDefinition(reportId);
+        }
+        else if (query) {
+            this.loadReportData(query);
+        }
     }
 
-    async UNSAFE_componentWillReceiveProps(props) {
+    UNSAFE_componentWillReceiveProps(props) {
         super.UNSAFE_componentWillReceiveProps(props);
         this.loadReportData(props.query);
     }
 
-    async loadReportData(query) {
+    async loadReportDefinition(reportId) {
+        const query = await this.$report.getReportDefinition(reportId);
+        this.title = query?.queryName || 'Custom report viewer';
+        this.setState({ query });
+        this.loadReportData(query);
+    }
+
+    loadReportData(query) {
         this.settings = { ...query.settings, ...this.settings };
 
         if (this.jql !== query.jql || this.fields !== query.fields) {
             this.jql = query.jql;
             this.fields = query.fields;
-            this.setState(await loadReportData(query));
+            this.loadData(query);
         }
+    }
+
+    refreshData = () => this.loadData(this.props.query || this.state.query);
+    loadData = async (query) => {
+        this.setState({ isLoading: true });
+        this.setState(await loadReportData(query));
     }
 
     tableSettingsChanged = (settings) => {
@@ -37,7 +58,11 @@ class ReportViewer extends BaseGadget {
     }
 
     render() {
-        const { query } = this.props;
+        const { query: queryFromProps } = this.props;
+
+        // When the report is loaded as gadget, it would have report definition in state
+        const { query = queryFromProps } = this.state;
+
         const {
             loading,
             reportData,
@@ -53,17 +78,19 @@ class ReportViewer extends BaseGadget {
             isDesc
         } = this.settings || settings || {};
 
+        if (loading || !reportData) {
+            return super.renderBase();
+        }
+
         return super.renderBase(
-            <div>
-                {!loading && reportData && <GroupableGrid dataset={reportData}
-                    exportSheetName={query.queryName}
-                    columns={columnList} allowSorting={true}
-                    onChange={this.tableSettingsChanged}
-                    displayColumns={displayColumns} groupBy={groupBy}
-                    groupFoldable={groupFoldable} sortField={sortField} isDesc={isDesc}
-                    noRowsMessage="No ticket details available"
-                />}
-            </div>
+            <GroupableGrid dataset={reportData}
+                exportSheetName={query.queryName}
+                columns={columnList} allowSorting={true}
+                onChange={this.tableSettingsChanged}
+                displayColumns={displayColumns} groupBy={groupBy}
+                groupFoldable={groupFoldable} sortField={sortField} isDesc={isDesc}
+                noRowsMessage="No ticket details available"
+            />
         );
     }
 }

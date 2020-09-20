@@ -26,7 +26,6 @@ import $ from 'jquery';
 import AsideUserInfo from './AsideUserInfo';
 import { setStartOfWeek } from '../../common/utils';
 
-//const DefaultAside = React.lazy(() => import('./DefaultAside'));
 const DefaultHeader = React.lazy(() => import('./DefaultHeader'));
 
 class DefaultLayout extends PureComponent {
@@ -102,7 +101,6 @@ class DefaultLayout extends PureComponent {
             <Suspense>
               <AppSidebarNav navConfig={menus} {...this.props} router={router} />
             </Suspense>
-            {/*<AppSidebarFooter />*/}
             <AppSidebarMinimizer />
           </AppSidebar>
           <main className="main">
@@ -122,17 +120,11 @@ class DefaultLayout extends PureComponent {
                           )} />
                       ) : (null);
                     })}
-                    {/*<Redirect from="/" to="/dashboard/0" />*/}
                   </Switch>
                 </Suspense>
               </Container>
             </DndProvider>
           </main>
-          {/*<AppAside fixed>
-            <Suspense fallback={this.loading()}>
-              <DefaultAside />
-            </Suspense>
-          </AppAside>*/}
         </div>
         <ContextMenu />
         <CustomDialog />

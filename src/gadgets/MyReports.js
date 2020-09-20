@@ -115,7 +115,7 @@ class MyReports extends BaseGadget {
     }
 
     editReport = (rpt) => {
-        this.context.navigate(`/reports/${rpt.advanced ? "advanced" : "customgrouped"}/${rpt.id}`, true);
+        this.context.navigate(`/reports/${rpt.advanced ? "advanced" : (rpt.isNew ? 'custom' : 'customgrouped')}/${rpt.id}`, true);
     }
 
     selectRowItem(item) {
@@ -166,7 +166,7 @@ class MyReports extends BaseGadget {
                             </td>
                             <td>{b.queryName}</td>
                             <td>{b.displayDate}</td>
-                            <td>{b.advanced ? 'Advanced report' : 'Custom Report'}</td>
+                            <td>{b.advanced ? 'Advanced report' : (`Custom Report${b.isNew ? '' : ' (old)'}`)}</td>
                             <td>{b.outputCount}</td>
                             <td className="text-center"><Button icon="fa fa-edit" onClick={() => this.editReport(b)} title="Click to edit this report" /></td>
                         </tr>;

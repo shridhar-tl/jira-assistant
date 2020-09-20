@@ -57,7 +57,7 @@ class CustomReport extends PureComponent {
         history.push(path);
     }
 
-    queryChanged = (query) => this.setState({ query });
+    queryChanged = (query) => this.setState({ query, hasUnsavedChanges: true });
 
     deleteQuery = () => {
         const { reportId, query: { queryName } } = this.state;
@@ -97,7 +97,7 @@ class CustomReport extends PureComponent {
         this.$report.saveQuery(query).then((id) => {
             query.id = id;
 
-            this.setState({ showSaveDialog: false, reportId: id, query });
+            this.setState({ showSaveDialog: false, hasUnsavedChanges: false, reportId: id, query });
 
             if (refillList) {
                 this.fillQueriesList();
@@ -120,11 +120,11 @@ class CustomReport extends PureComponent {
         query = { ...query, settings };
         reportQuery = { ...reportQuery, settings };
 
-        this.setState({ query, reportQuery });
+        this.setState({ query, reportQuery, hasUnsavedChanges: true });
     }
 
     render() {
-        const { reportId, query, reportQuery, reportsList, showSaveDialog } = this.state;
+        const { reportId, query, reportQuery, reportsList, showSaveDialog, hasUnsavedChanges } = this.state;
 
         return (
             <div className="custom-report">
@@ -138,6 +138,7 @@ class CustomReport extends PureComponent {
                     viewReport={this.viewReport}
                     showSaveDialog={this.showSaveDialog}
                     saveAs={this.saveAs}
+                    allowSave={hasUnsavedChanges}
                 />
                 {reportQuery && <ReportViewer
                     isGadget={false}

@@ -20,7 +20,8 @@ class QueryEditor extends BaseGadget {
     renderFooter() {
         const {
             query: { id, isSystemQuery },
-            deleteQuery, showSaveDialog, saveAs, viewReport
+            deleteQuery, showSaveDialog, saveAs, viewReport,
+            allowSave
         } = this.props;
 
         const isSaveEnabled = this.isSaveEnabled();
@@ -44,7 +45,7 @@ class QueryEditor extends BaseGadget {
                     icon="fa fa-floppy-o"
                     label="Save Query"
                     type="success"
-                    disabled={!isSaveEnabled || isSystemQuery}
+                    disabled={!isSaveEnabled || isSystemQuery || !allowSave}
                     onClick={isEditing ? saveAs : showSaveDialog} />
                 <Button
                     icon="fa fa-list"

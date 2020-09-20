@@ -151,21 +151,23 @@ export class GroupableGrid extends PureComponent {
             }));
     }
 
-    renderColumn = (c, i) => {
-        if (!c.visible) { return null; }
-        const sortBy = c.allowSorting ? c.fieldKey || c.field : undefined;
+    getColumnRenderer(isGroup) {
+        return (c, i) => {
+            if (!c.visible) { return null; }
+            const sortBy = !isGroup && c.allowSorting ? c.fieldKey || c.field : undefined;
 
-        if (c.allowGrouping === false) {
-            return (
-                <Column sortBy={sortBy}>{c.displayText}</Column>
-            );
+            if (c.allowGrouping === false) {
+                return (
+                    <Column key={i} sortBy={sortBy}>{c.displayText}</Column>
+                );
+            }
+
+            return <Draggable key={i} itemType="column" item={c} itemTarget={itemTarget}>
+                {(connectDragSource, isDragging) => <Column
+                    dragConnector={connectDragSource}
+                    sortBy={sortBy}>{c.displayText}</Column>}
+            </Draggable>;
         }
-
-        return <Draggable key={i} itemType="column" item={c} itemTarget={itemTarget}>
-            {(connectDragSource, isDragging) => <Column
-                dragConnector={connectDragSource}
-                sortBy={sortBy}>{c.displayText}</Column>}
-        </Draggable>;
     }
 
     renderGroupColumns = (_, i) => <th key={i} className="group-header foldable"></th>
@@ -226,6 +228,8 @@ export class GroupableGrid extends PureComponent {
     }
 
     renderFoldableGroupRow(g, i, columns, groupBy, depth = 0) {
+        const Component = groupBy[0]?.viewComponent;
+
         const emptyTDs = depth > 0 && [].init((_, i) => <td key={i} className="group-indent-td"></td>, depth);
         const groupKeyCell = groupBy.length > 0 && (<tr key={g.key}>
             {emptyTDs}
@@ -235,7 +239,7 @@ export class GroupableGrid extends PureComponent {
                 <span className={`fa fa-caret-${g.hidden ? "right" : "down"}`} />
             </td>
             <td className="group-name-td" colSpan={(groupBy.length - depth) + columns.length}>
-                {g.key}
+                {Component ? <Component tag='span' value={g.keyObj || g.key} /> : (g.key || '')}
             </td>
         </tr>);
 
@@ -352,8 +356,8 @@ export class GroupableGrid extends PureComponent {
                     <THead>
                         <TRow>
                             {!!groupFoldable && groupBy && groupBy.map(this.renderGroupColumns)}
-                            {!groupFoldable && groupBy && groupBy.map(this.renderColumn)}
-                            {columns.map(this.renderColumn)}
+                            {!groupFoldable && groupBy && groupBy.map(this.getColumnRenderer(true))}
+                            {columns.map(this.getColumnRenderer(false))}
                         </TRow>
                     </THead>
                     <TBody>{this.renderTableBody(columns, groupBy)}</TBody>

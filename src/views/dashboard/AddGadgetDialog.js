@@ -19,10 +19,15 @@ class AddGadgetDialog extends BaseDialog {
             if (reports && reports.length) {
                 const list = reports.map(r => {
                     return {
-                        id: (r.advanced ? "AR:" : "SQ:") + r.id,
+                        id: (r.advanced ? "AR:" : (r.isNew ? "CR:" : "SQ:")) + r.id,
                         icon: "fa fa-filter",
                         name: r.queryName,
-                        details: (!r.advanced ? `${r.outputCount} columns displayed in table format` : "<no details available>")
+                        isOld: !(r.isNew || r.advanced),
+                        details: (!r.advanced ?
+                            `${r.outputCount} columns displayed in table format${r.isNew
+                                ? ' with interactive option to sort and group based on columns.'
+                                : ' (deprecated, not allowed to add to dashboard)'}`
+                            : "<no details available>")
                     };
                 });
 
@@ -60,7 +65,7 @@ class AddGadgetDialog extends BaseDialog {
                                 <div className="params"></div>
                             </div>
                             <div className="controls">
-                                {!added && <Button type="success" icon="fa fa-plus" label="Add gadget" onClick={() => addGadget(g.id)} />}
+                                {!added && <Button type="success" icon="fa fa-plus" label="Add gadget" disabled={g.isOld} onClick={() => addGadget(g.id)} />}
                                 {added && <Button type="danger" icon="fa fa-times" label="Remove gadget" onClick={() => removeGadget(g.id)} />}
                             </div>
                         </div>

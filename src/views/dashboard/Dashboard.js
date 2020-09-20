@@ -7,7 +7,8 @@ import AddGadgetDialog from './AddGadgetDialog';
 import AddWorklog from '../../dialogs/AddWorklog';
 import BaseGadget, { onDashboardEvent } from '../../gadgets/BaseGadget';
 import { TabView, TabPanel } from 'primereact/tabview';
-import CustomReport from '../reports/custom-report/ReportViewer';
+import OldCustomReport from '../reports/custom-report/ReportViewer';
+import CustomReport from '../reports/custom-groupable/ReportViewer';
 import AdvancedReport from '../reports/report-builder/ReportViewer';
 import { Sortable } from 'jsd-report';
 
@@ -112,9 +113,11 @@ class Dashboard extends PureComponent {
             myFilters: { title: "My reports", control: MyReports },
             agendaDay: { title: "Calendar", control: Calendar, getProps: () => { return { viewMode: "timeGridDay" }; } },
             agendaWeek: { title: "Calendar", control: Calendar, getProps: () => { return { viewMode: "timeGridWeek" }; } },
-            SQ: { title: "Custom report", control: CustomReport, getProps: (sett, opts) => { return { reportId: parseInt(opts[0]) }; } },
+            SQ: { title: "Custom report (Old)", control: OldCustomReport, getProps: (sett, opts) => { return { reportId: parseInt(opts[0]) }; } },
+            CR: { title: "Custom report", control: CustomReport, getProps: (sett, opts) => { return { reportId: parseInt(opts[0]) }; } },
             AR: { title: "Advanced report", control: AdvancedReport, getProps: (sett, opts) => { return { reportId: parseInt(opts[0]) }; } },
         };
+
         controls.myBookmarks = controls.bookmarksList;
         controls.dtWiseWL = controls.dateWiseWorklog;
         controls.pendingWL = controls.pendingWorklog;

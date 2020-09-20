@@ -3,6 +3,11 @@
 
     .scroll-table-container {
         height: calc(100% - 47px);
+        max-height: calc(100vh - 134px);
+
+        table > thead:not(.scroll-overlay) th, table > tbody td {
+            max-width: 700px;
+        }
     }
 }
 
