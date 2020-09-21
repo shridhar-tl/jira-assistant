@@ -146,7 +146,7 @@ class Dashboard extends PureComponent {
         }
 
         const props = {
-            key: name,
+            key: `${name}_${nameOpts[0]}`,
             tabLayout,
             index: i,
             model: w,
