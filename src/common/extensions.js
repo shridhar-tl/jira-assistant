@@ -86,7 +86,7 @@ String.prototype.format = function (...args) {
     for (let i = 0; i < args.length; i++) {
         str = str.replace(new RegExp(`\\{${i}\\}`, 'g'), args[i]);
     }
-    return str;
+    return str.toString();
 };
 
 if (!String.prototype.startsWith) {
@@ -107,7 +107,7 @@ if (!String.prototype.clearEnd) {
         while (s.endsWith(str)) {
             s = s.substring(0, s.length - str.length);
         }
-        return s;
+        return s.toString();
     };
 }
 
@@ -117,6 +117,6 @@ if (!String.prototype.clearStart) {
         while (s.startsWith(str)) {
             s = s.substring(str.length);
         }
-        return s;
+        return s.toString();
     };
 }

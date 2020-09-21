@@ -16,42 +16,67 @@ class CustomReport extends PureComponent {
             reportId = parseInt(reportId);
         }
 
-        this.state = {
+        this.state = this.getEmptyReport(reportId);
+
+        this.loadReport(reportId);
+    }
+
+    UNSAFE_componentWillReceiveProps(props) {
+        let { match: { params: { reportId } } } = props;
+        if (reportId) {
+            reportId = parseInt(reportId);
+        }
+        if (this.state.reportId !== reportId) {
+            this.loadReport(reportId);
+        }
+    }
+
+    getEmptyReport(reportId = null) {
+        return {
             reportId,
             query: {
                 jql: '',
                 fields: []
             }
         };
-
-        this.loadReport(reportId);
     }
 
+    initModel = () => this.querySelected('');
+
     loadReport = async (reportId) => {
+        await this.fillQueriesList(reportId);
+
+        if (!reportId) {
+            return;
+        }
+
+        const query = await this.$report.getReportDefinition(reportId);
+
+        this.setState({ reportId, query, reportQuery: null, hasUnsavedChanges: false });
+    }
+
+    fillQueriesList = async (reportId) => {
         const result = await this.$report.getReportsList();
 
         const reportsList = result
             .filter(q => q.isNew)
             .map(q => ({ value: q.id, label: q.queryName }));
 
-        if (!reportId) {
-            this.setState({ reportsList });
-            return;
-        }
-
-        const query = await this.$report.getReportDefinition(reportId);
-
-        this.setState({ reportsList, query });
+        this.setState({ reportId, reportsList });
     }
 
     querySelected = (reportId) => {
         let { history, match: { path } } = this.props;
 
         if (path.indexOf(':reportId') >= 0) {
-            path = path.replace(':reportId', reportId);
+            path = path.replace(':reportId', reportId).clearEnd('/');
         }
-        else {
+        else if (reportId) {
             path = `${path}/${reportId}`;
+        }
+        else { // When report id is not available then user clicked on New Query button
+            this.setState(this.getEmptyReport());
+            return;
         }
 
         history.push(path);
@@ -66,9 +91,7 @@ class CustomReport extends PureComponent {
             .then(() => {
                 this.$report.deleteSavedQuery(reportId).then(q => {
                     this.$message.success('Report deleted successfully!');
-                    this.setState({ reportId: null });
-                    this.initModel();
-                    this.fillQueriesList();
+                    this.querySelected('');
                 });
             });
     }
@@ -99,14 +122,16 @@ class CustomReport extends PureComponent {
 
             this.setState({ showSaveDialog: false, hasUnsavedChanges: false, reportId: id, query });
 
-            if (refillList) {
-                this.fillQueriesList();
-            }
-
-            //this.props.onSave(query);
-
             this.$message.success("Report saved successfully!");
             this.$analytics.trackEvent("Custom Report Saved");
+
+            if (refillList) {
+                this.fillQueriesList(id);
+
+                if (copy) {
+                    this.querySelected(id);
+                }
+            }
         }, (err) => {
             if (err && err.message) {
                 this.$message.error(err.message);
@@ -139,6 +164,7 @@ class CustomReport extends PureComponent {
                     showSaveDialog={this.showSaveDialog}
                     saveAs={this.saveAs}
                     allowSave={hasUnsavedChanges}
+                    initModel={this.initModel}
                 />
                 {reportQuery && <ReportViewer
                     isGadget={false}
