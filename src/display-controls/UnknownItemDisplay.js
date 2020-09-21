@@ -1,14 +1,18 @@
+import React from 'react';
 import BaseControl from './BaseControl';
 
 class UnknownItemDisplay extends BaseControl {
-    renderControl() {
-        const { value } = this.props;
+    renderControl(badge) {
+        let { value } = this.props;
 
-        if (!value) { return null; }
+        if (!value) { return badge; }
 
-        if (typeof value === 'string') {
-            return value;
-        } else {
+        value = value?.text || value;
+
+        if (typeof value !== 'object') {
+            return <>{value} {badge}</>;
+        }
+        else {
             return JSON.stringify(value);
         }
     }

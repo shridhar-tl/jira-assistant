@@ -15,10 +15,14 @@ class IssueDisplay extends BaseControl {
         }
     }
 
-    renderControl() {
-        const { value, issue = value, title, className } = this.props;
+    renderControl(badge) {
+        const { value, issue = value, title, className, settings } = this.props;
 
-        if (!issue) { return null; }
+        if (!issue) { return badge; }
+
+        if (typeof issue === 'string') {
+            return issue;
+        }
 
         const key = issue.key;
         const fields = issue.fields;
@@ -26,13 +30,26 @@ class IssueDisplay extends BaseControl {
         const summary = fields?.summary;
         const iconUrl = issueType?.iconUrl;
         const issueTypeName = issueType?.name;
-        const status = fields?.status?.name;
+        let status = fields?.status?.name;
+        status = !!status && settings?.showStatus !== false && `(${status})`;
+
+        const valueType = settings?.valueType;
+
+        let disp = key || 'Unknown';
+
+        if (valueType === 'summary') {
+            disp = summary;
+        }
+        else if (valueType === 'both') {
+            disp = <>{disp} - {summary}</>
+        }
 
         return (
             <a href={this.getTicketUrl(key)} title={title} rel="noopener noreferrer"
                 className={`link ${className}`} target="_blank">
                 {!!iconUrl && <Image src={iconUrl} title={issueTypeName} />}
-                <span title={summary}>{key || 'Unknown'} ({status})</span>
+                <span title={summary}>{disp} {status}</span>
+                {badge}
             </a>
         );
     }

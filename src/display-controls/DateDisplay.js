@@ -8,8 +8,14 @@ class DateDisplay extends BaseControl {
         inject(this, "UserUtilsService");
     }
 
-    renderControl() {
+    renderControl(badge) {
         const { value, date = value, quick } = this.props;
+
+        if (!date) { return badge; }
+
+        if (value?.text) {
+            return <>{value.text} {badge}</>;
+        }
 
         return (
             <span title={quick ? this.$userutils.formatDateTime(date) : null}>

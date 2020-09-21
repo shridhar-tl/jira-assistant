@@ -132,6 +132,8 @@ Array.prototype.distinctObj = function (clause) {
 };
 Array.prototype.sum = function (clause) {
   let value = 0, index;
+  clause = parseClause(clause);
+
   if (clause) {
     for (index = 0; index < this.length; index++) {
       value += clause(this[index]) || 0;
@@ -146,6 +148,8 @@ Array.prototype.sum = function (clause) {
 Array.prototype.avg = function (clause) {
   let value = 0;
   let count = 0, val, index;
+  clause = parseClause(clause);
+
   if (clause) {
     for (index = 0; index < this.length; index++) {
       val = parseFloat(clause(this[index]));
@@ -356,7 +360,7 @@ Array.prototype.groupBy = function (clause, filter, keyObj) {
     if (!obj) {
       obj = { key: key, values: [] };
       if (keyObj) {
-        obj.keyObj = keyObj(item);
+        obj.keyObj = keyObj(item, key);
       }
       result.push(valObj[keyStr || key] = obj);
     }

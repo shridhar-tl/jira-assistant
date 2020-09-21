@@ -8,18 +8,25 @@ class TimeSpentDisplay extends BaseControl {
         inject(this, "UtilsService");
     }
 
-    renderControl() {
+    renderControl(badge) {
         const { value, inputType = "secs", days } = this.props;
         let { timespent = value } = this.props;
 
-        if (!timespent) { return null; }
+        if (!timespent) { return badge; }
 
         if (inputType === "ticks" && timespent > 500) {
             timespent = parseInt(timespent / 1000);
         }
 
+        if (timespent?.text) {
+            timespent = timespent.text;
+        }
+        else {
+            timespent = this.$utils.formatSecs(timespent, undefined, undefined, days);
+        }
+
         return (
-            <span>{this.$utils.formatSecs(timespent, undefined, undefined, days)} </span>
+            <span>{timespent} {badge}</span>
         );
     }
 }

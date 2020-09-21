@@ -1,17 +1,21 @@
 import React, { PureComponent, Fragment } from 'react';
 import PropTypes from 'prop-types';
+import * as moment from 'moment';
 import { Draggable } from 'jsd-report';
 import { ScrollableTable, THead, TRow, Column, TBody, NoDataRow } from '../ScrollableTable';
 import GroupedColumnList from './GroupedColumnList';
 import './GroupableGrid.scss';
 import ColumnList from './ColumnList';
 import { getPathValue } from '../../common/utils';
+import { inject } from '../../services/injector-service';
 
 const itemTarget = ["column"];
 
 export class GroupableGrid extends PureComponent {
     constructor(props) {
         super(props);
+        inject(this, 'UtilsService');
+        this.convertDate = this.$utils.convertDate;
         this.state = this.getNewState(props);
     }
 
@@ -66,21 +70,27 @@ export class GroupableGrid extends PureComponent {
                 let id = g;
                 let fieldKey = field;
                 let sortDesc = false;
+                let settings = undefined;
 
                 if (typeof g === "object") {
                     field = g.field;
                     id = g.id || field;
                     fieldKey = g.fieldKey || g.groupKey || field; // ToDo: groupKey is temporary. need to be removed later
                     sortDesc = g.sortDesc;
+                    settings = g.settings;
                 }
 
                 g = columns[id];
 
                 if (!g) { return null; }
 
-                const { displayText, allowSorting, viewComponent } = g;
+                const { displayText, allowSorting, groupOptions, type, viewComponent } = g;
 
-                return { id, field, viewComponent, fieldKey, displayText, allowSorting, sortDesc, visible: true };
+                return {
+                    id, field, viewComponent, fieldKey, displayText,
+                    allowSorting, groupOptions, sortDesc, visible: true,
+                    settings, type
+                };
             }).filter(Boolean);
 
             if (!result.length) {
@@ -103,7 +113,7 @@ export class GroupableGrid extends PureComponent {
         // Map all the known properties for column schema
         const result = columns.map(c => {
             const { field, fieldKey = field,
-                allowSorting = globalSort, allowGrouping = globalGrouping,
+                allowSorting = globalSort, allowGrouping = globalGrouping, groupOptions,
                 format, type, viewComponent, props: pr, sortValueFun, groupValueFunc } = c;
 
             const id = c.id || field;
@@ -117,6 +127,7 @@ export class GroupableGrid extends PureComponent {
                 visible: !displayColumns || (isColsToRemove ? !displayColumns.contains(`-${id}`) : displayColumns.contains(id)),
                 allowSorting,
                 allowGrouping,
+                groupOptions,
                 format, type, viewComponent, props: pr, sortValueFun, groupValueFunc
             };
         });
@@ -135,13 +146,62 @@ export class GroupableGrid extends PureComponent {
     groupData(data, groupBy, sortField, isDesc, prefix) {
         prefix = prefix ? `${prefix}_` : "";
         if (!groupBy.length) { return sortField ? data.sortBy(sortField, isDesc) : data; }
-        const { 0: { field, fieldKey, sortDesc } } = groupBy;
+        const { 0: { field, fieldKey, sortDesc, settings, type } } = groupBy;
         groupBy = groupBy.slice(1);
 
         const altKeyField = fieldKey && fieldKey !== field;
 
-        return data.groupBy(fieldKey || field, null, altKeyField ? field : null)
-            .sortBy("key", sortDesc)
+        const groupData = (grpBy, keyObjFunc = null) => data.groupBy(grpBy, null, altKeyField ? field : keyObjFunc);
+
+        let funcType = settings?.funcType;
+        const convertDate = this.convertDate;
+
+        let resultData = null;
+
+        if (type === 'date' || type === 'datetime') {
+            funcType = funcType || 'yyyy-MM (MMMM)';
+
+            let convertFunc = (d) => {
+                const val = convertDate(d[field]);
+
+                if (!val) { return val; }
+
+                return val.format(funcType);
+            };
+
+            if (funcType === 'friendly') {
+                convertFunc = (d) => {
+                    const val = d[field];
+                    if (!val) { return val; }
+
+                    return moment(val).fromNow();
+                };
+            }
+
+            resultData = groupData(convertFunc, (_, text) => ({ text: text || '(no date)' }));
+        }
+        else if (funcType && (type === 'number' || type === 'seconds')) {
+            switch (funcType) {
+                default:
+                    resultData = groupData(fieldKey || field);
+                    break;
+                case 'sum':
+                    resultData = [{ key: data.sum(field), values: data }];
+                    break;
+                case 'avg':
+                    resultData = [{ key: data.avg(field), values: data }];
+                    break;
+                case 'count':
+                    const count = data.count((d) => d[field] > 0);
+                    resultData = [{ key: count, keyObj: { text: `${count} has value` }, values: data }];
+                    break;
+            }
+        }
+        else {
+            resultData = groupData(fieldKey || field);
+        }
+
+        return resultData.sortBy("key", sortDesc)
             .map((row, i) => ({
                 key: row.key,
                 keyObj: row.keyObj,
@@ -228,7 +288,8 @@ export class GroupableGrid extends PureComponent {
     }
 
     renderFoldableGroupRow(g, i, columns, groupBy, depth = 0) {
-        const Component = groupBy[0]?.viewComponent;
+        const curGroup = groupBy[0];
+        const Component = curGroup?.viewComponent;
 
         const emptyTDs = depth > 0 && [].init((_, i) => <td key={i} className="group-indent-td"></td>, depth);
         const groupKeyCell = groupBy.length > 0 && (<tr key={g.key}>
@@ -239,7 +300,7 @@ export class GroupableGrid extends PureComponent {
                 <span className={`fa fa-caret-${g.hidden ? "right" : "down"}`} />
             </td>
             <td className="group-name-td" colSpan={(groupBy.length - depth) + columns.length}>
-                {Component ? <Component tag='span' value={g.keyObj || g.key} /> : (g.key || '')}
+                {Component ? <Component tag='span' count={g.rowSpan} value={g.keyObj || g.key} settings={curGroup.settings} /> : (g.key || '')}
             </td>
         </tr>);
 
@@ -256,9 +317,17 @@ export class GroupableGrid extends PureComponent {
     }
 
     renderGroupRow(g, i, columns, groupBy, prepend = null) {
-        const Component = groupBy[0]?.viewComponent;
+        const curGroup = groupBy[0];
+        const Component = curGroup?.viewComponent;
 
-        let groupKeyCell = groupBy.length > 0 && <td rowSpan={g.rowSpan}>{Component ? <Component tag='span' value={g.keyObj || g.key} /> : (g.key || '')}</td>;
+        let groupKeyCell = groupBy.length > 0 && (
+            <td rowSpan={g.rowSpan}>
+                {Component ?
+                    <Component tag='span' count={g.rowSpan} settings={curGroup?.settings} value={g.keyObj || g.key} />
+                    : (g.key || '')}
+            </td>
+        );
+
         if (prepend && groupKeyCell) {
             groupKeyCell = <Fragment>{prepend}{groupKeyCell}</Fragment>;
         }
@@ -306,7 +375,8 @@ export class GroupableGrid extends PureComponent {
         }
 
         if (type !== "mode") {
-            groupBy = groupBy.map(({ id, field, fieldKey, sortDesc }) => ({ id, field, fieldKey, sortDesc }));
+            groupBy = groupBy
+                .map(({ id, field, fieldKey, sortDesc, settings }) => ({ id, field, fieldKey, sortDesc, settings }));
         }
         else {
             groupBy = oldGroupBy;

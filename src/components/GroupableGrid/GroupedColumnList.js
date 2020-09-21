@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react';
 import { Sortable } from 'jsd-report';
 import PropTypes from 'prop-types';
+import { showContextMenu } from 'jsd-report';
 
 const emptyGroupPlaceholder = <div className="empty-group-msg">Drag and drop column here to group data</div>;
 const addGroupItemPlaceholder = <span>Drag and drop more columns here</span>;
@@ -11,6 +12,13 @@ class GroupedColumnList extends PureComponent {
         const groupBy = [...grpBy];
         groupBy[i] = { ...groupBy[i], sortDesc: desc };
         onChange(groupBy, foldable, "sort");
+    }
+
+    changeSettings = (i, settings) => {
+        const { groupBy: grpBy, foldable, onChange } = this.props;
+        const groupBy = [...grpBy];
+        groupBy[i] = { ...groupBy[i], settings };
+        onChange(groupBy, foldable, "settings");
     }
 
     removeGroup = (i) => {
@@ -51,7 +59,8 @@ class GroupedColumnList extends PureComponent {
                 <div className="group-list-container">
                     <Sortable className="group-list" items={groupBy} itemType="column" onChange={this.columnReordered} accepts={["column"]}
                         placeholder={groupBy.length ? addGroupItemPlaceholder : emptyGroupPlaceholder}>
-                        {(g, i, dropProps) => <GroupedColumn key={i} group={g} index={i} toggleSort={this.toggleSort} removeGroup={this.removeGroup} dropProps={dropProps} />}
+                        {(g, i, dropProps) => <GroupedColumn key={i} group={g} index={i} toggleSort={this.toggleSort}
+                            removeGroup={this.removeGroup} settingsChanged={this.changeSettings} dropProps={dropProps} />}
                     </Sortable>
                 </div>
             </div>
@@ -79,14 +88,58 @@ class GroupedColumn extends PureComponent {
         }
     }
 
+    changeSettings = ({ prop, type, value, default: def, aggregate }) => {
+        const { settingsChanged, group, index } = this.props;
+
+        let { settings } = group;
+        settings = settings ? { ...settings } : {};
+        if (type === 'check') {
+            const curValue = settings[prop] === undefined ? def : settings[prop];
+            settings[prop] = !curValue;
+        }
+        else {
+            settings[prop] = value;
+        }
+
+        settingsChanged(index, settings);
+    }
+
+    showMenu = (e) => {
+        const { group: { groupOptions, settings } } = this.props;
+
+        const menuItems = groupOptions.map(m => {
+            if (m.separator) {
+                return { separator: true };
+            }
+            const { label, type, prop, value = type === 'check', default: def } = m;
+
+            const curValue = settings?.[prop];
+            const selected = curValue === value || (curValue === undefined && def);
+
+            const prefix = `fa fa-${selected ? 'check-' : ''}`;
+            const icon = `${prefix}${type === 'check' ? 'square' : 'circle'}`;
+
+            return {
+                label, icon, command: () => this.changeSettings(m)
+            }
+        });
+
+        showContextMenu(e, menuItems);
+    }
+
     render() {
         const { group: g } = this.props;
 
         return (
             <div ref={this.setRef} className="group-list-item">
-                {!g.sortDesc && <span className="fa fa-sort-amount-asc sort-icon" onClick={this.sortDesc} />}
-                {!!g.sortDesc && <span className="fa fa-sort-amount-desc sort-icon" onClick={this.sortAsc} />}
+                {!g.sortDesc && <span className="fa fa-sort-amount-asc sort-icon"
+                    onClick={this.sortDesc} title="Click to sort desc" />}
+                {!!g.sortDesc && <span className="fa fa-sort-amount-desc sort-icon"
+                    onClick={this.sortAsc} title="Click to sort asc" />}
                 {g.displayText}
+
+                {!!g.groupOptions?.length && <span className="fa fa-wrench margin-l-5 pointer"
+                    onClick={this.showMenu} title="Click to change settings" />}
                 <span className="fa fa-times" onClick={this.removeGroup} />
             </div>
         );

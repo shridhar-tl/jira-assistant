@@ -1,12 +1,30 @@
+import React from 'react';
+import { Image } from '../controls';
 import BaseControl from './BaseControl';
 
 class UserDisplay extends BaseControl {
-    renderControl() {
-        const { value, user = value } = this.props;
+    renderControl(badge) {
+        const { value, user = value, settings } = this.props;
 
-        if (!user) { return null; }
+        if (!user) { return badge; }
 
-        return (typeof user === 'string') ? user : user?.displayName;
+        if (typeof user === 'string') {
+            return user;
+        }
+
+        const imageUrl = !!settings?.showImage && (user.avatarUrls?.['32x32'] || user.avatarUrls?.['48x48']);
+        const valueType = settings?.valueType;
+
+        let disp = user.displayName;
+
+        if (valueType === 'email') {
+            disp = user.emailAddress;
+        }
+        else if (valueType === 'both') {
+            disp = <>{user.displayName} ({user.emailAddress})</>
+        }
+
+        return (<>{!!imageUrl && <Image className="img-x32" src={imageUrl} />}{disp}{badge}</>);
     }
 }
 
