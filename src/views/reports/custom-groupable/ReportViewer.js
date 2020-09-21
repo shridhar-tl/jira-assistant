@@ -1,5 +1,6 @@
 import React from 'react';
 import GroupableGrid from '../../../components/GroupableGrid/GroupableGrid';
+import { Button } from '../../../controls';
 import BaseGadget from '../../../gadgets/BaseGadget';
 import { inject } from '../../../services/injector-service';
 import { loadReportData } from './actions';
@@ -16,6 +17,13 @@ class ReportViewer extends BaseGadget {
         }
         else if (query) {
             this.loadReportData(query);
+        }
+    }
+
+    renderCustomActions(isGadget) {
+        if (!isGadget) {
+            return (<Button type="success" label="Edit" title="Click to edit the report"
+                icon="fa fa-edit" onClick={this.props.onEditClicked} />);
         }
     }
 

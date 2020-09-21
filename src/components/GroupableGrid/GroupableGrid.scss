@@ -5,7 +5,8 @@
         height: calc(100% - 47px);
         max-height: calc(100vh - 134px);
 
-        table > thead:not(.scroll-overlay) th, table > tbody td {
+        table > thead:not(.scroll-overlay) th:not(.foldable),
+        table > tbody td:not(.group-indent-td) {
             max-width: 700px;
         }
     }
@@ -48,6 +49,7 @@ div.columns-list-container {
 th.group-header {
     &.foldable {
         min-width: 20px !important;
+        max-width: 27px !important;
         padding: 2px !important;
     }
 }
@@ -63,6 +65,7 @@ td.group-toggler-td {
 }
 
 td.group-indent-td {
+    width: 25px;
     border-top: 0;
     border-bottom: 0;
 }

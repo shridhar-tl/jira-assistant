@@ -63,7 +63,7 @@ class QueryEditor extends BaseGadget {
 
     fillQueriesList() {
         this.$report.getReportsList().then((result) => {
-            const reportsList = result.filter(q => !q.advanced).map(q => { return { value: q.id, label: q.queryName }; });
+            const reportsList = result.filter(q => !q.advanced && !q.isNew).map(q => { return { value: q.id, label: q.queryName }; });
             this.setState({ reportsList });
             //this.state.selReportId = this.reportRequest.id //ToDo:|| reportsList.selectpicker('val');
         });

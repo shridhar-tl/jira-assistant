@@ -313,7 +313,7 @@ export class GroupableGrid extends PureComponent {
             result = <tr key={i}>{emptyTDs}{result}</tr>;
         }
 
-        return [groupKeyCell, result];
+        return <Fragment key={i}>{groupKeyCell}{result}</Fragment>;
     }
 
     renderGroupRow(g, i, columns, groupBy, prepend = null) {

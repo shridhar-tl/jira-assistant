@@ -12,7 +12,7 @@ class ReportViewer extends BaseGadget {
     constructor(props) {
         let { definition } = props;
         definition = definition || {};
-        super(props, definition.queryName || 'Custom report viewer', 'fa-clock-o');
+        super(props, definition.queryName || 'Custom report viewer (deprecated)', 'fa-clock-o');
         inject(this, "AnalyticsService", "ReportService", "JiraService", "UtilsService", "UserUtilsService");
         this.state.reportDefinition = definition;
     }
@@ -42,7 +42,7 @@ class ReportViewer extends BaseGadget {
         const model = this.state.reportDefinition || {};
 
         if (model) {
-            this.title = model.queryName;
+            this.title = `${model.queryName} (deprecated)`;
         }
 
         if (!model.jql || !model.outputFields || !model.outputFields.length) {

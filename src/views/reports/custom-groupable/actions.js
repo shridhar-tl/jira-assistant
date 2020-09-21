@@ -23,10 +23,17 @@ export async function loadReportData(query) {
 
             return {
                 field: u, displayText: usr.displayName, type: 'seconds',
-                groupText: 'Worklog details', allowGrouping: false,
+                groupText: 'Log Work', allowGrouping: false,
                 viewComponent: TimeSpentDisplay,
                 props: {}
             };
+        });
+
+        userFields.push({
+            field: 'totalWorklog', displayText: 'Total Log Work', type: 'seconds',
+            groupText: 'Log Work', allowGrouping: false,
+            viewComponent: TimeSpentDisplay,
+            props: {}
         });
 
         const wlIndex = columnList.findIndex(({ field }) => field === 'worklog');
@@ -102,9 +109,9 @@ function setGroupOptions(curCol) {
         case 'number':
         case 'seconds':
             options.push({ type: 'radio', label: 'Group by field', prop: 'funcType', value: '', default: true });
-            options.push({ type: 'radio', label: 'Sum of field', prop: 'funcType', value: 'sum', aggregate: true });
-            options.push({ type: 'radio', label: 'Avg of field', prop: 'funcType', value: 'avg', aggregate: true });
-            options.push({ type: 'radio', label: 'Count having value', prop: 'funcType', value: 'count', aggregate: true });
+            options.push({ type: 'radio', label: 'Sum of field', prop: 'funcType', value: 'sum' });
+            options.push({ type: 'radio', label: 'Avg of field', prop: 'funcType', value: 'avg' });
+            options.push({ type: 'radio', label: 'Count having value', prop: 'funcType', value: 'count' });
             break;
     }
 
@@ -154,6 +161,7 @@ function processWorklogs(fields) {
         }
 
         fields[uid] = (fields[uid] || 0) + timeSpentSeconds;
+        fields['totalWorklog'] = (fields['totalWorklog'] || 0) + timeSpentSeconds;
     }
 }
 

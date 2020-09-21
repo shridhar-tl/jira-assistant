@@ -5,6 +5,7 @@ import SaveReportDialog from '../../../dialogs/SaveReportDialog';
 import Dialog from '../../../dialogs';
 import ReportViewer from './ReportViewer';
 import './Common.scss';
+import { UUID } from '../../../_constants';
 
 class CustomReport extends PureComponent {
     constructor(props) {
@@ -50,16 +51,81 @@ class CustomReport extends PureComponent {
             return;
         }
 
-        const query = await this.$report.getReportDefinition(reportId);
+        const query = await this.convertFromOldReport(await this.$report.getReportDefinition(reportId));
 
-        this.setState({ reportId, query, reportQuery: null, hasUnsavedChanges: false });
+        this.setState({ reportId, query, renderReport: false, hasUnsavedChanges: false });
+    }
+
+    async convertFromOldReport(query) {
+        if (Array.isArray(query?.fields)) {
+            return query;
+        }
+        const msg = (<>
+            Making changes and saving the report from here will upgrade the existing report definition.<br /><br />
+            You will not be able to use it with old report once you save changes from here.<br /><br />
+            <b>Note:</b> Only once you click on "Save Query" button, conversion will happen.
+            Untill then you can safely preview the report without converting it.
+        </>);
+
+        await new Promise((result) => Dialog.alert(msg, "Convert report", null, { waitFor: 5 }).then(result));
+
+        const { filterFields, outputFields, ...newQuery } = query;
+
+        const groupBy = [];
+        newQuery.settings = { groupBy };
+
+        const functionMapper = {
+            'formatSecs?1': 'sum',
+            'sum?0': 'sum',
+            'sum?1': 'sum',
+            'avg?0': 'avg',
+            'avg?1': 'avg',
+            'count?0': 'count',
+            'count?2': 'count',
+            'formatUser?1': 'name',
+            'formatUser?2': 'email',
+            'formatUser?4': 'both'
+        };
+
+        newQuery.fields = outputFields.map(f => {
+            const { functions, groupBy: grp, id, ...newField } = f;
+
+            newField.id = UUID.generate();
+            newField.field = id;
+
+            const fId = functions?.id
+
+            if (grp || fId === 'sum?1' || fId === 'avg?1' || fId === 'count?2') {
+                const settings = { showGroupCount: true };
+
+                if (fId) {
+                    const type = newField.type;
+                    const funcValue = functionMapper[fId];
+
+                    if (funcValue) {
+                        if (type === 'number' || type === 'seconds') {
+                            settings.funcType = funcValue;
+                        }
+                        else if (type === 'user' && fId.startsWith('formatUser')) {
+                            settings.valueType = funcValue;
+                        }
+                    }
+                }
+
+                groupBy.push({ ...newField, settings });
+            }
+
+            return newField;
+        });
+
+        return newQuery;
     }
 
     fillQueriesList = async (reportId) => {
         const result = await this.$report.getReportsList();
 
         const reportsList = result
-            .filter(q => q.isNew)
+            .filter(q => !q.advanced)
             .map(q => ({ value: q.id, label: q.queryName }));
 
         this.setState({ reportId, reportsList });
@@ -87,7 +153,7 @@ class CustomReport extends PureComponent {
     deleteQuery = () => {
         const { reportId, query: { queryName } } = this.state;
 
-        Dialog.confirmDelete(`Are you sure to delete the report named "${queryName}" permenantly?`)
+        Dialog.confirmDelete(`Are you sure to delete the report named "${queryName}" permanently?`)
             .then(() => {
                 this.$report.deleteSavedQuery(reportId).then(q => {
                     this.$message.success('Report deleted successfully!');
@@ -96,7 +162,7 @@ class CustomReport extends PureComponent {
             });
     }
 
-    viewReport = () => this.setState({ reportQuery: this.state.query });
+    viewReport = () => this.setState({ renderReport: !this.state.renderReport });
     showSaveDialog = () => this.setState({ showSaveDialog: true });
     saveAs = () => this.saveQuery(this.state.query.queryName);
     hideSaveDialog = () => this.setState({ showSaveDialog: false });
@@ -140,20 +206,19 @@ class CustomReport extends PureComponent {
     }
 
     settingsChanged = (settings) => {
-        let { query, reportQuery } = this.state;
+        let { query } = this.state;
 
         query = { ...query, settings };
-        reportQuery = { ...reportQuery, settings };
 
-        this.setState({ query, reportQuery, hasUnsavedChanges: true });
+        this.setState({ query, hasUnsavedChanges: true });
     }
 
     render() {
-        const { reportId, query, reportQuery, reportsList, showSaveDialog, hasUnsavedChanges } = this.state;
+        const { reportId, query, renderReport, reportsList, showSaveDialog, hasUnsavedChanges } = this.state;
 
         return (
             <div className="custom-report">
-                <QueryEditor
+                {!renderReport && <QueryEditor
                     reportId={reportId}
                     query={query}
                     reportsList={reportsList}
@@ -165,12 +230,15 @@ class CustomReport extends PureComponent {
                     saveAs={this.saveAs}
                     allowSave={hasUnsavedChanges}
                     initModel={this.initModel}
-                />
-                {reportQuery && <ReportViewer
-                    isGadget={false}
-                    query={reportQuery}
-                    settingsChanged={this.settingsChanged}
                 />}
+
+                {renderReport && <ReportViewer
+                    isGadget={false}
+                    query={query}
+                    settingsChanged={this.settingsChanged}
+                    onEditClicked={this.viewReport}
+                />}
+
                 {showSaveDialog && <SaveReportDialog queryName={query.queryName} allowCopy={query.id > 0}
                     onHide={this.hideSaveDialog} onChange={this.saveQuery} />}
             </div>

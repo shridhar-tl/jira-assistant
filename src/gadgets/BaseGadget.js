@@ -189,7 +189,7 @@ export class BaseGadget extends PureComponent {
         return <div ref={draggableHandle} className={className} onContextMenu={!isGadget ? null : this.showGadgetGontextMenu} onDoubleClick={this.toggleFullScreen}>
             <i className={`fa ${this.iconClass}`}></i> {title} {subTitle && <span> - {subTitle}</span>}
             <div className="pull-right">
-                {this.renderCustomActions && this.renderCustomActions()}
+                {this.renderCustomActions && this.renderCustomActions(isGadget)}
                 {!this.hideRefresh && this.getRefreshButton()}
                 {!this.hideMenu && <Button icon="fa fa-wrench" onClick={e => showContextMenu(e, this.getContextMenu())} />}
             </div>

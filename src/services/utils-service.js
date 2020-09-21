@@ -158,10 +158,10 @@ export default class UtilsService {
             return null;
         }
         if (prop) {
-            return arr.Avg((v) => v[prop]);
+            return arr.avg((v) => v[prop]);
         }
         else {
-            return arr.Avg();
+            return arr.avg();
         }
     }
 
@@ -178,18 +178,18 @@ export default class UtilsService {
             return null;
         }
         if (prop) {
-            return arr.Min((v) => { return v[prop]; });
+            return arr.min((v) => { return v[prop]; });
         }
         else {
-            return arr.Min();
+            return arr.min();
         }
     }
     max(arr, prop) {
         if (!arr) {
             return null;
         }
-        if (prop) { return arr.Max((v) => { return v[prop]; }); }
-        else { return arr.Max(); }
+        if (prop) { return arr.max((v) => { return v[prop]; }); }
+        else { return arr.max(); }
     }
     bytes(bytes, precision) {
         if (isNaN(parseFloat(bytes)) || !isFinite(bytes)) { return '-'; }

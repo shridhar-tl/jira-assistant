@@ -13,9 +13,31 @@ const buttonTypes = {
 };
 
 class Button extends PureComponent {
+    state = {}
+    componentDidMount() {
+        const { waitFor = 0 } = this.props;
+
+        if (waitFor > 0) {
+            this.setState({ waitFor });
+            const hndl = setInterval(() => {
+                const { waitFor: wf } = this.state;
+                this.setState({ waitFor: wf - 1 });
+                if (wf <= 1) {
+                    clearInterval(hndl);
+                }
+            }, 1000);
+        }
+    }
+
     render() {
-        const { type, rounded, label, isLoading, icon, onClick, disabled, title, style } = this.props;
-        let { className } = this.props;
+        const { type, rounded, isLoading, icon, onClick, title, style } = this.props;
+        let { className, disabled, label } = this.props;
+        const { waitFor } = this.state;
+
+        if (waitFor > 0) {
+            disabled = true;
+            label += ` (${waitFor})`;
+        }
 
         let btnClass = `rb-button ${buttonTypes[type] || ""}`;
         if (rounded) {

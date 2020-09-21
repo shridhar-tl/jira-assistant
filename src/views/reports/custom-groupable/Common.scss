@@ -1,11 +1,20 @@
 .query-editor-gadget {
-    height: auto !important;
-    max-height: 405px;
+    &.gadget.full-height.docked {
+        height: auto;
+
+        .p-panel-content {
+            height:auto;
+        }
+    }
 }
 
 .query-editor {
+    .jql-editor .jql-query {
+        height: calc(100vh - 194px);
+    }
+
     .display-fields {
-        max-height: 260px;
+        max-height: calc(100vh - 189px);
 
         table.scroll-table {
             thead{

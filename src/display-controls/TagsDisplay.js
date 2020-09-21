@@ -10,7 +10,7 @@ class TagsDisplay extends BaseControl {
             return (a, i) => {
                 const data = (
                     <a href={a[hrefProp] || undefined}
-                        title={!!titleProp && a[titleProp]}
+                        title={titleProp ? a[titleProp] : undefined}
                         rel="noopener noreferrer" target="_blank"
                         className="link badge badge-pill skin-bg-font">
                         {icon} {(typeof a === 'string') ? a : a[tagProp]}
@@ -25,7 +25,7 @@ class TagsDisplay extends BaseControl {
 
         return (a, i) => {
             const data = (
-                <span title={!!titleProp && a[titleProp]}
+                <span title={titleProp ? a[titleProp] : undefined}
                     className="badge badge-pill skin-bg-font">
                     {icon} {(typeof a === 'string') ? a : a[tagProp]}
                 </span>

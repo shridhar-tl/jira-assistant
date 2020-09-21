@@ -94,12 +94,12 @@ class DialogConfig {
         DialogConfig.changeEvent();
     }
 
-    alert(message, title, styles) {
+    alert(message, title, styles, config) {
         if (!title) {
             title = "Info";
         }
 
-        const footer = (ok) => <Button type="success" icon="fa fa-check" label="Ok" onClick={ok} />;
+        const footer = (ok) => <Button waitFor={config?.waitFor} type="success" icon="fa fa-check" label="Ok" onClick={ok} />;
         return this.custom(message, title, footer, styles);
     }
 
