@@ -41,7 +41,7 @@ class IssueDisplay extends BaseControl {
             disp = summary;
         }
         else if (valueType === 'both') {
-            disp = <>{disp} - {summary}</>
+            disp = (<>{disp} - {summary}</>);
         }
 
         return (

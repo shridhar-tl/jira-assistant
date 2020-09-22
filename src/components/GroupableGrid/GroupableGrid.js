@@ -227,7 +227,7 @@ export class GroupableGrid extends PureComponent {
                     dragConnector={connectDragSource}
                     sortBy={sortBy}>{c.displayText}</Column>}
             </Draggable>;
-        }
+        };
     }
 
     renderGroupColumns = (_, i) => <th key={i} className="group-header foldable"></th>

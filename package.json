@@ -29,7 +29,7 @@
         "jsd-report": "^0.1.9",
         "jspdf": "^2.1.1",
         "jspdf-autotable": "^3.5.13",
-        "moment": "^2.28.0",
+        "moment": "^2.29.0",
         "moment-timezone": "^0.5.31",
         "node-sass": "^4.14.1",
         "papaparse": "^5.3.0",

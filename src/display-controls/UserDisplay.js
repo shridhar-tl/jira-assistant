@@ -21,7 +21,7 @@ class UserDisplay extends BaseControl {
             disp = user.emailAddress;
         }
         else if (valueType === 'both') {
-            disp = <>{user.displayName} ({user.emailAddress})</>
+            disp = (<>{user.displayName} ({user.emailAddress})</>);
         }
 
         return (<>{!!imageUrl && <Image className="img-x32" src={imageUrl} />}{disp}{badge}</>);

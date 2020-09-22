@@ -93,7 +93,7 @@ class CustomReport extends PureComponent {
             newField.id = UUID.generate();
             newField.field = id;
 
-            const fId = functions?.id
+            const fId = functions?.id;
 
             if (grp || fId === 'sum?1' || fId === 'avg?1' || fId === 'count?2') {
                 const settings = { showGroupCount: true };
@@ -132,7 +132,8 @@ class CustomReport extends PureComponent {
     }
 
     querySelected = (reportId) => {
-        let { history, match: { path } } = this.props;
+        const { history } = this.props;
+        let { match: { path } } = this.props;
 
         if (path.indexOf(':reportId') >= 0) {
             path = path.replace(':reportId', reportId).clearEnd('/');

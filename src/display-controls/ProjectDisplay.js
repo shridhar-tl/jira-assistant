@@ -21,7 +21,7 @@ class ProjectDisplay extends BaseControl {
             disp = project.name;
         }
         else if (valueType === 'both') {
-            disp = <>{project.name} ({project.key})</>
+            disp = (<>{project.name} ({project.key})</>);
         }
 
         return (<>{!!iconUrl && <Image src={iconUrl} />}{disp}{badge}</>);

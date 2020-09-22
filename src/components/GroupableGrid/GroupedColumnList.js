@@ -121,7 +121,7 @@ class GroupedColumn extends PureComponent {
 
             return {
                 label, icon, command: () => this.changeSettings(m)
-            }
+            };
         });
 
         showContextMenu(e, menuItems);

@@ -1,4 +1,4 @@
-/* eslint-disable no-fallthrough */
+/* eslint-disable no-fallthrough, complexity*/
 
 import { UUID } from "../../../_constants";
 

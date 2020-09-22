@@ -17,7 +17,7 @@ export async function loadReportData(query) {
     const columnList = query.fields.map(processDisplayField.bind(ref));
 
     if (ref.hasWorklogs) {
-        const usrObj = ref.usersObj
+        const usrObj = ref.usersObj;
         const userFields = Object.keys(usrObj).map(u => {
             const usr = usrObj[u];
 
@@ -71,7 +71,7 @@ function processDisplayField(curCol) {
 }
 
 function setGroupOptions(curCol) {
-    let options = [
+    const options = [
         { type: 'check', label: 'Show count', prop: 'showGroupCount', value: true },
         { separator: true }
         //{ type: 'check', label: 'Show unique count', prop: 'showUniqueCount', value: true }
@@ -150,7 +150,7 @@ function processWorklogs(fields) {
     const users = this.usersObj || {};
     this.usersObj = users;
 
-    for (let worklog of fields.worklog) {
+    for (const worklog of fields.worklog) {
         const { author, timeSpentSeconds } = worklog;
 
         const { accountId, emailAddress } = author;
@@ -165,6 +165,7 @@ function processWorklogs(fields) {
     }
 }
 
+// eslint-disable complexity
 function getViewComponent(fieldType, col, isArray) {
     const { props } = col;
 

@@ -18,7 +18,7 @@ class CustomFieldSelector extends PureComponent {
         //const favoriteFilters = ['key', 'assignee', 'created', 'creator', 'issue type', 'labels', 'project', 'reporter', 'resolution', 'resolved', 'status', 'summary', 'updated', 'sprint'];
         let basicFields = [], customFields = [];
 
-        for (let f of data) {
+        for (const f of data) {
             f.label = f.name + (f.name.toLowerCase() !== f.id.toLowerCase() ? ` (${f.id})` : '');
             f.value = f.id;
             keyMap[f.id] = f;
@@ -29,7 +29,7 @@ class CustomFieldSelector extends PureComponent {
             else {
                 basicFields.push(f);
             }
-        };
+        }
 
         basicFields = basicFields.orderBy((f) => f.name);
         customFields = customFields.orderBy((f) => f.name);
