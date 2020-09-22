@@ -51,15 +51,20 @@ class CustomReport extends PureComponent {
             return;
         }
 
-        const query = await this.convertFromOldReport(await this.$report.getReportDefinition(reportId));
+        const queryFromDB = await this.$report.getReportDefinition(reportId);
+        const query = await this.convertFromOldReport(queryFromDB);
 
-        this.setState({ reportId, query, renderReport: false, hasUnsavedChanges: false });
+        this.setState({
+            reportId, query, renderReport: false,
+            hasUnsavedChanges: queryFromDB !== query
+        });
     }
 
     async convertFromOldReport(query) {
         if (Array.isArray(query?.fields)) {
             return query;
         }
+
         const msg = (<>
             Making changes and saving the report from here will upgrade the existing report definition.<br /><br />
             You will not be able to use it with old report once you save changes from here.<br /><br />
