@@ -165,7 +165,7 @@ function processWorklogs(fields) {
     }
 }
 
-// eslint-disable complexity
+// eslint-disable-next-line complexity
 function getViewComponent(fieldType, col, isArray) {
     const { props } = col;
 
