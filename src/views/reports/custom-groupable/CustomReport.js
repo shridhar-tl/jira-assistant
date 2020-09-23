@@ -5,12 +5,12 @@ import SaveReportDialog from '../../../dialogs/SaveReportDialog';
 import Dialog from '../../../dialogs';
 import ReportViewer from './ReportViewer';
 import './Common.scss';
-import { UUID } from '../../../_constants';
+import { EventCategory, UUID } from '../../../_constants';
 
 class CustomReport extends PureComponent {
     constructor(props) {
         super();
-        inject(this, "ReportService", "JiraService", "MessageService", "AnalyticsService");
+        inject(this, "ReportService", "MessageService", "AnalyticsService");
         let { match: { params: { reportId } } } = props;
 
         if (reportId) {
@@ -54,9 +54,11 @@ class CustomReport extends PureComponent {
         const queryFromDB = await this.$report.getReportDefinition(reportId);
         const query = await this.convertFromOldReport(queryFromDB);
 
+        this.reportConverted = queryFromDB !== query;
+
         this.setState({
             reportId, query, renderReport: false,
-            hasUnsavedChanges: queryFromDB !== query
+            hasUnsavedChanges: this.reportConverted
         });
     }
 
@@ -163,12 +165,22 @@ class CustomReport extends PureComponent {
             .then(() => {
                 this.$report.deleteSavedQuery(reportId).then(q => {
                     this.$message.success('Report deleted successfully!');
+                    this.$analytics.trackEvent("Custom Report Deleted");
                     this.querySelected('');
                 });
             });
     }
 
-    viewReport = () => this.setState({ renderReport: !this.state.renderReport });
+    viewReport = () => {
+        const { renderReport } = this.state;
+        this.setState({ renderReport: !renderReport });
+
+        if (!renderReport) {
+            this.$analytics.trackEvent(`${this.reportConverted ? 'Old: ' : ''}Custom Report Preview`,
+                EventCategory.UserActions);
+        }
+    }
+
     showSaveDialog = () => this.setState({ showSaveDialog: true });
     saveAs = () => this.saveQuery(this.state.query.queryName);
     hideSaveDialog = () => this.setState({ showSaveDialog: false });
@@ -195,7 +207,12 @@ class CustomReport extends PureComponent {
             this.setState({ showSaveDialog: false, hasUnsavedChanges: false, reportId: id, query });
 
             this.$message.success("Report saved successfully!");
-            this.$analytics.trackEvent("Custom Report Saved");
+            if (this.reportConverted) {
+                this.reportConverted = false;
+                this.$analytics.trackEvent("Custom Report migrated");
+            } else {
+                this.$analytics.trackEvent("Custom Report Saved");
+            }
 
             if (refillList) {
                 this.fillQueriesList(id);

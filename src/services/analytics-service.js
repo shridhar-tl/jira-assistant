@@ -43,7 +43,7 @@ export default class AnalyticsService {
 
     getEventObject(category, action, label, value) {
         const obj = { t: "event", ec: category, ea: action };
-        if (value) {
+        if (label) {
             obj.el = label;
         }
         if (value) {

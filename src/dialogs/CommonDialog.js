@@ -2,6 +2,7 @@ import React from 'react';
 import BaseDialog from './BaseDialog';
 import { Button } from '../controls';
 import { parseHTML } from '../common/utils';
+import { EventCategory } from '../_constants';
 
 class CommonDialog extends BaseDialog {
     constructor(props) {
@@ -19,6 +20,8 @@ class CommonDialog extends BaseDialog {
                 this.body = body;
                 this.getFooter = () => footer;
                 this.setState({ showDialog: true });
+
+                this.$analytics.trackEvent("Dialog opened", EventCategory.DialogEvents, title);
             }
             else {
                 this.setState({ showDialog: false });
