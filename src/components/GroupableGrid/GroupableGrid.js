@@ -113,7 +113,7 @@ export class GroupableGrid extends PureComponent {
         // Map all the known properties for column schema
         const result = columns.map(c => {
             const { field, fieldKey = field,
-                allowSorting = globalSort, allowGrouping = globalGrouping, groupOptions,
+                allowSorting = globalSort, groupText, allowGrouping = globalGrouping, groupOptions,
                 format, type, viewComponent, props: pr, sortValueFun, groupValueFunc } = c;
 
             const id = c.id || field;
@@ -126,6 +126,7 @@ export class GroupableGrid extends PureComponent {
                 displayText: c.displayText || field,
                 visible: !displayColumns || (isColsToRemove ? !displayColumns.contains(`-${id}`) : displayColumns.contains(id)),
                 allowSorting,
+                groupText,
                 allowGrouping,
                 groupOptions,
                 format, type, viewComponent, props: pr, sortValueFun, groupValueFunc
@@ -211,21 +212,62 @@ export class GroupableGrid extends PureComponent {
             }));
     }
 
-    getColumnRenderer(isGroup) {
+    getColumnGrouping(columns) {
+        const grouping = columns.groupBy('groupText', (c) => c.visible).filter(({ key }) => !!key);
+        return grouping.length ? grouping : undefined;
+    }
+
+    getColGroupingLen(colGrouping) {
+        if (!colGrouping) { return undefined; }
+
+        return colGrouping.reduce((obj, g) => {
+            obj[g.key] = g.values.length;
+
+            return obj;
+        }, {});
+    }
+
+    getGroupedRow(colGrouping) {
+        if (!colGrouping) { return null; }
+
+        return <TRow>{colGrouping.map(g => g.values.map(this.getColumnRenderer(false)))}</TRow>;
+    }
+
+    getColumnRenderer(isGroup, colGrouping) {
         return (c, i) => {
             if (!c.visible) { return null; }
-            const sortBy = !isGroup && c.allowSorting ? c.fieldKey || c.field : undefined;
+            let sortBy = !isGroup && c.allowSorting ? c.fieldKey || c.field : undefined;
+            let allowGrouping = c.allowGrouping;
 
-            if (c.allowGrouping === false) {
+            let rowSpan = colGrouping ? 2 : undefined;
+            let colSpan = undefined;
+            let displayText = c.displayText;
+
+            if (colGrouping && c.groupText) {
+                displayText = c.groupText;
+                colSpan = colGrouping[displayText];
+
+                if (!colSpan) {
+                    return null;
+                }
+
+                delete colGrouping[displayText];
+                rowSpan = undefined;
+                sortBy = undefined;
+                allowGrouping = false;
+            }
+
+            if (allowGrouping === false) {
                 return (
-                    <Column key={i} sortBy={sortBy}>{c.displayText}</Column>
+                    <Column key={i} sortBy={sortBy} rowSpan={rowSpan} colSpan={colSpan}>{displayText}</Column>
                 );
             }
 
             return <Draggable key={i} itemType="column" item={c} itemTarget={itemTarget}>
                 {(connectDragSource, isDragging) => <Column
+                    rowSpan={rowSpan} colSpan={colSpan}
                     dragConnector={connectDragSource}
-                    sortBy={sortBy}>{c.displayText}</Column>}
+                    sortBy={sortBy}>{displayText}</Column>}
             </Draggable>;
         };
     }
@@ -415,6 +457,9 @@ export class GroupableGrid extends PureComponent {
         const { exportSheetName, noRowsMessage, sortField, isDesc, displayColumns, className } = this.props;
         const { allColumns, columns, groupBy, groupFoldable, data, showColumns } = this.state;
 
+        const colGroupingArr = this.getColumnGrouping(columns);
+        const colGroupingObj = this.getColGroupingLen(colGroupingArr);
+
         return (
             <div className="groupable-grid">
                 {showColumns && <ColumnList onChange={this.columnSelectionChanged} columns={allColumns}
@@ -426,9 +471,10 @@ export class GroupableGrid extends PureComponent {
                     <THead>
                         <TRow>
                             {!!groupFoldable && groupBy && groupBy.map(this.renderGroupColumns)}
-                            {!groupFoldable && groupBy && groupBy.map(this.getColumnRenderer(true))}
-                            {columns.map(this.getColumnRenderer(false))}
+                            {!groupFoldable && groupBy && groupBy.map(this.getColumnRenderer(true, colGroupingObj))}
+                            {columns.map(this.getColumnRenderer(false, colGroupingObj))}
                         </TRow>
+                        {this.getGroupedRow(colGroupingArr)}
                     </THead>
                     <TBody>{this.renderTableBody(columns, groupBy)}</TBody>
                     <NoDataRow span={columns.length}>{noRowsMessage}</NoDataRow>
