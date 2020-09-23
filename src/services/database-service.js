@@ -52,7 +52,7 @@ class DatabaseService extends Dexie {
 
                 this.$analytics.setUserId(instId);
 
-                this.$analytics.setIfEnabled(user.enableAnalyticsLogging, user.enableExceptionLogging);
+                this.$analytics.setIfEnabled(user.enableAnalyticsLogging !== false, user.enableExceptionLogging !== false);
             }
         });
 

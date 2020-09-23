@@ -21,8 +21,8 @@ export default class UserService {
     }
 
     async saveGlobalSettings(users) {
-        const changeSetting = (sett, user, prop) => {
-            if (sett[prop]) {
+        const changeSetting = (sett, user, prop, retain) => {
+            if (sett[prop] || retain) {
                 user[prop] = sett[prop];
             }
             else {
@@ -42,8 +42,8 @@ export default class UserService {
             changeSetting(u, user, "suggestionJQL");
             changeSetting(u, user, "disableJiraUpdates");
             changeSetting(u, user, "jiraUpdatesJQL");
-            changeSetting(u, user, "enableAnalyticsLogging");
-            changeSetting(u, user, "enableExceptionLogging");
+            changeSetting(u, user, "enableAnalyticsLogging", true);
+            changeSetting(u, user, "enableExceptionLogging", true);
             changeSetting(u, user, "disableDevNotification");
 
             await this.$db.users.put(user);

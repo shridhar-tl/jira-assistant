@@ -31,15 +31,14 @@ class GlobalSettings extends PureComponent {
             intgUsers[index - 1] = user;
         }
 
-        if (value) {
-            if (typeof value === "string") {
-                user[field] = value.trim();
-            }
-            else {
-                user[field] = value;
-            }
+        if (typeof value === "string") {
+            user[field] = value.trim() || undefined;
         }
         else {
+            user[field] = value;
+        }
+
+        if (user[field] === undefined) {
             delete user[field];
         }
 
@@ -122,14 +121,14 @@ class GlobalSettings extends PureComponent {
                         </TRow>
                         {!!users[0] && <TRow>
                             <td>Enable tracking user actions (Anynmous, Google Analytics)</td>
-                            <td colSpan={intgUsers.length + 1}><Checkbox checked={users[0].enableAnalyticsLogging}
+                            <td colSpan={intgUsers.length + 1}><Checkbox checked={users[0].enableAnalyticsLogging !== false}
                                 onChange={(val) => this.setValue(val, "enableAnalyticsLogging", users[0])}
                                 label="Help developers to identify what features are being used much" />
                             </td>
                         </TRow>}
                         {!!users[0] && <TRow>
                             <td>Enable tracking exceptions (Anynmous)</td>
-                            <td colSpan={intgUsers.length + 1}><Checkbox checked={users[0].enableExceptionLogging}
+                            <td colSpan={intgUsers.length + 1}><Checkbox checked={users[0].enableExceptionLogging !== false}
                                 onChange={(val) => this.setValue(val, "enableExceptionLogging", users[0])}
                                 label="Help developers to identify what errors occur for users and would help in fixing it soon" />
                             </td>
