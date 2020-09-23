@@ -1,18 +1,18 @@
 import React from 'react';
+import * as moment from 'moment';
 import BaseGadget from './BaseGadget';
 import { inject } from '../services';
 import { showContextMenu } from 'jsd-report';
 import { ScrollableTable, THead, TBody, NoDataRow, Column } from '../components/ScrollableTable';
-import { Dialog } from '../dialogs/CommonDialog';
 import { DatePicker } from '../controls';
 import { DateDisplay } from '../display-controls';
+import { GadgetActionType } from './_constants';
 
 class TicketWiseWorklog extends BaseGadget {
     constructor(props) {
         super(props, 'Ticketwise worklog', 'fa-list-alt');
         inject(this, "WorklogService", "UserUtilsService", "UtilsService");
 
-        this.settings.dateRange = {};
         this.contextMenu = [
             { label: "Upload worklog", icon: "fa fa-clock-o", command: () => this.uploadWorklog() },
             { label: "Add worklog", icon: "fa fa-bookmark", command: () => this.addWorklog() } //ToDo: Add option for move to progress, show in tree view
@@ -25,10 +25,13 @@ class TicketWiseWorklog extends BaseGadget {
 
     refreshData = () => {
         const selDate = this.settings.dateRange;
+
         if (!selDate || !selDate.fromDate) {
             return;
         }
+
         this.setState({ isLoading: true });
+
         selDate.dateWise = false;
         this.$worklog.getWorklogs(selDate).then((worklogs) => {
             worklogs.forEach((b) => {
@@ -50,10 +53,10 @@ class TicketWiseWorklog extends BaseGadget {
     dateSelected = (date) => {
         this.settings.dateRange = date;
         if (date.toDate) {
+            this.refreshData();
             if (!date.auto) {
                 this.saveSettings();
             }
-            this.refreshData();
         }
     }
 
@@ -66,8 +69,26 @@ class TicketWiseWorklog extends BaseGadget {
     }
 
     getTicketUrl(ticketNo) { return this.$userutils.getTicketUrl(ticketNo); }
-    uploadWorklog() { Dialog.alert("This functionality is not yet implemented!", "Unimplemented functionality!"); }
-    addWorklog() { Dialog.alert("This functionality is not yet implemented!", "Unimplemented functionality!"); }
+
+    uploadWorklog() {
+        const toUpload = this.selectedTicket.logData.filter(t => !t.worklogId).map(t => t.id);
+        if (!toUpload.length) {
+            return;
+        }
+
+        this.setState({ isLoading: true });
+
+        this.$worklog.uploadWorklogs(toUpload).then(() => {
+            this.refreshData();
+            super.performAction(GadgetActionType.WorklogModified);
+        }, (err) => { this.setState({ isLoading: false }); });
+    }
+
+    addWorklog() {
+        const { ticketNo } = this.selectedTicket;
+        const startTime = moment().subtract(1, 'hours').toDate();
+        super.addWorklog({ ticketNo, startTime, timeSpent: '01:00', allowOverride: true });
+    }
 
     render() {
         const { worklogs } = this.state;
@@ -100,10 +121,10 @@ class TicketWiseWorklog extends BaseGadget {
                                     {b.logData.map((ld, x) => <li key={x}>
                                         {ld.worklogId && <a className="link badge badge-pill skin-bg-font" href={this.getWorklogUrl(b.ticketNo, ld.worklogId)}
                                             target="_blank" rel="noopener noreferrer" title={ld.comments}>
-                                            <span className="fa fa-clock-o" />  <DateDisplay value={ld.dateLogged} />: {ld.uploaded}
+                                            <span className="fa fa-clock-o" />  <DateDisplay tag="span" value={ld.dateLogged} />: {ld.uploaded}
                                         </a>}
                                         {!ld.worklogId && <span className="link badge badge-pill skin-bg-font" onClick={() => this.editWorklog(ld.id)} title={ld.comments}>
-                                            <span className="fa fa-clock-o" /> <DateDisplay value={ld.dateLogged} />: {ld.uploaded}
+                                            <span className="fa fa-clock-o" /> <DateDisplay tag="span" value={ld.dateLogged} />: {ld.uploaded}
                                         </span>}
                                     </li>)}
                                 </ul>
