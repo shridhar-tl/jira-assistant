@@ -9,6 +9,10 @@
 }
 
 .query-editor {
+    .p-tabview-panel {
+        height: calc(100vh - 190px);
+    }
+    
     .jql-editor .jql-query {
         height: calc(100vh - 194px);
     }

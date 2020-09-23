@@ -56,9 +56,9 @@ export default class AjaxService {
         return urlStr;
     }
 
-    handler(req) {
+    handler(req, quiet) {
         return req.then(null, (e) => {
-            if (e.status === 0) {
+            if (!quiet && e.status === 0) {
                 this.$message.error("Unable to connect to server. Please check your network connectivity.", "Network error");
             }
             const { responseJSON: error, responseText: response, status } = e;
@@ -66,8 +66,8 @@ export default class AjaxService {
         });
     }
 
-    request(method, url, params, headers) {
-        return this.handler(this.execute(method, this.prepareUrl(url, params), params, headers));
+    request(method, url, params, headers, quiet) {
+        return this.handler(this.execute(method, this.prepareUrl(url, params), params, headers), quiet);
     }
 
     async execute(method, url, params, customHeaders) {
@@ -80,7 +80,10 @@ export default class AjaxService {
             params = undefined;
         }
 
-        if (!await this.$browser.requestPermission(null, url)) {
+        const { withCredentials, json, ...remainingHeaders } = customHeaders || {};
+        const needsPermission = withCredentials !== false;
+
+        if (needsPermission && !await this.$browser.requestPermission(null, url)) {
             console.warn(`Permission not granted for ${url}.`);
         }
 
@@ -91,15 +94,13 @@ export default class AjaxService {
                 data: JSON.stringify(body),
                 success: resolve,
                 error: reject,
-                dataType: customHeaders?.json !== false ? "json" : undefined,
+                dataType: json !== false ? "json" : undefined,
                 xhrFields: {
-                    withCredentials: (customHeaders || {}).withCredentials !== false
+                    withCredentials: needsPermission
                 },
                 beforeSend: (request) => {
                     const { headers } = this.httpOptions;
-                    const allHeaders = { ...headers, ...customHeaders };
-                    delete allHeaders.withCredentials;
-                    delete allHeaders.json;
+                    const allHeaders = { ...headers, ...remainingHeaders };
 
                     Object.keys(allHeaders).forEach(h => request.setRequestHeader(h, allHeaders[h]));
                 }
