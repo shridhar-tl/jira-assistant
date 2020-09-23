@@ -41,7 +41,7 @@ export async function loadReportData(query) {
         columnList.splice(wlIndex, 1, ...userFields);
     }
 
-    const newState = { isLoading: false, reportData, columnList };
+    const newState = { isLoading: false, reportData, columnList, settings: query.settings };
 
     return newState;
 }

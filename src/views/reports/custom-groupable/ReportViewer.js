@@ -7,17 +7,11 @@ import { loadReportData } from './actions';
 
 class ReportViewer extends BaseGadget {
     constructor(props) {
-        const { query, reportId } = props;
+        const { query } = props;
         super(props, query?.queryName || 'Custom report viewer', 'fa-clock-o');
         inject(this, 'AnalyticsService', 'ReportService', 'JiraService', 'UtilsService', 'UserUtilsService');
         this.state.isLoading = true;
-
-        if (reportId) {
-            this.loadReportDefinition(reportId);
-        }
-        else if (query) {
-            this.loadReportData(query);
-        }
+        this.initWithProps(props);
     }
 
     renderCustomActions(isGadget) {
@@ -29,7 +23,24 @@ class ReportViewer extends BaseGadget {
 
     UNSAFE_componentWillReceiveProps(props) {
         super.UNSAFE_componentWillReceiveProps(props);
-        this.loadReportData(props.query);
+        this.initWithProps(props);
+    }
+
+    initWithProps(props) {
+        const { query, reportId } = props;
+
+        if (reportId) {
+            if (this.reportId !== reportId) {
+                this.reportId = reportId;
+                this.loadReportDefinition(reportId);
+            }
+        }
+        else if (query) {
+            if (this.query !== query) {
+                this.query = query;
+                this.loadReportData(query);
+            }
+        }
     }
 
     async loadReportDefinition(reportId) {
@@ -57,8 +68,10 @@ class ReportViewer extends BaseGadget {
 
     tableSettingsChanged = (settings) => {
         this.settings = { ...this.settings, ...settings };
+
         if (this.isGadget) {
             this.saveSettings();
+            this.setState({ settings });
         }
         else {
             this.props.settingsChanged(settings);

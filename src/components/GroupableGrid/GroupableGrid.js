@@ -272,7 +272,7 @@ export class GroupableGrid extends PureComponent {
         };
     }
 
-    renderGroupColumns = (_, i) => <th key={i} className="group-header foldable"></th>
+    getGroupColumnRenderer = (hasColGroup) => (_, i) => <th key={i} rowSpan={hasColGroup ? 2 : undefined} className="group-header foldable"></th>
 
     renderTableBody = (columns, groupBy) => {
         if (!groupBy || !groupBy.length) {
@@ -470,7 +470,7 @@ export class GroupableGrid extends PureComponent {
                     sortBy={sortField} isDesc={isDesc} onSort={this.sortColumnChanged}>
                     <THead>
                         <TRow>
-                            {!!groupFoldable && groupBy && groupBy.map(this.renderGroupColumns)}
+                            {!!groupFoldable && groupBy && groupBy.map(this.getGroupColumnRenderer(colGroupingObj))}
                             {!groupFoldable && groupBy && groupBy.map(this.getColumnRenderer(true, colGroupingObj))}
                             {columns.map(this.getColumnRenderer(false, colGroupingObj))}
                         </TRow>
