@@ -34,8 +34,14 @@ export default class AnalyticsService {
             ...obj
         };
 
-        this.$ajax.request("GET", AnalyticsUrl, data, { json: false, withCredentials: false }, true)
-            .catch((err) => console.log("Google analytics call failed", err));
+        const url = this.$ajax.prepareUrl(AnalyticsUrl, data);
+        const imgTag = document.createElement('img');
+        imgTag.onload = removeImageOnLoad;
+        imgTag.onerror = removeImageOnLoad;
+        imgTag.width = 1;
+        imgTag.height = 1;
+        imgTag.src = url;
+        document.body.append(imgTag);
     }
 
     getPageView(path) {
@@ -177,4 +183,8 @@ export default class AnalyticsService {
         window.ga('send', 'pageview', page);
         this.send(this.getPageView(page));
     }
+}
+
+function removeImageOnLoad() {
+    this.remove();
 }

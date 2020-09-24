@@ -80,10 +80,9 @@ export default class AjaxService {
             params = undefined;
         }
 
-        const { withCredentials, json, ...remainingHeaders } = customHeaders || {};
-        const needsPermission = withCredentials !== false;
+        const { withCredentials, needsPermission, json, ...remainingHeaders } = customHeaders || {};
 
-        if (needsPermission && !await this.$browser.requestPermission(null, url)) {
+        if (needsPermission !== false && !await this.$browser.requestPermission(null, url)) {
             console.warn(`Permission not granted for ${url}.`);
         }
 
@@ -96,7 +95,7 @@ export default class AjaxService {
                 error: reject,
                 dataType: json !== false ? "json" : undefined,
                 xhrFields: {
-                    withCredentials: needsPermission
+                    withCredentials: withCredentials !== false
                 },
                 beforeSend: (request) => {
                     const { headers } = this.httpOptions;
