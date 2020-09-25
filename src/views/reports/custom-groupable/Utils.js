@@ -20,46 +20,29 @@ export function getField(field) {
     }
 
     switch (type) {
-        case "user":
-        case "parent":
-        case "thumbnail":
-        case "statusCategory":
+        case "comments-page": // comments
+        case "securitylevel": // security
             obj.knownObj = true;
-        case "string":
-        case "date":
-        case "datetime":
-        case "issuerestriction":
-            obj.type = type;
+            obj.type = system;
             break;
+
         case "number":
             switch (system) {
                 case "timeoriginalestimate":
                 case "aggregatetimespent":
                 case "aggregatetimeoriginalestimate":
-                case "workratio":
                 case "timespent":
                 case "timeestimate":
                 case "aggregatetimeestimate":
                     obj.type = "seconds";
                     break;
+                case "workratio":
+                    obj.type = system;
+                    break;
                 default:
                     obj.type = type;
                     break;
             }
-            break;
-        case "issuetype":
-        case "priority":
-        case "project":
-        case "progress":
-        case "comments-page":
-        case "resolution":
-        case "securitylevel":
-        case "status":
-        case "timetracking":
-        case "votes":
-        case "watches":
-            obj.knownObj = true;
-            obj.type = system;
             break;
         case "array":
             obj.isArray = true;
@@ -87,35 +70,64 @@ export function getField(field) {
                 }
             }
             else {
-                switch (items) {
-                    case "user":
-                        obj.knownObj = true;
-                    case "string": // Fallthrough
-                    case "date":
-                    case "datetime":
-                    case "numeric":
-                    case "option":
-                        obj.type = items || customType;
-                        break;
-                    default:
-                        if (items === 'json' && customType?.indexOf('sprint') > -1) {
-                            obj.type = 'sprint';
-                        }
-                        else {
-                            obj.type = customType;
-                        }
-                        break;
+                if (items === 'numeric') {
+                    obj.type = items;
+                } else if (items === 'json' && customType?.indexOf('sprint') > -1) {
+                    obj.type = 'sprint';
+                }
+                else {
+                    const { type: sType, knownObj: sknownObj } = getKnownTypes(items, customType);
+                    obj.type = sType;
+                    obj.knownObj = sknownObj;
                 }
             }
             break;
         default:
-            if (customType?.indexOf('epic-link') > -1) {
+            const { type: kType, knownObj: kObj } = getKnownTypes(type, null);
+
+            if (kType) {
+                obj.type = kType;
+                obj.knownObj = kObj;
+            }
+            else if (customType?.indexOf('epic-link') > -1) {
                 obj.type = 'epicLink';
-            } else if (customType?.indexOf('epic-status') > -1) {
-                obj.type = 'epicStatus';
             } else if (custom) {
                 obj.type = customType;
             }
+            break;
+    }
+
+    return obj;
+}
+
+function getKnownTypes(type, defaultType) {
+    const obj = {};
+
+    switch (type) {
+        case "user":
+        case "parent":
+        case "thumbnail":
+        case "statusCategory":
+        case "project":
+        case "resolution":
+        case "issuetype":
+        case "watches":
+        case "priority":
+        case "status":
+        case "progress":
+        case "timetracking":
+        case "votes":
+            obj.knownObj = true;
+        case "string":
+        case "date":
+        case "datetime":
+        case "issuerestriction":
+        case "option":
+            obj.type = type;
+            break;
+
+        default:
+            obj.type = defaultType;
             break;
     }
 

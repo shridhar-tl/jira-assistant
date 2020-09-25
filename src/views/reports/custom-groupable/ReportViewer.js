@@ -11,7 +11,10 @@ class ReportViewer extends BaseGadget {
         super(props, query?.queryName || 'Custom report viewer', 'fa-clock-o');
         inject(this, 'AnalyticsService', 'ReportService', 'JiraService', 'UtilsService', 'UserUtilsService');
         this.state.isLoading = true;
-        this.initWithProps(props);
+    }
+
+    componentDidMount() {
+        this.initWithProps(this.props);
     }
 
     renderCustomActions(isGadget) {
@@ -62,8 +65,12 @@ class ReportViewer extends BaseGadget {
 
     refreshData = () => this.loadData(this.props.query || this.state.query);
     loadData = async (query) => {
-        this.setState({ isLoading: true });
-        this.setState(await loadReportData(query));
+        this.setState({ isLoading: true, hasError: false });
+        try {
+            this.setState(await loadReportData(query));
+        } catch (err) {
+            this.setState({ isLoading: false, hasError: true });
+        }
     }
 
     tableSettingsChanged = (settings) => {
@@ -88,7 +95,8 @@ class ReportViewer extends BaseGadget {
             loading,
             reportData,
             columnList,
-            settings
+            settings,
+            hasError
         } = this.state;
 
         const {
@@ -98,6 +106,10 @@ class ReportViewer extends BaseGadget {
             sortField,
             isDesc
         } = this.settings || settings || {};
+
+        if (hasError) {
+            return super.renderBase(<div className="error-block">Unable to load this report due to an error.</div>);
+        }
 
         if (loading || !reportData) {
             return super.renderBase();

@@ -9,14 +9,17 @@ class TimeSpentDisplay extends BaseControl {
     }
 
     renderControl(badge) {
-        const { value, inputType = "secs", days } = this.props;
+        const { value, inputType = "secs", days, converter } = this.props;
         let { timespent = value } = this.props;
+
+        if (converter) { timespent = converter(timespent); }
 
         if (!timespent) { return badge; }
 
         if (inputType === "ticks" && timespent > 500) {
             timespent = parseInt(timespent / 1000);
         }
+
 
         if (timespent?.text) {
             timespent = timespent.text;

@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react';
-import { ScrollableTable, TBody, THead } from '../../../components/ScrollableTable';
+import Sortable from 'jsd-report';
+import { ScrollableTable, THead } from '../../../components/ScrollableTable';
 import CustomFieldSelector from '../../../jira-controls/CustomFieldSelector';
 import { getField } from './Utils';
 
@@ -14,11 +15,15 @@ class DisplayFields extends PureComponent {
         onChange(fields.filter((_, i) => i !== index));
     }
 
+    getControls = (f, i, hndl, drag) => {
+        return (<DisplayField key={i} dragHandle={drag.dragHandle} dropConnector={hndl.dropConnector} field={f} index={i} onRemove={this.removeField} />);
+    }
+
     render() {
-        const { fields } = this.props;
+        const { fields, onChange } = this.props;
 
         return (
-            <ScrollableTable className="display-fields" dataset={fields}>
+            <ScrollableTable className="display-fields">
                 <THead>
                     <tr>
                         <th>#</th>
@@ -27,9 +32,16 @@ class DisplayFields extends PureComponent {
                         <th>Remove</th>
                     </tr>
                 </THead>
-                <TBody>
-                    {(f, i) => <DisplayField key={i} field={f} index={i} onRemove={this.removeField} />}
-                </TBody>
+                <Sortable items={fields} itemType="field" itemTarget="field"
+                    onChange={onChange}
+                    useDragHandle={true}
+                    useCustomContainer={true}>
+                    {(renderItems, dropProps) => (
+                        <tbody>
+                            {renderItems(this.getControls)}
+                        </tbody>
+                    )}
+                </Sortable>
                 <tfoot>
                     <tr>
                         <td className="data-center">{fields.length + 1}</td>
@@ -46,11 +58,14 @@ class DisplayField extends PureComponent {
     remove = () => this.props.onRemove(this.props.index);
 
     render() {
-        const { index, field, field: { name, type, isArray, knownObj } } = this.props;
+        const {
+            dragHandle, dropConnector,
+            index, field, field: { name, type, isArray, knownObj }
+        } = this.props;
 
-        return (
+        return dropConnector(
             <tr>
-                <td className="data-center">{index + 1}</td>
+                <td className="data-center" ref={dragHandle}>{index + 1}</td>
                 <td>{name}</td>
                 {(knownObj || type) && <td>{type} {!!isArray && "(multiple)"}</td>}
                 {!knownObj && !type && <td>{JSON.stringify(field)}</td>}

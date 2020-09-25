@@ -3,17 +3,20 @@ import BaseControl from './BaseControl';
 
 class TagsDisplay extends BaseControl {
     getRepeator(isObject) {
-        const { tagProp = 'name', titleProp, iconClass, hrefProp } = this.props;
+        const { tagProp = 'name', titleProp, iconClass, hrefProp, hideZero } = this.props;
         const icon = !!iconClass && <span className={`fa ${iconClass}`} />;
 
         if (hrefProp) {
             return (a, i) => {
+                const val = (typeof a === 'string') ? a : a[tagProp];
+                if (val === 0 && hideZero) { return null; }
+
                 const data = (
                     <a href={a[hrefProp] || undefined}
                         title={titleProp ? a[titleProp] : undefined}
                         rel="noopener noreferrer" target="_blank"
                         className="link badge badge-pill skin-bg-font">
-                        {icon} {(typeof a === 'string') ? a : a[tagProp]}
+                        {icon} {val}
                     </a>
                 );
 
@@ -24,10 +27,13 @@ class TagsDisplay extends BaseControl {
         }
 
         return (a, i) => {
+            const val = (typeof a === 'string') ? a : a[tagProp];
+            if (val === 0 && hideZero) { return null; }
+
             const data = (
                 <span title={titleProp ? a[titleProp] : undefined}
                     className="badge badge-pill skin-bg-font">
-                    {icon} {(typeof a === 'string') ? a : a[tagProp]}
+                    {icon} {val}
                 </span>
             );
 

@@ -185,6 +185,9 @@ function getViewComponent(fieldType, col, isArray) {
             return CommentsDisplay;
         case 'issuelinks': return IssueLinkDisplay;
         case 'seconds': return TimeSpentDisplay;
+        case 'workratio':
+            props.converter = function (val) { return val === -1 ? null : val; }
+            return TimeSpentDisplay;
         case 'timetracking': return TimeTrackDisplay;
         case 'parent':
             col.fieldKey = `${col.field}.key`;
@@ -205,13 +208,19 @@ function getViewComponent(fieldType, col, isArray) {
         case 'version':
             props.titleProp = 'releaseDate';
             return TagsDisplay;
+        case 'option':
+            col.fieldKey = `${col.field}.value`;
+            props.tagProp = 'value';
+            return TagsDisplay;
         case 'votes':
             col.fieldKey = `${col.field}.votes`;
             props.tagProp = 'votes';
+            props.hideZero = true;
             return TagsDisplay;
         case 'watches':
             col.fieldKey = `${col.field}.watchCount`;
             props.tagProp = 'watchCount';
+            props.hideZero = true;
             return TagsDisplay;
         case 'date':
         case 'datetime':
