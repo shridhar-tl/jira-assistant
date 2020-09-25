@@ -1,8 +1,8 @@
 .groupable-grid {
-    height: 100%;
+    height: calc(100% - 1px);
 
     &.groups-hidden .scroll-table-container {
-        height: 100%;
+        height: calc(100% - 1px);
     }
 
     .scroll-table-container {

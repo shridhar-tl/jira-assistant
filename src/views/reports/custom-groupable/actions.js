@@ -186,7 +186,7 @@ function getViewComponent(fieldType, col, isArray) {
         case 'issuelinks': return IssueLinkDisplay;
         case 'seconds': return TimeSpentDisplay;
         case 'workratio':
-            props.converter = function (val) { return val === -1 ? null : val; }
+            props.converter = function (val) { return val === -1 ? null : val; };
             return TimeSpentDisplay;
         case 'timetracking': return TimeTrackDisplay;
         case 'parent':
