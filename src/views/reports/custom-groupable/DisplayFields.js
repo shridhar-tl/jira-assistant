@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import Sortable from 'jsd-report';
+import { Sortable } from 'jsd-report';
 import { ScrollableTable, THead } from '../../../components/ScrollableTable';
 import CustomFieldSelector from '../../../jira-controls/CustomFieldSelector';
 import { getField } from './Utils';

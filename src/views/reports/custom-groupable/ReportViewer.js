@@ -11,6 +11,7 @@ class ReportViewer extends BaseGadget {
         super(props, query?.queryName || 'Custom report viewer', 'fa-clock-o');
         inject(this, 'AnalyticsService', 'ReportService', 'JiraService', 'UtilsService', 'UserUtilsService');
         this.state.isLoading = true;
+        this.state.hideGroups = this.isGadget;
     }
 
     componentDidMount() {
@@ -18,11 +19,17 @@ class ReportViewer extends BaseGadget {
     }
 
     renderCustomActions(isGadget) {
-        if (!isGadget) {
+        if (isGadget) {
+            return (<Button type="success" title="Click to toggle group options"
+                icon={this.state.hideGroups ? 'fa fa-toggle-off' : 'fa fa-toggle-on'}
+                onClick={this.toggleGroupOptions} />);
+        } else {
             return (<Button type="success" label="Edit" title="Click to edit the report"
                 icon="fa fa-edit" onClick={this.props.onEditClicked} />);
         }
     }
+
+    toggleGroupOptions = () => this.setState({ hideGroups: !this.state.hideGroups })
 
     UNSAFE_componentWillReceiveProps(props) {
         super.UNSAFE_componentWillReceiveProps(props);
@@ -96,7 +103,8 @@ class ReportViewer extends BaseGadget {
             reportData,
             columnList,
             settings,
-            hasError
+            hasError,
+            hideGroups
         } = this.state;
 
         const {
@@ -117,6 +125,7 @@ class ReportViewer extends BaseGadget {
 
         return super.renderBase(
             <GroupableGrid dataset={reportData}
+                hideGroups={hideGroups}
                 exportSheetName={query.queryName}
                 columns={columnList} allowSorting={true}
                 onChange={this.tableSettingsChanged}

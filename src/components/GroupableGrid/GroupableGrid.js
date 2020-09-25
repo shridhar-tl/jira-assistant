@@ -1,13 +1,14 @@
 import React, { PureComponent, Fragment } from 'react';
 import PropTypes from 'prop-types';
+import classNames from 'classnames';
 import * as moment from 'moment';
 import { Draggable } from 'jsd-report';
 import { ScrollableTable, THead, TRow, Column, TBody, NoDataRow } from '../ScrollableTable';
 import GroupedColumnList from './GroupedColumnList';
-import './GroupableGrid.scss';
 import ColumnList from './ColumnList';
 import { getPathValue } from '../../common/utils';
 import { inject } from '../../services/injector-service';
+import './GroupableGrid.scss';
 
 const itemTarget = ["column"];
 
@@ -454,18 +455,18 @@ export class GroupableGrid extends PureComponent {
     }
 
     render() {
-        const { exportSheetName, noRowsMessage, sortField, isDesc, displayColumns, className } = this.props;
+        const { exportSheetName, noRowsMessage, sortField, isDesc, displayColumns, className, hideGroups } = this.props;
         const { allColumns, columns, groupBy, groupFoldable, data, showColumns } = this.state;
 
         const colGroupingArr = this.getColumnGrouping(columns);
         const colGroupingObj = this.getColGroupingLen(colGroupingArr);
 
         return (
-            <div className="groupable-grid">
+            <div className={classNames("groupable-grid", hideGroups && 'groups-hidden')}>
                 {showColumns && <ColumnList onChange={this.columnSelectionChanged} columns={allColumns}
                     displayColumns={displayColumns} />}
-                <GroupedColumnList groupBy={groupBy || []} foldable={groupFoldable}
-                    onChange={this.onGroupChanged} showColumns={showColumns} toggleColumns={this.toggleColumns} />
+                {!hideGroups && <GroupedColumnList groupBy={groupBy || []} foldable={groupFoldable}
+                    onChange={this.onGroupChanged} showColumns={showColumns} toggleColumns={this.toggleColumns} />}
                 <ScrollableTable className={className} dataset={data} exportSheetName={exportSheetName}
                     sortBy={sortField} isDesc={isDesc} onSort={this.sortColumnChanged}>
                     <THead>

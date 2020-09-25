@@ -1,8 +1,12 @@
 .groupable-grid {
     height: 100%;
 
+    &.groups-hidden .scroll-table-container {
+        height: 100%;
+    }
+
     .scroll-table-container {
-        height: calc(100% - 47px);
+        height: calc(100% - 46px);
         max-height: calc(100vh - 134px);
 
         table > thead:not(.scroll-overlay) th:not(.foldable),

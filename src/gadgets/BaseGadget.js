@@ -71,8 +71,8 @@ export class BaseGadget extends PureComponent {
             onDashboardEvent.on("change", this.eventReceived);
             this.$analytics.trackEvent("Gadget loaded", EventCategory.GadgetActions, this.title);
         }
-        this.widgetCtl = $(this.el).closest('.widget-cntr');
-        this.widgetHdrCtl = this.widgetCtl.find('div.ui-panel-titlebar.ui-widget-header');
+        //this.widgetCtl = $(this.el).closest('.widget-cntr');
+        //this.widgetHdrCtl = this.widgetCtl.find('div.ui-panel-titlebar.ui-widget-header');
     }
 
     eventReceived = (e) => this.executeEvent(e)
@@ -82,10 +82,10 @@ export class BaseGadget extends PureComponent {
     }
 
     onResize(event) {
-        setTimeout(() => {
-            this.totalHeight = this.isFullScreen ? window.innerHeight : this.widgetCtl.height();
-            this.contentHeight = this.totalHeight + (this.hideHeader ? 0 : -((this.widgetHdrCtl.outerHeight() || 44) + 3));
-        }, 20);
+        /*setTimeout(() => {
+            //this.totalHeight = this.isFullScreen ? window.innerHeight : this.widgetCtl.height();
+            //this.contentHeight = this.totalHeight + (this.hideHeader ? 0 : -((this.widgetHdrCtl.outerHeight() || 44) + 3));
+        }, 20);*/
     }
 
     setSizeOptions(fullWidth, fullHeight) {
