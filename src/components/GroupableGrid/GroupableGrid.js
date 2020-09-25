@@ -465,8 +465,12 @@ export class GroupableGrid extends PureComponent {
             <div className={classNames("groupable-grid", hideGroups && 'groups-hidden')}>
                 {showColumns && <ColumnList onChange={this.columnSelectionChanged} columns={allColumns}
                     displayColumns={displayColumns} />}
-                {!hideGroups && <GroupedColumnList groupBy={groupBy || []} foldable={groupFoldable}
-                    onChange={this.onGroupChanged} showColumns={showColumns} toggleColumns={this.toggleColumns} />}
+                {!hideGroups && <GroupedColumnList groupBy={groupBy || []}
+                    displayColumns={displayColumns} allColumns={allColumns}
+                    foldable={groupFoldable}
+                    showColumns={showColumns}
+                    onChange={this.onGroupChanged}
+                    toggleColumns={this.toggleColumns} />}
                 <ScrollableTable className={className} dataset={data} exportSheetName={exportSheetName}
                     sortBy={sortField} isDesc={isDesc} onSort={this.sortColumnChanged}>
                     <THead>

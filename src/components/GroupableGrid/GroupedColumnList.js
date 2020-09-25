@@ -43,13 +43,21 @@ class GroupedColumnList extends PureComponent {
     }
 
     render() {
-        const { groupBy, foldable, toggleColumns, showColumns } = this.props;
+        const { groupBy, foldable, toggleColumns, showColumns, allColumns, displayColumns } = this.props;
+
+        let badgeText = null;
+        if (displayColumns && displayColumns.length < allColumns?.length) {
+            badgeText = `${displayColumns.length} (${allColumns.length})`;
+        } else if (allColumns?.length) {
+            badgeText = allColumns?.length;
+        }
 
         return (
             <div className="group-bar">
                 <span className={`fa group-mode-icon fa-columns${showColumns ? " active" : ""}`}
-                    onClick={toggleColumns} title="Click to choose what column to display" />
-
+                    onClick={toggleColumns} title="Click to choose what column to display">
+                    {badgeText && <span className="badge badge-warning visible-cols">{badgeText}</span>}
+                </span>
                 {groupBy.length > 0 && <span className={`fa group-mode-icon fa-th-list${foldable ? "" : " active"}`}
                     onClick={() => this.toggleMode(false)} title="Display group values in columns" />}
                 {groupBy.length > 0 && <span className={`fa group-mode-icon fa-indent${foldable ? " active" : ""}`}
