@@ -21,14 +21,33 @@
         max-height: calc(100vh - 189px);
 
         table.scroll-table {
-            thead{
-                tr{
+            thead {
+                tr {
                     th:nth-child(1) { cursor: pointer; width: 70px; }
                     th:nth-child(4) { width: 50px; }
+                    th:nth-child(5) {
+                        width: 50px;
+                    }
                 }
+            }
+
+            .fa-edit {
+                color: blue;
+                cursor: pointer;
+            }
+
+            .fa-times {
+                color: red;
+                cursor: pointer;
             }
         }
     }
+}
+
+.expr-editor {
+    width: 100%;
+    min-height: 60px;
+    max-height: 350px;
 }
 
 .error-block {

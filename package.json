@@ -1,6 +1,6 @@
 {
     "name": "jira-assistant",
-    "version": "2.2.0",
+    "version": "2.3.0",
     "description": "Contains source code for the browser extension Jira Assistant",
     "homepage": "chrome-extension://momjbjbjpbcbnepbgkkiaofkgimihbii/",
     "author": {
@@ -29,7 +29,7 @@
         "jsd-report": "^0.1.9",
         "jspdf": "^2.1.1",
         "jspdf-autotable": "^3.5.13",
-        "moment": "^2.29.0",
+        "moment": "^2.29.1",
         "moment-timezone": "^0.5.31",
         "node-sass": "^4.14.1",
         "papaparse": "^5.3.0",

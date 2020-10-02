@@ -5,6 +5,7 @@ import {
     UnknownItemDisplay, UserDisplay
 } from "../../../display-controls";
 import { resolve } from "../../../services/injector-service";
+import { execAst, parseCustExpr } from "../../../common/jsExec";
 
 export async function loadReportData(query) {
     if (!query) { return {}; }
@@ -13,8 +14,11 @@ export async function loadReportData(query) {
     const dataFields = query.fields.map((f) => f.field);
     const data = await $jira.searchTickets(query.jql, dataFields);
     const ref = {};
-    const reportData = data.map(processIssue.bind(ref));
     const columnList = query.fields.map(processDisplayField.bind(ref));
+
+    ref.fieldWithExpr = columnList.filter(f => !!f.ast);
+
+    const reportData = data.map(processIssue.bind(ref));
 
     if (ref.hasWorklogs) {
         const usrObj = ref.usersObj;
@@ -47,7 +51,7 @@ export async function loadReportData(query) {
 }
 
 function processDisplayField(curCol) {
-    const { id, field, name, type, isArray } = curCol;
+    const { id, field, name, type, isArray, expr } = curCol;
     const props = {};
 
     const col = {
@@ -57,7 +61,15 @@ function processDisplayField(curCol) {
         allowGrouping: field !== 'summary' && field !== 'description'
     };
 
-    col.viewComponent = getViewComponent(field === 'issuekey' ? 'issuekey' : type, col, isArray);
+    if (expr) {
+        col.ast = parseCustExpr(expr);
+        col.exprField = field;
+        col.field = id;
+        col.viewComponent = UnknownItemDisplay;
+    }
+    else {
+        col.viewComponent = getViewComponent(field === 'issuekey' ? 'issuekey' : type, col, isArray);
+    }
 
     if (!col.allowSorting) {
         col.allowGrouping = false;
@@ -125,7 +137,7 @@ function processIssue(issue) {
 
     processWorklogs.call(this, fields);
     processComments(fields);
-
+    processExpressions.call(this, fields);
     return fields;
 }
 
@@ -162,6 +174,24 @@ function processWorklogs(fields) {
 
         fields[uid] = (fields[uid] || 0) + timeSpentSeconds;
         fields['totalWorklog'] = (fields['totalWorklog'] || 0) + timeSpentSeconds;
+    }
+}
+
+function processExpressions(fields) {
+    if (!this.fieldWithExpr.length) { return; }
+
+    for (const f of this.fieldWithExpr) {
+        if (typeof f.ast === 'string') {
+            fields[f.id] = f.ast;
+            continue;
+        }
+
+        try {
+            const val = execAst(f.ast, { 'this': fields[f.exprField], Fields: fields });
+            fields[f.id] = val;
+        } catch (err) {
+            fields[f.id] = `Error: ${err?.message || err}`;
+        }
     }
 }
 

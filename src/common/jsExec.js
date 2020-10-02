@@ -71,6 +71,22 @@ export default function compileExpression(expression, props, { array, getObjVal,
     return funcToReturn;
 }
 
+export function parseCustExpr(expression) {
+    if (expression.indexOf('\n') > -1) {
+        expression = `(function () { ${expression} }).call(this)`;
+    }
+
+    try {
+        return parse(expression, parserOptions)?.body[0];
+    } catch (err) {
+        return err.toString();
+    }
+}
+
+export function execAst(ast, env) {
+    return exec(ast, env);
+}
+
 /*
 export default function compileExpression(expression, props, { array, getObjVal, sandbox: exclude }) {
     if (props?.$this) {

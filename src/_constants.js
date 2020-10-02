@@ -18,6 +18,8 @@ export const ApiUrls = {
     searchUser: "~/rest/api/2/user/search?maxResults={1}&startAt={2}&query={0}",
     searchUser_Alt: "~/rest/api/2/user/search?maxResults={1}&startAt={2}&username={0}",
     getCustomFields: "~/rest/api/2/field",
+    getJQLAutocomplete: "~/rest/api/2/jql/autocompletedata",
+    getJQLSuggestions: "~/rest/api/2/jql/autocompletedata/suggestions",
     getUserDetails: "~/rest/api/2/user?username={0}",
     mySelf: "~/rest/api/2/myself",
     //usersForPicker: "~/rest/api/2/user/picker?maxResults=10&showAvatar=true&username={0}&query={0}",
@@ -164,7 +166,7 @@ export const FULL_DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thur
 
 export const defaultJiraFields = ["issuetype", "summary", "reporter", "priority", "status", "resolution", "created", "updated"];
 
-export const AppVersionNo = 2.2;
+export const AppVersionNo = 2.3;
 
 let AnalyticsTrackingId = "UA-108841109-1"; // This is for public tracking id
 
