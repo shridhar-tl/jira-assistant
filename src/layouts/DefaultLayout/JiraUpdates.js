@@ -64,7 +64,7 @@ class Message extends PureComponent {
                     {msg.key} - {cut(msg.summary, 100, true)}
                 </div>
                 {msg.updates.map(({ date, author, field, fromString, toString }, i) => <div key={i} className="small text-muted message">
-                    <UserDisplay className="user-display" user={author} />
+                    <UserDisplay tag="span" className="user-display" user={author} />
                     <span> updated {field} from {fromString} to {toString} </span>
                     <DateDisplay tag="span" className="date-display" date={date} quick={true} />
                 </div>)}

@@ -13,10 +13,10 @@ import SelectBox from '../../controls/SelectBox';
 import { hideContextMenu, showContextMenu } from 'jsd-report';
 import AddWorklog from '../../dialogs/AddWorklog';
 import { OverlayPanel } from 'primereact/overlaypanel';
-import './Calendar.scss';
 import MeetingDetails from './MeetingDetails';
 import CalendarSettings from './Settings';
 import { EventCategory } from '../../_constants';
+import './Calendar.scss';
 
 //var moment;
 const viewModes = [{ value: 'dayGridMonth', label: 'Month' }, { value: 'timeGridWeek', label: 'Week' }, { value: 'timeGridDay', label: 'Day' }];

@@ -1,6 +1,6 @@
 import * as moment from 'moment';
 import { SHORT_MONTH_NAMES, FULL_MONTH_NAMES, TINY_DAY_NAMES, SHORT_DAY_NAMES, FULL_DAY_NAMES } from '../_constants';
-import { getUserName } from '../common/utils';
+import { getUserName, parseJiraCustomCSV } from '../common/utils';
 
 const secsPerDay = 86400;
 const secsPerHour = 3600;
@@ -332,15 +332,7 @@ export default class UtilsService {
         }
         else {
             if (typeof obj === "string") {
-                obj = obj.replace(/(^.*\[|\].*$)/g, '');
-                const vals = obj.split(',');
-                obj = {};
-                for (i = 0; i < vals.length; i++) {
-                    const val = vals[i].split('=');
-                    const data = val[1];
-                    if (data !== "<null>") { obj[val[0]] = data; }
-                }
-                return obj;
+                return parseJiraCustomCSV(obj);
             }
             else { return obj; }
         }

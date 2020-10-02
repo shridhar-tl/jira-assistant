@@ -30,7 +30,7 @@ class CalendarSettings extends BaseDialog {
 
     getFooter() {
         return <>
-            <Button type="default" icon="fa fa-revert" label="Cancel" onClick={this.onHide} />
+            <Button type="default" icon="fa fa-times" label="Cancel" onClick={this.onHide} />
             <Button type="success" icon="fa fa-floppy-o" label="Done" onClick={this.onDone} />
         </>;
     }

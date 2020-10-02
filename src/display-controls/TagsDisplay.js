@@ -1,5 +1,8 @@
 import React from 'react';
 import BaseControl from './BaseControl';
+import { parseJiraCustomCSV } from '../common/utils';
+
+const CSV_OBJECT_TESTER = /^com\..*\[.*\].*$/;
 
 class TagsDisplay extends BaseControl {
     getRepeator(isObject) {
@@ -27,8 +30,17 @@ class TagsDisplay extends BaseControl {
         }
 
         return (a, i) => {
-            const val = (typeof a === 'string') ? a : a[tagProp];
-            if (val === 0 && hideZero) { return null; }
+            let val = a;
+            if (typeof a === 'string') {
+                if (CSV_OBJECT_TESTER.test(a)) {
+                    a = parseJiraCustomCSV(a);
+                    val = a[tagProp || 'name'] || val;
+                }
+            }
+            else {
+                val = a[tagProp];
+                if (val === 0 && hideZero) { return null; }
+            }
 
             const data = (
                 <span title={titleProp ? a[titleProp] : undefined}

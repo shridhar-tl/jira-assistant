@@ -183,3 +183,17 @@ export function getPathValue(obj, path) {
 
     return value;
 }
+
+export function parseJiraCustomCSV(obj) {
+    obj = obj.replace(/(^.*\[|\].*$)/g, '');
+    const vals = obj.split(',');
+    obj = {};
+
+    for (let i = 0; i < vals.length; i++) {
+        const val = vals[i].split('=');
+        const data = val[1];
+        if (data !== "<null>") { obj[val[0]] = data; }
+    }
+
+    return obj;
+}
