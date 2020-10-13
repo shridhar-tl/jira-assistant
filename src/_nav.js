@@ -69,23 +69,9 @@ export const navigation = [
     },
     {
         name: 'Custom Report',
-        id: 'R-CG',
-        url: '/reports/customgrouped',
-        icon: 'fa fa-table',
-        badge: {
-            variant: 'warning',
-            text: 'DEPR'
-        }
-    },
-    {
-        name: 'Custom Report',
         id: 'R-CR',
         url: '/reports/custom',
-        icon: 'fa fa-table',
-        badge: {
-            variant: 'info',
-            text: 'BETA'
-        }
+        icon: 'fa fa-table'
     },
     {
         name: 'Estimate vs Actual',
