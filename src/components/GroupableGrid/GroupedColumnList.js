@@ -139,7 +139,8 @@ class GroupedColumn extends PureComponent {
         const { group: g } = this.props;
 
         return (
-            <div ref={this.setRef} className="group-list-item">
+            <div ref={this.setRef} className="group-list-item"
+                onContextMenu={g.groupOptions?.length ? this.showMenu : undefined}>
                 {!g.sortDesc && <span className="fa fa-sort-amount-asc sort-icon"
                     onClick={this.sortDesc} title="Click to sort desc" />}
                 {!!g.sortDesc && <span className="fa fa-sort-amount-desc sort-icon"

@@ -28,7 +28,7 @@ export default class CalendarService {
 
     getEvents(startDate, endDate, options) {
         options = options || {};
-        let reAuth = false; // eslint-disable-line no-unused-vars
+
         const calendarUrl = this.CALENDAR_EVENTS_API_URL.replace('{calendarId}', encodeURIComponent(options.calendar || 'primary')) + ([
             'showDeleted=false',
             'singleEvents=true',
@@ -80,10 +80,8 @@ export default class CalendarService {
             if (err.error && err.error.message && err.error.message.toLowerCase().indexOf("invalid credentials")) {
                 this.$message.warning("Authentication with google calendar has expired. You will have to reauthenticate to proceed!");
                 this.$analytics.trackEvent("Calendar auto reauthenticate");
-                reAuth = true;
                 return this.authenticate(true).then(onAuthSuccess);
             }
         });
     }
-
 }

@@ -24,9 +24,22 @@
             thead {
                 tr {
                     th:nth-child(1) { cursor: pointer; width: 70px; }
-                    th:nth-child(4) { width: 50px; }
-                    th:nth-child(5) {
+                    th:nth-child(3) { 
+                        width: 200px;
+
+                        input { width: 100%; }
+                    }
+                    th:nth-child(5) { width: 50px; }
+                    th:nth-child(6) {
                         width: 50px;
+                    }
+                }
+            }
+
+            tbody {
+                tr {
+                    td:nth-child(3) {
+                        input { width: 100%; }
                     }
                 }
             }
@@ -39,6 +52,7 @@
             .fa-times {
                 color: red;
                 cursor: pointer;
+                font-size: 22px;
             }
         }
     }

@@ -51,11 +51,11 @@ export async function loadReportData(query) {
 }
 
 function processDisplayField(curCol) {
-    const { id, field, name, type, isArray, expr } = curCol;
+    const { id, field, name, header = name, type, isArray, expr } = curCol;
     const props = {};
 
     const col = {
-        id, field, displayText: name,
+        id, field, displayText: header,
         type, props,
         allowSorting: !isArray,
         allowGrouping: field !== 'summary' && field !== 'description'
@@ -84,13 +84,23 @@ function processDisplayField(curCol) {
 
 function setGroupOptions(curCol) {
     const options = [
-        { type: 'check', label: 'Show count', prop: 'showGroupCount', value: true },
+        { type: 'check', label: 'Issue count', prop: 'showGroupCount', value: true },
         { separator: true }
-        //{ type: 'check', label: 'Show unique count', prop: 'showUniqueCount', value: true }
     ];
 
     switch (curCol.type) {
         default: return;
+        case 'issuetype':
+        case 'status':
+        case 'priority':
+        case 'resolution':
+            options.splice(1, 1);
+            break;
+        case 'string':
+            options.push({ type: 'radio', label: 'Show value', prop: 'valueType', value: 'value', default: true });
+            options.push({ type: 'radio', label: 'Show count', prop: 'valueType', value: 'count' });
+            options.push({ type: 'radio', label: 'Distinct count', prop: 'valueType', value: 'distinct' });
+            break;
         case 'user':
             options[1] = { type: 'check', label: 'Show Image', prop: 'showImage' };
             options.push({ separator: true });
@@ -187,7 +197,14 @@ function processExpressions(fields) {
         }
 
         try {
-            const val = execAst(f.ast, { 'this': fields[f.exprField], Fields: fields });
+            const val = execAst(f.ast,
+                {
+                    'this': fields[f.exprField],
+                    Fields: fields,
+                    parseInt,
+                    parseFloat,
+                    Number
+                });
             fields[f.id] = val;
         } catch (err) {
             fields[f.id] = `Error: ${err?.message || err}`;

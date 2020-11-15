@@ -3,14 +3,14 @@ import BaseControl from './BaseControl';
 import { Image } from '../controls';
 
 class ItemDisplay extends BaseControl {
-    renderControl() {
+    renderControl(badge) {
         const { value, textField = 'name', iconField = 'iconUrl' } = this.props;
 
-        if (!value) { return null; }
+        if (!value) { return badge; }
 
         return <>
             {!!iconField && <Image src={value[iconField]} />}
-            {value[textField]}
+            {value[textField]} {badge}
         </>;
     }
 }

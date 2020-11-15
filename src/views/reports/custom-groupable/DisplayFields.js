@@ -19,6 +19,18 @@ class DisplayFields extends PureComponent {
         onChange(fields.filter((_, i) => i !== index));
     }
 
+    headerChanged = (val, index) => {
+        let { fields } = this.props;
+        fields = [...fields];
+
+        let field = fields[index];
+        field = { ...field };
+        fields[index] = field;
+
+        field.header = val;
+        this.props.onChange(fields);
+    }
+
     editExpression = (index) => {
         let { fields } = this.props;
         let field = fields[index];
@@ -62,7 +74,9 @@ class DisplayFields extends PureComponent {
             dropConnector={hndl.dropConnector}
             field={f} index={i}
             onRemove={this.removeField}
-            editExpression={this.editExpression} />);
+            editExpression={this.editExpression}
+            updateHeader={this.headerChanged}
+        />);
     }
 
     render() {
@@ -73,7 +87,8 @@ class DisplayFields extends PureComponent {
                 <THead>
                     <tr>
                         <th>#</th>
-                        <th>Display Column</th>
+                        <th>Jira Field</th>
+                        <th>Header Text</th>
                         <th>Type</th>
                         <th>Use Expr.</th>
                         <th>Remove</th>
@@ -93,7 +108,7 @@ class DisplayFields extends PureComponent {
                     <tr>
                         <td className="data-center">{fields.length + 1}</td>
                         <td><CustomFieldSelector onChange={this.fieldAdded} /></td>
-                        <td colSpan="3">Note: Select the column from the list to add it as output</td>
+                        <td colSpan="4">Note: Select the column from the list to add it as output</td>
                     </tr>
                 </tfoot>
             </ScrollableTable>
@@ -102,19 +117,42 @@ class DisplayFields extends PureComponent {
 }
 
 class DisplayField extends PureComponent {
+    constructor(props) {
+        super(props);
+        this.state = { header: props.field.header };
+    }
+
+    UNSAFE_componentWillReceiveProps(props) {
+        this.setState({ header: props.field.header });
+    }
+
     remove = () => this.props.onRemove(this.props.index);
     editExpression = () => this.props.editExpression(this.props.index);
+    updateHeader = () => {
+        let { header } = this.state;
+        header = header?.trim() || undefined;
+
+        this.props.updateHeader(header, this.props.index);
+    }
+
+    headerChanged = (header) => this.setState({ header });
 
     render() {
         const {
             dragHandle, dropConnector,
-            index, field, field: { name, type, isArray, knownObj, expr }
+            index, field, field: { name, field: fieldProp, type, isArray, knownObj, expr }
         } = this.props;
+        const { header } = this.state;
 
         return dropConnector(
             <tr>
                 <td className="data-center" ref={dragHandle}>{index + 1}</td>
-                <td>{name}</td>
+                <td>{name} ({fieldProp})</td>
+                <td><TextBox
+                    value={header}
+                    placeholder={name}
+                    onChange={this.headerChanged}
+                    onBlur={this.updateHeader} /></td>
                 {(knownObj || type) && <td>{type} {!!isArray && "(multiple)"}</td>}
                 {!knownObj && !type && <td>{JSON.stringify(field)}</td>}
                 <td className="data-center">

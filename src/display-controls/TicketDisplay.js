@@ -15,14 +15,15 @@ class TicketDisplay extends BaseControl {
         ].filter(Boolean);
     }
 
-    renderControl() {
+    renderControl(badge) {
         const { value, url = this.$userutils.getTicketUrl(value), hideContext } = this.props;
 
-        if (!value) { return null; }
+        if (!value) { return badge; }
 
         return (<>
             {!hideContext && <i className="fa fa-ellipsis-v margin-r-8" onClick={this.showContext}></i>}
             <a href={url} className="link strike" target="_blank" rel="noopener noreferrer">{value}</a>
+            {badge}
         </>);
     }
 

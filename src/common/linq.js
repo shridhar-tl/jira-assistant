@@ -100,6 +100,7 @@ Array.prototype.distinct = function (clause, excludeNulls) {
   let item;
   const dict = {};
   const retVal = [];
+  clause = parseClause(clause);
   for (let i = 0; i < this.length; i++) {
     item = clause ? clause(this[i]) : this[i];
     if (excludeNulls && (item === null || item === undefined)) { continue; }

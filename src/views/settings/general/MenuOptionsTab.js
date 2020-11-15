@@ -75,7 +75,7 @@ class MenuOptionsTab extends TabControlBase {
     render() {
         const {
             props: { launchMenus, dashboards, menus, settings },
-            state: { selectedMenus, selectedDashboard, selectedLaunchPage }
+            state: { selectedDashboard, selectedLaunchPage }
         } = this;
 
         return (
@@ -100,7 +100,7 @@ class MenuOptionsTab extends TabControlBase {
                             </div>
                             <div className="ui-g-12 ui-md-9 ui-lg-9 ui-xl-10">
                                 <div className="form-group">
-                                    <ListBox options={menus} value={selectedMenus} onChange={(val) => this.setState({ selectedMenus: val })}
+                                    <ListBox options={menus} optionValue="id" optionLabel="id"
                                         multiple={true} style={{ width: '300px' }} listStyle={{ maxHeight: '250px' }} itemTemplate={this.menuTemplate} />
                                     <span className="help-block">Choose the list of menus you would like to be displayed</span>
                                 </div>

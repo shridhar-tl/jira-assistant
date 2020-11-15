@@ -49,7 +49,7 @@ class FlatDataGrid extends PureComponent {
             { field: "statusName", displayText: "Status", type: "string" },
             { field: "summary", displayText: "Summary", type: "string" },
             { field: "logTime", displayText: "Log Date & Time", type: "datetime", format: formatDateTime },
-            { field: "userDisplay", displayText: "User", type: "string" },
+            { field: "userDisplay", displayText: "Assignee", type: "string" },
             { field: "timeSpent", displayText: "Hr. Spent", type: "number", format: convertSecs },
             { field: "originalestimate", displayText: "Ori. Estm.", type: "number", format: convertSecs },
             { field: "totalLogged", displayText: "Total Worklogs", type: "number", format: convertSecs },

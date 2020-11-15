@@ -200,7 +200,19 @@ export class GroupableGrid extends PureComponent {
             }
         }
         else {
-            resultData = groupData(fieldKey || field);
+            const valueType = settings?.valueType;
+            switch (valueType) {
+                case 'count':
+                    resultData = [{ key: data.length, values: data }];
+                    break;
+                case 'distinct':
+                    const keyCount = data.distinct(fieldKey || field)?.length;
+                    resultData = [{ key: keyCount, values: data }];
+                    break;
+                default:
+                    resultData = groupData(fieldKey || field);
+                    break;
+            }
         }
 
         return resultData.sortBy("key", sortDesc)
@@ -332,7 +344,8 @@ export class GroupableGrid extends PureComponent {
 
     renderFoldableGroupRow(g, i, columns, groupBy, depth = 0) {
         const curGroup = groupBy[0];
-        const Component = curGroup?.viewComponent;
+        const valueType = curGroup?.settings?.valueType || 'value';
+        const Component = valueType !== 'value' ? null : curGroup?.viewComponent;
 
         const emptyTDs = depth > 0 && [].init((_, i) => <td key={i} className="group-indent-td"></td>, depth);
         const groupKeyCell = groupBy.length > 0 && (<tr key={g.key}>
@@ -361,7 +374,8 @@ export class GroupableGrid extends PureComponent {
 
     renderGroupRow(g, i, columns, groupBy, prepend = null) {
         const curGroup = groupBy[0];
-        const Component = curGroup?.viewComponent;
+        const valueType = curGroup?.settings?.valueType || 'value';
+        const Component = valueType !== 'value' ? null : curGroup?.viewComponent;
 
         let groupKeyCell = groupBy.length > 0 && (
             <td rowSpan={g.rowSpan}>
