@@ -31,7 +31,7 @@ export default class AjaxService {
         //}
     }
     prepareUrl(url, params) {
-        this._basePath = this.$session.rootUrl;
+        this._basePath = this.$session.rootUrl || '';
         if (!this._basePath.endsWith('/')) {
             this._basePath += '/';
         }
