@@ -203,6 +203,7 @@ function processExpressions(fields) {
                     Fields: fields,
                     parseInt,
                     parseFloat,
+                    Math,
                     Number
                 });
             fields[f.id] = val;

@@ -19,9 +19,11 @@ const isChrome = !!window.chrome && (!!window.chrome.webstore || !!window.chrome
 // Blink engine detection
 //const isBlink = (isChrome || isOpera) && !!window.CSS;
 
-export default {
+const browser = {
     isChrome, isFirefox, isEdge, isOpera //, isSafari, isBlink
 };
+
+export default browser;
 
 export const BROWSER_NAME = getName();
 

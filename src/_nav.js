@@ -128,4 +128,7 @@ export const navigation = [
         icon: 'fa fa-bug'
     }
 ];
-export default { items: navigation };
+
+const nav = { items: navigation };
+
+export default nav;
