@@ -301,10 +301,11 @@ class ImportWorklog extends BaseImport {
         const today = new Date().format("dd-MMM-yyyy HH:mm:ss");
         const lines = [
             "Ticket No,Start Date,Timespent,Comment",
-            `JA-1001,${today},1w 2d 3h 4m,Sample worklog 1`,
-            `JA-1002,${today},12.5,Sample worklog 2`,
-            `JA-1003,${today},14:45,Sample worklog 3`,
-            `JA-1003,${today},8,Sample worklog 4`
+            `JA-1001,${today},1w 2d 3h 4m,Logs 59 hours and 4 mins`,
+            `JA-1001,${today},1d 1h,Logs 9 hours`,
+            `JA-1002,${today},12.5,Logs 12 hours and 30 mins`,
+            `JA-1003,${today},14:45,Logs 14 hours and 45 mins`,
+            `JA-1003,${today},8,Logs 8 hours`
         ];
         exportCsv(lines.join("\n"), "sample_worklog");
     }
