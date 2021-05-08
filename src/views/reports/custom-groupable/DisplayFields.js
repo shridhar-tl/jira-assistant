@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Sortable } from 'jsd-report';
+import Sortable from '../../../drag-drop/Sortable';
 import { ScrollableTable, THead } from '../../../components/ScrollableTable';
 import CustomFieldSelector from '../../../jira-controls/CustomFieldSelector';
 import { getField } from './Utils';
@@ -68,7 +68,7 @@ class DisplayFields extends PureComponent {
             });
     }
 
-    getControls = (f, i, hndl, drag) => {
+    getControls = (f, i, drag, hndl) => {
         return (<DisplayField key={i}
             dragHandle={drag.dragHandle}
             dropConnector={hndl.dropConnector}
@@ -94,16 +94,14 @@ class DisplayFields extends PureComponent {
                         <th>Remove</th>
                     </tr>
                 </THead>
-                <Sortable items={fields} itemType="field" itemTarget="field"
-                    onChange={onChange}
-                    useDragHandle={true}
-                    useCustomContainer={true}>
-                    {(renderItems, dropProps) => (
-                        <tbody>
-                            {renderItems(this.getControls)}
-                        </tbody>
-                    )}
-                </Sortable>
+                <tbody>
+                    <Sortable
+                        items={fields}
+                        itemType="field"
+                        accepts={["field"]}
+                        onChange={onChange}
+                        itemTemplate={this.getControls} />
+                </tbody>
                 <tfoot>
                     <tr>
                         <td className="data-center">{fields.length + 1}</td>
