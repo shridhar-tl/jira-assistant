@@ -32,7 +32,7 @@ class Contribute extends PureComponent {
                     <div className="donate-block">
                         <div className="donate-cntr">
                             <span>Are you a paypal user?</span>
-                            <a href="http://paypal.me/shridhartl" target="_blank" rel="noopener noreferrer">
+                            <a href="https://paypal.me/shridhartl" target="_blank" rel="noopener noreferrer">
                                 <img className="paypal" src="/assets/donate_paypal.png" alt="Donate now" />
                             </a>
                         </div>

@@ -128,7 +128,7 @@ class Integrate extends PureComponent {
                                             <span className="input-group-text"><i className="fa fa-external-link" /></span>
                                         </div>
                                         <TextBox className="form-control" value={jiraUrl} onChange={(val) => this.setState({ jiraUrl: val })}
-                                            placeholder="Jira url (eg: http://jira.example.com)" />
+                                            placeholder="Jira url (eg: https://jira.example.com)" />
                                     </div>
                                     <p className="text-muted">
                                         Login to your Jira in current tab or provide the Url of your Jira server to integrate.
