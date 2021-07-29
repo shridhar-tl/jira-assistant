@@ -21,6 +21,15 @@ class WorklogTab extends TabControlBase {
                     </div>
                 </div>
                 <div className="form-label ui-g-12 ui-md-3 ui-lg-3 ui-xl-2">
+                    <strong>Default time spent</strong>
+                </div>
+                <div className="ui-g-12 ui-md-9 ui-lg-9 ui-xl-10">
+                    <div className="form-group">
+                        <TimePicker value={settings.defaultTimeSpent} onChange={(val) => this.setValue("defaultTimeSpent", val)} placeholder="Choose default time spent" />
+                        <span className="help-block">Specify the default value for time spent in worklog</span>
+                    </div>
+                </div>
+                <div className="form-label ui-g-12 ui-md-3 ui-lg-3 ui-xl-2">
                     <strong>Auto upload worklog</strong>
                 </div>
                 <div className="ui-g-12 ui-md-9 ui-lg-9 ui-xl-10">

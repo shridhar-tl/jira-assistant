@@ -98,6 +98,7 @@ export default class UserService {
             ticketViewUrl: `${currentUser.jiraUrl}/browse/`,
             profileUrl: `${currentUser.jiraUrl}/secure/ViewProfile.jspa`,
             maxHours: currentUser.maxHours || 8,
+            defaultTimeSpent: (currentUser.defaultTimeSpent || 1) * 60 * 60 * 1000,
             meetingTicket: currentUser.meetingTicket,
             team: currentUser.team || [],
             projects: currentUser.projects,

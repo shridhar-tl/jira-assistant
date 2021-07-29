@@ -13,8 +13,9 @@ class AddWorklog extends BaseDialog {
         inject(this, "SessionService", "SuggestionService", "WorklogService", "MessageService", "UtilsService");
 
         this.displayDateFormat = "yyyy-MM-dd HH:mm";
-        const { commentLength, autoUpload } = this.$session.CurrentUser;
+        const { commentLength, autoUpload, defaultTimeSpent } = this.$session.CurrentUser;
         this.minCommentLength = commentLength || 0;
+        this.defaultTimeSpent = this.$utils.formatSecs(defaultTimeSpent);
 
         const { worklog, uploadImmediately } = props;
         this.state = this.getState(worklog);
@@ -64,7 +65,7 @@ class AddWorklog extends BaseDialog {
                 newState.log.overrideTimeSpent = timeSpent;
             }
             else {
-                newState.log.overrideTimeSpent = '01:00';
+                newState.log.overrideTimeSpent = this.defaultTimeSpent;
                 newState.log.allowOverride = true;
             }
 

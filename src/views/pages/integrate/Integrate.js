@@ -65,6 +65,7 @@ class Integrate extends PureComponent {
                             dateFormat: "dd-MMM-yyyy",
                             timeFormat: " hh:mm:ss tt",
                             maxHours: 8,
+                            defaultTimeSpent: 1,
                             dateCreated: new Date()
                         };
                         this.$db.users.add(user)

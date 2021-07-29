@@ -241,6 +241,7 @@ class GeneralSettings extends PureComponent {
         cUser.gIntegration = sett.googleIntegration;
         cUser.oIntegration = sett.outlookIntegration;
         cUser.maxHours = sett.maxHours;
+        cUser.defaultTimeSpent = sett.defaultTimeSpent;
         cUser.meetingTicket = sett.meetingTicket;
         cUser.hasGoogleCreds = sett.hasGoogleCredentials;
         cUser.hasOutlookCreds = sett.hasOutlookCredentials;

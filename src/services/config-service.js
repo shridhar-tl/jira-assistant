@@ -48,6 +48,7 @@ export default class ConfigService {
                 autoUpload: user.autoUpload,
                 dateFormat: user.dateFormat,
                 maxHours: user.maxHours,
+                defaultTimeSpent: user.defaultTimeSpent,
                 workingDays: user.workingDays || [1, 2, 3, 4, 5],
                 taskLogEnabled: user.taskLogEnabled,
                 timeFormat: user.timeFormat,
@@ -94,6 +95,7 @@ export default class ConfigService {
         user.autoUpload = settings.autoUpload;
         user.dateFormat = settings.dateFormat;
         user.maxHours = settings.maxHours;
+        user.defaultTimeSpent = settings.defaultTimeSpent;
         user.taskLogEnabled = settings.taskLogEnabled;
         user.timeFormat = settings.timeFormat;
         user.workingDays = settings.workingDays;
