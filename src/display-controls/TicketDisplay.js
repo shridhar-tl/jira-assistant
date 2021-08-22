@@ -9,7 +9,7 @@ class TicketDisplay extends BaseControl {
         inject(this, "UserUtilsService", "BookmarkService");
 
         this.contextMenu = [
-            !props.hideWorklog && { label: "Add worklog", icon: "fa fa-clock-o", command: () => props.onAddWorklog(props.value) },
+            !props.hideWorklog && { label: "Add worklog", icon: "fa fa-clock-o", command: () => this.props.onAddWorklog(this.props.value) },
             { label: "Bookmark", icon: "fa fa-bookmark", command: () => this.addBookmark() }
             //{ label: "Start progress", icon: "fa fa-play", command: () => this.startProgress() } //ToDo: Add option for move to progress, show in tree view
         ].filter(Boolean);

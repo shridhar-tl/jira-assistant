@@ -86,12 +86,13 @@ class MyOpenTickets extends BaseGadget {
 
 class TicketRow extends PureComponent {
     setRef = (ref) => this.keyCtr = ref;
+    showContext = (e) => this.keyCtr.showContext(e);
 
     render() {
         const { ticket: b, onAddWorklog, onBookmark } = this.props;
 
         return (
-            <tr onContextMenu={(e) => this.keyCtr.showContext(e)}>
+            <tr onContextMenu={this.showContext}>
                 <TicketDisplay ref={this.setRef} value={b.ticketNo} onAddWorklog={onAddWorklog} onBookmark={onBookmark} />
                 <td><Image src={b.issuetypeIcon} />{b.issuetype}</td>
                 <td>{b.summary}</td>

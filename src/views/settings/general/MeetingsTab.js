@@ -2,6 +2,7 @@ import React from 'react';
 import TabControlBase from './TabControlBase';
 import { SelectBox, Checkbox } from '../../../controls';
 import { inject } from '../../../services';
+import { ApiUrls } from '../../../_constants';
 
 const intervalList = [
     { value: 5, label: 'Every 5 minutes' },
@@ -37,20 +38,31 @@ const launchList = [
 class MeetingsTab extends TabControlBase {
     constructor(props) {
         super(props);
+        this.state = {
+            settings: {
+                autoLaunch: 0,
+                notifyBefore: 0,
+                checkUpdates: 15,
+                ...props.settings
+            }
+        };
         inject(this, "CalendarService", "AnalyticsService", "MessageService", "SessionService", "OutlookService", "AppBrowserService");
     }
+
+    intgStatusChanged = (removedIntg) => this.setState({ removedIntg })
+    outlookIntgStatusChanged = (removedOIntg) => this.setState({ removedOIntg })
 
     enableIntegration(key, val) {
         if (val) {
             this.$jaBrowserExtn.requestPermission(["identity"]).then(result => {
                 if (result) {
-                    this.setValue(key, val);
+                    this.saveSetting(val, key);
                 } else {
                     this.$message.warning("Permission was not granted to enable this integration. Please grant permission to enable it.", "Permission not granted");
                 }
             });
         } else {
-            this.setValue(key, val);
+            this.saveSetting(val, key);
         }
     }
 
@@ -59,8 +71,8 @@ class MeetingsTab extends TabControlBase {
 
     googleSignIn = () => {
         this.$calendar.authenticate(true).then((result) => {
-            this.setValue("hasGoogleCredentials", true);
-            this.$session.CurrentUser.hasGoogleCreds = true;
+            this.saveSetting(true, "hasGoogleCredentials");
+            this.$session.CurrentUser.hasGoogleCredentials = true;
             this.$analytics.trackEvent("Signedin to Google Calendar");
             this.$message.success("Successfully integrated with google account.");
         }, (err) => { this.$message.warning("Unable to integrate with Google Calendar!"); });
@@ -68,9 +80,9 @@ class MeetingsTab extends TabControlBase {
 
     outlookSignIn = () => {
         this.$outlook.authenticate(true).then(async result => {
-            this.setValue("hasOutlookCredentials", true);
-            this.setValue("outlookStore", result);
-            this.$session.CurrentUser.hasOutlookCreds = true;
+            this.saveSetting(true, "hasOutlookCredentials",);
+            this.saveSetting(result, "outlookStore");
+            this.$session.CurrentUser.hasOutlookCredentials = true;
             this.$analytics.trackEvent("Signedin to Outlook Calendar");
             this.$message.success("Successfully integrated with outlook account.");
         }, (err) => {
@@ -81,28 +93,52 @@ class MeetingsTab extends TabControlBase {
     }
 
     removeIntegration = () => {
-        this.setValue("hasGoogleCredentials", false);
+        this.saveSetting(false, "hasGoogleCredentials");
         this.props.intgStatusChanged(true); //removedIntg
     }
 
     undoSignout = () => {
-        this.setValue("hasGoogleCredentials", true);
+        this.saveSetting(true, "hasGoogleCredentials");
         this.props.intgStatusChanged(false); //removedIntg
     }
 
     removeOutlookIntegration = () => {
-        this.setValue("hasOutlookCredentials", false);
+        this.saveSetting(false, "hasOutlookCredentials");
         this.props.outlookIntgStatusChanged(true); //removedIntg
     }
 
     undoOutlookSignout = () => {
-        this.setValue("hasOutlookCredentials", true);
+        this.saveSetting(true, "hasOutlookCredentials");
         this.props.outlookIntgStatusChanged(false); //removedIntg
+    }
+
+    // ToDo: This method is not yet implemneted / called
+    assignCalendarSettingsToUser(user, settings) {
+        if (!settings.hasGoogleCredentials && user.dataStore) {
+            const tokken = user.dataStore.access_token;
+            if (tokken) {
+                this.$ajax.get(ApiUrls.googleLogoutUrl, tokken).then(() => {
+                    this.$jaBrowserExtn.removeAuthTokken(tokken);
+                });
+            }
+            delete user.dataStore;
+        }
+
+        if (!settings.hasOutlookCredentials && user.outlookStore) {
+            const tokken = user.outlookStore.access_token;
+            if (tokken) {
+                this.$ajax.get(ApiUrls.outlookLogoutUrl).then(() => {
+                    console.log("Signedout from outlook");
+                });
+            }
+            delete user.outlookStore;
+        }
     }
 
     render() {
         const {
-            props: { settings, removedIntg, removedOIntg },
+            props: { removedIntg, removedOIntg },
+            state: { settings }
         } = this;
 
         return (
@@ -181,8 +217,9 @@ class MeetingsTab extends TabControlBase {
                         </div>
                         <div className="ui-g-12 ui-md-9 ui-lg-9 ui-xl-10">
                             <div className="form-group">
-                                <SelectBox className="form-control select" value={settings.checkUpdates} dataset={intervalList} valueField="value"
-                                    onChange={(val) => this.setValue("checkUpdates", val)} style={{ width: 180, display: 'inline-block' }} />
+                                <SelectBox className="form-control select" value={settings.checkUpdates} dataset={intervalList}
+                                    valueField="value" field="checkUpdates" onChange={this.saveSetting}
+                                    style={{ width: 180, display: 'inline-block' }} />
                                 <span className="help-block">Refresh the meeting invites for notification regularly in given interval</span>
                             </div>
                         </div>
@@ -192,7 +229,7 @@ class MeetingsTab extends TabControlBase {
                         <div className="ui-g-12 ui-md-9 ui-lg-9 ui-xl-10">
                             <div className="form-group">
                                 <SelectBox className="form-control select" value={settings.notifyBefore} dataset={notificationList} valueField="value"
-                                    onChange={(val) => this.setValue("notifyBefore", val)} style={{ width: 180, display: 'inline-block' }} />
+                                    field="notifyBefore" onChange={this.saveSetting} style={{ width: 180, display: 'inline-block' }} />
                                 <span className="help-block">Show notification before the selected time of meeting</span>
                             </div>
                         </div>
@@ -201,7 +238,7 @@ class MeetingsTab extends TabControlBase {
                         </div>
                         <div className="ui-g-12 ui-md-9 ui-lg-9 ui-xl-10">
                             <div className="form-group">
-                                <SelectBox className="form-control select" value={settings.autoLaunch} onChange={(val) => this.setValue("autoLaunch", val)}
+                                <SelectBox className="form-control select" value={settings.autoLaunch} field="autoLaunch" onChange={this.saveSetting}
                                     dataset={launchList} valueField="value" style={{ width: 180, display: 'inline-block' }} />
                                 <span className="help-block">Automatically launch hangout Url before the selected time of meeting</span>
                             </div>

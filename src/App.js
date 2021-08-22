@@ -9,9 +9,7 @@ import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
 import 'jsd-report/build/css/style.css';
 import './scss/style.scss';
-
 import './App.scss';
-import { isNumber } from 'util';
 
 const loading = () => (
   <div style={{ position: "fixed", top: "0px", left: "0px", height: "100%", minHeight: "600px", width: "100%", minWidth: "700px", zIndex: 3000, backgroundColor: "#f1f5f9" }}>
@@ -37,7 +35,7 @@ class App extends PureComponent {
   constructor(props) {
     super(props);
     registerServices();
-    inject(this, "AnalyticsService", "SessionService", "AuthService", "MessageService", "AnalyticsService");
+    inject(this, "AnalyticsService", "SessionService", "AuthService", "MessageService", "AnalyticsService", "SettingsService");
     this.state = { isLoading: true, needIntegration: false, authenticated: false };
     this.props.history.listen(this.routeChanged.bind(this));
   }
@@ -60,7 +58,7 @@ class App extends PureComponent {
 
   getMessanger = () => <Growl ref={(el) => this.messenger = el} baseZIndex={3000} />
 
-  UNSAFE_componentWillMount() {
+  async UNSAFE_componentWillMount() {
     this.$message.onNewMessage((message) => {
       let { detail } = message;
       if (detail && typeof detail !== 'string') {
@@ -70,13 +68,14 @@ class App extends PureComponent {
       if (this.messenger) { this.messenger.show(message); }
     });
 
+    await this.$settings.migrateSettings();
     this.authenticateUser(this.props.location.pathname);
   }
 
   authenticateUser(pathname, forceNavigate) {
     const parts = pathname.split("/");
     let userId = parseInt(parts[1]);
-    if (!userId || !isNumber(userId)) {
+    if (!userId || isNaN(userId) || pathname === '/401') {
       userId = null;
     }
 

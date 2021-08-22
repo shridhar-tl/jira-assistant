@@ -66,15 +66,18 @@ class DefaultLayout extends PureComponent {
   }
 
   getMenus(userId) {
-    const dashboards = this.$dashboard.getDashboards();
-    if (!dashboards || !dashboards.length) { return navigation; }
-
     const items = navigation.items.map(p => {
       const route = { ...p };
       route.url = `/${userId}${route.url}`;
       return route;
     });
-    items.splice(1, 1, ...dashboards.map((p, i) => getDashboardMenu(p, i, userId)));
+
+    const dashboards = this.$dashboard.getDashboards();
+
+    if (dashboards?.length) {
+      items.splice(1, 1, ...dashboards.map((p, i) => getDashboardMenu(p, i, userId)));
+    }
+
     return { items };
   }
 

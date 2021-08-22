@@ -1,26 +1,28 @@
 export default class UserGroupService {
-    static dependencies = ["AuthService", "SessionService", "UserService"];
+    static dependencies = ["AuthService", "SessionService", "UserService", 'SettingsService'];
 
-    constructor($auth, $session, $user) {
+    constructor($auth, $session, $user, $settings) {
         this.$auth = $auth;
         this.$session = $session;
         this.$user = $user;
+        this.$settings = $settings;
     }
 
-    getUserGroups() {
-        return this.$auth.getCurrentUser().then(u => {
-            let groups = u.groups;
-            if (!groups && u.team && u.team.length > 0) {
-                groups = [{ name: 'My Team', users: u.team }];
+    getUserGroups = async () => {
+        const currentUser = this.$session.CurrentUser;
+        const groups = await this.$settings.getGeneralSetting(currentUser.userId, 'groups');
+
+        return groups || [
+            {
+                name: 'Default group: No name set',
+                timeZone: '',
+                users: [currentUser.jiraUser]
             }
-            return groups || [{ name: 'Default group: No name set', timeZone: '', users: [this.$session.CurrentUser.jiraUser] }];
-        });
+        ];
     }
 
     saveUserGroups(groups) {
-        return this.$auth.getCurrentUser().then(u => {
-            u.groups = groups;
-            return this.$user.saveUser(u);
-        });
+        const currentUser = this.$session.CurrentUser;
+        return this.$settings.saveGeneralSetting(currentUser.userId, 'groups', groups);
     }
 }

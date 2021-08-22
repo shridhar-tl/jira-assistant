@@ -23,7 +23,7 @@ class AC extends PureComponent {
 
     onChange = ({ value }) => {
         this.setState({ value });
-        this.props.onChange(value);
+        this.props.onChange(value, this.props.field);
     }
 
     filterResult = ({ query }) => {

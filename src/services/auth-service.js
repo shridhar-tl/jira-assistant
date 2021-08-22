@@ -2,19 +2,13 @@ import * as moment from 'moment';
 import { getUserName } from '../common/utils';
 
 export default class AuthService {
-    static dependencies = ["UserService", "CacheService", "SessionService", "JiraService"];
-    constructor($user, $cache, $session, $jira) {
+    static dependencies = ["UserService", "CacheService", "SessionService", "JiraService", 'SettingsService'];
+    constructor($user, $cache, $session, $jira, $settings) {
         this.$user = $user;
         this.$cache = $cache;
         this.$session = $session;
         this.$jira = $jira;
-    }
-
-    async getCurrentUser() {
-        const user = await this.$user.getUser(this.$session.getCurrentUserId());
-        this.rootUrl = user.jiraUrl;
-
-        return user;
+        this.$settings = $settings;
     }
 
     async getUserDetails(userId) {
@@ -30,64 +24,75 @@ export default class AuthService {
     }
 
     async authenticate(userId) {
-        return await this.getUserDetails(userId)
-            .then(async userDetails => {
-                this.$session.CurrentUser = userDetails;
-                this.$session.userId = userDetails.userId;
-                this.$session.rootUrl = (userDetails.jiraUrl || "").toString();
-                //ToDo:
+        let userDetails;
 
-                const jiraUser = await this.$jira.getCurrentUser();
-                userDetails.jiraUser = jiraUser;
-                userDetails.displayName = jiraUser.displayName || "(not available)";
-                userDetails.name = getUserName(jiraUser) || "(not available)";
-                userDetails.emailAddress = jiraUser.emailAddress || "(not available)";
+        try {
+            userDetails = await this.getUserDetails(userId);
+            userId = userDetails.userId;
+            // ToDo: Remove once all the CurrentUser instances are changed to use new settings
+            const userSettings = await this.$settings.getGeneralSettings(userId);
+            const advSettings = await this.$settings.getAdvancedSettings(userId);
+            userDetails = { ...userDetails, ...userSettings, ...advSettings };
 
-                this.$session.authenticated = true;
-                return userDetails;
-            })
-            .then(userDetails => {
-                const settings = userDetails.settings;
+            this.$session.CurrentUser = userDetails;
+            this.$session.UserSettings = userSettings;
+            this.$session.userId = userId;
+            this.$session.rootUrl = (userDetails.jiraUrl || "").toString();
 
-                this.$session.pageSettings = {
-                    dashboard: this.parseIfJson(settings.page_dashboard, {
-                        viewMode: 0,
-                        gridList: ["myTickets", "bookmarksList", "dtWiseWL", "pendingWL"]
-                    }),
-                    calendar: this.parseIfJson(settings.page_calendar, {
-                        viewMode: 'timeGridWeek',
-                        showWorklogs: true,
-                        showMeetings: true,
-                        showInfo: true,
-                        eventColor: '#51b749',
-                        worklogColor: '#9a9cff',
-                        infoColor_valid: '#3a87ad',
-                        infoColor_less: '#f0d44f',
-                        infoColor_high: '#f06262'
-                    }),
-                    reports_UserDayWise: this.parseIfJson(settings.page_reports_UserDayWise, { logFormat: '1', breakupMode: '1', groupMode: '1' })
-                };
+            const jiraUser = await this.$jira.getCurrentUser();
+            userDetails.jiraUser = jiraUser;
+            userDetails.displayName = jiraUser.displayName || "(not available)";
+            userDetails.name = getUserName(jiraUser) || "(not available)";
+            userDetails.emailAddress = jiraUser.emailAddress || "(not available)";
 
-                let lastVisisted = this.$cache.get("LV");
-                if (lastVisisted) {
-                    lastVisisted = moment(lastVisisted);
-                    if (moment().startOf('day').isAfter(lastVisisted)) {
-                        this.$cache.set("LastVisited", lastVisisted.toDate());
-                    }
-                }
-                this.$cache.set("LV", new Date());
-
-                return true;
-            })
-            .then(null, (res) => {
-                this.$session.authenticated = false;
-                if (res.status === 401) {
-                    return false;
-                }
-                this.$session.needIntegration = res.needIntegration;
-
+            this.$session.authenticated = true;
+        } catch (res) {
+            this.$session.authenticated = false;
+            if (res.status === 401) {
                 return false;
-            });
+            }
+            this.$session.needIntegration = res.needIntegration;
+
+            return false;
+        }
+
+        userDetails.dashboards = await this.$settings.getDashboards(userId);
+
+        const settings = await this.$settings.getPageSettings(userId);
+
+        this.$session.pageSettings = {
+            /* Need to check if this is used anywhere. If not good to clear
+            dashboard: this.parseIfJson(settings.page_dashboard, {
+                viewMode: 0,
+                gridList: ["myOpenTickets", "myBookmarks", "dateWiseWorklog", "pendingWorklog"]
+            }),*/
+            calendar: this.parseIfJson(settings.page_calendar, {
+                viewMode: 'timeGridWeek',
+                showWorklogs: true,
+                showMeetings: true,
+                showInfo: true,
+                eventColor: '#51b749',
+                worklogColor: '#9a9cff',
+                infoColor_valid: '#3a87ad',
+                infoColor_less: '#f0d44f',
+                infoColor_high: '#f06262'
+            }),
+            reports_UserDayWise: this.parseIfJson(
+                settings.page_reports_UserDayWise,
+                { logFormat: '1', breakupMode: '1', groupMode: '1' }
+            )
+        };
+
+        let lastVisisted = this.$cache.get("LV");
+        if (lastVisisted) {
+            lastVisisted = moment(lastVisisted);
+            if (moment().startOf('day').isAfter(lastVisisted)) {
+                this.$cache.set("LastVisited", lastVisisted.toDate());
+            }
+        }
+        this.$cache.set("LV", new Date());
+
+        return true;
     }
 
     parseIfJson(json, dflt) {

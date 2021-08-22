@@ -52,8 +52,8 @@ export default class JiraService {
                         resolve({ total: result.total, issues: issues, startAt: startAt });
                     }
                 }, (err) => {
-                    const messages = (err.error || {}).errorMessages;
-                    if (messages && messages.length > 0) {
+                    const messages = err.error?.errorMessages;
+                    if (messages?.length > 0) {
                         this.$message.error(messages.join('<br/>'), "Error fetching ticket details");
                     }
                     reject(err);

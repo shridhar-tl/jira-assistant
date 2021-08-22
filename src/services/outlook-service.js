@@ -14,7 +14,7 @@ const tokenEndPoint = `${authApiBasePath}authorize`;
 //const tokenEndPoint = `${authApiBasePath}token`;
 
 const apiBasePath = "https://graph.microsoft.com/v1.0/me/";
-const calendarUrl = `${apiBasePath}/calendar/calendarView?startDateTime={0}&endDateTime={1}`;
+const calendarUrl = `${apiBasePath}/calendar/calendarView?startDateTime={0}&endDateTime={1}&top=100`;
 //const calendarListUrl = `${apiBasePath}calendars`;
 //const eventsListUrl = `${apiBasePath}calendar/events?$top=200&$expand=&$filter=&$orderby=&$select=`;
 //const groupEventsListUrl = `${apiBasePath}/calendarGroup/calendars/{0}/events`;
@@ -34,7 +34,7 @@ export default class OutlookCalendar {
     }
 
     async initConfigs() {
-        if (!this.oauth && this.$session.CurrentUser?.oIntegration) {
+        if (!this.oauth && this.$session.CurrentUser?.outlookIntegration) {
             let redirect_uri = null;
             if (process.env.NODE_ENV === "production") {
                 if (!await this.$jaBrowserExtn.requestPermission(["identity"])) {

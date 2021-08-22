@@ -11,9 +11,9 @@ class InputCheckbox extends PureComponent {
     }
 
     onChange = (e) => {
-        const { onChange } = this.props;
+        const { onChange, field, args } = this.props;
         if (onChange) {
-            onChange(e.checked);
+            onChange(e.checked, field, args);
         }
     }
 

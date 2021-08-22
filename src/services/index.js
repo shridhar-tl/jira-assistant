@@ -29,6 +29,7 @@ import UserUtilsService from './userutils-service';
 import UtilsService from './utils-service';
 import WorklogService from './worklog-service';
 import browsers from '../common/browsers';
+import SettingsService from './settings-service';
 
 export { inject };
 
@@ -70,6 +71,7 @@ export default function injectServices() {
     injectable(ReportService, "ReportService", "$report");
     injectable(ReportConfigService, "ReportConfigService", "$reportConfig");
     injectable(SessionService, "SessionService", "$session");
+    injectable(SettingsService, "SettingsService", "$settings");
     injectable(SuggestionService, "SuggestionService", "$suggestion");
     injectable(TicketService, "TicketService", "$ticket");
     injectable(UserService, "UserService", "$user");

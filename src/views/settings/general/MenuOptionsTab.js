@@ -2,19 +2,78 @@ import React from 'react';
 import TabControlBase from './TabControlBase';
 import { Checkbox, SelectBox, RadioButton } from '../../../controls';
 import { ListBox } from 'primereact/listbox';
+import { navigation } from '../../../_nav';
+import { inject } from '../../../services';
 
 class MenuOptionsTab extends TabControlBase {
     constructor(props) {
         super(props);
-        this.state = { launchMenus: [] };
+        inject(this, "DashboardService", "CacheService");
+        const { settings } = props;
+        const { launchAction } = settings;
+        const { action, autoLaunch, quickIndex } = launchAction || {};
+
+        this.state = {
+            settings: settings, launchMenus: [],
+            menuAction: action || 1,
+            selectedLaunchPage: autoLaunch,
+            selectedDashboard: quickIndex
+        };
+
+        // ToDo: Appropriate quick index has to be assigned.
+        //const idx = user.dashboards.indexOf(user.dashboards.first(d => d.isQuickView));
+        //settings.launchAction.quickIndex = `D-${idx}`;
+
+        this.fillMenus();
     }
 
-    UNSAFE_componentWillMount() {
-        const launchAct = this.props.settings.launchAction;
+    fillMenus() {
+        const menus = [];
+        const launchAct = this.state.settings.launchAction;
+        const selMenus = launchAct.selectedMenu || ['D-0', 'R-UD', 'R-SP', 'R-CG', 'CAL', 'S-GE'];
 
-        this.setState({
-            selectedLaunchPage: launchAct.autoLaunch, selectedDashboard: launchAct.quickIndex
+        const dashboards = this.$dashboard.getDashboards();
+        const dashboardMenus = [];
+        dashboards.forEach((d, i) => {
+            const id = `D-${i}`;
+            const url = `/dashboard/${i}`;
+            menus.push({ id, name: d.name, icon: d.icon, url, selected: selMenus.indexOf(id) > -1 });
+            dashboardMenus.push({ value: id, label: d.name, icon: d.icon });
         });
+
+        const launchMenus = [{ label: "Dashboards", items: dashboardMenus }];
+        let lastGroup = null;
+        navigation.forEach(menu => {
+            if (menu.name && !menu.isDashboard) {
+                menus.push({
+                    id: menu.id, isHead: menu.title, name: menu.name, icon: menu.icon,
+                    url: menu.url, selected: selMenus.indexOf(menu.id) > -1
+                });
+                if (menu.title) {
+                    lastGroup = { label: menu.name, items: [] };
+                    launchMenus.push(lastGroup);
+                }
+                else {
+                    lastGroup.items.push({ value: menu.id, label: menu.name, icon: menu.icon });
+                }
+            }
+        });
+
+        this.menus = menus;
+        this.launchMenus = launchMenus;
+        this.dashboardMenus = dashboardMenus;
+    }
+
+    menuActionSelected = (menuAction) => this.setState({ menuAction });
+
+    launchPageChanged = (autoLaunch) => this.setState({ selectedLaunchPage: autoLaunch }, this.saveSettings);
+
+    dashboardChanged = (quickIndex) => {
+        this.setState({ selectedDashboard: quickIndex }, this.saveSettings);
+        // ToDo: Updating appropriate dashboard index is not yet implemented
+        //const idx = parseInt((user.launchAction.quickIndex || '0').replace('D-', '')) || 0;
+        //delete user.launchAction.quickIndex;
+        //user.dashboards.forEach((dboard, i) => dboard.isQuickView = i === idx);
     }
 
     menuSelected = (menu, event) => {
@@ -28,13 +87,12 @@ class MenuOptionsTab extends TabControlBase {
             this.selectSubMenus(menu);
         }
 
-        const selectedMenus = this.props.menus.filter(m => m.selected && !m.isHead).map(m => m.id);
-        this.props.menusChanged(selectedMenus);
-        this.setState({ selectedMenus });
+        const selectedMenu = this.menus.filter(m => m.selected && !m.isHead).map(m => m.id);
+        this.setState({ selectedMenu }, this.saveSettings);
     }
 
     selectSubMenus(menu) {
-        const { menus } = this.props;
+        const { menus } = this;
 
         for (let i = menus.indexOf(menu) + 1; i < menus.length; i++) {
             const subMenu = menus[i];
@@ -58,24 +116,44 @@ class MenuOptionsTab extends TabControlBase {
         }
     }
 
-    menuActionSelected = (action) => {
-        this.setValue("menuAction", action);
-    }
+    saveSettings = () => {
+        const { menuAction } = this.state;
+        const setting = { action: parseInt(menuAction) };
+        const launchSetting = { action: setting.action };
 
-    launchPageChanged = (val) => {
-        this.setState({ selectedLaunchPage: val });
-        this.props.launchPageChanged(val);
-    }
+        switch (menuAction) {
+            case 1:
+                launchSetting.menus = this.menus
+                    .filter(menu => menu.selected && !menu.isHead)
+                    .map(menu => ({ name: menu.name, url: menu.url }));
+                setting.selectedMenu = this.state.selectedMenu;
+                break;
+            case 2:
+                if (this.state.selectedLaunchPage) {
+                    const selLPage = this.menus.first(menu => menu.id === this.state.selectedLaunchPage);
+                    if (selLPage) {
+                        launchSetting.url = selLPage.url;
+                        setting.autoLaunch = this.state.selectedLaunchPage;
+                    }
+                }
+                break;
+            case 3:
+                if (this.state.selectedDashboard) {
+                    launchSetting.index = parseInt((this.state.selectedDashboard || '0').replace('D-', ''));
+                    setting.quickIndex = this.state.selectedDashboard;
+                }
+                break;
+            default: break;
+        }
 
-    dashboardChanged = (val) => {
-        this.setState({ selectedDashboard: val });
-        this.props.dashboardChanged(val);
+        this.$cache.set("menuAction", launchSetting, false, true);
+        this.saveSetting(setting, 'launchAction');
     }
 
     render() {
         const {
-            props: { launchMenus, dashboards, menus, settings },
-            state: { selectedDashboard, selectedLaunchPage }
+            launchMenus, dashboardMenus, menus,
+            state: { selectedDashboard, selectedLaunchPage, menuAction }
         } = this;
 
         return (
@@ -88,26 +166,27 @@ class MenuOptionsTab extends TabControlBase {
                         </div>
                         <div className="ui-g-12 ui-md-9 ui-lg-9 ui-xl-10">
                             <div className="form-group">
-                                <RadioButton value={settings.menuAction} onChange={this.menuActionSelected} defaultValue={1} label="Show menus" />
-                                <RadioButton value={settings.menuAction} onChange={this.menuActionSelected} defaultValue={2} label="Auto launch" />
-                                <RadioButton value={settings.menuAction} onChange={this.menuActionSelected} defaultValue={3} label="Show quickview dashboard" />
+                                <RadioButton value={menuAction} onChange={this.menuActionSelected} defaultValue={1} label="Show menus" />
+                                <RadioButton value={menuAction} onChange={this.menuActionSelected} defaultValue={2} label="Auto launch" />
+                                <RadioButton value={menuAction} onChange={this.menuActionSelected} defaultValue={3} label="Show quickview dashboard" />
                                 <span className="help-block">Select appropriate option what you would expect to happen when you click on JA icon</span>
                             </div>
                         </div>
-                        {settings.menuAction === 1 && <>
+                        {menuAction === 1 && <>
                             <div className="form-label ui-g-12 ui-md-3 ui-lg-3 ui-xl-2">
                                 <strong>Menus to display</strong>
                             </div>
                             <div className="ui-g-12 ui-md-9 ui-lg-9 ui-xl-10">
                                 <div className="form-group">
                                     <ListBox options={menus} optionValue="id" optionLabel="id"
-                                        multiple={true} style={{ width: '300px' }} listStyle={{ maxHeight: '250px' }} itemTemplate={this.menuTemplate} />
+                                        multiple={true} style={{ width: '300px' }} listStyle={{ maxHeight: '250px' }}
+                                        itemTemplate={this.menuTemplate} />
                                     <span className="help-block">Choose the list of menus you would like to be displayed</span>
                                 </div>
                             </div>
                         </>}
 
-                        {settings.menuAction === 2 && <>
+                        {menuAction === 2 && <>
                             <div className="form-label ui-g-12 ui-md-3 ui-lg-3 ui-xl-2">
                                 <strong>Auto launch page</strong>
                             </div>
@@ -127,13 +206,13 @@ class MenuOptionsTab extends TabControlBase {
                         </>}
 
 
-                        {settings.menuAction === 3 && <>
+                        {menuAction === 3 && <>
                             <div className="form-label ui-g-12 ui-md-3 ui-lg-3 ui-xl-2">
                                 <strong>Quick view board</strong>
                             </div>
                             <div className="ui-g-12 ui-md-9 ui-lg-9 ui-xl-10">
                                 <div className="form-group">
-                                    <SelectBox dataset={dashboards} value={selectedDashboard} onChange={this.dashboardChanged}
+                                    <SelectBox dataset={dashboardMenus} value={selectedDashboard} onChange={this.dashboardChanged}
                                         style={{ 'width': '200px' }} valueField="value">
                                         {(menu) => <>
                                             <i className={`fa ${menu.icon}`} />

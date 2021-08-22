@@ -1,15 +1,15 @@
 import { EventCategory } from "../_constants";
 
 export default class BookmarkService {
-    static dependencies = ["UserService", "SessionService", "MessageService", "TicketService", "UserUtilsService", "AnalyticsService"];
+    static dependencies = ["SessionService", "MessageService", "TicketService", "UserUtilsService", "AnalyticsService", 'SettingsService'];
 
-    constructor($user, $session, $message, $ticket, $userutils, $analytics) {
-        this.$user = $user;
+    constructor($session, $message, $ticket, $userutils, $analytics, $settings) {
         this.$session = $session;
         this.$message = $message;
         this.$ticket = $ticket;
         this.$userutils = $userutils;
         this.$analytics = $analytics;
+        this.$settings = $settings;
     }
 
     addBookmark(ticketNo, showMessage) {
@@ -20,8 +20,7 @@ export default class BookmarkService {
 
         this.$analytics.trackEvent("Bookmark ticket", EventCategory.UserActions);
 
-        return this.$user.getUser(this.$session.userId).then((u) => {
-            let favTickets = u.favTicketList;
+        this.$settings.getGeneralSetting(this.$session.userId, 'favTicketList').then(favTickets => {
             if (!favTickets) {
                 favTickets = [];
             }
@@ -37,75 +36,87 @@ export default class BookmarkService {
                     return ticketNo;
                 }
                 issues.forEach((i) => { return favTickets.push(i.key); });
-                u.favTicketList = favTickets;
-                return this.$user.saveUser(u).then(() => {
-                    if (showMessage) {
-                        this.$message.success("Ticket(s) bookmarked successfully!");
-                    }
-                    return ticketNo.filter((t) => { return !favTickets.some((k) => { return k.toUpperCase() === t.toUpperCase(); }); });
-                });
+
+                return this.$settings.saveGeneralSetting(this.$session.userId, 'favTicketList', favTickets)
+                    .then(() => {
+                        if (showMessage) {
+                            this.$message.success("Ticket(s) bookmarked successfully!");
+                        }
+                        return ticketNo.filter((t) => { return !favTickets.some((k) => { return k.toUpperCase() === t.toUpperCase(); }); });
+                    });
             });
         });
     }
 
-    removeBookmark(tickets) {
+    async removeBookmark(tickets) {
         if (typeof (tickets) === 'string') {
             tickets = [tickets];
         }
 
         this.$analytics.trackEvent("Remove bookmark", EventCategory.UserActions);
 
-        return this.$user.getUser(this.$session.userId).then((u) => {
-            let favTickets = u.favTicketList;
-            if (!favTickets) {
-                favTickets = [];
-            }
-            favTickets.removeAll(tickets);
-            u.favTicketList = favTickets;
-            return this.$user.saveUser(u).then(() => { return this.getBookmarks(); });
-        });
+        let favTickets = await this.$settings.getGeneralSetting(this.$session.userId, 'favTicketList');
+        if (!favTickets) {
+            favTickets = [];
+        }
+        favTickets.removeAll(tickets);
+        this.$settings.saveGeneralSetting(this.$session.userId, 'favTicketList', favTickets);
+        return this.getBookmarks();
     }
 
-    getBookmarks() {
-        return this.$user.getUser(this.$session.userId).then((u) => {
-            const tickets = u.favTicketList;
-            if (tickets && tickets.length > 0) {
-                return this.$ticket.getTicketDetails(tickets, true).then((tickets) => {
-                    return tickets.map((i) => {
-                        const fields = i.fields || {};
-                        return {
-                            ticketNo: i.key,
-                            summary: fields.summary || "(unavailable)",
-                            assigneeName: (fields.assignee || "").displayName,
-                            reporterName: (fields.reporter || "").displayName,
-                            issuetype: (fields.issuetype || {}).name,
-                            issuetypeIcon: (fields.issuetype || {}).iconUrl,
-                            priority: (fields.priority || {}).name,
-                            priorityIcon: (fields.priority || {}).iconUrl,
-                            statusIcon: (fields.status || {}).iconUrl,
-                            status: (fields.status || {}).name,
-                            resolutionIcon: (fields.resolution || {}).iconUrl,
-                            resolution: (fields.resolution || {}).name,
-                            createdSortable: fields.created,
-                            updatedSortable: fields.updated,
-                            created: this.$userutils.formatDateTime(fields.created),
-                            updated: this.$userutils.formatDateTime(fields.updated)
-                        };
-                    });
-                }, (err) => {
-                    const msg = ((err.error || {}).errorMessages || [])[0];
-                    if (msg && msg.indexOf('does not exist')) {
-                        const bks = tickets.filter(t => msg.indexOf(t) > -1);
-                        if (bks.length > 0) {
-                            return this.removeBookmark(bks);
-                        }
+    async getBookmarks() {
+        const keys = await this.$settings.getGeneralSetting(this.$session.userId, 'favTicketList');
+
+        if (keys && keys.length > 0) {
+
+            return this.$ticket.getTicketDetails(keys, true).then((tickets) => {
+                const result = tickets.map((i) => {
+                    const keyIdx = keys.indexOf(i.key);
+                    if (~keyIdx) {
+                        keys.splice(keyIdx, 1);
+                    } else {
+                        this.addBookmark(i.key, false);
                     }
-                    return [];
+
+                    const fields = i.fields || {};
+                    return {
+                        ticketNo: i.key,
+                        summary: fields.summary || "(unavailable)",
+                        assigneeName: (fields.assignee || "").displayName,
+                        reporterName: (fields.reporter || "").displayName,
+                        issuetype: (fields.issuetype || {}).name,
+                        issuetypeIcon: (fields.issuetype || {}).iconUrl,
+                        priority: (fields.priority || {}).name,
+                        priorityIcon: (fields.priority || {}).iconUrl,
+                        statusIcon: (fields.status || {}).iconUrl,
+                        status: (fields.status || {}).name,
+                        resolutionIcon: (fields.resolution || {}).iconUrl,
+                        resolution: (fields.resolution || {}).name,
+                        createdSortable: fields.created,
+                        updatedSortable: fields.updated,
+                        created: this.$userutils.formatDateTime(fields.created),
+                        updated: this.$userutils.formatDateTime(fields.updated)
+                    };
                 });
-            }
-            else {
+
+                if (keys.length) {
+                    keys.forEach(k => result.push({ ticketNo: k, summary: '<<Ticket doesnt exist or you do not have permission>>' }));
+                }
+
+                return result;
+            }, (err) => {
+                const msg = ((err.error || {}).errorMessages || [])[0];
+                if (msg && msg.indexOf('does not exist')) {
+                    const bks = keys.filter(t => msg.indexOf(t) > -1);
+                    if (bks.length > 0) {
+                        return this.removeBookmark(bks);
+                    }
+                }
                 return [];
-            }
-        });
+            });
+        }
+        else {
+            return [];
+        }
     }
 }

@@ -1,25 +1,34 @@
 import React, { PureComponent } from 'react';
+import classNames from 'classnames';
 import { ScrollableTable, THead, TBody, TRow, Column } from '../../../components/ScrollableTable';
 import { inject } from '../../../services';
 import { getHostFromUrl } from '../../../common/utils';
 import { TextBox, Button, Checkbox } from '../../../controls';
-import { defaultSettings } from '../../../_constants';
+import { defaultSettings, SettingsCategory, SystemUserId } from '../../../_constants';
+import Dialog from '../../../dialogs';
 import './GlobalSettings.scss';
 
 class GlobalSettings extends PureComponent {
     constructor(props) {
         super(props);
-        inject(this, "UserService", "SessionService", "MessageService");
+        inject(this, 'UserService', 'SettingsService', 'MessageService');
         this.state = { users: [], intgUsers: [] };
     }
 
-    UNSAFE_componentWillMount() {
-        this.$user.getAllUsers().then(users => {
-            this.setState({ users, intgUsers: users.slice(1) });
-        });
+    async UNSAFE_componentWillMount() {
+        let users = await this.$user.getAllUsers();
+        users = await Promise.all(users.map(async u => {
+            const { id, userId, jiraUrl, email, lastLogin } = u;
+
+            const advSett = await this.$settings.getAllSettings(u.id, SettingsCategory.Advanced);
+
+            return { id, userId, jiraUrl, email, lastLogin, ...advSett };
+        }));
+
+        this.setState({ users, intgUsers: users.slice(1) });
     }
 
-    setValue(value, field, user) {
+    setValue = (value, field, user) => {
         let { users, intgUsers } = this.state;
         users = [...users];
         const index = users.indexOf(user);
@@ -32,15 +41,20 @@ class GlobalSettings extends PureComponent {
         }
 
         if (typeof value === "string") {
-            user[field] = value.trim() || undefined;
+            value = value.trim() || undefined;
         }
-        else {
-            user[field] = value;
-        }
+
+        user[field] = value;
 
         if (user[field] === undefined) {
             delete user[field];
         }
+
+        /*if (value || value === false) {
+            this.$settings.saveSetting(user.id, SettingsCategory.Advanced, field, value);
+        } else {
+            this.$settings.deleteSetting(user.id, SettingsCategory.Advanced, field);
+        }*/
 
         this.setState({ users, intgUsers });
     }
@@ -48,8 +62,23 @@ class GlobalSettings extends PureComponent {
     saveSettings = () => {
         const { users } = this.state;
         this.$user.saveGlobalSettings(users).then(() => {
+            this.UNSAFE_componentWillMount();
             this.$message.success("Settings saved successfully. Some changes will reflect only after you refresh the page.");
         });
+    }
+
+    toggleDelete = (user) => {
+        if (!user.deleted) {
+            Dialog.confirmDelete(
+                <>
+                    Are you sure to delete the selected integration? <br /><br />
+                    This would also delete all the associated data like local Worklogs, Custom Reports, etc.
+                </>,
+                "Confirm delete integration", undefined, { waitFor: 8 })
+                .then(() => this.setValue(true, 'deleted', user));
+        } else {
+            this.setValue(false, 'deleted', user);
+        }
     }
 
     render() {
@@ -66,7 +95,12 @@ class GlobalSettings extends PureComponent {
                         </TRow>
                         <TRow>
                             <Column>Default</Column>
-                            {intgUsers.map(u => <Column key={u.id}>{getHostFromUrl(u.jiraUrl)}</Column>)}
+                            {intgUsers.map(u => <Column key={u.id}>
+                                {getHostFromUrl(u.jiraUrl)}
+                                <span className={classNames('fa pull-right delete-account', u.deleted ? 'fa-undo' : 'fa-trash')}
+                                    title={u.deleted ? 'Undo delete' : 'Delete this integration'}
+                                    onClick={() => this.toggleDelete(u)} />
+                            </Column>)}
                         </TRow>
                     </THead>
                     <TBody>
@@ -79,64 +113,67 @@ class GlobalSettings extends PureComponent {
                             <td>Jira Server Url</td>
                             <td>N/A</td>
                             {intgUsers.map(u => <td key={u.id}>
-                                <TextBox placeholder="e.g. https://jira.example.com" value={u.jiraUrl?.toString()} onChange={(val) => this.setValue(val, "jiraUrl", u)} />
+                                <TextBox placeholder="e.g. https://jira.companysite.com" value={u.jiraUrl?.toString()}
+                                    args={u} field="jiraUrl" onChange={this.setValue} disabled={u.deleted} />
                             </td>)}
                         </TRow>
                         <TRow>
                             <td>Jira User id</td>
                             <td>N/A</td>
-                            {intgUsers.map(u => <td key={u.id}><TextBox placeholder="User id of Jira" value={u.userId} onChange={(val) => this.setValue(val, "userId", u)} /></td>)}
+                            {intgUsers.map(u => <td key={u.id}><TextBox placeholder="User id of Jira" value={u.userId}
+                                args={u} field="userId" onChange={this.setValue} disabled={u.deleted} /></td>)}
                         </TRow>
                         <TRow>
                             <td>Email id</td>
                             <td>N/A</td>
-                            {intgUsers.map(u => <td key={u.id}><TextBox placeholder="Email id of Jira" value={u.email} onChange={(val) => this.setValue(val, "email", u)} /></td>)}
+                            {intgUsers.map(u => <td key={u.id}><TextBox placeholder="Email id of Jira" value={u.email}
+                                args={u} field="email" onChange={this.setValue} disabled={u.deleted} /></td>)}
                         </TRow>
                         <TRow>
                             <td>Open tickets JQL</td>
-                            {users.map(u => <td key={u.id}><TextBox multiline placeholder={defaultSettings.openTicketsJQL} readOnly={u.id === 1}
-                                value={u.id === 1 ? defaultSettings.openTicketsJQL : (u.openTicketsJQL || "")}
-                                onChange={(val) => this.setValue(val, "openTicketsJQL", u)} /></td>)}
+                            {users.map(u => <td key={u.id}><TextBox multiline placeholder={defaultSettings.openTicketsJQL} readOnly={u.id === SystemUserId}
+                                value={u.id === SystemUserId ? defaultSettings.openTicketsJQL : (u.openTicketsJQL || "")}
+                                args={u} field="openTicketsJQL" onChange={this.setValue} disabled={u.deleted} /></td>)}
                         </TRow>
                         <TRow>
                             <td>Ticket suggestions JQL</td>
-                            {users.map(u => <td key={u.id}><TextBox multiline placeholder={defaultSettings.openTicketsJQL} readOnly={u.id === 1}
-                                value={u.id === 1 ? defaultSettings.openTicketsJQL : (u.suggestionJQL || "")}
-                                onChange={(val) => this.setValue(val, "suggestionJQL", u)} /></td>)}
+                            {users.map(u => <td key={u.id}><TextBox multiline placeholder={defaultSettings.openTicketsJQL} readOnly={u.id === SystemUserId}
+                                value={u.id === SystemUserId ? defaultSettings.openTicketsJQL : (u.suggestionJQL || "")}
+                                args={u} field="suggestionJQL" onChange={this.setValue} disabled={u.deleted} /></td>)}
                         </TRow>
                         <TRow>
                             <td>Disable Jira issue updates</td>
                             {users.map(u => <td key={u.id}><Checkbox checked={u.disableJiraUpdates}
-                                onChange={(val) => this.setValue(val, "disableJiraUpdates", u)}
+                                args={u} field="disableJiraUpdates" onChange={this.setValue} disabled={u.deleted}
                                 label="Disable Jira issue updates"
                                 title="Do not show updates about changes for any issues happend in Jira" />
                             </td>)}
                         </TRow>
                         <TRow>
                             <td>Jira updates JQL (used to fetch updates from Jira)</td>
-                            {users.map(u => <td key={u.id}><TextBox multiline placeholder={defaultSettings.jiraUpdatesJQL} readOnly={u.id === 1}
-                                disabled={u.disableJiraUpdates}
-                                value={u.id === 1 ? defaultSettings.jiraUpdatesJQL : (u.jiraUpdatesJQL || "")}
-                                onChange={(val) => this.setValue(val, "jiraUpdatesJQL", u)} /></td>)}
+                            {users.map(u => <td key={u.id}><TextBox multiline placeholder={defaultSettings.jiraUpdatesJQL} readOnly={u.id === SystemUserId}
+                                disabled={u.disableJiraUpdates || u.deleted}
+                                value={u.id === SystemUserId ? defaultSettings.jiraUpdatesJQL : (u.jiraUpdatesJQL || "")}
+                                args={u} field="jiraUpdatesJQL" onChange={this.setValue} /></td>)}
                         </TRow>
                         {!!users[0] && <TRow>
                             <td>Enable tracking user actions (Anynmous, Google Analytics)</td>
                             <td colSpan={intgUsers.length + 1}><Checkbox checked={users[0].enableAnalyticsLogging !== false}
-                                onChange={(val) => this.setValue(val, "enableAnalyticsLogging", users[0])}
+                                args={users[0]} field="enableAnalyticsLogging" onChange={this.setValue}
                                 label="Help developers to identify what features are being used much" />
                             </td>
                         </TRow>}
                         {!!users[0] && <TRow>
                             <td>Enable tracking exceptions (Anynmous)</td>
                             <td colSpan={intgUsers.length + 1}><Checkbox checked={users[0].enableExceptionLogging !== false}
-                                onChange={(val) => this.setValue(val, "enableExceptionLogging", users[0])}
+                                args={users[0]} field="enableExceptionLogging" onChange={this.setValue}
                                 label="Help developers to identify what errors occur for users and would help in fixing it soon" />
                             </td>
                         </TRow>}
                         {!!users[0] && <TRow>
                             <td>Disable notifications from developer</td>
                             <td colSpan={intgUsers.length + 1}><Checkbox checked={users[0].disableDevNotification}
-                                onChange={(val) => this.setValue(val, "disableDevNotification", users[0])}
+                                args={users[0]} field="disableDevNotification" onChange={this.setValue}
                                 label="Do not show important informations and bug notifications from developer" />
                             </td>
                         </TRow>}

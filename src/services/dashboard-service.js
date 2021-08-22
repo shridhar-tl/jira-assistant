@@ -1,11 +1,11 @@
-import { DASHBOARD_ICONS } from "../_constants";
+import { DASHBOARD_ICONS, SettingsCategory } from "../_constants";
 
 export default class DashboardService {
-    static dependencies = ["SessionService", "UserService", "CacheService"];
+    static dependencies = ["SessionService", "SettingsService", "CacheService"];
 
-    constructor($session, $user, $cache) {
+    constructor($session, $settings, $cache) {
         this.$session = $session;
-        this.$user = $user;
+        this.$settings = $settings;
         this.$cache = $cache;
         this.updated = () => { /* Empty method, no need of implementation */ };
     }
@@ -14,103 +14,109 @@ export default class DashboardService {
         this.updated = callback;
     }
 
-    getDashboards() {
-        return this.$session.CurrentUser.dashboards;
-    }
+    getDashboards = () => this.$session.CurrentUser.dashboards;// this.$settings.getDashboards(this.$session.userId);
 
     saveDashboardInfo = async (index, dashboard, updateMenu) => {
-        return await this.$user.getUser(this.$session.userId).then(u => {
-            if (!dashboard) {
-                console.error("Unable to save dashboard: ", index, dashboard, updateMenu);
-                return null;
-            }
+        if (!dashboard) {
+            console.error("Unable to save dashboard: ", index, dashboard, updateMenu);
+            return null;
+        }
 
-            if (!u.dashboards) {
-                u.dashboards = [dashboard];
-            }
-            else {
-                u.dashboards[index] = dashboard;
-            }
-
-            return this.saveUserDashboards(u, updateMenu !== true);
-        });
+        this.saveUserDashboards(dashboard, updateMenu !== true);
     }
 
-    async saveUserDashboards(u, avoidMenuUpdate) {
-        return await this.$user.saveUser(u).then(uid => {
-            this.$session.CurrentUser.dashboards = u.dashboards;
-            if (!avoidMenuUpdate) {
-                this.updated(u.dashboards);
-            }
-            return uid;
-        });
+    async saveUserDashboards(dashboard, avoidMenuUpdate) {
+        if (!dashboard.id) {
+            dashboard.id = new Date().getTime();
+        }
+
+        await this.saveBoard(dashboard);
+        await this.updateSessionDashboards(avoidMenuUpdate);
+
+        return dashboard;
     }
 
-    async createDashboard(currentBoard) {
-        return await this.$user.getUser(this.$session.userId).then(u => {
-            u.dashboards = this.$session.CurrentUser.dashboards;
-            if (!u.dashboards) {
-                u.dashboards = [currentBoard];
-            }
-            const iconIdx = this.rand(0, DASHBOARD_ICONS.length - 1);
-            u.dashboards.push({ icon: DASHBOARD_ICONS[iconIdx], layout: 1, name: `New Dashboard ${u.dashboards.length + 1}`, widgets: [], isQuickView: false });
-            return this.saveUserDashboards(u);
-        });
+    saveBoard = (board) => this.$settings.saveSetting(this.$session.userId, SettingsCategory.Dashboard, board.id, board);
+
+    async updateSessionDashboards(avoidMenuUpdate) {
+        const dashboards = await this.$settings.getDashboards(this.$session.userId);//this.getDashboards();
+        this.$session.CurrentUser.dashboards = dashboards;
+        if (!avoidMenuUpdate) {
+            this.updated(dashboards);
+        }
+    }
+
+    async createDashboard() {
+        const dashboards = this.$session.CurrentUser.dashboards;
+        const iconIdx = this.rand(0, DASHBOARD_ICONS.length - 1);
+        const dashboard = {
+            icon: DASHBOARD_ICONS[iconIdx],
+            layout: 1,
+            name: `New Dashboard ${dashboards.length + 1}`,
+            widgets: [],
+            isQuickView: false
+        };
+        return this.saveUserDashboards(dashboard);
     }
 
     rand(min, max) {
         return Math.floor(Math.random() * (max - min + 1) + min);
     }
 
-    deleteDashboard(index) {
-        return this.$user.getUser(this.$session.userId).then(u => {
-            const [removedBoard] = u.dashboards.splice(index, 1);
-            if (removedBoard.isQuickView) {
-                u.dashboards[0].isQuickView = true;
-            }
-            return this.saveUserDashboards(u);
-        });
+    async deleteDashboard(index) {
+        const dashboard = this.$session.CurrentUser.dashboards[index];
+        await this.$settings.deleteDashboard(this.$session.userId, dashboard.id);
+
+        if (dashboard.isQuickView) {
+            const firstBoard = this.$session.CurrentUser.dashboards[index ? 0 : 1];
+            this.setAsQuickView(firstBoard, 0);
+        } else {
+            await this.updateSessionDashboards();
+        }
     }
 
-    setAsQuickView(currentBoard, index) {
+    async setAsQuickView({ id }, index) {
+        const dashboards = await this.$settings.getDashboards(this.$session.userId);
+        const currentBoard = dashboards.filter(d => d.id === id)[0];
+        const oldBoard = dashboards.filter(d => d.isQuickView)[0];
+
         currentBoard.isQuickView = true;
-        this.$user.getUser(this.$session.userId).then(u => {
-            if (!u.dashboards) {
-                u.dashboards = [currentBoard];
-            }
-            else {
-                u.dashboards.forEach((dboard, i) => dboard.isQuickView = i === index);
-            }
 
-            let quickMenu = this.$cache.get("menuAction", true);
-            if (quickMenu) {
-                quickMenu = JSON.parse(quickMenu);
-                if (quickMenu.action === 3) {
-                    if (index === 0) {
-                        delete quickMenu.index;
-                    }
-                    else {
-                        quickMenu.index = index;
-                    }
+        if (oldBoard === currentBoard) { return currentBoard; }
+
+        if (oldBoard) {
+            oldBoard.isQuickView = false;
+            await this.saveBoard(oldBoard);
+        }
+
+        await this.saveUserDashboards(currentBoard, true);
+
+        let quickMenu = this.$cache.get("menuAction", true);
+        if (quickMenu) {
+            quickMenu = JSON.parse(quickMenu);
+            if (quickMenu.action === 3) {
+                if (index === 0) {
+                    delete quickMenu.index;
                 }
-                this.$cache.set("menuAction", quickMenu, false, true);
+                else {
+                    quickMenu.index = index;
+                }
             }
+            this.$cache.set("menuAction", quickMenu, false, true);
+        }
 
-            return this.saveUserDashboards(u, true);
-        });
+        return currentBoard;
     }
 
-    setAsTabView(currentBoard, index) {
-        currentBoard.isTabView = !currentBoard.isTabView;
-        this.$user.getUser(this.$session.userId).then(u => {
-            if (!u.dashboards) {
-                u.dashboards = [currentBoard];
-            }
-            else {
-                u.dashboards[index].isTabView = currentBoard.isTabView;
-            }
+    getBoardWithId = (id) => this.$settings.getSetting(this.$session.userId, SettingsCategory.Dashboard, id);
 
-            return this.saveUserDashboards(u, true);
-        });
+    async setAsTabView({ id }, index) {
+        const currentBoard = await this.getBoardWithId(id);
+
+        currentBoard.isTabView = !currentBoard.isTabView;
+
+        this.$session.CurrentUser.dashboards[index].isTabView = currentBoard.isTabView;
+
+        return this.saveUserDashboards(currentBoard, true);
     }
 }

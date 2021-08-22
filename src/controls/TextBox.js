@@ -18,7 +18,7 @@ class TextBox extends PureComponent {
     }
 
     onChange = (e) => {
-        const { filter, onChange, readOnly } = this.props;
+        const { filter, onChange, readOnly, field, args } = this.props;
         if (readOnly === true) { return; }
 
         const { value: oldValue } = this.state;
@@ -27,7 +27,7 @@ class TextBox extends PureComponent {
             value = oldValue; // ToDo: implement filter
         }
         this.setState({ value });
-        onChange(value);
+        onChange(value, field, args);
     }
 
     keyPress = (e) => {

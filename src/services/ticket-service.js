@@ -1,8 +1,15 @@
-export default class TicketService {
-    static dependencies = ["JiraService"];
+const commonTicketFields = [
+    "summary", "assignee", "reporter",
+    "priority", "status", "resolution",
+    "created", "updated", "issuetype", "parent"
+];
 
-    constructor($jira) {
+export default class TicketService {
+    static dependencies = ["JiraService", 'MessageService'];
+
+    constructor($jira, $message) {
         this.$jira = $jira;
+        this.$message = $message;
 
         this.ticketsCache = {};
     }
@@ -16,22 +23,23 @@ export default class TicketService {
             tickets = [tickets];
             onlyOne = true;
         }
-        return this.fetchTicketDetails(tickets, ["summary", "assignee", "reporter", "priority", "status", "resolution", "created", "updated", "issuetype", "parent"]).then((arr) => {
-            const result = {};
-            arr.forEach((t) => {
-                this.ticketsCache[t.key.toUpperCase()] = t;
-                if (!asArr) {
-                    result[t.key] = t;
+        return this.fetchTicketDetails(tickets, commonTicketFields)
+            .then((arr) => {
+                const result = {};
+                arr.forEach((t) => {
+                    this.ticketsCache[t.key.toUpperCase()] = t;
+                    if (!asArr) {
+                        result[t.key] = t;
+                    }
+                });
+                if (onlyOne) {
+                    return arr[0];
                 }
+                return asArr ? arr : result;
             });
-            if (onlyOne) {
-                return arr[0];
-            }
-            return asArr ? arr : result;
-        });
     }
 
-    fetchTicketDetails(tickets, fields) {
+    async fetchTicketDetails(tickets, fields) {
         const result = [];
         const toFetch = [];
         tickets = tickets.distinct(t => t);
@@ -43,17 +51,28 @@ export default class TicketService {
                 result.push(this.ticketsCache[t]);
             }
         });
+
         if (toFetch.length > 0) {
-            let jql = `'${toFetch.join("', '")}'`;
-            jql = `key in (${jql})`;
-            return this.$jira.searchTickets(jql, fields).then((list) => {
+            const jql = `key in ('${toFetch.join("', '")}')`;
+            try {
+                const list = await this.$jira.searchTickets(jql, fields);
                 result.addRange(list);
-                return result;
-            });
+            } catch (err) {
+                console.error(err);
+                /*
+                const { warningMessages, errorMessages = warningMessages } = err.error || {};
+                let messages = ['Unknown error occured. Check the console for more details'];
+                if (errorMessages?.length) {
+                    messages = errorMessages;
+                } else if (warningMessages?.length) {
+                    messages = warningMessages;
+                }
+                messages = messages.join('\r\n');
+                this.$message.error(messages, 'Query Error');*/
+            }
         }
-        else {
-            return Promise.resolve(result);
-        }
+
+        return result;
     }
 
     async processIssuesForImport(issues) {

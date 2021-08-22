@@ -36,7 +36,7 @@ class TimePicker extends PureComponent {
     onChange = (timeValue) => {
         const value = this.getValue(timeValue);
         this.setState({ timeValue, value });
-        this.props.onChange(value);
+        this.props.onChange(value, this.props.field);
     }
 
     getValue(timeValue) {

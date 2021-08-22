@@ -1,5 +1,5 @@
 import Dexie from 'dexie';
-import { UUID, EventCategory } from '../_constants';
+import { UUID, EventCategory, SystemUserId } from '../_constants';
 
 class DatabaseService extends Dexie {
     static dependencies = ["AnalyticsService", "MessageService"];
@@ -9,14 +9,13 @@ class DatabaseService extends Dexie {
         this.$message = $message;
         this.$analytics = $analytics;
 
-        this.version(1).stores({
+        this.version(2).stores({
             users: '++id,jiraUrl,userId',
             savedFilters: '++id,queryName,createdBy',
-            settings: '[name+userId],name,userId',
+            appSettings: '[userId+category+name],[userId+category]',
             worklogs: '++id,createdBy,isUploaded,dateStarted,worklogId,ticketNo',
             events: '++id,createdBy,name,ticketNo,startTime,isEnabled,source,sourceId'
         });
-
 
         // Open the database
         this.open().catch((error) => {
@@ -25,7 +24,7 @@ class DatabaseService extends Dexie {
         });
 
         // Database is being initialized for the first time
-        this.users.get(1).then((user) => {
+        this.users.get(SystemUserId).then((user) => {
             if (!user) {
                 const instId = UUID.generate();
 

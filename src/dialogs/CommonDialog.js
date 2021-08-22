@@ -106,14 +106,14 @@ class DialogConfig {
         return this.custom(message, title, footer, styles);
     }
 
-    confirmDelete(message, title, styles) {
+    confirmDelete(message, title, styles, config) {
         if (!title) {
             title = "Confirm delete";
         }
 
         const footer = (confirm, cancel) => <>
             <Button icon="fa fa-times" label="Cancel" onClick={cancel} />
-            <Button type="danger" icon="fa fa-trash" label="Delete" onClick={confirm} />
+            <Button type="danger" icon="fa fa-trash" label="Delete" onClick={confirm} waitFor={config?.waitFor} />
         </>;
 
         return this.custom(message, title, footer, styles);

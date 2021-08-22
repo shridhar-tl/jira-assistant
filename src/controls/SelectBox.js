@@ -61,7 +61,7 @@ class SelectBox extends PureComponent {
         const { value } = e;
         let subValue = value;
 
-        const { multiselect, valueField } = this.props;
+        const { multiselect, valueField, field } = this.props;
 
         if (valueField && typeof value === "object") {
             if (multiselect) {
@@ -73,7 +73,7 @@ class SelectBox extends PureComponent {
         }
 
         this.setState({ value, subValue });
-        this.props.onChange(subValue);
+        this.props.onChange(subValue, field);
     }
 
     render() {

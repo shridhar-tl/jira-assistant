@@ -43,25 +43,30 @@ class Header extends PureComponent {
         return { config, index };
     }
 
-    deleteDashboard() {
-        this.$dashboard.deleteDashboard(this.state.index).then(uid => {
-            this.props.history.push(`/${this.props.userId}/dashboard/0`);
-        });
+    async deleteDashboard() {
+        await this.$dashboard.deleteDashboard(this.state.index);
+        this.props.history.push(`/${this.props.userId}/dashboard/0`);
     }
 
-    setAsQuickView(quickViewLink) {
+    async setAsQuickView(quickViewLink) {
         quickViewLink.disabled = true;
         quickViewLink.icon = 'fa fa-check-square';
-        this.$dashboard.setAsQuickView(this.state.config, this.state.index);
+        this.contextMenu = [...this.contextMenu];
+
+        const config = await this.$dashboard.setAsQuickView(this.state.config, this.state.index);
+        this.setState({ config });
     }
 
-    setAsTabView(tabViewLink) {
+    async setAsTabView(tabViewLink) {
         const { config, index } = this.state;
 
-        this.$dashboard.setAsTabView(config, index);
+        const curBoard = await this.$dashboard.setAsTabView(config, index);
 
-        tabViewLink.icon = config.isQuickView ? "fa fa-check-square" : "fa fa-square";
-        this.props.tabViewChanged(config.isTabView);
+        tabViewLink.icon = curBoard.isTabView ? "fa fa-check-square" : "fa fa-square";
+        this.contextMenu = [...this.contextMenu];
+
+        this.setState({ config: curBoard });
+        this.props.tabViewChanged(curBoard.isTabView);
     }
 
     nameChanged = (name, icon) => {
@@ -71,19 +76,19 @@ class Header extends PureComponent {
         this.$dashboard.saveDashboardInfo(index, config, true);
     }
 
+    showContext = (e) => showContextMenu(e, this.contextMenu);
+
     render() {
         const { config: { icon, name } } = this.state;
 
         return (
-            <>
-                <div className="page-header">
-                    <div className="pull-left"><DashboardName icon={icon} value={name} onChange={this.nameChanged} /></div>
-                    <div className="pull-right">
-                        <Button type="success" icon="fa fa-cubes" label="Add gadgets" onClick={this.props.onShowGadgets} />
-                        <Button icon="fa fa-wrench" onClick={(e) => showContextMenu(e, this.contextMenu)} />
-                    </div>
+            <div className="page-header">
+                <div className="pull-left"><DashboardName icon={icon} value={name} onChange={this.nameChanged} /></div>
+                <div className="pull-right">
+                    <Button type="success" icon="fa fa-cubes" label="Add gadgets" onClick={this.props.onShowGadgets} />
+                    <Button icon="fa fa-wrench" onClick={this.showContext} />
                 </div>
-            </>
+            </div>
         );
     }
 }

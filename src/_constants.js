@@ -166,7 +166,7 @@ export const FULL_DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thur
 
 export const defaultJiraFields = ["issuetype", "summary", "reporter", "priority", "status", "resolution", "created", "updated"];
 
-export const AppVersionNo = 2.31;
+export const AppVersionNo = 2.32;
 
 let AnalyticsTrackingId = "UA-108841109-1"; // This is for public tracking id
 
@@ -193,3 +193,13 @@ export const EventCategory = {
     DialogEvents: "Popup events",
     DataFetch: "Data fetch operations"
 };
+
+export const SettingsCategory = {
+    System: 'SYST',
+    General: 'GNRL',
+    Advanced: 'ADVN',
+    Dashboard: 'DBORD',
+    PageSettings: 'PSET',
+};
+
+export const SystemUserId = 1;

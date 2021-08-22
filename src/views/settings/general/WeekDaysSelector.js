@@ -36,7 +36,7 @@ class WeekDaysSelector extends PureComponent {
 
         value = value.orderBy();
         this.setState({ value });
-        this.props.onChange(value);
+        this.props.onChange(value, this.props.field);
     }
 
     render() {

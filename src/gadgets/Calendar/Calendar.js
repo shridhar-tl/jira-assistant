@@ -285,7 +285,7 @@ class Calendar extends BaseGadget {
 
         const req = [this.$worklog.getWorklogsEntry(start, end)];
 
-        if (this.CurrentUser.gIntegration && this.CurrentUser.hasGoogleCreds && this.state.settings.showMeetings) {
+        if (this.CurrentUser.googleIntegration && this.CurrentUser.hasGoogleCredentials && this.state.settings.showMeetings) {
             req.push(this.$calendar.getEvents(start, end).then(null, (err) => {
                 let msg = "Unable to fetch Google meetings!";
                 if (err.error && err.error.message) {
@@ -296,7 +296,7 @@ class Calendar extends BaseGadget {
             }));
         }
 
-        if (this.CurrentUser.oIntegration && this.CurrentUser.hasOutlookCreds && this.state.settings.showMeetings) {
+        if (this.CurrentUser.outlookIntegration && this.CurrentUser.hasOutlookCredentials && this.state.settings.showMeetings) {
             req.push(this.$outlook.getEvents(start, end).then(null, (err) => {
                 let msg = "Unable to fetch Outlook meetings!";
                 if (err.error && err.error.message) {

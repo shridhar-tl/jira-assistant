@@ -21,6 +21,7 @@ import QueueService from './queue-service';
 import ReportService from './report-service';
 import ReportConfigService from './reportconfig-service';
 import SessionService from './session-service';
+import SettingsService from './settings-service';
 import SuggestionService from './suggestion-service';
 import TicketService from './ticket-service';
 import UserService from './user-service';
@@ -50,6 +51,7 @@ declare module 'react' {
         $report: ReportService
         $reportConfig: ReportConfigService
         $session: SessionService
+        $ettings: SettingsService
         $suggestion: SuggestionService
         $ticket: TicketService
         $user: UserService

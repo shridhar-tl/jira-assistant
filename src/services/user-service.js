@@ -1,4 +1,4 @@
-import { dateFormats, timeFormats } from '../_constants';
+import { SettingsCategory, SystemUserId } from "../_constants";
 
 export default class UserService {
     static dependencies = ["DatabaseService", "JiraService"];
@@ -8,12 +8,8 @@ export default class UserService {
         this.$jira = $jira;
     }
 
-    async getUser(userId) {
-        const user = await this.$db.users.get(userId);
-        if (user.commentLength === undefined) {
-            user.commentLength = 5;
-        }
-        return user;
+    getUser(userId) {
+        return this.$db.users.get(userId);
     }
 
     getAllUsers() {
@@ -21,16 +17,28 @@ export default class UserService {
     }
 
     async saveGlobalSettings(users) {
+        const settingsArr = [];
         const changeSetting = (sett, user, prop, retain) => {
-            if (sett[prop] || retain) {
-                user[prop] = sett[prop];
-            }
-            else {
-                delete user[prop];
+            const item = {
+                userId: user.id,
+                category: SettingsCategory.Advanced,
+                name: prop,
+                value: sett[prop]
+            };
+            settingsArr.push(item);
+
+            if (!item.value && !retain) {
+                delete item.value;
             }
         };
 
         await Promise.all(users.map(async u => {
+            if (u.id > SystemUserId && u.deleted) {
+                await this.$db.appSettings.where({ userId: u.id }).delete();
+                await this.$db.users.delete(u.id);
+                return;
+            }
+
             let user = await this.getUser(u.id);
             user = { ...user };
 
@@ -48,6 +56,8 @@ export default class UserService {
 
             await this.$db.users.put(user);
         }));
+
+        await this.$db.appSettings.bulkPut(settingsArr);
     }
 
     async saveUser(user) {
@@ -62,84 +72,21 @@ export default class UserService {
     async getUserDetails(userId) {
         const currentUser = await this.getUser(userId);
 
-        const feedbackUrl = "https://docs.google.com/forms/d/e/1FAIpQLScJvQtHZI_yZr1xd4Z8TwWgvtFss33hW5nJp4gePCgI2ScNvg/viewform?entry.326955045&entry.1696159737&entry.485428648={0}&entry.879531967={1}&entry.1426640786={2}&entry.972533768={3}";
-        if (!currentUser.settings) {
-            currentUser.settings = {};
-        }
-        const settings = {
-            page_dashboard: currentUser.settings.page_dashboard,
-            page_calendar: currentUser.settings.page_calendar,
-            page_reports_UserDayWise: currentUser.settings.page_reports_UserDayWise
-        };
-        let gridList = (settings.page_dashboard || {}).gridList;
-        if (gridList && gridList.length > 0) {
-            const converter = {
-                'myTickets': 'myOpenTickets', 'bookmarksList': 'myBookmarks', 'dtWiseWL': 'dateWiseWorklog',
-                'pendingWL': 'pendingWorklog', 'ticketWiseWL': 'ticketWiseWorklog', 'savedQuery': 'myFilters'
-            };
-            gridList = gridList.map(g => converter[g] || g);
-        }
-        else {
-            gridList = ['myOpenTickets', 'myBookmarks', 'dateWiseWorklog', 'pendingWorklog'];
+        if (!currentUser) {
+            return currentUser;
         }
 
-        currentUser.jiraUrl = currentUser.jiraUrl.clearEnd('/');
+        const feedbackUrl = "https://docs.google.com/forms/d/e/1FAIpQLScJvQtHZI_yZr1xd4Z8TwWgvtFss33hW5nJp4gePCgI2ScNvg/viewform?entry.326955045&entry.1696159737&entry.485428648={0}&entry.879531967={1}&entry.1426640786={2}&entry.972533768={3}";
+        currentUser.jiraUrl = currentUser.jiraUrl.toString().clearEnd('/');
 
         //this.$session.authTokken = currentUser.dataStore;
         const sessionUser = {
             userId: currentUser.id,
-            dateFormat: currentUser.dateFormat || dateFormats[0],
-            timeFormat: currentUser.timeFormat || timeFormats[0],
-            workingDays: currentUser.workingDays || [1, 2, 3, 4, 5],
-            startOfDay: currentUser.startOfDay || "10:00",
-            endOfDay: currentUser.endOfDay || "19:00",
-            notifyWL: currentUser.notifyWL,
             jiraUrl: currentUser.jiraUrl,
             ticketViewUrl: `${currentUser.jiraUrl}/browse/`,
             profileUrl: `${currentUser.jiraUrl}/secure/ViewProfile.jspa`,
-            maxHours: currentUser.maxHours || 8,
-            meetingTicket: currentUser.meetingTicket,
-            team: currentUser.team || [],
-            projects: currentUser.projects,
-            rapidViews: currentUser.rapidViews,
-            storyPointField: currentUser.storyPointField,
-            epicNameField: currentUser.epicNameField,
-            commentLength: currentUser.commentLength,
-            startOfWeek: currentUser.startOfWeek,
-            allowClosedTickets: currentUser.allowClosedTickets,
-            settings: settings,
-            autoUpload: currentUser.autoUpload,
-            gIntegration: currentUser.googleIntegration,
-            oIntegration: currentUser.outlookIntegration,
-            hasGoogleCreds: !!currentUser.dataStore,
-            hasOutlookCreds: !!currentUser.outlookStore,
-            outlookStore: currentUser.outlookStore,
-            feedbackUrl: `${feedbackUrl}&embedded=true`,
-            dashboards: currentUser.dashboards || [
-                {
-                    isQuickView: true, layout: 1, name: 'Default', icon: 'fa fa-tachometer',
-                    widgets: gridList.map(g => { return { name: g }; })
-                }
-            ],
-
-            // Advanced settings
-            openTicketsJQL: currentUser.openTicketsJQL,
-            suggestionJQL: currentUser.suggestionJQL,
-            disableJiraUpdates: currentUser.disableJiraUpdates,
-            jiraUpdatesJQL: currentUser.jiraUpdatesJQL
+            feedbackUrl: `${feedbackUrl}&embedded=true`
         };
-
-        // Assign system defaults to current user settings
-        if (userId > 1) {
-            const sysUser = await this.getUser(1);
-            if (sysUser) {
-                sessionUser.disableDevNotification = sysUser.disableDevNotification;
-
-                if (sysUser.disableJiraUpdates) {
-                    sessionUser.disableJiraUpdates = sysUser.disableJiraUpdates;
-                }
-            }
-        }
 
         const jiraUrlLower = currentUser.jiraUrl.toLowerCase();
 
@@ -149,7 +96,6 @@ export default class UserService {
         }
         else {
             delete sessionUser.noDonations;
-            sessionUser.hideDonateMenu = currentUser.hideDonateMenu;
         }
         return sessionUser;
     }
