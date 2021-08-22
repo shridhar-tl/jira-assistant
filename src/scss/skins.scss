@@ -72,6 +72,274 @@
   }
 }
 
+@mixin deep-style($background-color, $background-secondary, $primary-color, $font-color) {
+  background-color: $background-color;
+  color: $font-color;
+
+  .app-header.navbar .navbar-brand {
+    background-color: $background-color !important;
+  }
+
+  .app-header.navbar, .sidebar .nav-link:hover {
+    background-color: $background-secondary !important;
+    color: $font-color;
+
+  }
+
+  .sidebar .nav-link.active i {
+    color: $primary-color !important;
+  }
+
+  .ui-panel.ui-widget .ui-panel-titlebar {
+    border-top: 3px solid $primary-color;
+    background: white;
+  }
+
+  .sidebar .nav-link.active, .sidebar-minimized .sidebar .nav-link {
+    border-left: 3px solid $primary-color !important;
+  }
+
+  .link, .table i.fa-ellipsis-v {
+    color: $primary-color !important;
+  }
+
+  ul.right-menus li:hover {
+    background-color: $background-color;
+  }
+
+  .dashboard-icons div.d-icon {
+    color: $font-color;
+
+    &:hover {
+      color: $primary-color;
+    }
+  }
+
+  .page-header .board-icon {
+    color: $font-color;
+  }
+
+  .badge-info, .event-details .header {
+    background-color: $primary-color;
+    color: $font-color;
+  }
+
+  .skin-bg-font {
+    background-color: $primary-color;
+    color: $font-color!important;
+  }
+  /*.ui-widget-header .ui-button, .ui-widget-content .ui-button, .ui-widget.ui-button, .ui-button {
+    background-color: $header-bg;
+    border: 1px solid $header-logo-bg;
+  }*/
+  div.daysinweek {
+    > div.day:hover {
+      background-color: $primary-color !important;
+    }
+
+    > div.day.day-on {
+      background-color: $background-color;
+    }
+  }
+
+  .ui-datatable tbody > tr.ui-widget-content.ui-state-highlight {
+    background-color: $primary-color + bd !important;
+
+    .link {
+      color: #fff !important;
+      text-decoration: underline;
+    }
+  }
+
+  .page-header {
+    background-color: $background-color;
+    color: $font-color;
+
+    .dashboard-name {
+      color: $font-color
+    }
+  }
+
+  .text-muted {
+    color: $primary-color;
+  }
+
+  .dropdown-item,
+  .p-menu .p-menuitem-link .p-menuitem-icon,
+  .p-menubar .p-menuitem-link .p-menuitem-icon,
+  .p-tieredmenu .p-menuitem-link .p-menuitem-icon,
+  .p-contextmenu .p-menuitem-link .p-menuitem-icon,
+  .p-megamenu .p-menuitem-link .p-menuitem-icon,
+  .p-slidemenu .p-menuitem-link .p-menuitem-icon,
+  .p-menu .p-menuitem-link .p-menuitem-text,
+  .p-menubar .p-menuitem-link .p-menuitem-text,
+  .p-tieredmenu .p-menuitem-link .p-menuitem-text,
+  .p-contextmenu .p-menuitem-link .p-menuitem-text,
+  .p-megamenu .p-menuitem-link .p-menuitem-text,
+  .p-slidemenu .p-menuitem-link .p-menuitem-text {
+    color: $font-color
+  }
+
+  .p-menu .p-menuitem-link:hover .p-menuitem-icon,
+  .p-menubar .p-menuitem-link:hover .p-menuitem-icon,
+  .p-tieredmenu .p-menuitem-link:hover .p-menuitem-icon,
+  .p-contextmenu .p-menuitem-link:hover .p-menuitem-icon,
+  .p-megamenu .p-menuitem-link:hover .p-menuitem-icon,
+  .p-slidemenu .p-menuitem-link:hover .p-menuitem-icon,
+  .p-menu .p-menuitem-link:hover .p-menuitem-text,
+  .p-menubar .p-menuitem-link:hover .p-menuitem-text,
+  .p-tieredmenu .p-menuitem-link:hover .p-menuitem-text,
+  .p-contextmenu .p-menuitem-link:hover .p-menuitem-text,
+  .p-megamenu .p-menuitem-link:hover .p-menuitem-text,
+  .p-slidemenu .p-menuitem-link:hover .p-menuitem-text {
+    color: $font-color
+  }
+  
+
+  .p-inputtext,
+  .p-dropdown,
+  .p-dropdown-panel,
+  .p-dropdown-panel .p-dropdown-items .p-dropdown-item,
+  .p-dropdown-panel .p-dropdown-items .p-dropdown-item-group,
+  .p-panel .p-panel-content,
+  .p-tabview .p-tabview-panels,
+  .p-tabview.p-tabview-top .p-tabview-nav li.p-highlight:hover a,
+  .p-tabview.p-tabview-top .p-tabview-nav li.p-highlight a,
+  div.gadget .p-panel-titlebar,
+  div.scroll-table-container caption,
+  div.scroll-table-container .scroll-table tfoot,
+  .pnl-footer,
+  .p-dialog .p-dialog-content,
+  .p-dialog,
+  .p-autocomplete-panel,
+  .p-autocomplete-panel .p-autocomplete-items .p-autocomplete-list-item,
+  .dropdown-menu,
+  .p-accordion .p-accordion-content,
+  .p-menu {
+    background-color: $background-color;
+    color: $font-color;
+  }
+
+  .daterangepicker .calendar-table .next span,
+  .daterangepicker .calendar-table .prev span {
+    border-color: $font-color;
+  }
+
+  .daterangepicker,
+  .daterangepicker .calendar-table,
+  .daterangepicker td.off,
+  .daterangepicker td.off.in-range,
+  .daterangepicker td.off.start-date,
+  .daterangepicker td.off.end-date {
+    background-color: $background-color;
+  }
+
+  div.scroll-table-container .scroll-table thead tr,
+  div.scroll-table-container .scroll-table thead tr th,
+  .fc th,
+  tr.grouped-row,
+  .p-tabview.p-tabview-top .p-tabview-nav li a,
+  .p-tabview.p-tabview-bottom .p-tabview-nav li a,
+  .p-tabview.p-tabview-left .p-tabview-nav li a,
+  .p-tabview.p-tabview-right .p-tabview-nav li a,
+  .daterangepicker .ranges li:hover,
+  .daterangepicker td.available:hover,
+  .daterangepicker th.available:hover,
+  .p-dialog .p-dialog-titlebar,
+  .p-dialog .p-dialog-footer,
+  .p-autocomplete-panel .p-autocomplete-items .p-autocomplete-list-item:hover,
+  .dropdown-header,
+  .dropdown-item:hover,
+  .dropdown-item:focus,
+  .global-settings .footer,
+  .p-accordion .p-accordion-header a,
+  .p-menu .p-menuitem-link:hover,
+  .p-menubar .p-menuitem-link:hover,
+  .p-tieredmenu .p-menuitem-link:hover,
+  .p-contextmenu .p-menuitem-link:hover,
+  .p-megamenu .p-menuitem-link:hover,
+  .p-slidemenu .p-menuitem-link:hover,
+  .p-inputgroup .p-inputgroup-addon,
+  .p-dropdown .p-dropdown-trigger,
+  .p-dropdown-panel .p-dropdown-items .p-dropdown-item:not(.p-highlight):not(.p-disabled):hover,
+  .p-dropdown-panel .p-dropdown-items .p-dropdown-item-group:not(.p-highlight):not(.p-disabled):hover {
+    background-color: $background-secondary;
+    color: $font-color;
+  }
+
+  div.scroll-table-container .scroll-table tbody tr:nth-child(even),
+  .fc-widget-header,
+  .fc .fc-divider {
+    background: $background-secondary;
+  }
+
+  .p-dropdown,
+  .p-dropdown-panel,
+  .table-bordered th,
+  .table-bordered td,
+  .p-panel .p-panel-content,
+  .p-panel .p-panel-titlebar,
+  .p-tabview .p-tabview-panels,
+  .p-tabview.p-tabview-top .p-tabview-nav li.p-highlight:hover a,
+  .p-tabview.p-tabview-top .p-tabview-nav li.p-highlight a,
+  .page-header,
+  .app-header,
+  .table-bordered,
+  div.scroll-table-container .scroll-table tfoot tr:first-child td,
+  .fc td.fc-head-container,
+  .fc .fc-divider,
+  .daterangepicker,
+  .daterangepicker:after,
+  .daterangepicker.show-ranges.ltr .drp-calendar.left,
+  .daterangepicker .calendar-table,
+  .p-tabview.p-tabview-top .p-tabview-nav li a,
+  .p-tabview.p-tabview-bottom .p-tabview-nav li a,
+  .p-tabview.p-tabview-left .p-tabview-nav li a,
+  .p-tabview.p-tabview-right .p-tabview-nav li a,
+  .p-dialog .p-dialog-titlebar,
+  .p-dialog .p-dialog-content,
+  .p-dialog .p-dialog-footer,
+  .p-inputtext,
+  td .user-info img,
+  .dropdown-menu,
+  .dropdown-header,
+  .dropdown-item,
+  .p-accordion .p-accordion-header a,
+  .p-inputgroup .p-inputgroup-addon,
+  .p-dropdown .p-dropdown-trigger {
+    border-color: $background-secondary;
+  }
+
+  .fc-unthemed th,
+  .fc-unthemed td,
+  .fc-unthemed thead,
+  .fc-unthemed tbody,
+  .fc-unthemed .fc-divider,
+  .fc-unthemed .fc-row,
+  .fc-unthemed .fc-content,
+  .fc-unthemed .fc-popover,
+  .fc-unthemed .fc-list-view,
+  .fc-unthemed .fc-list-heading td {
+    border-color: #000;
+  }
+
+  td.log-good, tr.log-good {
+    background-color: $background-color + #0f300f !important;
+  }
+
+  td.log-less, tr.log-less {
+    background-color: #969640 !important; // $background-color + #9b9b53 !important;
+  }
+
+  td.log-high, tr.log-high {
+    background-color: $background-color + #804740 !important;
+  }
+
+  td.col-holiday {
+    background-color: $background-secondary !important;
+  }
+}
+
 .skin-blue {
   $header-logo-bg: #367fa9;
   $header-bg: #3c8dbc;
@@ -209,6 +477,14 @@
   $header-logo-bg: #64485c;
   $header-bg: #83677b;
   @include base-style($header-logo-bg,$header-bg);
+}
+
+.skin-dark {
+  $dark-color: #2f353a;
+  $second-dark-color: rgba(0,0,0,0.2);
+  $primary-color: #64afd8;
+  $font-color: #ffffff;
+  @include deep-style($dark-color, $second-dark-color, $primary-color, $font-color);
 }
 
 .skins {

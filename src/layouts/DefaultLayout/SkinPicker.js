@@ -55,6 +55,7 @@ class SkinPicker extends PureComponent {
                 <div skin="skin-cust2" onClick={this.skinSelected} style={{ borderColor: '#5d5c61', backgroundColor: '#379683' }}>G</div>
                 <div skin="skin-cust5" onClick={this.skinSelected} style={{ borderColor: '#7e685a', backgroundColor: '#afd275' }}>G</div>
                 <div skin="skin-cust3" onClick={this.skinSelected} style={{ borderColor: '#ffe400', backgroundColor: '#747474' }}>G</div>
+                <div skin="skin-dark" onClick={() => this.setSkin('skin-dark')} style={{ borderColor: 'rgba(0,0,0,0.2)', backgroundColor: '#2f353a' }}>~</div>
                 {/*<div onClick={() => this.setSkin('skin-cust1')} style={{ borderColor: '#44318d', backgroundColor: '#e98074' }}>B</div>*/}
                 {/*<div onClick={() => this.setSkin('skin-navy')} style={{ borderColor: '#0c0032', backgroundColor: '#190061' }}>B</div>
                 <div onClick={() => this.setSkin('skin-blue3')} style={{ borderColor: '#240090', backgroundColor: '#3500d3' }}>B</div>
