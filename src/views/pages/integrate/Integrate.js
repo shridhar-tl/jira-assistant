@@ -7,7 +7,7 @@ import { getUserName } from '../../../common/utils';
 class Integrate extends PureComponent {
     constructor(props) {
         super(props);
-        inject(this, "AjaxService", "DatabaseService", "MessageService", "CacheService", "AppBrowserService", "SessionService");
+        inject(this, "AjaxService", "DatabaseService", "MessageService", "CacheService", "AppBrowserService", "SessionService", "SettingsService");
 
         this.year = new Date().getFullYear();
 
@@ -62,13 +62,17 @@ class Integrate extends PureComponent {
                             userId: name,
                             email: email,
                             lastLogin: new Date(),
-                            dateFormat: "dd-MMM-yyyy",
-                            timeFormat: " hh:mm:ss tt",
-                            maxHours: 8,
                             dateCreated: new Date()
                         };
                         this.$db.users.add(user)
-                            .then((id) => {
+                            .then(async (id) => {
+                                await this.$settings.saveGeneralSetting(id, 'dateFormat', 'dd-MMM-yyyy');
+                                await this.$settings.saveGeneralSetting(id, 'timeFormat', ' hh:mm:ss tt');
+                                await this.$settings.saveGeneralSetting(id, 'maxHours', 8);
+                                await this.$settings.saveGeneralSetting(id, 'startOfDay', '09:00');
+                                await this.$settings.saveGeneralSetting(id, 'endOfDay', '17:00');
+                                await this.$settings.saveGeneralSetting(id, 'startOfWeek', 1);
+                                await this.$settings.saveGeneralSetting(id, 'maxHours', 8);
                                 return id;
                             }, this.handleDBError)
                             .then(this.openDashboard);

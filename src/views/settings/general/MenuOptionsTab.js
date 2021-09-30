@@ -10,8 +10,12 @@ class MenuOptionsTab extends TabControlBase {
         super(props);
         inject(this, "DashboardService", "CacheService");
         const { settings } = props;
-        const { launchAction } = settings;
-        const { action, autoLaunch, quickIndex } = launchAction || {};
+
+        if (!settings.launchAction) {
+            settings.launchAction = {};
+        }
+
+        const { launchAction: { action, autoLaunch, quickIndex } } = settings;
 
         this.state = {
             settings: settings, launchMenus: [],
