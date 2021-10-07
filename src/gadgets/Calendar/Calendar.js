@@ -15,7 +15,7 @@ import AddWorklog from '../../dialogs/AddWorklog';
 import { OverlayPanel } from 'primereact/overlaypanel';
 import MeetingDetails from './MeetingDetails';
 import CalendarSettings from './Settings';
-import { EventCategory } from '../../_constants';
+import { DefaultEndOfDay, DefaultStartOfDay, DefaultWorkingDays, EventCategory } from '../../_constants';
 import './Calendar.scss';
 
 //var moment;
@@ -98,7 +98,12 @@ class Calendar extends BaseGadget {
     }
 
     getCalendarOptions() {
-        const { startOfWeek, startOfDay, endOfDay, workingDays, timeFormat } = this.CurrentUser;
+        const {
+            startOfDay, endOfDay,
+            startOfDayDisp, endOfDayDisp,
+            startOfWeek, workingDays,
+            timeFormat
+        } = this.CurrentUser;
         let { viewMode } = this.props;
 
         if (!this.isGadget) {
@@ -160,8 +165,8 @@ class Calendar extends BaseGadget {
 
             // Time-Axis Settings
             slotDuration: "00:15:00",
-            minTime: startOfDay || "10:00", //"08:00:00",
-            maxTime: endOfDay || "19:00", //"22:00:00",
+            minTime: startOfDayDisp || startOfDay || DefaultStartOfDay, //"08:00:00",
+            maxTime: endOfDayDisp || endOfDay || DefaultEndOfDay, //"22:00:00",
 
             // TimeGrid View
             allDayText: "total",
@@ -181,9 +186,9 @@ class Calendar extends BaseGadget {
             // Business Hours
             businessHours: {
                 // days of week. an array of zero-based day of week integers (0=Sunday)
-                dow: workingDays || [1, 2, 3, 4, 5],
-                start: startOfDay || "10:00",
-                end: endOfDay || "19:00",
+                daysOfWeek: workingDays || DefaultWorkingDays,
+                startTime: startOfDay || DefaultStartOfDay,
+                endTime: endOfDay || DefaultEndOfDay,
             },
 
             // Reference - https://fullcalendar.io/docs/date-formatting

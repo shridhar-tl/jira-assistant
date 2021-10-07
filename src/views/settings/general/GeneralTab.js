@@ -4,7 +4,7 @@ import { InputMask } from 'primereact/inputmask';
 import { SelectBox, Checkbox } from '../../../controls';
 import WeekDaysSelector from './WeekDaysSelector';
 import { inject } from '../../../services';
-import { dateFormats, timeFormats } from '../../../_constants';
+import { dateFormats, DefaultEndOfDay, DefaultStartOfDay, timeFormats } from '../../../_constants';
 import { setStartOfWeek } from '../../../common/utils';
 import TabControlBase from './TabControlBase';
 
@@ -73,14 +73,26 @@ class GeneralTab extends TabControlBase {
                     </div>
                 </div>
                 <div className="form-label ui-g-12 ui-md-3 ui-lg-3 ui-xl-2">
+                    <strong>Displayed hours</strong>
+                </div>
+                <div className="ui-g-12 ui-md-9 ui-lg-9 ui-xl-10">
+                    <div className="form-group">
+                        <InputMask mask="99:99" value={settings.startOfDayDisp} onChange={(e) => this.saveSetting(e.value, 'startOfDayDisp')}
+                            placeholder={DefaultStartOfDay} maxLength={5} style={{ 'width': '150px', 'display': 'inline-block' }} />
+                        <InputMask mask="99:99" value={settings.endOfDayDisp} onChange={(e) => this.saveSetting(e.value, 'endOfDayDisp')}
+                            placeholder={DefaultEndOfDay} maxLength={5} style={{ 'width': '150px', 'display': 'inline-block' }} />
+                        <span className="help-block">Select your displayed hours range for calendar between 00:00 to 23:00 (24 hours format)</span>
+                    </div>
+                </div>
+                <div className="form-label ui-g-12 ui-md-3 ui-lg-3 ui-xl-2">
                     <strong>Working hours</strong>
                 </div>
                 <div className="ui-g-12 ui-md-9 ui-lg-9 ui-xl-10">
                     <div className="form-group">
                         <InputMask mask="99:99" value={settings.startOfDay} onChange={(e) => this.saveSetting(e.value, 'startOfDay')}
-                            placeholder="00:00" maxLength={5} style={{ 'width': '150px', 'display': 'inline-block' }} />
+                            placeholder={DefaultStartOfDay} maxLength={5} style={{ 'width': '150px', 'display': 'inline-block' }} />
                         <InputMask mask="99:99" value={settings.endOfDay} onChange={(e) => this.saveSetting(e.value, 'endOfDay')}
-                            placeholder="00:00" maxLength={5} style={{ 'width': '150px', 'display': 'inline-block' }} />
+                            placeholder={DefaultEndOfDay} maxLength={5} style={{ 'width': '150px', 'display': 'inline-block' }} />
                         <span className="help-block">Select your working hours range between 00:00 to 23:00 (24 hours format)</span>
                     </div>
                 </div>

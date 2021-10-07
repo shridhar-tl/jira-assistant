@@ -1,5 +1,6 @@
 import { getUserName } from "../common/utils";
 import moment from "moment";
+import { DefaultWorkingDays } from "../_constants";
 
 export default class UserUtilsService {
     static dependencies = ["SessionService", "UtilsService"];
@@ -28,7 +29,7 @@ export default class UserUtilsService {
 
     isHoliday = (date) => {
         const weekDay = date.getDay();
-        const workingDays = this.$session.CurrentUser.workingDays;
+        const workingDays = this.$session.CurrentUser.workingDays || DefaultWorkingDays;
         //ToDo: Need to have track of holiday and need to do the checking here
         return workingDays.indexOf(weekDay) === -1;
     }

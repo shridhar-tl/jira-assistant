@@ -1,4 +1,4 @@
-import { dateFormats, SettingsCategory, SystemUserId, timeFormats } from "../_constants";
+import { dateFormats, DefaultEndOfDay, DefaultStartOfDay, DefaultWorkingDays, SettingsCategory, SystemUserId, timeFormats } from "../_constants";
 
 const userSpecificSettings = [
     'allowClosedTickets',
@@ -40,13 +40,13 @@ const genericSettings = [
 ];
 
 const settingsDefaultValues = {
-    workingDays: [1, 2, 3, 4, 5],
+    workingDays: DefaultWorkingDays,
     dateFormat: dateFormats[0],
     timeFormat: timeFormats[0],
     maxHours: 8,
     commentLength: 5,
-    startOfDay: '10:00',
-    endOfDay: '19:00'
+    startOfDay: DefaultStartOfDay,
+    endOfDay: DefaultEndOfDay
 };
 
 class SettingsService {

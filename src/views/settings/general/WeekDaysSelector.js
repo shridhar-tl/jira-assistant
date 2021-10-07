@@ -1,17 +1,18 @@
 import React, { PureComponent } from 'react';
+import { DefaultWorkingDays } from '../../../_constants';
 
 const shortDays = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
 
 class WeekDaysSelector extends PureComponent {
     constructor(props) {
         super(props);
-        this.state = { value: props.value || [1, 2, 3, 4, 5] };
+        this.state = { value: props.value || DefaultWorkingDays };
     }
 
     UNSAFE_componentWillReceiveProps(props) {
         let { value } = props;
         if (!value) {
-            value = value || [1, 2, 3, 4, 5];
+            value = value || DefaultWorkingDays;
         }
 
         if (this.state.value !== value) {

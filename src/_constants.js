@@ -203,3 +203,7 @@ export const SettingsCategory = {
 };
 
 export const SystemUserId = 1;
+
+export const DefaultWorkingDays = [1, 2, 3, 4, 5];
+export const DefaultStartOfDay = '10:00';
+export const DefaultEndOfDay = '19:00';
