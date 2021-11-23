@@ -55,10 +55,15 @@ When it comes to security, first thing to clear is, Jira Assistant does not capt
 ### What information is collected by developer from users of Jira Assistant?
 We use Google analytics to capture which module of the tool is being used much by users and that too only in aggregate based on country. No other personal information like email id, company or jira server url is collected by developer. Only when you try to contact us, we get your email address just to responed you back. So all your personal informations are safe in your browser cache and is not sent anywhere outside of your browser by this tool.
 
-**Note:** Jira Assistant or its developer is not responsible if some other malicious software installed by you captures these details from your cache. Hence it is the responsibility of users to be safe when installing softwares.
+**Note:** Jira Assistant or its developer is not responsible if some other malicious software installed by you captures these details from your cache. Hence it is the responsibility of users to be safe when installing other softwares / extensions.
 
 ## Licence Aggrement
 Jira Assistant is a free software and anyone is free to use it for personal or commercial purpose. But you are authorized only to use this software. Any kind of changes or distribution of this software is not allowed. This software is provided as is without any warrenty and developer of this software is not responsible for any kind of loss incurred while using or mis-using this software.
+
+- The license grants the rights to run the program for any purpose;
+- The license grants the rights to study how the program works, to modify it and to adapt it;
+- The license grants the rights to distribute binary copies without modifications, for any purpose.
+- The license grants the rights to distribute binary copies with or without modifications to be used within the organization which did the modification.
 
 ## Shared Reports
 Their are few set of reports which are available in-built with Jira Assistant. Other than those reports their are few more reports / Gadgets available [here](docs/SHARED_REPORTS.md) which can be download and imported into Jira Assist. You can also develop a new report using Report Builder module in Jira Assist and share it with others through this page. You can watch the youtube videos in playlist below which will help you understand the Report Builder module.
