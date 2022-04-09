@@ -32,7 +32,7 @@ class WorklogSettings extends BaseDialog {
     };
 
     render() {
-        const { setValue, state: { pageSettings: { logFormat, breakupMode, timeZone, jql, hideEstimate } } } = this;
+        const { setValue, state: { pageSettings: { logFormat, breakupMode, timeZone, jql, hideEstimate, showCostReport } } } = this;
 
         return super.renderBase(
             <TabView styleclass="query-tab">
@@ -92,6 +92,14 @@ class WorklogSettings extends BaseDialog {
                                     Use individual users timezone
                                 </label>
                             </div>
+                        </div>
+                    </div>
+                    <div className="form-group row">
+                        <div className="form-check">
+                            <label className="form-check-label">
+                                <Checkbox checked={showCostReport} onChange={(e) => setValue("showCostReport", e)} label="Show cost report" />
+                                {this.showCostReport && !showCostReport && <span className="pad-left-15"> ( <i className="fa fa-exclamation-triangle" /> Change will take effect only after report is refreshed )</span>}
+                            </label>
                         </div>
                     </div>
                     <div className="form-group row">

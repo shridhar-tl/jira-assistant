@@ -1,6 +1,6 @@
 import React, { PureComponent, Fragment } from 'react';
 import { ScrollableTable, THead, TRow, Column, TBody, NoDataRow } from '../../components/ScrollableTable';
-import { getUserName } from '../../common/utils';
+import { getUserName, calcCostPerSecs } from '../../common/utils';
 
 class UserProjectWiseSummary extends PureComponent {
     constructor(props) {
@@ -28,7 +28,7 @@ class UserProjectWiseSummary extends PureComponent {
 
         const groupedData = groups.map(grp => {
             const { name, users } = grp;
-            const overallGroupTotal = { grandTotal: 0, projects: {} };
+            const overallGroupTotal = { grandTotal: 0, grandTotalCost: 0, projects: {} };
             const group = { name, overallTotal: overallGroupTotal };
 
             group.users = users.map((usr) => {
@@ -37,7 +37,7 @@ class UserProjectWiseSummary extends PureComponent {
                 const user = { name, emailAddress, displayName }; // User object to return
 
                 user.projects = projects.reduce((r_project, project) => { // User project wise data
-                    const groupProjectTotal = overallGroupTotal.projects[project.key] || { total: 0 };
+                    const groupProjectTotal = overallGroupTotal.projects[project.key] || { total: 0, totalCost: 0 };
                     overallGroupTotal.projects[project.key] = groupProjectTotal;
                     const projData = projectsData[project.key]; // All the worklog details related to project
 
@@ -50,23 +50,29 @@ class UserProjectWiseSummary extends PureComponent {
 
                             const projectData = projectIssueTypewiseData.reduce((obj, issueType) => {
                                 const total = issueType.values.sum((itr) => itr.timeSpent) || 0;
+                                const totalCost = calcCostPerSecs(total, usr.costPerHour);
 
                                 obj[issueType.key] = {
                                     total,
+                                    totalCost,
                                     logs: issueType.values
                                 };
 
                                 groupProjectTotal[issueType.key] = (groupProjectTotal[issueType.key] || 0) + total;
+                                groupProjectTotal[`${issueType.key}_Cost`] = (groupProjectTotal[`${issueType.key}_Cost`] || 0) + totalCost;
 
                                 return obj;
                             }, {});
 
+                            const totalTimeSpent = userProjectwiseData.sum((pr) => pr.timeSpent);
                             projectData.grandTotal = {
-                                total: userProjectwiseData.sum((pr) => pr.timeSpent),
+                                total: totalTimeSpent,
+                                totalCost: calcCostPerSecs(totalTimeSpent, usr.costPerHour),
                                 logs: userProjectwiseData
                             };
 
                             groupProjectTotal.total += projectData.grandTotal.total || 0;
+                            groupProjectTotal.totalCost += projectData.grandTotal.totalCost || 0;
 
                             r_project[project.key] = projectData;
                         }
@@ -77,12 +83,15 @@ class UserProjectWiseSummary extends PureComponent {
 
                 const userwiseData = userWiseWorklogs[name] || [];
 
+                const userGrandTotal = userwiseData.sum(wl => wl.timeSpent);
                 user.grandTotal = {
-                    total: userwiseData.sum(wl => wl.timeSpent),
+                    total: userGrandTotal,
+                    totalCost: calcCostPerSecs(userGrandTotal, usr.costPerHour),
                     logs: userwiseData
                 };
 
                 overallGroupTotal.grandTotal += user.grandTotal.total;
+                overallGroupTotal.grandTotalCost += user.grandTotal.totalCost;
 
                 return user;
             }); // End of user map
@@ -91,32 +100,33 @@ class UserProjectWiseSummary extends PureComponent {
         }); // End of group map
 
         const grandTotal = groupedData.reduce((grand, group) => {
-            const { overallTotal: { grandTotal, projects: groupProjects } } = group;
+            const { overallTotal: { grandTotal, grandTotalCost, projects: groupProjects } } = group;
 
             grand.grandTotal = (grand.grandTotal || 0) + grandTotal;
+            grand.grandTotalCost = (grand.grandTotalCost || 0) + grandTotalCost;
 
             projects.forEach((p) => {
                 const grpdProject = groupProjects[p.key] || {};
-                const projectGrand = grand[p.key] || { total: 0 };
+                const projectGrand = grand[p.key] || { total: 0, totalCost: 0 };
                 grand[p.key] = projectGrand;
                 projectGrand.total += grpdProject.total || 0;
+                projectGrand.totalCost += grpdProject.totalCost || 0;
 
                 p.issueTypes.forEach(it => {
-                    const issueTypeSum = grpdProject[it] || 0;
-                    projectGrand[it] = (projectGrand[it] || 0) + issueTypeSum;
+                    projectGrand[it] = (projectGrand[it] || 0) + (grpdProject[it] || 0);
+                    projectGrand[`${it}_Cost`] = (projectGrand[`${it}_Cost`] || 0) + (grpdProject[`${it}_Cost`] || 0);
                 });
             });
 
             return grand;
-        }, { grandTotal: 0 });
-        return { projects, projectsData, groupedData, grandTotal };
+        }, { grandTotal: 0, grandTotalCost: 0 });
+
+        return { projects, groupedData, grandTotal };
     }
-
-
 
     render() {
         const {
-            props: { convertSecs },
+            props: { convertSecs, costView },
             state: { projects, groupedData, grandTotal }
         } = this;
 
@@ -149,15 +159,22 @@ class UserProjectWiseSummary extends PureComponent {
                                         const userProject = user.projects[project.key] || {};
 
                                         return <Fragment key={pid}>
-                                            {project.issueTypes.map((it, iti) => {
+                                            {!costView && project.issueTypes.map((it, iti) => {
                                                 const projIssueTypeData = userProject[it];
-                                                return <td key={iti} className="data-center" exportType="float">{(projIssueTypeData ? convertSecs(projIssueTypeData.total) : null)}</td>;
+                                                return <td key={iti} className="data-center" exportType="float">{(convertSecs(projIssueTypeData?.total))}</td>;
                                             })}
-                                            <td className="strong data-center" exportType="float">{userProject.grandTotal ? convertSecs(userProject.grandTotal.total) : null}</td>
+                                            {!costView && <td className="strong data-center" exportType="float">{convertSecs(userProject.grandTotal?.total)}</td>}
+
+                                            {costView && project.issueTypes.map((it, iti) => {
+                                                const projIssueTypeData = userProject[it];
+                                                return <td key={iti} className="data-center" exportType="float" title={convertSecs(projIssueTypeData?.total)}>{projIssueTypeData?.totalCost}</td>;
+                                            })}
+                                            {costView && <td className="strong data-center" exportType="float" title={convertSecs(userProject.grandTotal?.total)}>{userProject.grandTotal?.totalCost}</td>}
                                         </Fragment>;
                                     })
                                 }
-                                <td className="strong data-center" exportType="float">{convertSecs(user.grandTotal.total)}</td>
+                                {!costView && <td className="strong data-center" exportType="float">{convertSecs(user.grandTotal.total)}</td>}
+                                {costView && <td className="strong data-center" exportType="float" title={convertSecs(user.grandTotal.total)}>{user.grandTotal.totalCost}</td>}
                             </tr>
                         ))}
                         <tr className="strong data-center">
@@ -166,13 +183,21 @@ class UserProjectWiseSummary extends PureComponent {
                                 projects.map((project, pid) => {
                                     const projectOverallTotal = group.overallTotal.projects[project.key] || {};
 
-                                    return <Fragment key={pid}>
-                                        {project.issueTypes.map((it, iti) => <td key={iti} exportType="float">{convertSecs(projectOverallTotal[it])}</td>)}
-                                        <td exportType="float">{convertSecs(projectOverallTotal.total)}</td>
-                                    </Fragment>;
+                                    if (!costView) {
+                                        return <Fragment key={pid}>
+                                            {project.issueTypes.map((it, iti) => <td key={iti} exportType="float">{convertSecs(projectOverallTotal[it])}</td>)}
+                                            <td exportType="float">{convertSecs(projectOverallTotal.total)}</td>
+                                        </Fragment>;
+                                    } else {
+                                        return <Fragment key={pid}>
+                                            {project.issueTypes.map((it, iti) => <td key={iti} exportType="float" title={convertSecs(projectOverallTotal[it])}>{projectOverallTotal[`${it}_Cost`]}</td>)}
+                                            <td exportType="float" title={convertSecs(projectOverallTotal.total)}>{projectOverallTotal.totalCost}</td>
+                                        </Fragment>;
+                                    }
                                 })
                             }
-                            <td exportType="float">{convertSecs(group.overallTotal.grandTotal)}</td>
+                            {!costView && <td exportType="float">{convertSecs(group.overallTotal.grandTotal)}</td>}
+                            {costView && <td exportType="float" title={convertSecs(group.overallTotal.grandTotal)}>{group.overallTotal.grandTotalCost}</td>}
                         </tr>
                     </Fragment>)
                     }
@@ -181,13 +206,21 @@ class UserProjectWiseSummary extends PureComponent {
                     <tr className="strong data-center">
                         <td colSpan={2} className="data-right">Grand total <span className="fa fa-arrow-right" /></td>
 
-                        {projects.map((project, pi) => {
+                        {!costView && projects.map((project, pi) => {
                             return (<Fragment key={pi}>
                                 {project.issueTypes.map((it, iti) => <td key={iti} exportType="float">{convertSecs(grandTotal[project.key][it])}</td>)}
                                 <td exportType="float">{convertSecs(grandTotal[project.key].total)}</td>
                             </Fragment>);
                         })}
-                        <td exportType="float">{convertSecs(grandTotal.grandTotal)}</td>
+                        {!costView && <td exportType="float">{convertSecs(grandTotal.grandTotal)}</td>}
+
+                        {costView && projects.map((project, pi) => {
+                            return (<Fragment key={pi}>
+                                {project.issueTypes.map((it, iti) => <td key={iti} exportType="float" title={convertSecs(grandTotal[project.key][it])}>{grandTotal[project.key][`${it}_Cost`]}</td>)}
+                                <td exportType="float" title={convertSecs(grandTotal[project.key].total)}>{grandTotal[project.key].totalCost}</td>
+                            </Fragment>);
+                        })}
+                        {costView && <td exportType="float" title={convertSecs(grandTotal.grandTotal)}>{grandTotal.grandTotalCost}</td>}
                     </tr>
                 </tfoot>
                 <NoDataRow span={11}>No worklog details available</NoDataRow>

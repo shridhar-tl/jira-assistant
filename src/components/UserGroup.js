@@ -235,7 +235,7 @@ class UserRow extends PureComponent {
             <td>{getUserName(user)}</td>
             <td><SelectBox dataset={userTimezones} value={user.timeZone} displayField="label" valueField="value"
                 onChange={timeZoneChanged} className="width-perc-100" filter={true} /></td>
-            <td><TextBox value={user.costPerHour} onChange={costChanged} /></td>
+            <td><TextBox value={user.costPerHour} onChange={costChanged} keyfilter="num" /></td>
             <td><Button type="danger" icon="fa fa-times" onClick={onRemove} style={{ marginTop: 0 }} /></td>
         </tr>
         );

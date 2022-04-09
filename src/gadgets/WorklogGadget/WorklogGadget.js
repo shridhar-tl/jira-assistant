@@ -99,9 +99,7 @@ class WorklogGadget extends BaseGadget {
         if (additionalJQL) {
             additionalJQL = ` AND (${additionalJQL})`;
         }
-        const jql = `worklogAuthor in ("${userList.join('","')}") and worklogDate >= '${
-            mfromDate.clone().add(-1, 'days').format("YYYY-MM-DD")}' and worklogDate < '${mtoDate.clone().add(1, 'days').format("YYYY-MM-DD")}'${
-            additionalJQL}`;
+        const jql = `worklogAuthor in ("${userList.join('","')}") and worklogDate >= '${mfromDate.clone().add(-1, 'days').format("YYYY-MM-DD")}' and worklogDate < '${mtoDate.clone().add(1, 'days').format("YYYY-MM-DD")}'${additionalJQL}`;
         const fieldsToFetch = ["summary", "worklog", "issuetype", "parent", "project", "status"];
         if (!hideEstimate) {
             fieldsToFetch.push("timeoriginalestimate");
@@ -376,6 +374,10 @@ class WorklogGadget extends BaseGadget {
     };
 
     convertSecs = (val) => {
+        if (!val && val !== 0) {
+            return val;
+        }
+
         return this.$utils.convertSecs(val, { format: this.state.pageSettings.logFormat === "1" });
     };
 
@@ -395,30 +397,49 @@ class WorklogGadget extends BaseGadget {
             state: { isLoading, showGroupsPopup, showWorklogPopup, showSettings, groups, pageSettings = {} }
         } = this;
 
-        const { breakupMode } = pageSettings;
+        const { breakupMode, showCostReport } = pageSettings;
         const flatDataUniqueKey = `${pageSettings._uniqueId}_${flatData._uniqueId}`;
+
+        const groupedWorklogTab = (<TabPanel header="Grouped - [User daywise]" contentClassName="no-padding">
+            {rawData && <GroupedDataGrid rawData={rawData} groups={groups} dates={dates} months={months} pageSettings={pageSettings}
+                convertSecs={convertSecs} formatTime={formatTime} breakupMode={breakupMode}
+                getTicketUrl={this.$userutils.getTicketUrl} maxSecsPerDay={this.maxSecsPerDay} addWorklog={this.addWorklog} />}
+        </TabPanel>);
+
+        const summaryTab = (<TabPanel header="Summary - [User project wise]">
+            {flatData && <UserProjectWiseSummary key={flatDataUniqueKey} groups={groups} flatData={flatData} formatDateTime={formatDateTime} convertSecs={convertSecs} />}
+        </TabPanel>);
+
+        const flatLogsTab = (<TabPanel header="Flat (Groupable)">
+            {flatData && <FlatDataGrid key={flatDataUniqueKey} flatData={flatData}
+                formatDateTime={formatDateTime} convertSecs={convertSecs} pageSettings={pageSettings}
+                onChange={this.groupSettingsChanged} />}
+        </TabPanel>);
 
         return super.renderBase(
             <div className="worklog-gadget-container">
                 {!rawData && !isLoading && <WorklogReportInfo />}
 
                 {isLoading && <div className="pad-15">Loading... please wait while the report is being loaded.
-                It may take few seconds / minute based on the range you had selected.</div>}
+                    It may take few seconds / minute based on the range you had selected.</div>}
 
-                {rawData && <TabView className="no-padding" renderActiveOnly={false}>
-                    <TabPanel header="Grouped - [User daywise]" contentClassName="no-padding">
+                {rawData && !showCostReport && <TabView className="no-padding" renderActiveOnly={false}>
+                    {groupedWorklogTab}
+                    {summaryTab}
+                    {flatLogsTab}
+                </TabView>}
+                {rawData && showCostReport && <TabView className="no-padding" renderActiveOnly={false}>
+                    {groupedWorklogTab}
+                    {<TabPanel header="Cost Report" contentClassName="no-padding">
                         {rawData && <GroupedDataGrid rawData={rawData} groups={groups} dates={dates} months={months} pageSettings={pageSettings}
-                            convertSecs={convertSecs} formatTime={formatTime} breakupMode={breakupMode}
-                            getTicketUrl={this.$userutils.getTicketUrl} maxSecsPerDay={this.maxSecsPerDay} addWorklog={this.addWorklog} />}
+                            costView={true} breakupMode={breakupMode}
+                            getTicketUrl={this.$userutils.getTicketUrl} maxSecsPerDay={this.maxSecsPerDay} />}
+                    </TabPanel>}
+                    {summaryTab}
+                    <TabPanel header="Cost Summary">
+                        {flatData && <UserProjectWiseSummary key={flatDataUniqueKey} groups={groups} flatData={flatData} formatDateTime={formatDateTime} convertSecs={convertSecs} costView={true} />}
                     </TabPanel>
-                    <TabPanel header="Summary - [User project wise]">
-                        {flatData && <UserProjectWiseSummary key={flatDataUniqueKey} groups={groups} flatData={flatData} formatDateTime={formatDateTime} convertSecs={convertSecs} />}
-                    </TabPanel>
-                    <TabPanel header="Flat (Groupable)">
-                        {flatData && <FlatDataGrid key={flatDataUniqueKey} flatData={flatData}
-                            formatDateTime={formatDateTime} convertSecs={convertSecs} pageSettings={pageSettings}
-                            onChange={this.groupSettingsChanged} />}
-                    </TabPanel>
+                    {flatLogsTab}
                 </TabView>}
 
                 {showGroupsPopup && <GroupEditor groups={groups} onHide={this.groupsChanged} />}

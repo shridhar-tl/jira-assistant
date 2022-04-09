@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import moment from 'moment';
 import { ScrollableTable, THead, TBody } from '../../components/ScrollableTable';
-import { getUserName } from '../../common/utils';
+import { getUserName, calcCostPerSecs } from '../../common/utils';
 
 class GroupedDataGrid extends PureComponent {
     constructor(props) {
@@ -44,7 +44,9 @@ class GroupedDataGrid extends PureComponent {
             const grpInfo = {
                 name: grp.name,
                 total: {},
+                totalCost: {},
                 grandTotal: 0,
+                grandTotalCost: 0,
                 users: null
             };
             grpInfo.users = grp.users.map(usr => {
@@ -83,10 +85,13 @@ class GroupedDataGrid extends PureComponent {
                     timeZone: curTimeZone,
                     imageUrl: usr.avatarUrls['48x48'] || usr.avatarUrls['32x32'],
                     profileUrl: usr.self,
+                    costPerHour: usr.costPerHour,
                     tickets: null,
                     total: {},
+                    totalCost: {},
                     logClass: {},
-                    grandTotal: 0
+                    grandTotal: 0,
+                    grandTotalCost: 0
                 };
 
                 const usrDta = data.first(d => d.userName === getUserName(usr, true)) || {};
@@ -116,7 +121,8 @@ class GroupedDataGrid extends PureComponent {
                             estVariance: firstTkt.estVariance,
                             url: firstTkt.url,
                             logs: logs,
-                            totalHours: 0
+                            totalHours: 0,
+                            totalCost: 0
                         };
                         let totalHours = 0;
                         items.forEach(item => {
@@ -130,15 +136,22 @@ class GroupedDataGrid extends PureComponent {
                                 logForDate = [];
                                 logs[dateFormated] = logForDate;
                             }
-                            logForDate.push({ logTime: logTime, totalHours: item.totalHours, comment: item.comment });
+                            logForDate.push({
+                                logTime: logTime,
+                                totalHours: item.totalHours,
+                                totalCost: calcCostPerSecs(item.totalHours, usr.costPerHour),
+                                comment: item.comment
+                            });
                             totalHours += item.totalHours;
                         });
                         ticket.totalHours = totalHours;
+                        ticket.totalCost = calcCostPerSecs(totalHours, usr.costPerHour);
                         return ticket;
                     });
                 // Set date wise total per user
                 const logClass = usrInfo.logClass;
                 const usrTotal = usrInfo.total;
+                const usrTotalCost = usrInfo.totalCost;
                 let usrGTotal = 0;
                 dates.forEach(d => {
                     const totalHrs = usrInfo.tickets.sum(t => {
@@ -152,47 +165,67 @@ class GroupedDataGrid extends PureComponent {
                     });
                     if (totalHrs > 0) {
                         usrTotal[d.prop] = totalHrs;
+                        usrTotalCost[d.prop] = calcCostPerSecs(totalHrs, usr.costPerHour);
                         usrGTotal += totalHrs;
                     }
                     logClass[d.prop] = this.getCssClass(d, totalHrs);
                 });
                 usrInfo.grandTotal = usrGTotal;
+                usrInfo.grandTotalCost = calcCostPerSecs(usrGTotal, usr.costPerHour);
                 return usrInfo;
             });
             // Set date wise total per group
             const grpTotal = grpInfo.total;
+            const grpTotalCost = grpInfo.totalCost;
             let grpGTotal = 0;
+            let grpGTotalCost = 0;
             dates.forEach(d => {
                 const totalHrs = grpInfo.users.sum(u => u.total[d.prop] || 0);
                 if (totalHrs > 0) {
                     grpTotal[d.prop] = totalHrs;
                     grpGTotal += totalHrs;
                 }
+                const totalCost = grpInfo.users.sum(u => u.totalCost[d.prop] || 0);
+                if (totalCost > 0) {
+                    grpTotalCost[d.prop] = totalCost;
+                    grpGTotalCost += totalCost;
+                }
             });
             grpInfo.grandTotal = grpGTotal;
+            grpInfo.grandTotalCost = grpGTotalCost;
             return grpInfo;
         });
 
         // Set date wise total for all groups
         let grandTotal = 0;
+        let grandTotalCost = 0;
         const grpTotal = {};
+        const grpTotalCost = {};
         dates.forEach(d => {
             const totalHrs = groupedData.sum(u => u.total[d.prop] || 0);
             if (totalHrs > 0) {
                 grpTotal[d.prop] = totalHrs;
                 grandTotal += totalHrs;
             }
+
+            const totalCost = groupedData.sum(u => u.totalCost[d.prop] || 0);
+            if (totalCost > 0) {
+                grpTotalCost[d.prop] = totalCost;
+                grandTotalCost += totalCost;
+            }
         });
 
         groupedData.grandTotal = grandTotal;
+        groupedData.grandTotalCost = grandTotalCost;
         groupedData.total = grpTotal;
+        groupedData.totalCost = grpTotalCost;
 
         return groupedData;
     }
 
     render() {
         const { state: { groupedData },
-            props: { months, dates, convertSecs, formatTime, breakupMode, pageSettings, addWorklog }
+            props: { months, dates, convertSecs, formatTime, breakupMode, pageSettings, addWorklog, costView }
         } = this;
 
         const timeExportFormat = pageSettings?.logFormat === "2" ? "float" : undefined;
@@ -203,7 +236,8 @@ class GroupedDataGrid extends PureComponent {
                     <tr className="data-center pad-min auto-wrap">
                         <th style={{ minWidth: 380 }} rowSpan={2}>User Details</th>
                         {months.map((day, i) => <th key={i} style={{ minWidth: 35 }} colSpan={day.days}>{day.monthName}</th>)}
-                        <th style={{ minWidth: 50 }} rowSpan={2}>Total Hours</th>
+                        {!costView && <th style={{ minWidth: 50 }} rowSpan={2}>Total Hours</th>}
+                        {costView && <th style={{ minWidth: 50 }} rowSpan={2}>Total Cost</th>}
                     </tr>
                     <tr className="pad-min auto-wrap">
                         {dates.map((day, i) => <th key={i} style={{ minWidth: 35 }}>{day.display}</th>)}
@@ -211,15 +245,21 @@ class GroupedDataGrid extends PureComponent {
                 </THead>
                 <TBody>
                     {
-                        groupedData.map((grp, i) => <GroupRow key={i} group={grp} dates={dates} addWorklog={addWorklog}
+                        groupedData.map((grp, i) => <GroupRow key={i} group={grp} dates={dates} addWorklog={addWorklog} costView={costView}
                             convertSecs={convertSecs} timeExportFormat={timeExportFormat} formatTime={formatTime} breakupMode={breakupMode} pageSettings={pageSettings} />)
                     }
 
-                    <tr className="grouped-row right auto-wrap">
+                    {!costView && <tr className="grouped-row right auto-wrap">
                         <td>Grand Total <i className="fa fa-arrow-right" /></td>
                         {dates.map((day, i) => <td key={i} exportType={timeExportFormat}>{convertSecs(groupedData.total[day.prop])}</td>)}
                         <td exportType={timeExportFormat}>{convertSecs(groupedData.grandTotal)}</td>
-                    </tr>
+                    </tr>}
+
+                    {costView && <tr className="grouped-row right auto-wrap">
+                        <td>Grand Total <i className="fa fa-arrow-right" /></td>
+                        {dates.map((day, i) => <td key={i}>{groupedData.totalCost[day.prop]}</td>)}
+                        <td>{groupedData.grandTotalCost}</td>
+                    </tr>}
                 </TBody>
             </ScrollableTable>
         );
@@ -235,7 +275,7 @@ class GroupRow extends PureComponent {
 
     render() {
         const {
-            props: { group: grp, dates, convertSecs, formatTime, breakupMode, pageSettings, addWorklog, timeExportFormat },
+            props: { group: grp, dates, convertSecs, formatTime, breakupMode, pageSettings, addWorklog, timeExportFormat, costView },
             state: { hidden }
         } = this;
 
@@ -248,7 +288,7 @@ class GroupRow extends PureComponent {
                     </td>
                 </tr>}
 
-                {!hidden && grp.users.map((u, i) => <UserRow key={i} user={u} dates={dates} breakupMode={breakupMode} addWorklog={addWorklog} timeExportFormat={timeExportFormat}
+                {!hidden && grp.users.map((u, i) => <UserRow key={i} user={u} dates={dates} breakupMode={breakupMode} costView={costView} addWorklog={addWorklog} timeExportFormat={timeExportFormat}
                     convertSecs={convertSecs} formatTime={formatTime} pageSettings={pageSettings} />)}
 
                 <tr className="grouped-row right auto-wrap" onClick={hidden ? this.toggleDisplay : null}>
@@ -259,8 +299,12 @@ class GroupRow extends PureComponent {
                         </div>}
                         {!hidden && <div>{grp.name} <i className="fa fa-arrow-right" /> Total <i className="fa fa-arrow-right" /></div>}
                     </td>
-                    {dates.map((day, i) => <td key={i} exportType={timeExportFormat}>{convertSecs(grp.total[day.prop])}</td>)}
-                    <td exportType={timeExportFormat}>{convertSecs(grp.grandTotal)}</td>
+
+                    {!costView && dates.map((day, i) => <td key={i} exportType={timeExportFormat}>{convertSecs(grp.total[day.prop])}</td>)}
+                    {!costView && <td exportType={timeExportFormat}>{convertSecs(grp.grandTotal)}</td>}
+
+                    {costView && dates.map((day, i) => <td key={i}>{grp.totalCost[day.prop]}</td>)}
+                    {costView && <td>{grp.grandTotalCost}</td>}
                 </tr>
             </>
         );
@@ -270,13 +314,13 @@ class GroupRow extends PureComponent {
 class UserRow extends PureComponent {
     state = {};
 
-    getComments = (arr) => {
+    getComments = (arr, showCost) => {
         if (!arr || arr.length === 0) {
             return "";
         }
 
         return arr.map((a) => {
-            return `${this.props.formatTime(a.logTime)}(${this.props.convertSecs(a.totalHours)}) - ${a.comment}`;
+            return `${this.props.formatTime(a.logTime)}(${this.props.convertSecs(a.totalHours)})${(showCost ? (`, Cost: ${a.totalCost}`) : '')} - ${a.comment}`;
         }).join(';\n');
     };
 
@@ -285,6 +329,13 @@ class UserRow extends PureComponent {
             return "";
         }
         return arr.sum((a) => { return a.totalHours; });
+    }
+
+    getTotalCost(arr) {
+        if (!arr || arr.length === 0) {
+            return "";
+        }
+        return arr.sum((a) => { return a.totalCost; });
     }
 
     toggleDisplay = () => this.setState({ expanded: !this.state.expanded });
@@ -304,7 +355,7 @@ class UserRow extends PureComponent {
 
     render() {
         const {
-            props: { user: u, dates, convertSecs, breakupMode, pageSettings: { hideEstimate }, timeExportFormat },
+            props: { user: u, dates, convertSecs, breakupMode, pageSettings: { hideEstimate }, timeExportFormat, costView },
             state: { expanded }
         } = this;
 
@@ -320,10 +371,14 @@ class UserRow extends PureComponent {
                             <span className="email">({u.emailAddress || u.name}{u.timeZone && <span>, time zone: {u.timeZone}</span>})</span>
                         </div>
                     </td>
-                    {dates.map((day, i) => <td key={i} className={`${u.logClass[day.prop]} day-wl-block`} exportType={timeExportFormat}>
+
+                    {!costView && dates.map((day, i) => <td key={i} className={`${u.logClass[day.prop]} day-wl-block`} exportType={timeExportFormat}>
                         {u.isCurrentUser && <span className="fa fa-clock-o add-wl" title="Click to add worklog" onClick={() => this.addWorklog(null, day)} />}
                         {convertSecs(u.total[day.prop])}</td>)}
-                    <td exportType={timeExportFormat}>{convertSecs(u.grandTotal)}</td>
+                    {!costView && <td exportType={timeExportFormat}>{convertSecs(u.grandTotal)}</td>}
+
+                    {costView && dates.map((day, i) => <td key={i} className={`${u.logClass[day.prop]} day-wl-block`}>{u.totalCost[day.prop]}</td>)}
+                    {costView && <td>{u.grandTotalCost}</td>}
                 </tr>
 
                 {expanded &&
@@ -339,17 +394,23 @@ class UserRow extends PureComponent {
                                 <td className="data-left">
                                     {t.parent && <a href={t.parentUrl} className="link" target="_blank" rel="noopener noreferrer">{t.parent} - </a>}
                                     <a href={t.url} className="link" target="_blank" rel="noopener noreferrer">{t.ticketNo}</a> -
-                                <span>{t.summary}</span>
+                                    <span>{t.summary}</span>
                                     <strong> ({t.statusName})</strong>
                                     {!hideEstimate && !!(oe || re) && <span className="estimate" title={estTitle}>
                                         (est: {oe || 0} / rem: {re || 0} / log: {logged} / var: {variance})</span>}
                                 </td>
-                                {dates.map((day, j) => <td key={j} className="day-wl-block" exportType={timeExportFormat}>
+
+                                {!costView && dates.map((day, j) => <td key={j} className="day-wl-block" exportType={timeExportFormat}>
                                     {u.isCurrentUser && <span className="fa fa-clock-o add-wl" title="Click to add worklog" onClick={() => this.addWorklog(t.ticketNo, day)} />}
                                     {breakupMode !== '2' && <span title={this.getComments(t.logs[day.prop])}>{convertSecs(this.getTotalTime(t.logs[day.prop]))}</span>}
                                     {breakupMode === '2' && <div> {this.getLogEntries(t.logs[day.prop])}</div>}
                                 </td>)}
-                                <td exportType={timeExportFormat}>{convertSecs(t.totalHours)}</td>
+                                {!costView && <td exportType={timeExportFormat}>{convertSecs(t.totalHours)}</td>}
+
+                                {costView && dates.map((day, j) => <td key={j} className="day-wl-block">
+                                    <span title={this.getComments(t.logs[day.prop], costView)}>{this.getTotalCost(t.logs[day.prop])}</span>
+                                </td>)}
+                                {costView && <td>{t.totalCost}</td>}
                             </tr>
                         );
                     })

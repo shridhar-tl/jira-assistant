@@ -201,3 +201,5 @@ export function parseJiraCustomCSV(obj) {
 
     return obj;
 }
+
+export function calcCostPerSecs(secs, cost) { return (secs / 60 / 60) * cost; }
