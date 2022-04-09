@@ -21,7 +21,7 @@ class Contribute extends PureComponent {
         this.state = { selectedCurrency: currencies[0].value };
     }
 
-    currencySelected = (val) => this.setState({ selectedCurrency: val })
+    currencySelected = (val) => this.setState({ selectedCurrency: val });
 
     render() {
         const { state: { selectedCurrency } } = this;

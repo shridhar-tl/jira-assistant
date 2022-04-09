@@ -9,13 +9,13 @@ class SaveReportDialog extends BaseDialog {
         this.state = { showDialog: true, newQueryName: props.queryName || "", copyQuery: false };
     }
 
-    nameChanged = (newQueryName) => this.setState({ newQueryName })
-    copyChanged = (copyQuery) => this.setState({ copyQuery })
+    nameChanged = (newQueryName) => this.setState({ newQueryName });
+    copyChanged = (copyQuery) => this.setState({ copyQuery });
 
     done = () => {
         const { newQueryName, copyQuery } = this.state;
         this.props.onChange(newQueryName, copyQuery);
-    }
+    };
 
     getFooter() {
         const {

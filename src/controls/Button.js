@@ -13,7 +13,7 @@ const buttonTypes = {
 };
 
 class Button extends PureComponent {
-    state = {}
+    state = {};
     componentDidMount() {
         const { waitFor = 0 } = this.props;
 

@@ -141,7 +141,7 @@ class EstimateActualReport extends BaseGadget {
         query = (query || '').toLowerCase();
         return this.state.projectsList.filter(r => (r.name.toLowerCase().indexOf(query) >= 0 || r.key.toLowerCase().startsWith(query) || r.id.toString().startsWith(query))
             && (!this.state.projects || !this.state.projects.some(v => v.id === r.id)));
-    }
+    };
 
     refreshData = () => {
         this.setState({ isLoading: true, chartData: {} });
@@ -358,7 +358,7 @@ class EstimateActualReport extends BaseGadget {
 
                 this.setState({ disableRefresh: false, isLoading: false, chartData: { labels: chartLabels, datasets, colors: this.chartColours }, selectedTab: 1 });
             });
-    }
+    };
 
     resizeChart(value) {
         value = value * 100;
@@ -378,13 +378,13 @@ class EstimateActualReport extends BaseGadget {
     }
 
     showGroupsPopup = () => this.setState({ showGroupsPopup: true });
-    groupsChanged = (groups) => this.setState({ showGroupsPopup: false, groups: groups || this.state.groups || [] })
-    onDateChange = (e) => this.setState({ dateRange: e.date })
+    groupsChanged = (groups) => this.setState({ showGroupsPopup: false, groups: groups || this.state.groups || [] });
+    onDateChange = (e) => this.setState({ dateRange: e.date });
     validateData() {
         const { dateRange, groups } = this.state;
         return !(dateRange || "").fromDate || !(groups || "").length;
     }
-    tabChanged = (e) => this.setState({ selectedTab: e.index })
+    tabChanged = (e) => this.setState({ selectedTab: e.index });
 
     render() {
         const {

@@ -46,7 +46,7 @@ class PendingWorklog extends BaseGadget {
 
                 this.setState({ isLoading: false, worklogs });
             });
-    }
+    };
 
     editWorklogObj(copy) {
         const newObj = Object.create(this.selectedItem);
@@ -58,7 +58,7 @@ class PendingWorklog extends BaseGadget {
         const { worklogs } = this.state;
         worklogs.forEach(wl => wl.selected = selAllChk);
         this.setState({ worklogs: [...worklogs], selAllChk });
-    }
+    };
 
     showContext(e, b) {
         this.selectedItem = b;

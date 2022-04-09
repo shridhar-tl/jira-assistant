@@ -49,7 +49,7 @@ class MyBookmarks extends BaseGadget {
 
                 this.setState({ isLoading: false, bookmarksList: result });
             });
-    }
+    };
 
     showContext($event, b) {
         this.selectedTicket = b;
@@ -61,7 +61,7 @@ class MyBookmarks extends BaseGadget {
         bookmarksList = [...bookmarksList];
         bookmarksList.forEach(wl => wl.selected = selAllChk);
         this.setState({ selAllChk, bookmarksList });
-    }
+    };
 
     deleteBookmark(ticketNo) {
         let ids;
@@ -101,7 +101,7 @@ class MyBookmarks extends BaseGadget {
         } else {
             this.setState({ showAddPopup: false });
         }
-    }
+    };
 
     renderCustomActions() {
         return <>

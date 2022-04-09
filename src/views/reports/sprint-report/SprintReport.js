@@ -172,12 +172,12 @@ class SprintReport extends BaseGadget {
 
                 this.setState({ isLoading: false, disableRefresh: false, worklogDetails: data.ticketDetails, selectedTab: 1, sprintDetails: result });
             });
-    }
+    };
 
     tabChanged = (e) => {
         this.setState({ selectedTab: e.index });
         //$('.tab-sprint .ui-tabview-panel:not(.ui-helper-hidden) div.table-container').trigger('resize');
-    }
+    };
 
     rapidViewSelected = (val) => this.setState({ selectedRapidViews: val });
     sprintSelected = (val) => this.setState({ selectedSprints: val });

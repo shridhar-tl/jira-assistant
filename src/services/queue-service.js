@@ -28,7 +28,7 @@ export default class QueueService {
         this.queue.push(obj);
 
         return obj.promise;
-    }
+    };
 
     addRange(array) {
         if (!array) { return; }

@@ -57,7 +57,7 @@ class GlobalSettings extends PureComponent {
         }*/
 
         this.setState({ users, intgUsers });
-    }
+    };
 
     saveSettings = () => {
         const { users } = this.state;
@@ -65,7 +65,7 @@ class GlobalSettings extends PureComponent {
             this.UNSAFE_componentWillMount();
             this.$message.success("Settings saved successfully. Some changes will reflect only after you refresh the page.");
         });
-    }
+    };
 
     toggleDelete = (user) => {
         if (!user.deleted) {
@@ -79,7 +79,7 @@ class GlobalSettings extends PureComponent {
         } else {
             this.setValue(false, 'deleted', user);
         }
-    }
+    };
 
     render() {
         const { state: { users, intgUsers } } = this;

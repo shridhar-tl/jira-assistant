@@ -258,32 +258,32 @@ class SprintWiseWorklog extends PureComponent {
         }); // End of sprint loop
 
         this.setState({ reportData, groups });
-    }
+    };
 
     toggleSubTasks = (val) => {
         this.setState({ showSubtask: val });
         this.updateWorklogDetails();
-    }
+    };
 
     toggleNonSprintHrs = (val) => {
         this.setState({ excludeNonSprintHrs: val });
         this.updateWorklogDetails();
-    }
+    };
 
     toggleShowIncomplete = (val) => {
         this.setState({ showIncomplete: val });
         this.updateWorklogDetails();
-    }
+    };
 
     toggleGroupSelection = (grp, chk) => {
         grp.include = chk;
         this.updateWorklogDetails();
-    }
+    };
 
     toggleUserSelection = (user, chk) => {
         user.include = chk;
         this.updateWorklogDetails();
-    }
+    };
 
     render() {
         const {

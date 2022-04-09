@@ -22,7 +22,7 @@ class Notifications extends PureComponent {
 
         const onClosed = () => this.markRead(msg, true);
         Dialog.alert(message, msg.title, styles).then(onClosed, onClosed);
-    }
+    };
 
     markRead = (msg, viewed) => {
         if (!msg.read) {
@@ -32,12 +32,12 @@ class Notifications extends PureComponent {
             this.trackAnalytics(msg, event);
             this.setState((s) => ({ unread: (s.unread || 1) - 1 }));
         }
-    }
+    };
 
     trackViewList = () => {
         const { total, unread } = this.state;
         this.$analytics.trackEvent("Messages: List viewed", "Messages", `Messages: Total: ${total}, Unread: ${unread}`);
-    }
+    };
 
     trackAnalytics(msg, event) {
         this.$analytics.trackEvent((msg.type === "versionInfo" ? "Update Info: " : "Message: ") + event, "Messages", `Message Id: ${msg.id}`);
@@ -69,8 +69,8 @@ class Notifications extends PureComponent {
 export default Notifications;
 
 class Message extends PureComponent {
-    readMessage = () => this.props.onOpen(this.props.message)
-    markRead = () => this.props.onRead(this.props.message)
+    readMessage = () => this.props.onOpen(this.props.message);
+    markRead = () => this.props.onRead(this.props.message);
 
     render() {
         const { message: msg, cut } = this.props;

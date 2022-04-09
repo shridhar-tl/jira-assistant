@@ -190,7 +190,7 @@ class ImportWorklog extends BaseImport {
                 this.setState({ worklogData: [...worklogData], selectedCount: "" });
             });
         }
-    }
+    };
 
     uploadSelectedWorklogs(selectedWorklogs) {
         selectedWorklogs.groupBy(w => w.ticketNo).forEach(g => {
@@ -283,11 +283,11 @@ class ImportWorklog extends BaseImport {
             }
         });
         this.setState({ selectAll, worklogData, selectedCount: this.getSelectedLogs(worklogData).length || "" });
-    }
+    };
 
-    getSelectedLogs = (worklogData) => (worklogData || this.state.worklogData).filter(w => w.selected)
+    getSelectedLogs = (worklogData) => (worklogData || this.state.worklogData).filter(w => w.selected);
 
-    toggleAutoUpload = (autoUpload) => this.setState({ autoUpload })
+    toggleAutoUpload = (autoUpload) => this.setState({ autoUpload });
 
     toggleSelection = (row, index) => {
         let { worklogData } = this.state;
@@ -295,7 +295,7 @@ class ImportWorklog extends BaseImport {
         row.selected = !row.selected;
         row.status = row.selected ? wlStatus_WillImport : wlStatus_Excluded;
         this.setState({ worklogData, selectedCount: this.getSelectedLogs(worklogData).length || "" });
-    }
+    };
 
     downloadTemplate = () => {
         const today = new Date().format("dd-MMM-yyyy HH:mm:ss");
@@ -308,12 +308,12 @@ class ImportWorklog extends BaseImport {
             `JA-1003,${today},8,Logs 8 hours`
         ];
         exportCsv(lines.join("\n"), "sample_worklog");
-    }
+    };
 
     clearWorklogs = () => {
         this.$q.reset();
         this.setState({ isLoading: false, selectedCount: "", worklogData: null, ticketSummary: {}, selectAll: false });
-    }
+    };
 
     renderFooter() {
         const {

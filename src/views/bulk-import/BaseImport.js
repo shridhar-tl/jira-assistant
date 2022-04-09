@@ -39,7 +39,7 @@ class BaseImport extends BaseGadget {
             });
         }
         selector.value = '';
-    }
+    };
 
     formatDate(value) {
         if (value instanceof Date) {
@@ -52,10 +52,10 @@ class BaseImport extends BaseGadget {
 
     getTicketLink = (ticketNo) => {
         return <a className="link" href={this.$userutils.getTicketUrl(ticketNo)} target="_blank" rel="noopener noreferrer">{ticketNo}</a>;
-    }
+    };
 
-    setFileSelector = (f) => this.fileSelector = f
-    chooseFileForImport = () => this.fileSelector.click()
+    setFileSelector = (f) => this.fileSelector = f;
+    chooseFileForImport = () => this.fileSelector.click();
 
     renderCustomActions() {
         return <>

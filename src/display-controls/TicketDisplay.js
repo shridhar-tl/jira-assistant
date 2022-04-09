@@ -29,7 +29,7 @@ class TicketDisplay extends BaseControl {
 
     showContext = ($event) => {
         showContextMenu($event, this.contextMenu);
-    }
+    };
 
     //startProgress() { Dialog.alert("This functionality is not yet implemented!", "Unimplemented functionality!"); }
 

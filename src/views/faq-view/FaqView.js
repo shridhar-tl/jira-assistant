@@ -49,7 +49,7 @@ class FaqView extends PureComponent {
             const option = faqArray.first(f => f.id === query.id);
             this.setState({ searchResults: [option] });
         }
-    }
+    };
 
     getDescription(res) {
         const descr = res.description;

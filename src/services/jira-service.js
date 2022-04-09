@@ -27,6 +27,10 @@ export default class JiraService {
             this.$ajax.get(prepareUrlWithQueryString(ApiUrls.search, postData))
                 .then((result) => {
                     const issues = result.issues;
+                    if (result.warningMessages?.length) {
+                        const msg = result.warningMessages.join('\r\n');
+                        this.$message.warning(msg, 'Query Error');
+                    }
                     //if (result.maxResults < result.total) {
                     //  this.$message.warning("Your filter returned " + result.total + " tickets but only first " + result.maxResults + " were fetched!");
                     //}
@@ -71,6 +75,24 @@ export default class JiraService {
 
     getWorklogs(jiraKey) {
         return this.$ajax.get(ApiUrls.issueWorklog, jiraKey);
+    }
+
+    async getJQLAutocomplete() {
+        let result = await this.$jaCache.session.getPromise("jql_autocomplete");
+
+        if (result) {
+            return result;
+        }
+
+        result = await this.$ajax.get(ApiUrls.getJQLAutocomplete);
+
+        this.$jaCache.session.set("jql_autocomplete", result, 10);
+
+        return result;
+    }
+
+    async getJQLSuggestions(fieldName, fieldValue) {
+        return await this.$ajax.get(ApiUrls.getJQLSuggestions, { fieldName, fieldValue });
     }
 
     async getCustomFields() {
@@ -369,7 +391,7 @@ export default class JiraService {
             this.$message.warning(`${e.status}:- ${e.statusText}`, "Unknown error");
         }
         return Promise.reject(e);
-    }
+    };
 
     getCurrentUser() {
         return this.$ajax.get(ApiUrls.mySelf).then(null, this.jiraErrorHandler);

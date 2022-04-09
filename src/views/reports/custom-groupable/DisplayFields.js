@@ -12,12 +12,12 @@ class DisplayFields extends PureComponent {
     fieldAdded = (val, obj) => {
         const { fields, onChange } = this.props;
         onChange(fields.concat(getField(obj)));
-    }
+    };
 
     removeField = (index) => {
         const { fields, onChange } = this.props;
         onChange(fields.filter((_, i) => i !== index));
-    }
+    };
 
     headerChanged = (val, index) => {
         let { fields } = this.props;
@@ -29,7 +29,7 @@ class DisplayFields extends PureComponent {
 
         field.header = val;
         this.props.onChange(fields);
-    }
+    };
 
     editExpression = (index) => {
         let { fields } = this.props;
@@ -66,7 +66,7 @@ class DisplayFields extends PureComponent {
                 fields[index] = field;
                 this.props.onChange(fields);
             });
-    }
+    };
 
     getControls = (f, i, drag, hndl) => {
         return (<DisplayField key={i}
@@ -77,7 +77,7 @@ class DisplayFields extends PureComponent {
             editExpression={this.editExpression}
             updateHeader={this.headerChanged}
         />);
-    }
+    };
 
     render() {
         const { fields, onChange } = this.props;
@@ -131,7 +131,7 @@ class DisplayField extends PureComponent {
         header = header?.trim() || undefined;
 
         this.props.updateHeader(header, this.props.index);
-    }
+    };
 
     headerChanged = (header) => this.setState({ header });
 

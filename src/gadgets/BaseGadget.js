@@ -75,7 +75,7 @@ export class BaseGadget extends PureComponent {
         //this.widgetHdrCtl = this.widgetCtl.find('div.ui-panel-titlebar.ui-widget-header');
     }
 
-    eventReceived = (e) => this.executeEvent(e)
+    eventReceived = (e) => this.executeEvent(e);
 
     componentWillUnmount() {
         onDashboardEvent.off("change", this.eventReceived);
@@ -125,7 +125,7 @@ export class BaseGadget extends PureComponent {
         this.columnResizeMode = isFullScreen ? 'fit' : 'expand';
         this.setState({ isFullScreen });
         this.onResize();
-    }
+    };
 
     performAction(type, data) {
         const { onAction } = this.props;
@@ -138,7 +138,7 @@ export class BaseGadget extends PureComponent {
 
     addWorklogOn = (ticketNo) => {
         this.addWorklog({ ticketNo: ticketNo });
-    }
+    };
 
     editWorklog(worklogId) {
         this.performAction(GadgetActionType.AddWorklog, { id: worklogId });
@@ -147,7 +147,7 @@ export class BaseGadget extends PureComponent {
     removeGadget = () => {
         this.$analytics.trackEvent("Gadget removed", EventCategory.GadgetActions, this.title);
         this.performAction(GadgetActionType.RemoveGadget);
-    }
+    };
 
     saveSettings() {
         this.performAction(GadgetActionType.SettingsChanged, this.settings);
@@ -178,9 +178,9 @@ export class BaseGadget extends PureComponent {
         exportHelper.element = this.el;
         this.$analytics.trackEvent("Export data", EventCategory.GadgetActions, exportHelper.format);
         exportHelper.export();
-    }
+    };
 
-    showGadgetGontextMenu = (e) => showContextMenu(e, this.getContextMenu())
+    showGadgetGontextMenu = (e) => showContextMenu(e, this.getContextMenu());
 
     getHeader = () => {
         const { title, subTitle, isGadget, props: { draggableHandle } } = this;
@@ -194,7 +194,7 @@ export class BaseGadget extends PureComponent {
                 {!this.hideMenu && <Button icon="fa fa-wrench" onClick={e => showContextMenu(e, this.getContextMenu())} />}
             </div>
         </div>;
-    }
+    };
 
     setRef = (el) => {
         this.el = el;
@@ -203,7 +203,7 @@ export class BaseGadget extends PureComponent {
         if (dropConnector) {
             dropConnector(el);
         }
-    }
+    };
 
     renderBase(childern) {
         const { fullWidth, fullHeight, isLoading, isFullScreen } = this.state;

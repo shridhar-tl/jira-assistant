@@ -15,7 +15,7 @@ export default class UserUtilsService {
             return;
         }
         return this.$session.CurrentUser.ticketViewUrl + ticketNo;
-    }
+    };
 
     mapJiraUrl = (url) => {
         if (!url || (url.startsWith('http') && url.indexOf(':') > 3)) {
@@ -25,14 +25,14 @@ export default class UserUtilsService {
             url = `/${url}`;
         }
         return this.$session.CurrentUser.jiraUrl + url;
-    }
+    };
 
     isHoliday = (date) => {
         const weekDay = date.getDay();
         const workingDays = this.$session.CurrentUser.workingDays || DefaultWorkingDays;
         //ToDo: Need to have track of holiday and need to do the checking here
         return workingDays.indexOf(weekDay) === -1;
-    }
+    };
 
     getProfileImgUrl = (user) => {
         if (user.jiraUser) {
@@ -45,7 +45,7 @@ export default class UserUtilsService {
             return `${this.$session.rootUrl}/secure/useravatar?ownerId=${getUserName(user, true)}`;
         }
         ///Security/ProfilePic / {{userInfo.name }}
-    }
+    };
 
     getProfileUrl = (user, rootUrl) => {
         if (!user) {
@@ -63,7 +63,7 @@ export default class UserUtilsService {
         }
 
         return `${rootUrl || this.$session.rootUrl}/secure/ViewUser.jspa?name=${user.toLowerCase()}`;
-    }
+    };
 
     formatDateTime = (value, format, utc) => {
         if (!value) { return value; }
@@ -80,18 +80,18 @@ export default class UserUtilsService {
             }
         }
         return date;
-    }
+    };
 
     formatDate = (value, format, utc) => {
         if (!format) {
             format = this.$session.CurrentUser.dateFormat;
         }
         return this.formatDateTime(value, format, utc);
-    }
+    };
 
     formatTime = (value, format, utc) => {
         return this.formatDateTime(value, format || this.$session.CurrentUser.timeFormat, utc);
-    }
+    };
 
     getDays = (fromDate, toDate) => {
         const dateArr = this.$utils.getDateArray(fromDate, toDate);
@@ -105,7 +105,7 @@ export default class UserUtilsService {
                 isFuture: d.getTime() > now
             };
         });
-    }
+    };
 
     getWorklogUrl(ticketNo, worklogId) {
         let url = this.getTicketUrl(ticketNo);

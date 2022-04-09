@@ -51,7 +51,7 @@ class SprintList extends PureComponent {
             });
             this.setState({ sprints });
         });
-    }
+    };
 
     searchSprints = (query) => {
         query = (query || '').toLowerCase();
@@ -61,11 +61,11 @@ class SprintList extends PureComponent {
 
         return this.state.sprints.filter(r => (r.name.toLowerCase().indexOf(query) >= 0 || r.id.toString().startsWith(query))
             && (!sprintIds || sprintIds.indexOf(r.id) === -1));
-    }
+    };
 
     setValue = (value) => {
         this.props.onChange(value);
-    }
+    };
 
     render() {
         const { state: { sprints }, props: { value, placeholder } } = this;

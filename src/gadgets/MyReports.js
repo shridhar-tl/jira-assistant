@@ -35,7 +35,7 @@ class MyReports extends BaseGadget {
 
                 this.setState({ reportsList: result, isLoading: false });
             });
-    }
+    };
 
     deleteSelectedReports = () => {
         const ids = this.state.reportsList.filter((w) => w.selected).map((w) => w.id);
@@ -52,7 +52,7 @@ class MyReports extends BaseGadget {
                 return this.refreshData();
             });
         });
-    }
+    };
 
     selectAll = () => {
         let { reportsList, selAllChk } = this.state;
@@ -60,7 +60,7 @@ class MyReports extends BaseGadget {
         reportsList.forEach(wl => wl.selected = selAllChk);
         reportsList = [...reportsList];
         this.setState({ reportsList, selAllChk, selReportsCount: selAllChk ? reportsList.length : null });
-    }
+    };
 
     downloadReports = () => {
         const items = this.state.reportsList.filter((w) => w.selected);
@@ -72,7 +72,7 @@ class MyReports extends BaseGadget {
         }
 
         this.$report.exportQueries(ids);
-    }
+    };
 
     fileSelected = () => {
         const selector = this.fileSelector;
@@ -112,11 +112,11 @@ class MyReports extends BaseGadget {
             };
         }
         selector.value = '';
-    }
+    };
 
     editReport = (rpt) => {
         this.context.navigate(`/reports/${rpt.advanced ? "advanced" : (rpt.isNew ? 'custom' : 'customgrouped')}/${rpt.id}`, true);
-    }
+    };
 
     selectRowItem(item) {
         item.selected = !item.selected;
@@ -129,10 +129,10 @@ class MyReports extends BaseGadget {
     hideImportPopup = (refresh) => {
         if (refresh) { this.refreshData(); }
         this.setState({ reportsToImport: null });
-    }
+    };
 
-    setFileSelector = (f) => this.fileSelector = f
-    chooseFileForImport = () => this.fileSelector.click()
+    setFileSelector = (f) => this.fileSelector = f;
+    chooseFileForImport = () => this.fileSelector.click();
 
     renderCustomActions() {
         return <>
@@ -206,7 +206,7 @@ class ImportReports extends BaseDialog {
             selectAll, reportsToImport,
             selReportsCount: this.getReportsCount(reportsToImport)
         });
-    }
+    };
 
     reportSelected(report) {
         report.selected = !report.selected;
@@ -229,7 +229,7 @@ class ImportReports extends BaseDialog {
         }
     }
 
-    getReportsCount = (reportsToImport) => (reportsToImport || this.state.reportsToImport).filter((r) => r.selected).length
+    getReportsCount = (reportsToImport) => (reportsToImport || this.state.reportsToImport).filter((r) => r.selected).length;
 
     reportNameChanged(rpt, newName) {
         rpt.queryName = newName;
@@ -278,7 +278,7 @@ class ImportReports extends BaseDialog {
                 this.setState({ selReportsCount: this.getReportsCount(reportsToImport), reportsToImport });
             }
         });
-    }
+    };
 
     getFooter() {
         const { selReportsCount } = this.state;

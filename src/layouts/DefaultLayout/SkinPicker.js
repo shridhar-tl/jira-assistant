@@ -20,7 +20,7 @@ class SkinPicker extends PureComponent {
         this.setSkin(skin);
         $('#divSkins .selected').removeClass('selected');
         div.addClass('selected');
-    }
+    };
 
     setSkin(skin) {
         const passedSkin = skin;

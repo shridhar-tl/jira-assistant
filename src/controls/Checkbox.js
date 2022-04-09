@@ -15,7 +15,7 @@ class InputCheckbox extends PureComponent {
         if (onChange) {
             onChange(e.checked, field, args);
         }
-    }
+    };
 
     render() {
         const { inputId, onChange, onClick, props: { className = "", checked = false, label, disabled, title } } = this;

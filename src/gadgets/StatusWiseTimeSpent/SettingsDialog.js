@@ -18,13 +18,13 @@ class SettingsDialog extends BaseDialog {
 
     onDone = () => {
         this.onHide(this.state.pageSettings);
-    }
+    };
 
     onChange = (jql, jqlSettings) => {
         let { pageSettings } = this.state;
         pageSettings = { ...pageSettings, jql, jqlSettings };
         this.setState({ pageSettings });
-    }
+    };
 
     render() {
         const { pageSettings: { jql, jqlSettings } } = this.state;

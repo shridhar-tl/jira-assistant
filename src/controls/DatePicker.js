@@ -77,7 +77,7 @@ class DatePicker extends PureComponent {
 
         this.setState({ value, displayDate });
         this.props.onChange(valToPush);
-    }
+    };
 
     getDateValue(value, range) {
         const newState = { displayDate: "" };
@@ -125,11 +125,11 @@ class DatePicker extends PureComponent {
 
             this.onChange(null, { startDate });
         }
-    }
+    };
 
     dateEdited = (e) => {
         this.manuallyEdited = true;
-    }
+    };
 
     setPicker = (picker) => this.picker = picker;
 

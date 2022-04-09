@@ -38,9 +38,9 @@ class AddBookmark extends BaseDialog {
         else {
             this.onHide();
         }
-    }
+    };
 
-    listChanged = (ticketsList) => this.setState({ ticketsList })
+    listChanged = (ticketsList) => this.setState({ ticketsList });
 
     getFooter() {
         return <>

@@ -77,7 +77,7 @@ class AddWorklog extends BaseDialog {
     searchTickets = (query) => {
         query = (query || "").toLowerCase();
         return this.allTicketList.filter(t => t.label.toLowerCase().indexOf(query) > -1);
-    }
+    };
 
     fillWorklog(worklog, copy) {
         return this.$worklog.getWorklog(worklog).then((d) => {
@@ -165,7 +165,7 @@ class AddWorklog extends BaseDialog {
                 console.error(e);
             }
         });
-    }
+    };
 
     getTicketNo(worklog) {
         if (!worklog || !worklog.ticketNo) {
@@ -201,7 +201,7 @@ class AddWorklog extends BaseDialog {
         log = { ...log };
 
         this.setState({ log });
-    }
+    };
 
     getFooter() {
         const {
@@ -221,7 +221,7 @@ class AddWorklog extends BaseDialog {
 
     formatTs = (val) => {
         return val;
-    }
+    };
 
     handleKeyPress = (e) => {
         const { ctrlKey, charCode } = e;
@@ -236,7 +236,7 @@ class AddWorklog extends BaseDialog {
                 this.saveWorklog(log, vald, uploadImmediately && !(log.id > 0));
             }
         }
-    }
+    };
 
     render() {
         const {

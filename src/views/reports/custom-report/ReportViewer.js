@@ -36,7 +36,7 @@ class ReportViewer extends BaseGadget {
         else if (this.state.reportDefinition) {
             this.fillReport();
         }
-    }
+    };
 
     fillReport = () => {
         const model = this.state.reportDefinition || {};
@@ -82,7 +82,7 @@ class ReportViewer extends BaseGadget {
                 this.setState({ subFields: subHeads, hasReportData, displayFields, isLoading: false });
                 this.$analytics.trackEvent("Custom report viewed", EventCategory.UserActions);
             });
-    }
+    };
 
     // eslint-disable-next-line complexity
     genHtmlRow(arr, prepn) {
@@ -301,11 +301,11 @@ class ReportViewer extends BaseGadget {
     addWorklog = (ticketNo) => {
         const worklogItem = { ticketNo };
         this.setState({ showWorklogPopup: true, worklogItem });
-    }
+    };
 
     hideWorklog = () => {
         this.setState({ showWorklogPopup: false });
-    }
+    };
 
     render() {
         const {

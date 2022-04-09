@@ -78,7 +78,7 @@ class MenuOptionsTab extends TabControlBase {
         //const idx = parseInt((user.launchAction.quickIndex || '0').replace('D-', '')) || 0;
         //delete user.launchAction.quickIndex;
         //user.dashboards.forEach((dboard, i) => dboard.isQuickView = i === idx);
-    }
+    };
 
     menuSelected = (menu, event) => {
         if (event) {
@@ -93,7 +93,7 @@ class MenuOptionsTab extends TabControlBase {
 
         const selectedMenu = this.menus.filter(m => m.selected && !m.isHead).map(m => m.id);
         this.setState({ selectedMenu }, this.saveSettings);
-    }
+    };
 
     selectSubMenus(menu) {
         const { menus } = this;
@@ -118,7 +118,7 @@ class MenuOptionsTab extends TabControlBase {
                 <Checkbox checked={menu.selected} /><span>{menu.name}</span>
             </div>;
         }
-    }
+    };
 
     saveSettings = () => {
         const { menuAction } = this.state;
@@ -152,7 +152,7 @@ class MenuOptionsTab extends TabControlBase {
 
         this.$cache.set("menuAction", launchSetting, false, true);
         this.saveSetting(setting, 'launchAction');
-    }
+    };
 
     render() {
         const {

@@ -54,9 +54,9 @@ class App extends PureComponent {
     navigate: (url, userbased) => {
       this.props.history.push(userbased ? `/${this.$session.userId}${url}` : url);
     }
-  }
+  };
 
-  getMessanger = () => <Growl ref={(el) => this.messenger = el} baseZIndex={3000} />
+  getMessanger = () => <Growl ref={(el) => this.messenger = el} baseZIndex={3000} />;
 
   async UNSAFE_componentWillMount() {
     this.$message.onNewMessage((message) => {

@@ -231,7 +231,7 @@ export default GroupedDataGrid;
 class GroupRow extends PureComponent {
     state = {};
 
-    toggleDisplay = () => this.setState({ hidden: !this.state.hidden })
+    toggleDisplay = () => this.setState({ hidden: !this.state.hidden });
 
     render() {
         const {
@@ -278,7 +278,7 @@ class UserRow extends PureComponent {
         return arr.map((a) => {
             return `${this.props.formatTime(a.logTime)}(${this.props.convertSecs(a.totalHours)}) - ${a.comment}`;
         }).join(';\n');
-    }
+    };
 
     getTotalTime(arr) {
         if (!arr || arr.length === 0) {
@@ -287,7 +287,7 @@ class UserRow extends PureComponent {
         return arr.sum((a) => { return a.totalHours; });
     }
 
-    toggleDisplay = () => this.setState({ expanded: !this.state.expanded })
+    toggleDisplay = () => this.setState({ expanded: !this.state.expanded });
 
     getLogEntries(entries) {
         if (Array.isArray(entries) && entries.length > 0) {
@@ -300,7 +300,7 @@ class UserRow extends PureComponent {
         const { user, addWorklog } = this.props;
         const { date, prop } = day;
         addWorklog(user, ticketNo, date, user.total[prop]);
-    }
+    };
 
     render() {
         const {

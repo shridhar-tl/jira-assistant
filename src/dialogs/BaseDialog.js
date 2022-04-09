@@ -25,7 +25,7 @@ class BaseDialog extends PureComponent {
             onHide(prop);
         }
         this.setState({ showDialog: false });
-    }
+    };
 
     renderBase(children) {
         const {

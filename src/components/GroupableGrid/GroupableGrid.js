@@ -285,7 +285,7 @@ export class GroupableGrid extends PureComponent {
         };
     }
 
-    getGroupColumnRenderer = (hasColGroup) => (_, i) => <th key={i} rowSpan={hasColGroup ? 2 : undefined} className="group-header foldable"></th>
+    getGroupColumnRenderer = (hasColGroup) => (_, i) => <th key={i} rowSpan={hasColGroup ? 2 : undefined} className="group-header foldable"></th>;
 
     renderTableBody = (columns, groupBy) => {
         if (!groupBy || !groupBy.length) {
@@ -294,7 +294,7 @@ export class GroupableGrid extends PureComponent {
         else {
             return this.getGroupRenderer(columns, groupBy);
         }
-    }
+    };
 
     getRowRenderer(columns) {
         return (row, i) => <tr key={i}>{this.renderRowCells(columns, row)}</tr>;
@@ -325,7 +325,7 @@ export class GroupableGrid extends PureComponent {
         else {
             return <Component key={ci} value={value} {...props} />;
         }
-    }
+    };
 
     getGroupRenderer(columns, groupBy) {
         const { groupFoldable } = this.state;
@@ -340,7 +340,7 @@ export class GroupableGrid extends PureComponent {
 
     toggleGroupVisibility = (e) => {
         // ToDo: implement toggle functionality
-    }
+    };
 
     renderFoldableGroupRow(g, i, columns, groupBy, depth = 0) {
         const curGroup = groupBy[0];
@@ -420,7 +420,7 @@ export class GroupableGrid extends PureComponent {
         this.props.onChange({ groupBy, groupFoldable, displayColumns, sortField, isDesc });
 
         return hasGroup ? newState.data : undefined;
-    }
+    };
 
     onGroupChanged = (groupBy, groupFoldable, type) => {
         const { data } = this.state;
@@ -441,7 +441,7 @@ export class GroupableGrid extends PureComponent {
 
         this.setState(newState);
         this.props.onChange({ groupBy, displayColumns, groupFoldable, sortField, isDesc });
-    }
+    };
 
     sortGroupedData(data, groups, sortField, isDesc, prefix) {
         prefix = prefix ? (`${prefix}_`) : "";
@@ -460,13 +460,13 @@ export class GroupableGrid extends PureComponent {
 
     toggleColumns = () => {
         this.setState({ showColumns: !this.state.showColumns });
-    }
+    };
 
     columnSelectionChanged = (displayColumns) => {
         const { groupBy, groupFoldable, sortField, isDesc } = this.props;
         this.setState({ showColumns: null },
             () => this.props.onChange({ groupBy, displayColumns, groupFoldable, sortField, isDesc }));
-    }
+    };
 
     render() {
         const { exportSheetName, noRowsMessage, sortField, isDesc, displayColumns, className, hideGroups } = this.props;

@@ -19,7 +19,7 @@ export default class UserGroupService {
                 users: [currentUser.jiraUser]
             }
         ];
-    }
+    };
 
     saveUserGroups(groups) {
         const currentUser = this.$session.CurrentUser;

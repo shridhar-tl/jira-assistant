@@ -98,12 +98,12 @@ class Integrate extends PureComponent {
                 this.$message.error("This is not a valid Jira server url or the server does not respond.", "Unknown server");
             }
         }).then(() => { this.setState({ isLoading: false }); });
-    }
+    };
 
     handleDBError = (err) => {
         this.$message.error("Unable to save the changes. Verify if you have sufficient free space in your C:", "Allocation failed");
         return -1;
-    }
+    };
 
     openDashboard = (id) => {
         if (id <= 0) {
@@ -113,7 +113,7 @@ class Integrate extends PureComponent {
         this.$cache.set("CurrentUserId", id);
         this.$jaBrowserExtn.openTab("/index.html");
         window.close();
-    }
+    };
 
     render() {
         const { integrate, version, browser, state: { jiraUrl, isLoading } } = this;

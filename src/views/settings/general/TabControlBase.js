@@ -18,7 +18,7 @@ class TabControlBase extends PureComponent {
 
         const cUser = this.$session.CurrentUser;
         cUser[field] = value;
-    }
+    };
 
     saveIntSetting = (value, field) => {
         value = parseInt(value);
@@ -27,7 +27,7 @@ class TabControlBase extends PureComponent {
             return;
         }
         this.saveSetting(value, field);
-    }
+    };
 
     setValue = (field, value) => {
         let { settings } = this.props;
@@ -40,7 +40,7 @@ class TabControlBase extends PureComponent {
 
         settings = { ...settings };
         this.setState({ settings });
-    }
+    };
 }
 
 export default TabControlBase;

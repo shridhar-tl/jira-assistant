@@ -37,7 +37,7 @@ class TimePicker extends PureComponent {
         const value = this.getValue(timeValue);
         this.setState({ timeValue, value });
         this.props.onChange(value, this.props.field);
-    }
+    };
 
     getValue(timeValue) {
         if (!timeValue) { return null; }
@@ -51,7 +51,7 @@ class TimePicker extends PureComponent {
         }
     }
 
-    checkDisabled = () => disabledHours
+    checkDisabled = () => disabledHours;
 
     render() {
         const { state: { timeValue }, props: { className, disabled, placeholder = "Choose time" } } = this;

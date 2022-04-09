@@ -48,14 +48,14 @@ class DefaultValuesTab extends TabControlBase {
         const { rapidViews, settings } = this.state;
         return rapidViews.filter(r => (r.name.toLowerCase().indexOf(query) >= 0 || r.id.toString().startsWith(query))
             && (!settings.rapidViews || !settings.rapidViews.some(v => v.id === r.id)));
-    }
+    };
 
     searchProject = (query) => {
         query = (query || '').toLowerCase();
         const { projects, settings } = this.state;
         return projects.filter(r => (r.name.toLowerCase().indexOf(query) >= 0 || r.key.toLowerCase().startsWith(query) || r.id.toString().startsWith(query))
             && (!settings.projects || !settings.projects.some(v => v.id === r.id)));
-    }
+    };
 
     setDefaultValues(numericFields, stringFields) {
         const { settings, } = this.state;

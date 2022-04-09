@@ -27,7 +27,7 @@ class Dashboard extends PureComponent {
         this.setGadgetsList();
     }
 
-    tabViewChanged = (isTabView) => this.setState({ isTabView })
+    tabViewChanged = (isTabView) => this.setState({ isTabView });
 
     UNSAFE_componentWillReceiveProps(newProps) {
         const newIndex = newProps.match.params.index;
@@ -50,7 +50,7 @@ class Dashboard extends PureComponent {
         currentBoard = { ...currentBoard };
         currentBoard.widgets = currentBoard.widgets.concat({ name: gadgetName, settings: settings || {} });
         this.setState({ currentBoard });
-    }
+    };
 
     removeGadget = (gadgetName) => {
         let { currentBoard } = this.state;
@@ -59,12 +59,12 @@ class Dashboard extends PureComponent {
         widgets.removeAll(g => g.name === gadgetName);
         currentBoard.widgets = widgets;
         this.setState({ currentBoard });
-    }
+    };
 
     saveDashboardInfo = () => {
         const { dashboardIndex, currentBoard } = this.state;
         this.$dashboard.saveDashboardInfo(dashboardIndex, currentBoard);
-    }
+    };
 
     widgetAction = ($event, gadget, widgetIndex) => {
         switch ($event.type) {
@@ -90,7 +90,7 @@ class Dashboard extends PureComponent {
                 this.emitToChildren($event, widgetIndex);
                 break;
         }
-    }
+    };
 
     emitToChildren($event, widgetIndex) {
         onDashboardEvent.emit("change", $event, widgetIndex);
@@ -100,7 +100,7 @@ class Dashboard extends PureComponent {
         let { currentBoard } = this.state;
         currentBoard = { ...currentBoard, widgets };
         this.setState({ currentBoard }, this.saveDashboardInfo);
-    }
+    };
 
     setGadgetsList() {
         const controls = {
@@ -174,7 +174,7 @@ class Dashboard extends PureComponent {
         else {
             return (h) => <Gadget {...props} draggableHandle={h} dropProps={dropProps} />;
         }
-    }
+    };
 
 
     getGadgets(widgets) {
@@ -188,17 +188,17 @@ class Dashboard extends PureComponent {
         }
     }
 
-    onShowGadgets = () => this.setState({ showGadgetDialog: true })
+    onShowGadgets = () => this.setState({ showGadgetDialog: true });
 
     hideGadgetDialog = () => {
         this.setState({ showGadgetDialog: false });
         this.saveDashboardInfo();
-    }
+    };
 
     worklogAdded = (e) => {
         this.emitToChildren(e);
         this.hideWorklog();
-    }
+    };
 
     hideWorklog = () => this.setState({ showWorklogPopup: false });
 

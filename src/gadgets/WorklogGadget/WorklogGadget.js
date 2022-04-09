@@ -46,7 +46,7 @@ class WorklogGadget extends BaseGadget {
         if (date.fromDate && date.toDate) {
             this.setState({ dateRange: date }, this.refreshData);
         }
-    }
+    };
 
     refreshData = () => {
         const { groups } = this.state;
@@ -76,7 +76,7 @@ class WorklogGadget extends BaseGadget {
             this.setState({ isLoading: false });
             this.onResize({ target: window });
         });
-    }
+    };
 
     getDayWiseReportData(req) {
         const userList = req.userList.distinct();
@@ -337,14 +337,14 @@ class WorklogGadget extends BaseGadget {
         const newState = { showGroupsPopup: false };
         if (groups && Array.isArray(groups)) { newState.groups = groups; }
         this.setState(newState);
-    }
+    };
 
     settingsChanged = (pageSettings) => {
         if (!pageSettings) {
             pageSettings = this.state.pageSettings;
         }
         this.setState({ showSettings: false, pageSettings });
-    }
+    };
 
     groupSettingsChanged = (grpSet) => {
         const { groupBy, groupFoldable, displayColumns, sortField, isDesc } = grpSet;
@@ -353,7 +353,7 @@ class WorklogGadget extends BaseGadget {
 
         this.$config.saveSettings('reports_UserDayWise', pageSettings);
         this.settingsChanged(pageSettings);
-    }
+    };
 
     addWorklog = (user, ticketNo, dateStarted, logged) => {
         let timeSpent = (this.maxSecsPerDay || 0) - (logged || 0);
@@ -364,28 +364,28 @@ class WorklogGadget extends BaseGadget {
         // ToDo: need to support adding worklog for different user
         this.worklogItem = { ticketNo, dateStarted, timeSpent };
         this.setState({ showWorklogPopup: true });
-    }
+    };
 
     worklogAdded = ({ added: { sourceObject: worklog } }) => {
         console.log("Worklog added: ", worklog);
-    }
+    };
 
     hideWorklog = () => {
         this.worklogItem = null;
         this.setState({ showWorklogPopup: false });
-    }
+    };
 
     convertSecs = (val) => {
         return this.$utils.convertSecs(val, { format: this.state.pageSettings.logFormat === "1" });
-    }
+    };
 
     formatTime = (val) => {
         return this.$userutils.formatTime(val);
-    }
+    };
 
     formatDateTime = (val) => {
         return this.$userutils.formatDateTime(val);
-    }
+    };
 
     render() {
         const {

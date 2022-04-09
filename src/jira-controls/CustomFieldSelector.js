@@ -48,7 +48,7 @@ class CustomFieldSelector extends PureComponent {
         }
 
         this.props.onChange(val, this.jiraFields[val]);
-    }
+    };
 
     render() {
         const { fields } = this.state;

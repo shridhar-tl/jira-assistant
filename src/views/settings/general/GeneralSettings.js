@@ -25,7 +25,7 @@ class GeneralSettings extends PureComponent {
             .then(settings => this.setState({ settings }));
     }
 
-    tabChanged = (e) => this.setState({ currentTabIndex: e.index })
+    tabChanged = (e) => this.setState({ currentTabIndex: e.index });
 
     render() {
         const { noDonations, state: { settings, currentTabIndex } } = this;

@@ -20,7 +20,7 @@ class JiraUpdates extends PureComponent {
     trackViewList = () => {
         const { total } = this.state;
         this.$analytics.trackEvent("Jira Updates: List viewed", "Updates", `Updates: Total: ${total}`);
-    }
+    };
 
     trackAnalytics(msg, event) {
         this.$analytics.trackEvent((msg.type === "versionInfo" ? "Update Info: " : "Message: ") + event, "Messages", `Message Id: ${msg.id}`);

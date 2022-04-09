@@ -39,7 +39,7 @@ class BindFunction extends PureComponent {
 
     selectionChanged = (func) => {
         this.setState(this.setFunction(func));
-    }
+    };
 
     setFunction(funcId) {
         if (!funcId && funcId !== '') {

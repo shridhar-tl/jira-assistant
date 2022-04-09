@@ -29,7 +29,7 @@ class ReportViewer extends BaseGadget {
         }
     }
 
-    toggleGroupOptions = () => this.setState({ hideGroups: !this.state.hideGroups })
+    toggleGroupOptions = () => this.setState({ hideGroups: !this.state.hideGroups });
 
     UNSAFE_componentWillReceiveProps(props) {
         super.UNSAFE_componentWillReceiveProps(props);
@@ -78,7 +78,7 @@ class ReportViewer extends BaseGadget {
         } catch (err) {
             this.setState({ isLoading: false, hasError: true });
         }
-    }
+    };
 
     tableSettingsChanged = (settings) => {
         this.settings = { ...this.settings, ...settings };
@@ -90,7 +90,7 @@ class ReportViewer extends BaseGadget {
         else {
             this.props.settingsChanged(settings);
         }
-    }
+    };
 
     render() {
         const { query: queryFromProps } = this.props;

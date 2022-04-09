@@ -57,7 +57,7 @@ class YoutubeVideo extends BaseDialog {
         const url = this.getVideoUrl(this.videoList[index], "Video view previous");
 
         this.setState({ url, index });
-    }
+    };
 
     playNext = () => {
         let { index } = this.state;
@@ -65,7 +65,7 @@ class YoutubeVideo extends BaseDialog {
         const url = this.getVideoUrl(this.videoList[index], "Video view next");
 
         this.setState({ url, index });
-    }
+    };
 
     render() {
         const { url, index } = this.state;

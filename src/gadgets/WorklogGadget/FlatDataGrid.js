@@ -65,7 +65,7 @@ class FlatDataGrid extends PureComponent {
 
     settingsChanged = (grpconfig, event) => {
         this.props.onChange(grpconfig, event);
-    }
+    };
 
     render() {
         const {

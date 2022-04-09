@@ -60,7 +60,7 @@ class CustomReport extends PureComponent {
             reportId, query, renderReport: false,
             hasUnsavedChanges: this.reportConverted
         });
-    }
+    };
 
     async convertFromOldReport(query) {
         if (Array.isArray(query?.fields)) {
@@ -136,7 +136,7 @@ class CustomReport extends PureComponent {
             .map(q => ({ value: q.id, label: q.queryName }));
 
         this.setState({ reportId, reportsList });
-    }
+    };
 
     querySelected = (reportId) => {
         const { history } = this.props;
@@ -154,7 +154,7 @@ class CustomReport extends PureComponent {
         }
 
         history.push(path);
-    }
+    };
 
     queryChanged = (query) => this.setState({ query, hasUnsavedChanges: true });
 
@@ -169,7 +169,7 @@ class CustomReport extends PureComponent {
                     this.querySelected('');
                 });
             });
-    }
+    };
 
     viewReport = () => {
         const { renderReport } = this.state;
@@ -179,7 +179,7 @@ class CustomReport extends PureComponent {
             this.$analytics.trackEvent(`${this.reportConverted ? 'Old: ' : ''}Custom Report Preview`,
                 EventCategory.UserActions);
         }
-    }
+    };
 
     showSaveDialog = () => this.setState({ showSaveDialog: true });
     saveAs = () => this.saveQuery(this.state.query.queryName);
@@ -226,7 +226,7 @@ class CustomReport extends PureComponent {
                 this.$message.error(err.message);
             }
         });
-    }
+    };
 
     settingsChanged = (settings) => {
         let { query } = this.state;
@@ -234,7 +234,7 @@ class CustomReport extends PureComponent {
         query = { ...query, settings };
 
         this.setState({ query, hasUnsavedChanges: true });
-    }
+    };
 
     render() {
         const { reportId, query, renderReport, reportsList, showSaveDialog, hasUnsavedChanges } = this.state;

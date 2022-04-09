@@ -3,7 +3,7 @@ import { ColorPicker as PrimeColorPicker } from 'primereact/colorpicker';
 import TextBox from './TextBox';
 
 class ColorPicker extends PureComponent {
-    onChange = (e) => this.colorTextChanged(e.value)
+    onChange = (e) => this.colorTextChanged(e.value);
 
     colorTextChanged = (color) => {
         const { onChange, fieldName } = this.props;
@@ -11,7 +11,7 @@ class ColorPicker extends PureComponent {
             color = `#${color}`;
         }
         onChange(color, fieldName);
-    }
+    };
 
     render() {
         const { disabled } = this.props;

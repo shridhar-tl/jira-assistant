@@ -5,7 +5,7 @@ import './Common.scss';
 class JQLEditor extends PureComponent {
     onChange = (val) => {
         this.props.onChange(val?.trim(), null);
-    }
+    };
 
     render() {
         const { jql } = this.props;

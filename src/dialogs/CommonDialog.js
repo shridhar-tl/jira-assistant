@@ -34,7 +34,7 @@ class CommonDialog extends BaseDialog {
             this.onClose();
         }
         this.style = { width: "485px" };
-    }
+    };
 
     parseMarkupString(body) {
         if (typeof body === "string") {

@@ -217,13 +217,13 @@ class Calendar extends BaseGadget {
 
     refreshData = () => {
         this.fillEvents(this.startDate, this.endDate);
-    }
+    };
 
     viewModeChanged = (viewMode) => {
         this.setState({ viewMode });
         this.fc.calendar.changeView(viewMode);
         this.saveSettings({ ...this.state.settings, viewMode }, true);
-    }
+    };
 
     createWorklog($event, m, mTicket) {
         hideContextMenu();
@@ -380,8 +380,8 @@ class Calendar extends BaseGadget {
         this.performAction(GadgetActionType.WorklogModified);
     }
 
-    hideWorklogDialog = () => this.setState({ showAddWorklogPopup: false })
-    toggleSettingsDialog = () => this.setState({ showSettingsPopup: !this.state.showSettingsPopup })
+    hideWorklogDialog = () => this.setState({ showAddWorklogPopup: false });
+    toggleSettingsDialog = () => this.setState({ showSettingsPopup: !this.state.showSettingsPopup });
 
     openTicket(obj) {
         const url = this.$userutils.getTicketUrl(obj.ticketNo);
@@ -450,7 +450,7 @@ class Calendar extends BaseGadget {
         //events.removeAll((e) => e.entryType === 3);
         this.setEventsData(events);
         return resp;
-    }
+    };
 
     setEventsData(events) {
         this.events = [...events];
@@ -643,7 +643,7 @@ class Calendar extends BaseGadget {
         return currentMeetingItem;
     }
 
-    hideOPEvent = () => this.setState({ showOpEvent: false })
+    hideOPEvent = () => this.setState({ showOpEvent: false });
 
     openVideoCall(meeting) {
         hideContextMenu();
@@ -872,7 +872,7 @@ class Calendar extends BaseGadget {
         this.setState({ settings }, (noRefresh !== true ? this.refreshData : null));
 
         this.$config.saveSettings('calendar', settings);
-    }
+    };
 
     renderCustomActions() {
         const {

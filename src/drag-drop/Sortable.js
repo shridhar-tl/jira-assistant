@@ -87,7 +87,7 @@ class Sortable extends PureComponent {
         newArr.splice(sourceIndex, 1);
 
         onChange(newArr);
-    }
+    };
 
     handleDrop = (item, source, target) => {
         const { items, onChange } = this.props;
@@ -109,7 +109,7 @@ class Sortable extends PureComponent {
         }
 
         onChange(newArr);
-    }
+    };
 }
 
 Sortable.propTypes = {

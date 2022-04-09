@@ -6,8 +6,8 @@ const desc_len = 350;
 class MeetingDetails extends PureComponent {
     state = {};
 
-    toggleShowAttendees = () => this.setState({ showAttendees: !this.state.showAttendees })
-    toggleShowDesc = () => this.setState({ showFullDesc: !this.state.showFullDesc })
+    toggleShowAttendees = () => this.setState({ showAttendees: !this.state.showAttendees });
+    toggleShowDesc = () => this.setState({ showFullDesc: !this.state.showFullDesc });
 
     render() {
         const {

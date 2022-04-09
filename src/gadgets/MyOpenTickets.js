@@ -74,7 +74,7 @@ class MyOpenTickets extends BaseGadget {
 
                 this.setState({ ticketList, isLoading: false });
             });
-    }
+    };
 
     showContext($event, b) {
         this.selectedTicket = b;

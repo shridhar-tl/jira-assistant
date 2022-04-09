@@ -84,7 +84,7 @@ export class ScrollableTable extends PureComponent {
 
     tableScrolled = (e) => {
         this.eventEmitter.emit(tableScrollingEvent, e.currentTarget.scrollTop, e);
-    }
+    };
 
     render() {
         const { className, style, children, exportable, exportSheetName } = this.props;
@@ -128,8 +128,8 @@ export class THead extends PureComponent {
         });
     }
 
-    setOverLay = (ref) => this.overlay = ref
-    setHeaderEl = (ref) => this.headerEl = ref
+    setOverLay = (ref) => this.overlay = ref;
+    setHeaderEl = (ref) => this.headerEl = ref;
 
     componentWillUnmount() {
         this.cleanup();
@@ -253,7 +253,7 @@ export class Column extends PureComponent {
 
     onClick = (e) => {
         this.context.sortBy(this.props.sortBy);
-    }
+    };
 
     componentWillUnmount() {
         this.cleanup();

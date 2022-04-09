@@ -12,21 +12,21 @@ class GroupedColumnList extends PureComponent {
         const groupBy = [...grpBy];
         groupBy[i] = { ...groupBy[i], sortDesc: desc };
         onChange(groupBy, foldable, "sort");
-    }
+    };
 
     changeSettings = (i, settings) => {
         const { groupBy: grpBy, foldable, onChange } = this.props;
         const groupBy = [...grpBy];
         groupBy[i] = { ...groupBy[i], settings };
         onChange(groupBy, foldable, "settings");
-    }
+    };
 
     removeGroup = (i) => {
         const { groupBy: grpBy, foldable, onChange } = this.props;
         const groupBy = [...grpBy];
         groupBy.splice(i, 1);
         onChange(groupBy, foldable, "remove");
-    }
+    };
 
     toggleMode = (newValue) => {
         const { groupBy, foldable, onChange } = this.props;
@@ -35,12 +35,12 @@ class GroupedColumnList extends PureComponent {
             return;
         }
         onChange(groupBy, newValue, "mode");
-    }
+    };
 
     columnReordered = (groupBy) => {
         const { foldable, onChange } = this.props;
         onChange(groupBy, foldable, "rearrange");
-    }
+    };
 
     render() {
         const { groupBy, foldable, toggleColumns, showColumns, allColumns, displayColumns } = this.props;
@@ -83,9 +83,9 @@ GroupedColumnList.propTypes = {
 export default GroupedColumnList;
 
 class GroupedColumn extends PureComponent {
-    removeGroup = () => this.props.removeGroup(this.props.index)
-    sortAsc = () => this.props.toggleSort(this.props.index, false)
-    sortDesc = () => this.props.toggleSort(this.props.index, true)
+    removeGroup = () => this.props.removeGroup(this.props.index);
+    sortAsc = () => this.props.toggleSort(this.props.index, false);
+    sortDesc = () => this.props.toggleSort(this.props.index, true);
 
     setRef = (el) => {
         this.el = el;
@@ -94,7 +94,7 @@ class GroupedColumn extends PureComponent {
         if (dropConnector) {
             dropConnector(el);
         }
-    }
+    };
 
     changeSettings = ({ prop, type, value, default: def, aggregate }) => {
         const { settingsChanged, group, index } = this.props;
@@ -110,7 +110,7 @@ class GroupedColumn extends PureComponent {
         }
 
         settingsChanged(index, settings);
-    }
+    };
 
     showMenu = (e) => {
         const { group: { groupOptions, settings } } = this.props;
@@ -133,7 +133,7 @@ class GroupedColumn extends PureComponent {
         });
 
         showContextMenu(e, menuItems);
-    }
+    };
 
     render() {
         const { group: g } = this.props;

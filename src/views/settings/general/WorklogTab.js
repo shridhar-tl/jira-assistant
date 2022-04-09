@@ -100,7 +100,7 @@ class TicketNo extends PureComponent {
         if (typeof value === 'string') {
             this.props.onChange(value, this.props.field);
         }
-    }
+    };
 
     validateTicket() {
         let { value } = this.state;

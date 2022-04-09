@@ -74,7 +74,7 @@ class Header extends PureComponent {
         config.name = name;
         config.icon = icon;
         this.$dashboard.saveDashboardInfo(index, config, true);
-    }
+    };
 
     showContext = (e) => showContextMenu(e, this.contextMenu);
 

@@ -23,7 +23,7 @@ export default class DashboardService {
         }
 
         this.saveUserDashboards(dashboard, updateMenu !== true);
-    }
+    };
 
     async saveUserDashboards(dashboard, avoidMenuUpdate) {
         if (!dashboard.id) {

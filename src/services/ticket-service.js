@@ -498,7 +498,7 @@ export default class TicketService {
         }
 
         return ticket;
-    }
+    };
 
     async importIssues(importData) {
         importData = [...importData];
@@ -697,7 +697,7 @@ export default class TicketService {
         }
 
         return returnValue;
-    }
+    };
 }
 
 function compareIgnoreCase(str1, str2) {

@@ -49,7 +49,7 @@ class QueryEditor extends BaseGadget {
 
     initModel = (clear) => {
         this.setState(this.getClearState(!!clear, this.props));
-    }
+    };
 
     UNSAFE_componentWillMount() {
         this.$jira.getCustomFields().then(this.processJson);
@@ -154,7 +154,7 @@ class QueryEditor extends BaseGadget {
                 this.$message.error(err.message);
             }
         });
-    }
+    };
 
     groupField(row, $index) {
         const grpBy = !row.groupBy;
@@ -306,7 +306,7 @@ class QueryEditor extends BaseGadget {
         reportQuery.outputFields = reportQuery.outputFields.concat(this.getField(field, false));
 
         this.queryChanged(reportQuery);
-    }
+    };
 
     removeOutputField(index) {
         let { reportQuery } = this.state;
@@ -353,7 +353,7 @@ class QueryEditor extends BaseGadget {
                 { label: 'Custom Fields', items: customFields }
             ]
         }); // false
-    }
+    };
 
     columnReordered(event) {
         const item = event.value;
@@ -388,7 +388,7 @@ class QueryEditor extends BaseGadget {
 
     querySelected = (selReportId) => {
         this.$report.getReportDefinition(selReportId).then(reportQuery => this.setState({ selReportId, reportQuery }));
-    }
+    };
 
     deleteQuery = () => {
         Dialog.confirmDelete(`Are you sure to delete the report named "${this.state.reportQuery.queryName}" permenantly?`)
@@ -400,12 +400,12 @@ class QueryEditor extends BaseGadget {
                     this.fillQueriesList();
                 });
             });
-    }
+    };
 
     queryChanged = (reportQuery) => {
         this.setState({ reportQuery });
         this.props.onChange(reportQuery);
-    }
+    };
 
     jqlChanged = (jql) => {
         let { reportQuery } = this.state;
@@ -414,7 +414,7 @@ class QueryEditor extends BaseGadget {
         reportQuery.jql = jql;
 
         this.queryChanged(reportQuery);
-    }
+    };
 
     setFunction = (i, func) => {
         let { reportQuery } = this.state;
@@ -425,12 +425,12 @@ class QueryEditor extends BaseGadget {
         outputFields[i] = row;
         row.functions = func;
         this.queryChanged(reportQuery);
-    }
+    };
 
-    viewReport = () => this.props.onViewReport(this.state.reportQuery)
-    showSaveDialog = () => this.setState({ showSaveDialog: true })
-    saveAs = () => this.saveQuery(this.state.reportQuery.queryName)
-    hideSaveDialog = () => this.setState({ showSaveDialog: false })
+    viewReport = () => this.props.onViewReport(this.state.reportQuery);
+    showSaveDialog = () => this.setState({ showSaveDialog: true });
+    saveAs = () => this.saveQuery(this.state.reportQuery.queryName);
+    hideSaveDialog = () => this.setState({ showSaveDialog: false });
 
     renderCustomActions() {
         const {

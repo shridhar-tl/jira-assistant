@@ -34,11 +34,11 @@ class RapidViewList extends PureComponent {
 
         return rapidViews.filter(r => (r.name.toLowerCase().indexOf(query) >= 0 || r.id.toString().startsWith(query))
             && (!value || !value.some(v => v.id === r.id)));
-    }
+    };
 
     setValue = (val) => {
         this.props.onChange(val);
-    }
+    };
 
     render() {
         const { state: { rapidViews }, props: { value, placeholder } } = this;

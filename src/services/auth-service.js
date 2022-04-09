@@ -29,6 +29,7 @@ export default class AuthService {
         try {
             userDetails = await this.getUserDetails(userId);
             userId = userDetails.userId;
+
             // ToDo: Remove once all the CurrentUser instances are changed to use new settings
             const userSettings = await this.$settings.getGeneralSettings(userId);
             const advSettings = await this.$settings.getAdvancedSettings(userId);

@@ -22,14 +22,14 @@ class WorklogSettings extends BaseDialog {
     onDone = () => {
         this.$config.saveSettings('reports_UserDayWise', this.state.pageSettings);
         this.onHide(this.state.pageSettings);
-    }
+    };
 
     setValue = (field, value) => {
         let { pageSettings } = this.state;
         pageSettings[field] = value;
         pageSettings = { ...pageSettings };
         this.setState({ pageSettings });
-    }
+    };
 
     render() {
         const { setValue, state: { pageSettings: { logFormat, breakupMode, timeZone, jql, hideEstimate } } } = this;

@@ -28,7 +28,7 @@ class TextBox extends PureComponent {
         }
         this.setState({ value });
         onChange(value, field, args);
-    }
+    };
 
     keyPress = (e) => {
         const { key } = e;
@@ -38,7 +38,7 @@ class TextBox extends PureComponent {
                 func(this.state.value);
             }
         }
-    }
+    };
 
     render() {
         const { value } = this.state;

@@ -19,9 +19,9 @@ class JQLEditorDialog extends BaseDialog {
 
         this.$jira.searchTickets(this.$reportConfig.prepareJQL(query.jql), query.outputFields.map(f => f.id))
             .then(data => this.props.onResolve(query, data));
-    }
+    };
 
-    queryChanged = (filterQuery) => this.setState({ filterQuery })
+    queryChanged = (filterQuery) => this.setState({ filterQuery });
 
     getFooter() {
         let isSaveEnabled = false;
@@ -36,7 +36,7 @@ class JQLEditorDialog extends BaseDialog {
         </>;
     }
 
-    getRef = (inst) => this.editorInstance = inst
+    getRef = (inst) => this.editorInstance = inst;
 
     render() {
         const { state: { filterQuery } } = this;

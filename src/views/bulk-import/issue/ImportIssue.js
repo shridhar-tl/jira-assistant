@@ -92,7 +92,7 @@ class ImportIssue extends BaseImport {
         }
 
         return fieldName || c;
-    }
+    };
 
     processData(data) {
         this.$ticket.processIssuesForImport(data).then(details => {
@@ -120,7 +120,7 @@ class ImportIssue extends BaseImport {
         });
 
         this.setState({ importData, selectAll, selectedCount: this.getSelectedCount(importData) });
-    }
+    };
 
     toggleSelection = (row, i) => {
         row = { ...row };
@@ -131,9 +131,9 @@ class ImportIssue extends BaseImport {
         importData[i] = row;
 
         this.setState({ selectAll: true, importData, selectedCount: this.getSelectedCount(importData) });
-    }
+    };
 
-    getSelectedCount = (importData) => importData.filter(t => t.selected).length
+    getSelectedCount = (importData) => importData.filter(t => t.selected).length;
 
     importIssues = () => {
         let { importData } = this.state;
@@ -156,7 +156,7 @@ class ImportIssue extends BaseImport {
             this.setState({ isLoading: false, uploading: false });
         });
 
-    }
+    };
 
     downloadTemplate = () => {
         const lines = [
@@ -166,11 +166,11 @@ class ImportIssue extends BaseImport {
             ",JAS,,Task,Third task to be imported,admin"
         ];
         exportCsv(lines.join("\n"), "sample_issues");
-    }
+    };
 
     clearImportData = () => {
         this.setState({ importFields: [], ticketDetails: {}, importData: null, selectedCount: null });
-    }
+    };
 
     renderFooter() {
         const {
@@ -224,7 +224,7 @@ class IssueRow extends PureComponent {
     toggleSelection = () => {
         const { row, index } = this.props;
         this.props.toggleSelection(row, index);
-    }
+    };
 
     render() {
         const { row, ticketDetails, importFields, index } = this.props;

@@ -24,7 +24,7 @@ class AC extends PureComponent {
     onChange = ({ value }) => {
         this.setState({ value });
         this.props.onChange(value, this.props.field);
-    }
+    };
 
     filterResult = ({ query }) => {
         const { dataset } = this.props;
@@ -42,7 +42,7 @@ class AC extends PureComponent {
         // else if (Array.isArray(dataset)) {
         //    // ToDo: need to implement when needed
         //}
-    }
+    };
 
     onKeyUp = (e) => {
         const { currentTarget, keyCode } = e;
@@ -51,9 +51,9 @@ class AC extends PureComponent {
             const value = currentTarget.value.trim();
             this.props.onCustomValue(value);
         }
-    }
+    };
 
-    setRef = e => this.ac = e
+    setRef = e => this.ac = e;
 
     render() {
         const {

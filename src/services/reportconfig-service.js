@@ -222,7 +222,7 @@ export default class ReportConfigService {
             }
             return fields;
         });
-    }
+    };
 
     prepareJQL(jql, parameters, parameterTemplate) {
         const usedParams = jql.match(/@Parameters.([a-zA-Z_\d.]+[|a-zA-Z_\d.()"',-//]+)\$/g); // Revisit: Escape charactors removed due to warning

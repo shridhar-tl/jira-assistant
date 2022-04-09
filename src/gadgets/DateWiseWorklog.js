@@ -44,7 +44,7 @@ class DateWiseWorklog extends BaseGadget {
             result.forEach((b) => b.rowClass = this.$utils.getRowStatus(b));
             this.setState({ worklogs: result, isLoading: false });
         });
-    }
+    };
 
     getWorklogUrl(ticketNo, worklogId) {
         return this.$userutils.getWorklogUrl(ticketNo, worklogId);

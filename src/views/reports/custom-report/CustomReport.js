@@ -14,11 +14,11 @@ class CustomReport extends PureComponent {
 
     viewReport = (reportDefinition) => {
         this.setState({ viewReport: true, reportDefinition });
-    }
+    };
 
     queryChanged = (qry) => {
         // nothing to do
-    }
+    };
 
     render() {
         const { reportId, viewReport, reportDefinition } = this.state;

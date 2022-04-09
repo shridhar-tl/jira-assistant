@@ -34,7 +34,7 @@ class GeneralTab extends TabControlBase {
         value = parseInt(value);
         this.saveSetting(value, field);
         setStartOfWeek(value);
-    }
+    };
 
     toggleDonateMenu = (value, field) => {
         const cUser = this.$session.CurrentUser;
@@ -47,7 +47,7 @@ class GeneralTab extends TabControlBase {
         else {
             $('body').removeClass('no-donation');
         }
-    }
+    };
 
     render() {
         const {

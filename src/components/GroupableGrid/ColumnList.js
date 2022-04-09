@@ -27,14 +27,14 @@ class ColumnList extends PureComponent {
         displayColumns = (displayColumns.length === columns.length) ? null : displayColumns.map(c => c.id);
         columns = null;
         this.props.onChange(displayColumns);
-    }
+    };
 
     selectionChanged = (index, selected) => {
         let { columns } = this.state;
         columns = [...columns];
         columns[index] = { ...columns[index], selected };
         this.setState({ columns });
-    }
+    };
 
     render() {
         const { columns } = this.state;

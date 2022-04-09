@@ -14,7 +14,7 @@ class StatusWiseTimeSpentGadget extends BaseGadget {
 
     settingsChanged = (gridSettings) => {
         this.pageSettingsChanged({ gridSettings });
-    }
+    };
 
     pageSettingsChanged = (settings) => {
         if (settings) {
@@ -22,11 +22,11 @@ class StatusWiseTimeSpentGadget extends BaseGadget {
             this.saveSettings();
         }
         this.setState({ showSettings: false, settings });
-    }
+    };
 
     showSettings = () => {
         this.setState({ showSettings: true });
-    }
+    };
 
     renderCustomActions() {
         return <Button icon="fa fa-cogs" onClick={this.showSettings} title="Show settings" />;
@@ -34,13 +34,13 @@ class StatusWiseTimeSpentGadget extends BaseGadget {
 
     setLoader = (isLoading) => {
         this.setState({ isLoading });
-    }
+    };
 
     refreshData = () => {
         let { gridKey } = this.state;
         gridKey++;
         this.setState({ gridKey });
-    }
+    };
 
     render() {
         const { showSettings, gridKey } = this.state;

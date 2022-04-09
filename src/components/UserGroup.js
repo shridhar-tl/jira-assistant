@@ -39,19 +39,19 @@ class UserGroup extends PureComponent {
             this.setState({ groups: groups.concat({ name: groupName, timeZone: '', users: [] }) });
             return true;
         }
-    }
+    };
 
     hasGroupWithName = (groupName, group) => {
         groupName = groupName.toLowerCase();
         return this.state.groups.some(g => g.name.toLowerCase() === groupName && g !== group);
-    }
+    };
 
     deleteGroup = (index) => {
         let { groups } = this.state;
         groups.splice(index, 1);
         groups = [...groups];
         this.setState({ groups });
-    }
+    };
 
     saveGroups = () => {
         this.setState({ saveInProg: true });
@@ -61,14 +61,14 @@ class UserGroup extends PureComponent {
             this.$analytics.trackEvent("User groups saved", EventCategory.UserActions);
             this.$message.success("Changes saved successfully!", "Group saved");
         });
-    }
+    };
 
     done = () => {
         if (this.props.onDone) {
             this.$analytics.trackEvent("User groups modified", EventCategory.UserActions);
             this.props.onDone(this.state.groups);
         }
-    }
+    };
 
     render() {
         const {
@@ -85,6 +85,7 @@ class UserGroup extends PureComponent {
                     <th>User Email</th>
                     <th>User Login</th>
                     <th>Timezone</th>
+                    <th>Cost per hour</th>
                     <th style={{ width: 150 }}>Options</th>
                 </tr>
             </THead>
@@ -110,10 +111,10 @@ class GroupRow extends PureComponent {
         this.state = { selectedUsers: [], users, timeZone: timeZone || "" };
     }
 
-    usersSelected = (users) => this.setState({ selectedUsers: users, users: this.props.group.users })
-    clearSelection = () => this.usersSelected([])
+    usersSelected = (users) => this.setState({ selectedUsers: users, users: this.props.group.users });
+    clearSelection = () => this.usersSelected([]);
 
-    searchUsers = (query) => this.$jira.searchUsers(query)
+    searchUsers = (query) => this.$jira.searchUsers(query);
 
     addUsersToGroup() {
         const {
@@ -136,7 +137,7 @@ class GroupRow extends PureComponent {
         users = [...users];
         group.users = users;
         this.setState({ users });
-    }
+    };
 
     usernameEntered = (username) => {
         let { selectedUsers } = this.state;
@@ -148,16 +149,16 @@ class GroupRow extends PureComponent {
             selectedUsers.push(user);
             this.setState({ selectedUsers });
         }, () => { /* Nothing to do */ });
-    }
+    };
 
     onRemove = () => {
         this.props.onRemove(this.props.index);
-    }
+    };
 
     setTimezone = (timeZone) => {
         this.props.group.timeZone = timeZone;
         this.setState({ timeZone });
-    }
+    };
 
     render() {
         const {
@@ -183,6 +184,7 @@ class GroupRow extends PureComponent {
                 <td>
                     <SelectBox dataset={groupTimezones} displayField="label" valueField="value" value={timeZone || ''}
                         onChange={setTimezone} className="width-perc-100" filter={true} /></td>
+                <td></td>
                 <td><Button type="danger" icon="fa fa-trash" label="Delete group" onClick={onRemove} /></td>
             </tr>
 
@@ -196,23 +198,29 @@ class GroupRow extends PureComponent {
 class UserRow extends PureComponent {
     constructor(props) {
         super(props);
-        const { user: { timeZone } } = props;
-        this.state = { timeZone: timeZone || "" };
+        const { user: { timeZone, costPerHour = 0 } } = props;
+        this.state = { timeZone: timeZone || "", costPerHour };
     }
 
     timeZoneChanged = (timeZone) => {
         const { user } = this.props;
         user.timeZone = timeZone;
         this.setState({ timeZone });
-    }
+    };
+
+    costChanged = (costPerHour) => {
+        const { user } = this.props;
+        user.costPerHour = costPerHour || 0;
+        this.setState({ costPerHour });
+    };
 
     onRemove = () => {
         this.props.onRemove(this.props.index);
-    }
+    };
 
     render() {
         const {
-            timeZoneChanged, onRemove,
+            timeZoneChanged, costChanged, onRemove,
             props: { user, userTimezones }
         } = this;
 
@@ -227,6 +235,7 @@ class UserRow extends PureComponent {
             <td>{getUserName(user)}</td>
             <td><SelectBox dataset={userTimezones} value={user.timeZone} displayField="label" valueField="value"
                 onChange={timeZoneChanged} className="width-perc-100" filter={true} /></td>
+            <td><TextBox value={user.costPerHour} onChange={costChanged} /></td>
             <td><Button type="danger" icon="fa fa-times" onClick={onRemove} style={{ marginTop: 0 }} /></td>
         </tr>
         );
@@ -243,13 +252,13 @@ class GroupFooter extends PureComponent {
         if (this.props.addNewGroup(this.state.groupName)) {
             this.endAdd();
         }
-    }
+    };
 
-    setGroupName = (groupName) => this.setState({ groupName })
+    setGroupName = (groupName) => this.setState({ groupName });
 
-    setAddMode = (editMode) => this.setState({ editMode, groupName: '' })
-    beginAdd = () => this.setAddMode(true)
-    endAdd = () => this.setAddMode(false)
+    setAddMode = (editMode) => this.setState({ editMode, groupName: '' });
+    beginAdd = () => this.setAddMode(true);
+    endAdd = () => this.setAddMode(false);
 
     render() {
         const {
@@ -261,7 +270,7 @@ class GroupFooter extends PureComponent {
         return (
             <tfoot>
                 <tr>
-                    <td colSpan={5}>
+                    <td colSpan={6}>
                         <div style={{ height: 30, paddingTop: 4 }}>
                             <div className="pull-left">
                                 <div className="ui-inputgroup" hidden={editMode}>
@@ -294,11 +303,11 @@ class GroupNameComponent extends PureComponent {
         this.state = { editMode: false };
     }
 
-    setEditMode = (editMode) => this.setState({ editMode, groupName: this.props.group.name })
-    beginEdit = () => this.setEditMode(true)
-    endEdit = () => this.setEditMode(false)
+    setEditMode = (editMode) => this.setState({ editMode, groupName: this.props.group.name });
+    beginEdit = () => this.setEditMode(true);
+    endEdit = () => this.setEditMode(false);
 
-    setGroupName = (groupName) => this.setState({ groupName })
+    setGroupName = (groupName) => this.setState({ groupName });
 
     updateGroupName = () => {
         const {
@@ -315,7 +324,7 @@ class GroupNameComponent extends PureComponent {
 
         this.props.group.name = groupName;
         this.endEdit();
-    }
+    };
 
     render() {
         const {

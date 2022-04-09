@@ -66,11 +66,11 @@ class DefaultHeader extends PureComponent {
 
   trackShare = () => {
     this.$analytics.trackEvent("Share option viewed", EventCategory.HeaderActions);
-  }
+  };
 
   showYoutubeHelp = () => this.setState({ showYoutubeVideo: true });
 
-  hideYoutube = () => this.setState({ showYoutubeVideo: false })
+  hideYoutube = () => this.setState({ showYoutubeVideo: false });
 
   logout() {
     this.$cache.clear();
@@ -84,7 +84,7 @@ class DefaultHeader extends PureComponent {
     if (!updates) { return; }
 
     Dialog.alert(<UpdatesInfo updates={updates} />, "Updates info", { width: "600px" }).then();
-  }
+  };
 
   render() {
     const {

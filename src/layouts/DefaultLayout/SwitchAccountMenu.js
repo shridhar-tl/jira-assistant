@@ -29,7 +29,7 @@ class SwitchAccountMenu extends PureComponent {
         const userId = parseInt(el.attr("user-id"));
         this.context.switchUser(userId);
         this.$analytics.trackEvent("Instance switched", EventCategory.Instance);
-    }
+    };
 
     render() {
         const { users, profileUrl } = this.state;

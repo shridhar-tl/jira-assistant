@@ -74,7 +74,7 @@ class SelectBox extends PureComponent {
 
         this.setState({ value, subValue });
         this.props.onChange(subValue, field);
-    }
+    };
 
     render() {
         const {

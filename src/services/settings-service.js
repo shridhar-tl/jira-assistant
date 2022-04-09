@@ -65,12 +65,12 @@ class SettingsService {
             obj[cur.name] = cur.value;
             return obj;
         }, {});
-    }
+    };
 
     getSetting = async (userId, category, name) => {
         const sett = await this.$db.appSettings.get([userId, category, name]);
         return sett?.value;
-    }
+    };
 
     getGeneralSettings = async (userId) => {
         const userSettings = await this.getAllSettings(userId, SettingsCategory.General);
@@ -82,7 +82,7 @@ class SettingsService {
         result.hasOutlookCredentials = !!result.outlookStore;
 
         return result;
-    }
+    };
 
     getAdvancedSettings = async (userId) => {
         const userSettings = await this.getAllSettings(userId, SettingsCategory.Advanced);
@@ -95,7 +95,7 @@ class SettingsService {
         const result = { ...globalSettings, ...userSettings };
 
         return result;
-    }
+    };
 
     getGeneralSetting = async (userId, name) => {
         let value = await this.getSetting(userId, SettingsCategory.General, name);
@@ -106,7 +106,7 @@ class SettingsService {
         }
 
         return value || settingsDefaultValues[name];
-    }
+    };
 
     getPageSettings = (userId, name) =>
         this.getAllSettings(userId, SettingsCategory.PageSettings, name);
@@ -138,7 +138,7 @@ class SettingsService {
         }
 
         return boards;
-    }
+    };
 
     deleteDashboard = (userId, id) => this.$db.appSettings.delete([userId, SettingsCategory.Dashboard, id]);
 
@@ -271,7 +271,7 @@ class SettingsService {
         }
 
         console.log('Settings migrated successfully');
-    }
+    };
 }
 
 export default SettingsService;

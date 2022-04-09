@@ -25,9 +25,9 @@ class ReportBuilder extends BaseGadget {
 
     setReportDefinition = (definition, update) => {
         this.setState({ reportDefinition: definition, selQueryId: definition.id });
-    }
+    };
 
-    getApi = api => (this.builderAPI = api)
+    getApi = api => (this.builderAPI = api);
 
     UNSAFE_componentWillMount() {
         const { match: { params } } = this.props;
@@ -60,7 +60,7 @@ class ReportBuilder extends BaseGadget {
         this.resolveJQLEvent = null;
 
         this.setState({ selectedDatasetType: null });
-    }
+    };
 
     fillQueriesList() {
         return this.$report.getReportsList().then((result) => {
@@ -72,7 +72,7 @@ class ReportBuilder extends BaseGadget {
     initModel = () => {
         this.filterQuery = {};
         this.setReportDefinition(this.getEmptyDefinition());
-    }
+    };
 
     getEmptyDefinition() {
         return {
@@ -84,7 +84,7 @@ class ReportBuilder extends BaseGadget {
     queryChanged = (reportId) => {
         return this.$report.getReportDefinition(reportId)
             .then(this.setReportDefinition);
-    }
+    };
 
     deleteQuery = () => {
         Dialog.confirmDelete(`Are you sure to delete the report named "${this.state.reportDefinition.queryName}" permenantly?`)
@@ -96,7 +96,7 @@ class ReportBuilder extends BaseGadget {
                     this.fillQueriesList();
                 });
             });
-    }
+    };
 
     saveQuery = (queryName, copy) => {
         const reportDefinition = { ...this.state.reportDefinition, ...this.builderAPI.getReportDefinition(), advanced: true };
@@ -127,18 +127,18 @@ class ReportBuilder extends BaseGadget {
                 this.$message.error(err.message);
             }
         });
-    }
+    };
 
     viewReport = () => {
         this.setReportDefinition(this.builderAPI.getReportDefinition());
         this.setState({ reportMode: true });
-    }
+    };
 
-    viewBuilder = () => this.setState({ reportMode: false })
+    viewBuilder = () => this.setState({ reportMode: false });
 
-    showSaveDialog = () => this.setState({ showSaveDialog: true })
-    saveAs = () => this.saveQuery(this.state.reportDefinition.queryName)
-    hideSaveDialog = () => this.setState({ showSaveDialog: false })
+    showSaveDialog = () => this.setState({ showSaveDialog: true });
+    saveAs = () => this.saveQuery(this.state.reportDefinition.queryName);
+    hideSaveDialog = () => this.setState({ showSaveDialog: false });
 
     renderCustomActions() {
         const { queryList, selQueryId } = this.state;
@@ -171,7 +171,7 @@ class ReportBuilder extends BaseGadget {
         </div>;
     }
 
-    hideDatasetPopup = () => this.setState({ selectedDatasetType: null })
+    hideDatasetPopup = () => this.setState({ selectedDatasetType: null });
 
     render() {
         const {

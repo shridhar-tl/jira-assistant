@@ -21,12 +21,12 @@ class CalendarSettings extends BaseDialog {
         }
 
         this.setState({ settings: settings });
-    }
+    };
 
     onDone = () => {
         this.props.onDone(this.state.settings);
         this.onHide();
-    }
+    };
 
     getFooter() {
         return <>

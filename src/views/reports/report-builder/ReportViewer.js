@@ -58,7 +58,7 @@ class ReportViewer extends BaseGadget {
         this.parameterEvent.onChange(this.parameterEvent.definition, groups);
         this.parameterEvent = null;
         this.setState({ showGroupsPopup: false, groups });
-    }
+    };
 
     refreshData = () => {
         if (this.props.reportId > 0) {
@@ -71,7 +71,7 @@ class ReportViewer extends BaseGadget {
             this.title = this.state.definition.queryName;
             this.$analytics.trackEvent("Advanced report viewed", EventCategory.UserActions);
         }
-    }
+    };
 
     setReportDefinition(definition) {
         if (definition && definition.queryName) {
@@ -86,11 +86,11 @@ class ReportViewer extends BaseGadget {
     worklogAdded = (result) => {
         // ToDo:
         this.hideWorklog();
-    }
+    };
 
     hideWorklog = () => {
         this.setState({ showWorklogPopup: false });
-    }
+    };
 
     renderCustomActions() {
         return <>

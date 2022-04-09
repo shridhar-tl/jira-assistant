@@ -43,7 +43,7 @@ class TicketWiseWorklog extends BaseGadget {
             });
             this.setState({ isLoading: false, worklogs });
         });
-    }
+    };
 
     showContext(e, b) {
         this.selectedTicket = b;
@@ -58,7 +58,7 @@ class TicketWiseWorklog extends BaseGadget {
                 this.saveSettings();
             }
         }
-    }
+    };
 
     renderCustomActions() {
         return <DatePicker range={true} value={this.settings.dateRange} onChange={this.dateSelected} style={{ marginRight: "35px" }} />;

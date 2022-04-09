@@ -49,8 +49,8 @@ class MeetingsTab extends TabControlBase {
         inject(this, "CalendarService", "AnalyticsService", "MessageService", "SessionService", "OutlookService", "AppBrowserService");
     }
 
-    intgStatusChanged = (removedIntg) => this.setState({ removedIntg })
-    outlookIntgStatusChanged = (removedOIntg) => this.setState({ removedOIntg })
+    intgStatusChanged = (removedIntg) => this.setState({ removedIntg });
+    outlookIntgStatusChanged = (removedOIntg) => this.setState({ removedOIntg });
 
     enableIntegration(key, val) {
         if (val) {
@@ -76,7 +76,7 @@ class MeetingsTab extends TabControlBase {
             this.$analytics.trackEvent("Signedin to Google Calendar");
             this.$message.success("Successfully integrated with google account.");
         }, (err) => { this.$message.warning("Unable to integrate with Google Calendar!"); });
-    }
+    };
 
     outlookSignIn = () => {
         this.$outlook.authenticate(true).then(async result => {
@@ -90,27 +90,27 @@ class MeetingsTab extends TabControlBase {
             console.error(err);
             this.$message.warning("Unable to integrate with Outlook Calendar!");
         });
-    }
+    };
 
     removeIntegration = () => {
         this.saveSetting(false, "hasGoogleCredentials");
         this.props.intgStatusChanged(true); //removedIntg
-    }
+    };
 
     undoSignout = () => {
         this.saveSetting(true, "hasGoogleCredentials");
         this.props.intgStatusChanged(false); //removedIntg
-    }
+    };
 
     removeOutlookIntegration = () => {
         this.saveSetting(false, "hasOutlookCredentials");
         this.props.outlookIntgStatusChanged(true); //removedIntg
-    }
+    };
 
     undoOutlookSignout = () => {
         this.saveSetting(true, "hasOutlookCredentials");
         this.props.outlookIntgStatusChanged(false); //removedIntg
-    }
+    };
 
     // ToDo: This method is not yet implemneted / called
     assignCalendarSettingsToUser(user, settings) {
