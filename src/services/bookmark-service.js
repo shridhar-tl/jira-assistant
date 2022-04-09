@@ -20,7 +20,7 @@ export default class BookmarkService {
 
         this.$analytics.trackEvent("Bookmark ticket", EventCategory.UserActions);
 
-        this.$settings.getGeneralSetting(this.$session.userId, 'favTicketList').then(favTickets => {
+        return this.$settings.getGeneralSetting(this.$session.userId, 'favTicketList').then(favTickets => {
             if (!favTickets) {
                 favTickets = [];
             }
