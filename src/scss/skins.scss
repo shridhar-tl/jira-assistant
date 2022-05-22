@@ -1,14 +1,15 @@
-@mixin base-style($header-logo-bg,$header-bg) {
+@mixin base-style($header-logo-bg, $header-bg) {
   .app-header.navbar .navbar-brand {
-    background-color: $header-logo-bg !important;
+    background-color: $header-logo-bg  !important;
   }
 
-  .app-header.navbar, .sidebar .nav-link:hover {
-    background-color: $header-bg !important;
+  .app-header.navbar,
+  .sidebar .nav-link:hover {
+    background-color: $header-bg  !important;
   }
 
   .sidebar .nav-link.active i {
-    color: $header-logo-bg !important;
+    color: $header-logo-bg  !important;
   }
 
   .ui-panel.ui-widget .ui-panel-titlebar {
@@ -16,12 +17,14 @@
     background: white;
   }
 
-  .sidebar .nav-link.active, .sidebar-minimized .sidebar .nav-link {
-    border-left: 3px solid $header-bg !important;
+  .sidebar .nav-link.active,
+  .sidebar-minimized .sidebar .nav-link {
+    border-left: 3px solid $header-bg  !important;
   }
 
-  .link, .table i.fa-ellipsis-v {
-    color: $header-bg !important;
+  .link,
+  .table i.fa-ellipsis-v {
+    color: $header-bg  !important;
   }
 
   ul.right-menus li:hover {
@@ -40,7 +43,8 @@
     color: $header-logo-bg;
   }
 
-  .badge-info, .event-details .header {
+  .badge-info,
+  .event-details .header {
     background-color: $header-bg;
   }
 
@@ -48,21 +52,22 @@
     background-color: $header-bg;
     color: #fff !important;
   }
+
   /*.ui-widget-header .ui-button, .ui-widget-content .ui-button, .ui-widget.ui-button, .ui-button {
     background-color: $header-bg;
     border: 1px solid $header-logo-bg;
   }*/
   div.daysinweek {
-    > div.day:hover {
-      background-color: $header-bg !important;
+    >div.day:hover {
+      background-color: $header-bg  !important;
     }
 
-    > div.day.day-on {
+    >div.day.day-on {
       background-color: $header-logo-bg;
     }
   }
 
-  .ui-datatable tbody > tr.ui-widget-content.ui-state-highlight {
+  .ui-datatable tbody>tr.ui-widget-content.ui-state-highlight {
     background-color: $header-bg + bd !important;
 
     .link {
@@ -77,17 +82,18 @@
   color: $font-color;
 
   .app-header.navbar .navbar-brand {
-    background-color: $background-color !important;
+    background-color: $background-color  !important;
   }
 
-  .app-header.navbar, .sidebar .nav-link:hover {
-    background-color: $background-secondary !important;
+  .app-header.navbar,
+  .sidebar .nav-link:hover {
+    background-color: $background-secondary  !important;
     color: $font-color;
 
   }
 
   .sidebar .nav-link.active i {
-    color: $primary-color !important;
+    color: $primary-color  !important;
   }
 
   .ui-panel.ui-widget .ui-panel-titlebar {
@@ -95,12 +101,14 @@
     background: white;
   }
 
-  .sidebar .nav-link.active, .sidebar-minimized .sidebar .nav-link {
-    border-left: 3px solid $primary-color !important;
+  .sidebar .nav-link.active,
+  .sidebar-minimized .sidebar .nav-link {
+    border-left: 3px solid $primary-color  !important;
   }
 
-  .link, .table i.fa-ellipsis-v {
-    color: $primary-color !important;
+  .link,
+  .table i.fa-ellipsis-v {
+    color: $primary-color  !important;
   }
 
   ul.right-menus li:hover {
@@ -119,30 +127,32 @@
     color: $font-color;
   }
 
-  .badge-info, .event-details .header {
+  .badge-info,
+  .event-details .header {
     background-color: $primary-color;
     color: $font-color;
   }
 
   .skin-bg-font {
     background-color: $primary-color;
-    color: $font-color!important;
+    color: $font-color !important;
   }
+
   /*.ui-widget-header .ui-button, .ui-widget-content .ui-button, .ui-widget.ui-button, .ui-button {
     background-color: $header-bg;
     border: 1px solid $header-logo-bg;
   }*/
   div.daysinweek {
-    > div.day:hover {
-      background-color: $primary-color !important;
+    >div.day:hover {
+      background-color: $primary-color  !important;
     }
 
-    > div.day.day-on {
+    >div.day.day-on {
       background-color: $background-color;
     }
   }
 
-  .ui-datatable tbody > tr.ui-widget-content.ui-state-highlight {
+  .ui-datatable tbody>tr.ui-widget-content.ui-state-highlight {
     background-color: $primary-color + bd !important;
 
     .link {
@@ -194,7 +204,7 @@
   .p-slidemenu .p-menuitem-link:hover .p-menuitem-text {
     color: $font-color
   }
-  
+
 
   .p-inputtext,
   .p-dropdown,
@@ -205,7 +215,7 @@
   .p-tabview .p-tabview-panels,
   .p-tabview.p-tabview-top .p-tabview-nav li.p-highlight:hover a,
   .p-tabview.p-tabview-top .p-tabview-nav li.p-highlight a,
-  div.gadget .p-panel-titlebar,
+  div.gadget .p-panel-header,
   div.scroll-table-container caption,
   div.scroll-table-container .scroll-table tfoot,
   .pnl-footer,
@@ -278,7 +288,7 @@
   .table-bordered th,
   .table-bordered td,
   .p-panel .p-panel-content,
-  .p-panel .p-panel-titlebar,
+  .p-panel .p-panel-header,
   .p-tabview .p-tabview-panels,
   .p-tabview.p-tabview-top .p-tabview-nav li.p-highlight:hover a,
   .p-tabview.p-tabview-top .p-tabview-nav li.p-highlight a,
@@ -323,20 +333,23 @@
     border-color: #000;
   }
 
-  td.log-good, tr.log-good {
+  td.log-good,
+  tr.log-good {
     background-color: $background-color + #0f300f !important;
   }
 
-  td.log-less, tr.log-less {
+  td.log-less,
+  tr.log-less {
     background-color: #969640 !important; // $background-color + #9b9b53 !important;
   }
 
-  td.log-high, tr.log-high {
+  td.log-high,
+  tr.log-high {
     background-color: $background-color + #804740 !important;
   }
 
   td.col-holiday {
-    background-color: $background-secondary !important;
+    background-color: $background-secondary  !important;
   }
 }
 
@@ -344,109 +357,109 @@
   $header-logo-bg: #367fa9;
   $header-bg: #3c8dbc;
 
-  @include base-style($header-logo-bg,$header-bg);
+  @include base-style($header-logo-bg, $header-bg);
 }
 
 .skin-meadow {
   $header-logo-bg: #1caf9a;
   $header-bg: #8cc1a2;
 
-  @include base-style($header-logo-bg,$header-bg);
+  @include base-style($header-logo-bg, $header-bg);
 }
 
 .skin-purple {
   $header-logo-bg: #555299;
   $header-bg: #605ca8;
 
-  @include base-style($header-logo-bg,$header-bg);
+  @include base-style($header-logo-bg, $header-bg);
 }
 
 .skin-green {
   $header-logo-bg: #008d4c;
   $header-bg: #00a65a;
 
-  @include base-style($header-logo-bg,$header-bg);
+  @include base-style($header-logo-bg, $header-bg);
 }
 
 .skin-red {
   $header-logo-bg: #d73925;
   $header-bg: #dd4b39;
 
-  @include base-style($header-logo-bg,$header-bg);
+  @include base-style($header-logo-bg, $header-bg);
 }
 
 .skin-yellow {
   $header-logo-bg: #e08e0b;
   $header-bg: #f39c12;
 
-  @include base-style($header-logo-bg,$header-bg);
+  @include base-style($header-logo-bg, $header-bg);
 }
 
 .skin-violet {
   $header-logo-bg: #7a4889; //#724381
   $header-bg: #9055A2; //#9055A2
-  @include base-style($header-logo-bg,$header-bg);
+  @include base-style($header-logo-bg, $header-bg);
 }
 
 .skin-pink {
   $header-logo-bg: #ec2f6c; //#eb2364
   $header-bg: #ef5285; //#ef5285
-  @include base-style($header-logo-bg,$header-bg);
+  @include base-style($header-logo-bg, $header-bg);
 }
 
 .skin-sea {
   $header-logo-bg: #2d7776; //#296e6d
   $header-bg: #379392;
-  @include base-style($header-logo-bg,$header-bg);
+  @include base-style($header-logo-bg, $header-bg);
 }
 
 .skin-green2 {
   $header-logo-bg: #2b954b; //#288b46
   $header-bg: #33b35a;
-  @include base-style($header-logo-bg,$header-bg);
+  @include base-style($header-logo-bg, $header-bg);
 }
 
 .skin-green3 {
   $header-logo-bg: #40561a;
   $header-bg: #729a2e;
-  @include base-style($header-logo-bg,$header-bg);
+  @include base-style($header-logo-bg, $header-bg);
 }
 
 
 .skin-blue2 {
   $header-logo-bg: #557a95;
   $header-bg: #7395ae;
-  @include base-style($header-logo-bg,$header-bg);
+  @include base-style($header-logo-bg, $header-bg);
 }
 
 .skin-blue3 {
   $header-logo-bg: #240090;
   $header-bg: #3500d3;
-  @include base-style($header-logo-bg,$header-bg);
+  @include base-style($header-logo-bg, $header-bg);
 }
 
 .skin-navy {
   $header-logo-bg: #0c0032;
   $header-bg: #190061;
-  @include base-style($header-logo-bg,$header-bg);
+  @include base-style($header-logo-bg, $header-bg);
 }
 
 .skin-cust1 {
   $header-logo-bg: #44318d;
   $header-bg: #e98074;
-  @include base-style($header-logo-bg,$header-bg);
+  @include base-style($header-logo-bg, $header-bg);
 }
 
 .skin-cust2 {
   $header-logo-bg: #5d5c61;
   $header-bg: #379683;
-  @include base-style($header-logo-bg,$header-bg);
+  @include base-style($header-logo-bg, $header-bg);
 }
 
 .skin-cust3 {
   $header-logo-bg: #ffe400;
   $header-bg: #747474;
-  @include base-style($header-logo-bg,$header-bg);
+  @include base-style($header-logo-bg, $header-bg);
 }
 
 /*.skin-cust4 {
@@ -458,30 +471,30 @@
 .skin-cust5 {
   $header-logo-bg: #7e685a;
   $header-bg: #afd275;
-  @include base-style($header-logo-bg,$header-bg);
+  @include base-style($header-logo-bg, $header-bg);
 }
 
 .skin-cust6 {
   $header-logo-bg: #2e1114;
   $header-bg: #501b1d;
-  @include base-style($header-logo-bg,$header-bg);
+  @include base-style($header-logo-bg, $header-bg);
 }
 
 .skin-cust7 {
   $header-logo-bg: #2e151b;
   $header-bg: #da7b93;
-  @include base-style($header-logo-bg,$header-bg);
+  @include base-style($header-logo-bg, $header-bg);
 }
 
 .skin-cust8 {
   $header-logo-bg: #64485c;
   $header-bg: #83677b;
-  @include base-style($header-logo-bg,$header-bg);
+  @include base-style($header-logo-bg, $header-bg);
 }
 
 .skin-dark {
   $dark-color: #2f353a;
-  $second-dark-color: rgba(0,0,0,0.2);
+  $second-dark-color: rgba(0, 0, 0, 0.2);
   $primary-color: #64afd8;
   $font-color: #ffffff;
   @include deep-style($dark-color, $second-dark-color, $primary-color, $font-color);

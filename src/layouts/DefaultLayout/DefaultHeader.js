@@ -93,14 +93,17 @@ class DefaultHeader extends PureComponent {
       //REVISIT: props: { children, ...attributes }
     } = this;
 
+    const { version, isBeta } = notifications?.updatesAvailable || {};
+
     return (
       <React.Fragment>
-        <AppSidebarToggler className="d-lg-none" display="md" mobile><span className="fa fa-bars" /></AppSidebarToggler>
+        <AppSidebarToggler className="d-lg-none quick-view-hide" display="md" mobile><span className="fa fa-bars" /></AppSidebarToggler>
         <a href={this.siteUrl} className="navbar-brand" target="_blank" rel="noopener noreferrer">
           <img src={logo} width="24" height="24" alt="Jira Assistant" className="navbar-brand-minimized" />
           <span className="navbar-brand-full">Jira Assistant <span className="v-info badge badge-success" onClick={this.showVersionInfo}>v {versionNumber}</span></span>
         </a>
-        <AppSidebarToggler className="d-md-down-none" display="lg"><span className="fa fa-bars" /></AppSidebarToggler>
+        <AppSidebarToggler className="d-md-down-none quick-view-hide" display="lg"><span className="fa fa-bars" /></AppSidebarToggler>
+        <button className="navbar-toggler quick-view-show"><a href="/index.html" target="_blank" title="Open in new tab"><span className="fa fa-external-link" /></a></button>
         <NavLink to={`/${this.userId}/contribute`} className="btn-donate"
           title="Would you like to contribute / compensate us for the effort we put in development of this tool? Click to know more">
           <img src="/assets/donate.png" width="145" className="Donate us" alt="Donate us" />
@@ -116,6 +119,9 @@ class DefaultHeader extends PureComponent {
               </DropdownMenu>
             </UncontrolledDropdown>
           </Nav>
+          {!!version && <span className={`update-available badge badge-${isBeta ? "warning" : "success"}`}
+            title={`Click to update to ${isBeta ? 'BETA ' : ''}v${version}`}
+            onClick={this.showVersionInfo}><i className="fa fa-download" /> Updates available</span>}
           {!this.disableJiraUpdates && <JiraUpdates />}
           {!this.disableNotification && notifications && <Notifications notifications={notifications} />}
           <NavItem className="d-md-down-none">

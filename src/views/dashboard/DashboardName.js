@@ -31,7 +31,7 @@ class DashboardName extends PureComponent {
     onChange = (value) => this.setState({ value });
     onIconChange = (icon) => this.setState({ icon });
 
-    cancelEdit = () => this.setState({ isEditMode: false, value: this.props.value });
+    cancelEdit = () => this.setState({ isEditMode: false, value: this.props.value, icon: this.props.icon });
 
     showIcons = (e) => this.op.show(e);
     setRef = (el) => this.op = el;

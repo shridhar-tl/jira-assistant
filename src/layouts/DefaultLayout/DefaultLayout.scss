@@ -2,7 +2,7 @@
     margin-top: 43px;
 }
 
-.sidebar-fixed .app-header + .app-body .sidebar {
+.sidebar-fixed .app-header+.app-body .sidebar {
     height: calc(100vh - 43px);
 }
 
@@ -27,12 +27,20 @@ body.quick-view {
             overflow: hidden;
         }
     }
-    
+
     .main {
         .container-fluid {
             overflow-y: hidden;
         }
     }
+
+    .quick-view-hide {
+        display: none;
+    }
+}
+
+body:not(.quick-view) .quick-view-show {
+    display: none;
 }
 
 .app-body {

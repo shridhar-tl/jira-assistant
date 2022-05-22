@@ -74,7 +74,7 @@ class SprintList extends PureComponent {
             <AutoComplete value={value} onChange={this.setValue}
                 dataset={this.searchSprints} dropdown={true} multiple={true} displayField="name"
                 placeholder={placeholder || "start typing the sprint name here"}
-                size={35} maxlength={25} styleclass="autocomplete-350" scrollHeight="300px"
+                size={35} maxLength={25} styleclass="autocomplete-350" scrollHeight="300px"
                 disabled={!sprints || sprints.length === 0} />
         );
     }

@@ -47,7 +47,7 @@ class RapidViewList extends PureComponent {
             <AutoComplete value={value} onChange={this.setValue}
                 dataset={this.searchRapidView} dropdown={true} multiple={true} displayField="name"
                 placeholder={placeholder || "start typing the board name here"}
-                size={35} maxlength={25} styleclass="autocomplete-350" scrollHeight="300px"
+                size={35} maxLength={25} styleclass="autocomplete-350" scrollHeight="300px"
                 disabled={!rapidViews || rapidViews.length === 0} />
         );
     }

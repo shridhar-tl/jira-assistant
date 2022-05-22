@@ -111,11 +111,14 @@ class Dashboard extends PureComponent {
             ticketWiseWorklog: { title: "Ticketwise worklog", control: TicketWiseWorklog },
             sWiseTSpent: { title: "Status Wise Time Spent", control: StatusWiseTimeSpentGadget },
             myFilters: { title: "My reports", control: MyReports },
-            agendaDay: { title: "Calendar", control: Calendar, getProps: () => { return { viewMode: "timeGridDay" }; } },
-            agendaWeek: { title: "Calendar", control: Calendar, getProps: () => { return { viewMode: "timeGridWeek" }; } },
-            SQ: { title: "Custom report (Old)", control: OldCustomReport, getProps: (sett, opts) => { return { reportId: parseInt(opts[0]) }; } },
-            CR: { title: "Custom report", control: CustomReport, getProps: (sett, opts) => { return { reportId: parseInt(opts[0]) }; } },
-            AR: { title: "Advanced report", control: AdvancedReport, getProps: (sett, opts) => { return { reportId: parseInt(opts[0]) }; } },
+            agendaDay: { title: "Calendar", control: Calendar, getProps: () => ({ viewMode: "timeGridDay" }) },
+            agendaWeek: { title: "Calendar", control: Calendar, getProps: () => ({ viewMode: "timeGridWeek" }) },
+            listDay: { title: "Calendar", control: Calendar, getProps: () => ({ viewMode: "listDay" }) },
+            listWeek: { title: "Calendar", control: Calendar, getProps: () => ({ viewMode: "listWeek" }) },
+            listMonth: { title: "Calendar", control: Calendar, getProps: () => ({ viewMode: "listMonth" }) },
+            SQ: { title: "Custom report (Old)", control: OldCustomReport, getProps: (sett, opts) => ({ reportId: parseInt(opts[0]) }) },
+            CR: { title: "Custom report", control: CustomReport, getProps: (sett, opts) => ({ reportId: parseInt(opts[0]) }) },
+            AR: { title: "Advanced report", control: AdvancedReport, getProps: (sett, opts) => ({ reportId: parseInt(opts[0]) }) },
         };
 
         controls.myBookmarks = controls.bookmarksList;
@@ -215,7 +218,7 @@ class Dashboard extends PureComponent {
                 {this.getGadgets(widgets)}
                 {(!widgets || widgets.length === 0) && <div className="no-widget-div">
                     You haven't added any gadgets to this dashboard. Click on "Add gadgets" button above to start adding a cool one and personalize your experience.
-                    </div>
+                </div>
                 }
 
                 {showGadgetDialog && <AddGadgetDialog onHide={this.hideGadgetDialog} widgetsList={widgets}

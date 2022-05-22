@@ -1,4 +1,7 @@
 .dashboard-name-edit {
+    input {
+        height: 27px;
+    }
 }
 
 .dashboard-name {
@@ -13,15 +16,16 @@
         font-size: 19px;
         color: #367fa9;
     }
+
     .fa {
         margin: auto 5px;
     }
 }
 
-.dashboard-icons{
+.dashboard-icons {
     width: 290px;
 
-    & > div.d-icon {
+    &>div.d-icon {
         float: left;
         padding: 3px;
         width: 32px;

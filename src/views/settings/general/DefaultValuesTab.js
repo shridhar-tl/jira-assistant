@@ -121,7 +121,7 @@ class DefaultValuesTab extends TabControlBase {
                         <AutoComplete value={settings.rapidViews} field="rapidViews" onChange={this.saveSetting}
                             dataset={this.searchRapidView} dropdown={true} multiple={true} displayField="name"
                             placeholder="start typing the board name here"
-                            size={35} maxlength={25} styleclass="autocomplete-350" scrollHeight="300px"
+                            size={35} maxLength={25} styleclass="autocomplete-350" scrollHeight="300px"
                             disabled={!rapidViews || rapidViews.length === 0} />
                         <span className="help-block">Add one or more rapid view board which you are interested in</span>
                     </div>

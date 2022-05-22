@@ -166,8 +166,7 @@ class EstimateActualReport extends BaseGadget {
         this.chartWidth = userList.length * 250;
         const custTicketsList = ticketsList ? ticketsList.split(',').filter(t => !!t) : [];
 
-        let jql = `(worklogAuthor in ("${userList.join("\",\"")}") and worklogDate >= '${
-            mfromDate.clone().add(-1, 'days').format("YYYY-MM-DD")}' and worklogDate < '${mtoDate.clone().add(1, 'days').format("YYYY-MM-DD")}') `;
+        let jql = `(worklogAuthor in ("${userList.join("\",\"")}") and worklogDate >= '${mfromDate.clone().add(-1, 'days').format("YYYY-MM-DD")}' and worklogDate < '${mtoDate.clone().add(1, 'days').format("YYYY-MM-DD")}') `;
         let addJql = '';
         let hasProject = projects && projects.length > 0;
         const hasTickets = custTicketsList.length > 0;
@@ -362,10 +361,7 @@ class EstimateActualReport extends BaseGadget {
 
     resizeChart(value) {
         value = value * 100;
-        const instances = window['Chart'].instances;
-        const key = Object.keys(instances)[0];
-        const Chart = instances[key];
-        const canvas = Chart.canvas;
+        const canvas = this.chart.getCanvas();
         let curWidth = parseInt(canvas.style.width.replace('px', ''));
         if (!(curWidth > 0)) {
             curWidth = 500;
@@ -382,9 +378,11 @@ class EstimateActualReport extends BaseGadget {
     onDateChange = (e) => this.setState({ dateRange: e.date });
     validateData() {
         const { dateRange, groups } = this.state;
-        return !(dateRange || "").fromDate || !(groups || "").length;
+        return !dateRange?.fromDate || !groups?.length;
     }
+
     tabChanged = (e) => this.setState({ selectedTab: e.index });
+    setChartRef = (e) => this.chart = e;
 
     render() {
         const {
@@ -487,7 +485,7 @@ class EstimateActualReport extends BaseGadget {
                         </div>
                         <div className="canvas-block">
                             <div className="canvas-container">
-                                <Chart className="chart" type="bar" data={chartData} options={chartOptions} />
+                                <Chart ref={this.setChartRef} className="chart" type="bar" data={chartData} options={chartOptions} />
                             </div>
                         </div>
                     </div>

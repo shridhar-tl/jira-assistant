@@ -1,16 +1,32 @@
 button.p-button {
     height: 27px;
     margin: 1px 2px;
+    padding: 0;
+    display: inline-block;
 
     &.p-button-icon-only {
         width: 2em;
+        padding: 0;
+
+        .p-button-label {
+            display: none;
+        }
     }
 
-    span:nth-child(2){
+    .p-button-icon-left {
+        margin-left: 7px;
+    }
+
+    span:nth-child(2) {
         margin-left: 5px;
     }
 
-    .p-button-text {
-        padding: 2.5px 15px 4px 30px !important;
+    .p-button-label {
+        padding: 2.5px 15px 4px 0px !important;
+    }
+
+    .p-button-icon-left {
+        margin-right: 0;
+        margin-right: 0;
     }
 }

@@ -27,6 +27,8 @@ class UpdatesInfo extends PureComponent {
                     <span className="version-no">{u.version}</span>
                     {u.publishDate && <span> (published: <b>{this.$userutils.formatDate(u.publishDate)}</b>)</span>}
                     {!u.publishDate && u.expectedOn && <span> (expected: <b>{this.$userutils.formatDate(u.expectedOn)}</b>)</span>}
+                    {u.availableNow && <span className={`badge badge-${u.isBeta ? 'warning' : 'success'}`}
+                        title="Download this version from web store">now available</span>}
                     <span className="changelog-header">Changelog:</span>
                     <ul className="changelogs">
                         {u.whatsnew.map(this.getDescription)}

@@ -33,11 +33,11 @@
     }
 }
 
-.form-control{
+.form-control {
     padding: 0;
 }
 
-.pnl-footer{
+.pnl-footer {
     height: 50px;
     background-color: #f6f7f9;
     padding: 10px;
@@ -103,6 +103,10 @@
     padding-right: 8px !important;
 }
 
+.pad-8 {
+    padding: 8px;
+}
+
 .pad-15 {
     padding: 15px;
 }
@@ -113,6 +117,10 @@
 
 .pad-32 {
     padding: 32px;
+}
+
+.pad-l-5 {
+    padding-left: 5px;
 }
 
 /* #endregion */
@@ -168,9 +176,11 @@
 .msg-error {
     color: red;
 }
+
 .msg-warning {
     color: #ffc107;
 }
+
 /* #endregion */
 
 /* #region Badge styles*/
@@ -209,4 +219,8 @@
         cursor: pointer;
         display: inline;
     }
+}
+
+a {
+    text-decoration: none;
 }

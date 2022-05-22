@@ -1,5 +1,23 @@
 /* #region  Prime overrides*/
 
+body .p-component {
+    font-family: "Open Sans", "Helvetica Neue", sans-serif;
+    font-size: 14px;
+    text-decoration: none;
+}
+
+.p-panel {
+    .p-panel-header {
+        display: block;
+
+        .p-panel-title {
+            vertical-align: middle;
+            line-height: 21px;
+            width: 100%;
+        }
+    }
+}
+
 .p-dialog {
     z-index: 2535 !important;
 
@@ -29,11 +47,13 @@
     width: 100%;
 }
 
-.p-autocomplete-panel,.p-datepicker,.p-dropdown-panel{
+.p-autocomplete-panel,
+.p-datepicker,
+.p-dropdown-panel {
     z-index: 3000 !important;
 }
 
-.p-autocomplete-panel{
+.p-autocomplete-panel {
     max-width: 350px;
 }
 
@@ -43,12 +63,20 @@
 
     .p-dropdown-trigger {
         border-left: 1px solid #d6d6d6;
+        display: inline-block;
+        width: 24px;
+        height: 100%;
+        padding-left: 4px;
+        vertical-align: top;
+        padding-top: 6px;
     }
 
     .p-dropdown-label {
         height: 28px;
+        width: calc(100% - 25px);
         padding-top: 3px;
         padding-bottom: 4px;
+        display: inline-block;
     }
 }
 
@@ -76,9 +104,9 @@ a.p-menuitem-link {
 .p-tabview {
     padding-bottom: 0;
 
-    &.no-padding{
-        .p-tabview-panels{
-            padding:0;
+    &.no-padding {
+        .p-tabview-panels {
+            padding: 0;
         }
     }
 
@@ -91,6 +119,24 @@ a.p-menuitem-link {
     .p-tabview-selected {
         a {
             height: 32px;
+        }
+    }
+
+    .p-tabview-nav-link {
+        display: inline-block;
+    }
+
+    .p-tabview-nav-content {
+        overflow-y: auto;
+        overflow-x: auto;
+        height: 34px;
+
+        .p-tabview-nav {
+            height: 32px;
+
+            a {
+                height: 32px;
+            }
         }
     }
 }

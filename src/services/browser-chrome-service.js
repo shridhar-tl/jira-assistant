@@ -117,6 +117,14 @@ export default class ChromeBrowserService extends BrowserBase {
         });
     }
 
+    hasUpdates() {
+        return new Promise(function (resolve) {
+            this.chrome.runtime.requestUpdateCheck(function (result) {
+                resolve(parseFloat(result?.update_available?.version) || false);
+            });
+        });
+    }
+
     async requestPermission(permissions, url) {
         try {
             const pObj = this.getPermissionObj(permissions, url);

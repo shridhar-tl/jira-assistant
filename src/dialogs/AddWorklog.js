@@ -266,7 +266,7 @@ class AddWorklog extends BaseDialog {
                 <div className="col-sm-9">
                     <AutoComplete value={log.ticketNo} displayField="value" className="w-p-100"
                         placeholder="Enter the ticket number or start typing the summary to get suggestion"
-                        dataset={this.searchTickets} disabled={log.isUploaded} maxlength={20}
+                        dataset={this.searchTickets} disabled={log.isUploaded} maxLength={20}
                         onChange={(val) => this.setValue("ticketNo", val)} autoFocus>
                         {(ticket) => <span style={{ fontSize: 12, margin: '10px 10px 0 0' }}>{ticket.label}</span>}
                     </AutoComplete>

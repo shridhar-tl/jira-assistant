@@ -96,6 +96,14 @@ export default class AppBrowserService extends BrowserBase {
         });
     }
 
+    hasUpdates() {
+        return new Promise(function (resolve) {
+            this.chrome.runtime.requestUpdateCheck(function (result) {
+                resolve(parseFloat(result?.update_available?.version) || false);
+            });
+        });
+    }
+
     replaceTabUrl(url) {
         return this.getCurrentTab().then((tab) => {
             this.browser.tabs.update(tab.id, { url: url });
@@ -147,7 +155,7 @@ export default class AppBrowserService extends BrowserBase {
         try {
             return this.browser?.runtime?.getManifest()?.version || '1.5';
         }
-        catch{
+        catch {
             return this.getAppInfo().then(info => info?.version, () => '1.5');
         }
     }

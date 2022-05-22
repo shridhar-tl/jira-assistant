@@ -16,6 +16,7 @@ a.navbar-brand {
 strong.share-header-text {
     font-size: 16px;
 }
+
 .share-items {
     width: 200px;
     padding: 5px;
@@ -24,18 +25,23 @@ strong.share-header-text {
         font-size: 26px !important;
         margin: 8px 4px;
     }
+
     .fa-star {
         color: #ffdd23;
     }
+
     .fa-google-plus-square {
         color: #dc4e41;
     }
+
     .fa-linkedin-square {
         color: #0077b5;
     }
+
     .fa-facebook-square {
         color: #3b5998;
     }
+
     .fa-twitter-square {
         color: #55acee;
     }
@@ -46,7 +52,7 @@ strong.share-header-text {
 }
 
 body.no-donation .btn-donate {
-    display: none!important;
+    display: none !important;
 }
 
 .video-help {
@@ -108,11 +114,14 @@ body.no-donation .btn-donate {
 }
 
 .release-history {
-
     .release {
         &:not(:first-child) {
             border-top: 1px solid gray;
             padding-top: 5px;
+        }
+
+        .badge {
+            margin-left: 8px;
         }
 
         .version-no {
@@ -127,4 +136,8 @@ body.no-donation .btn-donate {
             text-indent: 8px;
         }
     }
+}
+
+.navbar-toggler a {
+    color: white;
 }

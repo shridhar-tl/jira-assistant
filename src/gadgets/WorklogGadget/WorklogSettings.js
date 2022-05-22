@@ -98,7 +98,7 @@ class WorklogSettings extends BaseDialog {
                         <div className="form-check">
                             <label className="form-check-label">
                                 <Checkbox checked={showCostReport} onChange={(e) => setValue("showCostReport", e)} label="Show cost report" />
-                                {this.showCostReport && !showCostReport && <span className="pad-left-15"> ( <i className="fa fa-exclamation-triangle" /> Change will take effect only after report is refreshed )</span>}
+                                {this.showCostReport && !showCostReport && <span className="pad-l-15"> ( <i className="fa fa-exclamation-triangle" /> Change will take effect only after report is refreshed )</span>}
                             </label>
                         </div>
                     </div>
@@ -106,7 +106,7 @@ class WorklogSettings extends BaseDialog {
                         <div className="form-check">
                             <label className="form-check-label">
                                 <Checkbox checked={hideEstimate} onChange={(e) => setValue("hideEstimate", e)} label="Hide estimate related fields" />
-                                {this.hideEstimate && !hideEstimate && <span className="pad-left-15"> ( <i className="fa fa-exclamation-triangle" /> Change will take effect only after report is refreshed )</span>}
+                                {this.hideEstimate && !hideEstimate && <span className="pad-l-15"> ( <i className="fa fa-exclamation-triangle" /> Change will take effect only after report is refreshed )</span>}
                             </label>
                         </div>
                     </div>

@@ -14,12 +14,13 @@ class AC extends PureComponent {
             this.setState({ value: props.value });
         }
     }
-
+    /*
+    ref not working and temp commented code
     componentDidMount() {
         if (this.props.autoFocus) {
             setTimeout(() => this.ac.inputEl.focus(), 100);
         }
-    }
+    }*/
 
     onChange = ({ value }) => {
         this.setState({ value });
@@ -58,14 +59,14 @@ class AC extends PureComponent {
     render() {
         const {
             onChange, filterResult,
-            props: { multiple, dropdown, displayField, children, placeholder, title, className, style, size, maxlength, scrollHeight, disabled, onCustomValue, autoFocus },
+            props: { multiple, dropdown, displayField, children, placeholder, title, className, style, size, maxLength, scrollHeight, disabled, onCustomValue, autoFocus },
             state: { value, list }
         } = this;
 
         return (
             <AutoComplete ref={this.setRef} appendTo={document.body} multiple={multiple} itemTemplate={children} dropdown={dropdown}
                 field={displayField} placeholder={placeholder} tooltip={title} className={className} style={style}
-                size={size} maxlength={maxlength} scrollHeight={scrollHeight} disabled={disabled}
+                size={size} maxlength={maxLength} scrollHeight={scrollHeight} disabled={disabled}
                 value={value} onChange={onChange} suggestions={list} completeMethod={filterResult} onKeyUp={onCustomValue ? this.onKeyUp : null} autoFocus={autoFocus} />
         );
     }

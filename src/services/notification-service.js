@@ -9,6 +9,7 @@ export default class NotificationService {
         this.$ajax = $ajax;
         this.$cache = $cache;
         this.$userutils = $userutils;
+        this.$browser = $browser;
 
         $browser.getAppVersion().then(v => this.version = parseFloat(v));
     }
@@ -73,7 +74,27 @@ export default class NotificationService {
             allNotifications.splice(0, 0, updateNoti);
         }
 
-        return { updates_info, list: allNotifications, total: allNotifications.length, unread: allNotifications.count(n => !n.read) };
+        const version = await this.getExtnAvailableUpdates();
+        let isBeta = true;
+        if (version && this.version < version) {
+            const versionInfo = updates_info.filter(u => u.version === version)[0];
+            if (versionInfo) {
+                versionInfo.availableNow = true;
+                isBeta = versionInfo.isBeta !== false;
+            } else {
+                const date = new Date();
+                updates_info.splice(0, 0, {
+                    availableNow: true,
+                    version,
+                    isBeta,
+                    date,
+                    bugs: [],
+                    whatsnew: ["Information not available yet"]
+                });
+            }
+        }
+
+        return { updates_info, updatesAvailable: { version, isBeta }, list: allNotifications, total: allNotifications.length, unread: allNotifications.count(n => !n.read) };
     }
 
     getVersionNotification(updates_info) {
@@ -139,5 +160,17 @@ export default class NotificationService {
                 success(data);
             }, 500);
         });
+    }
+
+    async getExtnAvailableUpdates() {
+        let data = this.$cache.get("available_updates");
+
+        if (!data) {
+            data = { version: await this.$browser.hasUpdates() };
+
+            this.$cache.set("available_updates", data, moment().add(4, 'hours'));
+        }
+
+        return data.version;
     }
 }

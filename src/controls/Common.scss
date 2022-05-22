@@ -1,3 +1,8 @@
+/* Input text */
+.p-inputtext {
+    padding: 0.25rem 0.5rem;
+}
+
 /* Autocomplete */
 .p-autocomplete {
     input.p-inputtext {
@@ -36,9 +41,16 @@
     }
 }
 
+.daterangepicker,
+.p-autocomplete-panel,
+.p-datepicker,
+.p-dropdown-panel {
+    z-index: 10001 !important;
+}
+
 .react-bootstrap-daterangepicker-container {
     display: inline-block;
-    
+
     input.date-range-ctl {
         width: 250px;
         height: 27px;
@@ -62,11 +74,11 @@
 }
 
 /* Radio button */
-span.ja-radio{
+span.ja-radio {
     margin-right: 8px;
 
     label {
-        margin-left: 5px;
+        margin-left: 0px;
         margin-top: 6px;
     }
 }
@@ -78,4 +90,9 @@ span.ja-radio{
 
 .p-colorpicker-panel {
     z-index: 2200 !important;
+}
+
+.p-checkbox,
+.p-radiobutton {
+    vertical-align: middle;
 }

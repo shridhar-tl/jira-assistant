@@ -86,7 +86,7 @@ class Header extends PureComponent {
                 <div className="pull-left"><DashboardName icon={icon} value={name} onChange={this.nameChanged} /></div>
                 <div className="pull-right">
                     <Button type="success" icon="fa fa-cubes" label="Add gadgets" onClick={this.props.onShowGadgets} />
-                    <Button icon="fa fa-wrench" onClick={this.showContext} />
+                    {!this.props.isQuickView && <Button icon="fa fa-wrench" onClick={this.showContext} />}
                 </div>
             </div>
         );

@@ -3,8 +3,8 @@ import { Route, Switch, withRouter } from 'react-router-dom';
 import 'moment-timezone/builds/moment-timezone-with-data.min.js';
 import registerServices, { inject } from './services';
 import 'font-awesome/css/font-awesome.min.css';
-import { Growl } from 'primereact/growl';
-import 'primereact/resources/themes/nova-light/theme.css';
+import { Toast } from 'primereact/toast';
+import 'primereact/resources/themes/bootstrap4-light-purple/theme.css';
 import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
 import 'jsd-report/build/css/style.css';
@@ -56,7 +56,7 @@ class App extends PureComponent {
     }
   };
 
-  getMessanger = () => <Growl ref={(el) => this.messenger = el} baseZIndex={3000} />;
+  getMessanger = () => <Toast ref={(el) => this.messenger = el} baseZIndex={3000} />;
 
   async UNSAFE_componentWillMount() {
     this.$message.onNewMessage((message) => {

@@ -19,7 +19,10 @@ export const GadgetList = [
     { id: 'pendingWorklog', icon: 'fa-clock-o', name: 'Worklog - [Pending Upload]', details: 'Worklog\'s still pending for upload' },
     { id: 'ticketWiseWorklog', icon: 'fa-list-alt', name: 'Logged Work - [Ticketwise]', details: 'List of worklog\'s grouped by ticket' },
     { id: 'myFilters', icon: 'fa-filter', name: 'My Reports', details: 'List of custom & advanced report built / imported by you' },
-    { id: 'agendaDay', icon: 'fa-calendar', name: 'Current day calendar', details: 'Display calendar for current date for worklog and meetings' },
-    { id: 'agendaWeek', icon: 'fa-calendar', name: 'Current week calendar', details: 'Display calendar for current week for worklog and meetings' },
+    { id: 'agendaDay', icon: 'fa-calendar', name: 'Current day calendar', details: 'Display calendar for current date with worklog and meetings' },
+    { id: 'agendaWeek', icon: 'fa-calendar', name: 'Current week calendar', details: 'Display calendar for current week with worklog and meetings' },
+    { id: 'listDay', icon: 'fa-calendar', name: 'Current day worklog List', details: 'Display calendar as listview for current date with worklog and meetings' },
+    { id: 'listWeek', icon: 'fa-calendar', name: 'Current week worklog list', details: 'Display calendar as listview for current week with worklog and meetings' },
+    { id: 'listMonth', icon: 'fa-calendar', name: 'Current month worklog list', details: 'Display calendar as listview for current month with worklog and meetings' },
     { id: 'sWiseTSpent', icon: 'fa-list-alt', name: 'Status Wise Time Spent', details: 'Provides summary of time spent on each ticket on individual status' }
 ];
