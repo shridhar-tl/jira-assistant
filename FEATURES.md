@@ -17,7 +17,7 @@ Following features are available in dashboard module :
 ## Reports
 
 ### Worklog Report
-User daywise report is a place where you can view the worklog report for you and your team members in different formats.
+Worklog report module lets you view the daily worklog details for you and your team members in different formats.
 
 ### Sprint Report
 This report lets you view the sprint based report including worklog for sprint and velocity chart when more than one sprint is selected. You can export it to excel once generated.
