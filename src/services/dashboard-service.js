@@ -75,6 +75,20 @@ export default class DashboardService {
         }
     }
 
+    getQuickViewBoardIndex() {
+        const dashboards = this.$session.CurrentUser.dashboards;
+        return dashboards.findIndex(d => d.isQuickView);
+    }
+
+    setQuickViewBoardIndex(index) {
+        if ((index || index === 0) && index >= 0 && this.getQuickViewBoardIndex() !== index) {
+            const board = this.$session.CurrentUser.dashboards[index];
+            if (board) {
+                this.setAsQuickView(board, index);
+            }
+        }
+    }
+
     async setAsQuickView({ id }, index) {
         const dashboards = await this.$settings.getDashboards(this.$session.userId);
         const currentBoard = dashboards.filter(d => d.id === id)[0];

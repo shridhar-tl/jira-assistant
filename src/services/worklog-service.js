@@ -5,7 +5,6 @@ import { getUserName } from '../common/utils';
 export default class WorklogService {
     static dependencies = ["UserUtilsService", "JiraService", "SessionService", "DatabaseService", "TicketService", "AjaxService", "UtilsService", "MessageService"];
 
-    //ToDo: FormatTsPipe is not a service
     constructor($userutils, $jira, $session, $db, $ticket, $ajax, $utils) {
         this.$userutils = $userutils;
         this.$jira = $jira;
@@ -14,7 +13,7 @@ export default class WorklogService {
         this.$ticket = $ticket;
         this.$ajax = $ajax;
         this.$utils = $utils;
-    } // format ts should be pipe
+    }
 
     getUploadedWorklogs(fromDate, toDate, userList, fields) {
         const mfromDate = moment(fromDate).startOf('day');

@@ -71,27 +71,6 @@ export default class UtilsService {
         return classNames;
     }
 
-    //ToDo:
-    //loadModal(url, scope) {
-    //  const div = $('<div id="divRemoteModal" class="modal fade" role="dialog"></div>');
-    //  $("#divRemoteModal").remove();
-    //  $("body > div.page-container").append(div);
-    //}
-
-    // ToDo: Tour need to be fixed
-    //loadTour(name, settings) {
-    //  if (!name) {
-    //    name = obj.currentPage;
-    //    settings = obj.pageSettings;
-    //  }
-    //  if (settings) {
-    //    const items = tourData[name];
-    //    if (items && items.length > 0) {
-    //      bootstro.start('', { items: items });
-    //    }
-    //  }
-    //}
-
     getTotalSecs(ts) {
         if (typeof ts === "string") {
             let num = null;
@@ -107,12 +86,6 @@ export default class UtilsService {
             return ts / 1000;
         }
     }
-
-    //ToDo: Modal closed event
-    //modalClosed() {
-    //  $('body').removeClass("modal-open").removeAttr("style"); // This is a fix for Model Service.
-    //  $('.modal-backdrop').remove(); // This is fix for modal backdrop not hiding
-    //}
 
     convertDate(value) {
         if (!value) {
@@ -244,7 +217,7 @@ export default class UtilsService {
                 value = value.substr(0, lastspace);
             }
         }
-        return value + (tail || '...'); //$('<span>&hellip;</span>').text() // ToDo: need to find alternate approach
+        return value + (tail || '...');
     }
     formatSecs(d, showZeroSecs, simple, days) {
         if (d === 0) {

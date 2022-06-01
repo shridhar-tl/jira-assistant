@@ -15,6 +15,9 @@ class MenuOptionsTab extends TabControlBase {
             settings.launchAction = {};
         }
 
+        const idx = this.$dashboard.getQuickViewBoardIndex();
+        settings.launchAction.quickIndex = `D-${idx}`;
+
         const { launchAction: { action, autoLaunch, quickIndex } } = settings;
 
         this.state = {
@@ -23,10 +26,6 @@ class MenuOptionsTab extends TabControlBase {
             selectedLaunchPage: autoLaunch,
             selectedDashboard: quickIndex
         };
-
-        // ToDo: Appropriate quick index has to be assigned.
-        //const idx = user.dashboards.indexOf(user.dashboards.first(d => d.isQuickView));
-        //settings.launchAction.quickIndex = `D-${idx}`;
 
         this.fillMenus();
     }
@@ -68,58 +67,6 @@ class MenuOptionsTab extends TabControlBase {
         this.dashboardMenus = dashboardMenus;
     }
 
-    menuActionSelected = (menuAction) => this.setState({ menuAction });
-
-    launchPageChanged = (autoLaunch) => this.setState({ selectedLaunchPage: autoLaunch }, this.saveSettings);
-
-    dashboardChanged = (quickIndex) => {
-        this.setState({ selectedDashboard: quickIndex }, this.saveSettings);
-        // ToDo: Updating appropriate dashboard index is not yet implemented
-        //const idx = parseInt((user.launchAction.quickIndex || '0').replace('D-', '')) || 0;
-        //delete user.launchAction.quickIndex;
-        //user.dashboards.forEach((dboard, i) => dboard.isQuickView = i === idx);
-    };
-
-    menuSelected = (menu, event) => {
-        if (event) {
-            event.stopPropagation();
-        }
-
-        menu.selected = !menu.selected;
-
-        if (menu.isHead) {
-            this.selectSubMenus(menu);
-        }
-
-        const selectedMenu = this.menus.filter(m => m.selected && !m.isHead).map(m => m.id);
-        this.setState({ selectedMenu }, this.saveSettings);
-    };
-
-    selectSubMenus(menu) {
-        const { menus } = this;
-
-        for (let i = menus.indexOf(menu) + 1; i < menus.length; i++) {
-            const subMenu = menus[i];
-            if (subMenu.isHead) {
-                return;
-            }
-            subMenu.selected = menu.selected;
-        }
-    }
-
-    menuTemplate = (menu) => {
-        if (menu.isHead) {
-            return <div onClick={($event) => this.menuSelected(menu, $event)}>
-                <Checkbox checked={menu.selected} /><span>{menu.name}</span>
-            </div>;
-        }
-        if (!menu.isHead) {
-            return <div style={{ marginLeft: 20 }} onClick={(e) => this.menuSelected(menu, e)}>
-                <Checkbox checked={menu.selected} /><span>{menu.name}</span>
-            </div>;
-        }
-    };
-
     saveSettings = () => {
         const { menuAction } = this.state;
         const setting = { action: parseInt(menuAction) };
@@ -154,6 +101,83 @@ class MenuOptionsTab extends TabControlBase {
         this.saveSetting(setting, 'launchAction');
     };
 
+    // #region Code related to "Show menus" action selection
+
+    menuOptionSelected = () => {
+        const selectedMenu = this.menus.filter(m => m.selected && !m.isHead).map(m => m.id);
+        this.setState({ menuAction: 1, selectedMenu }, this.saveSettings);
+    };
+
+    menuTemplate = (menu) => {
+        if (menu.isHead) {
+            return <div onClick={($event) => this.menuSelected(menu, $event)}>
+                <Checkbox checked={menu.selected} /><span>{menu.name}</span>
+            </div>;
+        }
+        if (!menu.isHead) {
+            return <div style={{ marginLeft: 20 }} onClick={(e) => this.menuSelected(menu, e)}>
+                <Checkbox checked={menu.selected} /><span>{menu.name}</span>
+            </div>;
+        }
+    };
+
+    menuSelected = (menu, event) => {
+        if (event) {
+            event.stopPropagation();
+        }
+
+        menu.selected = !menu.selected;
+
+        if (menu.isHead) {
+            this.selectSubMenus(menu);
+        }
+
+        this.menuOptionSelected();
+    };
+
+    selectSubMenus(menu) {
+        const { menus } = this;
+
+        for (let i = menus.indexOf(menu) + 1; i < menus.length; i++) {
+            const subMenu = menus[i];
+            if (subMenu.isHead) {
+                return;
+            }
+            subMenu.selected = menu.selected;
+        }
+    }
+
+    //#endregion
+
+    // #region Code related to "Auto launch" action selection
+
+    autoLaunchOptionSelected = () => {
+        const value = this.launchMenus.first()?.items?.first()?.value;
+        if (value) {
+            this.launchPageChanged(value);
+        } else {
+            this.setState({ menuAction: 2 });
+        }
+    };
+
+    launchPageChanged = (autoLaunch) => this.setState({ menuAction: 2, selectedLaunchPage: autoLaunch }, this.saveSettings);
+
+    // #endregion
+
+    // #region Code related to quick view dashboard selection
+
+    quickViewOptionSelected = () => {
+        const index = this.$dashboard.getQuickViewBoardIndex() || 0;
+        this.dashboardChanged(`D-${index}`);
+    };
+
+    dashboardChanged = (quickIndex) => {
+        this.setState({ menuAction: 3, selectedDashboard: quickIndex }, this.saveSettings);
+        const idx = parseInt((quickIndex || '0').replace('D-', '')) || 0;
+        this.$dashboard.setQuickViewBoardIndex(idx);
+    };
+    // #endregion
+
     render() {
         const {
             launchMenus, dashboardMenus, menus,
@@ -170,9 +194,9 @@ class MenuOptionsTab extends TabControlBase {
                         </div>
                         <div className="ui-g-12 ui-md-9 ui-lg-9 ui-xl-10">
                             <div className="form-group">
-                                <RadioButton value={menuAction} onChange={this.menuActionSelected} defaultValue={1} label="Show menus" />
-                                <RadioButton value={menuAction} onChange={this.menuActionSelected} defaultValue={2} label="Auto launch" />
-                                <RadioButton value={menuAction} onChange={this.menuActionSelected} defaultValue={3} label="Show quickview dashboard" />
+                                <RadioButton value={menuAction} onChange={this.menuOptionSelected} defaultValue={1} label="Show menus" />
+                                <RadioButton value={menuAction} onChange={this.autoLaunchOptionSelected} defaultValue={2} label="Auto launch" />
+                                <RadioButton value={menuAction} onChange={this.quickViewOptionSelected} defaultValue={3} label="Show quickview dashboard" />
                                 <span className="help-block">Select appropriate option what you would expect to happen when you click on JA icon</span>
                             </div>
                         </div>
