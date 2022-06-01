@@ -118,8 +118,8 @@ export default class ChromeBrowserService extends BrowserBase {
     }
 
     hasUpdates() {
-        return new Promise(function (resolve) {
-            this.chrome.runtime.requestUpdateCheck(function (result) {
+        return new Promise((resolve) => {
+            this.chrome.runtime.requestUpdateCheck((result) => {
                 resolve(parseFloat(result?.update_available?.version) || false);
             });
         });

@@ -97,7 +97,7 @@ class SummaryView1 extends PureComponent {
                         <td rowSpan={4} className="brdr-btm-dbl">Not completed</td>
                         <td className="data-left">Story points</td>
                         {sprintDetails.map((sprint, i) => <td key={i} exportvalue={sprint.incompletedSP} exporttype="int">
-                            {sprint.incompletedSPOld && <span>{sprint.incompletedSPOld} <i className="fa fa-arrow-right" />}</span>}
+                            {sprint.incompletedSPOld && <span>{sprint.incompletedSPOld} <i className="fa fa-arrow-right" /></span>}
                             {sprint.incompletedSP}</td>)}
                     </tr>
                     <tr>
