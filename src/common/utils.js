@@ -82,18 +82,7 @@ export function parseTimespent(value) {
     const daysPerWeek = 5;
 
     if (!isNaN(value)) {
-        if (value.indexOf(".")) {
-            const parts = value.split(".");
-            hours = parseInt(parts[0]) || 0;
-            if (parts[1]?.length === 1) {
-                parts[1] += '0';
-            }
-            minutes = parseInt(parts[1]) || 0;
-            minutes = minutes * 60 / 100;
-        }
-        else {
-            minutes = parseInt(value) || 0;
-        }
+        minutes = parseInt(parseFloat(value) * 60);
     }
     else if (hourColanParser.test(value)) {
         const parts = value.split(":");
