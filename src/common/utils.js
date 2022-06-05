@@ -66,7 +66,7 @@ export function exportCsv(content, fileName, mimeType) {
     }
 }
 
-const hourColanParser = /^(\d*?):(\d*)$/;
+const hourColanParser = /^\d{1,3}:([0-5]\d?|60?)$/;
 const displayFormatParser = /^( *(?<w>\d{1,})w)?( *(?<d>\d{1,})d)?( *(?<h>\d{1,})h)?( *(?<m>\d{1,})m)?$/;
 
 export function parseTimespent(value) {
@@ -82,7 +82,7 @@ export function parseTimespent(value) {
     const daysPerWeek = 5;
 
     if (!isNaN(value)) {
-        minutes = parseInt(parseFloat(value) * 60);
+        minutes = Math.round(parseFloat(value) * 60);
     }
     else if (hourColanParser.test(value)) {
         const parts = value.split(":");
