@@ -201,8 +201,9 @@ class ImportWorklog extends BaseImport {
                     return this.uploadWorklog(wlList[0]);
                 }
                 else {
-                    return wlList.reduce((promise, wl) => {
-                        return promise.finally(() => this.uploadWorklog(wl));
+                    return wlList.reduce(async (promise, wl) => {
+                        await promise;
+                        return this.uploadWorklog(wl);
                     }, Promise.resolve());
                 }
             });
@@ -215,14 +216,15 @@ class ImportWorklog extends BaseImport {
         const { ticketNo, startDate, timespent, comment } = log;
 
         log.status = "Uploading...";
+        this.setState(({ worklogData }) => ({ worklogData: [...worklogData] }));
 
-        this.$worklog.upload(ticketNo, startDate, timespent * 1000, comment).then((wlId) => {
+        const result = this.$worklog.upload(ticketNo, startDate, timespent * 1000, comment).then((wlId) => {
             log.disabled = true;
             log.selected = false;
             log.status = "Uploaded";
             log.worklogId = wlId.id;
 
-            this.setState(({ worklogData }) => { return { worklogData: [...worklogData] }; });
+            this.setState(({ worklogData }) => ({ worklogData: [...worklogData] }));
         }, ({ message, error: { errors, errorMessages } = {} }) => {
             log.disabled = true;
             log.selected = false;
@@ -254,10 +256,11 @@ class ImportWorklog extends BaseImport {
                 }, "");
             }
 
-            this.setState(({ worklogData }) => { return { worklogData: [...worklogData] }; });
+            this.setState(({ worklogData }) => ({ worklogData: [...worklogData] }));
+            return Promise.resolve();
         });
 
-        this.setState(({ worklogData }) => { return { worklogData: [...worklogData] }; });
+        return result;
     }
 
     formatTimespent(value) {
