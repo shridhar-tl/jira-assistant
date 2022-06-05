@@ -20,7 +20,7 @@ const ReportBuilderComponent = React.lazy(() => import('./views/reports/report-b
 
 const GeneralSettingsComponent = React.lazy(() => import('./views/settings/general/GeneralSettings'));
 
-const UserGroupsComponent = React.lazy(() => import('./components/UserGroup'));
+const UserGroupsComponent = React.lazy(() => import('./components/user-group/UserGroup'));
 
 const FaqViewComponent = React.lazy(() => import('./views/faq-view/FaqView'));
 const ContributeComponent = React.lazy(() => import('./views/contribute/Contribute'));

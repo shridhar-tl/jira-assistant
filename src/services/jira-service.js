@@ -307,6 +307,20 @@ export default class JiraService {
         return result;
     }
 
+    async searchGroups(text, maxResult = 10) {
+        const result = await this.$ajax.get(ApiUrls.searchGroup, text, maxResult);
+        return result?.groups;
+    }
+
+    async getGroupMembers(groupId, maxResult = 50) {
+        const users = this.$jaCache.session.get(`JiraGroup_${groupId}_Users`);
+        if (users) {
+            return new Promise(resolve => resolve(users));
+        }
+        const result = await this.$ajax.get(ApiUrls.getGroupMembers, groupId, maxResult);
+        return result?.values;
+    }
+
     fillWorklogs(issues, callback) {
         issues = issues.filter((iss) => !(iss.fields || {}).worklog || (((iss.fields || {}).worklog || {}).worklogs || []).length < iss.fields.worklog.total);
         let pendCount = issues.length;

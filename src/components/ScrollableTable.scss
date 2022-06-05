@@ -3,26 +3,48 @@ div.scroll-table-container {
     height: 100%;
     overflow: auto;
 
-    &.data-center > table.scroll-table {
+    &.data-center>table.scroll-table {
         text-align: center;
 
-        td { text-align: center; }
+        td {
+            text-align: center;
+        }
     }
 
     table.scroll-table {
         tr {
-            &.data-left td { text-align: left; } 
-            &.data-center td { text-align: center; } 
-            &.data-right td { text-align: right; } 
+            &.data-left td {
+                text-align: left;
+            }
 
-            &.strong td { font-weight: bold; }
+            &.data-center td {
+                text-align: center;
+            }
+
+            &.data-right td {
+                text-align: right;
+            }
+
+            &.strong td {
+                font-weight: bold;
+            }
 
             td {
-            &.data-left { text-align: left; } 
-            &.data-center { text-align: center; } 
-            &.data-right { text-align: right; }
+                &.data-left {
+                    text-align: left;
+                }
 
-            &.strong { font-weight: bold; }
+                &.data-center {
+                    text-align: center;
+                }
+
+                &.data-right {
+                    text-align: right;
+                }
+
+                &.strong {
+                    font-weight: bold;
+                }
             }
         }
     }
@@ -131,6 +153,7 @@ div.scroll-table-container {
 }
 
 tr.pad-min {
+
     th,
     td {
         padding: 4px 5px !important;
@@ -138,6 +161,7 @@ tr.pad-min {
 }
 
 tr.auto-wrap {
+
     th,
     td {
         white-space: initial !important;
@@ -163,6 +187,7 @@ td.col-holiday {
     background-color: #d3d3d3 !important;
 }
 
-tr.closed .strike {
+tr.closed .strike,
+.link.strike {
     text-decoration: line-through;
 }

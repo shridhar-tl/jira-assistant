@@ -1,6 +1,6 @@
 import React from 'react';
 import BaseDialog from './BaseDialog';
-import UserGroup from '../components/UserGroup';
+import UserGroup from '../components/user-group/UserGroup';
 
 class GroupEditor extends BaseDialog {
     constructor(props) {

@@ -1,5 +1,5 @@
 {
-  "manifest_version": 2,
+  "manifest_version": 3,
   "name": "Jira Assistant: Worklog, Sprint report, etc",
   "short_name": "Jira Assist",
   "version": "2.34",
@@ -9,7 +9,7 @@
     "32": "/assets/icon_32.png",
     "48": "/assets/icon_48.png"
   },
-  "browser_action": {
+  "action": {
     "default_icon": {
       "24": "/assets/icon_24.png",
       "32": "/assets/icon_32.png",
@@ -33,7 +33,9 @@
       "https://www.googleapis.com/auth/calendar.readonly"
     ]
   },
-  "content_security_policy": "script-src 'self' ; object-src 'self';",
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' ; object-src 'self';"
+  },
   "offline_enabled": true,
   "permissions": [
     "storage"
@@ -41,7 +43,9 @@
   "optional_permissions": [
     "unlimitedStorage",
     "identity",
-    "tabs",
+    "tabs"
+  ],
+  "host_permissions": [
     "http://*/",
     "https://*/"
   ],

@@ -17,6 +17,8 @@ export const ApiUrls = {
     individualWorklog: "~/rest/api/2/issue/{0}/worklog/{1}",
     searchUser: "~/rest/api/2/user/search?maxResults={1}&startAt={2}&query={0}",
     searchUser_Alt: "~/rest/api/2/user/search?maxResults={1}&startAt={2}&username={0}",
+    searchGroup: "~/rest/api/2/groups/picker?maxResults={1}&query={0}",
+    getGroupMembers: "~/rest/api/2/group/member?maxResults={1}&includeInactiveUsers=true&groupId={0}",
     getCustomFields: "~/rest/api/2/field",
     getJQLAutocomplete: "~/rest/api/2/jql/autocompletedata",
     getJQLSuggestions: "~/rest/api/2/jql/autocompletedata/suggestions",
