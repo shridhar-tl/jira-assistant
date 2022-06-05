@@ -71,10 +71,19 @@ class ReportViewer extends BaseGadget {
     }
 
     refreshData = () => this.loadData(this.props.query || this.state.query);
+
     loadData = async (query) => {
         this.setState({ isLoading: true, hasError: false });
         try {
-            this.setState(await loadReportData(query));
+            this.setState(await loadReportData(query, {
+                formatDate: this.$userutils.formatDate,
+                formatTime: this.$userutils.formatTime,
+                formatDateTime: this.$userutils.formatDateTime,
+                formatSecs: this.$utils.formatSecs,
+                formatMS: this.$utils.formatTs,
+                showAsLink: (ticket) => <a href={this.$userutils.getTicketUrl(ticket)} // ToDo: Need to fix this
+                    target="_blank" rel="noopener noreferrer">{ticket}</a>
+            }));
         } catch (err) {
             this.setState({ isLoading: false, hasError: true });
         }

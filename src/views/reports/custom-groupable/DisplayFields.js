@@ -68,6 +68,13 @@ class DisplayFields extends PureComponent {
             });
     };
 
+    toggleDisplay = (index, hide) => {
+        let { fields } = this.props;
+        fields = [...fields];
+        fields[index] = { ...fields[index], hide };
+        this.props.onChange(fields);
+    };
+
     getControls = (f, i, drag, hndl) => {
         return (<DisplayField key={i}
             dragHandle={drag.dragHandle}
@@ -76,6 +83,7 @@ class DisplayFields extends PureComponent {
             onRemove={this.removeField}
             editExpression={this.editExpression}
             updateHeader={this.headerChanged}
+            toggleDisplay={this.toggleDisplay}
         />);
     };
 
@@ -88,8 +96,9 @@ class DisplayFields extends PureComponent {
                     <tr>
                         <th>#</th>
                         <th>Jira Field</th>
-                        <th>Header Text</th>
                         <th>Type</th>
+                        <th>Hide</th>
+                        <th>Header Text</th>
                         <th>Use Expr.</th>
                         <th>Remove</th>
                     </tr>
@@ -106,7 +115,7 @@ class DisplayFields extends PureComponent {
                     <tr>
                         <td className="data-center">{fields.length + 1}</td>
                         <td><CustomFieldSelector onChange={this.fieldAdded} /></td>
-                        <td colSpan="4">Note: Select the column from the list to add it as output</td>
+                        <td colSpan="5">Note: Select the column from the list to add it as output</td>
                     </tr>
                 </tfoot>
             </ScrollableTable>
@@ -126,6 +135,7 @@ class DisplayField extends PureComponent {
 
     remove = () => this.props.onRemove(this.props.index);
     editExpression = () => this.props.editExpression(this.props.index);
+    toggleDisplay = (hide) => this.props.toggleDisplay(this.props.index, hide);
     updateHeader = () => {
         let { header } = this.state;
         header = header?.trim() || undefined;
@@ -146,18 +156,22 @@ class DisplayField extends PureComponent {
             <tr>
                 <td className="data-center" ref={dragHandle}>{index + 1}</td>
                 <td>{name} ({fieldProp})</td>
-                <td><TextBox
+                {(knownObj || type) && <td>{type} {!!isArray && "(multiple)"}</td>}
+                <td className="data-center">
+                    <Checkbox checked={field.hide} onChange={this.toggleDisplay} title="Hide this field in display and use this property only from expression of other fields" />
+                </td>
+                <td>{field.hide ? "(not applicable)" : <TextBox
                     value={header}
                     placeholder={name}
                     onChange={this.headerChanged}
-                    onBlur={this.updateHeader} /></td>
-                {(knownObj || type) && <td>{type} {!!isArray && "(multiple)"}</td>}
+                    onBlur={this.updateHeader} />}</td>
                 {!knownObj && !type && <td>{JSON.stringify(field)}</td>}
-                <td className="data-center">
+                {!field.hide && <td className="data-center">
                     {expr ?
                         <span className="fa fa-edit" onClick={this.editExpression} title="Click to edit the expression" />
                         : <Checkbox checked={false} onChange={this.editExpression} title="Click to add an expression" />}
-                </td>
+                </td>}
+                {!!field.hide && <td></td>}
                 <td className="data-center"><span className="fa fa-times" onClick={this.remove} /></td>
             </tr>
         );

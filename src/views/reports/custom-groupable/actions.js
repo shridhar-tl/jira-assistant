@@ -7,14 +7,14 @@ import {
 import { resolve } from "../../../services/injector-service";
 import { execAst, parseCustExpr } from "../../../common/jsExec";
 
-export async function loadReportData(query) {
+export async function loadReportData(query, utils) {
     if (!query) { return {}; }
 
     const $jira = resolve('JiraService');
     const dataFields = query.fields.map((f) => f.field);
     const data = await $jira.searchTickets(query.jql, dataFields);
-    const ref = {};
-    const columnList = query.fields.map(processDisplayField.bind(ref));
+    const ref = { utils };
+    const columnList = query.fields.filter(f => !f.hide).map(processDisplayField.bind(ref));
 
     ref.fieldWithExpr = columnList.filter(f => !!f.ast);
 
@@ -201,16 +201,36 @@ function processExpressions(fields) {
                 {
                     'this': fields[f.exprField],
                     Fields: fields,
+                    Utils: this.utils,
                     parseInt,
                     parseFloat,
+                    isNaN,
                     Math,
-                    Number
+                    Number,
+                    Date
                 });
-            fields[f.id] = val;
+
+            fields[f.id] = postProcessExprOutput(val);
         } catch (err) {
             fields[f.id] = `Error: ${err?.message || err}`;
         }
     }
+}
+
+function postProcessExprOutput(val) {
+    if (val instanceof Date) {
+        return this.utils.formatDateTime(val);
+    } else if (typeof val === 'object') {
+        const keys = Object.keys(val);
+        if (keys.contains('type') && keys.contains('key') && keys.contains('props')) {
+            return val;
+        }
+        else {
+            return JSON.stringify(val);
+        }
+    }
+
+    return val;
 }
 
 // eslint-disable-next-line complexity

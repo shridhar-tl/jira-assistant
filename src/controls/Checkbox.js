@@ -22,7 +22,8 @@ class InputCheckbox extends PureComponent {
 
         return (
             <span className={`span-cb ${className}`}>
-                <Checkbox inputId={inputId} onChange={onChange} checked={checked} disabled={disabled} onClick={onClick} tooltip={title} />
+                <Checkbox inputId={inputId} onChange={onChange} checked={checked} disabled={disabled}
+                    onClick={onClick} tooltip={title} tooltipOptions={{ appendTo: document.body, position: 'top' }} />
                 {label && <label htmlFor={inputId} className="chk-label">{label}</label>}
             </span>
         );

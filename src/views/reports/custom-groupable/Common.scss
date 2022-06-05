@@ -3,16 +3,16 @@
         height: auto;
 
         .p-panel-content {
-            height:auto;
+            height: auto;
         }
     }
 }
 
 .query-editor {
     .p-tabview-panel {
-        height: calc(100vh - 190px);
+        height: calc(100vh - 170px);
     }
-    
+
     .jql-editor .jql-query {
         height: calc(100vh - 194px);
     }
@@ -23,14 +23,22 @@
         table.scroll-table {
             thead {
                 tr {
-                    th:nth-child(1) { cursor: pointer; width: 70px; }
-                    th:nth-child(3) { 
+                    th:nth-child(1) {
+                        cursor: pointer;
+                        width: 70px;
+                    }
+
+                    th:nth-child(5) {
                         width: 200px;
 
-                        input { width: 100%; }
+                        input {
+                            width: 100%;
+                        }
                     }
-                    th:nth-child(5) { width: 50px; }
-                    th:nth-child(6) {
+
+                    th:nth-child(4),
+                    th:nth-child(6),
+                    th:nth-child(7) {
                         width: 50px;
                     }
                 }
@@ -39,7 +47,9 @@
             tbody {
                 tr {
                     td:nth-child(3) {
-                        input { width: 100%; }
+                        input {
+                            width: 100%;
+                        }
                     }
                 }
             }

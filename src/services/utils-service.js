@@ -219,7 +219,7 @@ export default class UtilsService {
         }
         return value + (tail || '...');
     }
-    formatSecs(d, showZeroSecs, simple, days) {
+    formatSecs = (d, showZeroSecs, simple, days) => {
         if (d === 0) {
             return showZeroSecs ? "0s" : "";
         }
@@ -253,10 +253,12 @@ export default class UtilsService {
         else {
             return prefix + ((day > 0 ? `${day}d ` : "") + (h > 0 ? `${h}h ` : "") + (m > 0 ? `${m}m ` : "") + (s > 0 ? `${s}s` : "")).trim();
         }
-    }
-    formatTs(d, simple) {
+    };
+
+    formatTs = (d, simple) => {
         return this.formatSecs(this.getTotalSecs(d), false, simple);
-    }
+    };
+
     formatUser(obj, fields) {
         if (!obj) {
             return null;
