@@ -195,7 +195,7 @@ export class BaseGadget extends PureComponent {
                     {!this.hideMenu && <Button icon="fa fa-wrench" onClick={e => showContextMenu(e, this.getContextMenu())} />}
                 </div>
             </div>
-            <div class="clearfix"></div>
+            <div className="clearfix"></div>
         </>;
     };
 

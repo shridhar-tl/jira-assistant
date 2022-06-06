@@ -32,7 +32,9 @@ class WorklogSettings extends BaseDialog {
     };
 
     render() {
-        const { setValue, state: { pageSettings: { logFormat, breakupMode, timeZone, jql, hideEstimate, showCostReport } } } = this;
+        const { setValue, state: { pageSettings: { logFormat, breakupMode, timeZone, jql, hideEstimate, showCostReport,
+            showProject, showParentSummary, showIssueType, showEpic, showAssignee
+        } } } = this;
 
         return super.renderBase(
             <TabView styleclass="query-tab">
@@ -94,29 +96,38 @@ class WorklogSettings extends BaseDialog {
                             </div>
                         </div>
                     </div>
-                    <div className="form-group row">
-                        <div className="form-check">
-                            <label className="form-check-label">
-                                <Checkbox checked={showCostReport} onChange={(e) => setValue("showCostReport", e)} label="Show cost report" />
-                                {this.showCostReport && !showCostReport && <span className="pad-l-15"> ( <i className="fa fa-exclamation-triangle" /> Change will take effect only after report is refreshed )</span>}
-                            </label>
+                    <div className="row">
+                        <div className="col-4">
+                            <Checkbox checked={showCostReport} onChange={(e) => setValue("showCostReport", e)} label="Show cost report" />
+                            {!!this.showCostReport !== !!showCostReport && <span className="pad-l-15"> ( <i className="fa fa-exclamation-triangle" title="Change will take effect only after report is refreshed" /> )</span>}
                         </div>
-                    </div>
-                    <div className="form-group row">
-                        <div className="form-check">
-                            <label className="form-check-label">
-                                <Checkbox checked={hideEstimate} onChange={(e) => setValue("hideEstimate", e)} label="Hide estimate related fields" />
-                                {this.hideEstimate && !hideEstimate && <span className="pad-l-15"> ( <i className="fa fa-exclamation-triangle" /> Change will take effect only after report is refreshed )</span>}
-                            </label>
+                        <div className="col-4">
+                            <Checkbox checked={showProject} onChange={(e) => setValue("showProject", e)} label="Show Project details" />
+                        </div>
+                        <div className="col-4">
+                            <Checkbox checked={showParentSummary} onChange={(e) => setValue("showParentSummary", e)} label="Show Parent ticket" />
+                        </div>
+                        <div className="col-4">
+                            <Checkbox checked={showIssueType} onChange={(e) => setValue("showIssueType", e)} label="Show Issue Type" />
+                        </div>
+                        <div className="col-4">
+                            <Checkbox checked={showEpic} onChange={(e) => setValue("showEpic", e)} label="Show Epic" />
+                        </div>
+                        <div className="col-4">
+                            <Checkbox checked={showAssignee} onChange={(e) => setValue("showAssignee", e)} label="Show Assignee" />
+                        </div>
+                        <div className="col-12">
+                            <Checkbox checked={hideEstimate} onChange={(e) => setValue("hideEstimate", e)} label="Hide estimate related fields" />
+                            {!!this.hideEstimate !== !!hideEstimate && <span className="pad-l-15"> ( <i className="fa fa-exclamation-triangle" title="Change will take effect only after report is refreshed" /> )</span>}
                         </div>
                     </div>
                 </TabPanel>
                 <TabPanel header="JQL Filter" leftIcon="fa fa-filter">
-                    <TextBox multiline={true} value={jql} onChange={(val) => setValue("jql", val)} style={{ width: '100%', height: 323 }}
+                    <TextBox multiline={true} value={jql} onChange={(val) => setValue("jql", val)} style={{ width: '100%', height: 411 }}
                         placeholder="Provide the additional JQL filters to be applied while fetching data." defaultValue={""} />
                     <span><strong>Note:</strong> Date range and user list filter will be added automatically.</span>
                 </TabPanel>
-            </TabView>
+            </TabView >
         );
     }
 }

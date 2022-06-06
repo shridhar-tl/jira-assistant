@@ -172,7 +172,7 @@ export default class UtilsService {
         const units = ['bytes', 'kB', 'MB', 'GB', 'TB', 'PB'], number = Math.floor(Math.log(bytes) / Math.log(1024));
         return `${(bytes / Math.pow(1024, Math.floor(number))).toFixed(precision)} ${units[number]}`;
     }
-    convertSecs(d, opts) {
+    convertSecs = (d, opts) => {
         if (!opts) {
             opts = {};
         }
@@ -189,7 +189,7 @@ export default class UtilsService {
         else {
             return parseFloat(((d / 3600).toFixed(4)));
         }
-    }
+    };
     count(arr, prop) {
         if (!arr) {
             return null;

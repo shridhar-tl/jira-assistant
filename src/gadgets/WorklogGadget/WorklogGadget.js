@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 import React from 'react';
 import BaseGadget from '../BaseGadget';
 import { inject } from '../../services';
@@ -20,7 +21,6 @@ class WorklogGadget extends BaseGadget {
         super(props, 'Worklog Report', 'fa-list-alt');
         inject(this, "SessionService", "CacheService", "UtilsService", "UserUtilsService", "JiraService", "MessageService", "ConfigService", "UserGroupService", "AnalyticsService");
 
-        //$facade.getUserGroups().then(grps => this.state.groups = grps);
         const pageSettings = this.$session.pageSettings.reports_UserDayWise;
         if (!pageSettings.timeZone) {
             pageSettings.timeZone = '1';
@@ -33,7 +33,6 @@ class WorklogGadget extends BaseGadget {
 
         this.maxSecsPerDay = (maxHours || 8) * 60 * 60;
         this.epicNameField = (epicNameField || {}).id;
-        //this.onResize({ target: window });
     }
 
     UNSAFE_componentWillMount() {
@@ -100,7 +99,7 @@ class WorklogGadget extends BaseGadget {
             additionalJQL = ` AND (${additionalJQL})`;
         }
         const jql = `worklogAuthor in ("${userList.join('","')}") and worklogDate >= '${mfromDate.clone().add(-1, 'days').format("YYYY-MM-DD")}' and worklogDate < '${mtoDate.clone().add(1, 'days').format("YYYY-MM-DD")}'${additionalJQL}`;
-        const fieldsToFetch = ["summary", "worklog", "issuetype", "parent", "project", "status"];
+        const fieldsToFetch = ["summary", "worklog", "issuetype", "parent", "project", "status", "assignee"];
         if (!hideEstimate) {
             fieldsToFetch.push("timeoriginalestimate");
             fieldsToFetch.push("timeestimate");
@@ -146,8 +145,10 @@ class WorklogGadget extends BaseGadget {
                                     epicDisplay: null,
                                     epicUrl: null,
                                     url: this.$userutils.getTicketUrl(issue.key),
-                                    issueType: (fields.issuetype || "").name,
-                                    parent: (fields.parent || "").key,
+                                    issueType: fields.issuetype?.name,
+                                    parent: fields.parent?.key,
+                                    parentSummary: fields.parent?.fields?.summary,
+                                    assignee: fields.assignee?.displayName,
                                     summary: fields.summary,
                                     originalestimate,
                                     remainingestimate,
@@ -156,7 +157,7 @@ class WorklogGadget extends BaseGadget {
                                     logTime: startedTime,
                                     comment: worklog.comment,
                                     projectName: fields.project.name,
-                                    statusName: (fields.status || {}).name,
+                                    statusName: fields.status?.name,
                                     projectKey: fields.project.key,
                                     totalHours: worklog.timeSpentSeconds
                                 };
@@ -174,7 +175,7 @@ class WorklogGadget extends BaseGadget {
                 }
                 for (let j = 0; j < arr.length; j++) {
                     const userData = arr[j];
-                    userData.totalHours = userData.logData.sum((t) => { return t.totalHours; });
+                    userData.totalHours = userData.logData.sum((t) => t.totalHours);
                 }
                 return arr;
             });
@@ -192,6 +193,7 @@ class WorklogGadget extends BaseGadget {
                             username: getUserName(usr),
                             userDisplay: userName,
                             parent: log.parent,
+                            parentSummary: log.parentSummary,
                             parentUrl: log.parent ? this.$userutils.getTicketUrl(log.parent) : null,
                             epicDisplay: log.epicDisplay,
                             epicUrl: log.epicUrl,
@@ -214,98 +216,6 @@ class WorklogGadget extends BaseGadget {
             });
         });
     }
-
-    /*
-    processReportData(data) {
-        const param = { fromDate: this.state.dateRange.fromDate, toDate: this.state.dateRange.toDate, dateArr: [] };
-        data.forEach((d) => {
-            const usr = this.userList.first((u) => getUserName(u, true) === d.userName.toLowerCase());
-            d.userName = getUserName(usr);
-            d.displayName = usr.displayName;
-            d.userEmail = usr.emailAddress;
-            d.groupName = usr.groupName;
-            delete usr.groupName;
-            d.jiraUser = usr;
-        });
-        const dateArr = this.getDateArray(param.fromDate, param.toDate);
-        param.dateArr = dateArr;
-        const months = dateArr.distinct((d) => { return d.format("MMM, yyyy"); })
-            .map((m) => {
-                return {
-                    monthName: m,
-                    dates: dateArr.filter((d) => { return d.format("MMM, yyyy") === m; })
-                };
-            });
-        data.forEach((u) => {
-            u.profileImgUrl = this.$utils.getProfileImgUrl(u);
-            u.ticketWise = u.logData.distinctObj((t) => {
-                return {
-                    ticketNo: t.ticketNo,
-                    url: this.$userutils.getTicketUrl(t.ticketNo),
-                    summary: t.summary,
-                    parent: t.parent,
-                    parentUrl: this.$userutils.getTicketUrl(t.parent),
-                };
-            });
-            u.ticketWise.forEach((t) => {
-                const tickets = u.logData.filter((l) => {
-                    return l.ticketNo === t.ticketNo;
-                });
-                t.totalHours = tickets.sum((l) => { return l.totalHours; });
-                const dates = tickets.distinct((l) => { return this.$utils.convertDate(l.logTime).format("yyyyMMdd"); });
-                dates.forEach((d) => {
-                    t[d] = tickets.filter((l) => {
-                        return this.$utils.convertDate(l.logTime).format("yyyyMMdd") === d;
-                    }).map((l) => {
-                        return {
-                            logTime: l.logTime,
-                            totalHours: l.totalHours,
-                            comment: l.comment
-                        };
-                    });
-                });
-            });
-        });
-        this.bindReportData(dateArr, data, months);
-    }
-
-    bindReportData(dateArr, data, months) {
-        if (!dateArr && !data) {
-            const obj = this.$cache.session.get("lastViewed_DayWiseRpt");
-            if (obj) {
-                dateArr = obj.dateRanges;
-                data = obj.logs;
-                months = obj.months;
-            }
-        }
-        else {
-            this.$cache.session.set("lastViewed_DayWiseRpt", { dateRanges: dateArr, logs: data, months: months });
-        }
-        this.dates = dateArr;
-        this.userDayWise = data;
-        this.months = months;
-    }
-
-    filterUserData(arr, date) {
-        const tmp = date.format('yyyyMMdd');
-        return arr.filter((d) => { return this.$utils.convertDate(d.logTime).format('yyyyMMdd') === tmp; }).sum(d => d.totalHours);
-    }
-
-    getGroupTotal(groupName, date) {
-        let groupdUsers = this.userDayWise;
-        if (groupName) {
-            groupdUsers = groupdUsers.filter(g => g.groupName === groupName);
-        }
-        if (date) {
-            const tmp = date.format('yyyyMMdd');
-            return groupdUsers.union(g => g.logData)
-                .filter((d) => { return this.$utils.convertDate(d.logTime).format('yyyyMMdd') === tmp; }).sum(d => d.totalHours);
-        }
-        else {
-            return groupdUsers.sum(d => d.totalHours);
-        }
-    }
-    */
 
     getDateArray(startDate, endDate) {
         const interval = 1;
@@ -401,13 +311,14 @@ class WorklogGadget extends BaseGadget {
         const flatDataUniqueKey = `${pageSettings._uniqueId}_${flatData._uniqueId}`;
 
         const groupedWorklogTab = (<TabPanel header="Grouped - [User daywise]" contentClassName="no-padding">
-            {rawData && <GroupedDataGrid rawData={rawData} groups={groups} dates={dates} months={months} pageSettings={pageSettings}
-                convertSecs={convertSecs} formatTime={formatTime} breakupMode={breakupMode}
+            {rawData && <GroupedDataGrid rawData={rawData} groups={groups} dates={dates} months={months}
+                pageSettings={pageSettings} convertSecs={convertSecs} formatTime={formatTime} breakupMode={breakupMode}
                 getTicketUrl={this.$userutils.getTicketUrl} maxSecsPerDay={this.maxSecsPerDay} addWorklog={this.addWorklog} />}
         </TabPanel>);
 
         const summaryTab = (<TabPanel header="Summary - [User project wise]">
-            {flatData && <UserProjectWiseSummary key={flatDataUniqueKey} groups={groups} flatData={flatData} formatDateTime={formatDateTime} convertSecs={convertSecs} />}
+            {flatData && <UserProjectWiseSummary key={flatDataUniqueKey} groups={groups}
+                flatData={flatData} formatDateTime={formatDateTime} convertSecs={convertSecs} />}
         </TabPanel>);
 
         const flatLogsTab = (<TabPanel header="Flat (Groupable)">
@@ -431,13 +342,14 @@ class WorklogGadget extends BaseGadget {
                 {rawData && showCostReport && <TabView className="no-padding" renderActiveOnly={false}>
                     {groupedWorklogTab}
                     {<TabPanel header="Cost Report" contentClassName="no-padding">
-                        {rawData && <GroupedDataGrid rawData={rawData} groups={groups} dates={dates} months={months} pageSettings={pageSettings}
-                            costView={true} breakupMode={breakupMode}
+                        {rawData && <GroupedDataGrid rawData={rawData} groups={groups} dates={dates} months={months}
+                            pageSettings={pageSettings} costView={true} convertSecs={convertSecs} formatTime={formatTime} breakupMode={breakupMode}
                             getTicketUrl={this.$userutils.getTicketUrl} maxSecsPerDay={this.maxSecsPerDay} />}
                     </TabPanel>}
                     {summaryTab}
                     <TabPanel header="Cost Summary">
-                        {flatData && <UserProjectWiseSummary key={flatDataUniqueKey} groups={groups} flatData={flatData} formatDateTime={formatDateTime} convertSecs={convertSecs} costView={true} />}
+                        {flatData && <UserProjectWiseSummary key={flatDataUniqueKey} groups={groups} flatData={flatData}
+                            formatDateTime={formatDateTime} convertSecs={convertSecs} costView={true} />}
                     </TabPanel>
                     {flatLogsTab}
                 </TabView>}

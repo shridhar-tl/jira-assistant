@@ -34,7 +34,7 @@ export const navigation = [
         name: 'Activities'
     },
     {
-        name: 'Calendar / Worklogs',
+        name: 'Worklog Calendar',
         id: 'CAL',
         url: '/calendar',
         icon: 'fa fa-calendar'

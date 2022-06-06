@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 import React, { PureComponent } from 'react';
 import moment from 'moment';
 import { ScrollableTable, THead, TBody } from '../../components/ScrollableTable';
@@ -106,10 +107,15 @@ class GroupedDataGrid extends PureComponent {
                         const items = tGrp.values;
                         const firstTkt = items.first();
                         const logs = {};
+
                         const ticket = {
                             ticketNo: tGrp.key,
                             parent: firstTkt.parent,
                             parentUrl: firstTkt.parent ? getTicketUrl(firstTkt.parent) : null,
+                            parentSummary: firstTkt.parentSummary,
+                            projectKey: firstTkt.projectKey,
+                            projectName: firstTkt.projectName,
+                            assignee: firstTkt.assignee,
                             epicDisplay: firstTkt.epicDisplay,
                             epicUrl: firstTkt.epicUrl,
                             issueType: firstTkt.issueType,
@@ -230,33 +236,48 @@ class GroupedDataGrid extends PureComponent {
 
         const timeExportFormat = pageSettings?.logFormat === "2" ? "float" : undefined;
 
+        const { showProject, showParentSummary, showIssueType, showEpic, showAssignee } = pageSettings || {};
+        const addlColCount = 1
+            + (showProject ? 1 : 0)
+            + (showParentSummary ? 1 : 0)
+            + (showIssueType ? 1 : 0)
+            + (showEpic ? 1 : 0)
+            + (showAssignee ? 1 : 0);
+
+
         return (
             <ScrollableTable exportSheetName="Grouped - [User daywise]">
                 <THead>
                     <tr className="data-center pad-min auto-wrap">
-                        <th style={{ minWidth: 380 }} rowSpan={2}>User Details</th>
+                        <th style={{ minWidth: 260 + (addlColCount * 120) }} rowSpan={addlColCount > 1 ? 1 : 2} colSpan={addlColCount}>User Details</th>
                         {months.map((day, i) => <th key={i} style={{ minWidth: 35 }} colSpan={day.days}>{day.monthName}</th>)}
                         {!costView && <th style={{ minWidth: 50 }} rowSpan={2}>Total Hours</th>}
                         {costView && <th style={{ minWidth: 50 }} rowSpan={2}>Total Cost</th>}
                     </tr>
                     <tr className="pad-min auto-wrap">
+                        {addlColCount > 1 && <th style={{ minWidth: 380 }} >Issue details</th>}
+                        {!!showProject && <th>Project</th>}
+                        {!!showParentSummary && <th>Parent Summary</th>}
+                        {!!showIssueType && <th>Issuetype</th>}
+                        {!!showEpic && <th>Epic</th>}
+                        {!!showAssignee && <th>Assignee</th>}
                         {dates.map((day, i) => <th key={i} style={{ minWidth: 35 }}>{day.display}</th>)}
                     </tr>
                 </THead>
                 <TBody>
                     {
-                        groupedData.map((grp, i) => <GroupRow key={i} group={grp} dates={dates} addWorklog={addWorklog} costView={costView}
+                        groupedData.map((grp, i) => <GroupRow key={i} colSpan={addlColCount} group={grp} dates={dates} addWorklog={addWorklog} costView={costView}
                             convertSecs={convertSecs} timeExportFormat={timeExportFormat} formatTime={formatTime} breakupMode={breakupMode} pageSettings={pageSettings} />)
                     }
 
                     {!costView && <tr className="grouped-row right auto-wrap">
-                        <td>Grand Total <i className="fa fa-arrow-right" /></td>
+                        <td colSpan={addlColCount}>Grand Total <i className="fa fa-arrow-right" /></td>
                         {dates.map((day, i) => <td key={i} exportType={timeExportFormat}>{convertSecs(groupedData.total[day.prop])}</td>)}
                         <td exportType={timeExportFormat}>{convertSecs(groupedData.grandTotal)}</td>
                     </tr>}
 
                     {costView && <tr className="grouped-row right auto-wrap">
-                        <td>Grand Total <i className="fa fa-arrow-right" /></td>
+                        <td colSpan={addlColCount}>Grand Total <i className="fa fa-arrow-right" /></td>
                         {dates.map((day, i) => <td key={i}>{groupedData.totalCost[day.prop]}</td>)}
                         <td>{groupedData.grandTotalCost}</td>
                     </tr>}
@@ -275,8 +296,10 @@ class GroupRow extends PureComponent {
 
     render() {
         const {
-            props: { group: grp, dates, convertSecs, formatTime, breakupMode, pageSettings, addWorklog, timeExportFormat, costView },
-            state: { hidden }
+            props: {
+                group: grp, dates, convertSecs, formatTime, breakupMode,
+                pageSettings, addWorklog, timeExportFormat, costView, colSpan
+            }, state: { hidden }
         } = this;
 
         return (
@@ -288,11 +311,11 @@ class GroupRow extends PureComponent {
                     </td>
                 </tr>}
 
-                {!hidden && grp.users.map((u, i) => <UserRow key={i} user={u} dates={dates} breakupMode={breakupMode} costView={costView} addWorklog={addWorklog} timeExportFormat={timeExportFormat}
+                {!hidden && grp.users.map((u, i) => <UserRow key={i} colSpan={colSpan} user={u} dates={dates} breakupMode={breakupMode} costView={costView} addWorklog={addWorklog} timeExportFormat={timeExportFormat}
                     convertSecs={convertSecs} formatTime={formatTime} pageSettings={pageSettings} />)}
 
                 <tr className="grouped-row right auto-wrap" onClick={hidden ? this.toggleDisplay : null}>
-                    <td>
+                    <td colSpan={colSpan}>
                         {hidden && <div>
                             <i className="pull-left drill-down fa fa-chevron-circle-right" title="Click to show user details" />
                             <span className="pull-left">{grp.name}</span><span className="pull-right">Total <i className="fa fa-arrow-right" /></span>
@@ -355,14 +378,16 @@ class UserRow extends PureComponent {
 
     render() {
         const {
-            props: { user: u, dates, convertSecs, breakupMode, pageSettings: { hideEstimate }, timeExportFormat, costView },
+            props: { user: u, dates, convertSecs, breakupMode,
+                pageSettings: { hideEstimate, showProject, showParentSummary, showIssueType, showEpic, showAssignee },
+                timeExportFormat, costView, colSpan },
             state: { expanded }
         } = this;
 
         return (
             <>
                 <tr className="pointer auto-wrap" onClick={this.toggleDisplay}>
-                    <td className="data-left">
+                    <td className="data-left" colSpan={colSpan}>
                         <div className="user-info" style={{ paddingLeft: 0 }}>
                             <i className={`pull-left drill-down fa ${expanded ? 'fa-chevron-circle-down' : 'fa-chevron-circle-right'}`}
                                 title="Click to toggle ticket details" />
@@ -392,13 +417,19 @@ class UserRow extends PureComponent {
                         return (
                             <tr key={i} className="auto-wrap">
                                 <td className="data-left">
-                                    {t.parent && <a href={t.parentUrl} className="link" target="_blank" rel="noopener noreferrer">{t.parent} - </a>}
+                                    {!showParentSummary && t.parent && <a href={t.parentUrl} className="link" target="_blank" rel="noopener noreferrer">{t.parent} - </a>}
                                     <a href={t.url} className="link" target="_blank" rel="noopener noreferrer">{t.ticketNo}</a> -
                                     <span>{t.summary}</span>
                                     <strong> ({t.statusName})</strong>
                                     {!hideEstimate && !!(oe || re) && <span className="estimate" title={estTitle}>
                                         (est: {oe || 0} / rem: {re || 0} / log: {logged} / var: {variance})</span>}
                                 </td>
+
+                                {!!showProject && <td>{t.projectKey} - {t.projectName}</td>}
+                                {!!showParentSummary && <td>{t.parent && <a href={t.parentUrl} className="link" target="_blank" rel="noopener noreferrer">{t.parent}</a>} - {t.parentSummary}</td>}
+                                {!!showIssueType && <td>{t.issueType}</td>}
+                                {!!showEpic && <td>{t.epicDisplay && <a href={t.epicUrl} className="link" target="_blank" rel="noopener noreferrer">{t.epicDisplay}</a>}</td>}
+                                {!!showAssignee && <td>{t.assignee}</td>}
 
                                 {!costView && dates.map((day, j) => <td key={j} className="day-wl-block" exportType={timeExportFormat}>
                                     {u.isCurrentUser && <span className="fa fa-clock-o add-wl" title="Click to add worklog" onClick={() => this.addWorklog(t.ticketNo, day)} />}
