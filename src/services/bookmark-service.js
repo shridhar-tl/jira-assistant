@@ -67,8 +67,11 @@ export default class BookmarkService {
     async getBookmarks() {
         const keys = await this.$settings.getGeneralSetting(this.$session.userId, 'favTicketList');
 
-        if (keys && keys.length > 0) {
+        return this.getBookmarkDetails(keys);
+    }
 
+    async getBookmarkDetails(keys) {
+        if (keys && keys.length > 0) {
             return this.$ticket.getTicketDetails(keys, true).then((tickets) => {
                 const result = tickets.map((i) => {
                     const keyIdx = keys.indexOf(i.key);

@@ -355,7 +355,7 @@ export class GroupableGrid extends PureComponent {
                 group-path={g.path} onClick={this.toggleGroupVisibility}>
                 <span className={`fa fa-caret-${g.hidden ? "right" : "down"}`} />
             </td>
-            <td className="group-name-td" colSpan={(groupBy.length - depth) + columns.length}>
+            <td className="group-name-td" colSpan={groupBy.length + columns.length}>
                 {Component ? <Component tag='span' count={g.rowSpan} value={g.keyObj || g.key} settings={curGroup.settings} /> : (g.key || '')}
             </td>
         </tr>);
