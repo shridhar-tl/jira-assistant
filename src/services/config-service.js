@@ -12,6 +12,8 @@ export default class ConfigService {
     saveSettings(pageName, newSettings) {
         if (newSettings === undefined) {
             newSettings = this.$session.pageSettings[pageName];
+        } else {
+            this.$session.pageSettings[pageName] = newSettings;
         }
 
         const name = `page_${pageName}`;
