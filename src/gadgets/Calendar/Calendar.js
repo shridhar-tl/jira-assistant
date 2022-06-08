@@ -307,8 +307,8 @@ class Calendar extends BaseGadget {
             this.setState({ isLoading: false });
 
             const data = arr[0];
-            const allDayEvents = data.filter((d) => { return d.entryType === 1; })
-                .groupBy((key) => { return moment(key.start).format("YYYY-MM-DD"); })
+            const allDayEvents = data.filter((d) => d.entryType === 1)
+                .groupBy((key) => moment(key.start).format("YYYY-MM-DD"))
                 .map((d) => this.getAllDayObj(d));
 
             this.latestData = data;
@@ -352,7 +352,7 @@ class Calendar extends BaseGadget {
 
     updateAllDayEvent(result) {
         const key = moment(result.start).format("YYYY-MM-DD");
-        const { events } = this;
+        const { events } = this.state;
         events.removeAll((e) => e.id === key && e.entryType === 3);
         const logs = events.filter((a) => { return a.entryType === 1 && moment(a.start).format("YYYY-MM-DD") === key; });
         if (logs && logs.length > 0) {
@@ -411,7 +411,7 @@ class Calendar extends BaseGadget {
             return;
         } // This will be triggered when closing the popup
         let resp = false;
-        const { events } = this;
+        const { events } = this.state;
 
         if (result.removed) {
             const removedId = result.removed + (result.deletedObj.worklogId ? `#${result.deletedObj.worklogId}` : "");
@@ -441,7 +441,6 @@ class Calendar extends BaseGadget {
     };
 
     setEventsData(events) {
-        this.events = [...events];
         this.setState({ isLoading: false, events: [...events], pendingWorklogCount: this.getPendingWorklogs(events).length });
     }
 
@@ -670,10 +669,19 @@ class Calendar extends BaseGadget {
 
     eventDrop(e) {
         const { event, revert, jsEvent } = e;
+        const eventSrcObj = event.extendedProps.sourceObject;
+        const isCopy = jsEvent.ctrlKey || jsEvent.altKey;
 
-        if (jsEvent.ctrlKey || jsEvent.altKey) {
+        if (!isCopy && eventSrcObj.isUploaded) {
+            const icon = e.el.querySelector('i.fa-ellipsis-v');
+            icon.classList.replace('fa-ellipsis-v', 'fa-refresh');
+            icon.classList.add('fa-spin');
             revert();
-            const eventFromArr = this.events.first(e => e.entryType === 1 && e.id === event.id);
+        }
+
+        if (isCopy) {
+            revert();
+            const eventFromArr = this.state.events.first(e => e.entryType === 1 && e.id === event.id);
             if (eventFromArr) {
                 const srcObj = eventFromArr.sourceObject;
                 eventFromArr.start = moment(new Date(srcObj.dateStarted)).toDate();
@@ -681,21 +689,22 @@ class Calendar extends BaseGadget {
                     .add(this.$worklog.getTimeSpent(srcObj), "minutes").toDate();
                 //.add(this.$utils.getTotalSecs(srcObj.overrideTimeSpent || srcObj.timeSpent), 'seconds').toDate();
             }
-            this.$worklog.copyWorklog(event.extendedProps.sourceObject, event.start)
+            this.$worklog.copyWorklog(eventSrcObj, event.start)
                 .then((result) => {
                     this.addEvent({ added: result });
-                    this.$analytics.trackEvent("Worklog quick copied", EventCategory.UserActions, event.extendedProps.sourceObject.isUploaded ? "Uploaded worklog" : "Pending worklog");
+                    this.$analytics.trackEvent("Worklog quick copied", EventCategory.UserActions, eventSrcObj.isUploaded ? "Uploaded worklog" : "Pending worklog");
                 });
         }
         else {
-            const oldDate = event.extendedProps.sourceObject.dateStarted;
-            this.$worklog.changeWorklogDate(event.extendedProps.sourceObject, event.start).then((entry) => {
-                this.$analytics.trackEvent("Worklog moved", EventCategory.UserActions, event.extendedProps.sourceObject.isUploaded ? "Uploaded worklog" : "Pending worklog");
+            const oldDate = eventSrcObj.dateStarted;
+            this.$worklog.changeWorklogDate(eventSrcObj, event.start).then((entry) => {
+                this.$analytics.trackEvent("Worklog moved", EventCategory.UserActions, eventSrcObj.isUploaded ? "Uploaded worklog" : "Pending worklog");
                 //this.updateAllDayEvent({ start: oldDate }); // This is to update the info of previous date
                 //event.extendedProps.sourceObject.dateStarted = event.start.toDate();
                 //var evnt = this.latestData.first((e) => { return e.id === event.id && e.entryType === 1; });
                 //evnt.start = event.start.toDate();
                 //evnt.end = event.end.toDate();
+
                 this.addEvent({ previousTime: oldDate, edited: entry });
                 //this.updateAllDayEvent(event);
             });
@@ -756,7 +765,7 @@ class Calendar extends BaseGadget {
         }
         else if (entryType === 2) {
             const m = srcObj;
-            const hasWorklog = this.latestData.some((e) => { return e.parentId === event.id && e.entryType === 1; });
+            const hasWorklog = this.latestData.some((e) => e.parentId === event.id && e.entryType === 1);
 
             contextEvent = (e) => {
                 //hideContextMenu();
@@ -813,7 +822,7 @@ class Calendar extends BaseGadget {
                     this.setState({ uploading: false });
                     this.$message.success("Worklog uploaded successfully!");
                     // ToDo: update latestData collection also for is uploaded flag
-                    const { events } = this;
+                    const { events } = this.state;
                     events.removeAll(w => w.entryType === 1 && w.id.toString() === this.currentWLItem.id.toString());
                     this.addEvent({ added: this.$worklog.getWLCalendarEntry(wl[0]) });
                     this.$analytics.trackEvent("Worklog uploaded: Individual", EventCategory.UserActions);
@@ -840,7 +849,7 @@ class Calendar extends BaseGadget {
     }
 
     getPendingWorklogs(events) {
-        if (!events) { events = this.events; }
+        if (!events) { events = this.state.events; }
 
         return events.filter(e => e.entryType === 1 && !e.sourceObject.isUploaded);
     }
