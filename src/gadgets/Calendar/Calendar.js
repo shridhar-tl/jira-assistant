@@ -499,7 +499,6 @@ class Calendar extends BaseGadget {
         }
         else if (event.extendedProps.source === "outlook") {
             this.currentMeetingItem = this.getOutlookEventView(item);
-            return;
         }
 
         if (this.$session.isQuickView) {
