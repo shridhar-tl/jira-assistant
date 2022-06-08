@@ -178,7 +178,7 @@ class ImportWorklog extends BaseImport {
 
                 return this.$worklog.saveWorklog(entry).then((s) => {
                     wl.id = s.id;
-                    wl.status = "Imported";
+                    wl.status = "Imported. Not Uploaded";
                 }, (err) => {
                     wl.status = wlStatus_Error;
                     wl.error = err;
@@ -186,7 +186,7 @@ class ImportWorklog extends BaseImport {
             });
 
             Promise.all(savedWorklogs).then(() => {
-                this.$message.info("Worklog import completed");
+                this.$message.info("Worklog import completed. Upload it to Jira from Calendar or Worklog gadget.");
                 this.setState({ worklogData: [...worklogData], selectedCount: "" });
             });
         }
@@ -225,7 +225,9 @@ class ImportWorklog extends BaseImport {
             log.worklogId = wlId.id;
 
             this.setState(({ worklogData }) => ({ worklogData: [...worklogData] }));
-        }, ({ message, error: { errors, errorMessages } = {} }) => {
+        }, (err) => {
+            const { message, response, status, error: { errors, errorMessages } = {} } = err;
+
             log.disabled = true;
             log.selected = false;
             log.status = wlStatus_Error;
@@ -235,7 +237,7 @@ class ImportWorklog extends BaseImport {
             if (message) {
                 log.error = message;
             }
-            else if (errorKeys && errorKeys.length) {
+            else if (errorKeys?.length) {
                 log.error = errorKeys.reduce((err, key) => {
                     const msg = errors[key];
 
@@ -246,7 +248,7 @@ class ImportWorklog extends BaseImport {
                     }
                 }, "");
             }
-            else if (errorMessages && errorMessages.length) {
+            else if (errorMessages?.length) {
                 log.error = errorMessages.reduce((err, msg) => {
                     if (err) {
                         return `${err}; ${msg}`;
@@ -254,6 +256,11 @@ class ImportWorklog extends BaseImport {
                         return msg;
                     }
                 }, "");
+            } else if (response?.length > 5 && response.length <= 100) {
+                log.error = response;
+            }
+            else if (status) {
+                log.error = `Status Code: ${status}`;
             }
 
             this.setState(({ worklogData }) => ({ worklogData: [...worklogData] }));
