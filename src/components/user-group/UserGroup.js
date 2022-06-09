@@ -25,7 +25,7 @@ class UserGroup extends PureComponent {
     }
 
     addNewGroup = async (groupName, groupId) => {
-        groupName = groupName.trim();
+        groupName = groupName?.trim();
         if (!groupName) {
             return;
         }
@@ -36,8 +36,14 @@ class UserGroup extends PureComponent {
             return false;
         }
         else {
-            const newGroup = { name: groupName, timeZone: '', isJiraGroup: !!groupId, id: groupId };
-            await this.$usergroup.fillJiraGroupMembers([newGroup]);
+            const newGroup = { name: groupName, timeZone: '', users: [], isJiraGroup: !!groupId, id: groupId };
+            if (newGroup.isJiraGroup) {
+                await this.$usergroup.fillJiraGroupMembers([newGroup]);
+            } else {
+                delete newGroup.isJiraGroup;
+                delete newGroup.id;
+            }
+
             this.setState({ groups: groups.concat(newGroup) });
             return true;
         }
