@@ -99,7 +99,7 @@ class WorklogGadget extends BaseGadget {
             additionalJQL = ` AND (${additionalJQL})`;
         }
         const jql = `worklogAuthor in ("${userList.join('","')}") and worklogDate >= '${mfromDate.clone().add(-1, 'days').format("YYYY-MM-DD")}' and worklogDate < '${mtoDate.clone().add(1, 'days').format("YYYY-MM-DD")}'${additionalJQL}`;
-        const fieldsToFetch = ["summary", "worklog", "issuetype", "parent", "project", "status", "assignee"];
+        const fieldsToFetch = ["summary", "worklog", "issuetype", "parent", "project", "status", "assignee", "reporter"];
         if (!hideEstimate) {
             fieldsToFetch.push("timeoriginalestimate");
             fieldsToFetch.push("timeestimate");
@@ -149,6 +149,7 @@ class WorklogGadget extends BaseGadget {
                                     parent: fields.parent?.key,
                                     parentSummary: fields.parent?.fields?.summary,
                                     assignee: fields.assignee?.displayName,
+                                    reporter: fields.reporter?.displayName,
                                     summary: fields.summary,
                                     originalestimate,
                                     remainingestimate,
@@ -192,6 +193,8 @@ class WorklogGadget extends BaseGadget {
                             groupName: groupName,
                             username: getUserName(usr),
                             userDisplay: userName,
+                            assignee: log.assignee,
+                            reporter: log.reporter,
                             parent: log.parent,
                             parentSummary: log.parentSummary,
                             parentUrl: log.parent ? this.$userutils.getTicketUrl(log.parent) : null,

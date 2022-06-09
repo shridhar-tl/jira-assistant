@@ -33,7 +33,7 @@ class WorklogSettings extends BaseDialog {
 
     render() {
         const { setValue, state: { pageSettings: { logFormat, breakupMode, timeZone, jql, hideEstimate, showCostReport,
-            showProject, showParentSummary, showIssueType, showEpic, showAssignee
+            showProject, showParentSummary, showIssueType, showEpic, showAssignee, showReporter
         } } } = this;
 
         return super.renderBase(
@@ -115,6 +115,9 @@ class WorklogSettings extends BaseDialog {
                         </div>
                         <div className="col-4">
                             <Checkbox checked={showAssignee} onChange={(e) => setValue("showAssignee", e)} label="Show Assignee" />
+                        </div>
+                        <div className="col-4">
+                            <Checkbox checked={showReporter} onChange={(e) => setValue("showReporter", e)} label="Show Reporter" />
                         </div>
                         <div className="col-12">
                             <Checkbox checked={hideEstimate} onChange={(e) => setValue("hideEstimate", e)} label="Hide estimate related fields" />

@@ -168,7 +168,7 @@ export const FULL_DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thur
 
 export const defaultJiraFields = ["issuetype", "summary", "reporter", "priority", "status", "resolution", "created", "updated"];
 
-export const AppVersionNo = 2.35;
+export const AppVersionNo = 2.36;
 
 let AnalyticsTrackingId = "UA-108841109-1"; // This is for public tracking id
 

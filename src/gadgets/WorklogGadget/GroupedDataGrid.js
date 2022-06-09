@@ -116,6 +116,7 @@ class GroupedDataGrid extends PureComponent {
                             projectKey: firstTkt.projectKey,
                             projectName: firstTkt.projectName,
                             assignee: firstTkt.assignee,
+                            reporter: firstTkt.reporter,
                             epicDisplay: firstTkt.epicDisplay,
                             epicUrl: firstTkt.epicUrl,
                             issueType: firstTkt.issueType,
@@ -236,13 +237,14 @@ class GroupedDataGrid extends PureComponent {
 
         const timeExportFormat = pageSettings?.logFormat === "2" ? "float" : undefined;
 
-        const { showProject, showParentSummary, showIssueType, showEpic, showAssignee } = pageSettings || {};
+        const { showProject, showParentSummary, showIssueType, showEpic, showAssignee, showReporter } = pageSettings || {};
         const addlColCount = 1
             + (showProject ? 1 : 0)
             + (showParentSummary ? 1 : 0)
             + (showIssueType ? 1 : 0)
             + (showEpic ? 1 : 0)
-            + (showAssignee ? 1 : 0);
+            + (showAssignee ? 1 : 0)
+            + (showReporter ? 1 : 0);
 
 
         return (
@@ -261,6 +263,7 @@ class GroupedDataGrid extends PureComponent {
                         {!!showIssueType && <th>Issuetype</th>}
                         {!!showEpic && <th>Epic</th>}
                         {!!showAssignee && <th>Assignee</th>}
+                        {!!showReporter && <th>Reporter</th>}
                         {dates.map((day, i) => <th key={i} style={{ minWidth: 35 }}>{day.display}</th>)}
                     </tr>
                 </THead>
@@ -379,7 +382,7 @@ class UserRow extends PureComponent {
     render() {
         const {
             props: { user: u, dates, convertSecs, breakupMode,
-                pageSettings: { hideEstimate, showProject, showParentSummary, showIssueType, showEpic, showAssignee },
+                pageSettings: { hideEstimate, showProject, showParentSummary, showIssueType, showEpic, showAssignee, showReporter },
                 timeExportFormat, costView, colSpan },
             state: { expanded }
         } = this;
@@ -430,6 +433,7 @@ class UserRow extends PureComponent {
                                 {!!showIssueType && <td>{t.issueType}</td>}
                                 {!!showEpic && <td>{t.epicDisplay && <a href={t.epicUrl} className="link" target="_blank" rel="noopener noreferrer">{t.epicDisplay}</a>}</td>}
                                 {!!showAssignee && <td>{t.assignee}</td>}
+                                {!!showReporter && <td>{t.reporter}</td>}
 
                                 {!costView && dates.map((day, j) => <td key={j} className="day-wl-block" exportType={timeExportFormat}>
                                     {u.isCurrentUser && <span className="fa fa-clock-o add-wl" title="Click to add worklog" onClick={() => this.addWorklog(t.ticketNo, day)} />}
