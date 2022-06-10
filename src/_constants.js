@@ -58,6 +58,8 @@ export const OPERA_STORE_URL = "https://addons.opera.com/en/extensions/details/j
 
 export const GITHUB_HOME_URL = "https://github.com/shridhar-tl/jira-assistant";
 
+export function getGitHubIssueUrl(issueId) { return `${GITHUB_HOME_URL}/issues/${issueId}`; }
+
 export const ATLASSIAN_MARKETPLACE_URL = "https://marketplace.atlassian.com/apps/1221570/jassistant";
 
 export const DASHBOARD_ICONS = [
