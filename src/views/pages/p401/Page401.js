@@ -19,6 +19,14 @@ class Page401 extends PureComponent {
         }
     }
 
+    grantPermission = async () => {
+        const jiraUrl = this.props.jiraUrl;
+        const hasPermission = await this.$jaBrowserExtn.requestPermission(null, jiraUrl);
+        if (hasPermission) {
+            document.location.href = "/index.html";
+        }
+    };
+
     render() {
         const { jiraUrl } = this.props;
         const { hasPermission } = this.state;
@@ -43,9 +51,11 @@ class Page401 extends PureComponent {
                         Please grant permission before trying to access it.
                         More details available in issue {issueLink}</p>}
                     <a className="btn btn-primary margin-r-5" href="index.html">
-                        <i className="fa fa-angle-left"></i> Go to Dashboard</a>
+                        <i className="fa fa-angle-left"></i> Dashboard</a>
+                    {!hasPermission && <button className="btn btn-warning" onClick={this.grantPermission}>
+                        <i className="fa fa-unlock"></i> Grant permission</button>}
                     <a className="btn btn-success pull-right" href={jiraUrl} target="_blank" rel="noopener noreferrer">
-                        <i className="fa fa-external-link"></i> Open Jira Url</a>
+                        <i className="fa fa-external-link"></i> Open Jira</a>
                 </div>
             </div>
         );

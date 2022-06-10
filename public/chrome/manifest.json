@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Jira Assistant: Worklog, Sprint report, etc",
   "short_name": "Jira Assist",
-  "version": "2.36",
+  "version": "2.37",
   "description": "Help to track & upload work done on a Jira Ticket on timely basis and generate Worklog, Sprint and other custom reports.",
   "icons": {
     "24": "/assets/icon_24.png",
