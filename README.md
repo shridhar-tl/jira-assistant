@@ -49,6 +49,8 @@ Also before raising a new issue do a quick search on the issues to see if one is
 
 The most popular issues and the one with proper description and scenarios are addressed first. So don't forget to provide all the necessary descriptions / screenshots which is required by the developers to resolve it.
 
+No GitHub Account? Use this form then: https://docs.google.com/forms/d/e/1FAIpQLScJvQtHZI_yZr1xd4Z8TwWgvtFss33hW5nJp4gePCgI2ScNvg/viewform
+
 ## How safe is the data handled by JiraAssistant?
 Please read our [Privacy policy](docs/PRIVACY_POLICY.md) to know about it.
 
