@@ -13,9 +13,7 @@ class DefaultValuesTab extends TabControlBase {
 
     async loadData() {
         this.$jira.getRapidViews().then((rapidViews) => {
-            rapidViews = rapidViews.orderBy((d) => { return d.name; }).map((d) => {
-                return { name: d.name, id: d.id };
-            });
+            rapidViews = rapidViews.orderBy((d) => d.name).map((d) => ({ name: d.name, id: d.id }));
 
             this.setState({ rapidViews });
 
@@ -25,17 +23,17 @@ class DefaultValuesTab extends TabControlBase {
         });
 
         this.$jira.getProjects().then((projects) => {
-            projects = projects.map((d) => { return { name: d.name, id: d.id, key: d.key }; }).orderBy((d) => d.name);
+            projects = projects.map(({ name, id, key }) => ({ name, id, key })).orderBy((d) => d.name);
             this.setState({ projects });
         });
 
         this.$jira.getCustomFields().then(cfList => {
             const numericFields = cfList.filter(cf => cf.custom && cf.schema.type === "number")
-                .map(cf => { return { id: cf.id, name: cf.name, clauseNames: cf.clauseNames }; })
+                .map(cf => ({ id: cf.id, name: cf.name, clauseNames: cf.clauseNames }))
                 .orderBy(cf => cf.name);
 
             const stringFields = cfList.filter(cf => cf.custom && (cf.schema.type === "any" || cf.schema.type === "string"))
-                .map(cf => { return { id: cf.id, name: cf.name, clauseNames: cf.clauseNames }; })
+                .map(cf => ({ id: cf.id, name: cf.name, clauseNames: cf.clauseNames }))
                 .orderBy(cf => cf.name);
 
             this.setState({ numericFields, stringFields });

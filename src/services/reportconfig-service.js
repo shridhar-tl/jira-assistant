@@ -49,21 +49,15 @@ export default class ReportConfigService {
             selfHandleScriptExecution, compiler,
             useExternalDnDProvider: true,
             customFunctions: !selfHandleScriptExecution,
-            subReports: (defn) => {
-                return this.$report.getReportsList().then((result) => {
-                    result = result.filter(q => q.advanced).map(q => { return { id: q.id, name: q.queryName }; });
+            subReports: (defn) => this.$report.getReportsList().then((result) => {
+                    result = result.filter(q => q.advanced).map(q => ({ id: q.id, name: q.queryName }));
                     if (defn && defn.id) {
                         result = result.filter(r => r.id !== defn.id);
                     }
                     return result;
-                });
-            },
-            resolveReportDefinition: (reportId) => {
-                return this.$report.getReportDefinition(reportId);
-            },
-            resolveHttpRequest: (method, url, data, headers) => {
-                return this.$http.request(method, url, data, headers);
-            },
+                }),
+            resolveReportDefinition: (reportId) => this.$report.getReportDefinition(reportId),
+            resolveHttpRequest: (method, url, data, headers) => this.$http.request(method, url, data, headers),
             builtInFields: {
                 UserDateFormat: { value: this.$session.CurrentUser.dateFormat, helpText: "Provides the date format of the current user" },
                 UserTimeFormat: { value: this.$session.CurrentUser.timeFormat },
@@ -99,23 +93,17 @@ export default class ReportConfigService {
         return {
             JQL: {
                 label: "JQL search result",
-                resolveSchema: (datasetTypes.JQL || ((name, props, data) => {
-                    return new Promise((resolve, reject) => {
+                resolveSchema: (datasetTypes.JQL || ((name, props, data) => new Promise((resolve, reject) => {
                         this.eventPipe.emit("resolveSchema_JQL", { name, props, data, schema: { resolve, reject } });
-                    });
-                })),
-                resolveData: (qry, parametersValues, { parameterTemplate }) => {
-                    return this.$jira.searchTickets(this.prepareJQL(qry.jql, parametersValues, parameterTemplate), qry.outputFields.map(f => f.id))
-                        .then(this.processSearchData);
-                }
+                    }))),
+                resolveData: (qry, parametersValues, { parameterTemplate }) => this.$jira.searchTickets(this.prepareJQL(qry.jql, parametersValues, parameterTemplate), qry.outputFields.map(f => f.id))
+                        .then(this.processSearchData)
             },
             FLT: true,
             PLS: {
                 label: "Project list", allowEdit: false,
-                resolveSchema: (name, props, promise) => {
-                    return this.$jira.getProjects().then(p => { promise.resolve(p); return props; });
-                },
-                resolveData: props => { return this.$jira.getProjects(); }
+                resolveSchema: (name, props, promise) => this.$jira.getProjects().then(p => { promise.resolve(p); return props; }),
+                resolveData: props => this.$jira.getProjects()
             },
             ITL: {
                 label: "Issue type list", allowEdit: false,
@@ -123,7 +111,7 @@ export default class ReportConfigService {
                     this.$jira.getIssueTypes().then(p => promise.resolve(p));
                     return Promise.resolve(props);
                 },
-                resolveData: props => { return this.$jira.getIssueTypes(); }
+                resolveData: props => this.$jira.getIssueTypes()
             },
             OTL: {
                 label: "My open tickets list", allowEdit: false,
@@ -131,7 +119,7 @@ export default class ReportConfigService {
                     this.$jira.getOpenTickets().then(p => promise.resolve(p));
                     return Promise.resolve(props);
                 },
-                resolveData: props => { return this.$jira.getOpenTickets(); }
+                resolveData: props => this.$jira.getOpenTickets()
             },
             RPV: {
                 label: "Rapid view list (sprint board list)", allowEdit: false,
@@ -139,7 +127,7 @@ export default class ReportConfigService {
                     this.$jira.getRapidViews().then(p => promise.resolve(p));
                     return Promise.resolve(props);
                 },
-                resolveData: props => { return this.$jira.getRapidViews(); }
+                resolveData: props => this.$jira.getRapidViews()
             },
             CUF: {
                 label: "Custom fields list", allowEdit: false,
@@ -147,7 +135,7 @@ export default class ReportConfigService {
                     this.$jira.getCustomFields().then(p => promise.resolve(p));
                     return Promise.resolve(props);
                 },
-                resolveData: props => { return this.$jira.getCustomFields(); }
+                resolveData: props => this.$jira.getCustomFields()
             },
             EXP: true,
             HTP: true,
@@ -212,8 +200,7 @@ export default class ReportConfigService {
         this.isBuilderConfigured = true;
     }
 
-    processSearchData = (data) => {
-        return data.map(d => {
+    processSearchData = (data) => data.map(d => {
             const fields = d.fields;
             fields.key = d.key;
             if (fields.worklog && fields.worklog.worklogs) {
@@ -222,7 +209,6 @@ export default class ReportConfigService {
             }
             return fields;
         });
-    };
 
     prepareJQL(jql, parameters, parameterTemplate) {
         const usedParams = jql.match(/@Parameters.([a-zA-Z_\d.]+[|a-zA-Z_\d.()"',-//]+)\$/g); // Revisit: Escape charactors removed due to warning

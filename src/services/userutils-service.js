@@ -89,22 +89,18 @@ export default class UserUtilsService {
         return this.formatDateTime(value, format, utc);
     };
 
-    formatTime = (value, format, utc) => {
-        return this.formatDateTime(value, format || this.$session.CurrentUser.timeFormat, utc);
-    };
+    formatTime = (value, format, utc) => this.formatDateTime(value, format || this.$session.CurrentUser.timeFormat, utc);
 
     getDays = (fromDate, toDate) => {
         const dateArr = this.$utils.getDateArray(fromDate, toDate);
         const now = new Date().getTime();
-        return dateArr.map(d => {
-            return {
+        return dateArr.map(d => ({
                 prop: d.format('yyyyMMdd'),
                 display: d.format('DDD, dd'),
                 date: d,
                 isHoliday: this.isHoliday(d),
                 isFuture: d.getTime() > now
-            };
-        });
+            }));
     };
 
     getWorklogUrl(ticketNo, worklogId) {

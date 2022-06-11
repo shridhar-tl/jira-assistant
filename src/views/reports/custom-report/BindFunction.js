@@ -10,12 +10,10 @@ class BindFunction extends PureComponent {
 
         const { row } = props;
 
-        const applFuncs = functions.filter((f) => {
-            return (((f.types.indexOf(row.type) > -1 || f.types.indexOf("*") > -1)
+        const applFuncs = functions.filter((f) => (((f.types.indexOf(row.type) > -1 || f.types.indexOf("*") > -1)
                 || (row.knownObj && f.types.indexOf("object") > -1))
                 && (!row.isArray === !f.forArray))
-                && f.types.indexOf(`!${row.type}`) === -1;
-        }).map(f => { return { value: f.name || emptyValueHolder, label: f.text }; });
+                && f.types.indexOf(`!${row.type}`) === -1).map(f => ({ value: f.name || emptyValueHolder, label: f.text }));
 
         this.state = { applFuncs };
 
@@ -67,7 +65,7 @@ class BindFunction extends PureComponent {
 
         const selFunction = funcId;
         const funcName = func.name.split("?")[0];
-        const params = !func.params ? null : func.params.map((p) => { return p.value !== undefined ? p.value : p.default; });
+        const params = !func.params ? null : func.params.map((p) => (p.value !== undefined ? p.value : p.default));
 
         this.props.onChange({ id: func.name, name: funcName, params: params, useArray: func.aggregate, header: func.header });
         return { selFunction };

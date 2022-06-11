@@ -50,9 +50,7 @@ class BaseImport extends BaseGadget {
         }
     }
 
-    getTicketLink = (ticketNo) => {
-        return <a className="link" href={this.$userutils.getTicketUrl(ticketNo)} target="_blank" rel="noopener noreferrer">{ticketNo}</a>;
-    };
+    getTicketLink = (ticketNo) => <a className="link" href={this.$userutils.getTicketUrl(ticketNo)} target="_blank" rel="noopener noreferrer">{ticketNo}</a>;
 
     setFileSelector = (f) => this.fileSelector = f;
     chooseFileForImport = () => this.fileSelector.click();

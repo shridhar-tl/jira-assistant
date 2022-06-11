@@ -222,8 +222,7 @@ export default class JiraService {
     }
 
     getRapidSprintList(rapidIds) {
-        const reqArr = rapidIds.map((rapidId) => {
-            return this.$jaCache.session.getPromise(`rapidSprintList${rapidId}`).then((value) => {
+        const reqArr = rapidIds.map((rapidId) => this.$jaCache.session.getPromise(`rapidSprintList${rapidId}`).then((value) => {
                 if (value) {
                     return value;
                 }
@@ -234,9 +233,8 @@ export default class JiraService {
                         this.$jaCache.session.set(`rapidSprintList${rapidId}`, sprints, 10);
                         return sprints;
                     });
-            });
-        });
-        return Promise.all(reqArr).then((results) => { return results.union(); });
+            }));
+        return Promise.all(reqArr).then((results) => results.union());
     }
 
     getSprintList(projects) {
@@ -363,10 +361,8 @@ export default class JiraService {
     getUserDetails(username) {
         const keyName = `userdetail_${username}`;
 
-        return this.fetchCachedData(keyName, () => {
-            return this.$ajax.get(ApiUrls.getUserDetails, username)
-                .then((user) => { this.$jaCache.session.set(keyName, user, 10); return user; }, this.jiraErrorHandler);
-        });
+        return this.fetchCachedData(keyName, () => this.$ajax.get(ApiUrls.getUserDetails, username)
+                .then((user) => { this.$jaCache.session.set(keyName, user, 10); return user; }, this.jiraErrorHandler));
     }
 
     async fetchCachedData(keyName, http) {

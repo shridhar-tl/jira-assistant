@@ -66,7 +66,7 @@ export default class UserService {
 
     async getUsersList() {
         const users = await this.$db.users.where("id").notEqual(1).toArray();
-        return users.map(u => { return { id: u.id, email: u.email, jiraUrl: u.jiraUrl, userId: u.userId }; });
+        return users.map(u => ({ id: u.id, email: u.email, jiraUrl: u.jiraUrl, userId: u.userId }));
     }
 
     async getUserDetails(userId) {

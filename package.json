@@ -59,6 +59,10 @@
     "eslintConfig": {
         "extends": "react-app",
         "rules": {
+            "arrow-body-style": [
+                "error",
+                "as-needed"
+            ],
             "no-unused-vars": "error",
             "no-unreachable": "error",
             "eqeqeq": "error",

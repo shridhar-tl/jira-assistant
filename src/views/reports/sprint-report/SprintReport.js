@@ -17,11 +17,11 @@ import { EventCategory } from '../../../_constants';
 
 const notes = <div className="padding-15">
     <strong>Experimental:</strong> This report is experimental and development / bug fixes are in progress. If you encounter any issues or have any
-suggestions for improvement please send us a feedback by clicking on <i className="fa fa-bug" /> icon on top right corner of the page.
-<br />
+    suggestions for improvement please send us a feedback by clicking on <i className="fa fa-bug" /> icon on top right corner of the page.
+    <br />
     <br />
     <strong>How to use:</strong> To generate the sprint report follow the below steps
-<ul>
+    <ul>
         <li>Rapid view: This is the name of the Agile board which contains the sprint.</li>
         <li>Select one or more rapid view from the list. You can alternatively start typing the id or name of the board which will filter the list</li>
         <li>If you want to repeatedly view the sprint of selective rapid views, then add it in Settings -&gt; General -&gt; Default values tab.</li>
@@ -72,13 +72,13 @@ class SprintReport extends BaseGadget {
                     ticketsList.addDistinctRange(result.union(spr => spr.contents.puntedIssues).distinct(t => t.key));
                     ticketsList.addDistinctRange(result.union(spr => spr.contents.issuesNotCompletedInCurrentSprint).distinct(t => t.key));
                     return this.$jira.searchTickets(`key in (${ticketsList.join()}) or parent in (${ticketsList.join()})`, ["summary", "worklog", "issuetype", "parent", "timeoriginalestimate"])
-                        .then(tickets => { return { sprintDetails: result, ticketDetails: tickets }; });
+                        .then(tickets => ({ sprintDetails: result, ticketDetails: tickets }));
                 }
                 return { sprintDetails: result };
             })
             .then((data) => {
                 const result = data.sprintDetails;
-                const getCountWithSP = (issues) => { return issues.count((issue) => { return ((issue.currentEstimateStatistic || {}).statFieldValue || {}).value; }); };
+                const getCountWithSP = (issues) => issues.count((issue) => ((issue.currentEstimateStatistic || {}).statFieldValue || {}).value);
                 // eslint-disable-next-line complexity
                 result.forEach((sprint) => {
                     let added = 0, removed = 0, addedWithSP = 0;

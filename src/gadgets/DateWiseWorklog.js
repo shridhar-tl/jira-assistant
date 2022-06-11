@@ -119,8 +119,7 @@ class DateWiseWorklog extends BaseGadget {
                     </tr>
                 </THead>
                 <TBody>
-                    {(b) => {
-                        return <tr key={b.dateLogged} onContextMenu={(e) => this.showContext(e, b)} className={b.rowClass}>
+                    {(b) => <tr key={b.dateLogged} onContextMenu={(e) => this.showContext(e, b)} className={b.rowClass}>
                             <td>{this.$userutils.formatDate(b.dateLogged)}</td>
                             <td>{this.$utils.formatTs(b.totalHours)}</td>
                             <td>{this.$utils.formatTs(b.uploaded)}</td>
@@ -138,8 +137,7 @@ class DateWiseWorklog extends BaseGadget {
                                     </li>)}
                                 </ul>
                             </td>
-                        </tr>;
-                    }}
+                        </tr>}
                 </TBody>
                 <NoDataRow span={5}>No worklog exists for selected date range!</NoDataRow>
             </ScrollableTable>

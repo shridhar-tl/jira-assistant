@@ -18,7 +18,7 @@ class UserProjectWiseSummary extends PureComponent {
             return obj;
         }, {});
 
-        flatData.groupBy(g => { return { key: g.projectKey, name: g.projectName }; }).sortBy(g => g.key.key)
+        flatData.groupBy(g => ({ key: g.projectKey, name: g.projectName })).sortBy(g => g.key.key)
             .forEach(({ key: project, values }) => {
                 projects.push(project);
                 projectsData[project.key] = values;
@@ -140,12 +140,10 @@ class UserProjectWiseSummary extends PureComponent {
                         <Column rowSpan={2}>Grand Total</Column>
                     </TRow>
                     <TRow>
-                        {projects.map((project, pi) => {
-                            return <Fragment key={pi}>
+                        {projects.map((project, pi) => <Fragment key={pi}>
                                 {project.issueTypes.map((it, iti) => <Column key={iti}>{it}</Column>)}
                                 <Column>Total</Column>
-                            </Fragment>;
-                        })}
+                            </Fragment>)}
                     </TRow>
                 </THead>
                 <TBody>
@@ -206,20 +204,16 @@ class UserProjectWiseSummary extends PureComponent {
                     <tr className="strong data-center">
                         <td colSpan={2} className="data-right">Grand total <span className="fa fa-arrow-right" /></td>
 
-                        {!costView && projects.map((project, pi) => {
-                            return (<Fragment key={pi}>
+                        {!costView && projects.map((project, pi) => (<Fragment key={pi}>
                                 {project.issueTypes.map((it, iti) => <td key={iti} exportType="float">{convertSecs(grandTotal[project.key][it])}</td>)}
                                 <td exportType="float">{convertSecs(grandTotal[project.key].total)}</td>
-                            </Fragment>);
-                        })}
+                            </Fragment>))}
                         {!costView && <td exportType="float">{convertSecs(grandTotal.grandTotal)}</td>}
 
-                        {costView && projects.map((project, pi) => {
-                            return (<Fragment key={pi}>
+                        {costView && projects.map((project, pi) => (<Fragment key={pi}>
                                 {project.issueTypes.map((it, iti) => <td key={iti} exportType="float" title={convertSecs(grandTotal[project.key][it])}>{grandTotal[project.key][`${it}_Cost`]}</td>)}
                                 <td exportType="float" title={convertSecs(grandTotal[project.key].total)}>{grandTotal[project.key].totalCost}</td>
-                            </Fragment>);
-                        })}
+                            </Fragment>))}
                         {costView && <td exportType="float" title={convertSecs(grandTotal.grandTotal)}>{grandTotal.grandTotalCost}</td>}
                     </tr>
                 </tfoot>

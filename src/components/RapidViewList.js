@@ -12,9 +12,7 @@ class RapidViewList extends PureComponent {
 
     UNSAFE_componentWillMount() {
         return this.$jira.getRapidViews().then((views) => {
-            const rapidViews = views.orderBy((d) => { return d.name; }).map((d) => {
-                return { name: d.name, id: d.id };
-            });
+            const rapidViews = views.orderBy((d) => d.name).map((d) => ({ name: d.name, id: d.id }));
 
             let { value } = this.props;
             if (value && Array.isArray(value) && value.length) {

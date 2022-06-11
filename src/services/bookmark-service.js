@@ -25,7 +25,7 @@ export default class BookmarkService {
                 favTickets = [];
             }
 
-            const pending = ticketNo.filter((t) => { return !favTickets.some((k) => { return k.toUpperCase() === t.toUpperCase(); }); });
+            const pending = ticketNo.filter((t) => !favTickets.some((k) => k.toUpperCase() === t.toUpperCase()));
             if (pending.length === 0) {
                 this.$message.warning(ticketNo.length === 1 ? `${ticketNo[0]} is already bookmarked` : "The specified ticket is already bookmarked");
                 return [];
@@ -35,14 +35,14 @@ export default class BookmarkService {
                 if (!issues || issues.length === 0) {
                     return ticketNo;
                 }
-                issues.forEach((i) => { return favTickets.push(i.key); });
+                issues.forEach((i) => favTickets.push(i.key));
 
                 return this.$settings.saveGeneralSetting(this.$session.userId, 'favTicketList', favTickets)
                     .then(() => {
                         if (showMessage) {
                             this.$message.success("Ticket(s) bookmarked successfully!");
                         }
-                        return ticketNo.filter((t) => { return !favTickets.some((k) => { return k.toUpperCase() === t.toUpperCase(); }); });
+                        return ticketNo.filter((t) => !favTickets.some((k) => k.toUpperCase() === t.toUpperCase()));
                     });
             });
         });

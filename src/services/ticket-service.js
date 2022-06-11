@@ -504,7 +504,7 @@ export default class TicketService {
         importData = [...importData];
 
         const importableData = await this.prepareIssuesForImport(importData);
-        const issuesToImport = importableData.map(i => { return { fields: i.fields }; });
+        const issuesToImport = importableData.map(i => ({ fields: i.fields }));
 
         const result = await this.$jira.bulkImportIssues(issuesToImport)
             .then(null, (err) => err.error)

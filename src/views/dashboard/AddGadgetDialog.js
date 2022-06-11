@@ -17,8 +17,7 @@ class AddGadgetDialog extends BaseDialog {
     UNSAFE_componentWillMount() {
         this.$report.getReportsList().then(reports => {
             if (reports && reports.length) {
-                const list = reports.map(r => {
-                    return {
+                const list = reports.map(r => ({
                         id: (r.advanced ? "AR:" : (r.isNew ? "CR:" : "SQ:")) + r.id,
                         icon: "fa fa-filter",
                         name: r.queryName,
@@ -28,8 +27,7 @@ class AddGadgetDialog extends BaseDialog {
                                 ? ' with interactive option to sort and group based on columns.'
                                 : ' (deprecated, not allowed to add to dashboard)'}`
                             : "<no details available>")
-                    };
-                });
+                    }));
 
                 const gadgetList = [...GadgetList, ...list];
                 this.setState({ gadgetList });

@@ -84,15 +84,13 @@ class WorklogGadget extends BaseGadget {
         const fromDate = mfromDate.toDate();
         const toDate = mtoDate.toDate();
         const dateArr = this.getDateArray(fromDate, toDate);
-        this.dates = dateArr.map(d => {
-            return {
+        this.dates = dateArr.map(d => ({
                 prop: d.format('yyyyMMdd'),
                 display: d.format('DDD, dd'),
                 date: d,
                 isHoliday: this.$userutils.isHoliday(d)
-            };
-        });
-        this.months = dateArr.groupBy((d) => d.format("MMM, yyyy")).map(grp => { return { monthName: grp.key, days: grp.values.length }; });
+            }));
+        this.months = dateArr.groupBy((d) => d.format("MMM, yyyy")).map(grp => ({ monthName: grp.key, days: grp.values.length }));
         const hideEstimate = this.state.pageSettings.hideEstimate;
         let additionalJQL = (this.state.pageSettings.jql || '').trim();
         if (additionalJQL) {
@@ -188,8 +186,7 @@ class WorklogGadget extends BaseGadget {
             return grp.users.union(usr => {
                 const userName = usr.displayName;
                 return data.first(d => d.userName === getUserName(usr, true)).logData
-                    .map(log => {
-                        return {
+                    .map(log => ({
                             groupName: groupName,
                             username: getUserName(usr),
                             userDisplay: userName,
@@ -214,8 +211,7 @@ class WorklogGadget extends BaseGadget {
                             totalLogged: log.totalLogged,
                             estVariance: log.estVariance,
                             comment: log.comment
-                        };
-                    });
+                        }));
             });
         });
     }
@@ -294,13 +290,9 @@ class WorklogGadget extends BaseGadget {
         return this.$utils.convertSecs(val, { format: this.state.pageSettings.logFormat === "1" });
     };
 
-    formatTime = (val) => {
-        return this.$userutils.formatTime(val);
-    };
+    formatTime = (val) => this.$userutils.formatTime(val);
 
-    formatDateTime = (val) => {
-        return this.$userutils.formatDateTime(val);
-    };
+    formatDateTime = (val) => this.$userutils.formatDateTime(val);
 
     render() {
         const {

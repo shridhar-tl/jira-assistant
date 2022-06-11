@@ -132,7 +132,7 @@ class EstimateActualReport extends BaseGadget {
     UNSAFE_componentWillMount() {
         this.$usergroup.getUserGroups().then(groups => this.setState({ groups: groups || [] }));
         this.$jira.getProjects().then((projectsList) => {
-            projectsList = projectsList.map((d) => { return { name: d.name, key: d.key, id: d.id }; }).orderBy((d) => { return d.name; });
+            projectsList = projectsList.map((d) => ({ name: d.name, key: d.key, id: d.id })).orderBy((d) => d.name);
             this.setState({ projectsList });
         });
     }
@@ -155,7 +155,7 @@ class EstimateActualReport extends BaseGadget {
             grps.users.forEach(gu => gu.groupName = grps.name);
             return grps.users;
         });
-        const uniqueUsers = users.distinctObj(u => { return { name: getUserName(u, true), display: u.displayName }; });
+        const uniqueUsers = users.distinctObj(u => ({ name: getUserName(u, true), display: u.displayName }));
         const userList = uniqueUsers.map(u => getUserName(u));
         const chartLabels = uniqueUsers.map(u => u.display);
 
@@ -266,12 +266,7 @@ class EstimateActualReport extends BaseGadget {
                 // If both project and ticket filter is not selected, then by default take the list of projects from data
                 if (!hasProject && !hasTickets) {
                     hasProject = true;
-                    selProjects = flatData.distinctObj(t => {
-                        return {
-                            key: t.projectKey,
-                            name: t.projectName
-                        };
-                    });
+                    selProjects = flatData.distinctObj(t => ({ key: t.projectKey, name: t.projectName }));
                 }
                 const datasets = [];
 

@@ -108,8 +108,7 @@ class TicketWiseWorklog extends BaseGadget {
                     </tr>
                 </THead>
                 <TBody>
-                    {(b) => {
-                        return <tr key={b.ticketNo} onContextMenu={(e) => this.showContext(e, b)} className={b.rowClass}>
+                    {(b) => <tr key={b.ticketNo} onContextMenu={(e) => this.showContext(e, b)} className={b.rowClass}>
                             <td><a href={b.ticketUrl} rel="noopener noreferrer" className="link strike" target="_blank">{b.ticketNo}</a></td>
                             <td>{b.summary}</td>
                             <td>{b.totalHours}</td>
@@ -130,8 +129,7 @@ class TicketWiseWorklog extends BaseGadget {
                                 </ul>
                             </td>
                             <td>{b.description}</td>
-                        </tr>;
-                    }}
+                        </tr>}
                 </TBody>
                 <NoDataRow span={8}>No records exists</NoDataRow>
             </ScrollableTable>

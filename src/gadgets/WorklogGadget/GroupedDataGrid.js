@@ -345,23 +345,21 @@ class UserRow extends PureComponent {
             return "";
         }
 
-        return arr.map((a) => {
-            return `${this.props.formatTime(a.logTime)}(${this.props.convertSecs(a.totalHours)})${(showCost ? (`, Cost: ${a.totalCost}`) : '')} - ${a.comment}`;
-        }).join(';\n');
+        return arr.map((a) => `${this.props.formatTime(a.logTime)}(${this.props.convertSecs(a.totalHours)})${(showCost ? (`, Cost: ${a.totalCost}`) : '')} - ${a.comment}`).join(';\n');
     };
 
     getTotalTime(arr) {
         if (!arr || arr.length === 0) {
             return "";
         }
-        return arr.sum((a) => { return a.totalHours; });
+        return arr.sum((a) => a.totalHours);
     }
 
     getTotalCost(arr) {
         if (!arr || arr.length === 0) {
             return "";
         }
-        return arr.sum((a) => { return a.totalCost; });
+        return arr.sum((a) => a.totalCost);
     }
 
     toggleDisplay = () => this.setState({ expanded: !this.state.expanded });

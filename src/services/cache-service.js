@@ -21,9 +21,7 @@ export default class CacheService {
                 }
                 return value;
             },
-            get: (key) => {
-                return this.varStorage[key];
-            },
+            get: (key) => this.varStorage[key],
             getPromise: (key) => new Promise((resolve, reject) => resolve(this.session.get(key))),
             clear: () => { this.varStorage = {}; }
         };
@@ -59,8 +57,7 @@ export default class CacheService {
                 }
                 return value;
             },
-            get: (key) => {
-                return new Promise((resolve, reject) => {
+            get: (key) => new Promise((resolve, reject) => {
                     const process = (data) => {
                         if (data && (data = data[key])) {
                             if (data.expires) {
@@ -79,8 +76,7 @@ export default class CacheService {
                     else {
                         process(this.storage[key]);
                     }
-                });
-            },
+                }),
             remove: (key) => { this.lob.set(key, null); },
             clear: () => { this.storage.clear(); }
         };

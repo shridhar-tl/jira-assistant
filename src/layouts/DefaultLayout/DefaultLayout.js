@@ -111,8 +111,7 @@ class DefaultLayout extends PureComponent {
               <Container fluid>
                 <Suspense fallback={this.loading()}>
                   <Switch>
-                    {routes.map((route, idx) => {
-                      return route.component ? (
+                    {routes.map((route, idx) => (route.component ? (
                         <Route
                           key={idx}
                           path={`/${userId}${route.path}`}
@@ -121,8 +120,7 @@ class DefaultLayout extends PureComponent {
                           render={props => (
                             <route.component {...props} />
                           )} />
-                      ) : (null);
-                    })}
+                      ) : (null)))}
                   </Switch>
                 </Suspense>
               </Container>

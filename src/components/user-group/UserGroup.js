@@ -12,7 +12,7 @@ class UserGroup extends PureComponent {
         inject(this, "SessionService", "MessageService", "UserGroupService", "JiraService", "AnalyticsService");
         const { groups } = props;
 
-        const timezones = moment.tz.names().map(t => { return { label: t, value: t }; });
+        const timezones = moment.tz.names().map(t => ({ label: t, value: t }));
         this.groupTimezones = [{ label: 'My local time zone', value: '' }].union([timezones]);
         this.userTimezones = [{ label: 'My local time zone', value: '' }, { label: "Use group's time zone", value: 'GRP_TZ' }].union([timezones]);
         this.state = { groups };

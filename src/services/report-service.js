@@ -15,8 +15,7 @@ export default class ReportService {
     getSavedQueries(ids) { return this.$db.savedFilters.where("id").anyOf(ids); }
 
     exportQueries(ids) {
-        return this.getSavedQueries(ids).toArray().then((qrys) => {
-            return Promise.all(qrys
+        return this.getSavedQueries(ids).toArray().then((qrys) => Promise.all(qrys
                 .filter(qry => !qry.uniqueId)
                 .map(qry => this.saveQuery(qry)))
                 .then(() => {
@@ -30,24 +29,19 @@ export default class ReportService {
                     saveStringAs(json, "jrd", fileName);
                     this.$analytics.trackEvent("Report definition exported", EventCategory.UserActions);
                     return true;
-                });
-        });
+                }));
     }
 
     getReportsList() {
         return this.$db.savedFilters.where("createdBy").equals(this.$session.userId).toArray()
-            .then((qrys) => {
-                return qrys.map((q) => {
-                    return {
+            .then((qrys) => qrys.map((q) => ({
                         id: q.id,
                         queryName: q.queryName,
                         dateCreated: q.dateCreated,
                         advanced: q.advanced,
                         outputCount: q.advanced ? null : (q.outputFields?.length || q.fields?.length),
                         isNew: !q.advanced && Array.isArray(q.fields)
-                    };
-                });
-            });
+                    })));
     }
 
     getReportDefinition(id) { return this.$db.savedFilters.where("id").equals(parseInt(id)).first(); }
@@ -62,7 +56,7 @@ export default class ReportService {
         query.dateCreated = new Date();
         const existingQry = this.$db.savedFilters.where("queryName").equals(query.queryName);
         if (query.id > 0) {
-            return existingQry.and((q) => { return q.createdBy === this.$session.userId && query.id !== q.id; })
+            return existingQry.and((q) => q.createdBy === this.$session.userId && query.id !== q.id)
                 .first()
                 .then((qry) => {
                     if (qry) {
@@ -81,7 +75,7 @@ export default class ReportService {
                 });
         }
         else {
-            return existingQry.and((q) => { return q.createdBy === this.$session.userId; })
+            return existingQry.and((q) => q.createdBy === this.$session.userId)
                 .first()
                 .then((qry) => {
                     if (qry) {

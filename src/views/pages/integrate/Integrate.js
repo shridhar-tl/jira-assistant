@@ -32,7 +32,7 @@ class Integrate extends PureComponent {
 
     async getUserFromDB(root, name, email) {
         let user = await this.$db.users.where("userId").equalsIgnoreCase(name)
-            .and((u) => { return u.jiraUrl.toLowerCase() === root.toLowerCase(); }).first();
+            .and((u) => u.jiraUrl.toLowerCase() === root.toLowerCase()).first();
 
         if (!user && email) {
             email = email.toLowerCase();
@@ -83,9 +83,7 @@ class Integrate extends PureComponent {
                         user.email = email;
                         user.lastLogin = new Date();
                         this.$db.users.put(user)
-                            .then((id) => {
-                                return user.id;
-                            }, this.handleDBError)
+                            .then((id) => user.id, this.handleDBError)
                             .then(this.openDashboard);
                     }
                 });

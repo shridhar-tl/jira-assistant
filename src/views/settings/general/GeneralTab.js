@@ -26,8 +26,8 @@ class GeneralTab extends TabControlBase {
         this.state = { settings: props.settings };
 
         const curDate = new Date();
-        this.dateFormats = dateFormats.map((f) => { return { format: f, text: this.$utils.formatDate(curDate, f) }; });
-        this.timeFormats = timeFormats.map((f) => { return { format: f, text: this.$utils.formatDate(curDate, f) }; });
+        this.dateFormats = dateFormats.map((f) => ({ format: f, text: this.$utils.formatDate(curDate, f) }));
+        this.timeFormats = timeFormats.map((f) => ({ format: f, text: this.$utils.formatDate(curDate, f) }));
     }
 
     setStartOfweek = (value, field) => {

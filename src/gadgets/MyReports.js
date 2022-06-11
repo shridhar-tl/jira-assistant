@@ -48,9 +48,7 @@ class MyReports extends BaseGadget {
         Dialog.confirmDelete("Are you sure to delete the selected report(s)?", "Confirm delete report(s)").then(() => {
             this.setState({ isLoading: true });
 
-            this.$report.deleteSavedQuery(ids).then(() => {
-                return this.refreshData();
-            });
+            this.$report.deleteSavedQuery(ids).then(() => this.refreshData());
         });
     };
 
@@ -159,8 +157,7 @@ class MyReports extends BaseGadget {
                     </tr>
                 </THead>
                 <TBody>
-                    {(b) => {
-                        return <tr key={b.id}>
+                    {(b) => <tr key={b.id}>
                             <td className="text-center">
                                 <Checkbox checked={b.selected} onChange={() => this.selectRowItem(b)} />
                             </td>
@@ -169,8 +166,7 @@ class MyReports extends BaseGadget {
                             <td>{b.advanced ? 'Advanced report' : (`Custom Report${b.isNew ? '' : ' (old)'}`)}</td>
                             <td>{b.outputCount}</td>
                             <td className="text-center"><Button icon="fa fa-edit" onClick={() => this.editReport(b)} title="Click to edit this report" /></td>
-                        </tr>;
-                    }}
+                        </tr>}
                 </TBody>
                 <NoDataRow span={7}>You have not yet created or imported any reports.</NoDataRow>
             </ScrollableTable>

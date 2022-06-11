@@ -63,7 +63,7 @@ class QueryEditor extends BaseGadget {
 
     fillQueriesList() {
         this.$report.getReportsList().then((result) => {
-            const reportsList = result.filter(q => !q.advanced && !q.isNew).map(q => { return { value: q.id, label: q.queryName }; });
+            const reportsList = result.filter(q => !q.advanced && !q.isNew).map(q => ({ value: q.id, label: q.queryName }));
             this.setState({ reportsList });
             //this.state.selReportId = this.reportRequest.id //ToDo:|| reportsList.selectpicker('val');
         });
@@ -516,12 +516,8 @@ class QueryEditor extends BaseGadget {
                                     <SelectBox dataset={displayFields} value="" style={{ 'width': '100%' }}
                                         placeholder="Choose a column to add to the list" group={true} displayField="name" valueField="id" dataKey="id"
                                         filterPlaceholder="Type the field name to filter" onChange={this.displayFieldAdded}>
-                                        {(itm, i) => {
-                                            return <span>{itm.name}</span>;
-                                        }}
-                                        {(grp, i) => {
-                                            return <strong>{grp.label}</strong>;
-                                        }}
+                                        {(itm, i) => <span>{itm.name}</span>}
+                                        {(grp, i) => <strong>{grp.label}</strong>}
                                     </SelectBox>
                                     {/*<select id="lstCustomFields" style="width:100%;" title="Choose a column to add to the list" data-container="body"></select>*/}
                                 </td>

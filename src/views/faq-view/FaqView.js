@@ -26,9 +26,7 @@ class FaqView extends PureComponent {
             return;
         }
 
-        return faqArray.union(f => {
-            return f.questions.filter(q => q.toLowerCase().indexOf(query) > -1).map(q => { return { id: f.id, text: q }; }).take(1);
-        });
+        return faqArray.union(f => f.questions.filter(q => q.toLowerCase().indexOf(query) > -1).map(q => ({ id: f.id, text: q })).take(1));
     }
 
     search = (e) => {
@@ -37,12 +35,10 @@ class FaqView extends PureComponent {
 
         if (typeof query === "string") {
             this.setState({
-                searchResults: faqArray.filter(f => {
-                    return f.questions.some(q => q.toLowerCase().indexOf(query) > -1)
+                searchResults: faqArray.filter(f => f.questions.some(q => q.toLowerCase().indexOf(query) > -1)
                         || f.strand.toLowerCase().indexOf(query) > -1
                         || f.description.toLowerCase().indexOf(query) > -1
-                        || (f.keywords && f.keywords.some(k => k.toLowerCase().indexOf(query) > -1 || query.indexOf(k) > -1));
-                })
+                        || (f.keywords && f.keywords.some(k => k.toLowerCase().indexOf(query) > -1 || query.indexOf(k) > -1)))
             });
         }
         else {

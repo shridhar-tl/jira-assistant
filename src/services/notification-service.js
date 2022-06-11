@@ -94,7 +94,12 @@ export default class NotificationService {
             }
         }
 
-        return { updates_info, updatesAvailable: { version, isBeta }, list: allNotifications, total: allNotifications.length, unread: allNotifications.count(n => !n.read) };
+        return {
+            updates_info,
+            updatesAvailable: { version, isBeta },
+            list: allNotifications, total: allNotifications.length,
+            unread: allNotifications.count(n => !n.read)
+        };
     }
 
     getVersionNotification(updates_info) {

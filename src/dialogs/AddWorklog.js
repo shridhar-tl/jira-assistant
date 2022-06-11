@@ -219,9 +219,7 @@ class AddWorklog extends BaseDialog {
         </>;
     }
 
-    formatTs = (val) => {
-        return val;
-    };
+    formatTs = (val) => val;
 
     handleKeyPress = (e) => {
         const { ctrlKey, charCode } = e;

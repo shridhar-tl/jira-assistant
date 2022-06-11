@@ -61,7 +61,7 @@ export default class ChromeBrowserService extends BrowserBase {
                     buttons: []
                 };
                 if (opts.buttons) {
-                    msgObj.buttons = opts.buttons.map((b) => { return { title: b.title }; });
+                    msgObj.buttons = opts.buttons.map((b) => ({ title: b.title }));
                 }
                 this.chrome.notifications.create(id, msgObj, (notId) => {
                     this.notSetting.curShowing[id] = opts;

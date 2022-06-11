@@ -60,7 +60,7 @@ export default class AppBrowserService extends BrowserBase {
                     buttons: []
                 };
                 if (opts.buttons) {
-                    msgObj.buttons = opts.buttons.map((b) => { return { title: b.title }; });
+                    msgObj.buttons = opts.buttons.map((b) => ({ title: b.title }));
                 }
                 this.browser.notifications.create(id, msgObj, (notId) => {
                     this.notSetting.curShowing[id] = opts;

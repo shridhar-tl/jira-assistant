@@ -148,8 +148,7 @@ class PendingWorklog extends BaseGadget {
                     </tr>
                 </THead>
                 <TBody>
-                    {b => {
-                        return <tr key={b.id} onContextMenu={(e) => this.showContext(e, b)} className={b.rowClass}>
+                    {b => <tr key={b.id} onContextMenu={(e) => this.showContext(e, b)} className={b.rowClass}>
                             <td className="text-center">
                                 {b.selected && <Checkbox checked={true} onChange={() => this.selectRowItem(b)} />}
                                 {!b.selected && <i className="fa fa-ellipsis-v" onClick={(e) => this.showContext(e, b)}></i>}
@@ -160,8 +159,7 @@ class PendingWorklog extends BaseGadget {
                             <td>{b.timeSpent}</td>
                             <td>{b.overrideTimeSpent}</td>
                             <td>{b.description}</td>
-                        </tr>;
-                    }}
+                        </tr>}
                 </TBody>
                 <NoDataRow span={7}>No worklog pending to be uploaded!</NoDataRow>
             </ScrollableTable>

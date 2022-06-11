@@ -65,7 +65,7 @@ class ReportViewer extends BaseGadget {
                 this.processIssues(issues);
                 const displayFields = this.headerFields;
                 const subHeads = [];
-                this.headerFields.filter((f) => { return f.subCols && f.subCols.length > 0; })
+                this.headerFields.filter((f) => f.subCols && f.subCols.length > 0)
                     .forEach((f) => {
                         subHeads.addRange(f.subCols);
                         subHeads.push({ text: "Total" });
@@ -73,9 +73,9 @@ class ReportViewer extends BaseGadget {
                         f.rowspan = 1;
                     });
 
-                const groupList = model.outputFields.filter((f) => { return f.groupBy; });
+                const groupList = model.outputFields.filter((f) => f.groupBy);
                 const groupedData = groupList.length > 0 ? this.groupData(issues, Array.from(groupList)) : issues;
-                this.dataFields = model.outputFields.filter((f) => { return !f.groupBy; });
+                this.dataFields = model.outputFields.filter((f) => !f.groupBy);
                 this.reportHtml = this.genHtmlRow(groupedData);
                 const hasReportData = groupedData.length > 0;
 
@@ -208,7 +208,7 @@ class ReportViewer extends BaseGadget {
             const values = grp.values;
             if (groups.length > 0) {
                 val.subGroups = this.groupData(values, Array.from(groups));
-                val.issueCount = val.subGroups.sum((tm) => { return tm.issueCount; });
+                val.issueCount = val.subGroups.sum((tm) => tm.issueCount);
             }
             else {
                 val.issues = values;
@@ -217,7 +217,7 @@ class ReportViewer extends BaseGadget {
             return val;
         };
         if (isAggGrp) {
-            const data = issues.map(field === "issuekey" ? (iss) => { return iss.key; } : (iss) => { return iss.fields[field]; }, true);
+            const data = issues.map(field === "issuekey" ? (iss) => iss.key : (iss) => iss.fields[field], true);
             return [selectFunc({ key: this.execute(data, func), values: issues })];
         }
         else {
@@ -274,9 +274,7 @@ class ReportViewer extends BaseGadget {
             const fields = issue.fields;
             if (fields.worklog && fields.worklog.worklogs.length > 0) {
                 const worklogs = fields.worklog.worklogs;
-                const grp = worklogs.groupBy((w) => {
-                    return { id: getUserName(w.author), text: w.author.displayName };
-                });
+                const grp = worklogs.groupBy((w) => ({ id: getUserName(w.author), text: w.author.displayName }));
                 const obj = {};
                 for (let g = 0; g < grp.length; g++) {
                     const gr = grp[g];
@@ -285,7 +283,7 @@ class ReportViewer extends BaseGadget {
                         subCols.push(gr.key);
                         tmpUserIds.push(keyId);
                     } // Store it in header if it is not available in temp list
-                    obj[keyId] = { timespent: gr.values.sum((v) => { return v.timeSpentSeconds; }) };
+                    obj[keyId] = { timespent: gr.values.sum((v) => v.timeSpentSeconds) };
                 }
                 fields.worklogs_proc = obj;
             }
@@ -294,7 +292,7 @@ class ReportViewer extends BaseGadget {
             }
         }
         const headObj = this.headerFields[wlIndex];
-        headObj.subCols = subCols.orderBy((c) => { return c.text; }); // Object for storing the user details to show in header
+        headObj.subCols = subCols.orderBy((c) => c.text); // Object for storing the user details to show in header
         this.fieldOpts.worklogUsers = headObj.subCols;
     }
 

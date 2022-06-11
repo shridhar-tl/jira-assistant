@@ -64,7 +64,7 @@ class ReportBuilder extends BaseGadget {
 
     fillQueriesList() {
         return this.$report.getReportsList().then((result) => {
-            const queryList = result.filter(q => q.advanced).map(q => { return { value: q.id, label: q.queryName }; });
+            const queryList = result.filter(q => q.advanced).map(q => ({ value: q.id, label: q.queryName }));
             this.setState({ queryList });
         });
     }
@@ -81,10 +81,7 @@ class ReportBuilder extends BaseGadget {
         };
     }
 
-    queryChanged = (reportId) => {
-        return this.$report.getReportDefinition(reportId)
-            .then(this.setReportDefinition);
-    };
+    queryChanged = (reportId) => this.$report.getReportDefinition(reportId).then(this.setReportDefinition);
 
     deleteQuery = () => {
         Dialog.confirmDelete(`Are you sure to delete the report named "${this.state.reportDefinition.queryName}" permenantly?`)

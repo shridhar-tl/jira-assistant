@@ -60,7 +60,7 @@ export default class DevBrowserService extends BrowserBase {
                     buttons: []
                 };
                 if (opts.buttons) {
-                    msgObj.buttons = opts.buttons.map((b) => { return { title: b.title }; });
+                    msgObj.buttons = opts.buttons.map((b) => ({ title: b.title }));
                 }
                 this.chrome.notifications.create(id, msgObj, (notId) => {
                     this.notSetting.curShowing[id] = opts;
@@ -142,7 +142,7 @@ export default class DevBrowserService extends BrowserBase {
         return window['browser'].identity.launchWebAuthFlow({
             interactive: options.interactive,
             url: AUTH_URL
-        }).then((tokken) => { return this.extractAccessToken(tokken); });
+        }).then((tokken) => this.extractAccessToken(tokken));
     }
 
     getRedirectUrl(endpoint) { //ToDo: need to implement

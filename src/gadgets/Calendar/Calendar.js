@@ -268,7 +268,7 @@ class Calendar extends BaseGadget {
                     break;
                 case 3: break;
                 default:
-                    data = data.filter((e) => { return types.indexOf(e.entryType) > -1; });
+                    data = data.filter((e) => types.indexOf(e.entryType) > -1);
                     break;
             }
 
@@ -354,7 +354,7 @@ class Calendar extends BaseGadget {
         const key = moment(result.start).format("YYYY-MM-DD");
         const { events } = this.state;
         events.removeAll((e) => e.id === key && e.entryType === 3);
-        const logs = events.filter((a) => { return a.entryType === 1 && moment(a.start).format("YYYY-MM-DD") === key; });
+        const logs = events.filter((a) => a.entryType === 1 && moment(a.start).format("YYYY-MM-DD") === key);
         if (logs && logs.length > 0) {
             const allDayEvent = this.getAllDayObj({ key: key, values: logs });
             if (allDayEvent.logged) {
@@ -415,9 +415,9 @@ class Calendar extends BaseGadget {
 
         if (result.removed) {
             const removedId = result.removed + (result.deletedObj.worklogId ? `#${result.deletedObj.worklogId}` : "");
-            result = events.first((e) => { return e.id === removedId && e.entryType === 1; });
+            result = events.first((e) => e.id === removedId && e.entryType === 1);
             events.remove(result);
-            this.latestData.remove((e) => { return e.id === result.id && e.entryType === 1; });
+            this.latestData.remove((e) => e.id === result.id && e.entryType === 1);
         }
         else if (result.added || result.edited) {
             const previousTime = result.previousTime;

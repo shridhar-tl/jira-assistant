@@ -36,7 +36,7 @@ export default class WorklogService {
         } //, "summary", "issuetype", "parent", "status", "assignee"
         return this.$jira.searchTickets(jql, fields)
             .then((issues) => {
-                const arr = userList.map((u) => { return { logData: [], userName: u.toLowerCase() }; });
+                const arr = userList.map((u) => ({ logData: [], userName: u.toLowerCase() }));
                 const report = {};
                 for (let x = 0; x < arr.length; x++) {
                     const a = arr[x];
@@ -74,8 +74,8 @@ export default class WorklogService {
     }
 
     getPendingWorklogs() {
-        return this.$db.worklogs.where("createdBy").equals(this.$session.userId).and((w) => { return !w.isUploaded; }).toArray().then((worklogs) => {
-            const keys = worklogs.distinct((w) => { return w.ticketNo; });
+        return this.$db.worklogs.where("createdBy").equals(this.$session.userId).and((w) => !w.isUploaded).toArray().then((worklogs) => {
+            const keys = worklogs.distinct((w) => w.ticketNo);
             return this.$ticket.getTicketDetails(keys).then((tickets) => {
                 const wlList = worklogs.map((w) => {
                     const fields = (tickets[w.ticketNo.toUpperCase()] || {}).fields || {};
@@ -177,7 +177,7 @@ export default class WorklogService {
             return 0;
         });
         if (entry.worklogId > 0) {
-            delReq.then(() => { return this.$ajax.delete(ApiUrls.individualWorklog, entry.ticketNo, entry.worklogId); });
+            delReq.then(() => this.$ajax.delete(ApiUrls.individualWorklog, entry.ticketNo, entry.worklogId));
         }
         return delReq;
     }
@@ -191,11 +191,10 @@ export default class WorklogService {
         const fromDate = moment(range.fromDate).toDate();
         const toDate = moment(range.toDate).endOf('day').toDate();
         const prom = this.$db.worklogs.where("dateStarted").between(fromDate, toDate, true, true)
-            .and((w) => { return w.createdBy === curUserId; }).toArray();
+            .and((w) => w.createdBy === curUserId).toArray();
         const uploadedWL = this.getUploadedWorklogs(fromDate, toDate).then(wl => {
             const logData = wl.first().logData;
-            const wlArr = logData.map(ld => {
-                return {
+            const wlArr = logData.map(ld => ({
                     createdBy: curUserId,
                     dateStarted: ld.logTime,
                     description: ld.comment,
@@ -205,8 +204,7 @@ export default class WorklogService {
                     ticketNo: ld.ticketNo,
                     worklogId: ld.worklogId
                     //parentId:0 - ToDo: Something to be thought of
-                };
-            });
+                }));
             return wlArr;
         });
         let modProm = Promise.all([prom, uploadedWL])
@@ -260,7 +258,7 @@ export default class WorklogService {
         }
         return pro.then((wl) => {
             wl.dateStarted = moment(startDate).toDate();
-            const getCalEntry = () => { return this.getWLCalendarEntry(wl); };
+            const getCalEntry = () => this.getWLCalendarEntry(wl);
             if (wl.worklogId > 0) {
                 return this.uploadWorklog(wl).then(() => getCalEntry());
             }
@@ -281,7 +279,7 @@ export default class WorklogService {
         return pro.then((wl) => {
             wl.timeSpent = timeSpent;
             delete wl.overrideTimeSpent;
-            const getCalEntry = () => { return this.getWLCalendarEntry(wl); };
+            const getCalEntry = () => this.getWLCalendarEntry(wl);
             if (wl.worklogId > 0) {
                 return this.uploadWorklog(wl).then(() => getCalEntry());
             }
@@ -347,7 +345,7 @@ export default class WorklogService {
             if (upload || worklog.worklogId) {
                 pro = pro.then(() => this.uploadWorklog(worklog));
             }
-            return pro.then(() => { return this.getWLCalendarEntry(worklog); });
+            return pro.then(() => this.getWLCalendarEntry(worklog));
         }, (err) => { console.log("error for ticket number", err); return Promise.reject(err); });
     }
 
@@ -387,7 +385,7 @@ export default class WorklogService {
 
     getDWWorklog(data, fromDate, toDate) {
         const dateArr = this.$userutils.getDays(fromDate, toDate);
-        let entries = data.groupBy((l) => { return l.dateStarted.format("yyyy-MM-dd"); });
+        let entries = data.groupBy((l) => l.dateStarted.format("yyyy-MM-dd"));
         entries = dateArr.leftJoin(entries, (left, right) => left.date.format("yyyy-MM-dd") === right.key)
             .select(data => data.right || (data.left.isHoliday || data.left.isFuture ? null : {
                 key: data.left.date.format("yyyy-MM-dd"),
@@ -403,9 +401,9 @@ export default class WorklogService {
                     uploaded: $values.filter((d) => d.isUploaded).sum(t => this.getTimeSpent(t)) * 60 * 1000,
                     pendingUpload: $values.filter((d) => !d.isUploaded).sum(tkt => this.getTimeSpent(tkt)) * 60 * 1000,
                     totalHours: $values.sum(t => this.getTimeSpent(t)) * 60 * 1000,
-                    ticketList: $values.map((d) => { return { id: d.id, ticketNo: d.ticketNo, uploaded: (d.overrideTimeSpent || d.timeSpent), comment: d.description, worklogId: d.worklogId }; })
+                    ticketList: $values.map((d) => ({ id: d.id, ticketNo: d.ticketNo, uploaded: (d.overrideTimeSpent || d.timeSpent), comment: d.description, worklogId: d.worklogId }))
                 };
-            }).orderByDescending((l) => { return l.key; });
+            }).orderByDescending((l) => l.key);
         let maxHours = this.$session.CurrentUser.maxHours;
         maxHours = maxHours * 60 * 60 * 1000;
         entries.forEach((d) => {
@@ -422,8 +420,8 @@ export default class WorklogService {
 
     getTWWorklog(data) {
         const $data = data;
-        return this.$ticket.getTicketDetails($data.distinct((w) => { return w.ticketNo; })).then((tickets) => {
-            const entries = $data.groupBy((l) => { return l.ticketNo; }).map((l) => {
+        return this.$ticket.getTicketDetails($data.distinct((w) => w.ticketNo)).then((tickets) => {
+            const entries = $data.groupBy((l) => l.ticketNo).map((l) => {
                 const t = tickets[l.key];
                 const item = {
                     ticketNo: l.key,
@@ -431,17 +429,15 @@ export default class WorklogService {
                     parentKey: ((t.fields || "").parent || "").key,
                     summary: t.fields.summary,
                     status: (t.fields.status || "").name,
-                    uploaded: l.values.filter((d) => { return d.isUploaded; }).sum(this.getTimeSpent) * 60 * 1000,
+                    uploaded: l.values.filter((d) => d.isUploaded).sum(this.getTimeSpent) * 60 * 1000,
                     totalHours: l.values.sum(this.getTimeSpent) * 60 * 1000,
-                    logData: l.values.map((d) => {
-                        return {
+                    logData: l.values.map((d) => ({
                             id: d.id, dateLogged: d.dateStarted, uploaded: (d.overrideTimeSpent || d.timeSpent), worklogId: d.worklogId
-                        };
-                    })
+                        }))
                 };
                 item.pendingUpload = item.totalHours - item.uploaded;
                 return item;
-            }).orderBy((d) => { return d.ticketNo; });
+            }).orderBy((d) => d.ticketNo);
             return entries;
         });
     }

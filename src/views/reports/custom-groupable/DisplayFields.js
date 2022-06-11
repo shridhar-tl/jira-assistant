@@ -75,8 +75,7 @@ class DisplayFields extends PureComponent {
         this.props.onChange(fields);
     };
 
-    getControls = (f, i, drag, hndl) => {
-        return (<DisplayField key={i}
+    getControls = (f, i, drag, hndl) => (<DisplayField key={i}
             dragHandle={drag.dragHandle}
             dropConnector={hndl.dropConnector}
             field={f} index={i}
@@ -85,7 +84,6 @@ class DisplayFields extends PureComponent {
             updateHeader={this.headerChanged}
             toggleDisplay={this.toggleDisplay}
         />);
-    };
 
     render() {
         const { fields, onChange } = this.props;

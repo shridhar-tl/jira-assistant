@@ -69,7 +69,7 @@ class MyBookmarks extends BaseGadget {
             ids = [ticketNo];
         }
         else {
-            ids = this.state.bookmarksList.filter((b) => { return b.selected; }).map((b) => { return b.ticketNo; });
+            ids = this.state.bookmarksList.filter((b) => b.selected).map((b) => b.ticketNo);
         }
         if (ids.length === 0) {
             this.$message.info("Select the bookmarks to be deleted!");
@@ -131,8 +131,7 @@ class MyBookmarks extends BaseGadget {
                     </tr>
                 </THead>
                 <TBody>
-                    {(b, i) => {
-                        return <tr key={b.ticketNo} onContextMenu={(e) => this.showContext(e, b)} className={b.rowClass}>
+                    {(b, i) => <tr key={b.ticketNo} onContextMenu={(e) => this.showContext(e, b)} className={b.rowClass}>
                             <td className="text-center">
                                 {b.selected && <Checkbox checked={true} onChange={() => this.selectTicket(b)} />}
                                 {!b.selected && <i className="fa fa-ellipsis-v" onClick={(e) => this.showContext(e, b)}></i>}
@@ -149,8 +148,7 @@ class MyBookmarks extends BaseGadget {
                             <td>{b.resolutionIcon && <Image src={b.resolutionIcon} />}{b.resolution}</td>
                             <td>{b.created}</td>
                             <td>{b.updated}</td>
-                        </tr>;
-                    }}
+                        </tr>}
                 </TBody>
                 <NoDataRow span={11}>You have not yet bookmarked any tickets. Bookmark your frequently used tickets</NoDataRow>
             </ScrollableTable>

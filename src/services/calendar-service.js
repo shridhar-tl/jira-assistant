@@ -19,11 +19,9 @@ export default class CalendarService {
         if (!await this.$jaBrowserExtn.requestPermission(["identity"])) {
             return false;
         }
-        return this.$jaBrowserExtn.getAuthToken({ 'interactive': interactive === true }).then((accessToken) => {
-            return this.$config.updateAuthCode({
+        return this.$jaBrowserExtn.getAuthToken({ 'interactive': interactive === true }).then((accessToken) => this.$config.updateAuthCode({
                 access_token: accessToken
-            }).then(() => { return accessToken; });
-        });
+            }).then(() => accessToken));
     }
 
     getEvents(startDate, endDate, options) {
@@ -38,8 +36,7 @@ export default class CalendarService {
             'orderBy=startTime',
             'singleEvents=true'
         ].join('&'));
-        const onAuthSuccess = (authToken) => {
-            return new Promise((resolve, reject) => {
+        const onAuthSuccess = (authToken) => new Promise((resolve, reject) => {
                 $.ajax(calendarUrl, {
                     headers: { 'Authorization': `Bearer ${authToken}` },
                     success: (data) => {
@@ -75,7 +72,6 @@ export default class CalendarService {
                     }
                 });
             });
-        };
         return this.authenticate().then(onAuthSuccess, (err) => {
             if (err.error && err.error.message && err.error.message.toLowerCase().indexOf("invalid credentials")) {
                 this.$message.warning("Authentication with google calendar has expired. You will have to reauthenticate to proceed!");

@@ -142,7 +142,7 @@ export default class UtilsService {
         if (!arr) {
             return null;
         }
-        if (prop) { return arr.sum((v) => { return v[prop]; }); }
+        if (prop) { return arr.sum((v) => v[prop]); }
         else { return arr.sum(); }
     }
 
@@ -151,7 +151,7 @@ export default class UtilsService {
             return null;
         }
         if (prop) {
-            return arr.min((v) => { return v[prop]; });
+            return arr.min((v) => v[prop]);
         }
         else {
             return arr.min();
@@ -161,7 +161,7 @@ export default class UtilsService {
         if (!arr) {
             return null;
         }
-        if (prop) { return arr.max((v) => { return v[prop]; }); }
+        if (prop) { return arr.max((v) => v[prop]); }
         else { return arr.max(); }
     }
     bytes(bytes, precision) {
@@ -255,9 +255,7 @@ export default class UtilsService {
         }
     };
 
-    formatTs = (d, simple) => {
-        return this.formatSecs(this.getTotalSecs(d), false, simple);
-    };
+    formatTs = (d, simple) => this.formatSecs(this.getTotalSecs(d), false, simple);
 
     formatUser(obj, fields) {
         if (!obj) {
