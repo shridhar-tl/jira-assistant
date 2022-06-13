@@ -1,4 +1,4 @@
-import { SettingsCategory, SystemUserId } from "../_constants";
+import { ContactUsUrl, SettingsCategory, SystemUserId } from "../_constants";
 
 export default class UserService {
     static dependencies = ["DatabaseService", "JiraService"];
@@ -76,7 +76,7 @@ export default class UserService {
             return currentUser;
         }
 
-        const feedbackUrl = "https://docs.google.com/forms/d/e/1FAIpQLScJvQtHZI_yZr1xd4Z8TwWgvtFss33hW5nJp4gePCgI2ScNvg/viewform?entry.326955045&entry.1696159737&entry.485428648={0}&entry.879531967={1}&entry.1426640786={2}&entry.972533768={3}";
+        const feedbackUrl = `${ContactUsUrl}?entry.326955045&entry.1696159737&entry.485428648={0}&entry.879531967={1}&entry.1426640786={2}&entry.972533768={3}`;
         currentUser.jiraUrl = currentUser.jiraUrl.toString().clearEnd('/');
 
         //this.$session.authTokken = currentUser.dataStore;
@@ -85,7 +85,7 @@ export default class UserService {
             jiraUrl: currentUser.jiraUrl,
             ticketViewUrl: `${currentUser.jiraUrl}/browse/`,
             profileUrl: `${currentUser.jiraUrl}/secure/ViewProfile.jspa`,
-            feedbackUrl: `${feedbackUrl}&embedded=true`
+            feedbackUrl: `${feedbackUrl}&emb=true` //&embedded=true for directly using google forms
         };
 
         const jiraUrlLower = currentUser.jiraUrl.toLowerCase();

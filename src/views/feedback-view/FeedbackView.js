@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { inject } from '../../services';
 import { AppVersionNo } from '../../_constants';
 
-const style = { minWidth: 'calc(100% + 16px)', minHeight: '100%', marginLeft: '-8px', height: 1650, overflow: 'auto', border: 0 };
+const style = { minWidth: 'calc(100% + 16px)', minHeight: 'calc(100vh - 46px)', marginLeft: '-8px', overflow: 'auto', border: 0 };
 
 class FeedbackView extends PureComponent {
     constructor(props) {
