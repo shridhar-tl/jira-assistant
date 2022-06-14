@@ -3,6 +3,7 @@ import { UncontrolledDropdown, DropdownItem, DropdownMenu, DropdownToggle } from
 import { inject } from '../../services';
 import Dialog from '../../dialogs';
 import UpdatesInfo from './UpdatesInfo';
+import TextParser from '../../components/TextParser';
 
 class Notifications extends PureComponent {
     constructor(props) {
@@ -18,6 +19,8 @@ class Notifications extends PureComponent {
         if (msg.type === "versionInfo") {
             styles = { width: "600px" };
             message = <UpdatesInfo updates={this.state.updates_info} />;
+        } else {
+            message = <TextParser message={message} />;
         }
 
         const onClosed = () => this.markRead(msg, true);
@@ -82,8 +85,9 @@ class Message extends PureComponent {
                 <div className={`text-truncate${msg.read ? "" : " font-weight-bold"}`} onClick={this.readMessage}>
                     {msg.important && <span className="fa fa-exclamation text-danger"></span>} {msg.title}
                 </div>
-                <div className="small text-muted message" onClick={this.readMessage}>{cut(msg.message, 175, true)}</div>
+                <div className="small text-muted message" onClick={this.readMessage}><TextParser message={cut(msg.message, 175, true)} /></div>
             </DropdownItem>
         );
     }
 }
+
