@@ -1,5 +1,4 @@
 import React, { PureComponent } from 'react';
-import $ from "jquery";
 import { inject } from '../../services/injector-service';
 import { EventCategory } from '../../_constants';
 
@@ -11,15 +10,15 @@ class SkinPicker extends PureComponent {
     }
 
     componentDidMount() {
-        $(`#divSkins [skin="${this.selectedSkin}"]`).addClass("selected");
+        document.body.querySelector(`#divSkins [skin="${this.selectedSkin}"]`)?.classList?.add('selected');
     }
 
     skinSelected = (e) => {
-        const div = $(e.currentTarget);
-        const skin = div.attr("skin");
+        const div = e.currentTarget;
+        const skin = div.attributes["skin"].value;
         this.setSkin(skin);
-        $('#divSkins .selected').removeClass('selected');
-        div.addClass('selected');
+        document.body.querySelector('#divSkins .selected').classList.remove('selected');
+        div.classList.add('selected');
     };
 
     setSkin(skin) {
@@ -27,12 +26,12 @@ class SkinPicker extends PureComponent {
         if (this.selectedSkin === skin) {
             return;
         }
-        const body = $('body');
-        body.removeClass(this.selectedSkin);
+        const body = document.body.classList;
+        body.remove(this.selectedSkin);
         this.skinClass = passedSkin;
         this.selectedSkin = skin;
         this.$cache.set('skin', skin, false, true);
-        body.addClass(this.selectedSkin);
+        body.add(this.selectedSkin);
         this.$analytics.trackEvent("Skin changed", EventCategory.HeaderActions, skin);
     }
 

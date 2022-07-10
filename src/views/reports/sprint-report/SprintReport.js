@@ -1,7 +1,6 @@
 import React from 'react';
 import { inject } from '../../../services';
 import { TabView, TabPanel } from 'primereact/tabview';
-import $ from 'jquery';
 import RapidViewList from '../../../components/RapidViewList';
 import { Checkbox, Button } from '../../../controls';
 import SprintList from '../../../components/SprintList';
@@ -164,10 +163,16 @@ class SprintReport extends BaseGadget {
                         }
                     }
                     sprint.expanded = result.length === 1;
-                    let link = $(sprint.lastUserToClose)
-                        .attr('target', '_blank');
-                    link = link.attr('href', this.$userutils.mapJiraUrl(link.attr('href')));
-                    sprint.lastUserToClose = $("<div/>").append(link).html();
+                    if (sprint.lastUserToClose) {
+                        const div = document.createElement('div');
+                        div.innerHTML = sprint.lastUserToClose;
+                        const link = div.childNodes[0];
+                        if (link) {
+                            link.setAttribute('target', '_blank');
+                            link.setAttribute('href', this.$userutils.mapJiraUrl(link.attributes['href']?.value));
+                            sprint.lastUserToClose = div.innerHTML;
+                        }
+                    }
                 });
 
                 this.setState({ isLoading: false, disableRefresh: false, worklogDetails: data.ticketDetails, selectedTab: 1, sprintDetails: result });

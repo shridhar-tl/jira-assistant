@@ -22,7 +22,6 @@ import navigation, { getDashboardMenu } from '../../_nav';
 import routes from '../../routes';
 import { inject } from '../../services/injector-service';
 import { ContextMenu } from 'jsd-report';
-import $ from 'jquery';
 import AsideUserInfo from './AsideUserInfo';
 import { setStartOfWeek } from '../../common/utils';
 
@@ -49,15 +48,21 @@ class DefaultLayout extends PureComponent {
     const isSideBarToggled = this.$cache.get('SideBarToggled');
     const isSideBarHidden = this.$cache.get('SideBarHidden');
 
-    const body = $(document.body);
-    body.addClass(skinName.replace('-light', '')); //ToDo: once old version is removed, need to permenently update skin color instead of replace
+    const body = document.body.classList;
+    body.add(skinName.replace('-light', '')); //ToDo: once old version is removed, need to permenently update skin color instead of replace
 
-    if (isSideBarHidden) { body.addClass('sidebar-hidden brand-minimized'); }
-    else if (isSideBarToggled) { body.addClass('sidebar-minimized brand-minimized'); }
+    if (isSideBarHidden) {
+      body.add('sidebar-hidden');
+      body.add('brand-minimized');
+    }
+    else if (isSideBarToggled) {
+      body.add('sidebar-minimized');
+      body.add('brand-minimized');
+    }
 
     if (document.location.href.indexOf('?quick=true') > -1) {
       this.$session.isQuickView = true;
-      body.addClass('quick-view');
+      body.add('quick-view');
     }
   }
 
@@ -112,15 +117,15 @@ class DefaultLayout extends PureComponent {
                 <Suspense fallback={this.loading()}>
                   <Switch>
                     {routes.map((route, idx) => (route.component ? (
-                        <Route
-                          key={idx}
-                          path={`/${userId}${route.path}`}
-                          exact={route.exact}
-                          name={route.name}
-                          render={props => (
-                            <route.component {...props} />
-                          )} />
-                      ) : (null)))}
+                      <Route
+                        key={idx}
+                        path={`/${userId}${route.path}`}
+                        exact={route.exact}
+                        name={route.name}
+                        render={props => (
+                          <route.component {...props} />
+                        )} />
+                    ) : (null)))}
                   </Switch>
                 </Suspense>
               </Container>

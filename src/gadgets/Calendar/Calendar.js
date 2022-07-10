@@ -1,5 +1,4 @@
 import React from 'react';
-import $ from 'jquery';
 import BaseGadget from '../BaseGadget';
 import { inject } from '../../services/injector-service';
 import { GadgetActionType } from '../_constants';
@@ -236,7 +235,7 @@ class Calendar extends BaseGadget {
             obj.ticketNo = mTicket;
             this.$worklog.saveWorklog(obj).then((entry) => {
                 this.addEvent({ added: entry });
-                $($event.currentTarget).remove();
+                $event.currentTarget?.remove();
             }, e => {
                 if (typeof e === "string") {
                     this.$message.error(e);
@@ -502,7 +501,7 @@ class Calendar extends BaseGadget {
         }
 
         if (this.$session.isQuickView) {
-            const targetCtl = $('.app-header.navbar > button[appmobilesidebartoggler]').get(0);
+            const targetCtl = document.body.querySelector('.app-header.navbar > button[appmobilesidebartoggler]');
             if (targetCtl) {
                 jsEvent = { currentTarget: targetCtl };
             }

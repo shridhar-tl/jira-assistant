@@ -1,6 +1,5 @@
 import React, { PureComponent } from 'react';
 import { Panel } from 'primereact/panel';
-import $ from 'jquery';
 import { EventEmitter } from 'events';
 import Button from '../controls/Button';
 import classNames from "classnames";
@@ -23,7 +22,6 @@ export class BaseGadget extends PureComponent {
         this.iconClass = iconClass;
         this.isGadget = props.isGadget !== false;
         this.settings = props.settings || { fullWidth: false, fullHeight: false };
-        this.bodyTag = $(document.body);
 
         const { fullWidth = false, fullHeight = false } = this.settings;
         this.state = { fullWidth, fullHeight };
@@ -117,10 +115,10 @@ export class BaseGadget extends PureComponent {
         isFullScreen = !isFullScreen;
         this.$analytics.trackEvent("Toggle full screen", EventCategory.GadgetActions, this.title, isFullScreen);
         if (isFullScreen) {
-            this.bodyTag.addClass('fs-layout');
+            document.body.classList.add('fs-layout');
         }
         else {
-            this.bodyTag.removeClass('fs-layout');
+            document.body.classList.remove('fs-layout');
         }
         this.columnResizeMode = isFullScreen ? 'fit' : 'expand';
         this.setState({ isFullScreen });

@@ -9,8 +9,8 @@
         height: calc(100% - 46px);
         max-height: calc(100vh - 134px);
 
-        table > thead:not(.scroll-overlay) th:not(.foldable),
-        table > tbody td:not(.group-indent-td) {
+        table>thead th:not(.foldable),
+        table>tbody td:not(.group-indent-td) {
             max-width: 700px;
         }
     }
@@ -27,8 +27,8 @@ div.columns-list-container {
         width: 300px;
         background-color: #f8f8f8;
         border: 1px solid #c8ced3;
-        
-        div.column-list-title{
+
+        div.column-list-title {
             height: 46px;
             border-bottom: 1px solid #c8ced3;
             padding: 12px 15px 8px 15px;
@@ -58,7 +58,9 @@ th.group-header {
     }
 }
 
-td.group-toggler-td, td.group-indent-td, td.group-name-td {
+td.group-toggler-td,
+td.group-indent-td,
+td.group-name-td {
     background-color: #ededed;
 }
 
@@ -78,7 +80,7 @@ td.group-name-td {
     border-left: 0;
     padding-left: 1px !important;
     font-weight: bold;
-    
+
     .fa-caret-right {
         cursor: pointer;
         font-size: 20px;
@@ -112,11 +114,12 @@ td.group-name-td {
     .group-list-container {
         display: inline-block;
 
-        & > div.empty-group-msg {
+        &>div.empty-group-msg {
             margin: 10px 8px;
         }
 
-        div[draggable], div.drop-message {
+        div[draggable],
+        div.drop-message {
             display: inline-block;
         }
     }
@@ -132,7 +135,7 @@ td.group-name-td {
             border: 1px solid #c8ced3;
             background-color: #fafafb;
             cursor: move;
-            
+
             .sort-icon {
                 margin-right: 12px;
                 cursor: pointer;

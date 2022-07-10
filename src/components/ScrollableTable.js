@@ -1,12 +1,10 @@
 import React, { PureComponent, createContext } from 'react';
 import "./ScrollableTable.scss";
-import $ from "jquery";
 import { EventEmitter } from 'events';
 import classNames from "classnames";
 
 const TableContext = createContext({});
 
-const tableScrollingEvent = "tableScrolling";
 const sortChangedEvent = "sortChanged";
 const dataChangedEvent = "dataChanged";
 
@@ -75,15 +73,7 @@ export class ScrollableTable extends PureComponent {
         onSortFieldChanged: (callback) => {
             this.eventEmitter.on(sortChangedEvent, callback);
             return () => this.eventEmitter.off(sortChangedEvent, callback);
-        },
-        onScroll: (callback) => {
-            this.eventEmitter.on(tableScrollingEvent, callback);
-            return () => this.eventEmitter.off(tableScrollingEvent, callback);
         }
-    };
-
-    tableScrolled = (e) => {
-        this.eventEmitter.emit(tableScrollingEvent, e.currentTarget.scrollTop, e);
     };
 
     render() {
@@ -91,7 +81,7 @@ export class ScrollableTable extends PureComponent {
 
         return (
             <div className={classNames("scroll-table-container", className)}
-                ref={el => this.container = el} onScroll={this.tableScrolled}>
+                ref={el => this.container = el}>
                 <TableContext.Provider value={this.sharedProps}>
                     <table ref={el => this.table = el}
                         export-sheet-name={exportSheetName}
@@ -107,66 +97,14 @@ export class ScrollableTable extends PureComponent {
 
 export class THead extends PureComponent {
     static contextType = TableContext;
-    state = { showOverlay: false };
-
-    componentDidMount() {
-        this.cleanup = this.context.onScroll((scrollTop) => {
-            this.scrollTop = parseInt(scrollTop) - 1;
-
-            if (scrollTop > 0) {
-                if (!this.state.showOverlay) {
-                    this.setState({ showOverlay: true });
-                }
-
-                if (this.overlay) {
-                    this.overlay.style.top = `${this.scrollTop}px`;
-                }
-            }
-            else {
-                this.setState({ showOverlay: false });
-            }
-        });
-    }
-
-    setOverLay = (ref) => this.overlay = ref;
-    setHeaderEl = (ref) => this.headerEl = ref;
-
-    componentWillUnmount() {
-        this.cleanup();
-    }
-
-    componentDidUpdate() {
-        this.setOverLayStyle();
-    }
-
-    setOverLayStyle() {
-        if (!this.state.showOverlay) { return; }
-
-        const actualTH = $(this.headerEl).find("th");
-        const overlayTH = $(this.overlay).find("th");
-
-        actualTH.each((i, ath) => {
-            const $ath = $(ath);
-            const $oth = $(overlayTH[i]);
-            $oth.width($ath.width());
-        });
-    }
+    state = {};
 
     render() {
-        const { className = "", style, children } = this.props;
-        const { showOverlay } = this.state;
+        const { className, style, children } = this.props;
 
-        const overlayStyle = { ...style, top: this.scrollTop };
-
-        return (<>
-            {showOverlay && <thead ref={this.setOverLay} no-export="true" className={`${className} scroll-overlay`} style={overlayStyle}>
-                {children}
-            </thead>}
-            <thead ref={this.setHeaderEl} className={className} style={style}>
-                {children}
-            </thead>
-        </>
-        );
+        return (<thead className={className} style={style}>
+            {children}
+        </thead>);
     }
 }
 

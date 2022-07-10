@@ -1,5 +1,4 @@
 import React from 'react';
-import $ from 'jquery';
 import { InputMask } from 'primereact/inputmask';
 import { SelectBox, Checkbox } from '../../../controls';
 import WeekDaysSelector from './WeekDaysSelector';
@@ -42,10 +41,10 @@ class GeneralTab extends TabControlBase {
         this.saveSetting(value, field);
 
         if (cUser.hideDonateMenu) {
-            $('body').addClass('no-donation');
+            document.body.classList.add('no-donation');
         }
         else {
-            $('body').removeClass('no-donation');
+            document.body.classList.remove('no-donation');
         }
     };
 

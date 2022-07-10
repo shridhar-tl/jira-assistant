@@ -63,21 +63,6 @@ div.scroll-table-container {
         position: relative;
 
         thead {
-            &.scroll-overlay {
-                position: absolute;
-                left: 0;
-
-                tr {
-                    th:first-child {
-                        border-left: 0;
-                    }
-
-                    th:last-child {
-                        border-right: 0;
-                    }
-                }
-            }
-
             tr {
                 background-color: #ebedf0;
 
@@ -89,6 +74,10 @@ div.scroll-table-container {
                     font-size: 1em;
                     text-align: center;
                     white-space: nowrap;
+                    position: sticky;
+                    top: 0;
+                    z-index: 2000;
+                    background-color: #ebedf0;
 
                     &.sortable {
                         cursor: pointer;

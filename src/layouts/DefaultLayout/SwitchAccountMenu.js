@@ -1,7 +1,6 @@
 import React, { PureComponent } from 'react';
 import { DropdownItem } from 'reactstrap';
 import { inject } from '../../services';
-import $ from "jquery";
 import { AppContext } from '../../App';
 import { getHostFromUrl } from "../../common/utils";
 import { EventCategory } from '../../_constants';
@@ -25,8 +24,7 @@ class SwitchAccountMenu extends PureComponent {
     }
 
     switchUser = (e) => {
-        const el = $(e.currentTarget);
-        const userId = parseInt(el.attr("user-id"));
+        const userId = parseInt(e.currentTarget.attributes['user-id'].value);
         this.context.switchUser(userId);
         this.$analytics.trackEvent("Instance switched", EventCategory.Instance);
     };
