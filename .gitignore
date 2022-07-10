@@ -7,6 +7,7 @@
 
 # testing
 /coverage
+/chrome-cache
 
 # production
 /build
@@ -25,7 +26,6 @@ yarn-error.log*
 
 package-lock.json
 yarn.lock
-/.vscode
 
 # ignore IntelliJ IDEA, WebStorm, etc. project files
 .idea

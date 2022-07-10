@@ -673,8 +673,10 @@ class Calendar extends BaseGadget {
 
         if (!isCopy && eventSrcObj.isUploaded) {
             const icon = e.el.querySelector('i.fa-ellipsis-v');
-            icon.classList.replace('fa-ellipsis-v', 'fa-refresh');
-            icon.classList.add('fa-spin');
+            if (icon) {
+                icon.classList.replace('fa-ellipsis-v', 'fa-refresh');
+                icon.classList.add('fa-spin');
+            }
             revert();
         }
 

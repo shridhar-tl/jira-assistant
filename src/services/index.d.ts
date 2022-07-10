@@ -36,14 +36,14 @@ declare module 'react' {
         $analytics: AnalyticsService
         $auth: AuthService
         $bookmark: BookmarkService
+        $jaBrowserExtn: ChromeService | FirefoxService | EdgeService | DevService
         $cache: CacheService
         $calendar: CalendarService
         $config: ConfigService
         $dashboard: DashboardService
         $db: DatabaseService
-        $jaBrowserExtn: ChromeService | FirefoxService | EdgeService | DevService
-        $jupdates: JiraUpdatesService
         $jira: JiraService
+        $jupdates: JiraUpdatesService
         $message: MessageService
         $noti: NotificationService
         $outlook: OutlookCalendar
@@ -51,7 +51,7 @@ declare module 'react' {
         $report: ReportService
         $reportConfig: ReportConfigService
         $session: SessionService
-        $ettings: SettingsService
+        $settings: SettingsService
         $suggestion: SuggestionService
         $ticket: TicketService
         $user: UserService

@@ -501,10 +501,8 @@ Array.prototype.contains = function (val) {
   return this.indexOf(val) > -1;
 };
 
-Array.prototype.asyncForEach = async function (callback) {
-  for (let index = 0; index < this.length; index++) {
-    await callback(this[index], index);
-  }
+Array.prototype.mapAsync = async function (callback) {
+  return await Promise.all(this.map(callback));
 };
 
 Array.prototype.containsAny = function (arr) {

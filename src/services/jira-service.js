@@ -27,9 +27,11 @@ export default class JiraService {
             this.$ajax.get(prepareUrlWithQueryString(ApiUrls.search, postData))
                 .then((result) => {
                     const issues = result.issues;
-                    if (result.warningMessages?.length) {
-                        const msg = result.warningMessages.join('\r\n');
-                        this.$message.warning(msg, 'Query Error');
+                    if (opts?.ignoreWarnings !== true) {
+                        if (result.warningMessages?.length) {
+                            const msg = result.warningMessages.join('\r\n');
+                            this.$message.warning(msg, 'Query Error');
+                        }
                     }
                     //if (result.maxResults < result.total) {
                     //  this.$message.warning("Your filter returned " + result.total + " tickets but only first " + result.maxResults + " were fetched!");
@@ -56,9 +58,11 @@ export default class JiraService {
                         resolve({ total: result.total, issues: issues, startAt: startAt });
                     }
                 }, (err) => {
-                    const messages = err.error?.errorMessages;
-                    if (messages?.length > 0) {
-                        this.$message.error(messages.join('<br/>'), "Error fetching ticket details");
+                    if (opts?.ignoreErrors !== true) {
+                        const messages = err.error?.errorMessages;
+                        if (messages?.length > 0) {
+                            this.$message.error(messages.join('<br/>'), "Error fetching ticket details");
+                        }
                     }
                     reject(err);
                 });
@@ -171,6 +175,10 @@ export default class JiraService {
                 return this.$ajax.get(ApiUrls.getProjectImportMetadata + projectsToPull.join(","))
                     .then((metadata) => {
                         result = metadata.projects.reduce((r, prj) => {
+                            prj.issuetypesObj = prj.issuetypes.reduce((types, type) => {
+                                types[type.name.toLowerCase().replace(/ /g, '-')] = type;
+                                return types;
+                            }, {});
                             r[prj.key] = prj;
                             return r;
                         }, {});
@@ -205,12 +213,24 @@ export default class JiraService {
         return onlyOne ? result[0] : result;
     }
 
-    getIssueMetadata(issuekey) {
-        return this.$ajax.get(ApiUrls.getIssueMetadata, issuekey);
+    async getIssueMetadata(issuekey) {
+        let value = await this.$jaCache.session.getPromise(`issueMetadata_${issuekey}`);
+        if (value) {
+            return value;
+        }
+
+        value = await this.$ajax.get(ApiUrls.getIssueMetadata, issuekey);
+        this.$jaCache.session.set(`issueMetadata_${issuekey}`, value, 10);
+
+        return value;
     }
 
     createIssue(issue) {
-        return this.$ajax.post(ApiUrls.getIssue, { fields: issue });
+        return this.$ajax.post(ApiUrls.createIssue, { fields: issue });
+    }
+
+    deleteIssue(issuekey) {
+        return this.$ajax.delete(ApiUrls.individualIssue, issuekey);
     }
 
     bulkImportIssues(issueUpdates) {
@@ -223,17 +243,17 @@ export default class JiraService {
 
     getRapidSprintList(rapidIds) {
         const reqArr = rapidIds.map((rapidId) => this.$jaCache.session.getPromise(`rapidSprintList${rapidId}`).then((value) => {
-                if (value) {
-                    return value;
-                }
-                return this.$ajax.get(ApiUrls.rapidSprintList, rapidId)
-                    .then((result) => {
-                        const sprints = result.sprints;
-                        sprints.forEach((sp) => { sp.rapidId = rapidId; });
-                        this.$jaCache.session.set(`rapidSprintList${rapidId}`, sprints, 10);
-                        return sprints;
-                    });
-            }));
+            if (value) {
+                return value;
+            }
+            return this.$ajax.get(ApiUrls.rapidSprintList, rapidId)
+                .then((result) => {
+                    const sprints = result.sprints;
+                    sprints.forEach((sp) => { sp.rapidId = rapidId; });
+                    this.$jaCache.session.set(`rapidSprintList${rapidId}`, sprints, 10);
+                    return sprints;
+                });
+        }));
         return Promise.all(reqArr).then((results) => results.union());
     }
 
@@ -289,6 +309,11 @@ export default class JiraService {
             return this.searchTickets(jql, defaultJiraFields)
                 .then((result) => { this.$jaCache.session.set("mySuggestionTickets", result); return result; });
         }
+    }
+
+    async searchIssueForPicker(query, project = '') {
+        const result = await this.$ajax.get(ApiUrls.searchIssueForPicker, query, project);
+        return result.sections[0].issues;
     }
 
     async searchUsers(text, maxResult = 10, startAt = 0) {
@@ -362,7 +387,7 @@ export default class JiraService {
         const keyName = `userdetail_${username}`;
 
         return this.fetchCachedData(keyName, () => this.$ajax.get(ApiUrls.getUserDetails, username)
-                .then((user) => { this.$jaCache.session.set(keyName, user, 10); return user; }, this.jiraErrorHandler));
+            .then((user) => { this.$jaCache.session.set(keyName, user, 10); return user; }, this.jiraErrorHandler));
     }
 
     async fetchCachedData(keyName, http) {
