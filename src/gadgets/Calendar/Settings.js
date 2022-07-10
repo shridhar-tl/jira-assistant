@@ -13,7 +13,7 @@ class CalendarSettings extends BaseDialog {
         let { settings } = this.state;
         settings = { ...settings };
 
-        if (value) {
+        if (value || value === false) {
             settings[field] = value;
         }
         else {
