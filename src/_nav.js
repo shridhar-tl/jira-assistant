@@ -49,7 +49,21 @@ export const navigation = [
         name: 'Import issue',
         id: 'IMI',
         url: '/import/issue',
-        icon: 'fa fa-ticket'
+        icon: 'fa fa-ticket',
+        badge: {
+            variant: 'info',
+            text: 'BETA'
+        }
+    },
+    {
+        name: 'Import issue',
+        id: 'IMI',
+        url: '/import/issue-old',
+        icon: 'fa fa-ticket',
+        badge: {
+            variant: 'danger',
+            text: 'OLD'
+        }
     },
     {
         title: true,

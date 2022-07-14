@@ -1,66 +1,12 @@
 import React, { PureComponent } from 'react';
 import BaseImport from '../BaseImport';
 import { ScrollableTable, THead, TRow, TBody, Column, NoDataRow } from '../../../components/ScrollableTable';
-import { Checkbox, Button } from '../../../controls';
+import { Checkbox } from '../../../controls';
 import { inject } from '../../../services/injector-service';
+import { noRowMessage } from './helpers';
 import "./ImportIssue.scss";
-import { exportCsv } from '../../../common/utils';
-
-const fieldTicketNo = "issuekey";
-const parentKey = "parent";
-const fieldProject = "project";
-const fieldIssueType = "issuetype";
-const fieldAssignee = "assignee";
-const fieldReporter = "reporter";
-const originalEstimate = "timetracking.originalEstimate";
-const remainingEstimate = "timetracking.remainingEstimate";
-
-const fieldMapping = {
-    issuekey: fieldTicketNo,
-    ticketno: fieldTicketNo,
-    ticket: fieldTicketNo,
-    issue: fieldTicketNo,
-    key: fieldTicketNo,
-    id: fieldTicketNo,
-
-    project: fieldProject,
-    projectkey: fieldProject,
-
-    parent: parentKey,
-    parentkey: parentKey,
-    parentticket: parentKey,
-    parentticketno: parentKey,
-    parentissue: parentKey,
-    parentid: parentKey,
-
-    status: "status",
-    issuestatus: "status",
-
-    summary: "summary",
-    priority: "priority",
-    resolution: "resolution",
-    description: "description",
-
-    estimate: originalEstimate,
-    originalestimate: originalEstimate,
-    initialestimate: originalEstimate,
-    remaining: remainingEstimate,
-    remainingestimate: remainingEstimate,
-    currentestimate: remainingEstimate,
-
-    assignee: fieldAssignee,
-    assignto: fieldAssignee,
-    assignedto: fieldAssignee,
-
-    reporter: fieldReporter,
-    reported: fieldReporter,
-    reportedby: fieldReporter,
-
-    issuetype: fieldIssueType,
-    type: fieldIssueType,
-
-    label: "labels"
-};
+import Footer from './Footer';
+import { transformHeader } from './field-mapping';
 
 class ImportIssue extends BaseImport {
     constructor(props) {
@@ -72,27 +18,11 @@ class ImportIssue extends BaseImport {
     }
 
     UNSAFE_componentWillMount() {
-        this.$jira.getCustomFields().then(fields => this.customFields = fields);
+        this.$jira.getCustomFields().then(fields => {
+            this.customFields = fields;
+            this.transformHeader = transformHeader(fields);
+        });
     }
-
-    transformHeader = (c) => {
-        c = c.replace(/ /g, '').toLowerCase();
-        let fieldName = fieldMapping[c] || null;
-
-        if (!fieldName) {
-            const field = this.customFields.first(cf =>
-                cf.id.toLowerCase() === c // Match with field id
-                || cf.name.replace(/ /g, '').toLowerCase() === c // Try match with name field
-                || (cf.clauseNames && cf.clauseNames.some(cn => cn.replace(/ /g, '').toLowerCase() === c)) // Try find in clause names
-            );
-
-            if (field) {
-                fieldName = field.id;
-            }
-        }
-
-        return fieldName || c;
-    };
 
     processData(data) {
         this.$ticket.processIssuesForImport(data).then(details => {
@@ -155,37 +85,18 @@ class ImportIssue extends BaseImport {
             this.$message.error(error, "Import failed");
             this.setState({ isLoading: false, uploading: false });
         });
-
     };
 
-    downloadTemplate = () => {
-        const lines = [
-            "Ticket No,Project,Parent ticket,IssueType,Summary,Assignee,Reporter,Priority,Status,Resolution",
-            ",JAS,,Story,Sample template to be downloaded for Issues import,admin",
-            ",JAS,,Bug,Summary of Bug to be imported,admin",
-            ",JAS,,Task,Third task to be imported,admin"
-        ];
-        exportCsv(lines.join("\n"), "sample_issues");
-    };
 
     clearImportData = () => {
         this.setState({ importFields: [], ticketDetails: {}, importData: null, selectedCount: null });
     };
 
     renderFooter() {
-        const {
-            state: { isLoading, selectedCount }
-        } = this;
+        const { isLoading, selectedCount } = this.state;
 
-        const importLabel = `Import ${selectedCount || ''} Issues`;
-
-        return <div className="pnl-footer">
-            <div className="pull-right">
-                <Button type="info" icon="fa fa-list" label="Clear" disabled={isLoading} onClick={this.clearImportData} />
-                <Button type="success" icon="fa fa-upload" disabled={isLoading || !(selectedCount > 0)}
-                    label={importLabel} onClick={this.importIssues} />
-            </div>
-        </div>;
+        return (<Footer isLoading={isLoading} selectedCount={selectedCount}
+            clearImportData={this.clearImportData} importIssues={this.importIssues} />);
     }
 
     render() {
@@ -208,8 +119,7 @@ class ImportIssue extends BaseImport {
                             toggleSelection={this.toggleSelection} getTicketLink={this.getTicketLink} />}
                     </TBody>
                     <NoDataRow span={12}>
-                        Upload the list of issues by clicking the ( <span className="fa fa-upload" /> ) icon in top right corner.
-                        Click <span className="link" onClick={this.downloadTemplate}>here</span> to download a sample template.
+                        {noRowMessage}
                     </NoDataRow>
                 </ScrollableTable>
             </div>

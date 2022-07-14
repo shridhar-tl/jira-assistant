@@ -26,6 +26,14 @@ export function saveStringAs(str, typeName, fileName) {
     }
 }
 
+export function waitFor(ms) {
+    if (ms > 0) {
+        return new Promise((resolve) => setTimeout(resolve, ms));
+    }
+
+    return Promise.resolve(true);
+}
+
 /**
 * Export the given content to CSV file.
 *

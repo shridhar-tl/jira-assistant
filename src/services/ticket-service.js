@@ -1,20 +1,31 @@
+/* eslint-disable complexity */
+import { prepareParentAndProjectFields, repeatIssuesWithMultiValues } from "../views/bulk-import/issue/data-processor";
+
+const msgValueRequired = 'Value is required';
+const msgValueInvalid = 'Invalid value for this field';
+const msgInvalidForCreation = 'Not an allowed field while creation of issue. Will try to update after issue is created.';
+
 const commonTicketFields = [
     "summary", "assignee", "reporter",
     "priority", "status", "resolution",
     "created", "updated", "issuetype", "parent"
 ];
 
-export default class TicketService {
-    static dependencies = ["JiraService", 'MessageService'];
+const ignoredFields = ['selected', 'issuekey', 'delete', 'clone', 'importStatus'];
 
-    constructor($jira, $message) {
+export default class TicketService {
+    static dependencies = ["JiraService", 'MessageService', 'UtilsService', 'UserUtilsService'];
+
+    constructor($jira, $message, $utils, $userutils) {
         this.$jira = $jira;
         this.$message = $message;
+        this.$utils = $utils;
+        this.$userutils = $userutils;
 
         this.ticketsCache = {};
     }
 
-    getTicketDetails(tickets, asArr) {
+    getTicketDetails(tickets, asArr, ticketFields, opts) {
         if (!tickets) {
             return null;
         }
@@ -23,7 +34,7 @@ export default class TicketService {
             tickets = [tickets];
             onlyOne = true;
         }
-        return this.fetchTicketDetails(tickets, commonTicketFields)
+        return this.fetchTicketDetails(tickets, ticketFields || commonTicketFields, opts)
             .then((arr) => {
                 const result = {};
                 arr.forEach((t) => {
@@ -39,7 +50,7 @@ export default class TicketService {
             });
     }
 
-    async fetchTicketDetails(tickets, fields) {
+    async fetchTicketDetails(tickets, fields, opts) {
         const result = [];
         const toFetch = [];
         tickets = tickets.distinct(t => t);
@@ -55,7 +66,7 @@ export default class TicketService {
         if (toFetch.length > 0) {
             const jql = `key in ('${toFetch.join("', '")}')`;
             try {
-                const list = await this.$jira.searchTickets(jql, fields);
+                const list = await this.$jira.searchTickets(jql, fields, undefined, opts);
                 result.addRange(list);
             } catch (err) {
                 console.error(err);
@@ -75,10 +86,779 @@ export default class TicketService {
         return result;
     }
 
-    async processIssuesForImport(issues) {
-        issues = this.repeatIssuesWithMultipleParent(issues);
+    //#region New Import functions
 
-        const importData = issues.map(this.prepareParentAndProjectFields);
+    async pullProjectMetadata(projectListToPull) {
+        const metadata = await this.$jira.getProjectImportMetadata(projectListToPull);
+        if (this.projectImportMetadata) {
+            this.projectImportMetadata = { ...this.projectImportMetadata, ...metadata };
+        }
+        else {
+            this.projectImportMetadata = metadata;
+        }
+        return !!Object.keys(metadata).length;
+    }
+
+    async validateIssuesForImport({ columns, importData: issues, addedFields }, settings) {
+        await this.pullProjectMetadata(issues.distinct(i => i.project?.value, true));
+
+        const importData = await issues.mapAsync(issue => this.validateIssueForImport(issue, columns, addedFields, true, settings));
+        await this.fillIssueDetails(importData, columns);
+        await importData.mapAsync(async issue => {
+            const { issuekey, importStatus } = issue;
+            const isInsert = !issuekey.value;
+            const metadata = isInsert ? importStatus.createMetadata : importStatus.updateMetadata;
+            if (metadata) {
+                importStatus.hasError = !(await this.validateFieldsUsingMetadata(issue, columns, metadata.fields, addedFields, isInsert)) || importStatus.hasError;
+            }
+            issue.disabled = importStatus.hasError;
+            if (issue.disabled) {
+                issue.selected = false;
+            }
+        });
+        return { columns, importData, addedFields };
+    }
+
+    async fillIssueDetails(issues, columns) {
+        const issueKeys = issues.distinct(i => i.issuekey?.value, true);
+        const filteredCols = columns.filter(c => !c.hasError && ignoredFields.indexOf(c.field) === -1);
+        const colNames = filteredCols.map(c => c.field);
+
+        const jiraIssues = await this.getTicketDetails(issueKeys, false, colNames, { ignoreErrors: true, ignoreWarnings: true });
+        issues.forEach(issue => {
+            const key = issue.issuekey.value;
+            if (!key || issue.issuekey.error) {
+                return;
+            }
+
+            const jiraIssue = jiraIssues[key];
+            if (!jiraIssue) {
+                issue.issuekey.error = msgValueInvalid;
+                issue.importStatus.hasError = true;
+                return;
+            }
+
+            const fields = jiraIssue.fields;
+            filteredCols.forEach(col => {
+                const { field } = col;
+                const curValue = fields[field];
+                if (!issue[field]) { issue[field] = {}; }
+                this.setJiraValue(issue, col, curValue);
+            });
+        });
+    }
+
+    setJiraValue(issue, col, jiraValue) {
+        const { field, fieldType } = col;
+        if (field === 'issuekey') { return; }
+        const { [field]: valueObj } = issue;
+        if (!jiraValue || issue.jiraValue) {
+            return;
+        }
+
+        if (field === 'parent') {
+            valueObj.jiraValue = jiraValue.key;
+            if (compareIgnoreCase(valueObj.value, valueObj.jiraValue)) {
+                delete valueObj.value;
+            }
+        }
+        else if (fieldType === 'user') {
+            valueObj.jiraValue = {};
+            this.setUserValueObj(valueObj.jiraValue, jiraValue);
+            this.clearUserIfUnChanged(valueObj, jiraValue);
+        }
+        else if (typeof (jiraValue) === 'object') {
+            valueObj.jiraValue = {};
+            if (Array.isArray(jiraValue)) {
+                const val = [];
+                valueObj.jiraValue.value = val;
+                jiraValue.forEach(jv => {
+                    if (typeof jv === 'object') {
+                        const item = {};
+                        val.push(item);
+                        this.setKnownValueObj(item, jv);
+                    } else {
+                        val.push({ value: jv });
+                    }
+                });
+            } else {
+                this.setKnownValueObj(valueObj.jiraValue, jiraValue);
+                this.clearValueIfUnChanged(valueObj, jiraValue);
+            }
+        } else {
+            valueObj.jiraValue = { value: jiraValue };
+            if (valueObj.value === jiraValue) {
+                delete valueObj.value;
+                delete valueObj.displayText;
+                delete valueObj.avatarUrl;
+            }
+        }
+    }
+
+    clearValueIfUnChanged(valueObj, jiraValue) {
+        const { value } = valueObj;
+        if (!value) { return; }
+        if (!Array.isArray(value)) {
+            const toCompare = prepareForCompare(value);
+            if (toCompare === jiraValue.id
+                || toCompare === prepareForCompare(jiraValue.key)
+                || toCompare === prepareForCompare(jiraValue.name)) {
+                delete valueObj.value;
+                delete valueObj.displayText;
+                delete valueObj.avatarUrl;
+            }
+        }
+    }
+
+    clearUserIfUnChanged(valueObj, jiraValue) {
+        const { value } = valueObj;
+        if (!value) { return; }
+        const toCompare = prepareForCompare(value);
+        if (toCompare === jiraValue.id
+            || toCompare === prepareForCompare(jiraValue.key)
+            || toCompare === prepareForCompare(jiraValue.name)
+            || toCompare === prepareForCompare(jiraValue.emailAddress)
+            || toCompare === prepareForCompare(jiraValue.accountId)
+            || toCompare === prepareForCompare(jiraValue.displayName)
+        ) {
+            delete valueObj.value;
+            delete valueObj.displayText;
+            delete valueObj.avatarUrl;
+        }
+    }
+
+    async validateIssueForImport(issue, columns, addedFields, isBulk, settings) {
+        issue = { ...issue };
+
+        const actions = {};
+
+        const importStatus = {
+            hasError: false,
+            actions
+        };
+        issue.importStatus = importStatus;
+
+        if (issue.issuekey.value) {
+            if (issue.delete) {
+                actions.delete = true;
+                return issue;
+            }
+            else if (issue.clone) {
+                actions.clone = true;
+            }
+
+            await this.validateIssueForUpdate(issue, columns, addedFields, isBulk, settings);
+        } else {
+            actions.create = true;
+            await this.validateIssueForCreate(issue, columns, addedFields, isBulk, settings);
+        }
+
+        return issue;
+    }
+
+    async validateIssueForUpdate(issue, columns, addedFields, isBulk, settings) {
+        const { issuekey, importStatus } = issue;
+        let issueMetadata = issue.updateMetadata;
+
+        if (!issueMetadata) {
+            try {
+                issueMetadata = await this.$jira.getIssueMetadata(issuekey.value);
+            }
+            catch {
+                issuekey.error = msgValueInvalid;
+                importStatus.hasError = true;
+                return;
+            }
+        }
+
+        const { fields } = issueMetadata;
+        let { fieldsArr } = issueMetadata;
+        if (!fieldsArr) {
+            fieldsArr = Object.keys(fields).map(f => fields[f]);
+            issueMetadata.fieldsArr = fieldsArr;
+        }
+        this.addMissingColumns(columns, addedFields, fieldsArr, settings);
+        importStatus.updateMetadata = issueMetadata;
+    }
+
+    async validateIssueForCreate(issue, columns, addedFields, isBulk, settings) {
+        const { importStatus } = issue;
+
+        const { project, parent, issuetype } = issue;
+
+        delete project.error;
+        delete project.warning;
+        if (!project.value) {
+            project.error = msgValueRequired;
+        }
+        else if (!this.projectImportMetadata[project.value]) {
+            if (isBulk || !await this.projectListToPull([project.value])) {
+                project.error = msgValueInvalid;
+            }
+        }
+
+        delete issuetype.error;
+        delete issuetype.warning;
+        if (!issuetype.value) {
+            issuetype.error = msgValueRequired;
+        }
+        else if (!project.error) {
+            const projectMetadata = this.projectImportMetadata[project.value];
+            const typeObj = projectMetadata.issuetypesObj[issuetype.value.toLowerCase().replace(/ /g, '-')];
+            if (typeObj) {
+                issue.issuetype.value = typeObj.name;
+                issue.issuetype.displayText = typeObj.name;
+                issue.issuetype.avatarUrl = typeObj.iconUrl;
+
+                if (parent.value && !typeObj.subtask) {
+                    issuetype.error = "Must be a subtask";
+                } else if (!parent.value && typeObj.subtask) {
+                    issuetype.error = "Must not be a subtask";
+                }
+
+                //importStatus.fieldInfo = typeObj.fields;
+                if (!typeObj.fieldsArr) {
+                    typeObj.fieldsArr = Object.keys(typeObj.fields).map(f => typeObj.fields[f]);
+                }
+                this.addMissingColumns(columns, addedFields, typeObj.fieldsArr, settings);
+                importStatus.createMetadata = typeObj;
+            }
+            else {
+                issuetype.error = msgValueInvalid;
+            }
+        }
+
+        importStatus.hasError = importStatus.hasError || !!project.error || !!parent.error || !!issuetype.error;
+
+        return issue;
+    }
+
+    addMissingColumns(columns, addedFields, fields, settings) {
+        fields.forEach(col => {
+            if (col.required && !addedFields[col.key]) {
+                addedFields[col.key] = true;
+                columns.push({
+                    field: col.key, displayText: col.name,
+                    fieldType: this.getFieldType(col),
+                    custom: !!col.schema?.customId,
+                    headerEditable: false,
+                    ...settings
+                });
+            }
+        });
+    }
+
+    getFieldType(col) {
+        const { schema: { type, system } = {} } = col;
+        return type === 'array' ? system : type;
+    }
+
+    async validateFieldsUsingMetadata(issue, columns, fields, addedFields, insert) {
+        let isValid = true;
+        const hasIssueKey = !!issue.issuekey.value;
+        await columns.mapAsync(async col => {
+            if (~ignoredFields.indexOf(col.field)) { return; }
+
+            const field = fields[col.field];
+            const valueObj = issue[col.field] || {};
+            if (!field) {
+                if (valueObj.value) {
+                    if (insert) {
+                        valueObj.warning = msgInvalidForCreation;
+                    }
+                    else {
+                        valueObj.error = 'Field not allowed for update';
+                    }
+
+                    issue[col.field] = valueObj;
+                    isValid = isValid && !valueObj.error;
+                }
+                return;
+            }
+            const { key, required, autoCompleteUrl, allowedValues, schema } = field; // ToDo: 
+
+            if (key === 'issuetype') { return; } // Issue type is already validated and hence no need of additional validation
+
+            const value = valueObj.value;
+
+            delete valueObj.error;
+            //delete valueObj.warning;
+
+            if (required && !value && (!hasIssueKey || valueObj.delete)) {
+                issue[key] = valueObj;
+                valueObj.error = msgValueRequired;
+            }
+
+            if (addedFields[key]) {
+                if (allowedValues) {
+                    valueObj.allowedValues = allowedValues;
+                }
+                else if (autoCompleteUrl) {
+                    valueObj.autoCompleteUrl = autoCompleteUrl;
+                    issue[key] = valueObj;
+                }
+
+                if (schema.type === 'array') {
+                    issue[key] = valueObj;
+                    valueObj.isArray = true;
+
+                    if (value && !Array.isArray(value)) {
+                        valueObj.value = value.split(/[;,]/g).distinct().map(v => ({ value: v.trim() }));
+                    }
+                }
+
+                if (value) {
+                    this.verifyAllowedValues(allowedValues, valueObj);
+
+                    await this.validateFieldType(schema, valueObj);
+                }
+                // attachment not supported
+                // issuelinks not supported
+            }
+
+            isValid = isValid && !valueObj.error;
+        });
+
+        return isValid;
+    }
+
+    verifyAllowedValues(allowedValues, valueObj) {
+        delete valueObj.error;
+        if (allowedValues && valueObj) {
+            valueObj.allowedValues = allowedValues;
+            const { value } = valueObj;
+            if (Array.isArray(value)) {
+                let isValid = true;
+                value.forEach(val => {
+                    if (!this.verifyAllowedValues(allowedValues, val)) {
+                        valueObj.error = 'One or more item is invalid';
+                        isValid = false;
+                    }
+                });
+                return isValid;
+            }
+            else {
+                const valueItem = this.getField(value, allowedValues);
+                if (valueItem) {
+                    this.setKnownValueObj(valueObj, valueItem);
+                    return true;
+                }
+                else {
+                    valueObj.error = msgValueInvalid;
+                    return false;
+                }
+            }
+        }
+
+        return !valueObj.error;
+    }
+
+    async validateFieldType(schema, valueObj) {
+        if (!valueObj?.value) { return; }
+
+        const value = valueObj.value;
+
+        const { type } = schema || {};
+        let isValid;
+        switch (type) {
+            case "string":
+                isValid = typeof value === type;
+                break;
+            case "date":
+            case "datetime":
+                isValid = this.validateFieldType_Date(valueObj, value, type);
+                break;
+            case "array":
+                isValid = true;
+                // isValid = Array.isArray(value); // ToDo: need to check how to validate array
+                break;
+            case "user":
+                isValid = await this.validateFieldType_User(valueObj, value);
+                break;
+            case "issuelink":
+                isValid = await this.validateFieldType_IssueLink(valueObj, value);
+                break;
+            default: isValid = true; break;
+        }
+
+        if (!isValid) {
+            valueObj.error = msgValueInvalid;
+        }
+    }
+
+    validateFieldType_Date(valueObj, value, type) {
+        const dateObj = this.$utils.convertDate(value);
+        if (dateObj) {
+            valueObj.value = dateObj;
+            const { formatDateTime, formatDate } = this.$userutils;
+            valueObj.displayText = type === 'datetime' ? formatDateTime(dateObj) : formatDate(dateObj);
+            return true;
+        }
+
+        return false;
+    }
+
+    async validateFieldType_User(valueObj, value) {
+        if (!value) { return true; }
+        const user = await this.getUserObject(value);
+        if (user) {
+            this.setUserValueObj(valueObj, user);
+            return true;
+        }
+    }
+
+    setUserValueObj(valueObj, user) {
+        valueObj.value = user.emailAddress || user.name || user.accountId || valueObj.value;
+        valueObj.displayText = user.displayName;
+        const { avatarUrls } = user;
+        const avt = avatarUrls && (avatarUrls['24x24'] || avatarUrls['32x32'] || avatarUrls['48x48'] || avatarUrls['16x16']);
+        if (avt) {
+            valueObj.avatarUrl = avt;
+        }
+    }
+
+    setKnownValueObj(valueObj, valueItem) {
+        valueObj.displayText = valueItem.name || valueItem.value;
+        valueObj.value = valueItem.key || valueItem.id || valueItem.name || valueItem.value;
+
+        let iconUrl = valueItem.iconUrl;
+        if (!iconUrl) {
+            const { avatarUrls } = valueItem;
+            iconUrl = avatarUrls && (avatarUrls['24x24'] || avatarUrls['32x32'] || avatarUrls['48x48'] || avatarUrls['16x16']);
+        }
+
+        if (iconUrl) {
+            valueObj.avatarUrl = iconUrl;
+        }
+    }
+
+    async validateFieldType_IssueLink(valueObj, value) {
+        const issueLink = await this.searchIssueForPicker(value);
+        if (issueLink) {
+            valueObj.value = issueLink.key;
+            valueObj.displayText = `${issueLink.key}: ${issueLink.summary}`;
+            return true;
+        }
+    }
+
+    getField(value, allowedValues) {
+        const strForCompare = prepareForCompare(value);
+        const valueItem = allowedValues.filter(v => v.id === value || prepareForCompare(v.key) === strForCompare || prepareForCompare(v.name) === strForCompare || prepareForCompare(v.value) === strForCompare)[0];
+        return valueItem;
+    }
+
+    async getUserObject(value) {
+        const users = await this.$jira.searchUsers(value);
+        if (users.length > 1) {
+            const filteredUsers = users.filter(u => compareIgnoreCase(u.accountId, value)
+                || compareIgnoreCase(u.emailAddress, value)
+                || compareIgnoreCase(u.displayName, value)
+                || compareIgnoreCase(u.name, value)
+            );
+
+            if (filteredUsers.length) {
+                return filteredUsers[0];
+            }
+        }
+
+        return users[0];
+    }
+
+    async searchIssueForPicker(query) {
+        let issues = await this.$jira.searchIssueForPicker(query);
+        if (issues.length > 1) {
+            const key = prepareForCompare(query);
+            issues = issues.filter(issue => prepareForCompare(issue.key) === key);
+        }
+
+        return issues[0];
+    }
+
+    async importIssue(issue, columns, addedFields) {
+        const { issuekey, clone, delete: deleteIssue, importStatus } = issue;
+        if (deleteIssue) {
+            try {
+                await this.$jira.deleteIssue(issuekey.value);
+                importStatus.imported = true;
+                issue.disabled = true;
+                delete issue.selected;
+            } catch (err) {
+                importStatus.hasError = true;
+                const msg = err.response || 'Check console for error details';
+                importStatus.error = `Error: ${err.status}, ${msg.length < 50 ? msg : 'Check console for error details'}`;
+                console.error("Delete Error: Key:-", issuekey.value, " Error Details:-", err);
+            }
+            return;
+        }
+        else if (clone) {
+            try {
+                const summary = issue.summary.value || issue.summary.jiraValue;
+                const response = await this.$jira.cloneIssue(issuekey.value, summary);
+                issue.summary.jiraValue = summary;
+                importStatus.imported = true;
+                issue.disabled = true;
+                delete issue.selected;
+                delete issue.clone;
+                delete issue.summary.value;
+                if (response.key) {
+                    issuekey.value = response.key;
+                } else {
+                    console.log(issuekey.value, ' cloning is Queued. Task Details:-', response);
+                    importStatus.hasWarning = true;
+                    importStatus.warning = 'Cloning is queued in Jira. Check Jira Issue for status.';
+                    return;
+                }
+            } catch (err) {
+                importStatus.hasError = true;
+                const msg = err.response || 'Check console for error details';
+                importStatus.error = `Error: ${err.status}, ${msg.length < 50 ? msg : 'Check console for error details'}`;
+                console.error("Clone Error: Key:-", issuekey.value, " Error Details:-", err);
+            }
+        }
+
+        let hasFieldsForUpdate = !!issuekey.value;
+
+        if (!issuekey.value) { // create issue
+            const { fields, pending } = this.getFieldsForImport(issue, columns, importStatus.createMetadata.fields);
+
+            try {
+                const response = await this.$jira.createIssue(fields);
+                const { key } = response;
+                if (key) {
+                    issuekey.value = key;
+                    hasFieldsForUpdate = !!pending.length;
+                    importStatus.imported = true;
+                    issue.disabled = true;
+                    delete issue.selected;
+                    delete importStatus.hasWarning;
+                    delete importStatus.warning;
+                }
+                console.log("Issue created", response);
+
+                // Clear the fields which are already imported
+                Object.keys(fields).forEach(f => {
+                    const { displayText, value, avatarUrl } = issue[f];
+                    issue[f].jiraValue = { displayText, value, avatarUrl };
+                    delete issue[f].value;
+                    delete issue[f].displayText;
+                    delete issue[f].avatarUrl;
+                });
+
+                if (hasFieldsForUpdate) {
+                    try {
+                        const metadata = await this.$jira.getIssueMetadata(issuekey.value);
+                        importStatus.updateMetadata = metadata;
+                        const isValidForUpdate = await this.validateFieldsUsingMetadata(issue, columns, metadata.fields, addedFields, false);
+                        if (!isValidForUpdate) {
+                            importStatus.hasError = true;
+                            hasFieldsForUpdate = false;
+                        }
+                    } catch (err) {
+                        importStatus.hasError = true;
+                        importStatus.error = `Update Error: ${err.status}, ${err.response?.length < 50 ? err.response : 'Check console for error details'}`;
+                        console.error("Error pulling update metadata: Fields:-", fields, " Error Details:-", err);
+                    }
+                }
+            } catch (err) {
+                importStatus.hasError = true;
+                importStatus.error = `Error: ${err.status}, ${err.response?.length < 50 ? err.response : 'Check console for error details'}`;
+                console.error("Import Error: Key:-", issuekey.value, " Error Details:-", err);
+            }
+        }
+
+        if (issuekey.value && hasFieldsForUpdate && importStatus.updateMetadata) {
+            const { fields, pending } = this.getFieldsForImport(issue, columns, importStatus.updateMetadata.fields);
+
+            try {
+                if (Object.keys(fields).length) {
+                    const response = await this.$jira.updateIssue(fields);
+                    console.log("Issue updated", response);
+
+                    importStatus.imported = true;
+                    issue.disabled = true;
+                    delete issue.selected;
+                    delete importStatus.hasWarning;
+                    delete importStatus.warning;
+
+                    // Clear the fields which are already imported
+                    Object.keys(fields).forEach(f => {
+                        const { displayText, value, avatarUrl } = issue[f];
+                        issue[f].jiraValue = { displayText, value, avatarUrl };
+                        delete issue[f].value;
+                        delete issue[f].displayText;
+                        delete issue[f].avatarUrl;
+                    });
+                }
+
+                if (pending.length) {
+                    importStatus.hasWarning = true;
+                    importStatus.warning = `Following fields not imported: ${pending.join()}`;
+                }
+            } catch (err) {
+                importStatus.hasError = true;
+                importStatus.error = `Error: ${err.status}, ${err.response?.length < 50 ? err.response : 'Check console for error details'}`;
+                console.error("Update Error: Key:-", issuekey.value, "Fields:-", fields, " Error Details:-", err);
+            }
+        }
+
+        return issue;
+    }
+
+    getFieldsForImport(issue, columns, fields) {
+        const result = {};
+        const pending = [];
+        columns.forEach((col) => {
+            const { field } = col;
+            const valueObj = issue[field];
+
+            if (!valueObj.value) {
+                return;
+            }
+
+            const jiraField = fields[field];
+            if (jiraField) {
+                const value = this.getFieldValueForImport(valueObj.value, jiraField);
+                result[field] = value;
+            } else {
+                pending.push(field);
+            }
+        });
+        return { fields: result, pending };
+    }
+
+    getFieldValueForImport = (value, field) => {
+        const { schema: { type, items }, allowedValues } = field;
+        let returnValue = null;
+
+        switch (type) {
+            case "user": returnValue = { name: value }; break;
+            case "date": returnValue = this.$utils.formatDateTimeForJira(value); break; // Must be in "2019-04-16T00:00:00.000Z" format
+            case "array":
+                returnValue = value.map(v => {
+                    v = v.value;
+                    const val = {};
+
+                    if (items === "string") { return v; }
+                    else {
+                        let fieldName = null;
+
+                        if (allowedValues) {
+                            const cVal = prepareForCompare(v);
+                            for (let i = 0; i < allowedValues.length; i++) {
+                                const { id, key, name } = allowedValues[i];
+
+                                if (key && cVal === prepareForCompare(key)) { fieldName = "key"; v = key; }
+                                else if (name && cVal === prepareForCompare(name)) { fieldName = "name"; v = name; }
+                                else if (v === id) { fieldName = "id"; v = id; }
+                                else { continue; }
+
+                                break;
+                            }
+                        }
+                        else {
+                            if (isNaN(v)) { fieldName = "key"; } // ToDo: need to verfy with value
+                            else { fieldName = "id"; }
+                        }
+                        val[fieldName] = v;
+                    }
+
+                    return val;
+                });
+                break;
+            case "string": returnValue = value; break;
+            case "timetracking": returnValue = value; break; // ToDo: need to check with 15, 15h, etc
+            // ToDo: need to verify for project
+            default:
+                const val = {};
+
+                let fieldName = null;
+
+                if (isNaN(value)) { fieldName = "key"; } // ToDo: need to verfy with value
+                else { fieldName = "id"; }
+
+                if (allowedValues) {
+                    for (let i = 0; i < allowedValues.length; i++) {
+                        const { id, key, name } = allowedValues[i];
+
+                        if (value === key) { fieldName = "key"; }
+                        else if (value === name) { fieldName = "name"; }
+                        else if (value === id) { fieldName = "id"; }
+                        else { continue; }
+
+                        break;
+                    }
+                }
+
+                val[fieldName] = value;
+
+                returnValue = val;
+                break;
+        }
+
+        return returnValue;
+    };
+
+    /*
+    verifyAllowedAutocompleteValues(autoCompleteUrl, valueObj) {
+        if (autoCompleteUrl && valueObj) {
+            const { value } = valueObj;
+            if (Array.isArray(value)) {
+                value.forEach(val => {
+                    if (this.verifyAllowedValues(autoCompleteUrl, val)) {
+                        valueObj.error = msgValueInvalid;
+                    }
+                });
+            }
+            else {
+                delete valueObj.error;
+
+                const valueItem = this.getItemFromUrl(autoCompleteUrl, valueObj?.value);
+                if (valueItem) {
+                    valueObj.displayText = valueItem.name || valueItem.value;
+                    valueObj.value = valueItem.key || valueItem.id || valueItem.name || valueItem.value;
+
+                    let iconUrl = valueItem.iconUrl;
+                    if (!iconUrl) {
+                        const { avatarUrls } = valueItem;
+                        iconUrl = avatarUrls && (avatarUrls['24x24'] || avatarUrls['32x32'] || avatarUrls['48x48'] || avatarUrls['16x16']);
+                    }
+
+                    if (iconUrl) {
+                        valueObj.avatarUrl = iconUrl;
+                    }
+                }
+                else {
+                    valueObj.error = msgValueInvalid;
+                }
+
+                return !!valueItem;
+            }
+        }
+    }
+
+    async getItemFromUrl(url, value) {
+        const items = await this.$jira.searchUsers(value);
+        if (items.length > 1) {
+            const filteredUsers = items.filter(u => compareIgnoreCase(u.accountId, value)
+                || compareIgnoreCase(u.emailAddress, value)
+                || compareIgnoreCase(u.displayName, value)
+                || compareIgnoreCase(u.name, value)
+            );
+
+            if (filteredUsers.length) {
+                return filteredUsers[0];
+            }
+        }
+
+        return items[0];
+    }*/
+    //#endregion
+
+    //#region Old Import functions
+    async processIssuesForImport(issues) {
+        issues = repeatIssuesWithMultiValues(issues);
+
+        const importData = issues.map(prepareParentAndProjectFields);
         const projectListToPull = importData.distinct(i => i.project, true);
 
         const metadata = await this.$jira.getProjectImportMetadata(projectListToPull);
@@ -88,30 +868,12 @@ export default class TicketService {
 
         const importFields = await this.getFieldsToImport(metadata, issues);
 
-        const processedIssues = await Promise.all(importData.map(async issue => {
+        const processedIssues = await importData.mapAsync(async issue => {
             const ticketFields = issue.issuekey && ticketDetails && (ticketDetails[issue.issuekey] || {}).fields;
             return await this.prepareIssue(issue, metadata, importFields, ticketFields);
-        }));
-
-        return { importFields, metadata, importData: processedIssues, ticketDetails };
-    }
-
-    repeatIssuesWithMultipleParent(issues) {
-        const result = [];
-        issues.forEach(issue => {
-            if (issue.parent) {
-                const parents = (issue.parent || "").trim().toUpperCase().split(/[ ;,]/gi).filter(p => !!p).distinct();
-
-                if (parents.length > 1) {
-                    parents.forEach(parent => result.push({ ...issue, parent }));
-                    return;
-                }
-            }
-
-            result.push(issue);
         });
 
-        return result;
+        return { importFields, metadata, importData: processedIssues, ticketDetails };
     }
 
     async prepareIssue(issue, metadata, importFields, ticketFields) {
@@ -122,7 +884,7 @@ export default class TicketService {
         let hasError = this.validateCrossFields(raw, options, issuetype) || result.hasError;
 
         const importFieldKeys = Object.keys(fields);
-        await importFieldKeys.asyncForEach(async f => {
+        await importFieldKeys.mapAsync(async f => {
             const fieldMetadata = fields[f];
 
             const fieldOption = this.getOptionField(options, f);
@@ -153,7 +915,7 @@ export default class TicketService {
                         }
                     }
                     else {
-                        fieldOption.warnings.push("Not an allowed field while creation of issue. Will try to update after issue is created.");
+                        fieldOption.warnings.push(msgInvalidForCreation);
                     }
                 }
                 else {
@@ -350,18 +1112,12 @@ export default class TicketService {
             const valueItem = this.getField(value, allowedValues);
             if (valueItem) {
                 option.displayValue = valueItem.name || valueItem.value;
-                issue[field] = valueItem.id || valueItem.key || valueItem.name;
+                issue[field] = valueItem.id || valueItem.key || valueItem.name || valueItem.value;
             }
             else {
                 option.errors.push("Invalid value for this field");
             }
         }
-    }
-
-    getField(value, allowedValues) {
-        const strForCompare = prepareForCompare(value);
-        const valueItem = allowedValues.filter(v => v.id === value || prepareForCompare(v.key) === strForCompare || prepareForCompare(v.name) === strForCompare || prepareForCompare(v.value) === strForCompare)[0];
-        return valueItem;
     }
 
     async validateType(schema, value, option) {
@@ -390,33 +1146,11 @@ export default class TicketService {
     }
 
     validateIfValidUser(value, option) {
-        return this.$jira.searchUsers(value)
-            .then((users) => {
-                if (users.length > 1) {
-                    const filteredUsers = users.filter(u => compareIgnoreCase(u.accountId, value)
-                        || compareIgnoreCase(u.emailAddress, value)
-                        || compareIgnoreCase(u.displayName, value)
-                        || compareIgnoreCase(u.name, value)
-                    );
-
-                    if (filteredUsers.length) {
-                        return filteredUsers[0];
-                    }
-                }
-
-                return users[0];
-            })
-            .then(u => {
-                if (!u) {
-                    return Promise.reject();
-                }
-                return u;
-            })
-            .then((u) => {
-                option.displayValue = u.displayName;
-            }, (e) => {
-                option.errors.push("Not a valid jira user name");
-            });
+        return this.getUserObject(value).then((u) => {
+            option.displayValue = u.displayName;
+        }, (e) => {
+            option.errors.push("Not a valid jira user name");
+        });
     }
 
     async getFieldsToImport(metadata, rawissues) {
@@ -462,43 +1196,6 @@ export default class TicketService {
 
         return importFields;
     }
-
-    prepareParentAndProjectFields = (issue) => {
-        const ticket = { ...issue };
-
-        Object.keys(ticket).forEach(f => {
-            if (!ticket[f]) {
-                delete ticket[f];
-            }
-        });
-
-        let { issuekey, project } = issue;
-
-        if (issuekey) {
-            issuekey = issuekey.trim().toUpperCase();
-            ticket.issuekey = issuekey;
-        }
-
-        if (project) {
-            project = project.trim().toUpperCase();
-            ticket.project = project;
-        }
-
-        if (!project && issuekey) {
-            project = issuekey.split("-")[0].toUpperCase();
-            ticket.project = project;
-        }
-
-        if (ticket.parent) {
-            ticket.parent = ticket.parent.trim().toUpperCase();
-            if (!project) {
-                project = ticket.parent.split("-")[0].toUpperCase();
-                ticket.project = project;
-            }
-        }
-
-        return ticket;
-    };
 
     async importIssues(importData) {
         importData = [...importData];
@@ -698,6 +1395,8 @@ export default class TicketService {
 
         return returnValue;
     };
+
+    //#endregion
 }
 
 function compareIgnoreCase(str1, str2) {
@@ -715,6 +1414,6 @@ function prepareForCompare(value) {
         return value.replace(comparisonCharsRegex, "").toLowerCase();
     }
     else {
-        return value.toString();
+        return value.toString().toLowerCase();
     }
 }

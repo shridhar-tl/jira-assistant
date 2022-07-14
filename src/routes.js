@@ -8,6 +8,7 @@ const DashboardComponent = React.lazy(() => import('./views/dashboard/Dashboard'
 // Bulk Import
 const ImportWorklogComponent = React.lazy(() => import('./views/bulk-import/worklog/ImportWorklog'));
 const ImportIssueComponent = React.lazy(() => import('./views/bulk-import/issue/ImportIssue'));
+const BulkImportIssueComponent = React.lazy(() => import('./views/bulk-import/issue/BulkImportIssue'));
 
 // reports
 const CustomReportComponent = React.lazy(() => import('./views/reports/custom-report/CustomReport'));
@@ -83,8 +84,12 @@ const sessionBasedRoute = [
         component: ImportWorklogComponent
     },
     {
-        path: '/import/issue',
+        path: '/import/issue-old',
         component: ImportIssueComponent
+    },
+    {
+        path: '/import/issue',
+        component: BulkImportIssueComponent
     },
     {
         path: '/settings/general',

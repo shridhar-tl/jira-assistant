@@ -42,9 +42,9 @@ class DatePicker extends PureComponent {
         this.state = this.getDateValue(value, range);
     }
 
-
-    UNSAFE_componentWillReceiveProps(newProps) {
-        const { value, range } = newProps;
+    UNSAFE_componentWillReceiveProps(newProps) { this.setDateFromProps(newProps); }
+    setDateFromProps(props) {
+        const { value, range } = props;
         this.setState(this.getDateValue(value, range));
     }
 
@@ -53,7 +53,7 @@ class DatePicker extends PureComponent {
         //let { value } = e;
         const { range } = this.props;
         let value = picker.startDate;
-        let valToPush = value.toDate();
+        let valToPush = value?.toDate();
         let displayDate = "";
 
         if (range) {
@@ -71,7 +71,7 @@ class DatePicker extends PureComponent {
                 value = [valToPush.fromDate, valToPush.toDate];
             }
         }
-        else {
+        else if (value?.isValid()) {
             displayDate = value.format(this.displayFormat);
         }
 
@@ -113,10 +113,16 @@ class DatePicker extends PureComponent {
         if (this.manuallyEdited) {
             let { target: { value } } = e;
             value = value.trim();
-
+            if (!value && this.props.allowClear === true) {
+                this.onChange(null, { startDate: null });
+                return;
+            }
             let startDate = moment(value, this.displayFormat);
+            if (!startDate.isValid()) {
+                startDate = moment(value);
+            }
 
-            if (startDate.format(this.displayFormat) !== value) {
+            if (!startDate.isValid() || startDate.format(this.displayFormat) !== value) {
                 startDate = this.state.value;
             }
 
@@ -124,6 +130,22 @@ class DatePicker extends PureComponent {
             this.picker.setEndDate(startDate);
 
             this.onChange(null, { startDate });
+        } else if (e?.currentTarget && this.props.onBlur) {
+            this.props.onBlur(e);
+        }
+    };
+
+    onKeyDown = (e) => {
+        const { keyCode } = e;
+
+        if (keyCode === 13) {
+            this.setDate(e);
+        } else if (this.props.onKeyDown) {
+            if (keyCode === 27) {
+                this.setDateFromProps(this.props);
+                this.manuallyEdited = false;
+            }
+            this.props.onKeyDown(e);
         }
     };
 
@@ -136,7 +158,7 @@ class DatePicker extends PureComponent {
     render() {
         const {
             onChange,
-            props: { multiselect, range, disabled, style, className },
+            props: { multiselect, range, disabled, style, className, autoFocus },
             state: { displayDate }
         } = this;
         let { placeholder } = this.props;
@@ -159,9 +181,10 @@ class DatePicker extends PureComponent {
                 onApply={onChange}>
                 <span>
                     <TextBox className="date-range-ctl" value={displayDate}
-                        readOnly={range} placeholder={placeholder}
+                        readOnly={range} placeholder={placeholder} autoFocus={autoFocus}
                         onChange={range ? undefined : this.dateEdited}
                         onBlur={range ? undefined : this.setDate}
+                        onKeyDown={this.onKeyDown}
                     />
                     <Button icon="fa fa-calendar" className="icon" />
                 </span>

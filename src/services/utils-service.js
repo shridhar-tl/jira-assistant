@@ -55,7 +55,7 @@ export default class UtilsService {
             date = this.convertDate(date);
         }
 
-        return date.format("dd/MMM/yy");
+        return date?.format("dd/MMM/yy");
     }
 
     getRowStatus(d) {

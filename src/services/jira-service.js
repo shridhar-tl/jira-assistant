@@ -1,6 +1,6 @@
 import { ApiUrls, DummyWLId, defaultSettings, defaultJiraFields } from '../_constants';
 import * as moment from 'moment';
-import { prepareUrlWithQueryString } from '../common/utils';
+import { prepareUrlWithQueryString, waitFor } from '../common/utils';
 
 export default class JiraService {
     static dependencies = ["AjaxService", "CacheService", "MessageService", "SessionService"];
@@ -227,6 +227,23 @@ export default class JiraService {
 
     createIssue(issue) {
         return this.$ajax.post(ApiUrls.createIssue, { fields: issue });
+    }
+
+    async cloneIssue(key, summary, fields) {
+        const task = await this.$ajax.post(ApiUrls.cloneIssue, { includeAttachments: true, summary, optionalFields: fields || {} }, key);
+
+        if (task.taskId) {
+            await waitFor(1250);
+            const result = await this.$ajax.get(ApiUrls.taskStatus, task.taskId);
+            if (result.progress === 100 && result.result?.issueId) {
+                const issue = await this.$ajax.get(`${ApiUrls.individualIssue}?fields=key`, result.result?.issueId);
+                if (issue) {
+                    return issue;
+                }
+            }
+        }
+
+        return task;
     }
 
     deleteIssue(issuekey) {

@@ -5,7 +5,7 @@ class Image extends PureComponent {
     render() {
         const { src } = this.props;
 
-        if (!src || new URL(src).pathname.length < 3) { return null; }
+        if (!src || getPathName(src).length < 3) { return null; }
 
         const { alt = "", className, title } = this.props;
 
@@ -18,3 +18,13 @@ class Image extends PureComponent {
 }
 
 export default Image;
+
+function getPathName(src) {
+    try {
+        return new URL(src).pathname;
+    }
+    catch (err) {
+        console.warn('Invalid URL Passed: ', src, err);
+    }
+    return '';
+}

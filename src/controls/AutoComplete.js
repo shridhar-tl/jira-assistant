@@ -24,7 +24,10 @@ class AC extends PureComponent {
 
     onChange = ({ value }) => {
         this.setState({ value });
-        this.props.onChange(value, this.props.field);
+        const { onChange } = this.props;
+        if (onChange) {
+            onChange(value, this.props.field);
+        }
     };
 
     filterResult = ({ query }) => {
@@ -47,10 +50,14 @@ class AC extends PureComponent {
 
     onKeyUp = (e) => {
         const { currentTarget, keyCode } = e;
-
+        const { onCustomValue, onKeyUp } = this.props;
         if (keyCode === 13) {
             const value = currentTarget.value.trim();
-            this.props.onCustomValue(value);
+            onCustomValue(value);
+        }
+
+        if (onKeyUp) {
+            onKeyUp(e);
         }
     };
 
@@ -59,15 +66,20 @@ class AC extends PureComponent {
     render() {
         const {
             onChange, filterResult,
-            props: { multiple, dropdown, displayField, children, placeholder, title, className, style, size, maxLength, scrollHeight, disabled, onCustomValue, autoFocus },
+            props: { multiple, dropdown, displayField, children, placeholder, title,
+                className, style, size, maxLength, scrollHeight, disabled, onCustomValue,
+                autoFocus, onKeyUp, onFocus, onBlur, onSelect, onShow, onHide },
             state: { value, list }
         } = this;
 
         return (
-            <AutoComplete ref={this.setRef} appendTo={document.body} multiple={multiple} itemTemplate={children} dropdown={dropdown}
-                field={displayField} placeholder={placeholder} tooltip={title} className={className} style={style}
-                size={size} maxlength={maxLength} scrollHeight={scrollHeight} disabled={disabled}
-                value={value} onChange={onChange} suggestions={list} completeMethod={filterResult} onKeyUp={onCustomValue ? this.onKeyUp : null} autoFocus={autoFocus} />
+            <AutoComplete ref={this.setRef} appendTo={document.body} multiple={multiple}
+                itemTemplate={children} dropdown={dropdown} field={displayField} placeholder={placeholder}
+                tooltip={title} className={className} style={style} size={size} maxlength={maxLength}
+                scrollHeight={scrollHeight} disabled={disabled} value={value} onChange={onChange}
+                suggestions={list} completeMethod={filterResult} autoFocus={autoFocus}
+                onKeyUp={onCustomValue ? this.onKeyUp : onKeyUp} onFocus={onFocus} onBlur={onBlur}
+                onSelect={onSelect} onShow={onShow} onHide={onHide} />
         );
     }
 }
