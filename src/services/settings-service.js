@@ -50,16 +50,14 @@ const settingsDefaultValues = {
 };
 
 class SettingsService {
-    static dependencies = ["DatabaseService"];
+    static dependencies = ["StorageService"];
 
-    constructor($db) {
-        this.$db = $db;
+    constructor($storage) {
+        this.$storage = $storage;
     }
 
     getAllSettings = async (userId, category) => {
-        const settings = await this.$db.appSettings
-            .where({ userId, category })
-            .toArray();
+        const settings = await this.$storage.filterSettings({ userId, category });
 
         return settings.reduce((obj, cur) => {
             obj[cur.name] = cur.value;
@@ -68,7 +66,7 @@ class SettingsService {
     };
 
     getSetting = async (userId, category, name) => {
-        const sett = await this.$db.appSettings.get([userId, category, name]);
+        const sett = await this.$storage.getSetting(userId, category, name);
         return sett?.value;
     };
 
@@ -112,9 +110,7 @@ class SettingsService {
         this.getAllSettings(userId, SettingsCategory.PageSettings, name);
 
     getDashboards = async (userId) => {
-        let boards = await this.$db.appSettings
-            .where({ userId, category: SettingsCategory.Dashboard })
-            .toArray();
+        let boards = await this.$storage.filterSettings({ userId, category: SettingsCategory.Dashboard });
 
         if (boards.length) {
             boards = boards.map(({ value }) => value).filter(Boolean);
@@ -140,10 +136,10 @@ class SettingsService {
         return boards;
     };
 
-    deleteDashboard = (userId, id) => this.$db.appSettings.delete([userId, SettingsCategory.Dashboard, id]);
+    deleteDashboard = (userId, id) => this.$storage.deleteSetting(userId, SettingsCategory.Dashboard, id);
 
     saveSetting = async (userId, category, name, value) =>
-        this.$db.appSettings.put({ userId, category, name, value });
+        this.$storage.addOrUpdateSetting({ userId, category, name, value });
 
     saveGeneralSetting = (userId, name, value) =>
         this.saveSetting(userId, SettingsCategory.General, name, value);
@@ -152,7 +148,7 @@ class SettingsService {
         this.saveSetting(userId, SettingsCategory.PageSettings, name, value);
 
     migrateSettings = async () => {
-        const users = await this.$db.users.toArray();
+        const users = await this.$storage.getAllUsers();
 
         const systemUser = users.filter(u => u.id === SystemUserId)[0];
 
@@ -263,11 +259,11 @@ class SettingsService {
             });
         });
 
-        await this.$db.appSettings.bulkPut(settingsArr);
+        await this.$storage.bulkPutSettings(settingsArr);
 
         if (systemUser) {
             systemUser.settingsMigrated = true;
-            await this.$db.users.put(systemUser);
+            await this.$storage.addOrUpdateUser(systemUser);
         }
 
         console.log('Settings migrated successfully');

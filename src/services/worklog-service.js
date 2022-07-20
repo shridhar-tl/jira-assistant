@@ -3,13 +3,13 @@ import { ApiUrls, DummyWLId } from '../_constants';
 import { getUserName } from '../common/utils';
 
 export default class WorklogService {
-    static dependencies = ["UserUtilsService", "JiraService", "SessionService", "DatabaseService", "TicketService", "AjaxService", "UtilsService", "MessageService"];
+    static dependencies = ["UserUtilsService", "JiraService", "SessionService", "StorageService", "TicketService", "AjaxService", "UtilsService", "MessageService"];
 
-    constructor($userutils, $jira, $session, $db, $ticket, $ajax, $utils) {
+    constructor($userutils, $jira, $session, $storage, $ticket, $ajax, $utils) {
         this.$userutils = $userutils;
         this.$jira = $jira;
         this.$session = $session;
-        this.$db = $db;
+        this.$storage = $storage;
         this.$ticket = $ticket;
         this.$ajax = $ajax;
         this.$utils = $utils;
@@ -74,7 +74,7 @@ export default class WorklogService {
     }
 
     getPendingWorklogs() {
-        return this.$db.worklogs.where("createdBy").equals(this.$session.userId).and((w) => !w.isUploaded).toArray().then((worklogs) => {
+        return this.$storage.getPendingWorlogByUserId(this.$session.userId).then((worklogs) => {
             const keys = worklogs.distinct((w) => w.ticketNo);
             return this.$ticket.getTicketDetails(keys).then((tickets) => {
                 const wlList = worklogs.map((w) => {
@@ -90,7 +90,7 @@ export default class WorklogService {
     }
 
     uploadWorklogs(ids, sameObjects) {
-        return this.$db.worklogs.where("id").anyOf(ids).toArray().then((worklogs) => {
+        return this.$storage.getWorklogsWithIds(ids).then((worklogs) => {
             const promises = worklogs.groupBy(wl => wl.ticketNo).map(grp => {
                 let promise = null;
                 grp.values.forEach(wl => {
@@ -120,11 +120,11 @@ export default class WorklogService {
             delete entry.overrideTimeSpent;
 
             if (entry.parentId) {
-                return this.$db.worklogs.put(entry).then(() => entry);
+                return this.$storage.addOrUpdateWorklog(entry);
             }
             else {
                 if (entry.id !== DummyWLId) {
-                    return this.$db.worklogs.delete(entry.id).then(() => { entry.id = DummyWLId; return entry; });
+                    return this.$storage.deleteWorklog(entry.id).then(() => { entry.id = DummyWLId; return entry; });
                 }
                 else {
                     return entry;
@@ -163,14 +163,14 @@ export default class WorklogService {
 
     deleteWorklogs(ids) {
         const reqArr = [];
-        return this.$db.worklogs.where("id").anyOf(ids).toArray().then((wls) => {
+        return this.$storage.getWorklogsWithIds(ids).then((wls) => {
             wls.forEach((entry) => { reqArr.push(this.deleteWorklog(entry)); });
             return Promise.all(reqArr);
         });
     }
 
     deleteWorklog(entry) {
-        const delReq = this.$db.worklogs.where("id").equals(entry.id).delete().then(null, (e) => {
+        const delReq = this.$storage.deleteWorklog(entry.id).then(null, (e) => {
             if (!entry.worklogId) {
                 return Promise.reject(e);
             }
@@ -182,29 +182,33 @@ export default class WorklogService {
         return delReq;
     }
 
+    /* Commented as no reference was found
     deleteWorklogsBefore(date) {
-        return this.$db.worklogs.where("dateStarted").below(date).delete();
+        return this.$storage.deleteWorklogsBefore(date);
     }
+
+    getLocalWorklog(worklogId) {
+        return this.$storage.getSingleWorklogWithId(parseInt(`${worklogId}`));
+    }*/
 
     getWorklogs(range) {
         const curUserId = this.$session.userId;
         const fromDate = moment(range.fromDate).toDate();
         const toDate = moment(range.toDate).endOf('day').toDate();
-        const prom = this.$db.worklogs.where("dateStarted").between(fromDate, toDate, true, true)
-            .and((w) => w.createdBy === curUserId).toArray();
+        const prom = this.$storage.getWorklogsBetween(fromDate, toDate, curUserId);
         const uploadedWL = this.getUploadedWorklogs(fromDate, toDate).then(wl => {
             const logData = wl.first().logData;
             const wlArr = logData.map(ld => ({
-                    createdBy: curUserId,
-                    dateStarted: ld.logTime,
-                    description: ld.comment,
-                    id: DummyWLId,
-                    isUploaded: true,
-                    timeSpent: ld.totalHours,
-                    ticketNo: ld.ticketNo,
-                    worklogId: ld.worklogId
-                    //parentId:0 - ToDo: Something to be thought of
-                }));
+                createdBy: curUserId,
+                dateStarted: ld.logTime,
+                description: ld.comment,
+                id: DummyWLId,
+                isUploaded: true,
+                timeSpent: ld.totalHours,
+                ticketNo: ld.ticketNo,
+                worklogId: ld.worklogId
+                //parentId:0 - ToDo: Something to be thought of
+            }));
             return wlArr;
         });
         let modProm = Promise.all([prom, uploadedWL])
@@ -245,13 +249,13 @@ export default class WorklogService {
             ticketNo: wl.ticketNo,
             isUploaded: false
         };
-        return this.$db.worklogs.add(newWL).then((id) => { newWL.id = id; return this.getWLCalendarEntry(newWL); });
+        return this.$storage.addWorklog(newWL).then((id) => { newWL.id = id; return this.getWLCalendarEntry(newWL); });
     }
 
     changeWorklogDate(worklog, startDate) {
         let pro = null;
         if (!isNaN(Number(worklog.id)) && worklog.id !== DummyWLId) {
-            pro = this.$db.worklogs.where("id").equals(worklog.id).first();
+            pro = this.$storage.getSingleWorklogWithId(worklog.id);
         }
         else {
             pro = Promise.resolve(worklog);
@@ -263,7 +267,7 @@ export default class WorklogService {
                 return this.uploadWorklog(wl).then(() => getCalEntry());
             }
             else {
-                return this.$db.worklogs.put(wl).then(() => getCalEntry());
+                return this.$storage.addOrUpdateWorklog(wl).then(() => getCalEntry());
             }
         });
     }
@@ -271,7 +275,7 @@ export default class WorklogService {
     changeWorklogTS(worklog, timeSpent) {
         let pro = null;
         if (!isNaN(Number(worklog.id)) && worklog.id !== DummyWLId) {
-            pro = this.$db.worklogs.where("id").equals(worklog.id).first();
+            pro = this.$storage.getSingleWorklogWithId(worklog.id);
         }
         else {
             pro = Promise.resolve(worklog);
@@ -284,19 +288,17 @@ export default class WorklogService {
                 return this.uploadWorklog(wl).then(() => getCalEntry());
             }
             else {
-                return this.$db.worklogs.put(wl).then(getCalEntry);
+                return this.$storage.addOrUpdateWorklog(wl).then(getCalEntry);
             }
         });
     }
-
-    getLocalWorklog(worklogId) { return this.$db.worklogs.where("id").equals(parseInt(`${worklogId}`)).first(); }
 
     getWorklog(worklog) {
         if (worklog.isUploaded) {
             return this.$jira.getJAWorklog(worklog.worklogId, worklog.ticketNo);
         }
         else {
-            return this.getLocalWorklog(worklog.id);
+            return this.$storage.getSingleWorklogWithId(worklog.id);
         }
     }
 
@@ -337,10 +339,10 @@ export default class WorklogService {
             worklog = wl;
             let pro = null;
             if (worklog.id > 0) {
-                pro = this.$db.worklogs.put(worklog);
+                pro = this.$storage.addOrUpdateWorklog(worklog);
             }
             else {
-                pro = this.$db.worklogs.add(worklog).then((id) => { worklog.id = id; });
+                pro = this.$storage.addWorklog(worklog).then((id) => { worklog.id = id; });
             }
             if (upload || worklog.worklogId) {
                 pro = pro.then(() => this.uploadWorklog(worklog));
@@ -432,8 +434,8 @@ export default class WorklogService {
                     uploaded: l.values.filter((d) => d.isUploaded).sum(this.getTimeSpent) * 60 * 1000,
                     totalHours: l.values.sum(this.getTimeSpent) * 60 * 1000,
                     logData: l.values.map((d) => ({
-                            id: d.id, dateLogged: d.dateStarted, uploaded: (d.overrideTimeSpent || d.timeSpent), worklogId: d.worklogId
-                        }))
+                        id: d.id, dateLogged: d.dateStarted, uploaded: (d.overrideTimeSpent || d.timeSpent), worklogId: d.worklogId
+                    }))
                 };
                 item.pendingUpload = item.totalHours - item.uploaded;
                 return item;

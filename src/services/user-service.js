@@ -1,20 +1,16 @@
 import { ContactUsUrl, SettingsCategory, SystemUserId } from "../_constants";
 
 export default class UserService {
-    static dependencies = ["DatabaseService", "JiraService"];
+    static dependencies = ["StorageService", "JiraService"];
 
-    constructor($db, $jira) {
-        this.$db = $db;
+    constructor($storage, $jira) {
+        this.$storage = $storage;
         this.$jira = $jira;
     }
 
-    getUser(userId) {
-        return this.$db.users.get(userId);
-    }
+    getUser(userId) { return this.$storage.getUser(userId); }
 
-    getAllUsers() {
-        return this.$db.users.toArray();
-    }
+    getAllUsers() { return this.$storage.getAllUsers(); }
 
     async saveGlobalSettings(users) {
         const settingsArr = [];
@@ -34,8 +30,8 @@ export default class UserService {
 
         await Promise.all(users.map(async u => {
             if (u.id > SystemUserId && u.deleted) {
-                await this.$db.appSettings.where({ userId: u.id }).delete();
-                await this.$db.users.delete(u.id);
+                await this.$storage.deleteAllSettingsWithUserId(u.id);
+                await this.$storage.deleteUser(u.id);
                 return;
             }
 
@@ -54,18 +50,18 @@ export default class UserService {
             changeSetting(u, user, "enableExceptionLogging", true);
             changeSetting(u, user, "disableDevNotification");
 
-            await this.$db.users.put(user);
+            await this.$storage.addOrUpdateUser(user);
         }));
 
-        await this.$db.appSettings.bulkPut(settingsArr);
+        await this.$storage.bulkPutSettings(settingsArr);
     }
 
     async saveUser(user) {
-        return this.$db.users.put(user);
+        return this.$storage.addOrUpdateUser(user);
     }
 
     async getUsersList() {
-        const users = await this.$db.users.where("id").notEqual(1).toArray();
+        const users = (await this.$storage.getAllUsers()).filter(u => u.id !== 1);
         return users.map(u => ({ id: u.id, email: u.email, jiraUrl: u.jiraUrl, userId: u.userId }));
     }
 
@@ -76,7 +72,7 @@ export default class UserService {
             return currentUser;
         }
 
-        const feedbackUrl = `${ContactUsUrl}?entry.326955045&entry.1696159737&entry.485428648={0}&entry.879531967={1}&entry.1426640786={2}&entry.972533768={3}`;
+        const feedbackUrl = `${ContactUsUrl}?name={0}&email={1}&javersion={2}&browser={3}&entry.326955045&entry.1696159737&entry.485428648={0}&entry.879531967={1}&entry.1426640786={2}&entry.972533768={3}`;
         currentUser.jiraUrl = currentUser.jiraUrl.toString().clearEnd('/');
 
         //this.$session.authTokken = currentUser.dataStore;

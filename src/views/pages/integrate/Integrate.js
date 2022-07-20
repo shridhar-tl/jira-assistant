@@ -7,7 +7,7 @@ import { getUserName } from '../../../common/utils';
 class Integrate extends PureComponent {
     constructor(props) {
         super(props);
-        inject(this, "AjaxService", "DatabaseService", "MessageService", "CacheService", "AppBrowserService", "SessionService", "SettingsService");
+        inject(this, "AjaxService", "StorageService", "MessageService", "CacheService", "AppBrowserService", "SessionService", "SettingsService");
 
         this.year = new Date().getFullYear();
 
@@ -31,14 +31,10 @@ class Integrate extends PureComponent {
     }
 
     async getUserFromDB(root, name, email) {
-        let user = await this.$db.users.where("userId").equalsIgnoreCase(name)
-            .and((u) => u.jiraUrl.toLowerCase() === root.toLowerCase()).first();
+        let user = await this.$storage.getUserWithNameAndJiraUrl(name, root);
 
         if (!user && email) {
-            email = email.toLowerCase();
-            user = await this.$db.users
-                .filter((u) => (u.email || "").toLowerCase() === email && u.jiraUrl.toLowerCase() === root.toLowerCase())
-                .first();
+            user = await this.$storage.getUserWithEmailAndJiraUrl(email, root);
         }
 
         return user;
@@ -64,7 +60,7 @@ class Integrate extends PureComponent {
                             lastLogin: new Date(),
                             dateCreated: new Date()
                         };
-                        this.$db.users.add(user)
+                        this.$storage.addUser(user)
                             .then(async (id) => {
                                 await this.$settings.saveGeneralSetting(id, 'dateFormat', 'dd-MMM-yyyy');
                                 await this.$settings.saveGeneralSetting(id, 'timeFormat', ' hh:mm:ss tt');
@@ -82,8 +78,8 @@ class Integrate extends PureComponent {
                         user.userId = name;
                         user.email = email;
                         user.lastLogin = new Date();
-                        this.$db.users.put(user)
-                            .then((id) => user.id, this.handleDBError)
+                        this.$storage.addOrUpdateUser(user)
+                            .then(() => user.id, this.handleDBError)
                             .then(this.openDashboard);
                     }
                 });
@@ -99,7 +95,7 @@ class Integrate extends PureComponent {
     };
 
     handleDBError = (err) => {
-        this.$message.error("Unable to save the changes. Verify if you have sufficient free space in your C:", "Allocation failed");
+        this.$message.error("Unable to save the changes. Verify if you have sufficient free space in your drive", "Allocation failed");
         return -1;
     };
 

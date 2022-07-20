@@ -1,3 +1,34 @@
+import AjaxService from './ajax-service';
+import AnalyticsService from './analytics-service';
+import ChromeService from './browser-chrome-service';
+import FirefoxService from './browser-firefox-service';
+import EdgeService from './browser-edge-service';
+import DevService from './browser-dev-service';
+import AuthService from './auth-service';
+import BookmarkService from './bookmark-service';
+import CacheService from './cache-service';
+import CalendarService from './calendar-service';
+import ConfigService from './config-service';
+import DashboardService from './dashboard-service';
+import JiraUpdatesService from './jira-updates-service';
+import JiraService from './jira-service';
+import MessageService from './message-service';
+import NotificationService from './notification-service';
+import OutlookCalendar from './outlook-service';
+import QueueService from './queue-service';
+import ReportService from './report-service';
+import ReportConfigService from './reportconfig-service';
+import SessionService from './session-service';
+import SettingsService from './settings-service';
+import StorageService from './storage-service';
+import SuggestionService from './suggestion-service';
+import TicketService from './ticket-service';
+import UserService from './user-service';
+import UserGroupService from './usergroups-service';
+import UserUtilsService from './userutils-service';
+import UtilsService from './utils-service';
+import WorklogService from './worklog-service';
+
 export default class BaseService {
     $ajax: AjaxService
     $analytics: AnalyticsService
@@ -8,7 +39,6 @@ export default class BaseService {
     $calendar: CalendarService
     $config: ConfigService
     $dashboard: DashboardService
-    $db: DatabaseService
     $jira: JiraService
     $jupdates: JiraUpdatesService
     $message: MessageService
@@ -19,6 +49,7 @@ export default class BaseService {
     $reportConfig: ReportConfigService
     $session: SessionService
     $settings: SettingsService
+    $storage: StorageService
     $suggestion: SuggestionService
     $ticket: TicketService
     $user: UserService

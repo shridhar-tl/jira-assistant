@@ -15,14 +15,19 @@ class FeedbackView extends PureComponent {
         const cUser = this.$session.CurrentUser;
         this.$jaBrowserExtn.getAppVersion().then((version) => {
             const siteVersionNumber = (version || AppVersionNo);
-            const feedbackUrl = cUser.feedbackUrl.format([cUser.displayName, cUser.emailAddress, siteVersionNumber, navigator.userAgent]);
+            const feedbackUrl = cUser.feedbackUrl.format([
+                encodeURIComponent(cUser.displayName),
+                encodeURIComponent(cUser.emailAddress),
+                encodeURIComponent(siteVersionNumber),
+                encodeURIComponent(navigator.userAgent)
+            ]);
             this.setState({ feedbackUrl });
         });
     }
 
     render() {
         return (
-            <iframe src={this.state.feedbackUrl} title="Feedback" style={style} />
+            <iframe src={this.state.feedbackUrl} title="Contact Us" style={style} />
         );
     }
 }

@@ -11,7 +11,6 @@ import CacheService from './cache-service';
 import CalendarService from './calendar-service';
 import ConfigService from './config-service';
 import DashboardService from './dashboard-service';
-import DatabaseService from './database-service';
 import JiraUpdatesService from './jira-updates-service';
 import JiraService from './jira-service';
 import MessageService from './message-service';
@@ -22,6 +21,7 @@ import ReportService from './report-service';
 import ReportConfigService from './reportconfig-service';
 import SessionService from './session-service';
 import SettingsService from './settings-service';
+import StorageService from './storage-service';
 import SuggestionService from './suggestion-service';
 import TicketService from './ticket-service';
 import UserService from './user-service';
@@ -41,7 +41,6 @@ declare module 'react' {
         $calendar: CalendarService
         $config: ConfigService
         $dashboard: DashboardService
-        $db: DatabaseService
         $jira: JiraService
         $jupdates: JiraUpdatesService
         $message: MessageService
@@ -52,6 +51,7 @@ declare module 'react' {
         $reportConfig: ReportConfigService
         $session: SessionService
         $settings: SettingsService
+        $storage: StorageService
         $suggestion: SuggestionService
         $ticket: TicketService
         $user: UserService
