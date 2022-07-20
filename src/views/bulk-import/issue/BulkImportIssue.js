@@ -77,7 +77,8 @@ class ImportIssue extends BaseImport {
     }
 
     async processData(data) {
-        const processedData = processData(data, this.colMapping, this.defaultColumns, this.invalidHeaderTemplate, this.defaultColSettings);
+        this.setState({ isLoading: true });
+        const processedData = processData(data, this.colMapping, this.defaultColumns, this.invalidHeaderTemplate, this.unsupportedFieldTemplate, this.defaultColSettings);
         const newState = await this.$ticket.validateIssuesForImport(processedData, this.defaultColSettings);
         newState.selectedCount = this.getSelectedCount(newState.importData);
         newState.selectAll = newState.selectedCount > 0;
@@ -200,8 +201,8 @@ class ImportIssue extends BaseImport {
         }
     }
 
-    invalidHeaderTemplate = (col) => <span>{col.field} <span className="fa fa-exclamation-triangle msg-error" title="Unknown column. This will not be imported." /></span>;
-
+    invalidHeaderTemplate = (col) => <span>{col.field} <span className="fa fa-exclamation-triangle msg-error" title="Unknown field. This will not be imported." /></span>;
+    unsupportedFieldTemplate = (col) => <span>{col.field} <span className="fa fa-exclamation-triangle msg-error" title="Unsupported field. This will not be imported." /></span>;
     setFocus = (ref) => ref?.focus();
     renderCellEditor = (data, column, rowIndex, cell, setValue, endEdit) => {
         const { fieldType } = column;
@@ -227,7 +228,7 @@ class ImportIssue extends BaseImport {
         return <Editor
             value={value}
             onChange={(value, modified) => this.valueChanged(value, modified, endEdit, column, rowIndex)}
-            dataset={dataset} multiple={valueObj?.isArray} showTime={showTime}
+            dataset={dataset} multiple={!!valueObj?.isArray} showTime={showTime}
         />;
     };
 

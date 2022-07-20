@@ -17,7 +17,16 @@ class AutoCompleteEditor extends PureComponent {
     setFocus = () => this.onFocus = true;
     onBlur = (e) => {
         if (!this.isShowing) {
-            this.onChange(this.getItem(e.currentTarget.value), true);
+            if (this.props.multiple) {
+                if (e.currentTarget.value) {
+                    const result = [...this.props.value, this.getItem(e.currentTarget.value)];
+                    this.onChange({ value: result }, true);
+                } else {
+                    this.onChange(this.props.value, false);
+                }
+            } else {
+                this.onChange(this.getItem(e.currentTarget.value), true);
+            }
         }
         this.onFocus = false;
     };
@@ -26,7 +35,13 @@ class AutoCompleteEditor extends PureComponent {
 
     onSelect = ({ value: item }) => {
         const { value, displayText, iconUrl: avatarUrl } = item;
-        this.onChange({ value, displayText, avatarUrl }, true);
+        const newValue = { value, displayText, avatarUrl };
+        if (this.props.multiple) {
+            const result = [...this.props.value, newValue];
+            this.onChange({ value: result }, true);
+        } else {
+            this.onChange(newValue, true);
+        }
     };
 
     onShow = () => this.isShowing = true;
@@ -48,6 +63,7 @@ class AutoCompleteEditor extends PureComponent {
                 placeholder={placeholder}
                 dataset={this.search} maxLength={20}
                 autoFocus onKeyUp={this.validateKeys} onSelect={this.onSelect}
+                forceSelection={this.forceSelection}
                 onShow={this.onShow} onHide={this.onHide} onBlur={this.onBlur} onFocus={this.setFocus}
             >
                 {this.renderTemplate}

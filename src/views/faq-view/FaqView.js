@@ -36,9 +36,9 @@ class FaqView extends PureComponent {
         if (typeof query === "string") {
             this.setState({
                 searchResults: faqArray.filter(f => f.questions.some(q => q.toLowerCase().indexOf(query) > -1)
-                        || f.strand.toLowerCase().indexOf(query) > -1
-                        || f.description.toLowerCase().indexOf(query) > -1
-                        || (f.keywords && f.keywords.some(k => k.toLowerCase().indexOf(query) > -1 || query.indexOf(k) > -1)))
+                    || f.strand.toLowerCase().indexOf(query) > -1
+                    || f.description.toLowerCase().indexOf(query) > -1
+                    || (f.keywords && f.keywords.some(k => k.toLowerCase().indexOf(query) > -1 || query.indexOf(k) > -1)))
             });
         }
         else {
@@ -162,7 +162,7 @@ class FaqView extends PureComponent {
                             <li>edit layout</li>
                             <li>dashboard</li>
                         </ul>
-                        <p>If you did not find anything appropriate for your question, you can <a href="#/feedback">Contact us</a></p>
+                        <p>If you did not find anything appropriate for your question, you can <a href="#/contactus">Contact us</a></p>
                     </div>}
                 </Panel>
             </div>

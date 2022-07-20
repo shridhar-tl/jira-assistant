@@ -129,17 +129,17 @@ export const navigation = [
         title: true,
         name: 'Other'
     },
-    {
+    /*{
         name: 'Help / FAQ',
         id: 'FAQ',
         url: '/faq',
         icon: 'fa fa-question'
-    },
+    },*/
     {
         name: 'Contact us',
         id: 'SUP',
-        url: '/feedback',
-        icon: 'fa fa-bug'
+        url: '/contactus',
+        icon: 'fa fa-phone'
     }
 ];
 

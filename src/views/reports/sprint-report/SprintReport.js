@@ -16,7 +16,7 @@ import { EventCategory } from '../../../_constants';
 
 const notes = <div className="padding-15">
     <strong>Experimental:</strong> This report is experimental and development / bug fixes are in progress. If you encounter any issues or have any
-    suggestions for improvement please send us a feedback by clicking on <i className="fa fa-bug" /> icon on top right corner of the page.
+    suggestions for improvement please send us a feedback by clicking on <i className="fa fa-phone" /> icon on top right corner of the page.
     <br />
     <br />
     <strong>How to use:</strong> To generate the sprint report follow the below steps

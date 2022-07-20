@@ -1,6 +1,8 @@
 import AutoCompleteEditor from './AutoCompleteEditor';
 
 class AllowedValuesEditor extends AutoCompleteEditor {
+    forceSelection = true;
+
     search = (qry) => {
         const qryToLower = qry.toLowerCase();
         const { dataset } = this.props;

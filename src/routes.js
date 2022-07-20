@@ -23,7 +23,7 @@ const GeneralSettingsComponent = React.lazy(() => import('./views/settings/gener
 
 const UserGroupsComponent = React.lazy(() => import('./components/user-group/UserGroup'));
 
-const FaqViewComponent = React.lazy(() => import('./views/faq-view/FaqView'));
+//const FaqViewComponent = React.lazy(() => import('./views/faq-view/FaqView'));
 const ContributeComponent = React.lazy(() => import('./views/contribute/Contribute'));
 const FeedbackViewComponent = React.lazy(() => import('./views/feedback-view/FeedbackView'));
 
@@ -107,7 +107,7 @@ const sessionBasedRoute = [
         path: '/contribute',
         component: ContributeComponent
     },
-    {
+    /*{
         path: '/faq/:query',
         component: FaqViewComponent
     },
@@ -115,9 +115,9 @@ const sessionBasedRoute = [
         path: '/faq',
         component: FaqViewComponent,
         isExact: true
-    },
+    },*/
     {
-        path: '/feedback',
+        path: '/contactus',
         component: FeedbackViewComponent
     }
 ];

@@ -1,6 +1,8 @@
 import { colSpecialProps } from "./helpers";
 
-export function processData(data, colMapping, defaultColumns, invalidHeaderTemplate, settings) {
+const unsupportedFields = ['watches', 'thumbnail', 'issuelinks', 'attachment', 'subtasks', 'votes', 'worklog'];
+
+export function processData(data, colMapping, defaultColumns, invalidHeaderTemplate, unsupportedFieldTemplate, settings) {
     const columns = defaultColumns.filter(c => c.field !== 'status' && c.field !== 'importStatus');
     const addedFields = columns.reduce((obj, col) => {
         obj[col.field] = true;
@@ -9,6 +11,17 @@ export function processData(data, colMapping, defaultColumns, invalidHeaderTempl
 
     Object.keys(data[0]).forEach(f => {
         if (addedFields[f]) { return null; }
+
+        if (unsupportedFields.indexOf(f) > -1) {
+            columns.push({
+                field: f,
+                cellEditable: false,
+                footerEditable: false,
+                hasError: true,
+                headerTemplate: unsupportedFieldTemplate
+            });
+            return;
+        }
 
         const col = colMapping[f];
 

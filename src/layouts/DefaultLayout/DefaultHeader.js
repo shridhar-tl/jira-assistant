@@ -163,7 +163,7 @@ class DefaultHeader extends PureComponent {
             </DropdownMenu>
           </UncontrolledDropdown>
           <NavItem className="d-md-down-none">
-            <NavLink to={`/${this.userId}/feedback`} className="nav-link"><i className="fa fa-bug" title="Report a bug or suggest a new feature"></i></NavLink>
+            <NavLink to={`/${this.userId}/contactus`} className="nav-link"><i className="fa fa-phone" title="Contact us"></i></NavLink>
           </NavItem>
         </Nav>
         {showYoutubeVideo && <YoutubeVideo onHide={this.hideYoutube} />}

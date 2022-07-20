@@ -17,6 +17,7 @@ const fieldMapping = {
 
     project: fieldProject,
     projectkey: fieldProject,
+    projectid: fieldProject,
 
     parent: parentKey,
     parentkey: parentKey,

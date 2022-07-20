@@ -152,40 +152,40 @@ export default class TicketService {
         const { field, fieldType } = col;
         if (field === 'issuekey') { return; }
         const { [field]: valueObj } = issue;
-        if (!jiraValue || issue.jiraValue) {
+        if (!jiraValue) {
+            delete valueObj.jiraValue;
             return;
         }
+        valueObj.jiraValue = {};
 
         if (field === 'parent') {
             valueObj.jiraValue = jiraValue.key;
-            if (compareIgnoreCase(valueObj.value, valueObj.jiraValue)) {
+            if (valueObj.value && compareIgnoreCase(valueObj.value, valueObj.jiraValue)) {
                 delete valueObj.value;
             }
         }
         else if (fieldType === 'user') {
-            valueObj.jiraValue = {};
             this.setUserValueObj(valueObj.jiraValue, jiraValue);
             this.clearUserIfUnChanged(valueObj, jiraValue);
         }
+        else if (Array.isArray(jiraValue)) {
+            const val = [];
+            valueObj.jiraValue.value = val;
+            jiraValue.forEach(jv => {
+                if (typeof jv === 'object') {
+                    const item = {};
+                    val.push(item);
+                    this.setKnownValueObj(item, jv);
+                } else {
+                    val.push({ value: jv });
+                }
+            });
+        }
         else if (typeof (jiraValue) === 'object') {
-            valueObj.jiraValue = {};
-            if (Array.isArray(jiraValue)) {
-                const val = [];
-                valueObj.jiraValue.value = val;
-                jiraValue.forEach(jv => {
-                    if (typeof jv === 'object') {
-                        const item = {};
-                        val.push(item);
-                        this.setKnownValueObj(item, jv);
-                    } else {
-                        val.push({ value: jv });
-                    }
-                });
-            } else {
-                this.setKnownValueObj(valueObj.jiraValue, jiraValue);
-                this.clearValueIfUnChanged(valueObj, jiraValue);
-            }
-        } else {
+            this.setKnownValueObj(valueObj.jiraValue, jiraValue);
+            this.clearValueIfUnChanged(valueObj, jiraValue);
+        }
+        else {
             valueObj.jiraValue = { value: jiraValue };
             if (valueObj.value === jiraValue) {
                 delete valueObj.value;
@@ -412,8 +412,6 @@ export default class TicketService {
 
                     await this.validateFieldType(schema, valueObj);
                 }
-                // attachment not supported
-                // issuelinks not supported
             }
 
             isValid = isValid && !valueObj.error;

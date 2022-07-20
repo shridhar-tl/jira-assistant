@@ -114,9 +114,10 @@ export default class NotificationService {
 
                 if (version > this.version) {
                     let publishMessage = "is available now to update";
+                    const now = new Date().getTime();
 
-                    if (!publishDate) {
-                        const exptDate = expectedOn ? `on ${this.$userutils.formatDate(expectedOn, "dd-MMM-yyyy")} approximately` : "soon";
+                    if (!publishDate || publishDate < now) {
+                        const exptDate = expectedOn && expectedOn > now ? `on ${this.$userutils.formatDate(expectedOn, "dd-MMM-yyyy")} approximately` : "soon";
                         publishMessage = `will be published ${exptDate}`;
                     }
 
