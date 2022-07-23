@@ -202,3 +202,19 @@ export function parseJiraCustomCSV(obj) {
 }
 
 export function calcCostPerSecs(secs, cost) { return (secs / 60 / 60) * cost; }
+
+export function convertToDate(value) {
+    if (!value) {
+        return value;
+    }
+    if (value instanceof Date) {
+        return value;
+    }
+    else if (typeof value === "string" && value.indexOf("/Date(") > -1) { return new Date(parseInt(value.replace("/Date(", "").replace(")/", ""), 10)); }
+    else {
+        const dateObj = moment(value);
+        if (dateObj.isValid()) {
+            return dateObj.toDate();
+        }
+    }
+}

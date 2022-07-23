@@ -9,7 +9,7 @@
         opacity: 0.85;
 
         &:hover {
-            box-shadow: 0 1px 3px 1px rgba(60,64,67,0.149);
+            box-shadow: 0 1px 3px 1px rgba(60, 64, 67, 0.149);
             opacity: 1;
         }
 
@@ -23,13 +23,13 @@
         &.left {
             top: 50%;
             float: left;
-            left: -20px;
+            left: -36px;
         }
 
         &.right {
             top: 50%;
             float: right;
-            right: -15px;
+            right: -36px;
         }
     }
 }

@@ -73,7 +73,9 @@ class WorklogGadget extends BaseGadget {
             this.generateFlatData(res);
 
             this.setState({ isLoading: false });
-            this.onResize({ target: window });
+        }, (err) => {
+            this.setState({ isLoading: false });
+            return Promise.reject(err);
         });
     };
 
@@ -85,11 +87,11 @@ class WorklogGadget extends BaseGadget {
         const toDate = mtoDate.toDate();
         const dateArr = this.getDateArray(fromDate, toDate);
         this.dates = dateArr.map(d => ({
-                prop: d.format('yyyyMMdd'),
-                display: d.format('DDD, dd'),
-                date: d,
-                isHoliday: this.$userutils.isHoliday(d)
-            }));
+            prop: d.format('yyyyMMdd'),
+            display: d.format('DDD, dd'),
+            date: d,
+            isHoliday: this.$userutils.isHoliday(d)
+        }));
         this.months = dateArr.groupBy((d) => d.format("MMM, yyyy")).map(grp => ({ monthName: grp.key, days: grp.values.length }));
         const hideEstimate = this.state.pageSettings.hideEstimate;
         let additionalJQL = (this.state.pageSettings.jql || '').trim();
@@ -187,31 +189,31 @@ class WorklogGadget extends BaseGadget {
                 const userName = usr.displayName;
                 return data.first(d => d.userName === getUserName(usr, true)).logData
                     .map(log => ({
-                            groupName: groupName,
-                            username: getUserName(usr),
-                            userDisplay: userName,
-                            assignee: log.assignee,
-                            reporter: log.reporter,
-                            parent: log.parent,
-                            parentSummary: log.parentSummary,
-                            parentUrl: log.parent ? this.$userutils.getTicketUrl(log.parent) : null,
-                            epicDisplay: log.epicDisplay,
-                            epicUrl: log.epicUrl,
-                            ticketNo: log.ticketNo,
-                            ticketUrl: log.url,
-                            issueType: log.issueType,
-                            summary: log.summary,
-                            projectKey: log.projectKey,
-                            projectName: log.projectName,
-                            statusName: log.statusName,
-                            logTime: log.logTime,
-                            timeSpent: log.totalHours,
-                            originalestimate: log.originalestimate,
-                            remainingestimate: log.remainingestimate,
-                            totalLogged: log.totalLogged,
-                            estVariance: log.estVariance,
-                            comment: log.comment
-                        }));
+                        groupName: groupName,
+                        username: getUserName(usr),
+                        userDisplay: userName,
+                        assignee: log.assignee,
+                        reporter: log.reporter,
+                        parent: log.parent,
+                        parentSummary: log.parentSummary,
+                        parentUrl: log.parent ? this.$userutils.getTicketUrl(log.parent) : null,
+                        epicDisplay: log.epicDisplay,
+                        epicUrl: log.epicUrl,
+                        ticketNo: log.ticketNo,
+                        ticketUrl: log.url,
+                        issueType: log.issueType,
+                        summary: log.summary,
+                        projectKey: log.projectKey,
+                        projectName: log.projectName,
+                        statusName: log.statusName,
+                        logTime: log.logTime,
+                        timeSpent: log.totalHours,
+                        originalestimate: log.originalestimate,
+                        remainingestimate: log.remainingestimate,
+                        totalLogged: log.totalLogged,
+                        estVariance: log.estVariance,
+                        comment: log.comment
+                    }));
             });
         });
     }
@@ -306,13 +308,13 @@ class WorklogGadget extends BaseGadget {
         const flatDataUniqueKey = `${pageSettings._uniqueId}_${flatData._uniqueId}`;
 
         const groupedWorklogTab = (<TabPanel header="Grouped - [User daywise]" contentClassName="no-padding">
-            {rawData && <GroupedDataGrid rawData={rawData} groups={groups} dates={dates} months={months}
+            {rawData && <GroupedDataGrid exportSheetName="Grouped - [User daywise]" rawData={rawData} groups={groups} dates={dates} months={months}
                 pageSettings={pageSettings} convertSecs={convertSecs} formatTime={formatTime} breakupMode={breakupMode}
                 getTicketUrl={this.$userutils.getTicketUrl} maxSecsPerDay={this.maxSecsPerDay} addWorklog={this.addWorklog} />}
         </TabPanel>);
 
         const summaryTab = (<TabPanel header="Summary - [User project wise]">
-            {flatData && <UserProjectWiseSummary key={flatDataUniqueKey} groups={groups}
+            {flatData && <UserProjectWiseSummary exportSheetName="Summary - [User project wise]" key={flatDataUniqueKey} groups={groups}
                 flatData={flatData} formatDateTime={formatDateTime} convertSecs={convertSecs} />}
         </TabPanel>);
 
@@ -337,13 +339,13 @@ class WorklogGadget extends BaseGadget {
                 {rawData && showCostReport && <TabView className="no-padding" renderActiveOnly={false}>
                     {groupedWorklogTab}
                     {<TabPanel header="Cost Report" contentClassName="no-padding">
-                        {rawData && <GroupedDataGrid rawData={rawData} groups={groups} dates={dates} months={months}
+                        {rawData && <GroupedDataGrid exportSheetName="Cost Report" rawData={rawData} groups={groups} dates={dates} months={months}
                             pageSettings={pageSettings} costView={true} convertSecs={convertSecs} formatTime={formatTime} breakupMode={breakupMode}
                             getTicketUrl={this.$userutils.getTicketUrl} maxSecsPerDay={this.maxSecsPerDay} />}
                     </TabPanel>}
                     {summaryTab}
                     <TabPanel header="Cost Summary">
-                        {flatData && <UserProjectWiseSummary key={flatDataUniqueKey} groups={groups} flatData={flatData}
+                        {flatData && <UserProjectWiseSummary exportSheetName="Cost Summary" key={flatDataUniqueKey} groups={groups} flatData={flatData}
                             formatDateTime={formatDateTime} convertSecs={convertSecs} costView={true} />}
                     </TabPanel>
                     {flatLogsTab}

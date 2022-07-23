@@ -5,11 +5,11 @@ import { EventCategory } from '../../_constants';
 class SkinPicker extends PureComponent {
     constructor(props) {
         super(props);
-        inject(this, "CacheService", "AnalyticsService");
-        this.selectedSkin = this.$cache.get('skin', true) || 'skin-blue';
+        inject(this, "SettingsService", "AnalyticsService");
     }
 
-    componentDidMount() {
+    async componentDidMount() {
+        this.selectedSkin = await this.$settings.get('skin') || 'skin-blue';
         document.body.querySelector(`#divSkins [skin="${this.selectedSkin}"]`)?.classList?.add('selected');
     }
 
@@ -30,7 +30,7 @@ class SkinPicker extends PureComponent {
         body.remove(this.selectedSkin);
         this.skinClass = passedSkin;
         this.selectedSkin = skin;
-        this.$cache.set('skin', skin, false, true);
+        this.$settings.set('skin', skin);
         body.add(this.selectedSkin);
         this.$analytics.trackEvent("Skin changed", EventCategory.HeaderActions, skin);
     }

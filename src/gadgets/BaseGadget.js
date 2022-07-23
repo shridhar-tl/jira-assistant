@@ -79,13 +79,6 @@ export class BaseGadget extends PureComponent {
         onDashboardEvent.off("change", this.eventReceived);
     }
 
-    onResize(event) {
-        /*setTimeout(() => {
-            //this.totalHeight = this.isFullScreen ? window.innerHeight : this.widgetCtl.height();
-            //this.contentHeight = this.totalHeight + (this.hideHeader ? 0 : -((this.widgetHdrCtl.outerHeight() || 44) + 3));
-        }, 20);*/
-    }
-
     setSizeOptions(fullWidth, fullHeight) {
         const { settings } = this;
 
@@ -98,10 +91,6 @@ export class BaseGadget extends PureComponent {
     }
 
     UNSAFE_componentWillReceiveProps(changes) {
-        if (changes.layout) {
-            this.onResize();
-        }
-
         if (this.settings !== changes.settings) {
             this.settings = changes.settings || {};
 
@@ -122,7 +111,6 @@ export class BaseGadget extends PureComponent {
         }
         this.columnResizeMode = isFullScreen ? 'fit' : 'expand';
         this.setState({ isFullScreen });
-        this.onResize();
     };
 
     performAction(type, data) {
@@ -152,9 +140,7 @@ export class BaseGadget extends PureComponent {
     }
 
     executeEvent(action) {
-        if (action.type === GadgetActionType.RemoveGadget) {
-            this.onResize();
-        }
+        /* This function has to be overridden in gadgets if needed */
     }
 
     getFullScreenButton() {

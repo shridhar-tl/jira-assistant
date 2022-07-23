@@ -35,7 +35,7 @@ class App extends PureComponent {
   constructor(props) {
     super(props);
     registerServices();
-    inject(this, "AnalyticsService", "SessionService", "AuthService", "MessageService", "AnalyticsService", "SettingsService");
+    inject(this, "AnalyticsService", "SessionService", "AuthService", "MessageService", "SettingsService");
     this.state = { isLoading: true, needIntegration: false, authenticated: false };
     this.props.history.listen(this.routeChanged.bind(this));
   }

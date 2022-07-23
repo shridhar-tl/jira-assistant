@@ -1,10 +1,14 @@
+/* global chrome */
 import { CHROME_WS_URL, AppVersionNo } from '../_constants';
 import { getOriginFromUrl } from '../common/utils';
 import BrowserBase from '../common/BrowserBase';
 
 export default class ChromeBrowserService extends BrowserBase {
+    // This class gets proxied when accessed as webapp
+    // When new method is added or method name is changed in this class, availableMethods list in base class has to be updated
     constructor() {
         super();
+        /* Commented as no reference found
         this.notSetting = {
             init: () => {
                 if (this.notSetting.curShowing) {
@@ -67,9 +71,8 @@ export default class ChromeBrowserService extends BrowserBase {
                     this.notSetting.curShowing[id] = opts;
                 });
             }
-        };
-        this.$window = window;
-        this.chrome = this.$window['chrome'];
+        };*/
+        this.chrome = chrome;
         //https://stackoverflow.com/questions/9847580/how-to-detect-safari-chrome-ie-firefox-and-opera-browser?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
     }
 
@@ -168,23 +171,6 @@ export default class ChromeBrowserService extends BrowserBase {
         window.open(url); // need to change
     }
 
-    getStorage() {
-        return this.chrome.storage ? this.chrome.storage.local : localStorage;
-    }
-
-    getStorageInfo() {
-        return navigator.storage.estimate().then((estimate) => {
-            const usedSpace = estimate.usage;
-            const totalSpace = estimate.quota;
-            return {
-                totalSpace: totalSpace,
-                usedSpace: usedSpace,
-                freeSpace: totalSpace - usedSpace,
-                usedSpacePerc: Math.round(usedSpace * 100 / totalSpace)
-            };
-        });
-    }
-
     getAppInfo() { // need to change
         return new Promise((resolve, reject) => {
             const { management } = this.chrome;
@@ -205,17 +191,6 @@ export default class ChromeBrowserService extends BrowserBase {
     getAppVersion() {
         return this.getAppInfo().then(info => info.version, () => AppVersionNo.toString());
     }
-
-    getAppLongName() { // need to change
-        return this.chrome.app.getDetails().name;
-    }
-
-    notify(id, title, message, ctxMsg, opts) {
-        this.notSetting.init();
-        this.notSetting.show(id, title, message, ctxMsg, opts);
-    }
-
-    addCmdListener(callback) { this.chrome.commands.onCommand.addListener(callback); }
 
     getAuthToken(options) { // need to change
         return new Promise((resolve, reject) => {
@@ -255,4 +230,29 @@ export default class ChromeBrowserService extends BrowserBase {
         const params = new URLSearchParams(m[1].split("#")[0]);
         return params.get("access_token");
     }
+
+    /* Commented as no usage found
+    getStorageInfo() {
+        return navigator.storage.estimate().then((estimate) => {
+            const usedSpace = estimate.usage;
+            const totalSpace = estimate.quota;
+            return {
+                totalSpace: totalSpace,
+                usedSpace: usedSpace,
+                freeSpace: totalSpace - usedSpace,
+                usedSpacePerc: Math.round(usedSpace * 100 / totalSpace)
+            };
+        });
+    }
+
+    getAppLongName() { // need to change
+        return this.chrome.app.getDetails().name;
+    }
+
+    notify(id, title, message, ctxMsg, opts) {
+        this.notSetting.init();
+        this.notSetting.show(id, title, message, ctxMsg, opts);
+    }
+
+    addCmdListener(callback) { this.chrome.commands.onCommand.addListener(callback); }*/
 }

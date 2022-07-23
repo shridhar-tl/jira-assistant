@@ -1,3 +1,4 @@
+import { get } from "../common/storage-helpers";
 import { dateFormats, DefaultEndOfDay, DefaultStartOfDay, DefaultWorkingDays, SettingsCategory, SystemUserId, timeFormats } from "../_constants";
 
 const userSpecificSettings = [
@@ -147,10 +148,30 @@ class SettingsService {
     savePageSetting = (userId, name, value) =>
         this.saveSetting(userId, SettingsCategory.PageSettings, name, value);
 
+    set = (name, value) => this.saveSetting(SystemUserId, SettingsCategory.System, name, value);
+    get = (name) => this.getSetting(SystemUserId, SettingsCategory.System, name);
+
     migrateSettings = async () => {
         const users = await this.$storage.getAllUsers();
 
         const systemUser = users.filter(u => u.id === SystemUserId)[0];
+
+        const migrateKey = (key, raw) => {
+            const value = get(localStorage, key, raw);
+            if (value) {
+                this.set(key, value);
+            }
+            localStorage.removeItem(key);
+        };
+
+        migrateKey('CurrentUserId', false);
+        migrateKey('CurrentJiraUrl', false);
+        migrateKey('skin', true);
+        migrateKey('LastVisited', false);
+        migrateKey('LV', false);
+        migrateKey('readVersion', false);
+        migrateKey('menuAction');
+        // migrateKey('olbt', true); // This needs expires functionality and not yet ready to use IDB for this
 
         if (systemUser?.settingsMigrated) {
             console.log('Settings already migrated');

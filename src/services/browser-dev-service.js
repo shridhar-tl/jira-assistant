@@ -4,6 +4,7 @@ import BrowserBase from '../common/BrowserBase';
 export default class DevBrowserService extends BrowserBase {
     constructor() {
         super();
+        /* Commented as no reference found
         this.notSetting = {
             init: () => {
                 if (this.notSetting.curShowing) {
@@ -66,9 +67,8 @@ export default class DevBrowserService extends BrowserBase {
                     this.notSetting.curShowing[id] = opts;
                 });
             }
-        };
-        this.$window = window;
-        this.chrome = this.$window['chrome'];
+        };*/
+        this.chrome = window['chrome'];
     }
 
     getCurrentUrl() {
@@ -93,10 +93,6 @@ export default class DevBrowserService extends BrowserBase {
         window.open(url);
     }
 
-    getStorage() {
-        return localStorage;
-    }
-
     getAppInfo() { // This function is for private use
         return Promise.resolve({ isDevelopment: true, version: AppVersionNo.toString() });
     }
@@ -105,38 +101,11 @@ export default class DevBrowserService extends BrowserBase {
         return this.getAppInfo().then(info => info.version);
     }
 
-    /* // This function is not used anywhere currently
-    getStorageInfo() {
-        return navigator.storage.estimate().then((estimate) => {
-            const usedSpace = estimate.usage;
-            const totalSpace = estimate.quota;
-            return {
-                totalSpace: totalSpace,
-                usedSpace: usedSpace,
-                freeSpace: totalSpace - usedSpace,
-                usedSpacePerc: Math.round(usedSpace * 100 / totalSpace)
-            };
-        });
-    }
-
-    getAppLongName() {
-        return "Jira Assistant";
-    }
-
-    notify(id, title, message, ctxMsg, opts) {
-        this.notSetting.init();
-        this.notSetting.show(id, title, message, ctxMsg, opts);
-    }
-
-    addCmdListener(callback) { this.chrome.commands.onCommand.addListener(callback); }
-    */
-
     getAuthToken(options) {
         const REDIRECT_URL = window['browser'].identity.getRedirectURL();
         const CLIENT_ID = "692513716183-jm587gc534dvsere4qhnk5bj68pql3p9.apps.googleusercontent.com";
         const SCOPES = ["https://www.googleapis.com/auth/calendar.readonly"];
-        const AUTH_URL = `https://accounts.google.com/o/oauth2/auth?client_id=${
-            CLIENT_ID}&response_type=token&redirect_uri=${encodeURIComponent(REDIRECT_URL)
+        const AUTH_URL = `https://accounts.google.com/o/oauth2/auth?client_id=${CLIENT_ID}&response_type=token&redirect_uri=${encodeURIComponent(REDIRECT_URL)
             }&scope=${encodeURIComponent(SCOPES.join(" "))}`;
         //REVISIT: const VALIDATION_BASE_URL = "https://www.googleapis.com/oauth2/v3/tokeninfo"; // ToDo: Check why this URL is used
         return window['browser'].identity.launchWebAuthFlow({
@@ -169,4 +138,30 @@ export default class DevBrowserService extends BrowserBase {
         const params = new URLSearchParams(m[1].split("#")[0]);
         return params.get("access_token");
     }
+
+    /* // This function is not used anywhere currently
+    getStorageInfo() {
+        return navigator.storage.estimate().then((estimate) => {
+            const usedSpace = estimate.usage;
+            const totalSpace = estimate.quota;
+            return {
+                totalSpace: totalSpace,
+                usedSpace: usedSpace,
+                freeSpace: totalSpace - usedSpace,
+                usedSpacePerc: Math.round(usedSpace * 100 / totalSpace)
+            };
+        });
+    }
+
+    getAppLongName() {
+        return "Jira Assistant";
+    }
+
+    notify(id, title, message, ctxMsg, opts) {
+        this.notSetting.init();
+        this.notSetting.show(id, title, message, ctxMsg, opts);
+    }
+
+    addCmdListener(callback) { this.chrome.commands.onCommand.addListener(callback); }
+    */
 }

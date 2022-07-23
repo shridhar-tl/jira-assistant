@@ -20,7 +20,9 @@
   },
   "background": {
     "persistent": true,
-    "page": "/background.html"
+    "scripts": [
+      "/static/js/background.js"
+    ]
   },
   "commands": {
     "open-ja-dashboard": {

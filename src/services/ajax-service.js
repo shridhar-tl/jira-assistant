@@ -1,35 +1,15 @@
-import $ from 'jquery';
+
 import { prepareUrlWithQueryString } from '../common/utils';
-import browser from '../common/browsers';
 
 export default class AjaxService {
-    static dependencies = ["SessionService", "MessageService", "AppBrowserService"];
+    static dependencies = ["SessionService", "MessageService", "AjaxRequestService"];
 
-    constructor($session, $message, $browser) {
+    constructor($session, $message, $request) {
         this.$session = $session;
         this.$message = $message;
-        this.$browser = $browser;
-
-        const headerObj = { 'Content-Type': 'application/json' };
-
-        // Jira has issue with some user agent. Hence always customize it for Firefox
-        if (browser.isFirefox || browser.isEdge) {
-            headerObj["User-Agent"] = "Chrome";
-        }
-
-        this.httpOptions = {
-            headers: headerObj
-        };
-        //// Jira has issue with user agent of firefox
-        //if (typeof window['InstallTrigger'] !== 'undefined') {
-        //  $.ajaxSetup({
-        //    beforeSend: function (request) {
-        //      console.log("chrome setting user agent");
-        //      request.setRequestHeader("User-Agent", "Chrome");
-        //    }
-        //  });
-        //}
+        this.$request = $request;
     }
+
     prepareUrl(url, params) {
         this._basePath = this.$session.rootUrl;
         if (!this._basePath?.endsWith('/')) {
@@ -61,7 +41,7 @@ export default class AjaxService {
             if (!quiet && e.status === 0) {
                 this.$message.error("Unable to connect to server. Please check your network connectivity.", "Network error");
             }
-            const { responseJSON: error, responseText: response, status } = e;
+            const { error, statusText: response, status } = e;
             return Promise.reject({ error, response, status, ref: e });
         });
     }
@@ -70,41 +50,8 @@ export default class AjaxService {
         return this.handler(this.execute(method, this.prepareUrl(url, params), params, headers), quiet);
     }
 
-    async execute(method, url, params, customHeaders) {
-        let body = params;
-
-        if ((method || "GET").toUpperCase() === "GET") {
-            body = undefined;
-        }
-        else {
-            params = undefined;
-        }
-
-        const { withCredentials, needsPermission, json, ...remainingHeaders } = customHeaders || {};
-
-        if (needsPermission !== false && !await this.$browser.requestPermission(null, url)) {
-            console.warn(`Permission not granted for ${url}.`);
-        }
-
-        return new Promise((resolve, reject) => {
-            $.ajax({
-                type: method,
-                url: url,
-                data: JSON.stringify(body),
-                success: resolve,
-                error: reject,
-                dataType: json !== false ? "json" : undefined,
-                xhrFields: {
-                    withCredentials: withCredentials !== false
-                },
-                beforeSend: (request) => {
-                    const { headers } = this.httpOptions;
-                    const allHeaders = { ...headers, ...remainingHeaders };
-
-                    Object.keys(allHeaders).forEach(h => request.setRequestHeader(h, allHeaders[h]));
-                }
-            });
-        });
+    execute(method, url, params, customHeaders) {
+        return this.$request.execute(method, url, params, customHeaders);
     }
 
     get(url, ...params) {

@@ -1,11 +1,12 @@
-import * as moment from 'moment';
 import { SHORT_MONTH_NAMES, FULL_MONTH_NAMES, TINY_DAY_NAMES, SHORT_DAY_NAMES, FULL_DAY_NAMES } from '../_constants';
-import { getUserName, parseJiraCustomCSV } from '../common/utils';
+import { convertToDate, getUserName, parseJiraCustomCSV } from '../common/utils';
 
 const secsPerDay = 86400;
 const secsPerHour = 3600;
 
 export default class UtilsService {
+    convertDate = convertToDate;
+
     formatDate(date, format) {
         if (!(date instanceof Date)) {
             date = this.convertDate(date);
@@ -84,22 +85,6 @@ export default class UtilsService {
         }
         else if (typeof ts === "number") {
             return ts / 1000;
-        }
-    }
-
-    convertDate(value) {
-        if (!value) {
-            return value;
-        }
-        if (value instanceof Date) {
-            return value;
-        }
-        else if (typeof value === "string" && value.indexOf("/Date(") > -1) { return new Date(parseInt(value.replace("/Date(", "").replace(")/", ""), 10)); }
-        else {
-            const dateObj = moment(value);
-            if (dateObj.isValid()) {
-                return dateObj.toDate();
-            }
         }
     }
 

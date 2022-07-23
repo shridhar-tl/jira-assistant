@@ -2,19 +2,18 @@ import * as moment from 'moment';
 import { getUserName } from '../common/utils';
 
 export default class AuthService {
-    static dependencies = ["UserService", "CacheService", "SessionService", "JiraService", 'SettingsService'];
-    constructor($user, $cache, $session, $jira, $settings) {
+    static dependencies = ["UserService", "SettingsService", "SessionService", "JiraService"];
+    constructor($user, $settings, $session, $jira) {
         this.$user = $user;
-        this.$cache = $cache;
+        this.$settings = $settings;
         this.$session = $session;
         this.$jira = $jira;
-        this.$settings = $settings;
     }
 
     async getUserDetails(userId) {
         try {
             if (!userId) {
-                userId = this.$session.getCurrentUserId();
+                userId = await this.$session.getCurrentUserId();
             }
         }
         catch (ex) {
@@ -84,14 +83,15 @@ export default class AuthService {
             )
         };
 
-        let lastVisisted = this.$cache.get("LV");
+        let lastVisisted = await this.$settings.get('LV');
         if (lastVisisted) {
             lastVisisted = moment(lastVisisted);
             if (moment().startOf('day').isAfter(lastVisisted)) {
-                this.$cache.set("LastVisited", lastVisisted.toDate());
+                await this.$settings.set('LastVisited', lastVisisted.toDate());
             }
         }
-        this.$cache.set("LV", new Date());
+
+        await this.$settings.set('LV', new Date());
 
         return true;
     }

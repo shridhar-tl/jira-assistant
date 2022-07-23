@@ -1,9 +1,6 @@
-import { injectable, inject } from './injector-service';
+import AjaxRequestService from './ajax-request-service';
 import AjaxService from './ajax-service';
 import AnalyticsService from './analytics-service';
-import ChromeService from './browser-chrome-service';
-import FirefoxService from './browser-firefox-service';
-import EdgeService from './browser-edge-service';
 import DevService from './browser-dev-service';
 import AuthService from './auth-service';
 import BookmarkService from './bookmark-service';
@@ -28,37 +25,34 @@ import UserGroupService from './usergroups-service';
 import UserUtilsService from './userutils-service';
 import UtilsService from './utils-service';
 import WorklogService from './worklog-service';
-import browsers from '../common/browsers';
 import SettingsService from './settings-service';
 import StorageService from './storage-service';
+import { AjaxRequestProxyService, BrowserProxyService, StorageProxyService } from './proxy-service';
+import { injectable, inject, injectProdBrowserServices } from './index.common';
 
 export { inject };
 
+const useProxy = process.env.REACT_APP_WEB_BUILD === 'true';
+
 // Any new classes injected should be added in index.d.ts file as well to support intellisense in VS Code.
 export default function injectServices() {
+    injectable(useProxy ? AjaxRequestProxyService : AjaxRequestService, "AjaxRequestService", "$request", { isSingleton: false });
     injectable(AjaxService, "AjaxService", "$ajax");
-    injectable(AnalyticsService, "AnalyticsService", "$analytics");
-    if (process.env.NODE_ENV === "production") {
-        if (browsers.isChrome) {
-            console.log("Chrome Browser service injected");
-            injectable(ChromeService, "AppBrowserService", "$jaBrowserExtn");
-        }
-        else if (browsers.isFirefox) {
-            console.log("Firefox Browser service injected");
-            injectable(FirefoxService, "AppBrowserService", "$jaBrowserExtn");
-        }
-        else if (browsers.isEdge) {
-            console.log("Edge Browser service injected");
-            injectable(EdgeService, "AppBrowserService", "$jaBrowserExtn");
-        }
+    injectable(AnalyticsService, "AnalyticsService", "$analytics", { isSingleton: false });
+    if (useProxy) {
+        console.log("Proxy Browser service injected");
+        injectable(BrowserProxyService, "AppBrowserService", "$jaBrowserExtn", { isSingleton: false });
+    }
+    else if (process.env.NODE_ENV === "production") {
+        injectProdBrowserServices();
     }
     else {
         console.log("Browser service running in Dev mode");
-        injectable(DevService, "AppBrowserService", "$jaBrowserExtn");
+        injectable(DevService, "AppBrowserService", "$jaBrowserExtn", { isSingleton: false });
     }
     injectable(AuthService, "AuthService", "$auth");
     injectable(BookmarkService, "BookmarkService", "$bookmark");
-    injectable(CacheService, "CacheService", "$cache");
+    injectable(CacheService, "CacheService", "$cache", { isSingleton: false });
     injectable(CalendarService, "CalendarService", "$calendar");
     injectable(ConfigService, "ConfigService", "$config");
     injectable(DashboardService, "DashboardService", "$dashboard");
@@ -73,7 +67,7 @@ export default function injectServices() {
     injectable(ReportConfigService, "ReportConfigService", "$reportConfig");
     injectable(SessionService, "SessionService", "$session");
     injectable(SettingsService, "SettingsService", "$settings");
-    injectable(StorageService, "StorageService", "$storage");
+    injectable(useProxy ? StorageProxyService : StorageService, "StorageService", "$storage", { isSingleton: false });
     injectable(SuggestionService, "SuggestionService", "$suggestion");
     injectable(TicketService, "TicketService", "$ticket");
     injectable(UserService, "UserService", "$user");

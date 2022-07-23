@@ -112,9 +112,6 @@ class PendingWorklog extends BaseGadget {
         if (action.type === GadgetActionType.AddWorklog || action.type === GadgetActionType.DeletedWorklog || action.type === GadgetActionType.WorklogModified) {
             this.refreshData();
         }
-        else {
-            super.executeEvent(action);
-        }
     }
 
     selectRowItem(item) {

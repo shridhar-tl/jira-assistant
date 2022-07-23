@@ -8,7 +8,7 @@ import Excel from "exceljs";
 //import { saveAs } from 'file-saver';
 
 export default class Exporter {
-    constructor(format) {
+    constructor() {
         const doc = new Excel.Workbook();
         doc.created = new Date();
         doc.creator = "Jira Assistant";

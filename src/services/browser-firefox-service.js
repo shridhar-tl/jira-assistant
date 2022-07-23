@@ -1,9 +1,11 @@
+/* global chrome browser */
 import { FF_STORE_URL, AppVersionNo } from '../_constants';
 import BrowserBase from '../common/BrowserBase';
 // ToDo: need to pull url
 export default class FirefoxBrowserService extends BrowserBase {
     constructor() {
         super();
+        /* Commented as no reference found
         this.notSetting = {
             init: () => {
                 if (this.notSetting.curShowing) {
@@ -66,9 +68,9 @@ export default class FirefoxBrowserService extends BrowserBase {
                     this.notSetting.curShowing[id] = opts;
                 });
             }
-        };
-        this.$window = window;
-        this.chrome = this.$window['chrome'];
+        };*/
+        this.chrome = chrome;
+        this.browser = browser;
         //https://stackoverflow.com/questions/9847580/how-to-detect-safari-chrome-ie-firefox-and-opera-browser?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
     }
 
@@ -105,33 +107,16 @@ export default class FirefoxBrowserService extends BrowserBase {
     }
 
     openTab(url) {
-        window['browser'].tabs.create({ url: url });
-    }
-
-    getStorage() {
-        return this.chrome.storage ? this.chrome.storage.local : localStorage;
-    }
-
-    getStorageInfo() {
-        return navigator.storage.estimate().then((estimate) => {
-            const usedSpace = estimate.usage;
-            const totalSpace = estimate.quota;
-            return {
-                totalSpace: totalSpace,
-                usedSpace: usedSpace,
-                freeSpace: totalSpace - usedSpace,
-                usedSpacePerc: Math.round(usedSpace * 100 / totalSpace)
-            };
-        });
+        this.browser.tabs.create({ url: url });
     }
 
     getAppInfo() {
-        const browser = window['browser'];
+        const browser = this.browser;
         if (!browser) {
             return Promise.reject(null);
         }
         return browser.management.getSelf().then((info) => {
-            info.isDevelopment = info.installType === window['browser'].management.ExtensionInstallType.DEVELOPMENT;
+            info.isDevelopment = info.installType === this.browser.management.ExtensionInstallType.DEVELOPMENT;
             return info;
         });
     }
@@ -140,26 +125,14 @@ export default class FirefoxBrowserService extends BrowserBase {
         return this.getAppInfo().then(info => info.version, () => AppVersionNo.toString());
     }
 
-    getAppLongName() {
-        return "Jira Assistant";
-    }
-
-    notify(id, title, message, ctxMsg, opts) {
-        this.notSetting.init();
-        this.notSetting.show(id, title, message, ctxMsg, opts);
-    }
-
-    addCmdListener(callback) { this.chrome.commands.onCommand.addListener(callback); }
-
     getAuthToken(options) {
-        const REDIRECT_URL = window['browser'].identity.getRedirectURL();
+        const REDIRECT_URL = this.browser.identity.getRedirectURL();
         const CLIENT_ID = "692513716183-jm587gc534dvsere4qhnk5bj68pql3p9.apps.googleusercontent.com";
         const SCOPES = ["https://www.googleapis.com/auth/calendar.readonly"];
-        const AUTH_URL = `https://accounts.google.com/o/oauth2/auth?client_id=${
-            CLIENT_ID}&response_type=token&redirect_uri=${encodeURIComponent(REDIRECT_URL)
+        const AUTH_URL = `https://accounts.google.com/o/oauth2/auth?client_id=${CLIENT_ID}&response_type=token&redirect_uri=${encodeURIComponent(REDIRECT_URL)
             }&scope=${encodeURIComponent(SCOPES.join(" "))}`;
         //REVISIT: const VALIDATION_BASE_URL = "https://www.googleapis.com/oauth2/v3/tokeninfo"; // ToDo: Check why this URL is used
-        return window['browser'].identity.launchWebAuthFlow({
+        return this.browser.identity.launchWebAuthFlow({
             interactive: options.interactive,
             url: AUTH_URL
         }).then((tokken) => this.extractAccessToken(tokken));
@@ -176,7 +149,7 @@ export default class FirefoxBrowserService extends BrowserBase {
     }
 
     removeAuthTokken(authToken) {
-        window['browser'].identity.removeCachedAuthToken({ 'token': authToken }, () => { /* Nothing to implement */ });
+        this.browser.identity.removeCachedAuthToken({ 'token': authToken }, () => { /* Nothing to implement */ });
     }
 
     getStoreUrl(forRating) {
@@ -189,4 +162,29 @@ export default class FirefoxBrowserService extends BrowserBase {
         const params = new URLSearchParams(m[1].split("#")[0]);
         return params.get("access_token");
     }
+
+    /* Commented as no usage found
+    getStorageInfo() {
+        return navigator.storage.estimate().then((estimate) => {
+            const usedSpace = estimate.usage;
+            const totalSpace = estimate.quota;
+            return {
+                totalSpace: totalSpace,
+                usedSpace: usedSpace,
+                freeSpace: totalSpace - usedSpace,
+                usedSpacePerc: Math.round(usedSpace * 100 / totalSpace)
+            };
+        });
+    }
+
+    getAppLongName() {
+        return "Jira Assistant";
+    }
+
+    notify(id, title, message, ctxMsg, opts) {
+        this.notSetting.init();
+        this.notSetting.show(id, title, message, ctxMsg, opts);
+    }
+
+    addCmdListener(callback) { this.chrome.commands.onCommand.addListener(callback); }*/
 }

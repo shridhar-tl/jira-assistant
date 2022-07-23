@@ -1,5 +1,14 @@
 export default class StorageService {
+    // This class gets proxied when accessed as webapp
+    // When new method is added or method name is changed in this class, this list has to be updated with the method name
+    static availableMethods = "getPendingWorlogByUserId,getWorklogsWithIds,getSingleWorklogWithId,getWorklogsBetween,addOrUpdateWorklog,"
+        + "addWorklog,deleteWorklog,getReportsWithIds,getReportsByUserId,getSingleReportById,getReportByNameForValidation,addOrUpdateReport,addReport,"
+        + "deleteReportsWithIds,getAllUsers,getUser,getUserWithNameAndJiraUrl,getUserWithEmailAndJiraUrl,addUser,addOrUpdateUser,deleteUser,"
+        //+ "setCache,getCache,removeCache,clearCache,getAllCachedValues"
+        + "filterSettings,getSetting,addOrUpdateSetting,bulkPutSettings,deleteSetting,deleteAllSettingsWithUserId";
+
     static dependencies = ["DatabaseService"];
+
     constructor($db) {
         this.$db = $db;
     }
@@ -131,4 +140,38 @@ export default class StorageService {
         return this.$db.appSettings.where({ userId }).delete();
     }
     //#endregion
+
+    /*
+    //#region Local cache storage operations
+    // All thesese functions are async considering the futurestic perspective of using API calls instead
+    // if this data has to be synced, then sync only items which do not have expires property
+    async setCache(key, value, expires, raw) {
+        return set(localStorage, key, value, expires, raw);
+    }
+
+    async getCache(key, raw) {
+        return get(localStorage, key, raw);
+    }
+
+    async removeCache(key) {
+        return this.setCache(key, null, null);
+    }
+
+    async clearCache() {
+        localStorage.clear();
+    }
+
+    getAllCachedValues() {
+        return new Promise((resolve) => {
+            const len = localStorage.length;
+            const result = {};
+            for (let i = 0; i < len; i++) {
+                const key = localStorage.key(i);
+                result[key] = get(localStorage, key, true);
+            }
+            resolve(result);
+        });
+    }
+    //#endregion
+    */
 }

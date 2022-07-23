@@ -7,7 +7,7 @@ import { getUserName } from '../../../common/utils';
 class Integrate extends PureComponent {
     constructor(props) {
         super(props);
-        inject(this, "AjaxService", "StorageService", "MessageService", "CacheService", "AppBrowserService", "SessionService", "SettingsService");
+        inject(this, "AjaxService", "StorageService", "MessageService", "SettingsService", "AppBrowserService", "SessionService", "SettingsService");
 
         this.year = new Date().getFullYear();
 
@@ -99,12 +99,12 @@ class Integrate extends PureComponent {
         return -1;
     };
 
-    openDashboard = (id) => {
+    openDashboard = async (id) => {
         if (id <= 0) {
             return;
         }
-        this.$cache.set("CurrentJiraUrl", this.state.jiraUrl);
-        this.$cache.set("CurrentUserId", id);
+        await this.$settings.set("CurrentJiraUrl", this.state.jiraUrl);
+        await this.$settings.set("CurrentUserId", id);
         this.$jaBrowserExtn.openTab("/index.html");
         window.close();
     };

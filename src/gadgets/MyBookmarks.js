@@ -89,9 +89,6 @@ class MyBookmarks extends BaseGadget {
         if (action.type === GadgetActionType.TicketBookmarked) {
             this.refreshData();
         }
-        else {
-            super.executeEvent(action);
-        }
     }
 
     showAddPopup = () => this.setState({ showAddPopup: true });

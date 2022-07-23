@@ -27,6 +27,12 @@
       "description": "Open JiraAssist dashboard page"
     }
   },
+  "background": {
+    "persistent": true,
+    "scripts": [
+      "/static/js/background.js"
+    ]
+  },
   "content_security_policy": "script-src 'self' ; object-src 'self';",
   "permissions": [
     "activeTab",
@@ -44,7 +50,7 @@
   ],
   "developer": {
     "name": "Shridhar",
-    "url": "http://github.com/shridhar-tl/jira-assistant"
+    "url": "https://www.jiraassistant.com/"
   },
   "author": "Shridhar"
 }

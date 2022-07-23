@@ -1,13 +1,13 @@
+import { prepareUrlWithQueryString } from "../common/utils";
 import { AppVersionNo, AnalyticsTrackingId, AnalyticsUrl } from "../_constants";
 
 export default class AnalyticsService {
-    static dependencies = ["AppBrowserService", "AjaxService"];
+    static dependencies = ["AppBrowserService"];
 
-    constructor($jaBrowserExtn, $ajax) {
+    constructor($jaBrowserExtn) {
         $jaBrowserExtn.getAppVersion().then((version) => {
             this.versionNumber = version || AppVersionNo;
         }, () => this.versionNumber = AppVersionNo);
-        this.$ajax = $ajax;
     }
 
     send(obj) {
@@ -34,7 +34,7 @@ export default class AnalyticsService {
             ...obj
         };
 
-        const url = this.$ajax.prepareUrl(AnalyticsUrl, data);
+        const url = prepareUrlWithQueryString(AnalyticsUrl, data);
         const imgTag = document.createElement('img');
         imgTag.onload = removeImageOnLoad;
         imgTag.onerror = removeImageOnLoad;

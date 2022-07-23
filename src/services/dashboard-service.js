@@ -105,9 +105,12 @@ export default class DashboardService {
 
         await this.saveUserDashboards(currentBoard, true);
 
-        let quickMenu = this.$cache.get("menuAction", true);
+        let quickMenu = (await this.$settings.get("menuAction")) || this.$cache.get("menuAction", true);
         if (quickMenu) {
-            quickMenu = JSON.parse(quickMenu);
+            if (typeof quickMenu === 'string') {
+                quickMenu = JSON.parse(quickMenu);
+            }
+
             if (quickMenu.action === 3) {
                 if (index === 0) {
                     delete quickMenu.index;
@@ -116,7 +119,7 @@ export default class DashboardService {
                     quickMenu.index = index;
                 }
             }
-            this.$cache.set("menuAction", quickMenu, false, true);
+            await this.$settings.set("menuAction", quickMenu);
         }
 
         return currentBoard;

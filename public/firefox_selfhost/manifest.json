@@ -27,7 +27,10 @@
     "default_popup": "/menu.html"
   },
   "background": {
-    "page": "/background.html"
+    "persistent": true,
+    "scripts": [
+      "/static/js/background.js"
+    ]
   },
   "commands": {
     "open-ja-dashboard": {
@@ -56,7 +59,7 @@
   ],
   "developer": {
     "name": "Shridhar",
-    "url": "http://github.com/shridhar-tl/jira-assistant"
+    "url": "https://www.jiraassistant.com"
   },
   "author": "Shridhar"
 }

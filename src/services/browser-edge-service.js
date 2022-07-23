@@ -4,6 +4,7 @@ import BrowserBase from '../common/BrowserBase';
 export default class AppBrowserService extends BrowserBase {
     constructor() {
         super();
+        /* Commented as no reference found
         this.notSetting = {
             init: () => {
                 if (this.notSetting.curShowing) {
@@ -66,9 +67,8 @@ export default class AppBrowserService extends BrowserBase {
                     this.notSetting.curShowing[id] = opts;
                 });
             }
-        };
-        this.$window = window;
-        this.browser = this.$window['browser'];
+        };*/
+        this.browser = window['browser'];
         //https://stackoverflow.com/questions/9847580/how-to-detect-safari-chrome-ie-firefox-and-opera-browser?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
     }
 
@@ -114,23 +114,6 @@ export default class AppBrowserService extends BrowserBase {
         this.browser.tabs.create({ url, active: true });
     }
 
-    getStorage() {
-        return this.browser.storage ? this.browser.storage.local : localStorage;
-    }
-
-    getStorageInfo() {
-        return navigator.storage.estimate().then((estimate) => {
-            const usedSpace = estimate.usage;
-            const totalSpace = estimate.quota;
-            return {
-                totalSpace: totalSpace,
-                usedSpace: usedSpace,
-                freeSpace: totalSpace - usedSpace,
-                usedSpacePerc: Math.round(usedSpace * 100 / totalSpace)
-            };
-        });
-    }
-
     getAppInfo() { // need to change
         return new Promise((resolve, reject) => {
             const { management } = this.browser;
@@ -159,17 +142,6 @@ export default class AppBrowserService extends BrowserBase {
             return this.getAppInfo().then(info => info?.version, () => '1.5');
         }
     }
-
-    getAppLongName() { // need to change
-        return this.browser.app.getDetails().name;
-    }
-
-    notify(id, title, message, ctxMsg, opts) {
-        this.notSetting.init();
-        this.notSetting.show(id, title, message, ctxMsg, opts);
-    }
-
-    addCmdListener(callback) { this.browser.commands.onCommand.addListener(callback); }
 
     getAuthToken(options) { // need to change
         return new Promise((resolve, reject) => {
@@ -210,4 +182,29 @@ export default class AppBrowserService extends BrowserBase {
         const params = new URLSearchParams(m[1].split("#")[0]);
         return params.get("access_token");
     }
+
+    /* Commented as no usage found
+    getStorageInfo() {
+        return navigator.storage.estimate().then((estimate) => {
+            const usedSpace = estimate.usage;
+            const totalSpace = estimate.quota;
+            return {
+                totalSpace: totalSpace,
+                usedSpace: usedSpace,
+                freeSpace: totalSpace - usedSpace,
+                usedSpacePerc: Math.round(usedSpace * 100 / totalSpace)
+            };
+        });
+    }
+
+    getAppLongName() { // need to change
+        return this.browser.app.getDetails().name;
+    }
+
+    notify(id, title, message, ctxMsg, opts) {
+        this.notSetting.init();
+        this.notSetting.show(id, title, message, ctxMsg, opts);
+    }
+
+    addCmdListener(callback) { this.browser.commands.onCommand.addListener(callback); }*/
 }

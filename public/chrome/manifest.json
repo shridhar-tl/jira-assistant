@@ -28,6 +28,15 @@
       "description": "Open JiraAssist dashboard page"
     }
   },
+  "externally_connectable": {
+    "matches": [
+      "https://*.jiraassistant.com/*",
+      "*://localhost/*"
+    ]
+  },
+  "background": {
+    "service_worker": "/static/js/background.js"
+  },
   "oauth2": {
     "client_id": "692513716183-s97kv5slq5ihm410jq2kc4r8hr77rcku.apps.googleusercontent.com",
     "scopes": [

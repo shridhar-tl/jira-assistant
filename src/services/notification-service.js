@@ -3,11 +3,12 @@ import { BROWSER_NAME } from "../common/browsers";
 import * as moment from 'moment';
 
 export default class NotificationService {
-    static dependencies = ["AjaxService", "CacheService", "AppBrowserService", "UtilsService", "MessageService"];
+    static dependencies = ["AjaxService", "CacheService", "SettingsService", "AppBrowserService", "UtilsService", "MessageService"];
 
-    constructor($ajax, $cache, $browser, $userutils) {
+    constructor($ajax, $cache, $settings, $browser, $userutils) {
         this.$ajax = $ajax;
         this.$cache = $cache;
+        this.$settings = $settings;
         this.$userutils = $userutils;
         this.$browser = $browser;
 
@@ -69,42 +70,46 @@ export default class NotificationService {
         //    allNotifications = allNotifications.orderBy(n => (n.read ? 2 : 1));
         //}
 
-        const updateNoti = this.getVersionNotification(updates_info);
+        const updateNoti = await this.getVersionNotification(updates_info);
         if (updateNoti) {
             allNotifications.splice(0, 0, updateNoti);
         }
 
-        const version = await this.getExtnAvailableUpdates();
-        let isBeta = true;
-        if (version && this.version < version) {
-            const versionInfo = updates_info.filter(u => u.version === version)[0];
-            if (versionInfo) {
-                versionInfo.availableNow = true;
-                isBeta = versionInfo.isBeta !== false;
-            } else {
-                const date = new Date();
-                updates_info.splice(0, 0, {
-                    availableNow: true,
-                    version,
-                    isBeta,
-                    date,
-                    bugs: [],
-                    whatsnew: ["Information not available yet"]
-                });
+        let updatesAvailable;
+        if (process.env.REACT_APP_WEB_BUILD !== 'true') {
+            const version = await this.getExtnAvailableUpdates();
+            let isBeta = true;
+            if (version && this.version < version) {
+                const versionInfo = updates_info.filter(u => u.version === version)[0];
+                if (versionInfo) {
+                    versionInfo.availableNow = true;
+                    isBeta = versionInfo.isBeta !== false;
+                } else {
+                    const date = new Date();
+                    updates_info.splice(0, 0, {
+                        availableNow: true,
+                        version,
+                        isBeta,
+                        date,
+                        bugs: [],
+                        whatsnew: ["Information not available yet"]
+                    });
+                }
             }
+            updatesAvailable = { version, isBeta };
         }
 
         return {
             updates_info,
-            updatesAvailable: { version, isBeta },
+            updatesAvailable,
             list: allNotifications, total: allNotifications.length,
             unread: allNotifications.count(n => !n.read)
         };
     }
 
-    getVersionNotification(updates_info) {
+    async getVersionNotification(updates_info) {
         if (updates_info && Array.isArray(updates_info) && updates_info.length) {
-            const lastReadVersion = this.$cache.get("readVersion") || { version: 0, timestamp: 0 };
+            const lastReadVersion = await this.$settings.get("readVersion") || { version: 0, timestamp: 0 };
 
             const { version, timestamp, whatsnew, publishDate, expectedOn } = updates_info[0];
 
@@ -134,7 +139,7 @@ export default class NotificationService {
         if (!msg) { return; }
         if (msg.type === "versionInfo") {
             const { version, timestamp } = msg;
-            this.$cache.set("readVersion", { version, timestamp });
+            this.$settings.set("readVersion", { version, timestamp });
         }
         else {
             const readMessages = this.$cache.get("processed_notifications") || [];

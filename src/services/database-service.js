@@ -55,24 +55,26 @@ class DatabaseService extends Dexie {
             }
         });
 
-        window.addEventListener('unhandledrejection', (event) => this.handleError(event));
-        window.addEventListener("rejectionhandled", (event) => this.handleError(event)); // For firefox
+        if (typeof window !== 'undefined') {
+            window.addEventListener('unhandledrejection', (event) => this.handleError(event));
+            window.addEventListener("rejectionhandled", (event) => this.handleError(event)); // For firefox
 
-        if (window.addEventListener) {
-            window.addEventListener("error", (e) => {
-                const { error, filename, lineno, colno, message } = e || {};
-                const { stack } = error || {};
-                this.reportError(message, filename, lineno, colno, stack);
-                this.$message.error("An unknown error occured while processing your request", "Unhandled error", true);
-                console.error("Global handler:-", e);
-            });
-        } else {
-            window.onerror = (msg, url, line, col, error) => {
-                const { stack } = error || {};
-                this.reportError(msg, url, line, col, stack);
-                this.$message.error("An unknown error occured while processing your request", "Unhandled error", true);
-                console.error(msg, url, line, col, error);
-            };
+            if (window.addEventListener) {
+                window.addEventListener("error", (e) => {
+                    const { error, filename, lineno, colno, message } = e || {};
+                    const { stack } = error || {};
+                    this.reportError(message, filename, lineno, colno, stack);
+                    this.$message.error("An unknown error occured while processing your request", "Unhandled error", true);
+                    console.error("Global handler:-", e);
+                });
+            } else {
+                window.onerror = (msg, url, line, col, error) => {
+                    const { stack } = error || {};
+                    this.reportError(msg, url, line, col, stack);
+                    this.$message.error("An unknown error occured while processing your request", "Unhandled error", true);
+                    console.error(msg, url, line, col, error);
+                };
+            }
         }
     }
 

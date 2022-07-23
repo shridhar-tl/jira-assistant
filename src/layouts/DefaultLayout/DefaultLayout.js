@@ -30,12 +30,13 @@ const DefaultHeader = React.lazy(() => import('./DefaultHeader'));
 class DefaultLayout extends PureComponent {
   constructor() {
     super();
-    inject(this, "DashboardService", "SessionService", "CacheService");
+    inject(this, "DashboardService", "SessionService", "SettingsService");
     const { userId } = this.$session;
     this.state = { menus: this.getMenus(userId), userId };
+    this.initApp();
   }
 
-  UNSAFE_componentWillMount() {
+  initApp() {
     const { userId } = this.state;
     setStartOfWeek(this.$session.CurrentUser.startOfWeek);
 
@@ -43,14 +44,21 @@ class DefaultLayout extends PureComponent {
     this.initBody();
   }
 
-  initBody() {
-    const skinName = this.$cache.get('skin', true) || 'skin-blue';
-    const isSideBarToggled = this.$cache.get('SideBarToggled');
-    const isSideBarHidden = this.$cache.get('SideBarHidden');
-
+  async initBody() {
     const body = document.body.classList;
+
+    if (document.location.href.indexOf('?quick=true') > -1) {
+      this.$session.isQuickView = true;
+      body.add('quick-view');
+    }
+
+    const skinName = await this.$settings.get('skin', true) || 'skin-blue';
+
     body.add(skinName.replace('-light', '')); //ToDo: once old version is removed, need to permenently update skin color instead of replace
 
+    /* Commented out as this is not really implemented
+    const isSideBarToggled = this.$cache.get('SideBarToggled');
+    const isSideBarHidden = this.$cache.get('SideBarHidden');
     if (isSideBarHidden) {
       body.add('sidebar-hidden');
       body.add('brand-minimized');
@@ -59,11 +67,7 @@ class DefaultLayout extends PureComponent {
       body.add('sidebar-minimized');
       body.add('brand-minimized');
     }
-
-    if (document.location.href.indexOf('?quick=true') > -1) {
-      this.$session.isQuickView = true;
-      body.add('quick-view');
-    }
+    */
   }
 
   componentWillUnmount() {

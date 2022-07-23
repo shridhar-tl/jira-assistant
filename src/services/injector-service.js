@@ -21,7 +21,7 @@ export const injector = (function () {
         return svcObj;
     };
 
-    svc.resolve = function (name) {
+    svc.resolve = function (name, path) {
         const svcObj = svc.getRef(name);
 
         if (svcObj.isSingleton && svcObj.instance) {
@@ -35,7 +35,12 @@ export const injector = (function () {
             const dependencies = new Array(depLen + 1);
             dependencies[0] = svcObj.type;
             for (let i = 0; i < depLen; i++) {
-                dependencies[i + 1] = svc.resolve(svcObj.dependency[i]);
+                const depToResolve = svcObj.dependency[i];
+                const newPath = path ? [...path, depToResolve] : [depToResolve];
+                if (path && path.indexOf(depToResolve) > -1) {
+                    throw new Error(`Circular dependency not supported. Error resolving: ${newPath.join('->')}`);
+                }
+                dependencies[i + 1] = svc.resolve(depToResolve, newPath);
             }
 
             instance = new (svcObj.type.bind.apply(svcObj.type, dependencies))();
@@ -57,6 +62,11 @@ export const injector = (function () {
     };
 
     svc.inject = function (instance, dependencies) {
+        if (process.env.NODE_ENV !== "production") {
+            if (dependencies.length < dependencies.distinct().length) {
+                throw new Error(`Repeated dependency is not allow:${JSON.stringify(dependencies)}`);
+            }
+        }
         dependencies.forEach(dependency => {
             const svcObj = svc.getRef(dependency);
             instance[svcObj.defaultName] = svc.resolve(dependency);

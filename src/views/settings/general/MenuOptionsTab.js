@@ -8,7 +8,7 @@ import { inject } from '../../../services';
 class MenuOptionsTab extends TabControlBase {
     constructor(props) {
         super(props);
-        inject(this, "DashboardService", "CacheService");
+        inject(this, "DashboardService", "SettingsService");
         const { settings } = props;
 
         if (!settings.launchAction) {
@@ -97,7 +97,7 @@ class MenuOptionsTab extends TabControlBase {
             default: break;
         }
 
-        this.$cache.set("menuAction", launchSetting, false, true);
+        this.$settings.set("menuAction", launchSetting, false, true);
         this.saveSetting(setting, 'launchAction');
     };
 

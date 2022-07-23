@@ -63,6 +63,7 @@ export const FF_STORE_URL = "https://addons.mozilla.org/en-US/firefox/addon/jira
 export const EDGE_STORE_URL = "https://microsoftedge.microsoft.com/addons/detail/aoenpdbabcjnjbjpegeenodfknllmaoi";
 export const OPERA_STORE_URL = "https://addons.opera.com/en/extensions/details/jira-assistant/";
 
+
 export const GITHUB_HOME_URL = "https://github.com/shridhar-tl/jira-assistant";
 
 export function getGitHubIssueUrl(issueId) { return `${GITHUB_HOME_URL}/issues/${issueId}`; }

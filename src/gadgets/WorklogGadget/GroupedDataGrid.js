@@ -232,7 +232,7 @@ class GroupedDataGrid extends PureComponent {
 
     render() {
         const { state: { groupedData },
-            props: { months, dates, convertSecs, formatTime, breakupMode, pageSettings, addWorklog, costView }
+            props: { exportSheetName, months, dates, convertSecs, formatTime, breakupMode, pageSettings, addWorklog, costView }
         } = this;
 
         const timeExportFormat = pageSettings?.logFormat === "2" ? "float" : undefined;
@@ -248,7 +248,7 @@ class GroupedDataGrid extends PureComponent {
 
 
         return (
-            <ScrollableTable exportSheetName="Grouped - [User daywise]">
+            <ScrollableTable exportSheetName={exportSheetName}>
                 <THead>
                     <tr className="data-center pad-min auto-wrap">
                         <th style={{ minWidth: 260 + (addlColCount * 120) }} rowSpan={addlColCount > 1 ? 1 : 2} colSpan={addlColCount}>User Details</th>

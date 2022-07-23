@@ -1,15 +1,15 @@
 export default class SessionService {
-    static dependencies = ["CacheService"];
+    static dependencies = ["SettingsService"];
 
-    constructor($cache) {
-        this.$cache = $cache;
+    constructor($settings) {
+        this.$settings = $settings;
         this.CurrentUser = {};
     }
 
-    getCurrentUserId() {
+    async getCurrentUserId() {
         let userId = this.userId;
         if (!userId) {
-            userId = this.$cache.get("CurrentUserId");
+            userId = await this.$settings.get("CurrentUserId");
             this.userId = userId;
         }
         if (!userId) {
