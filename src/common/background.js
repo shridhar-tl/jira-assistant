@@ -17,7 +17,7 @@ function startListening() {
 function onRequestReceived(message, sender, sendResponse) {
     log("Received request form ", sender, message);
     const origin = sender.origin.toLowerCase();
-    if (!origin.endsWith('.jiraassistant.com') && origin !== "http://localhost:8080") {
+    if (!origin.endsWith('.jiraassistant.com')) {
         return;
     }
 
