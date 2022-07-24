@@ -1,13 +1,12 @@
 import React, { PureComponent } from 'react';
 import { NavLink } from 'react-router-dom';
 import { UncontrolledDropdown, DropdownItem, DropdownMenu, DropdownToggle, Nav, NavItem } from 'reactstrap';
-import PropTypes from 'prop-types';
 
 import { AppSidebarToggler } from '@coreui/react';
 import logo from '../../img/logo-symbol.png';
 import { AppVersionNo } from '../../constants/common';
 import { EventCategory } from '../../constants/settings';
-import { CHROME_WS_URL, FF_STORE_URL, EDGE_STORE_URL, GITHUB_HOME_URL, OPERA_STORE_URL } from '../../constants/urls';
+import { CHROME_WS_URL, FF_STORE_URL, EDGE_STORE_URL, WebSiteUrl, OPERA_STORE_URL } from '../../constants/urls';
 
 import './DefaultHeader.scss';
 import { inject } from '../../services/injector-service';
@@ -19,12 +18,9 @@ import Notifications from './Notifications';
 import JiraUpdates from './JiraUpdates';
 import Dialog from '../../dialogs';
 import UpdatesInfo from './UpdatesInfo';
+import LaunchWeb from './LaunchWeb';
 
-const propTypes = {
-  children: PropTypes.node,
-};
-
-const defaultProps = {};
+const isWebBuild = process.env.REACT_APP_WEB_BUILD === 'true';
 
 class DefaultHeader extends PureComponent {
   constructor(props) {
@@ -35,24 +31,27 @@ class DefaultHeader extends PureComponent {
     this.disableJiraUpdates = cUser.disableJiraUpdates;
     this.userId = cUser.userId;
     this.currentJiraInstance = getHostFromUrl(cUser.jiraUrl);
-    this.state = { versionNumber: AppVersionNo.toString() };
+    this.state = { versionNumber: isWebBuild ? 'WEB' : `v ${AppVersionNo.toString()}` };
+    this.initComponent();
   }
 
-  UNSAFE_componentWillMount() {
+  initComponent() {
     this.$noti.getNotifications().then(notifications => this.setState({ notifications }),
       (err) => { console.log("Error fetching notifications: ", err); });
 
     this.siteUrl = "https://www.jiraassistant.com";
     this.ratingUrl = this.$jaBrowserExtn.getStoreUrl(true);
     this.storeUrl = this.$jaBrowserExtn.getStoreUrl();
-    this.$jaBrowserExtn.getAppVersion().then(v => this.setState({ versionNumber: v }));
+    if (!isWebBuild) {
+      this.$jaBrowserExtn.getAppVersion().then(v => this.setState({ versionNumber: `v ${v}` }));
+    }
     const subj = encodeURIComponent('Check out "Jira Assistant" in web store');
     const body = encodeURIComponent('Check out "Jira Assistant", a open source extension / add-on for your browser from below url:'
       + `\n\nChrome users: ${CHROME_WS_URL}?utm_source%3Dgmail#`
       + `\n\nFirefox users: ${FF_STORE_URL}`
       + `\n\nEdge users: ${EDGE_STORE_URL}`
       + `\n\nOpera users: ${OPERA_STORE_URL}`
-      + `\n\nFor source code or to know more about the extension visit: ${GITHUB_HOME_URL}`
+      + `\n\nFor source code or to know more about the extension visit: ${WebSiteUrl}`
       + `\n\n\nThis would help you to track your worklog and generate reports from Jira easily with lots of customizations. `
       + `Also has lot more features like Google Calendar integration, Jira comment & meeting + worklog notifications, Worklog, Sprint and custom report generations, etc..`);
     const storeUrl = encodeURIComponent(this.storeUrl);
@@ -102,7 +101,7 @@ class DefaultHeader extends PureComponent {
         <AppSidebarToggler className="d-lg-none quick-view-hide" display="md" mobile><span className="fa fa-bars" /></AppSidebarToggler>
         <a href={this.siteUrl} className="navbar-brand" target="_blank" rel="noopener noreferrer">
           <img src={logo} width="24" height="24" alt="Jira Assistant" className="navbar-brand-minimized" />
-          <span className="navbar-brand-full">Jira Assistant <span className="v-info badge badge-success" onClick={this.showVersionInfo}>v {versionNumber}</span></span>
+          <span className="navbar-brand-full">Jira Assistant <span className="v-info badge badge-success" onClick={this.showVersionInfo}>{versionNumber}</span></span>
         </a>
         <AppSidebarToggler className="d-md-down-none quick-view-hide" display="lg"><span className="fa fa-bars" /></AppSidebarToggler>
         <button className="navbar-toggler quick-view-show"><a href="/index.html" target="_blank" title="Open in new tab"><span className="fa fa-external-link" /></a></button>
@@ -121,6 +120,7 @@ class DefaultHeader extends PureComponent {
               </DropdownMenu>
             </UncontrolledDropdown>
           </Nav>
+          <LaunchWeb />
           {!!version && <span className={`update-available badge badge-${isBeta ? "warning" : "success"}`}
             title={`Click to update to ${isBeta ? 'BETA ' : ''}v${version}`}
             onClick={this.showVersionInfo}><i className="fa fa-download" /> Updates available</span>}
@@ -175,8 +175,5 @@ class DefaultHeader extends PureComponent {
     );
   }
 }
-
-DefaultHeader.propTypes = propTypes;
-DefaultHeader.defaultProps = defaultProps;
 
 export default DefaultHeader;

@@ -232,6 +232,8 @@ export default class ChromeBrowserService extends BrowserBase {
         return params.get("access_token");
     }
 
+    getLaunchUrl(file) { return Promise.resolve(this.chrome.runtime.getURL(file)); }
+
     /* Commented as no usage found
     getStorageInfo() {
         return navigator.storage.estimate().then((estimate) => {

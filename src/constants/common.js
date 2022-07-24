@@ -20,3 +20,5 @@ if (process.env.NODE_ENV !== "production") { // While doing local development, t
 export { AnalyticsTrackingId };
 
 export const SystemUserId = 1;
+
+export const BuildDateTime = (process.env.NODE_ENV === "production") ? new Date(parseInt(process.env.REACT_APP_BUILD_DATE)) : new Date();

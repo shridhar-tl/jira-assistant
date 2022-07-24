@@ -140,8 +140,13 @@ class SettingsService {
 
     deleteDashboard = (userId, id) => this.$storage.deleteSetting(userId, SettingsCategory.Dashboard, id);
 
-    saveSetting = async (userId, category, name, value) =>
-        this.$storage.addOrUpdateSetting({ userId, category, name, value });
+    saveSetting = async (userId, category, name, value) => {
+        if (value === undefined || value === null) {
+            this.$storage.deleteSetting(userId, category, name);
+        } else {
+            this.$storage.addOrUpdateSetting({ userId, category, name, value });
+        }
+    };
 
     saveGeneralSetting = (userId, name, value) =>
         this.saveSetting(userId, SettingsCategory.General, name, value);

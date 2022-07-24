@@ -13,17 +13,19 @@ import './scss/style.scss';
 import './App.scss';
 import { validateIfWebApp } from './common/proxy';
 
+const isWebBuild = process.env.REACT_APP_WEB_BUILD === 'true';
+export const extnAuth = isWebBuild && document.location.href.indexOf('?authType=1') > 0;
+
 // Layout
 const DefaultLayout = React.lazy(() => import('./layouts/DefaultLayout'));
 
 // Pages
-const ChooseAuthType = React.lazy(() => import('./views/pages/authenticate/ChooseAuthType'));
-const Integrate = React.lazy(() => import('./views/pages/integrate/Integrate'));
+const Integrate = React.lazy(() => (isWebBuild ?
+  import('./views/pages/authenticate/ChooseAuthType')
+  : import('./views/pages/integrate/Integrate')));
 const Page401 = React.lazy(() => import('./views/pages/p401/Page401'));
 
 export const AppContext = createContext({});
-
-const isWebBuild = process.env.REACT_APP_WEB_BUILD === 'true';
 
 class App extends PureComponent {
   constructor(props) {
@@ -53,12 +55,19 @@ class App extends PureComponent {
     if (isWebBuild) {
       authType = localStorage.getItem('authType');
 
-      const newState = { isLoading: false, authType };
+      const newState = { authType };
       if ((!authType || authType === '1') && await validateIfWebApp(newState)) {
+        if (extnAuth && !authType && newState.authReady) {
+          localStorage.setItem('authType', 1);
+          authType = '1';
+          newState.authType = '1';
+        }
         this.setState(newState);
       }
+
       if (!authType || !newState.authReady) {
-        this.props.history.push(`/auth`);
+        this.setState({ isLoading: false });
+        this.props.history.push(`/integrate`);
         return;
       }
     }
@@ -67,7 +76,9 @@ class App extends PureComponent {
   }
 
   authTypeChosen = (authType) => {
+    localStorage.setItem('authType', authType);
     this.setState({ authType, needIntegration: false });
+    this.props.history.push('/');
     this.beginLoad(authType);
   };
 
@@ -141,7 +152,7 @@ class App extends PureComponent {
   }
 
   render() {
-    const { isLoading, userId, isExtnValid, extnUnavailable, needIntegration } = this.state;
+    const { isLoading, userId, isExtnValid, extnUnavailable, needIntegration, authType } = this.state;
 
     if (isLoading) {
       return <>{this.getMessanger()}{getLoader('Loading... Please wait...')}</>;
@@ -154,11 +165,11 @@ class App extends PureComponent {
         <AppContext.Provider value={this.contextProps}>
           <React.Suspense fallback={getLoader()}>
             <Switch>
-              <Route exact path="/auth" name="Authenticate Page" render={props => <ChooseAuthType {...props}
-                isExtnValid={isExtnValid} extnUnavailable={extnUnavailable} needIntegration={needIntegration} onAuthTypeChosen={this.authTypeChosen} />} />
-              <Route exact path="/integrate" name="Integrate Page" render={props => <Integrate {...props} />} />
+              {isWebBuild && <Route exact path="/integrate" name="Authenticate Page" render={props => <Integrate {...props}
+                isExtnValid={isExtnValid} extnUnavailable={extnUnavailable} needIntegration={needIntegration} onAuthTypeChosen={this.authTypeChosen} />} />}
+              {!isWebBuild && <Route exact path="/integrate" name="Integrate Page" render={props => <Integrate {...props} />} />}
               <Route exact path="/401" name="Page 401" render={props => <Page401 {...props} jiraUrl={this.state.jiraUrl} />} />
-              <Route key={userId} path="/:userId" name="Home" render={props => <DefaultLayout {...props} />} />
+              {(!isWebBuild || !!authType) && <Route key={userId} path="/:userId" name="Home" render={props => <DefaultLayout {...props} />} />}
             </Switch>
           </React.Suspense>
         </AppContext.Provider>

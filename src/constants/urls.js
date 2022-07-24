@@ -26,3 +26,7 @@ export const UNINSTALL_URL = "";
 export const GITHUB_HOME_URL = "https://github.com/shridhar-tl/jira-assistant";
 
 export const ATLASSIAN_MARKETPLACE_URL = "https://marketplace.atlassian.com/apps/1221570/jassistant";
+
+export const JAWebRootUrl = 'https://app.jiraassistant.com';
+
+export const JAWebLaunchUrl = `${JAWebRootUrl}?authType=1`;

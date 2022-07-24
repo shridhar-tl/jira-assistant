@@ -31,7 +31,7 @@
   "externally_connectable": {
     "matches": [
       "https://*.jiraassistant.com/*",
-      "*://localhost/*"
+      "http://local.jiraassistant.com/*"
     ]
   },
   "background": {

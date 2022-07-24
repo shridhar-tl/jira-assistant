@@ -31,10 +31,7 @@ class ChooseAuthType extends PureComponent {
 
     navigateToStore = () => window.open(this.storeUrl);
 
-    extnSelected = () => {
-        localStorage.setItem('authType', '1');
-        this.props.onAuthTypeChosen('1');
-    };
+    extnSelected = () => this.props.onAuthTypeChosen('1');
 
     render() {
         const { version, browser, props: { extnUnavailable, isExtnValid, needIntegration } } = this;

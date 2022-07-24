@@ -2,7 +2,7 @@
     "name": "jira-assistant",
     "version": "2.38.0",
     "description": "Contains source code for the browser extension Jira Assistant",
-    "homepage": "chrome-extension://momjbjbjpbcbnepbgkkiaofkgimihbii/",
+    "homepage": "https://app.jiraassistant.com",
     "author": {
         "name": "Shridhar TL",
         "email": "shridhar.tl@gmail.com"

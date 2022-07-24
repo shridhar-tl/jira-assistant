@@ -24,6 +24,7 @@ import { inject } from '../../services/injector-service';
 import { ContextMenu } from 'jsd-report';
 import AsideUserInfo from './AsideUserInfo';
 import { setStartOfWeek } from '../../common/utils';
+import BuildDate from './BuildDate';
 
 const DefaultHeader = React.lazy(() => import('./DefaultHeader'));
 
@@ -113,7 +114,7 @@ class DefaultLayout extends PureComponent {
             <Suspense>
               <AppSidebarNav navConfig={menus} {...this.props} router={router} />
             </Suspense>
-            <AppSidebarMinimizer />
+            <AppSidebarMinimizer><BuildDate /></AppSidebarMinimizer>
           </AppSidebar>
           <main className="main">
             <DndProvider backend={HTML5Backend}>

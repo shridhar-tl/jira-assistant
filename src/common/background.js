@@ -1,6 +1,7 @@
 ﻿/* global chrome */
 import injectServices, { serviceObjectMap, inject } from "../services/index.background";
-import { AppVersionNo, SettingsCategory, SystemUserId } from "../constants/common";
+import { AppVersionNo, SystemUserId } from "../constants/common";
+import { SettingsCategory } from "../constants/settings";
 import { convertToStorableValue, convertToUsableValue } from "./storage-helpers";
 
 injectServices();
@@ -14,32 +15,35 @@ function startListening() {
 }
 
 function onRequestReceived(message, sender, sendResponse) {
-    log("Received request form ", sender, message);
+    const reqDetails = { sender, message };
+    log("Received request from ", reqDetails);
     const origin = sender.origin.toLowerCase();
     if (!origin.endsWith('.jiraassistant.com')) {
+        log("Denied to serve request from unknown origin: ", sender.origin);
         return;
     }
 
-    executeCommand(message, sendResponse);
+    executeCommand(message, sendResponse, reqDetails);
     return true;
 }
 
-async function executeCommand(message, sendResponse) {
+async function executeCommand(message, sendResponse, logDetails) {
     const response = { messages: [] };
+    logDetails.response = response;
 
     try {
         const { svcName, action, args } = message;
 
         if (svcName === 'SELF') {
             if (action === 'VERSION') {
-                response.success = AppVersionNo;
+                response.success = await Promise.resolve(convertToStorableValue(AppVersionNo));
             } else if (action === 'IS_INTEGRATED') {
                 const { $storage } = services;
                 const { value: userId } = await $storage.getSetting(SystemUserId, SettingsCategory.System, 'CurrentUserId') || {};
                 const { value: jiraUrl } = await $storage.getSetting(SystemUserId, SettingsCategory.System, 'CurrentJiraUrl') || {};
-                response.success = userId > 0 && !!jiraUrl;
+                response.success = convertToStorableValue(userId > 0 && !!jiraUrl);
             } else {
-                throw new Error('Unsupported command: ', action);
+                throw new Error(`Unsupported command: ${action}`);
             }
         } else {
             const { $message, [serviceObjectMap[svcName]]: $service } = services;
@@ -54,6 +58,7 @@ async function executeCommand(message, sendResponse) {
     }
 
     sendResponse(response);
+    logDetails.sent = true;
 }
 
 function log() { console.log(arguments); }

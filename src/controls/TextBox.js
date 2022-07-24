@@ -65,8 +65,8 @@ class TextBox extends PureComponent {
 }
 
 TextBox.propTypes = {
-    onChange: PropTypes.func.isRequired,
-    value: PropTypes.string.isRequired,
+    onChange: PropTypes.func,
+    value: PropTypes.string,
     maxLength: PropTypes.number,
     placeholder: PropTypes.string,
     multiline: PropTypes.bool

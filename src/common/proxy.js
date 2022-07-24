@@ -12,29 +12,34 @@ const extnId = extensionId[BROWSER_NAME];
 const chr = window.chrome || window.browser;
 
 export function executeService(svcName, action, args, $message) {
-    if (!chr) {
+    if (!chr?.runtime) {
         throw new Error("Unable to connect to extension. Ensure if Jira Assistant extension is installed and not disabled!");
     }
 
     args = convertToStorableValue(args);
     return new Promise((resolve, reject) => {
-        chr.runtime.sendMessage(
-            extnId,
-            { svcName, action, args },
-            (response) => {
-                const { success, error, messages } = response;
+        try {
+            chr.runtime.sendMessage(
+                extnId,
+                { svcName, action, args },
+                (response) => {
+                    const { success, error, messages } = response;
 
-                if ($message && messages?.length) {
-                    messages.forEach($message.handler);
-                }
+                    if ($message && messages?.length) {
+                        messages.forEach($message.handler);
+                    }
 
-                if (success || !error) {
-                    resolve(convertToUsableValue(success));
-                } else {
-                    reject(error);
+                    if (success || !error) {
+                        resolve(convertToUsableValue(success));
+                    } else {
+                        reject(error);
+                    }
                 }
-            }
-        );
+            );
+        } catch (err) {
+            console.error("Extension response error:", err);
+            reject(err);
+        }
     });
 }
 
@@ -48,17 +53,18 @@ export async function validateIfWebApp(state) {
             state.extnUnavailable = true;
             return state;
         }
+
         try {
-            const { success: version } = await executeService('SELF', 'VERSION');
+            const version = await executeService('SELF', 'VERSION');
             // This value should never be changed as this is the first version where this feature is introduced
             state.extnUnavailable = !version || !(version >= 2.38);
             // This version can be changed when specific change is available only after a specific version
             state.isExtnValid = version >= 2.38;
-            const { success: isIntegrated } = await executeService('SELF', 'IS_INTEGRATED');
+            const isIntegrated = await executeService('SELF', 'IS_INTEGRATED');
             state.needIntegration = !isIntegrated;
-            state.authReady = state.isExtnValid && state.needIntegration;
+            state.authReady = state.isExtnValid && isIntegrated;
         } catch (err) {
-            console.error(err);
+            console.error('Webapp validation error:', err);
         }
         return state;
     }

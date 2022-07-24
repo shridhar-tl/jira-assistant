@@ -26,6 +26,8 @@ class GlobalSettings extends PureComponent {
             return { id, userId, jiraUrl, email, lastLogin, ...advSett };
         }));
 
+        users[0].useWebVersion = await this.$settings.get('useWebVersion');
+
         this.setState({ users, intgUsers: users.slice(1) });
     }
 
@@ -157,6 +159,13 @@ class GlobalSettings extends PureComponent {
                                 value={u.id === SystemUserId ? defaultSettings.jiraUpdatesJQL : (u.jiraUpdatesJQL || "")}
                                 args={u} field="jiraUpdatesJQL" onChange={this.setValue} /></td>)}
                         </TRow>
+                        {!!users[0] && <TRow>
+                            <td>Use Jira Assistant Web version</td>
+                            <td colSpan={intgUsers.length + 1}><Checkbox checked={users[0].useWebVersion}
+                                args={users[0]} field="useWebVersion" onChange={this.setValue}
+                                label="Opt to always use Web build with latest updates and fixes" />
+                            </td>
+                        </TRow>}
                         {!!users[0] && <TRow>
                             <td>Enable tracking user actions (Anynmous, Google Analytics)</td>
                             <td colSpan={intgUsers.length + 1}><Checkbox checked={users[0].enableAnalyticsLogging !== false}

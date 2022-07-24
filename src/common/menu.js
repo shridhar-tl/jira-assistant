@@ -1,5 +1,6 @@
 import './init-ga';
 import injectServices, { inject } from "../services/index.menu";
+import { JAWebRootUrl } from '../constants/urls';
 
 (async function () {
   // ToDo: Use of localStorage has to be removed once the settings for all the user is migrated
@@ -8,8 +9,9 @@ import injectServices, { inject } from "../services/index.menu";
   inject(svc, 'AppBrowserService', 'SettingsService');
 
   const { $jaBrowserExtn, $settings } = svc;
-
-  const indexPageUrl = "/index.html";
+  const switched = await $settings.get('useWebVersion');
+  const indexHtml = "/index.html";
+  const indexPageUrl = switched ? JAWebRootUrl : indexHtml;
   const currentUserId = (await $settings.get('CurrentUserId')) || localStorage.getItem('CurrentUserId');
   const CurrentJiraUrl = (await $settings.get('CurrentJiraUrl')) || localStorage.getItem('CurrentJiraUrl');
   const hasTabAccess = () => $jaBrowserExtn.hasPermission({ permissions: ["activeTab"] });
@@ -85,7 +87,7 @@ import injectServices, { inject } from "../services/index.menu";
             break;
           case 2: openUrl(menu.url || '/dashboard/0'); break;
           case 3:
-            document.location.href = `${indexPageUrl}?quick=true#/dashboard/${(menu.index || 0)}/1`;
+            document.location.href = `${indexHtml}?quick=true#/dashboard/${(menu.index || 0)}/1`;
             break;
         }
       } catch (err) { console.error(err); bindEvents(); }

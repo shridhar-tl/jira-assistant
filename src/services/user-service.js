@@ -16,10 +16,10 @@ export default class UserService {
 
     async saveGlobalSettings(users) {
         const settingsArr = [];
-        const changeSetting = (sett, user, prop, retain) => {
+        const changeSetting = (sett, user, prop, retain, category) => {
             const item = {
                 userId: user.id,
-                category: SettingsCategory.Advanced,
+                category: category || SettingsCategory.Advanced,
                 name: prop,
                 value: sett[prop]
             };
@@ -31,7 +31,8 @@ export default class UserService {
         };
 
         await Promise.all(users.map(async u => {
-            if (u.id > SystemUserId && u.deleted) {
+            const intgUser = u.id > SystemUserId;
+            if (intgUser && u.deleted) {
                 await this.$storage.deleteAllSettingsWithUserId(u.id);
                 await this.$storage.deleteUser(u.id);
                 return;
@@ -48,9 +49,12 @@ export default class UserService {
             changeSetting(u, user, "suggestionJQL");
             changeSetting(u, user, "disableJiraUpdates");
             changeSetting(u, user, "jiraUpdatesJQL");
-            changeSetting(u, user, "enableAnalyticsLogging", true);
-            changeSetting(u, user, "enableExceptionLogging", true);
-            changeSetting(u, user, "disableDevNotification");
+            if (!intgUser) {
+                changeSetting(u, user, "enableAnalyticsLogging", true);
+                changeSetting(u, user, "enableExceptionLogging", true);
+                changeSetting(u, user, "disableDevNotification");
+                changeSetting(u, user, "useWebVersion", false, SettingsCategory.System);
+            }
 
             await this.$storage.addOrUpdateUser(user);
         }));
