@@ -39,3 +39,28 @@ export function executeService(svcName, action, args, $message) {
 }
 
 window.executeService = executeService;
+
+export async function validateIfWebApp(state) {
+    if (process.env.REACT_APP_WEB_BUILD === 'true') {
+        state.extnUnavailable = true;
+        state.isExtnValid = false;
+        if (!window.chrome && !window.browser) {
+            state.extnUnavailable = true;
+            return state;
+        }
+        try {
+            const { success: version } = await executeService('SELF', 'VERSION');
+            // This value should never be changed as this is the first version where this feature is introduced
+            state.extnUnavailable = !version || !(version >= 2.38);
+            // This version can be changed when specific change is available only after a specific version
+            state.isExtnValid = version >= 2.38;
+            const { success: isIntegrated } = await executeService('SELF', 'IS_INTEGRATED');
+            state.needIntegration = !isIntegrated;
+            state.authReady = state.isExtnValid && state.needIntegration;
+        } catch (err) {
+            console.error(err);
+        }
+        return state;
+    }
+    return false;
+}

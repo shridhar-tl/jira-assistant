@@ -1,0 +1,44 @@
+.auth-page {
+    .auth-type {
+        min-height: 110px;
+        max-height: 140px;
+        overflow: hidden;
+        width: 100%;
+        border: 4px solid lightblue;
+        cursor: pointer;
+        padding: 8px;
+        margin-bottom: 8px;
+        border-radius: 8px;
+
+        .auth-type-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 6px;
+        }
+
+        &.disabled {
+            opacity: .55;
+            cursor: not-allowed;
+            border-color: lightgray;
+        }
+    }
+
+    .auth-type:not(.disabled):hover {
+        background-color: lightblue;
+        border-color: blue;
+    }
+
+    .badge {
+        float: right;
+    }
+
+    .badge-success {
+        font-size: 16px;
+        margin-top: 12px;
+        cursor: pointer;
+        font-weight: bold;
+        position: absolute;
+        right: 37px;
+        z-index: 2;
+    }
+}
