@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { defaultSettings } from '../_constants';
+import { defaultSettings } from '../constants/settings';
 
 export default class JiraUpdatesService {
     static dependencies = ["JiraService", "UserUtilsService", "SessionService"];

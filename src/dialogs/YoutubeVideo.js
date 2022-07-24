@@ -1,6 +1,6 @@
 import React from 'react';
 import BaseDialog from './BaseDialog';
-import { EventCategory } from '../_constants';
+import { EventCategory } from '../constants/settings';
 
 const videoList = [
     { videoId: "xNYNXWUgCeA", module: "Dashboard", route: "dashboard" },

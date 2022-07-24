@@ -2,7 +2,7 @@ import AjaxRequestService from "./ajax-request-service";
 import BrowserBase from "../common/BrowserBase";
 import StorageService from "./storage-service";
 import { executeService } from "../common/proxy";
-import { AppVersionNo } from "../_constants";
+import { AppVersionNo } from "../constants/common";
 
 class BaseProxyService {
     constructor(svcName, methods) {

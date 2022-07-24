@@ -8,11 +8,11 @@ import SummaryView1 from './SummaryView1';
 import SummaryView2 from './SummaryView2';
 import SprintWiseWorklog from './SprintWiseWorklog';
 import GroupEditor from "../../../dialogs/GroupEditor";
-import "./Common.scss";
 import VelocityChart from './VelocityChart';
 import BaseGadget from "../../../gadgets/BaseGadget";
 import { ExportFormat } from '../../../common/Exporter';
-import { EventCategory } from '../../../_constants';
+import { EventCategory } from '../../../constants/settings';
+import "./Common.scss";
 
 const notes = <div className="padding-15">
     <strong>Experimental:</strong> This report is experimental and development / bug fixes are in progress. If you encounter any issues or have any

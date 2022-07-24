@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import Button from '../../controls/Button';
 import TextBox from '../../controls/TextBox';
 import { OverlayPanel } from 'primereact/overlaypanel';
-import { DASHBOARD_ICONS } from '../../_constants';
+import { DASHBOARD_ICONS } from '../../constants/font-icons';
 import './DashboardName.scss';
 
 class DashboardName extends PureComponent {

@@ -1,5 +1,6 @@
 import { get } from "../common/storage-helpers";
-import { dateFormats, DefaultEndOfDay, DefaultStartOfDay, DefaultWorkingDays, SettingsCategory, SystemUserId, timeFormats } from "../_constants";
+import { SystemUserId } from "../constants/common";
+import { dateFormats, DefaultEndOfDay, DefaultStartOfDay, DefaultWorkingDays, SettingsCategory, timeFormats } from "../constants/settings";
 
 const userSpecificSettings = [
     'allowClosedTickets',

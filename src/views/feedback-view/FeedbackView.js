@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { inject } from '../../services';
-import { AppVersionNo } from '../../_constants';
+import { AppVersionNo } from '../../constants/common';
 
 const style = { minWidth: 'calc(100% + 16px)', minHeight: 'calc(100vh - 46px)', marginLeft: '-8px', overflow: 'auto', border: 0 };
 

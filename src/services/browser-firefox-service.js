@@ -1,5 +1,6 @@
 /* global chrome browser */
-import { FF_STORE_URL, AppVersionNo } from '../_constants';
+import { FF_STORE_URL } from '../constants/urls';
+import { AppVersionNo } from '../constants/common';
 import BrowserBase from '../common/BrowserBase';
 // ToDo: need to pull url
 export default class FirefoxBrowserService extends BrowserBase {

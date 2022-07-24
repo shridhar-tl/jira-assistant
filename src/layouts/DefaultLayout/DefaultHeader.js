@@ -5,7 +5,9 @@ import PropTypes from 'prop-types';
 
 import { AppSidebarToggler } from '@coreui/react';
 import logo from '../../img/logo-symbol.png';
-import { CHROME_WS_URL, FF_STORE_URL, EventCategory, EDGE_STORE_URL, GITHUB_HOME_URL, OPERA_STORE_URL, AppVersionNo } from '../../_constants';
+import { AppVersionNo } from '../../constants/common';
+import { EventCategory } from '../../constants/settings';
+import { CHROME_WS_URL, FF_STORE_URL, EDGE_STORE_URL, GITHUB_HOME_URL, OPERA_STORE_URL } from '../../constants/urls';
 
 import './DefaultHeader.scss';
 import { inject } from '../../services/injector-service';

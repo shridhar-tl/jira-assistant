@@ -1,4 +1,6 @@
-import { ApiUrls, DummyWLId, defaultSettings, defaultJiraFields } from '../_constants';
+import { DummyWLId } from '../constants/common';
+import { defaultSettings, defaultJiraFields } from '../constants/settings';
+import { ApiUrls } from '../constants/api-urls';
 import * as moment from 'moment';
 import { prepareUrlWithQueryString, waitFor } from '../common/utils';
 

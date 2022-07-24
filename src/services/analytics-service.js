@@ -1,5 +1,6 @@
 import { prepareUrlWithQueryString } from "../common/utils";
-import { AppVersionNo, AnalyticsTrackingId, AnalyticsUrl } from "../_constants";
+import { AnalyticsUrl } from "../constants/urls";
+import { AppVersionNo, AnalyticsTrackingId } from "../constants/common";
 
 export default class AnalyticsService {
     static dependencies = ["AppBrowserService"];

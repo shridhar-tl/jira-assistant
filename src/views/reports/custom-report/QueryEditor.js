@@ -1,7 +1,7 @@
 /* eslint no-fallthrough: 0 */
 import React from 'react';
 import { inject } from "../../../services/injector-service";
-import { getDateRange } from '../../../_constants';
+import { getDateRange } from '../../../constants/utils';
 import BaseGadget from '../../../gadgets/BaseGadget';
 import { Button, SelectBox, TextBox, Checkbox } from '../../../controls';
 import { TabView, TabPanel } from 'primereact/tabview';

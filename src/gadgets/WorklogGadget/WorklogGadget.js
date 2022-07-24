@@ -12,7 +12,7 @@ import GroupedDataGrid from './GroupedDataGrid';
 import WorklogReportInfo from './WorklogReportInfo';
 import "./WorklogGadget.scss";
 import UserProjectWiseSummary from './UserProjectWiseSummary';
-import { EventCategory } from '../../_constants';
+import { EventCategory } from '../../constants/settings';
 import { getUserName } from '../../common/utils';
 import AddWorklog from '../../dialogs/AddWorklog';
 

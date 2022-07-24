@@ -1,5 +1,6 @@
 import * as moment from 'moment';
-import { ApiUrls, DummyWLId } from '../_constants';
+import { ApiUrls } from '../constants/api-urls';
+import { DummyWLId } from '../constants/common';
 import { getUserName } from '../common/utils';
 
 export default class WorklogService {

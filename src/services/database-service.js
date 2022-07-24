@@ -1,5 +1,7 @@
 import Dexie from 'dexie';
-import { UUID, EventCategory, SystemUserId } from '../_constants';
+import { UUID } from '../constants/utils';
+import { SystemUserId } from '../constants/common';
+import { EventCategory } from '../constants/settings';
 
 class DatabaseService extends Dexie {
     static dependencies = ["AnalyticsService", "MessageService"];

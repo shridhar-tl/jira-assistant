@@ -1,4 +1,4 @@
-import { messagesUrl } from "../_constants";
+import { messagesUrl } from "../constants/urls";
 import { BROWSER_NAME } from "../common/browsers";
 import * as moment from 'moment';
 

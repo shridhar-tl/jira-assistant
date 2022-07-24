@@ -8,7 +8,7 @@ import { AutoComplete, TextBox, Button, DatePicker, RadioButton } from '../../..
 import { Chart } from 'primereact/chart';
 import GroupEditor from '../../../dialogs/GroupEditor';
 import "./EstimateActualReport.scss";
-import { EventCategory } from '../../../_constants';
+import { EventCategory } from '../../../constants/settings';
 import { getUserName } from '../../../common/utils';
 
 const STORYPOINT_ENABLE_HELP = 'Select an appropriate field for story point in Settings -> General -> Default values tab -> Story point field to enable this option.';

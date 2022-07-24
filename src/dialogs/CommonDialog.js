@@ -2,7 +2,7 @@ import React from 'react';
 import BaseDialog from './BaseDialog';
 import { Button } from '../controls';
 import { parseHTML } from '../common/utils';
-import { EventCategory } from '../_constants';
+import { EventCategory } from '../constants/settings';
 
 class CommonDialog extends BaseDialog {
     constructor(props) {

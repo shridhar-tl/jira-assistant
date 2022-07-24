@@ -5,7 +5,7 @@ import { inject } from '../services/injector-service';
 import { Button, Checkbox, DatePicker, AutoComplete, TextBox } from '../controls';
 import moment from 'moment';
 import { GadgetActionType } from '../gadgets';
-import { EventCategory } from '../_constants';
+import { EventCategory } from '../constants/settings';
 
 class AddWorklog extends BaseDialog {
     constructor(props) {

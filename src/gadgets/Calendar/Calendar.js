@@ -15,7 +15,7 @@ import AddWorklog from '../../dialogs/AddWorklog';
 import { OverlayPanel } from 'primereact/overlaypanel';
 import MeetingDetails from './MeetingDetails';
 import CalendarSettings from './Settings';
-import { DefaultEndOfDay, DefaultStartOfDay, DefaultWorkingDays, EventCategory } from '../../_constants';
+import { DefaultEndOfDay, DefaultStartOfDay, DefaultWorkingDays, EventCategory } from '../../constants/settings';
 import './Calendar.scss';
 
 //var moment;

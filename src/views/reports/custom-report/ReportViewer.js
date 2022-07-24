@@ -2,11 +2,11 @@ import React from 'react';
 import BaseGadget from "../../../gadgets/BaseGadget";
 import { inject } from "../../../services/injector-service";
 import { ScrollableTable, THead } from '../../../components/ScrollableTable';
-import "./Common.scss";
-import { EventCategory } from '../../../_constants';
+import { EventCategory } from '../../../constants/settings';
 import { getUserName } from '../../../common/utils';
 import { TicketDisplay } from '../../../display-controls';
 import AddWorklog from '../../../dialogs/AddWorklog';
+import "./Common.scss";
 
 class ReportViewer extends BaseGadget {
     constructor(props) {

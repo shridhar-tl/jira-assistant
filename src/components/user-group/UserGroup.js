@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { ScrollableTable, TBody, THead, NoDataRow } from '../ScrollableTable';
 import moment from 'moment';
 import { inject } from '../../services';
-import { EventCategory } from '../../_constants';
+import { EventCategory } from '../../constants/settings';
 import GroupRow from './GroupRow';
 import GroupFooter from './GroupFooter';
 

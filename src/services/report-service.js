@@ -1,4 +1,5 @@
-import { UUID, EventCategory } from "../_constants";
+import { EventCategory } from "../constants/settings";
+import { UUID } from "../constants/utils";
 import { saveStringAs } from '../common/utils';
 
 export default class ReportService {

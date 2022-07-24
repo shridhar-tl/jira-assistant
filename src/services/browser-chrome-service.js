@@ -1,5 +1,6 @@
 /* global chrome */
-import { CHROME_WS_URL, AppVersionNo } from '../_constants';
+import { CHROME_WS_URL } from '../constants/urls';
+import { AppVersionNo } from '../constants/common';
 import { getOriginFromUrl } from '../common/utils';
 import BrowserBase from '../common/BrowserBase';
 

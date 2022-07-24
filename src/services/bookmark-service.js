@@ -1,4 +1,4 @@
-import { EventCategory } from "../_constants";
+import { EventCategory } from "../constants/settings";
 
 export default class BookmarkService {
     static dependencies = ["SessionService", "MessageService", "TicketService", "UserUtilsService", "AnalyticsService", 'SettingsService'];

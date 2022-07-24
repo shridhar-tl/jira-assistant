@@ -1,7 +1,8 @@
 import React, { PureComponent } from 'react';
 import { inject } from '../../../services';
 import { Button, TextBox } from '../../../controls';
-import { ApiUrls, ContactUsUrl } from '../../../_constants';
+import { ContactUsUrl } from '../../../constants/urls';
+import { ApiUrls } from '../../../constants/api-urls';
 import { getUserName } from '../../../common/utils';
 
 class Integrate extends PureComponent {

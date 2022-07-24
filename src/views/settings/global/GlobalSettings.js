@@ -4,7 +4,8 @@ import { ScrollableTable, THead, TBody, TRow, Column } from '../../../components
 import { inject } from '../../../services';
 import { getHostFromUrl } from '../../../common/utils';
 import { TextBox, Button, Checkbox } from '../../../controls';
-import { defaultSettings, SettingsCategory, SystemUserId } from '../../../_constants';
+import { defaultSettings, SettingsCategory } from '../../../constants/settings';
+import { SystemUserId } from '../../../constants/common';
 import Dialog from '../../../dialogs';
 import './GlobalSettings.scss';
 

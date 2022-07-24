@@ -1,6 +1,6 @@
 import { getUserName } from "../common/utils";
 import moment from "moment";
-import { DefaultWorkingDays } from "../_constants";
+import { DefaultWorkingDays } from "../constants/settings";
 
 export default class UserUtilsService {
     static dependencies = ["SessionService", "UtilsService"];
@@ -95,12 +95,12 @@ export default class UserUtilsService {
         const dateArr = this.$utils.getDateArray(fromDate, toDate);
         const now = new Date().getTime();
         return dateArr.map(d => ({
-                prop: d.format('yyyyMMdd'),
-                display: d.format('DDD, dd'),
-                date: d,
-                isHoliday: this.isHoliday(d),
-                isFuture: d.getTime() > now
-            }));
+            prop: d.format('yyyyMMdd'),
+            display: d.format('DDD, dd'),
+            date: d,
+            isHoliday: this.isHoliday(d),
+            isFuture: d.getTime() > now
+        }));
     };
 
     getWorklogUrl(ticketNo, worklogId) {

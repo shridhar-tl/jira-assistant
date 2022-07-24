@@ -1,4 +1,4 @@
-import { EDGE_STORE_URL } from '../_constants';
+import { EDGE_STORE_URL } from '../constants/urls';
 import BrowserBase from '../common/BrowserBase';
 
 export default class AppBrowserService extends BrowserBase {

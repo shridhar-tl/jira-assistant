@@ -2,7 +2,7 @@ import React from 'react';
 import TabControlBase from './TabControlBase';
 import { SelectBox, Checkbox } from '../../../controls';
 import { inject } from '../../../services';
-import { ApiUrls } from '../../../_constants';
+import { ApiUrls } from '../../../constants/api-urls';
 
 const intervalList = [
     { value: 5, label: 'Every 5 minutes' },

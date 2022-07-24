@@ -1,4 +1,5 @@
-import { CHROME_WS_URL, AppVersionNo } from '../_constants';
+import { CHROME_WS_URL } from '../constants/urls';
+import { AppVersionNo } from '../constants/common';
 import BrowserBase from '../common/BrowserBase';
 // ToDo: need to pull url
 export default class DevBrowserService extends BrowserBase {

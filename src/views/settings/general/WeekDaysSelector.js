@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { DefaultWorkingDays } from '../../../_constants';
+import { DefaultWorkingDays } from '../../../constants/settings';
 
 const shortDays = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
 

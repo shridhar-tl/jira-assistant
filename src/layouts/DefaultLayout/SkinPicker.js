@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { inject } from '../../services/injector-service';
-import { EventCategory } from '../../_constants';
+import { EventCategory } from '../../constants/settings';
 
 class SkinPicker extends PureComponent {
     constructor(props) {

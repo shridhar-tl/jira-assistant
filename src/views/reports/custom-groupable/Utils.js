@@ -1,6 +1,6 @@
 /* eslint-disable no-fallthrough, complexity*/
 
-import { UUID } from "../../../_constants";
+import { UUID } from "../../../constants/utils";
 
 export function getField(field) {
     const { id, name, custom,

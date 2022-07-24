@@ -1,4 +1,5 @@
-import { DASHBOARD_ICONS, SettingsCategory } from "../_constants";
+import { DASHBOARD_ICONS } from "../constants/font-icons";
+import { SettingsCategory } from "../constants/settings";
 
 export default class DashboardService {
     static dependencies = ["SessionService", "SettingsService", "CacheService"];

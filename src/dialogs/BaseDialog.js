@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import { Dialog } from 'primereact/dialog';
 import { inject } from '../services';
-import { EventCategory } from '../_constants';
+import { EventCategory } from '../constants/settings';
 import './CommonStyles.scss';
 
 class BaseDialog extends PureComponent {

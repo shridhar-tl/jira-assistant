@@ -3,7 +3,7 @@ import { InputMask } from 'primereact/inputmask';
 import { SelectBox, Checkbox } from '../../../controls';
 import WeekDaysSelector from './WeekDaysSelector';
 import { inject } from '../../../services';
-import { dateFormats, DefaultEndOfDay, DefaultStartOfDay, timeFormats } from '../../../_constants';
+import { dateFormats, DefaultEndOfDay, DefaultStartOfDay, timeFormats } from '../../../constants/settings';
 import { setStartOfWeek } from '../../../common/utils';
 import TabControlBase from './TabControlBase';
 

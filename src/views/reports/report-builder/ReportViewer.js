@@ -6,7 +6,7 @@ import { ReportViewer as JSRViewer } from "jsd-report";
 import GroupEditor from '../../../dialogs/GroupEditor';
 import "./ReportViewer.scss";
 import AddWorklog from '../../../dialogs/AddWorklog';
-import { EventCategory } from '../../../_constants';
+import { EventCategory } from '../../../constants/settings';
 
 class ReportViewer extends BaseGadget {
     constructor(props) {

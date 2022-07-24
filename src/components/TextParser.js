@@ -1,5 +1,5 @@
 import { PureComponent } from "react";
-import { getGitHubIssueUrl } from "../_constants";
+import { getGitHubIssueUrl } from "../constants/utils";
 
 class TextParser extends PureComponent {
     render() { return parseText(this.props.message); }

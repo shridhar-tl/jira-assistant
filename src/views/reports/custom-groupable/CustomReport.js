@@ -5,7 +5,8 @@ import SaveReportDialog from '../../../dialogs/SaveReportDialog';
 import Dialog from '../../../dialogs';
 import ReportViewer from './ReportViewer';
 import './Common.scss';
-import { EventCategory, UUID } from '../../../_constants';
+import { EventCategory } from '../../../constants/settings';
+import { UUID } from '../../../constants/utils';
 
 class CustomReport extends PureComponent {
     constructor(props) {

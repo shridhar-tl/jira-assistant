@@ -3,7 +3,7 @@ import { DropdownItem } from 'reactstrap';
 import { inject } from '../../services';
 import { AppContext } from '../../App';
 import { getHostFromUrl } from "../../common/utils";
-import { EventCategory } from '../../_constants';
+import { EventCategory } from '../../constants/settings';
 
 class SwitchAccountMenu extends PureComponent {
     static contextType = AppContext;

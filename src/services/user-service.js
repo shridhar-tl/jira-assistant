@@ -1,4 +1,6 @@
-import { ContactUsUrl, SettingsCategory, SystemUserId } from "../_constants";
+import { ContactUsUrl } from "../constants/urls";
+import { SettingsCategory } from "../constants/settings";
+import { SystemUserId } from "../constants/common";
 
 export default class UserService {
     static dependencies = ["StorageService", "JiraService"];

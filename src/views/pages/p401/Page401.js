@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { inject } from '../../../services';
-import { getGitHubIssueUrl } from '../../../_constants';
+import { getGitHubIssueUrl } from '../../../constants/utils';
 import "./P401.scss";
 
 class Page401 extends PureComponent {

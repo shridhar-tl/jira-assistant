@@ -9,7 +9,7 @@ import { ExportHelper } from '../common/ExportHelper';
 import { ExportFormat } from '../common/Exporter';
 import { GadgetActionType } from './_constants';
 import { inject } from '../services';
-import { EventCategory } from '../_constants';
+import { EventCategory } from '../constants/settings';
 
 export const onDashboardEvent = new EventEmitter();
 

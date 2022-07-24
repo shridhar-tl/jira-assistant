@@ -1,7 +1,7 @@
 import moment from "moment";
 import OAuthClient from '../common/OAuthClient';
 import { parseJwt } from "../common/utils";
-import { EventCategory } from "../_constants";
+import { EventCategory } from "../constants/settings";
 
 // https://docs.microsoft.com/en-us/graph/api/resources/calendar?view=graph-rest-1.0
 

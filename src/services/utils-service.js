@@ -1,4 +1,4 @@
-import { SHORT_MONTH_NAMES, FULL_MONTH_NAMES, TINY_DAY_NAMES, SHORT_DAY_NAMES, FULL_DAY_NAMES } from '../_constants';
+import { SHORT_MONTH_NAMES, FULL_MONTH_NAMES, TINY_DAY_NAMES, SHORT_DAY_NAMES, FULL_DAY_NAMES } from '../constants/settings';
 import { convertToDate, getUserName, parseJiraCustomCSV } from '../common/utils';
 
 const secsPerDay = 86400;

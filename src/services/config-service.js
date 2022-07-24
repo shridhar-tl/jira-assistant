@@ -1,4 +1,4 @@
-import { SettingsCategory } from '../_constants';
+import { SettingsCategory } from '../constants/settings';
 
 export default class ConfigService {
     static dependencies = ["SessionService", "AuthService", "SettingsService"];
