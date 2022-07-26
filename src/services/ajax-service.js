@@ -2,18 +2,19 @@
 import { prepareUrlWithQueryString } from '../common/utils';
 
 export default class AjaxService {
-    static dependencies = ["SessionService", "MessageService", "AjaxRequestService"];
+    static dependencies = ["SessionService", "MessageService", "AjaxRequestService", "JiraOAuthService"];
 
-    constructor($session, $message, $request) {
+    constructor($session, $message, $request, $jAuth) {
         this.$session = $session;
         this.$message = $message;
         this.$request = $request;
+        this.$jAuth = $jAuth;
     }
 
     prepareUrl(url, params) {
-        this._basePath = this.$session.rootUrl;
-        if (!this._basePath?.endsWith('/')) {
-            this._basePath += '/';
+        let basePath = this.$session.apiRootUrl || this.$session.rootUrl;
+        if (!basePath?.endsWith('/')) {
+            basePath += '/';
         }
 
         let urlStr = url.toString();
@@ -30,7 +31,7 @@ export default class AjaxService {
         }
 
         if (urlStr.startsWith('~/')) {
-            return this._basePath + urlStr.substring(2);
+            return basePath + urlStr.substring(2);
         }
 
         return urlStr;
@@ -50,7 +51,8 @@ export default class AjaxService {
         return this.handler(this.execute(method, this.prepareUrl(url, params), params, headers), quiet);
     }
 
-    execute(method, url, params, customHeaders) {
+    async execute(method, url, params, customHeaders) {
+        customHeaders = await this.$jAuth.transformHeaders(this.$session.userId, customHeaders);
         return this.$request.execute(method, url, params, customHeaders);
     }
 
@@ -64,7 +66,14 @@ export default class AjaxService {
         //      reject(err);
         //    });
         //});
-        return this.handler(this.execute("GET", this.prepareUrl(url, params)));
+        let headers = params[params.length - 1];
+        if (params.length > 1 && typeof headers === 'object') {
+            params = params.slice(0, -1);
+        } else {
+            headers = undefined;
+        }
+
+        return this.handler(this.execute("GET", this.prepareUrl(url, params), null, headers));
     }
 
     post(url, data, ...params) {

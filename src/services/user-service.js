@@ -1,13 +1,14 @@
 import { ContactUsUrl } from "../constants/urls";
 import { SettingsCategory } from "../constants/settings";
 import { SystemUserId } from "../constants/common";
+import { getUserName } from '../common/utils';
 
 export default class UserService {
-    static dependencies = ["StorageService", "JiraService"];
+    static dependencies = ["SettingsService", "StorageService"];
 
-    constructor($storage, $jira) {
+    constructor($settings, $storage) {
+        this.$settings = $settings;
         this.$storage = $storage;
-        this.$jira = $jira;
     }
 
     getUser(userId) { return this.$storage.getUser(userId); }
@@ -62,13 +63,14 @@ export default class UserService {
         await this.$storage.bulkPutSettings(settingsArr);
     }
 
+    /* Commented out as no reference is found
     async saveUser(user) {
         return this.$storage.addOrUpdateUser(user);
-    }
+    }*/
 
     async getUsersList() {
         const users = (await this.$storage.getAllUsers()).filter(u => u.id !== 1);
-        return users.map(u => ({ id: u.id, email: u.email, jiraUrl: u.jiraUrl, userId: u.userId }));
+        return users.map(u => ({ id: u.id, email: u.email, jiraUrl: u.jiraUrl, apiUrl: u.apiUrl, userId: u.userId }));
     }
 
     async getUserDetails(userId) {
@@ -80,7 +82,9 @@ export default class UserService {
 
         const feedbackUrl = `${ContactUsUrl}?name={0}&email={1}&javersion={2}&browser={3}&entry.326955045&entry.1696159737&entry.485428648={0}&entry.879531967={1}&entry.1426640786={2}&entry.972533768={3}`;
         currentUser.jiraUrl = currentUser.jiraUrl.toString().clearEnd('/');
-
+        if (currentUser.apiUrl) {
+            currentUser.apiUrl = currentUser.apiUrl.toString().clearEnd('/');
+        }
         //this.$session.authTokken = currentUser.dataStore;
         const sessionUser = {
             userId: currentUser.id,
@@ -89,6 +93,10 @@ export default class UserService {
             profileUrl: `${currentUser.jiraUrl}/secure/ViewProfile.jspa`,
             feedbackUrl: `${feedbackUrl}&emb=true` //&embedded=true for directly using google forms
         };
+
+        if (currentUser.apiUrl) {
+            sessionUser.apiUrl = currentUser.apiUrl;
+        }
 
         const jiraUrlLower = currentUser.jiraUrl.toLowerCase();
 
@@ -100,5 +108,63 @@ export default class UserService {
             delete sessionUser.noDonations;
         }
         return sessionUser;
+    }
+
+
+    async getUserFromDB(root, name, email) {
+        let user = await this.$storage.getUserWithNameAndJiraUrl(name, root);
+
+        if (!user && email) {
+            user = await this.$storage.getUserWithEmailAndJiraUrl(email, root);
+        }
+
+        return user;
+    }
+
+    async createUser(profile, root, apiUrl) {
+        const name = getUserName(profile);
+        const email = profile.emailAddress;
+
+        let user = await this.getUserFromDB(root, name, email);
+        if (!user) {
+            user = {
+                jiraUrl: root,
+                userId: name,
+                email: email,
+                lastLogin: new Date(),
+                dateCreated: new Date()
+            };
+
+            if (apiUrl) { user.apiUrl = apiUrl; }
+
+            const id = await this.$storage.addUser(user);
+
+            await this.$settings.saveGeneralSetting(id, 'dateFormat', 'dd-MMM-yyyy');
+            await this.$settings.saveGeneralSetting(id, 'timeFormat', ' hh:mm:ss tt');
+            await this.$settings.saveGeneralSetting(id, 'maxHours', 8);
+            await this.$settings.saveGeneralSetting(id, 'startOfDay', '09:00');
+            await this.$settings.saveGeneralSetting(id, 'endOfDay', '17:00');
+            await this.$settings.saveGeneralSetting(id, 'startOfWeek', 1);
+            await this.$settings.saveGeneralSetting(id, 'maxHours', 8);
+
+            await this.$settings.set("CurrentJiraUrl", root);
+            await this.$settings.set("CurrentUserId", id);
+
+            return id;
+        }
+        else {
+            user.jiraUrl = root;
+            user.userId = name;
+            user.email = email;
+            user.lastLogin = new Date();
+
+            if (apiUrl) {
+                user.apiUrl = apiUrl;
+            }
+
+            await this.$storage.addOrUpdateUser(user);
+
+            return user.id;
+        }
     }
 }

@@ -8,6 +8,8 @@ import MeetingsTab from './MeetingsTab';
 import MenuOptionsTab from './MenuOptionsTab';
 import './Common.scss';
 
+const isWebBuild = process.env.REACT_APP_WEB_BUILD === 'true';
+
 class GeneralSettings extends PureComponent {
     constructor(props) {
         super(props);
@@ -18,6 +20,9 @@ class GeneralSettings extends PureComponent {
         this.settings = {};
         this.spaceInfo = {};
         this.state = {};
+        if (isWebBuild) {
+            this.isExtnConnected = localStorage.getItem('authType') === '1';
+        }
     }
 
     componentDidMount() {
@@ -48,9 +53,9 @@ class GeneralSettings extends PureComponent {
                 <TabPanel header="Meetings" lefticon="fa-calendar">
                     <MeetingsTab settings={settings} userId={this.userId} />
                 </TabPanel >
-                <TabPanel header="Menu options" lefticon="fa-calendar">
+                {(!isWebBuild || this.isExtnConnected) && <TabPanel header="Menu options" lefticon="fa-calendar">
                     <MenuOptionsTab settings={settings} userId={this.userId} />
-                </TabPanel>
+                </TabPanel>}
             </TabView>
         </>
         );

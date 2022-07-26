@@ -116,6 +116,24 @@ export function encodeAsQuerystring(params) {
     return Object.keys(params).map((key) => `${key}=${encodeURIComponent(params[key])}`).join('&');
 }
 
+export function getCurrentQueryParams() {
+    const qryParams = document.location.search;
+
+    if (qryParams) {
+        return parseQueryParams(qryParams);
+    }
+
+    return {};
+}
+
+function parseQueryParams(qryParams) {
+    const sp = new URLSearchParams(qryParams);
+    return Array.from(sp.keys()).reduce((obj, k) => {
+        obj[k] = sp.get(k);
+        return obj;
+    }, {});
+}
+
 export function parseJwt(token) {
     try {
         // Get Token Header

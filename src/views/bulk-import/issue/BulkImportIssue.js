@@ -277,15 +277,16 @@ class ImportIssue extends BaseImport {
         const selectedRowsIndex = importData.findAllIndex(t => t.selected);
         //const selectedRows = selectedRowsIndex.map(i => importData[i]);
 
+        try {
+            await selectedRowsIndex.mapAsync(async index => {
+                const issue = { ...importData[index] };
+                importData[index] = issue;
 
-        await selectedRowsIndex.mapAsync(async index => {
-            const issue = { ...importData[index] };
-            importData[index] = issue;
-
-            await this.$ticket.importIssue(issue, cols, addedFields);
-        });
-
-        this.setState({ isLoading: false, uploading: false, importData });
+                await this.$ticket.importIssue(issue, cols, addedFields);
+            });
+        } finally {
+            this.setState({ isLoading: false, uploading: false, importData });
+        }
 
         /*
         this.$ticket.importIssue(selectedRows).then(result => {

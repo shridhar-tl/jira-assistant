@@ -12,6 +12,7 @@ import 'jsd-report/build/css/style.css';
 import './scss/style.scss';
 import './App.scss';
 import { validateIfWebApp } from './common/proxy';
+import { getCurrentQueryParams } from './common/utils';
 
 const isWebBuild = process.env.REACT_APP_WEB_BUILD === 'true';
 export const extnAuth = isWebBuild && document.location.href.indexOf('?authType=1') > 0;
@@ -31,10 +32,9 @@ class App extends PureComponent {
   constructor(props) {
     super(props);
     this.state = { isLoading: true, needIntegration: false, authenticated: false };
-    this.beginInit();
   }
 
-  componentDidMount() { this._mounted = true; }
+  componentDidMount() { this.beginInit(); }
 
   contextProps = {
     switchUser: (userId) => {
@@ -52,7 +52,18 @@ class App extends PureComponent {
 
   async beginInit() {
     let authType;
-    if (isWebBuild) {
+    const { oauth, code, state } = getCurrentQueryParams();
+
+    if (oauth) {
+      if (state) {
+        const { forWeb, authType: selAuthType } = JSON.parse(state);
+        if (forWeb && selAuthType) {
+          authType = selAuthType;
+        }
+      }
+    }
+
+    if (isWebBuild && !oauth) {
       authType = localStorage.getItem('authType');
 
       const newState = { authType };
@@ -62,17 +73,17 @@ class App extends PureComponent {
           authType = '1';
           newState.authType = '1';
         }
-        this.setState(newState);
       }
+      this.setState(newState);
 
-      if (!authType || !newState.authReady) {
+      if (!authType || (authType === '1' && !newState.authReady)) {
         this.setState({ isLoading: false });
         this.props.history.push(`/integrate`);
         return;
       }
     }
 
-    this.beginLoad(authType);
+    this.beginLoad(authType, oauth, code);
   }
 
   authTypeChosen = (authType) => {
@@ -82,9 +93,9 @@ class App extends PureComponent {
     this.beginLoad(authType);
   };
 
-  async beginLoad(authType) {
+  async beginLoad(authType, oauth, code) {
     registerServices(authType);
-    inject(this, "AnalyticsService", "SessionService", "AuthService", "MessageService", "SettingsService", "CacheService");
+    inject(this, "AnalyticsService", "SessionService", "AuthService", "MessageService", "SettingsService", "CacheService", "JiraOAuthService");
     this.props.history.listen((location) => this.$analytics.trackPageView(location.pathname));
 
     this.$message.onNewMessage((message) => {
@@ -97,6 +108,21 @@ class App extends PureComponent {
     });
 
     await this.$settings.migrateSettings();
+
+    if (oauth === 'jc') { // When Jira OAuth integration is done, save the user using authCode
+      const { success, message, userId: uid } = await this.$jAuth.integrate(code);
+      if (success) { // ToDo: if its extension handle it differently
+        localStorage.setItem('authType', authType);
+        document.location.href = `/${isWebBuild ? '' : 'index.html'}#/${uid}/dashboard/0`;
+        return;
+      } else {
+        const newState = {};
+        await validateIfWebApp(newState); // This function would not have got called as its a oauth request.
+        this.setState(newState);
+        this.$message.error(message, 'Jira Cloud Integration Failed');
+      }
+    }
+
     this.authenticateUser(this.props.location.pathname);
   }
 
@@ -110,7 +136,7 @@ class App extends PureComponent {
     // For existing users who uses old UI have the menu saved as /dashboard
     if (pathname.endsWith("/dashboard")) {
       forceNavigate = true;
-      pathname += "/0";
+      pathname += "/0"; // Load the default dashboard if their is no dashboard id in url
     }
 
     if (pathname.startsWith("/dashboard")) {
@@ -165,7 +191,7 @@ class App extends PureComponent {
         <AppContext.Provider value={this.contextProps}>
           <React.Suspense fallback={getLoader()}>
             <Switch>
-              {isWebBuild && <Route exact path="/integrate" name="Authenticate Page" render={props => <Integrate {...props}
+              {isWebBuild && <Route exact path="/integrate" name="Authenticate Page" render={props => <Integrate {...props} isWebBuild={isWebBuild}
                 isExtnValid={isExtnValid} extnUnavailable={extnUnavailable} needIntegration={needIntegration} onAuthTypeChosen={this.authTypeChosen} />} />}
               {!isWebBuild && <Route exact path="/integrate" name="Integrate Page" render={props => <Integrate {...props} />} />}
               <Route exact path="/401" name="Page 401" render={props => <Page401 {...props} jiraUrl={this.state.jiraUrl} />} />

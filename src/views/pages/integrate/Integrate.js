@@ -3,20 +3,20 @@ import { inject } from '../../../services';
 import { Button, TextBox } from '../../../controls';
 import { ContactUsUrl } from '../../../constants/urls';
 import { ApiUrls } from '../../../constants/api-urls';
-import { getUserName } from '../../../common/utils';
 
 class Integrate extends PureComponent {
     constructor(props) {
         super(props);
-        inject(this, "AjaxService", "StorageService", "MessageService", "SettingsService", "AppBrowserService", "SessionService", "SettingsService");
+        inject(this, "AjaxService", "StorageService", "MessageService", "SettingsService", "AppBrowserService", "SessionService", "SettingsService", "UserService");
 
         this.year = new Date().getFullYear();
 
         this.browser = navigator.userAgent;
         this.state = {};
+        this.init();
     }
 
-    UNSAFE_componentWillMount() {
+    init() {
         this.$jaBrowserExtn.getAppVersion().then(v => this.setState({ version: v }));
 
         this.$jaBrowserExtn.getCurrentUrl().then((url) => {
@@ -31,68 +31,23 @@ class Integrate extends PureComponent {
         return url.replace(/^(.*\/\/[^/?#]*).*$/, "$1");
     }
 
-    async getUserFromDB(root, name, email) {
-        let user = await this.$storage.getUserWithNameAndJiraUrl(name, root);
-
-        if (!user && email) {
-            user = await this.$storage.getUserWithEmailAndJiraUrl(email, root);
-        }
-
-        return user;
-    }
-
     integrate = () => {
         const root = this.state.jiraUrl.trim().clearEnd('/').clearEnd('\\');
         this.setState({ jiraUrl: root });
         this.$session.rootUrl = root;
         this.setState({ isLoading: true });
-
-        this.$ajax.get(ApiUrls.mySelf).then((data) => {
-            const name = getUserName(data);
-            const email = data.emailAddress;
-
-            this.getUserFromDB(root, name, email)
-                .then((user) => {
-                    if (!user) {
-                        user = {
-                            jiraUrl: root,
-                            userId: name,
-                            email: email,
-                            lastLogin: new Date(),
-                            dateCreated: new Date()
-                        };
-                        this.$storage.addUser(user)
-                            .then(async (id) => {
-                                await this.$settings.saveGeneralSetting(id, 'dateFormat', 'dd-MMM-yyyy');
-                                await this.$settings.saveGeneralSetting(id, 'timeFormat', ' hh:mm:ss tt');
-                                await this.$settings.saveGeneralSetting(id, 'maxHours', 8);
-                                await this.$settings.saveGeneralSetting(id, 'startOfDay', '09:00');
-                                await this.$settings.saveGeneralSetting(id, 'endOfDay', '17:00');
-                                await this.$settings.saveGeneralSetting(id, 'startOfWeek', 1);
-                                await this.$settings.saveGeneralSetting(id, 'maxHours', 8);
-                                return id;
-                            }, this.handleDBError)
-                            .then(this.openDashboard);
+        this.$ajax.get(ApiUrls.mySelf)
+            .then(data => this.$user.createUser(data, root).then(this.openDashboard, this.handleDBError)
+                , (response) => {
+                    response = response || {};
+                    if (response.status === 401) {
+                        this.$message.warning("You are not authenticated with Jira to integrate.", "Unauthorized");
                     }
                     else {
-                        user.jiraUrl = root;
-                        user.userId = name;
-                        user.email = email;
-                        user.lastLogin = new Date();
-                        this.$storage.addOrUpdateUser(user)
-                            .then(() => user.id, this.handleDBError)
-                            .then(this.openDashboard);
+                        this.$message.error("This is not a valid Jira server url or the server does not respond.", "Unknown server");
                     }
-                });
-        }, (response) => {
-            response = response || {};
-            if (response.status === 401) {
-                this.$message.warning("You are not authenticated with Jira to integrate.", "Unauthorized");
-            }
-            else {
-                this.$message.error("This is not a valid Jira server url or the server does not respond.", "Unknown server");
-            }
-        }).then(() => { this.setState({ isLoading: false }); });
+                })
+            .then(() => this.setState({ isLoading: false }));
     };
 
     handleDBError = (err) => {

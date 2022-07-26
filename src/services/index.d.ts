@@ -1,4 +1,5 @@
 import 'react';
+import AjaxRequestService from './ajax-request-service';
 import AjaxService from './ajax-service';
 import AnalyticsService from './analytics-service';
 import ChromeService from './browser-chrome-service';
@@ -11,8 +12,9 @@ import CacheService from './cache-service';
 import CalendarService from './calendar-service';
 import ConfigService from './config-service';
 import DashboardService from './dashboard-service';
-import JiraUpdatesService from './jira-updates-service';
+import JiraOAuthService from './jira-oauth-service';
 import JiraService from './jira-service';
+import JiraUpdatesService from './jira-updates-service';
 import MessageService from './message-service';
 import NotificationService from './notification-service';
 import OutlookCalendar from './outlook-service';
@@ -32,6 +34,7 @@ import WorklogService from './worklog-service';
 
 declare module 'react' {
     interface PureComponent<P = {}, S = {}, SS = any> extends Component<P, S, SS> {
+        $request: AjaxRequestService
         $ajax: AjaxService
         $analytics: AnalyticsService
         $auth: AuthService
@@ -41,6 +44,7 @@ declare module 'react' {
         $calendar: CalendarService
         $config: ConfigService
         $dashboard: DashboardService
+        $jAuth: JiraOAuthService
         $jira: JiraService
         $jupdates: JiraUpdatesService
         $message: MessageService

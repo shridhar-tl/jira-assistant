@@ -38,6 +38,9 @@ export default class AuthService {
             this.$session.UserSettings = userSettings;
             this.$session.userId = userId;
             this.$session.rootUrl = (userDetails.jiraUrl || "").toString();
+            if (userDetails.apiUrl) {
+                this.$session.apiRootUrl = (userDetails.apiUrl || "").toString();
+            }
 
             const jiraUser = await this.$jira.getCurrentUser();
             userDetails.jiraUser = jiraUser;

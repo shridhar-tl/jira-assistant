@@ -1,8 +1,10 @@
 import classNames from 'classnames';
 import React, { PureComponent } from 'react';
+import Dialog, { CustomDialog } from '../../../dialogs';
 import { BROWSER_NAME } from '../../../common/browsers';
 import { ContactUsUrl, StoreUrls, WebSiteUrl } from '../../../constants/urls';
 import './ChooseAuthType.scss';
+import { getJiraCloudOAuthAuthorizeUrl } from '../../../constants/oauth';
 
 class ChooseAuthType extends PureComponent {
     constructor(props) {
@@ -33,6 +35,20 @@ class ChooseAuthType extends PureComponent {
 
     extnSelected = () => this.props.onAuthTypeChosen('1');
 
+    oAuthSelected = () => {
+        Dialog.yesNo((<span>
+            You will be redirected to Jira Cloud where you can Authorize Jira Assistant to access Jira API's.
+            <br /><br />
+            This is a one time activity and the authorization code would be stored in your browser cache which would be used in future for accessing Jira.
+        </span>),
+            "Jira Cloud - OAuth2 Integration").then(() => {
+                document.location.href = getJiraCloudOAuthAuthorizeUrl({
+                    forWeb: this.props.isWebBuild,
+                    authType: '2'
+                });
+            });
+    };
+
     render() {
         const { version, browser, props: { extnUnavailable, isExtnValid, needIntegration } } = this;
         const allowExtn = !extnUnavailable && isExtnValid && !needIntegration;
@@ -52,14 +68,14 @@ class ChooseAuthType extends PureComponent {
                                         <div className="auth-type-title">Use Jira Assistant Extension</div>
                                         {this.getExtensionMessage()}
                                     </div>
+                                    <div className="auth-type" onClick={this.oAuthSelected}>
+                                        <div className="auth-type-title">Use OAuth2 (Jira Cloud only)</div>
+                                        <div className="auth-type-desc">Using OAuth option will let authorize this tool to Integrate with Jira without need to store credentials in this tool. This is more secured than using userid and password</div>
+                                    </div>
                                     <div className="auth-type disabled">
                                         <div className="auth-type-title">Use User id and Password <span className="badge badge-warning">Comming Soon</span></div>
                                         <div className="auth-type-desc">You can use your user id and password to authenticate with Jira.
                                             On some cases this option may not work if you use single signon for logging in to Jira.</div>
-                                    </div>
-                                    <div className="auth-type disabled">
-                                        <div className="auth-type-title">Use OAuth2 <span className="badge badge-warning">Comming Soon</span></div>
-                                        <div className="auth-type-desc">Using OAuth option will let authorize this tool to Integrate with Jira without need to store credentials in this tool. This is more secured than using userid and password</div>
                                     </div>
                                 </div>
                                 <div className="card-footer p-4">
@@ -85,9 +101,11 @@ class ChooseAuthType extends PureComponent {
                         </div>
                     </div>
                 </div>
+                <CustomDialog />
             </div >
         );
     }
 }
 
 export default ChooseAuthType;
+

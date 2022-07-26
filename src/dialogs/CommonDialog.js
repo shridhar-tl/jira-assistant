@@ -21,7 +21,7 @@ class CommonDialog extends BaseDialog {
                 this.getFooter = () => footer;
                 this.setState({ showDialog: true });
 
-                this.$analytics.trackEvent("Dialog opened", EventCategory.DialogEvents, title);
+                this.$analytics?.trackEvent("Dialog opened", EventCategory.DialogEvents, title);
             }
             else {
                 this.setState({ showDialog: false });
