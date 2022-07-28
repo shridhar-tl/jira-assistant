@@ -2,7 +2,7 @@ import { CHROME_WS_URL } from '../constants/urls';
 import { AppVersionNo } from '../constants/common';
 import BrowserBase from '../common/BrowserBase';
 // ToDo: need to pull url
-export default class DevBrowserService extends BrowserBase {
+export default class WebBrowserService extends BrowserBase {
     constructor() {
         super();
         /* Commented as no reference found
@@ -73,9 +73,7 @@ export default class DevBrowserService extends BrowserBase {
     }
 
     getCurrentUrl() {
-        return new Promise((resolve, reject) => {
-            resolve("https://jira-ja.atlassian.net");
-        });
+        return Promise.resolve('');
     }
 
     getCurrentTab() {
@@ -95,7 +93,7 @@ export default class DevBrowserService extends BrowserBase {
     }
 
     getAppInfo() { // This function is for private use
-        return Promise.resolve({ isDevelopment: true, version: AppVersionNo.toString() });
+        return Promise.resolve({ isDevelopment: process.env.NODE_ENV !== "production", version: AppVersionNo.toString() });
     }
 
     getAppVersion() {

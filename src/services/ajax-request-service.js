@@ -50,24 +50,29 @@ export default class AjaxRequestService {
         if (json !== false) {
             headers['Content-Type'] = 'application/json';
         }
-        const result = await fetch(url, {
-            method,
-            body: JSON.stringify(body),
-            credentials: withCredentials !== false ? 'include' : undefined,
-            referrerPolicy: 'no-referrer',
-            headers,
-        });
+        try {
+            const result = await fetch(url, {
+                method,
+                body: JSON.stringify(body),
+                credentials: withCredentials !== false ? 'include' : undefined,
+                referrerPolicy: 'no-referrer',
+                headers,
+            });
 
-        if (result.ok) {
-            return await result.json();
-        } else {
-            const { status, statusText, headers } = result;
-            const type = headers.get('content-type');
-            let error;
-            if (type?.includes('json')) {
-                error = await result.json();
+            if (result.ok) {
+                return await result.json();
+            } else {
+                const { status, statusText, headers } = result;
+                const type = headers.get('content-type');
+                let error;
+                if (type?.includes('json')) {
+                    error = await result.json();
+                }
+                return Promise.reject({ status, statusText, error });
             }
-            return Promise.reject({ status, statusText, error });
+        } catch (err) {
+            console.error(err);
+            return Promise.reject({ status: 0, statusText: err.message, error: err });
         }
         /* Removed usage of AJAX and used fetch instead. This has to be removed later if all works well
         return new Promise((resolve, reject) => {

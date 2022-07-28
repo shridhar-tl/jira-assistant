@@ -34,28 +34,28 @@ import { injectable, inject, injectProdBrowserServices } from './index.common';
 export { inject };
 
 let _isReady = false;
-const useProxy = process.env.REACT_APP_WEB_BUILD === 'true';
+const isWebBuild = process.env.REACT_APP_WEB_BUILD === 'true';
 
 // Any new classes injected should be added in index.d.ts file as well to support intellisense in VS Code.
 export default function injectServices(authType) {
-    const injectProxy = useProxy && authType === '1';
+    const injectProxy = isWebBuild && authType === '1';
     injectable(injectProxy ? AjaxRequestProxyService : AjaxRequestService, "AjaxRequestService", "$request", { isSingleton: false });
     injectable(AjaxService, "AjaxService", "$ajax");
-    injectable(AnalyticsService, "AnalyticsService", "$analytics", { isSingleton: false });
+    injectable(AnalyticsService, "AnalyticsService", "$analytics", { isSingleton: true });
     if (injectProxy) {
         console.log("Proxy Browser service injected");
         injectable(BrowserProxyService, "AppBrowserService", "$jaBrowserExtn", { isSingleton: false });
     }
-    else if (process.env.NODE_ENV === "production") {
+    else if (!isWebBuild && process.env.NODE_ENV === "production") {
         injectProdBrowserServices();
     }
     else {
-        console.log("Browser service running in Dev mode");
-        injectable(DevService, "AppBrowserService", "$jaBrowserExtn", { isSingleton: false });
+        console.log("Web Browser service injected");
+        injectable(DevService, "AppBrowserService", "$jaBrowserExtn", { isSingleton: true });
     }
     injectable(AuthService, "AuthService", "$auth");
     injectable(BookmarkService, "BookmarkService", "$bookmark");
-    injectable(CacheService, "CacheService", "$cache", { isSingleton: false });
+    injectable(CacheService, "CacheService", "$cache", { isSingleton: true });
     injectable(CalendarService, "CalendarService", "$calendar");
     injectable(ConfigService, "ConfigService", "$config");
     injectable(DashboardService, "DashboardService", "$dashboard");
@@ -71,7 +71,7 @@ export default function injectServices(authType) {
     injectable(ReportConfigService, "ReportConfigService", "$reportConfig");
     injectable(SessionService, "SessionService", "$session");
     injectable(SettingsService, "SettingsService", "$settings");
-    injectable(injectProxy ? StorageProxyService : StorageService, "StorageService", "$storage", { isSingleton: false });
+    injectable(injectProxy ? StorageProxyService : StorageService, "StorageService", "$storage", { isSingleton: true });
     injectable(SuggestionService, "SuggestionService", "$suggestion");
     injectable(TicketService, "TicketService", "$ticket");
     injectable(UserService, "UserService", "$user");

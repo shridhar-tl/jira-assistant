@@ -3,10 +3,10 @@ import { BROWSER_NAME } from "../common/browsers";
 import * as moment from 'moment';
 
 export default class NotificationService {
-    static dependencies = ["AjaxService", "CacheService", "SettingsService", "AppBrowserService", "UtilsService", "MessageService"];
+    static dependencies = ["AjaxRequestService", "CacheService", "SettingsService", "AppBrowserService", "UtilsService", "MessageService"];
 
-    constructor($ajax, $cache, $settings, $browser, $userutils) {
-        this.$ajax = $ajax;
+    constructor($request, $cache, $settings, $browser, $userutils) {
+        this.$request = $request;
         this.$cache = $cache;
         this.$settings = $settings;
         this.$userutils = $userutils;
@@ -157,7 +157,7 @@ export default class NotificationService {
         let data = this.$cache.get("messages");
 
         if (!data) {
-            data = await this.$ajax.execute("GET", messagesUrl, null, { withCredentials: false });
+            data = await this.$request.execute("GET", messagesUrl, null, { withCredentials: false });
 
             if (data) {
                 this.$cache.set("messages", data, moment().add(4, 'hours'));

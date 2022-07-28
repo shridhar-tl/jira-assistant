@@ -709,7 +709,7 @@ export default class TicketService {
             const { field } = col;
             const valueObj = issue[field];
 
-            if (!valueObj.value) {
+            if (!valueObj?.value) {
                 return;
             }
 
