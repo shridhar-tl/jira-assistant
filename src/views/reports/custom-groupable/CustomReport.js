@@ -4,9 +4,8 @@ import QueryEditor from './QueryEditor';
 import SaveReportDialog from '../../../dialogs/SaveReportDialog';
 import Dialog from '../../../dialogs';
 import ReportViewer from './ReportViewer';
-import './Common.scss';
 import { EventCategory } from '../../../constants/settings';
-import { UUID } from '../../../constants/utils';
+import './Common.scss';
 
 class CustomReport extends PureComponent {
     constructor(props) {
@@ -52,82 +51,10 @@ class CustomReport extends PureComponent {
             return;
         }
 
-        const queryFromDB = await this.$report.getReportDefinition(reportId);
-        const query = await this.convertFromOldReport(queryFromDB);
+        const query = await this.$report.getReportDefinition(reportId);
 
-        this.reportConverted = queryFromDB !== query;
-
-        this.setState({
-            reportId, query, renderReport: false,
-            hasUnsavedChanges: this.reportConverted
-        });
+        this.setState({ reportId, query, renderReport: false });
     };
-
-    async convertFromOldReport(query) {
-        if (Array.isArray(query?.fields)) {
-            return query;
-        }
-
-        const msg = (<>
-            Making changes and saving the report from here will upgrade the existing report definition.<br /><br />
-            You will not be able to use it with old report once you save changes from here.<br /><br />
-            <b>Note:</b> Only once you click on "Save Query" button, conversion will happen.
-            Untill then you can safely preview the report without converting it.
-        </>);
-
-        await new Promise((result) => Dialog.alert(msg, "Convert report", null, { waitFor: 5 }).then(result));
-
-        const { filterFields, outputFields, ...newQuery } = query;
-
-        const groupBy = [];
-        newQuery.settings = { groupBy };
-
-        const functionMapper = {
-            'formatSecs?1': 'sum',
-            'sum?0': 'sum',
-            'sum?1': 'sum',
-            'avg?0': 'avg',
-            'avg?1': 'avg',
-            'count?0': 'count',
-            'count?2': 'count',
-            'formatUser?1': 'name',
-            'formatUser?2': 'email',
-            'formatUser?4': 'both'
-        };
-
-        newQuery.fields = outputFields.map(f => {
-            const { functions, groupBy: grp, id, ...newField } = f;
-
-            newField.id = UUID.generate();
-            newField.field = id;
-
-            const fId = functions?.id;
-
-            if (grp || fId === 'sum?1' || fId === 'avg?1' || fId === 'count?2') {
-                const settings = { showGroupCount: true };
-
-                if (fId) {
-                    const type = newField.type;
-                    const funcValue = functionMapper[fId];
-
-                    if (funcValue) {
-                        if (type === 'number' || type === 'seconds') {
-                            settings.funcType = funcValue;
-                        }
-                        else if (type === 'user' && fId.startsWith('formatUser')) {
-                            settings.valueType = funcValue;
-                        }
-                    }
-                }
-
-                groupBy.push({ ...newField, settings });
-            }
-
-            return newField;
-        });
-
-        return newQuery;
-    }
 
     fillQueriesList = async (reportId) => {
         const result = await this.$report.getReportsList();
@@ -177,8 +104,7 @@ class CustomReport extends PureComponent {
         this.setState({ renderReport: !renderReport });
 
         if (!renderReport) {
-            this.$analytics.trackEvent(`${this.reportConverted ? 'Old: ' : ''}Custom Report Preview`,
-                EventCategory.UserActions);
+            this.$analytics.trackEvent('Custom Report Preview', EventCategory.UserActions);
         }
     };
 
@@ -208,12 +134,7 @@ class CustomReport extends PureComponent {
             this.setState({ showSaveDialog: false, hasUnsavedChanges: false, reportId: id, query });
 
             this.$message.success("Report saved successfully!");
-            if (this.reportConverted) {
-                this.reportConverted = false;
-                this.$analytics.trackEvent("Custom Report migrated");
-            } else {
-                this.$analytics.trackEvent("Custom Report Saved");
-            }
+            this.$analytics.trackEvent("Custom Report Saved");
 
             if (refillList) {
                 this.fillQueriesList(id);

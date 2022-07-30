@@ -37,7 +37,7 @@ class DefaultHeader extends PureComponent {
 
   initComponent() {
     this.$noti.getNotifications().then(notifications => this.setState({ notifications }),
-      (err) => { console.log("Error fetching notifications: ", err); });
+      (err) => { console.error("Error fetching notifications: ", err); });
 
     this.siteUrl = "https://www.jiraassistant.com";
     this.ratingUrl = this.$jaBrowserExtn.getStoreUrl(true);

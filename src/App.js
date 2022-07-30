@@ -67,7 +67,8 @@ class App extends PureComponent {
       authType = localStorage.getItem('authType');
 
       const newState = { authType };
-      if ((!authType || authType === '1') && await validateIfWebApp(newState)) {
+      const pathname = this.props.location?.pathname;
+      if ((!authType || authType === '1' || pathname === '/integrate') && await validateIfWebApp(newState)) {
         if (extnAuth && !authType && newState.authReady) {
           localStorage.setItem('authType', 1);
           authType = '1';

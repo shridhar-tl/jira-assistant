@@ -772,10 +772,8 @@ class Calendar extends BaseGadget {
                 e.stopPropagation();
                 e.preventDefault();
 
-                //e.currentTarget = icon.get(0); // ToDo
                 this.currentMeetingItem = m;
 
-                //this.currentMeetingViewItem = timeItem.find('i.fa').get(0); // ToDo
                 this.mnuCal_AddWL.disabled = hasWorklog;
                 this.mnuCal_OpenUrl.disabled = !m.hangoutLink;
                 showContextMenu(e, this.calMenuItems);

@@ -53,22 +53,8 @@ class DefaultLayout extends PureComponent {
       body.add('quick-view');
     }
 
-    const skinName = await this.$settings.get('skin', true) || 'skin-blue';
-
-    body.add(skinName.replace('-light', '')); //ToDo: once old version is removed, need to permenently update skin color instead of replace
-
-    /* Commented out as this is not really implemented
-    const isSideBarToggled = this.$cache.get('SideBarToggled');
-    const isSideBarHidden = this.$cache.get('SideBarHidden');
-    if (isSideBarHidden) {
-      body.add('sidebar-hidden');
-      body.add('brand-minimized');
-    }
-    else if (isSideBarToggled) {
-      body.add('sidebar-minimized');
-      body.add('brand-minimized');
-    }
-    */
+    const skinName = (await this.$settings.get('skin', true)) || 'skin-blue';
+    body.add(skinName);
   }
 
   componentWillUnmount() {

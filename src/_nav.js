@@ -56,16 +56,6 @@ export const navigation = [
         }
     },
     {
-        name: 'Import issue',
-        id: 'IMI',
-        url: '/import/issue-old',
-        icon: 'fa fa-ticket',
-        badge: {
-            variant: 'danger',
-            text: 'OLD'
-        }
-    },
-    {
         title: true,
         name: 'Reports'
     },

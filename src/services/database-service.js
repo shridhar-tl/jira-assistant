@@ -41,18 +41,7 @@ class DatabaseService extends Dexie {
                 });
             }
             else {
-                let instId = user.instId;
-
-                // ToDo: Temp. Temp fix for existing users. Need to be removed once all user will have this.
-                if (!instId) {
-                    instId = UUID.generate();
-                    user.instId = instId;
-                    this.users.put(user).then(() => { this.$analytics.trackEvent("User Inst ID added", EventCategory.Temporary); });
-                }
-                // ToDo ends
-
-                this.$analytics.setUserId(instId);
-
+                this.$analytics.setUserId(user.instId);
                 this.$analytics.setIfEnabled(user.enableAnalyticsLogging !== false, user.enableExceptionLogging !== false);
             }
         });

@@ -7,7 +7,6 @@ import AddGadgetDialog from './AddGadgetDialog';
 import AddWorklog from '../../dialogs/AddWorklog';
 import BaseGadget, { onDashboardEvent } from '../../gadgets/BaseGadget';
 import { TabView, TabPanel } from 'primereact/tabview';
-import OldCustomReport from '../reports/custom-report/ReportViewer';
 import CustomReport from '../reports/custom-groupable/ReportViewer';
 import AdvancedReport from '../reports/report-builder/ReportViewer';
 import { Sortable } from 'jsd-report';
@@ -116,7 +115,6 @@ class Dashboard extends PureComponent {
             listDay: { title: "Calendar", control: Calendar, getProps: () => ({ viewMode: "listDay" }) },
             listWeek: { title: "Calendar", control: Calendar, getProps: () => ({ viewMode: "listWeek" }) },
             listMonth: { title: "Calendar", control: Calendar, getProps: () => ({ viewMode: "listMonth" }) },
-            SQ: { title: "Custom report (Old)", control: OldCustomReport, getProps: (sett, opts) => ({ reportId: parseInt(opts[0]) }) },
             CR: { title: "Custom report", control: CustomReport, getProps: (sett, opts) => ({ reportId: parseInt(opts[0]) }) },
             AR: { title: "Advanced report", control: AdvancedReport, getProps: (sett, opts) => ({ reportId: parseInt(opts[0]) }) },
         };

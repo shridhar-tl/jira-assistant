@@ -25,13 +25,4 @@ export default class ConfigService {
             SettingsCategory.General,
             'dataStore', authCode);
     }
-
-    /* ToDo: Not sure if removing this would have impact
-    async getUserSettings() {
-        return {
-            settings: settings,
-            dateFormats: dateFormats.map((f) => { return { value: f, text: this.$utils.formatDate(curDate, f) }; }),
-            timeFormats: timeFormats.map((f) => { return { value: f, text: this.$utils.formatDate(curDate, f) }; })
-        };
-    }*/
 }
