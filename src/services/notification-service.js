@@ -35,7 +35,7 @@ export default class NotificationService {
             const noti = notifications[id];
             const { version, browsers } = noti;
 
-            if (browsers && browsers.length && !browsers.contains(BROWSER_NAME)) {
+            if (browsers && browsers.length && !browsers.includes(BROWSER_NAME)) {
                 return false;
             }
 
@@ -127,7 +127,7 @@ export default class NotificationService {
                     }
 
                     message = `You have ${whatsnew.length} new updates added in this version and ${publishMessage}. Click to know what is new...`;
-                    title = `Upcomming in Jira Assistant v${version}`;
+                    title = `Upcoming in Jira Assistant v${version}`;
                 }
 
                 return { id: `v${version}`, type: "versionInfo", version, timestamp, title, message };

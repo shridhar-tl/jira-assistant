@@ -215,7 +215,7 @@ class EstimateActualReport extends BaseGadget {
                             'timespent': function (obj) { return obj.timeSpentSeconds / 60 / 60; },
                         }
                     }
-                }, (data) => userList.contains(data.author) && data.worklog.date.isBetween(fromDateMS, toDateMS));
+                }, (data) => userList.includes(data.author) && data.worklog.date.isBetween(fromDateMS, toDateMS));
                 // Story points will be available in parent ticket. So take the estimate from parent if story point is selected.
                 if (this.state.estimationField !== 'timeoriginalestimate') {
                     let parentIds = flatData.distinct(t => t.parentkey);
@@ -240,7 +240,7 @@ class EstimateActualReport extends BaseGadget {
                                 }).reduce((index, ticket) => { index[ticket.key] = ticket; return index; }, {});
                                 flatData.forEach(t => {
                                     const { parentkey, key } = t;
-                                    if (hasTickets && custTicketsList.contains(key)) {
+                                    if (hasTickets && custTicketsList.includes(key)) {
                                         return;
                                     }
                                     if (parentkey) {
@@ -277,7 +277,7 @@ class EstimateActualReport extends BaseGadget {
                         colorIndex++;
 
                         const projData = flatData.filter(t => t.projectKey.toUpperCase() === proj.key.toUpperCase()
-                            && (!hasTickets || !custTicketsList.contains(t.key)));
+                            && (!hasTickets || !custTicketsList.includes(t.key)));
                         const estimateUserData = [];
                         const actUserData = [];
                         const estimatePrj = {
@@ -308,10 +308,10 @@ class EstimateActualReport extends BaseGadget {
                 }
                 // If tickets are specified then add the tickets as seperate item
                 if (hasTickets) {
-                    flatData = flatData.filter(t => custTicketsList.contains(t.parentkey) || custTicketsList.contains(t.key));
+                    flatData = flatData.filter(t => custTicketsList.includes(t.parentkey) || custTicketsList.includes(t.key));
 
                     flatData.forEach(t => {
-                        if (custTicketsList.contains(t.key)) {
+                        if (custTicketsList.includes(t.key)) {
                             return;
                         }
                         t.key = t.parentkey;

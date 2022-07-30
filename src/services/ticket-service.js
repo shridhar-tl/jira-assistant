@@ -1243,7 +1243,7 @@ export default class TicketService {
                 if (issues && issues.length > 0) {
                     let curItem = -1;
                     for (let i = 0; i < importData.length; i++) {
-                        if (!itemsWithErrors.contains(i)) {
+                        if (!itemsWithErrors.includes(i)) {
                             let issue = importData[i];
                             issue = { ...issue };
                             curItem++;

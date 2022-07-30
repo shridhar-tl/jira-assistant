@@ -32,7 +32,7 @@ class WeekDaysSelector extends PureComponent {
             value = value.concat(index);
         }
         else {
-            value.removeAt(pos);
+            value.splice(pos, 1);
         }
 
         value = value.orderBy();

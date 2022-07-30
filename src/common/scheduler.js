@@ -1,5 +1,3 @@
-const $ = window['$'];
-
 const scheduler = new (function () {
   const schedules = {};
 
@@ -52,41 +50,4 @@ const scheduler = new (function () {
   }
 })();
 
-// eslint-disable-next-line no-unused-vars
-function loadScript(src, scriptId, isLoaded, done, retryCount) {
-  if (!retryCount && retryCount !== 0) {
-    retryCount = 10;
-  }
-  console.log(`Loading script:- ${src}`);
-
-  const scriptGAPI = document.createElement("script");
-  scriptGAPI.id = scriptId;
-  scriptGAPI.src = src;
-  scriptGAPI.async = true;
-  scriptGAPI.defer = true;
-  //var scriptGAPI = $("head").append('<script id="' + scriptId + '" async defer src="' + src + '"></script>').get(0);
-  const lSch = scheduler.create(`scriptLoader${retryCount}`, 0.2, completeCallback);
-
-  scriptGAPI.onload = function () {
-    this.onload = function () { /* Nothing to do here */ };
-    completeCallback(lSch);
-  };
-  scriptGAPI.onerror = function (err) { /* Nothing to do here */ };
-  scriptGAPI.onreadystatechange = function () { if (this.readyState === 'complete') { this.onload(); } };
-
-  $('head').append(scriptGAPI);
-
-  function completeCallback(sch) {
-    sch.cancel();
-    if (!isLoaded()) {
-      console.error(`Script not loaded:- ${src}`);
-      scheduler.create(`scriptLoadCaller${retryCount}`, 10, function () {
-        $(`#${scriptId}`).remove();
-        loadScript(src, scriptId, isLoaded, done, --retryCount);
-      });
-    }
-    else {
-      done();
-    }
-  }
-}
+export { scheduler };

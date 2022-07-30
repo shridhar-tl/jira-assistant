@@ -130,7 +130,7 @@ class SprintWiseWorklog extends PureComponent {
     getIssueDetails(issueList, details, isMainTask) {
         //var issueDetails = details.issueDetails;
         //var users = this.userObject;
-        const issues = this.props.ticketDetails.filter(i => issueList.contains(i.key))
+        const issues = this.props.ticketDetails.filter(i => issueList.includes(i.key))
             .map(issue => {
                 //const curDetail = issueDetails[issue.key];
                 const fields = issue.fields || {};

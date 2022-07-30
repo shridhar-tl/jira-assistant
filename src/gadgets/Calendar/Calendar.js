@@ -71,7 +71,7 @@ class Calendar extends BaseGadget {
             { label: "Delete worklog", icon: "fa fa-times", command: () => this.deleteWorklog() }
         ];
 
-        const meetingTicket = (this.$session.CurrentUser.meetingTicket || "").trim().split(',').select(t => t || null);
+        const meetingTicket = (this.$session.CurrentUser.meetingTicket || "").trim().split(',').map(t => t || null);
         const ticketDetails = await this.$ticket.getTicketDetails(meetingTicket);
 
         const wlTickets = [];

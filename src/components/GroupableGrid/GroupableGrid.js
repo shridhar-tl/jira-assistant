@@ -109,7 +109,7 @@ export class GroupableGrid extends PureComponent {
         if (!Array.isArray(displayColumns)) {
             displayColumns = null;
         }
-        const isColsToRemove = !!displayColumns && displayColumns.any(c => c.startsWith("-"));
+        const isColsToRemove = !!displayColumns && displayColumns.some(c => c.startsWith("-"));
 
         // Map all the known properties for column schema
         const result = columns.map(c => {
@@ -125,7 +125,7 @@ export class GroupableGrid extends PureComponent {
                 fieldKey,
                 hasPath: field?.indexOf(".") > 0,
                 displayText: c.displayText || field,
-                visible: !displayColumns || (isColsToRemove ? !displayColumns.contains(`-${id}`) : displayColumns.contains(id)),
+                visible: !displayColumns || (isColsToRemove ? !displayColumns.includes(`-${id}`) : displayColumns.includes(id)),
                 allowSorting,
                 groupText,
                 allowGrouping,

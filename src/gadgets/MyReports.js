@@ -158,15 +158,15 @@ class MyReports extends BaseGadget {
                 </THead>
                 <TBody>
                     {(b) => <tr key={b.id}>
-                            <td className="text-center">
-                                <Checkbox checked={b.selected} onChange={() => this.selectRowItem(b)} />
-                            </td>
-                            <td>{b.queryName}</td>
-                            <td>{b.displayDate}</td>
-                            <td>{b.advanced ? 'Advanced report' : (`Custom Report${b.isNew ? '' : ' (old)'}`)}</td>
-                            <td>{b.outputCount}</td>
-                            <td className="text-center"><Button icon="fa fa-edit" onClick={() => this.editReport(b)} title="Click to edit this report" /></td>
-                        </tr>}
+                        <td className="text-center">
+                            <Checkbox checked={b.selected} onChange={() => this.selectRowItem(b)} />
+                        </td>
+                        <td>{b.queryName}</td>
+                        <td>{b.displayDate}</td>
+                        <td>{b.advanced ? 'Advanced report' : (`Custom Report${b.isNew ? '' : ' (old)'}`)}</td>
+                        <td>{b.outputCount}</td>
+                        <td className="text-center"><Button icon="fa fa-edit" onClick={() => this.editReport(b)} title="Click to edit this report" /></td>
+                    </tr>}
                 </TBody>
                 <NoDataRow span={7}>You have not yet created or imported any reports.</NoDataRow>
             </ScrollableTable>
@@ -263,7 +263,7 @@ class ImportReports extends BaseDialog {
         });
 
         Promise.all(saveAction).then((result) => {
-            if (result.all(r => r)) {
+            if (!result.some(r => !r)) {
                 this.$message.success(`${selectedReports.length} selected reports were imported`, "Reports imported");
                 this.onHide(true);
             }

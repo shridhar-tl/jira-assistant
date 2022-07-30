@@ -390,7 +390,7 @@ export default class WorklogService {
         const dateArr = this.$userutils.getDays(fromDate, toDate);
         let entries = data.groupBy((l) => l.dateStarted.format("yyyy-MM-dd"));
         entries = dateArr.leftJoin(entries, (left, right) => left.date.format("yyyy-MM-dd") === right.key)
-            .select(data => data.right || (data.left.isHoliday || data.left.isFuture ? null : {
+            .map(data => data.right || (data.left.isHoliday || data.left.isFuture ? null : {
                 key: data.left.date.format("yyyy-MM-dd"),
                 values: []
             }))

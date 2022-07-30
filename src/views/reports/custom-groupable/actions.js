@@ -222,7 +222,7 @@ function postProcessExprOutput(val) {
         return this.utils.formatDateTime(val);
     } else if (typeof val === 'object') {
         const keys = Object.keys(val);
-        if (keys.contains('type') && keys.contains('key') && keys.contains('props')) {
+        if (keys.includes('type') && keys.includes('key') && keys.includes('props')) {
             return val;
         }
         else {

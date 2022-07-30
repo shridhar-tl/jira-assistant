@@ -1,9 +1,7 @@
 /*eslint-disable no-extend-native, no-loop-func*/
-
 import { getPathValue } from "./utils";
 
-//Array.prototype.ToArray= function() { return this; };
-
+/* Unused functions. Commented on 30-Jul-2022. Need to be removed in future
 Array.prototype.init = function (val, count, start = 0) {
   if (count === undefined || count === null) {
     count = this.length;
@@ -46,6 +44,234 @@ Array.prototype.select = function (clause, incNull) {
   }
   return newArray;
 };
+
+Array.prototype.selectMany = function (clause) {
+  let r = [];
+  for (let i = 0; i < this.length; i++) {
+    r = r.concat(clause(this[i]));
+  }
+  return r;
+};
+Array.prototype.any = function (clause) {
+  if (typeof clause === "function") {
+    return this.some(clause);
+  }
+  else if (clause) {
+    return this.indexOf(clause) >= 0;
+  }
+  else { return this.length > 0; }
+};
+Array.prototype.all = function (clause) {
+  for (let index = 0; index < this.length; index++) {
+    if (!clause(this[index], index)) { return false; }
+  }
+  return true;
+};
+Array.prototype.reverse = function () {
+  const retVal = [];
+  for (let index = this.length - 1; index > -1; index--) { retVal[retVal.length] = this[index]; }
+  return retVal;
+};
+Array.prototype.elementAt = function (index) {
+  return this[index];
+};
+Array.prototype.firstIndexOf = function (predicate) {
+  for (let index = 0; index < this.length; index++) {
+    if (predicate(this[index], index)) {
+      return index;
+    }
+  }
+  return -1;
+};
+Array.prototype.intersect = function (secondArray, clause) {
+  const clauseMethod = clause || function (item, index, item2, index2) { return item === item2; };
+
+  const sa = secondArray.items || secondArray;
+
+  const result = [];
+  for (let a = 0; a < this.length; a++) {
+    for (let b = 0; b < sa.length; b++) {
+      if (clauseMethod(this[a], a, sa[b], b)) {
+        result[result.length] = this[a];
+      }
+    }
+  }
+  return result;
+};
+Array.prototype.defaultIfEmpty = function (defaultValue) {
+  if (this.length === 0) {
+    return defaultValue;
+  }
+  return this;
+};
+Array.prototype.elementAtOrDefault = function (index, defaultValue) {
+  if (index >= 0 && index < this.length) {
+    return this[index];
+  }
+  return defaultValue;
+};
+Array.prototype.firstOrDefault = function (defaultValue, clause) {
+  return this.first(clause) || defaultValue;
+};
+Array.prototype.lastOrDefault = function (defaultValue, clause) {
+  return this.last(clause) || defaultValue;
+};
+Array.prototype.ToString = function (str) {
+  str = str || ',';
+  let returnVal = "";
+  for (let index = 0; index < this.length; index++) {
+    const val = this[index];
+    if (val && (`${val}`).length > 0) { returnVal += str + val; }
+  }
+  return returnVal.length ? returnVal.substring(str.length) : "";
+};
+Array.prototype.removeAt = function (index, count) {
+  if (index < 0) { return false; }
+  return this.splice(index, count || 1);
+};
+Array.prototype.add = function (item) {
+  this.push(item);
+  return item;
+};
+Array.prototype.insertAt = function (index, item) {
+  this.splice(index, 0, item);
+  return item;
+};
+Array.prototype.insertRangeAt = function (index, items) {
+  this.splice(index, 0, ...items);
+  return this;
+};
+Array.prototype.replace = function (item, newItem) {
+  const idx = this.indexOf(item);
+  if (idx !== -1) { this[idx] = newItem; }
+  return this;
+};
+Array.prototype.clone = function (items) {
+  const result = [];
+
+  for (let i = 0; i < this.length; i++) {
+    result[i] = this[i];
+  }
+  if (items && items.length > 0) {
+    for (let x = 0; x < items.length; x++) {
+      result[result.length] = items[x];
+    }
+  }
+  return result;
+};
+Array.prototype.notIn = function (items, condition) {
+  if (!items || (Array.isArray(items) && items.length === 0)) { return this; }
+  const ignoreCase = condition === true;
+  if (ignoreCase) { items = items.map(function (item) { return typeof item === "string" ? item.toLowerCase() : item; }); }
+  if (condition && typeof condition !== "function") { condition = null; }
+
+  if (Array.isArray(items)) {
+    if (!condition) {
+      return this.filter(function (itm) {
+        if (ignoreCase && typeof itm === 'string') { itm = itm.toLowerCase(); }
+
+        return items.indexOf(itm) === -1;
+      });
+    }
+    else {
+      return this.filter(function (itm) { return !items.some(function (excl) { return condition(itm, excl); }); });
+    }
+  }
+  else {
+    // ToDo: yet to implement
+  }
+};
+Array.prototype.in = function (items, condition) {
+  if (!items || (Array.isArray(items) && items.length === 0)) { return this; }
+  const ignoreCase = condition === true;
+  if (ignoreCase) { items = items.map(function (item) { return typeof item === "string" ? item.toLowerCase() : item; }); }
+  if (condition && typeof condition !== "function") { condition = null; }
+
+  if (Array.isArray(items)) {
+    if (!condition) {
+      return this.filter(function (itm) {
+        if (ignoreCase && typeof itm === 'string') { itm = itm.toLowerCase(); }
+
+        return items.indexOf(itm) > -1;
+      });
+    }
+    else {
+      return this.filter(function (itm) { return items.some(function (excl) { return condition(itm, excl); }); });
+    }
+  }
+  else {
+    // ToDo: Yet to implement
+  }
+};
+Array.prototype.skip = function (index) {
+  if (index < 0) { index = 0; }
+  const result = [];
+  for (let i = index; i < this.length; i++) {
+    result.push(this[i]);
+  }
+  return result;
+};
+Array.prototype.take = function (count) {
+  const result = [];
+  for (let i = 0; i < this.length && i < count; i++) {
+    result.push(this[i]);
+  }
+  return result;
+};
+Array.prototype.contains = function (val) {
+  return this.indexOf(val) > -1;
+};
+
+Array.prototype.containsAny = function (arr) {
+  const $this = this;
+  if (arr && Array.isArray(arr)) {
+    return arr.some(function (obj) { return $this.indexOf(obj) >= 0; });
+  }
+  else { return false; }
+};
+Array.prototype.innerJoin = function (rightArray, onClause) {
+  const result = [];
+
+  for (let i = 0; i < this.length; i++) {
+    const left = this[i];
+    const matches = rightArray.filter(function (right) { return onClause(left, right); });
+    if (matches.length > 0) {
+      matches.forEach(function (right) {
+        result.push({ left: left, right: right });
+      });
+    }
+  }
+
+  return result;
+};
+
+Array.prototype.rightJoin = function (rightArray, onClause) {
+  const result = [];
+
+  for (let i = 0; i < rightArray.length; i++) {
+    const right = rightArray[i];
+    const leftMatches = this.filter(function (left) { return onClause(left, right); });
+    if (leftMatches.length === 0) { result.push({ left: null, right: right }); }
+    else {
+      leftMatches.forEach(function (left) {
+        result.push({ left: left, right: right });
+      });
+    }
+  }
+
+  return result;
+};
+
+Array.prototype.toKeyValuePair = function (clause, filter) {
+  const $this = this.groupBy(clause, filter);
+  const result = {};
+  for (let i = 0; i < $this.length; i++) {
+    const item = $this[i];
+    result[`${item.key}`] = item.values;
+  }
+  return result;
+};
+*/
 Array.prototype.orderBy = function (clause) {
   const tempArray = [];
   for (let i = 0; i < this.length; i++) {
@@ -80,20 +306,12 @@ Array.prototype.sortBy = function (clause, desc) {
   }
   return desc ? this.orderByDescending(clause) : this.orderBy(clause);
 };
-
-Array.prototype.selectMany = function (clause) {
-  let r = [];
-  for (let i = 0; i < this.length; i++) {
-    r = r.concat(clause(this[i]));
-  }
-  return r;
-};
 Array.prototype.count = function (clause) {
   if (!clause) {
     return this.length;
   }
   else {
-    return this.where(clause).length;
+    return this.filter(clause).length;
   }
 };
 Array.prototype.distinct = function (clause, excludeNulls) {
@@ -119,7 +337,7 @@ Array.prototype.distinctObj = function (clause) {
     item = clause ? clause(this[i]) : this[i];
 
     const keys = Object.keys(item);
-    if (!retVal.any(function (d) {
+    if (!retVal.some(function (d) {
       let match = true;
       for (let i = 0; i < keys.length; i++) {
         match = match && d[keys[i]] === item[keys[i]];
@@ -199,32 +417,9 @@ Array.prototype.min = function (clause) {
   }
   return value;
 };
-Array.prototype.any = function (clause) {
-  if (typeof clause === "function") {
-    for (let index = 0; index < this.length; index++) {
-      if (clause(this[index], index)) { return true; }
-    }
-    return false;
-  }
-  else if (clause) {
-    return this.indexOf(clause) >= 0;
-  }
-  else { return this.length > 0; }
-};
-Array.prototype.all = function (clause) {
-  for (let index = 0; index < this.length; index++) {
-    if (!clause(this[index], index)) { return false; }
-  }
-  return true;
-};
-Array.prototype.reverse = function () {
-  const retVal = [];
-  for (let index = this.length - 1; index > -1; index--) { retVal[retVal.length] = this[index]; }
-  return retVal;
-};
 Array.prototype.first = function (clause) {
   if (clause) {
-    return this.where(clause, 1).first();
+    return this.filter(clause).first();
   }
   else {
     // If no clause was specified, then return the First element in the Array
@@ -234,7 +429,7 @@ Array.prototype.first = function (clause) {
 };
 Array.prototype.last = function (clause) {
   if (clause) {
-    return this.where(clause).last();
+    return this.filter(clause).last();
   }
   else {
     // If no clause was specified, then return the First element in the Array
@@ -242,94 +437,19 @@ Array.prototype.last = function (clause) {
     else { return null; }
   }
 };
-Array.prototype.elementAt = function (index) {
-  return this[index];
-};
-Array.prototype.firstIndexOf = function (predicate) {
-  for (let index = 0; index < this.length; index++) {
-    if (predicate(this[index], index)) {
-      return index;
-    }
-  }
-  return -1;
-};
-Array.prototype.intersect = function (secondArray, clause) {
-  const clauseMethod = clause || function (item, index, item2, index2) { return item === item2; };
-
-  const sa = secondArray.items || secondArray;
-
-  const result = [];
-  for (let a = 0; a < this.length; a++) {
-    for (let b = 0; b < sa.length; b++) {
-      if (clauseMethod(this[a], a, sa[b], b)) {
-        result[result.length] = this[a];
-      }
-    }
-  }
-  return result;
-};
-Array.prototype.defaultIfEmpty = function (defaultValue) {
-  if (this.length === 0) {
-    return defaultValue;
-  }
-  return this;
-};
-Array.prototype.elementAtOrDefault = function (index, defaultValue) {
-  if (index >= 0 && index < this.length) {
-    return this[index];
-  }
-  return defaultValue;
-};
-Array.prototype.firstOrDefault = function (defaultValue, clause) {
-  return this.first(clause) || defaultValue;
-};
-Array.prototype.lastOrDefault = function (defaultValue, clause) {
-  return this.last(clause) || defaultValue;
-};
-Array.prototype.ToString = function (str) {
-  str = str || ',';
-  let returnVal = "";
-  for (let index = 0; index < this.length; index++) {
-    const val = this[index];
-    if (val && (`${val}`).length > 0) { returnVal += str + val; }
-  }
-  return returnVal.length ? returnVal.substring(str.length) : "";
-};
-Array.prototype.remove = function (item) {
-  //if (!item) return false;
-  const i = this.indexOf(item);
-  if (i < 0) { return false; }
-  return this.splice(i, 1);
-};
-Array.prototype.removeAt = function (index, count) {
-  if (index < 0) { return false; }
-  return this.splice(index, count || 1);
-};
 Array.prototype.removeAll = function (clause) {
   const arr = this;
-  if (typeof clause === "function") { this.removeAll(this.where(clause)); }
+  if (typeof clause === "function") { this.removeAll(this.filter(clause)); }
   else if (Array.isArray(clause)) { clause.forEach(function (o) { arr.remove(o); }); }
   return arr;
 };
-Array.prototype.add = function (item) {
-  this.push(item);
-  return item;
-};
-Array.prototype.insertAt = function (index, item) {
-  this.splice(index, 0, item);
-  return item;
-};
-Array.prototype.insertRangeAt = function (index, items) {
-  this.splice(index, 0, ...items);
-  return this;
-};
-Array.prototype.addDistinct = function (item) {
-  if (!this.any(item)) {
-    this[this.length] = item;
+function addDistinct(array, item) {
+  if (!array.includes(item)) {
+    array[array.length] = item;
     return true;
   }
   return false;
-};
+}
 Array.prototype.addRange = function (items) {
   if (items) {
     for (let i = 0; i < items.length; i++) {
@@ -341,7 +461,7 @@ Array.prototype.addRange = function (items) {
 Array.prototype.addDistinctRange = function (items) {
   if (items) {
     for (let i = 0; i < items.length; i++) {
-      this.addDistinct(items[i]);
+      addDistinct(this, items[i]);
     }
   }
   return this;
@@ -379,83 +499,6 @@ function parseClause(clause) {
   }
   return clause;
 }
-Array.prototype.replace = function (item, newItem) {
-  const idx = this.indexOf(item);
-  if (idx !== -1) { this[idx] = newItem; }
-  return this;
-};
-Array.prototype.clone = function (items) {
-  const result = [];
-
-  for (let i = 0; i < this.length; i++) {
-    result[i] = this[i];
-  }
-  if (items && items.length > 0) {
-    for (let x = 0; x < items.length; x++) {
-      result[result.length] = items[x];
-    }
-  }
-  return result;
-};
-Array.prototype.notIn = function (items, condition) {
-  if (!items || (Array.isArray(items) && items.length === 0)) { return this; }
-  const ignoreCase = condition === true;
-  if (ignoreCase) { items = items.select(function (item) { return typeof item === "string" ? item.toLowerCase() : item; }); }
-  if (condition && typeof condition !== "function") { condition = null; }
-
-  if (Array.isArray(items)) {
-    if (!condition) {
-      return this.where(function (itm) {
-        if (ignoreCase && typeof itm === 'string') { itm = itm.toLowerCase(); }
-
-        return items.indexOf(itm) === -1;
-      });
-    }
-    else {
-      return this.where(function (itm) { return !items.any(function (excl) { return condition(itm, excl); }); });
-    }
-  }
-  else {
-    // ToDo: yet to implement
-  }
-};
-Array.prototype.in = function (items, condition) {
-  if (!items || (Array.isArray(items) && items.length === 0)) { return this; }
-  const ignoreCase = condition === true;
-  if (ignoreCase) { items = items.select(function (item) { return typeof item === "string" ? item.toLowerCase() : item; }); }
-  if (condition && typeof condition !== "function") { condition = null; }
-
-  if (Array.isArray(items)) {
-    if (!condition) {
-      return this.where(function (itm) {
-        if (ignoreCase && typeof itm === 'string') { itm = itm.toLowerCase(); }
-
-        return items.indexOf(itm) > -1;
-      });
-    }
-    else {
-      return this.where(function (itm) { return items.any(function (excl) { return condition(itm, excl); }); });
-    }
-  }
-  else {
-    // ToDo: Yet to implement
-  }
-};
-Array.prototype.skip = function (index) {
-  if (index < 0) { index = 0; }
-  const result = [];
-  for (let i = index; i < this.length; i++) {
-    result.push(this[i]);
-  }
-  return result;
-};
-Array.prototype.take = function (count) {
-  const result = [];
-  for (let i = 0; i < this.length && i < count; i++) {
-    result.push(this[i]);
-  }
-  return result;
-};
 Array.prototype.union = function (clause) {
   let result = [];
   if (!clause) {
@@ -497,35 +540,9 @@ Array.prototype.remove = function (func) {
     }
   }
 };
-Array.prototype.contains = function (val) {
-  return this.indexOf(val) > -1;
-};
 
 Array.prototype.mapAsync = async function (callback) {
   return await Promise.all(this.map(callback));
-};
-
-Array.prototype.containsAny = function (arr) {
-  const $this = this;
-  if (arr && Array.isArray(arr)) {
-    return arr.any(function (obj) { return $this.indexOf(obj) >= 0; });
-  }
-  else { return false; }
-};
-Array.prototype.innerJoin = function (rightArray, onClause) {
-  const result = [];
-
-  for (let i = 0; i < this.length; i++) {
-    const left = this[i];
-    const matches = rightArray.where(function (right) { return onClause(left, right); });
-    if (matches.length > 0) {
-      matches.forEach(function (right) {
-        result.push({ left: left, right: right });
-      });
-    }
-  }
-
-  return result;
 };
 
 Array.prototype.leftJoin = function (rightArray, onClause) {
@@ -533,7 +550,7 @@ Array.prototype.leftJoin = function (rightArray, onClause) {
 
   for (let i = 0; i < this.length; i++) {
     const left = this[i];
-    const matches = rightArray.where(function (right) { return onClause(left, right); });
+    const matches = rightArray.filter(function (right) { return onClause(left, right); });
     if (matches.length === 0) { result.push({ left: left, right: null }); }
     else {
       matches.forEach(function (right) {
@@ -544,34 +561,6 @@ Array.prototype.leftJoin = function (rightArray, onClause) {
 
   return result;
 };
-
-Array.prototype.rightJoin = function (rightArray, onClause) {
-  const result = [];
-
-  for (let i = 0; i < rightArray.length; i++) {
-    const right = rightArray[i];
-    const leftMatches = this.where(function (left) { return onClause(left, right); });
-    if (leftMatches.length === 0) { result.push({ left: null, right: right }); }
-    else {
-      leftMatches.forEach(function (left) {
-        result.push({ left: left, right: right });
-      });
-    }
-  }
-
-  return result;
-};
-
-Array.prototype.toKeyValuePair = function (clause, filter) {
-  const $this = this.groupBy(clause, filter);
-  const result = {};
-  for (let i = 0; i < $this.length; i++) {
-    const item = $this[i];
-    result[`${item.key}`] = item.values;
-  }
-  return result;
-};
-
 
 Array.prototype.findAllIndex = function (clause, maxItems) {
   const source = this;
