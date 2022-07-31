@@ -390,11 +390,12 @@ export default class WorklogService {
         const dateArr = this.$userutils.getDays(fromDate, toDate);
         let entries = data.groupBy((l) => l.dateStarted.format("yyyy-MM-dd"));
         entries = dateArr.leftJoin(entries, (left, right) => left.date.format("yyyy-MM-dd") === right.key)
-            .map(data => data.right || (data.left.isHoliday || data.left.isFuture ? null : {
-                key: data.left.date.format("yyyy-MM-dd"),
-                values: []
-            }))
-            .map((l) => {
+            .map((data) => {
+                const l = data.right || (data.left.isHoliday || data.left.isFuture ? null : {
+                    key: data.left.date.format("yyyy-MM-dd"), values: []
+                });
+                if (!l) { return l; }
+
                 const $values = l.values;
                 const logDate = moment(l.key, "YYYY-MM-DD").toDate();
                 return {
@@ -406,7 +407,7 @@ export default class WorklogService {
                     totalHours: $values.sum(t => this.getTimeSpent(t)) * 60 * 1000,
                     ticketList: $values.map((d) => ({ id: d.id, ticketNo: d.ticketNo, uploaded: (d.overrideTimeSpent || d.timeSpent), comment: d.description, worklogId: d.worklogId }))
                 };
-            }).orderByDescending((l) => l.key);
+            }).filter(Boolean).orderByDescending((l) => l.key);
         let maxHours = this.$session.CurrentUser.maxHours;
         maxHours = maxHours * 60 * 60 * 1000;
         entries.forEach((d) => {
