@@ -1,6 +1,6 @@
 //export const messagesUrl = "https://drive.google.com/uc?export=download&id=1aDFOfa5z5W5rP4ErvhMeAkYsq7-2_vk9";
 //export const messagesUrl = "https://onedrive.live.com/download?cid=1E579D4F3D2F2078&resid=1E579D4F3D2F2078%217441&authkey=ACLAWbvhYgNCAM8";
-export const WebSiteUrl = 'https://jiraassistant.com';
+export const WebSiteUrl = 'https://www.jiraassistant.com';
 export const messagesUrl = `${WebSiteUrl}/messages.json`;
 export const ContactUsUrl = `${WebSiteUrl}/contactus`;
 

@@ -3,6 +3,7 @@ import AjaxService from './ajax-service';
 import AnalyticsService from './analytics-service';
 import DevService from './browser-dev-service';
 import AuthService from './auth-service';
+import BackupService from './backup-service';
 import BookmarkService from './bookmark-service';
 import CacheService from './cache-service';
 import CalendarService from './calendar-service';
@@ -54,6 +55,7 @@ export default function injectServices(authType) {
         injectable(DevService, "AppBrowserService", "$jaBrowserExtn", { isSingleton: true });
     }
     injectable(AuthService, "AuthService", "$auth");
+    injectable(BackupService, "BackupService", "$backup");
     injectable(BookmarkService, "BookmarkService", "$bookmark");
     injectable(CacheService, "CacheService", "$cache", { isSingleton: true });
     injectable(CalendarService, "CalendarService", "$calendar");

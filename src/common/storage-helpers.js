@@ -45,7 +45,7 @@ export function convertToUsableValue(data, raw) {
         return data;
     }
     if (data) {
-        data = parse(data);
+        data = parseCustomJSON(data);
         if (data.expires) {
             const exp = moment(data.expires);
             if (exp.isBefore(new Date())) {
@@ -57,7 +57,7 @@ export function convertToUsableValue(data, raw) {
     return data;
 }
 
-function parse(value) {
+export function parseCustomJSON(value) {
     return JSON.parse(value, (key, val) => {
         if (val && typeof val === "string" && val.startsWith("/Date(")) {
             return convertToDate(val);

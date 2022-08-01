@@ -31,7 +31,7 @@ const DefaultHeader = React.lazy(() => import('./DefaultHeader'));
 class DefaultLayout extends PureComponent {
   constructor() {
     super();
-    inject(this, "DashboardService", "SessionService", "SettingsService");
+    inject(this, "DashboardService", "SessionService", "SettingsService", "CacheService");
     const { userId } = this.$session;
     this.state = { menus: this.getMenus(userId), userId };
     this.initApp();
@@ -81,6 +81,7 @@ class DefaultLayout extends PureComponent {
 
   signOut = (e) => {
     e.preventDefault();
+    this.$cache.clear();
     this.props.history.push('/integrate');
   };
 

@@ -12,20 +12,21 @@ import './DefaultHeader.scss';
 import { inject } from '../../services/injector-service';
 import YoutubeVideo from '../../dialogs/YoutubeVideo';
 import SkinPicker from './SkinPicker';
-import SwitchAccountMenu from './SwitchAccountMenu';
+import SwitchAccountOption from './SwitchAccountMenu';
 import { getHostFromUrl } from '../../common/utils';
 import Notifications from './Notifications';
 import JiraUpdates from './JiraUpdates';
 import Dialog from '../../dialogs';
 import UpdatesInfo from './UpdatesInfo';
 import LaunchWeb from './LaunchWeb';
+import BackupImporter from './BackupImporter';
 
 const isWebBuild = process.env.REACT_APP_WEB_BUILD === 'true';
 
 class DefaultHeader extends PureComponent {
   constructor(props) {
     super(props);
-    inject(this, "AppBrowserService", "CacheService", "SessionService", "NotificationService", "AnalyticsService");
+    inject(this, "AppBrowserService", "SessionService", "NotificationService", "AnalyticsService");
     const cUser = this.$session.CurrentUser;
     this.disableNotification = cUser.disableDevNotification;
     this.disableJiraUpdates = cUser.disableJiraUpdates;
@@ -39,7 +40,7 @@ class DefaultHeader extends PureComponent {
     this.$noti.getNotifications().then(notifications => this.setState({ notifications }),
       (err) => { console.error("Error fetching notifications: ", err); });
 
-    this.siteUrl = "https://www.jiraassistant.com";
+    this.siteUrl = WebSiteUrl;
     this.ratingUrl = this.$jaBrowserExtn.getStoreUrl(true);
     this.storeUrl = this.$jaBrowserExtn.getStoreUrl();
     if (!isWebBuild) {
@@ -65,19 +66,9 @@ class DefaultHeader extends PureComponent {
     }
   }
 
-  trackShare = () => {
-    this.$analytics.trackEvent("Share option viewed", EventCategory.HeaderActions);
-  };
-
+  trackShare = () => this.$analytics.trackEvent("Share option viewed", EventCategory.HeaderActions);
   showYoutubeHelp = () => this.setState({ showYoutubeVideo: true });
-
   hideYoutube = () => this.setState({ showYoutubeVideo: false });
-
-  logout() {
-    this.$cache.clear();
-    window.close();
-    window.location.href = "/index.html";
-  }
 
   showVersionInfo = (e) => {
     e.preventDefault();
@@ -110,16 +101,9 @@ class DefaultHeader extends PureComponent {
           <img src="/assets/donate.png" width="145" className="Donate us" alt="Donate us" />
         </NavLink>
         <Nav className="ml-auto" navbar>
-          <Nav className="d-md-down-none margin-r-5" navbar>
-            <UncontrolledDropdown nav direction="down">
-              <DropdownToggle nav>
-                <span className="nav-link pointer" title={`Currently connected to ${this.currentJiraInstance}. Click to see more options.`}> <span className="fa fa-exchange" /> <strong>{this.currentJiraInstance}</strong></span>
-              </DropdownToggle>
-              <DropdownMenu left>
-                <SwitchAccountMenu onLogout={this.props.onLogout} />
-              </DropdownMenu>
-            </UncontrolledDropdown>
-          </Nav>
+          <BackupImporter>
+            {(importSettings) => <SwitchAccountOption instance={this.currentJiraInstance} onLogout={this.props.onLogout} onImport={importSettings} />}
+          </BackupImporter>
           <LaunchWeb />
           {!!version && <span className={`update-available badge badge-${isBeta ? "warning" : "success"}`}
             title={`Click to update to ${isBeta ? 'BETA ' : ''}v${version}`}

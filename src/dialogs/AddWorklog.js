@@ -20,9 +20,10 @@ class AddWorklog extends BaseDialog {
         this.state = this.getState(worklog);
         this.state.uploadImmediately = typeof uploadImmediately === "boolean" ? uploadImmediately : (autoUpload || false);
         this.allTicketList = [];
+        this.init();
     }
 
-    UNSAFE_componentWillMount() {
+    init() {
         this.$suggestion.getTicketSuggestion().then(u => {
             this.allTicketList = u;
         });

@@ -2,11 +2,12 @@ import 'react';
 import AjaxRequestService from './ajax-request-service';
 import AjaxService from './ajax-service';
 import AnalyticsService from './analytics-service';
+import AuthService from './auth-service';
+import BackupService from './backup-service';
 import ChromeService from './browser-chrome-service';
 import FirefoxService from './browser-firefox-service';
 import EdgeService from './browser-edge-service';
 import DevService from './browser-dev-service';
-import AuthService from './auth-service';
 import BookmarkService from './bookmark-service';
 import CacheService from './cache-service';
 import CalendarService from './calendar-service';
@@ -38,6 +39,7 @@ declare module 'react' {
         $ajax: AjaxService
         $analytics: AnalyticsService
         $auth: AuthService
+        $backup: BackupService
         $bookmark: BookmarkService
         $jaBrowserExtn: ChromeService | FirefoxService | EdgeService | DevService
         $cache: CacheService

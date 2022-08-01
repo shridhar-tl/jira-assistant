@@ -1,7 +1,7 @@
 import Dexie from 'dexie';
 import { UUID } from '../constants/utils';
 import { SystemUserId } from '../constants/common';
-import { EventCategory } from '../constants/settings';
+import { EventCategory, SettingsCategory } from '../constants/settings';
 
 class DatabaseService extends Dexie {
     static dependencies = ["AnalyticsService", "MessageService"];
@@ -26,23 +26,32 @@ class DatabaseService extends Dexie {
         });
 
         // Database is being initialized for the first time
-        this.users.get(SystemUserId).then((user) => {
+        this.users.get(SystemUserId).then(async (user) => {
             if (!user) {
                 const instId = UUID.generate();
 
-                this.transaction('rw', this.users, () => {
-                    this.users.add({ jiraUrl: 'SystemUser', userId: 'SystemUser', dateCreated: new Date(), instId }).then(() => {
-                        this.$analytics.setUserId(instId);
-                        this.$analytics.trackEvent("New installation", EventCategory.Instance);
+                this.transaction('rw', this.users, async () => {
+                    await this.users.add({ jiraUrl: 'SystemUser', userId: 'SystemUser', dateCreated: new Date(), instId });
+                    await this.appSettings.put({
+                        userId: SystemUserId,
+                        category: SettingsCategory.System,
+                        name: "instId",
+                        value: instId
                     });
+                    this.$analytics.setUserId(instId);
+                    this.$analytics.trackEvent("New installation", EventCategory.Instance);
                 }).catch((e) => {
                     this.reportError(e.message, "database-service.js", 32, 0, e.stack);
                     console.error("Unable to initialize the database:-", e);
                 });
             }
             else {
-                this.$analytics.setUserId(user.instId);
-                this.$analytics.setIfEnabled(user.enableAnalyticsLogging !== false, user.enableExceptionLogging !== false);
+                const instId = await this.appSettings.get([SystemUserId, SettingsCategory.System, 'instId']);
+                const anLog = await this.appSettings.get([SystemUserId, SettingsCategory.Advanced, 'enableAnalyticsLogging']);
+                const exLog = await this.appSettings.get([SystemUserId, SettingsCategory.Advanced, 'enableExceptionLogging']);
+
+                this.$analytics.setUserId(instId?.value || user.instId);
+                this.$analytics.setIfEnabled(anLog.value !== false, exLog.value !== false);
             }
         });
 

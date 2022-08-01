@@ -4,6 +4,7 @@ import * as $ from 'jquery';
 //import Excel from "exceljs/dist/es5/exceljs.browser";
 //Working:import * as Excel from "exceljs/dist/exceljs.min.js";
 import Excel from "exceljs";
+import { saveStringAs } from './utils';
 //https://github.com/guyonroche/exceljs/issues/511#issuecomment-391140701
 //import { saveAs } from 'file-saver';
 
@@ -267,24 +268,6 @@ export function saveAs(blob, fileName) {
         saveStringAs(reader.result, blob.type, fileName);
     };
     reader.readAsBinaryString(blob);
-}
-
-export function saveStringAs(str, typeName, fileName) {
-    const bdata = btoa(str);
-    const datauri = `data:${typeName};base64,${bdata}`;
-    const a = document.createElement('a');
-    if ('download' in a) { //html5 A[download]
-        a.href = datauri;
-        a.setAttribute('download', fileName);
-        document.body.appendChild(a);
-        setTimeout(function () {
-            a.click();
-            document.body.removeChild(a);
-        }, 66);
-    }
-    else {
-        document.location.href = datauri;
-    }
 }
 
 function toInt(value) {

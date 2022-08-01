@@ -9,9 +9,10 @@ class JiraUpdates extends PureComponent {
         super(props);
         inject(this, "JiraUpdatesService", "AnalyticsService", "UtilsService");
         this.state = {};
+        this.loadUpdates();
     }
 
-    UNSAFE_componentWillMount() {
+    loadUpdates() {
         this.$jupdates.getRescentUpdates().then(res => {
             this.setState(res);
         });
@@ -43,8 +44,7 @@ class JiraUpdates extends PureComponent {
                         <div className="text-center"><strong>You have {total} updates on {ticketCount} issues</strong></div>
                     </DropdownItem>
                     <div className="noti-messages">
-                        {list.map((msg, i) => (<Message key={i} message={msg}
-                            cut={this.$utils.cut} />))}
+                        {list.map((msg, i) => (<Message key={i} message={msg} cut={this.$utils.cut} />))}
                     </div>
                 </DropdownMenu>
             </UncontrolledDropdown>

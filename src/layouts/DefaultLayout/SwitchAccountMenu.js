@@ -1,9 +1,10 @@
 import React, { PureComponent } from 'react';
-import { DropdownItem } from 'reactstrap';
+import { DropdownItem, DropdownMenu, DropdownToggle, Nav, UncontrolledDropdown } from 'reactstrap';
 import { inject } from '../../services';
 import { AppContext } from '../../App';
 import { getHostFromUrl } from "../../common/utils";
 import { EventCategory } from '../../constants/settings';
+import ExportSettings from './ExportSettings';
 
 class SwitchAccountMenu extends PureComponent {
     static contextType = AppContext;
@@ -15,12 +16,12 @@ class SwitchAccountMenu extends PureComponent {
         this.state = {
             profileUrl: this.$userutils.getProfileUrl()
         };
+        this.init();
     }
 
-    UNSAFE_componentWillMount() {
-        this.$user.getUsersList().then(users => {
-            this.setState({ users: users.filter(u => u.id !== this.currentUserId) });
-        });
+    async init() {
+        const users = await this.$user.getUsersList();
+        this.setState({ users: users.filter(u => u.id !== this.currentUserId) });
     }
 
     switchUser = (e) => {
@@ -50,6 +51,8 @@ class SwitchAccountMenu extends PureComponent {
                         <DropdownItem><i className="fa fa-comments"></i> Comments<Badge color="warning">42</Badge></DropdownItem>*/}
 
                 <DropdownItem header tag="div" className="text-center"><strong>Settings</strong></DropdownItem>
+                <DropdownItem tag="span" onClick={this.props.showSettings} className="pointer"><i className="fa fa-download"></i> Export Settings</DropdownItem>
+                <DropdownItem tag="span" className="pointer" onClick={this.props.onImport}><i className="fa fa-upload"></i> Import Settings</DropdownItem>
                 <DropdownItem tag="a" href={profileUrl} target="_blank"><i className="fa fa-user"></i> Jira Profile</DropdownItem>
                 {/*<DropdownItem><i className="fa fa-wrench"></i> Settings</DropdownItem>*/}
 
@@ -60,4 +63,33 @@ class SwitchAccountMenu extends PureComponent {
     }
 }
 
-export default SwitchAccountMenu;
+class SwitchAccountOption extends PureComponent {
+    constructor(props) {
+        super(props);
+        this.state = {};
+    }
+
+    showSettings = () => this.setState({ showSettingPopup: true });
+    hideSettings = () => this.setState({ showSettingPopup: true });
+
+    render() {
+        const { showSettingPopup } = this.state;
+
+        return (<>
+            <Nav className="d-md-down-none margin-r-5" navbar>
+                <UncontrolledDropdown nav direction="down">
+                    <DropdownToggle nav>
+                        <span className="nav-link pointer" title={`Currently connected to ${this.props.instance}. Click to see more options.`}> <span className="fa fa-exchange" /> <strong>{this.props.instance}</strong></span>
+                    </DropdownToggle>
+                    <DropdownMenu left>
+                        <SwitchAccountMenu onLogout={this.props.onLogout} onImport={this.props.onImport} showSettings={this.showSettings} />
+                    </DropdownMenu>
+                </UncontrolledDropdown>
+            </Nav>
+            {showSettingPopup && <ExportSettings onDone={this.hideSettings} onHide={this.hideSettings} />}
+        </>
+        );
+    }
+}
+
+export default SwitchAccountOption;

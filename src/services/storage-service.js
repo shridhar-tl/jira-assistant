@@ -32,10 +32,12 @@ export default class StorageService {
     }
 
     async addOrUpdateWorklog(entry) {
+        setLastUpdated(entry);
         return await this.$db.worklogs.put(entry);
     }
 
     async addWorklog(entry) {
+        setLastUpdated(entry);
         return await this.$db.worklogs.add(entry);
     }
 
@@ -78,10 +80,12 @@ export default class StorageService {
     }
 
     async addOrUpdateReport(report) {
+        setLastUpdated(report);
         return await this.$db.savedFilters.put(report);
     }
 
     async addReport(report) {
+        setLastUpdated(report);
         return await this.$db.savedFilters.add(report);
     }
 
@@ -110,8 +114,14 @@ export default class StorageService {
             .filter((u) => (u.email || "").toLowerCase() === email && u.jiraUrl.toLowerCase() === url).first();
     }
 
-    async addUser(user) { return await this.$db.users.add(user); }
-    async addOrUpdateUser(user) { return await this.$db.users.put(user); }
+    async addUser(user) {
+        setLastUpdated(user);
+        return await this.$db.users.add(user);
+    }
+    async addOrUpdateUser(user) {
+        setLastUpdated(user);
+        return await this.$db.users.put(user);
+    }
     async deleteUser(userId) { return await this.$db.users.delete(userId); }
     //#endregion
 
@@ -125,10 +135,12 @@ export default class StorageService {
     }
 
     addOrUpdateSetting(setting) {
+        setLastUpdated(setting);
         return this.$db.appSettings.put(setting);
     }
 
     bulkPutSettings(arr) {
+        setLastUpdated(arr);
         return this.$db.appSettings.bulkPut(arr);
     }
 
@@ -174,4 +186,12 @@ export default class StorageService {
     }
     //#endregion
     */
+}
+
+function setLastUpdated(data, _ts) {
+    if (Array.isArray(data)) {
+        data.forEach(d => setLastUpdated(d, new Date().getTime()));
+    } else {
+        data._ts = _ts || new Date().getTime();
+    }
 }
