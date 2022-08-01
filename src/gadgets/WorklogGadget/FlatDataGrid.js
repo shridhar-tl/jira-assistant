@@ -38,7 +38,7 @@ class FlatDataGrid extends PureComponent {
 
         //displayFormat: null, sortValueFun: null, groupValueFunc: null
         //, allowSorting: true, allowGrouping: true
-
+        const timeFormat = props.pageSettings?.logFormat === '1' ? 'string' : 'number';
         return [
             { field: "groupName", displayText: "Group Name", type: "string" },
             { field: "projectName", displayText: "Project Name", type: "string" },
@@ -52,11 +52,11 @@ class FlatDataGrid extends PureComponent {
             { field: "userDisplay", displayText: "Log user", type: "string" },
             { field: "assignee", displayText: "Assignee", type: "string" },
             { field: "reporter", displayText: "Reporter", type: "string" },
-            { field: "timeSpent", displayText: "Hr. Spent", type: "number", format: convertSecs },
-            { field: "originalestimate", displayText: "Ori. Estm.", type: "number", format: convertSecs },
-            { field: "totalLogged", displayText: "Total Worklogs", type: "number", format: convertSecs },
-            { field: "remainingestimate", displayText: "Rem. Estm.", type: "number", format: convertSecs },
-            { field: "estVariance", displayText: "Estm. Variance", type: "number", format: (value) => (value > 0 ? "+" : "") + convertSecs(value) },
+            { field: "timeSpent", displayText: "Hr. Spent", type: timeFormat, format: convertSecs },
+            { field: "originalestimate", displayText: "Ori. Estm.", type: timeFormat, format: convertSecs },
+            { field: "totalLogged", displayText: "Total Worklogs", type: timeFormat, format: convertSecs },
+            { field: "remainingestimate", displayText: "Rem. Estm.", type: timeFormat, format: convertSecs },
+            { field: "estVariance", displayText: "Estm. Variance", type: 'string', format: (value) => (value > 0 ? "+" : "") + convertSecs(value) },
             { field: "comment", displayText: "Comment" },
         ];
     }
