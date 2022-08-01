@@ -9,6 +9,9 @@ export default class AnalyticsService {
         $jaBrowserExtn.getAppVersion().then((version) => {
             this.versionNumber = version || AppVersionNo;
         }, () => this.versionNumber = AppVersionNo);
+        //this.gtag = window.gtag;
+        this.gtag = function () { /* Do nothing */ };
+        this.temp = { prepareUrlWithQueryString, AnalyticsUrl, AnalyticsTrackingId, removeImageOnLoad }; // Temp: ToDo: remove this
     }
 
     send(obj) {
@@ -18,44 +21,62 @@ export default class AnalyticsService {
         const { availHeight, availWidth, height, width, pixelDepth } = window.screen;
 
         const data = {
-            v: 1,
+            v: 2,
             tid: AnalyticsTrackingId,
             uid: this.JAInstId,
-            //cid: "",// need to check
-            //je: 0,
+            _p: Math.round(2147483647 * Math.random()),
+            cid: this.JAInstId,
             ul: navigator?.language?.toLowerCase(),
-            de: document.charset,
-            sd: `${pixelDepth}-bit`,
-            td: document.title,
-            dh: origin,
-            dl: origin,
             sr: `${availWidth}x${availHeight}`,
+            _s: 1,
+            sid: new Date() * 1,
+            dl: origin,
+            dt: document.title,
+            en: 'page_view',
+            _ee: 1,
+            //dr: origin, Use to send referrer url
+            //gtm:'2oe7r0', //Container Hash: need to check
+            //sct:1, // Session Count: need to check
+            //seg:1, // Session Engagement: need to check
+            //aip:1, // to anonymize the ip address
+            //_z:'ccd.v9B', // need to check
+
+            // not available in latest version necessary
             vp: `${width}x${height}`,
+            //de: document.charset,
+            sd: `${pixelDepth}-bit`,
+            //dh: origin,
+
+            // t:  'pageview', 'screenview', 'event', 'transaction', 'item', 'social', 'exception', 'timing'.
             ...this.getPageView(this.currentPage),
             ...obj
         };
 
         const url = prepareUrlWithQueryString(AnalyticsUrl, data);
-        const imgTag = document.createElement('img');
-        imgTag.onload = removeImageOnLoad;
-        imgTag.onerror = removeImageOnLoad;
-        imgTag.width = 1;
-        imgTag.height = 1;
-        imgTag.src = url;
-        document.body.append(imgTag);
+        if (typeof document !== 'undefined') {
+            const imgTag = document.createElement('img');
+            imgTag.onload = removeImageOnLoad;
+            imgTag.onerror = removeImageOnLoad;
+            imgTag.width = 1;
+            imgTag.height = 1;
+            imgTag.src = url;
+            document.body.append(imgTag);
+        } else {
+            console.log('Analytics not hit:', url);
+        }
     }
 
     getPageView(path) {
-        return { t: "pageview", dp: path };
+        return { t: "pageview", dp: path, dl: path };
     }
 
     getEventObject(category, action, label, value) {
-        const obj = { t: "event", ec: category, ea: action };
+        const obj = { en: category, 'ep.event': action, _et: new Date().getTime() };
         if (label) {
-            obj.el = label;
+            obj['ep.label'] = label;
         }
         if (value) {
-            obj.ev = value;
+            obj['ep.value'] = value;
         }
         return obj;
     }
@@ -68,7 +89,7 @@ export default class AnalyticsService {
     setUserId(uid) {
         if (uid) {
             this.JAInstId = uid;
-            window.ga('set', 'userId', uid);
+            this.gtag('set', 'userId', uid);
         }
     }
 
@@ -79,7 +100,7 @@ export default class AnalyticsService {
 
         label = label || this.getCurrentRouteUrl();
 
-        window.ga('send', 'event', category, event, label, value);
+        this.gtag('event', category, { event, label, value });
         this.send(this.getEventObject(category, event, label, value));
     }
 
@@ -90,20 +111,20 @@ export default class AnalyticsService {
 
         const exd = this.getExceptionDetails(err);
 
-        window.ga('send', 'exception', {
-            'exDescription': exd,
-            'exFatal': fatal || false
+        this.gtag('event', 'exception', {
+            'description': exd,
+            'fatal': fatal || false
         });
 
-        this.send({ t: "exception", exd, exf: fatal ? 1 : 0 });
+        this.send({ en: "exception", 'ep.description': exd, 'ep.fatal': fatal ? 'true' : 'false' });
     }
 
     getExceptionDetails(err) {
         if (err) {
             if (typeof err === "object") {
                 if (err.promise && err.reason) {
-                    const { status, response } = err.reason;
-                    err = { status, response };
+                    const { status, response, error } = err.reason;
+                    err = { status, response, error };
                 }
 
                 try {
@@ -177,15 +198,21 @@ export default class AnalyticsService {
             console.error("Error tracking", e);
         }
 
-        page = `v${this.versionNumber}/index.html${page}`;
+        page = getVirtualUrl(this.versionNumber, page);
         this.currentPage = page;
 
-        window.ga('set', 'page', page);
-        window.ga('send', 'pageview', page);
+        this.gtag('set', 'page', page);
+        this.gtag('send', 'pageview', page);
         this.send(this.getPageView(page));
     }
 }
 
 function removeImageOnLoad() {
     this.remove();
+}
+
+function getVirtualUrl(versionNo, path) {
+    const url = new URL(document.location.href);
+    const origin = url.protocol.startsWith('http') ? url.origin : `v${versionNo}`;
+    return `${origin}${path}${url.search}`;
 }

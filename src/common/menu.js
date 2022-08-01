@@ -1,4 +1,3 @@
-import './init-ga';
 import injectServices, { inject } from "../services/index.menu";
 import { JAWebRootUrl } from '../constants/urls';
 

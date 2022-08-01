@@ -47,10 +47,9 @@ class DatabaseService extends Dexie {
         });
 
         if (typeof window !== 'undefined') {
-            window.addEventListener('unhandledrejection', (event) => this.handleError(event));
-            window.addEventListener("rejectionhandled", (event) => this.handleError(event)); // For firefox
-
             if (window.addEventListener) {
+                window.addEventListener('unhandledrejection', (event) => this.handleError(event));
+                window.addEventListener("rejectionhandled", (event) => this.handleError(event)); // For firefox
                 window.addEventListener("error", (e) => {
                     const { error, filename, lineno, colno, message } = e || {};
                     const { stack } = error || {};
@@ -76,8 +75,14 @@ class DatabaseService extends Dexie {
     handleError(event) {
         const detail = event.detail || event;
         this.$analytics.trackError(detail, false);
-        this.$message.error("One or more of the actions failed", "Action error", true);
-        console.error('Unhandled rejection (promise: ', detail.promise || event.promise, ', reason: ', detail.reason || event.reason, ').');
+        const reason = detail.reason || event.reason;
+        const msgs = reason?.error?.errorMessages;
+        let msg = 'One or more of the actions failed. Look at console for more details.';
+        if (msgs && Array.isArray(msgs) && msgs.length > 0) {
+            msg = msgs.join(',\n');
+        }
+        this.$message.error(msg, "Action error", true);
+        console.error('Unhandled rejection (promise: ', detail.promise || event.promise, ', reason: ', reason, ').');
     }
 }
 

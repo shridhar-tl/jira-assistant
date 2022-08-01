@@ -5,7 +5,6 @@ import './common/linq';
 import './index.scss';
 import App from './App';
 import { HashRouter } from 'react-router-dom';
-import './common/init-ga';
 //import * as serviceWorker from './serviceWorker';
 
 if (window.name === "oAuthHandler") {
