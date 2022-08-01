@@ -2,24 +2,6 @@
 import { getPathValue } from "./utils";
 
 /* Unused functions. Commented on 30-Jul-2022. Need to be removed in future
-Array.prototype.init = function (val, count, start = 0) {
-  if (count === undefined || count === null) {
-    count = this.length;
-  }
-  if (typeof val === "function") {
-    while (start < count) {
-      this[start] = val(this[start], start);
-      start++;
-    }
-  }
-  else {
-    while (start < count) {
-      this[start++] = val;
-    }
-  }
-  return this;
-};
-
 Array.prototype.where = function (clause, maxItems) {
   const newArray = [];
 
@@ -272,6 +254,24 @@ Array.prototype.toKeyValuePair = function (clause, filter) {
   return result;
 };
 */
+Array.prototype.init = function (val, count, start = 0) {
+  if (count === undefined || count === null) {
+    count = this.length;
+  }
+  if (typeof val === "function") {
+    while (start < count) {
+      this[start] = val(this[start], start);
+      start++;
+    }
+  }
+  else {
+    while (start < count) {
+      this[start++] = val;
+    }
+  }
+  return this;
+};
+
 Array.prototype.orderBy = function (clause) {
   const tempArray = [];
   for (let i = 0; i < this.length; i++) {
