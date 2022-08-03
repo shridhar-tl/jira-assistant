@@ -160,6 +160,8 @@ export default class UserService {
 
             if (apiUrl) {
                 user.apiUrl = apiUrl;
+            } else {
+                delete user.apiUrl;
             }
 
             await this.$storage.addOrUpdateUser(user);

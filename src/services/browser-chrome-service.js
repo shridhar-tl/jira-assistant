@@ -186,6 +186,9 @@ export default class ChromeBrowserService extends BrowserBase {
                     }
                 });
             }
+            else {
+                reject("Extension do not have access to management api");
+            }
         });
     }
 

@@ -1,8 +1,15 @@
 import React, { PureComponent } from 'react';
+import { showContextMenu, ContextMenu } from 'jsd-report';
 import { inject } from '../../../services';
 import { Button, TextBox } from '../../../controls';
 import { ContactUsUrl } from '../../../constants/urls';
 import { ApiUrls } from '../../../constants/api-urls';
+import BackupImporter from '../../../layouts/DefaultLayout/BackupImporter';
+import { getJiraCloudOAuthAuthorizeUrl } from '../../../constants/oauth';
+
+const settingsIconStyles = {
+    fontSize: '18px', position: 'absolute', right: '20px', top: '35px'
+};
 
 class Integrate extends PureComponent {
     constructor(props) {
@@ -16,7 +23,13 @@ class Integrate extends PureComponent {
         this.init();
     }
 
-    init() {
+    async init() {
+        this.settingsMenu = [
+            { label: "Import Settings", icon: 'fa fa-upload fs-16 margin-r-5', command: this.importBackup.bind(this) },
+            { separator: true },
+            { label: "Use Jira OAuth", icon: 'fa fa-external-link fs-16 margin-r-5', command: this.useOAuth.bind(this) },
+        ];
+
         this.$jaBrowserExtn.getAppVersion().then(v => this.setState({ version: v }));
 
         this.$jaBrowserExtn.getCurrentUrl().then((url) => {
@@ -25,7 +38,31 @@ class Integrate extends PureComponent {
                 this.setState({ jiraUrl: root });
             }
         });
+
+        await this.$storage.untilInit();
+        console.log('Storage initialized');
     }
+
+    importBackup() {
+        if (this.importSettings) {
+            this.importSettings();
+        }
+    }
+
+    useOAuth() {
+        const url = getJiraCloudOAuthAuthorizeUrl({
+            forWeb: false,
+            authType: '2'
+        });
+        window.open(url, 'JAOAuth2Win');
+        window.close();
+    }
+
+    showMenu = (e) => showContextMenu(e, this.settingsMenu);
+    setUploader = (a) => {
+        // This need to be with curly braces to return undefined
+        this.importSettings = a;
+    };
 
     getJiraRootUrl(url) {
         return url.replace(/^(.*\/\/[^/?#]*).*$/, "$1");
@@ -75,6 +112,9 @@ class Integrate extends PureComponent {
                         <div className="col-md-6 no-padding no-margin" style={{ maxWidth: 480, minWidth: 460 }}>
                             <div className="card mx-4 no-padding no-margin">
                                 <div className="card-body p-4">
+                                    <BackupImporter>{this.setUploader}</BackupImporter>
+                                    <ContextMenu />
+                                    <span className="fa fa-cogs pull-right pointer" style={settingsIconStyles} onClick={this.showMenu} onContextMenu={this.showMenu} />
                                     <h1>Jira Assistant</h1>
                                     <p className="text-muted"><strong>Integrate</strong> with your Jira account</p>
                                     <div className="input-group mb-3">

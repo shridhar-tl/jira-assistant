@@ -164,6 +164,8 @@ export default class FirefoxBrowserService extends BrowserBase {
         return params.get("access_token");
     }
 
+    getLaunchUrl(file) { return Promise.resolve(this.browser.runtime.getURL(file)); }
+
     /* Commented as no usage found
     getStorageInfo() {
         return navigator.storage.estimate().then((estimate) => {

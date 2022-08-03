@@ -142,9 +142,9 @@ class SettingsService {
 
     saveSetting = async (userId, category, name, value) => {
         if (value === undefined || value === null) {
-            this.$storage.deleteSetting(userId, category, name);
+            return await this.$storage.deleteSetting(userId, category, name);
         } else {
-            this.$storage.addOrUpdateSetting({ userId, category, name, value });
+            return await this.$storage.addOrUpdateSetting({ userId, category, name, value });
         }
     };
 

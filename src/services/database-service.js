@@ -11,49 +11,7 @@ class DatabaseService extends Dexie {
         this.$message = $message;
         this.$analytics = $analytics;
 
-        this.version(2).stores({
-            users: '++id,jiraUrl,userId',
-            savedFilters: '++id,queryName,createdBy',
-            appSettings: '[userId+category+name],[userId+category]',
-            worklogs: '++id,createdBy,isUploaded,dateStarted,worklogId,ticketNo',
-            events: '++id,createdBy,name,ticketNo,startTime,isEnabled,source,sourceId'
-        });
-
-        // Open the database
-        this.open().catch((error) => {
-            this.$analytics.trackError(error, true);
-            console.error(error);
-        });
-
-        // Database is being initialized for the first time
-        this.users.get(SystemUserId).then(async (user) => {
-            if (!user) {
-                const instId = UUID.generate();
-
-                this.transaction('rw', this.users, async () => {
-                    await this.users.add({ jiraUrl: 'SystemUser', userId: 'SystemUser', dateCreated: new Date(), instId });
-                    await this.appSettings.put({
-                        userId: SystemUserId,
-                        category: SettingsCategory.System,
-                        name: "instId",
-                        value: instId
-                    });
-                    this.$analytics.setUserId(instId);
-                    this.$analytics.trackEvent("New installation", EventCategory.Instance);
-                }).catch((e) => {
-                    this.reportError(e.message, "database-service.js", 32, 0, e.stack);
-                    console.error("Unable to initialize the database:-", e);
-                });
-            }
-            else {
-                const instId = await this.appSettings.get([SystemUserId, SettingsCategory.System, 'instId']);
-                const anLog = await this.appSettings.get([SystemUserId, SettingsCategory.Advanced, 'enableAnalyticsLogging']);
-                const exLog = await this.appSettings.get([SystemUserId, SettingsCategory.Advanced, 'enableExceptionLogging']);
-
-                this.$analytics.setUserId(instId?.value || user.instId);
-                this.$analytics.setIfEnabled(anLog?.value !== false, exLog?.value !== false);
-            }
-        });
+        this.initDatabase();
 
         if (typeof window !== 'undefined') {
             if (window.addEventListener) {
@@ -75,6 +33,69 @@ class DatabaseService extends Dexie {
                 };
             }
         }
+    }
+
+    initDatabase() {
+        this.initialized = new Promise((resolve) => {
+            this._setInitStatus = (sucess) => {
+                resolve(sucess);
+                delete this._setInitStatus;
+            };
+
+            this.version(2).stores({
+                users: '++id,jiraUrl,userId',
+                savedFilters: '++id,queryName,createdBy',
+                appSettings: '[userId+category+name],[userId+category]',
+                worklogs: '++id,createdBy,isUploaded,dateStarted,worklogId,ticketNo',
+                events: '++id,createdBy,name,ticketNo,startTime,isEnabled,source,sourceId'
+            });
+
+            // Open the database
+            this.open().catch((error) => {
+                this.$analytics.trackError(error, true);
+                console.error(error);
+            });
+
+            this.initUser();
+        });
+    }
+
+    initUser() {
+        // Database is being initialized for the first time
+        return this.users.get(SystemUserId).then(async (user) => {
+            if (!user) {
+                const instId = UUID.generate();
+
+                this.transaction('rw', this.users, this.appSettings, async () => {
+                    await this.users.add({ id: SystemUserId, jiraUrl: 'SystemUser', userId: 'SystemUser', dateCreated: new Date(), instId });
+                    await this.appSettings.add({
+                        userId: SystemUserId,
+                        category: SettingsCategory.System,
+                        name: "instId",
+                        value: instId
+                    });
+
+                    this._setInitStatus(true);
+
+                    this.$analytics.setUserId(instId);
+                    this.$analytics.trackEvent("New installation", EventCategory.Instance);
+                }).catch((e) => {
+                    this._setInitStatus(false);
+                    this.reportError(e.message, "database-service.js", 32, 0, e.stack);
+                    console.error("Unable to initialize the database:-", e);
+                });
+            }
+            else {
+                this._setInitStatus(true);
+
+                const instId = await this.appSettings.get([SystemUserId, SettingsCategory.System, 'instId']);
+                const anLog = await this.appSettings.get([SystemUserId, SettingsCategory.Advanced, 'enableAnalyticsLogging']);
+                const exLog = await this.appSettings.get([SystemUserId, SettingsCategory.Advanced, 'enableExceptionLogging']);
+
+                this.$analytics.setUserId(instId?.value || user.instId);
+                this.$analytics.setIfEnabled(anLog?.value !== false, exLog?.value !== false);
+            }
+        });
     }
 
     reportError(msg, url, line, col, stack) {

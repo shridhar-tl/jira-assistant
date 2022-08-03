@@ -37,6 +37,17 @@
   "background": {
     "service_worker": "/static/js/background.js"
   },
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "index.html"
+      ],
+      "matches": [
+        "https://*.jiraassistant.com/*",
+        "http://local.jiraassistant.com/*"
+      ]
+    }
+  ],
   "oauth2": {
     "client_id": "692513716183-s97kv5slq5ihm410jq2kc4r8hr77rcku.apps.googleusercontent.com",
     "scopes": [

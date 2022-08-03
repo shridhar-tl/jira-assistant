@@ -1,4 +1,4 @@
-﻿/* global chrome */
+﻿/* global chrome browser */
 import injectServices, { serviceObjectMap, inject } from "../services/index.background";
 import { AppVersionNo, SystemUserId } from "../constants/common";
 import { SettingsCategory } from "../constants/settings";
@@ -11,13 +11,20 @@ startListening();
 
 function startListening() {
     chrome.runtime.onMessageExternal.addListener(onRequestReceived);
+    if (typeof browser !== 'undefined' && browser.runtime) {
+        browser.runtime.onMessage.addListener(onRequestReceived);
+    }
     console.log("Started listening for incomming requests");
 }
 
 function onRequestReceived(message, sender, sendResponse) {
     const reqDetails = { sender, message };
     log("Received request from ", reqDetails);
-    const origin = sender.origin.toLowerCase();
+    let origin = sender.origin;
+    if (!origin && sender.url) { // origin is unavailable when request received through content script
+        origin = new URL(sender.url).origin;
+    }
+    origin = origin.toLowerCase();
     if (!origin.endsWith('.jiraassistant.com')) {
         log("Denied to serve request from unknown origin: ", sender.origin);
         return;

@@ -66,6 +66,10 @@ export default class JiraOAuthService extends BaseService {
     }
 
     async transformHeaders(userId, customHeaders) {
+        if (!userId) {
+            return customHeaders;
+        }
+
         const user = await this.$user.getUser(userId);
         if (user.apiUrl) {
             let auth = await this.$settings.getGeneralSetting(userId, 'JOAT');

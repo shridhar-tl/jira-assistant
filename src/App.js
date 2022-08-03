@@ -11,7 +11,7 @@ import 'primeicons/primeicons.css';
 import 'jsd-report/build/css/style.css';
 import './scss/style.scss';
 import './App.scss';
-import { validateIfWebApp } from './common/proxy';
+import { getExtnLaunchUrl, validateIfWebApp } from './common/proxy';
 import { getCurrentQueryParams } from './common/utils';
 
 const isWebBuild = process.env.REACT_APP_WEB_BUILD === 'true';
@@ -50,15 +50,34 @@ class App extends PureComponent {
 
   getMessanger = () => <Toast ref={(el) => this.messenger = el} baseZIndex={3000} />;
 
+  async processOAuthForExtn(code) {
+    registerServices('1'); // Register proxy services
+    inject(this, 'JiraOAuthService', 'MessageService');
+    const { success, message, userId: uid } = await this.$jAuth.integrate(code);
+    if (success) {
+      const url = await getExtnLaunchUrl(uid, this.$message);
+      if (url) {
+        window.location.href = url;
+      } else {
+        window.close();
+      }
+    } else {
+      this.$message.error(message);
+    }
+  }
+
   async beginInit() {
     let authType;
     const { oauth, code, state } = getCurrentQueryParams();
 
     if (oauth) {
       if (state) {
-        const { forWeb, authType: selAuthType } = JSON.parse(state);
+        const { forWeb, authType: selAuthType } = JSON.parse(atob(state));
         if (forWeb && selAuthType) {
           authType = selAuthType;
+        } else if (!forWeb) {
+          await this.processOAuthForExtn(code);
+          return;
         }
       }
     }

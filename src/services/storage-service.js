@@ -13,6 +13,8 @@ export default class StorageService {
         this.$db = $db;
     }
 
+    untilInit() { return this.$db.initialized; }
+
     //#region Worklog table operations
     getPendingWorlogByUserId(userId) {
         return this.$db.worklogs.where("createdBy").equals(userId).and((w) => !w.isUploaded).toArray();

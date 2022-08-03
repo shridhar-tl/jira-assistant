@@ -11,31 +11,24 @@ const extensionId = {
 const extnId = extensionId[BROWSER_NAME];
 const chr = window.chrome || window.browser;
 
+function hasInjection() { return typeof window._executeJASvc === 'function'; }
+
 export function executeService(svcName, action, args, $message) {
-    if (!chr?.runtime) {
+    const injected = hasInjection();
+    if (!injected && !chr?.runtime) {
         throw new Error("Unable to connect to extension. Ensure if Jira Assistant extension is installed and not disabled!");
     }
 
     args = convertToStorableValue(args);
     return new Promise((resolve, reject) => {
+        const responder = (response) => processResponse(response, $message, resolve, reject);
         try {
-            chr.runtime.sendMessage(
-                extnId,
-                { svcName, action, args },
-                (response) => {
-                    const { success, error, messages } = response;
-
-                    if ($message && messages?.length) {
-                        messages.forEach($message.handler);
-                    }
-
-                    if (success || !error) {
-                        resolve(convertToUsableValue(success));
-                    } else {
-                        reject(error);
-                    }
-                }
-            );
+            if (injected) {
+                window._executeJASvc(extnId, { svcName, action, args }, responder, reject);
+            }
+            else {
+                chr.runtime.sendMessage(extnId, { svcName, action, args }, responder);
+            }
         } catch (err) {
             console.error("Extension response error:", err);
             reject(err);
@@ -43,13 +36,36 @@ export function executeService(svcName, action, args, $message) {
     });
 }
 
-window.executeService = executeService;
+function processResponse(response, $message, resolve, reject) {
+    try {
+        // Response received through content script would be JSON string
+        if (response && typeof response === 'string') {
+            response = JSON.parse(response);
+        }
+
+        const { success, error, messages } = response;
+
+        if ($message && messages?.length) {
+            messages.forEach($message.handler);
+        }
+
+        if (success || !error) {
+            resolve(convertToUsableValue(success));
+        } else {
+            reject(error);
+        }
+    } catch (err) {
+        console.error("Extension response error:", err);
+        reject(err);
+    }
+}
 
 export async function validateIfWebApp(state) {
     if (process.env.REACT_APP_WEB_BUILD === 'true') {
         state.extnUnavailable = true;
         state.isExtnValid = false;
-        if (!window.chrome && !window.browser) {
+
+        if (!window.chrome && !window.browser && !hasInjection()) {
             state.extnUnavailable = true;
             return state;
         }
@@ -69,4 +85,8 @@ export async function validateIfWebApp(state) {
         return state;
     }
     return false;
+}
+
+export async function getExtnLaunchUrl(userId, $message) {
+    return await executeService('AppBrowserService', 'getLaunchUrl', [`/index.html#/${userId}/dashboard`], $message);
 }

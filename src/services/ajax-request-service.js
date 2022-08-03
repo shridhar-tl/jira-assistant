@@ -42,7 +42,7 @@ export default class AjaxRequestService {
 
         const { withCredentials, needsPermission, json, ...remainingHeaders } = customHeaders || {};
 
-        if (needsPermission !== false && !await this.$browser.requestPermission(null, url)) {
+        if (needsPermission !== false && withCredentials !== false && !await this.$browser.requestPermission(null, url)) {
             console.warn(`Permission not granted for ${url}.`);
         }
 

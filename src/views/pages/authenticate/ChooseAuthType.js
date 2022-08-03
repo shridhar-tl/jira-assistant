@@ -64,7 +64,7 @@ class ChooseAuthType extends PureComponent {
                                     <p className="text-muted">Choose the way you would like to <strong>Integration</strong> with your Jira</p>
                                     {extnUnavailable && <span className="badge badge-success" onClick={this.navigateToStore} title="Click to visit webstore and install the extension">Install Extension</span>}
                                     {!extnUnavailable && !isExtnValid && !allowExtn && <span className="badge badge-success" onClick={this.navigateToStore} title="Click to visit webstore and update the extension">Update Extension</span>}
-                                    <div className={classNames("auth-type", !allowExtn && "disabled")} onClick={allowExtn && this.extnSelected}>
+                                    <div className={classNames("auth-type", !allowExtn && "disabled")} onClick={allowExtn ? this.extnSelected : undefined}>
                                         <div className="auth-type-title">Use Jira Assistant Extension</div>
                                         {this.getExtensionMessage()}
                                     </div>

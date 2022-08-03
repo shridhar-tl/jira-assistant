@@ -9,8 +9,6 @@ export const jiraCloudRedirectUrl = 'https://app.jiraassistant.com?oauth=jc';
 
 export const jaJiraTokenExchangeUrl = `${JAApiBasePath}/jira/oauth/token`;
 
-const jiraCloudState = 'WEB';
-
 export function getJiraCloudOAuthAuthorizeUrl(state) {
     if (typeof state === 'object') {
         state = JSON.stringify(state);
@@ -23,7 +21,7 @@ export function getJiraCloudOAuthAuthorizeUrl(state) {
         client_id: jiraCloudClientId,
         scope: jiraCloudScopes,
         redirect_uri: jiraCloudRedirectUrl,
-        state: state || jiraCloudState
+        state: btoa(state)
     };
 
     return prepareUrlWithQueryString(jiraCloudAuthorizeUrl, params);

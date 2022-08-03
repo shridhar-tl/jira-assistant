@@ -27,12 +27,27 @@
       "description": "Open JiraAssist dashboard page"
     }
   },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://*.jiraassistant.com/*",
+        "http://local.jiraassistant.com/*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "run_at": "document_start"
+    }
+  ],
   "background": {
     "persistent": true,
     "scripts": [
       "/static/js/background.js"
     ]
   },
+  "web_accessible_resources": [
+    "index.html"
+  ],
   "content_security_policy": "script-src 'self' ; object-src 'self';",
   "permissions": [
     "activeTab",
