@@ -122,9 +122,14 @@ export default class JiraService {
         if (result) {
             return result;
         }
-
-        result = await this.$ajax.get(ApiUrls.rapidViews);
-        result = result.views;
+        try {
+            result = await this.$ajax.get(ApiUrls.scrumBoards);
+        }
+        catch (err) {
+            console.warn("Getting board list failed. Trying alternate option", err);
+            result = await this.$ajax.get(ApiUrls.rapidViews);
+        }
+        result = result.views || result.values;
 
         this.$jaCache.session.set("rapidViews", result, 10);
 
@@ -261,18 +266,27 @@ export default class JiraService {
     }
 
     getRapidSprintList(rapidIds) {
-        const reqArr = rapidIds.map((rapidId) => this.$jaCache.session.getPromise(`rapidSprintList${rapidId}`).then((value) => {
-            if (value) {
-                return value;
-            }
-            return this.$ajax.get(ApiUrls.rapidSprintList, rapidId)
-                .then((result) => {
-                    const sprints = result.sprints;
-                    sprints.forEach((sp) => { sp.rapidId = rapidId; });
-                    this.$jaCache.session.set(`rapidSprintList${rapidId}`, sprints, 10);
-                    return sprints;
-                });
-        }));
+        const reqArr = rapidIds.map((rapidId) => this.$jaCache.session.getPromise(`rapidSprintList${rapidId}`)
+            .then(async (value) => {
+                if (value) {
+                    return value;
+                }
+                let result;
+                try {
+                    result = await this.$ajax.get(ApiUrls.sprintListByBoard, rapidId);
+                }
+                catch (err) {
+                    console.warn('Getting rapid sprint list failed. Using alternate api.', err);
+                    result = await this.$ajax.get(ApiUrls.rapidSprintList, rapidId);
+                }
+
+                const sprints = result.sprints || result.values;
+                sprints.forEach((sp) => { sp.rapidId = rapidId; });
+                this.$jaCache.session.set(`rapidSprintList${rapidId}`, sprints, 10);
+
+                return sprints;
+            }));
+
         return Promise.all(reqArr).then((results) => results.union());
     }
 
@@ -342,7 +356,7 @@ export default class JiraService {
             result = await this.$ajax.get(ApiUrls.searchUser, text, maxResult, startAt);
         }
         catch (err) {
-            console.error("User search failed. Using alternate search mechanism.", err);
+            console.warn("User search failed. Using alternate search mechanism.", err);
             result = await this.$ajax.get(ApiUrls.searchUser_Alt, text, maxResult, startAt);
         }
 

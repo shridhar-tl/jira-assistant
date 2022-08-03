@@ -8,9 +8,10 @@ class RapidViewList extends PureComponent {
         inject(this, "JiraService");
 
         this.state = {};
+        this.init();
     }
 
-    UNSAFE_componentWillMount() {
+    init() {
         return this.$jira.getRapidViews().then((views) => {
             const rapidViews = views.orderBy((d) => d.name).map((d) => ({ name: d.name, id: d.id }));
 

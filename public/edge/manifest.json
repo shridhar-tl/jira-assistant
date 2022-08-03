@@ -1,5 +1,6 @@
 {
-  "manifest_version": 2,
+  "manifest_version": 3,
+  "minimum_chrome_version": "102",
   "name": "Jira Assistant: Worklog, Sprint report, etc",
   "short_name": "Jira Assist",
   "version": "2.39",
@@ -9,7 +10,7 @@
     "32": "assets/icon_32.png",
     "48": "assets/icon_48.png"
   },
-  "browser_action": {
+  "action": {
     "default_icon": {
       "24": "assets/icon_24.png",
       "32": "assets/icon_32.png",
@@ -17,12 +18,6 @@
     },
     "default_title": "Jira Assistant",
     "default_popup": "/menu.html"
-  },
-  "background": {
-    "persistent": true,
-    "scripts": [
-      "/static/js/background.js"
-    ]
   },
   "commands": {
     "open-ja-dashboard": {
@@ -33,30 +28,44 @@
       "description": "Open JiraAssist dashboard page"
     }
   },
+  "externally_connectable": {
+    "matches": [
+      "https://*.jiraassistant.com/*",
+      "http://local.jiraassistant.com/*"
+    ]
+  },
+  "background": {
+    "service_worker": "/static/js/background.js"
+  },
   "oauth2": {
     "client_id": "692513716183-s97kv5slq5ihm410jq2kc4r8hr77rcku.apps.googleusercontent.com",
     "scopes": [
       "https://www.googleapis.com/auth/calendar.readonly"
     ]
   },
-  "content_security_policy": "script-src 'self' https://apis.google.com https://calendar.google.com https://ssl.google-analytics.com https://www.google-analytics.com https://login.microsoftonline.com https://graph.microsoft.com ; object-src 'self';",
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' ; object-src 'self';"
+  },
   "offline_enabled": true,
   "permissions": [
     "tabs",
     "identity",
-    "http://*/",
-    "https://*/",
     "storage",
     "background",
-    "notifications",
-    "http://calendar.google.com/calendar/*",
-    "https://calendar.google.com/calendar/*",
-    "https://login.microsoftonline.com/common/oauth2/v2.0/*",
-    "https://graph.microsoft.com/v1.0/me/*"
+    "notifications"
   ],
   "optional_permissions": [
     "activeTab",
     "unlimitedStorage"
   ],
-  "author": "Shridhar"
+  "host_permissions": [
+    "http://*/",
+    "https://*/",
+    "http://calendar.google.com/calendar/*",
+    "https://calendar.google.com/calendar/*",
+    "https://login.microsoftonline.com/common/oauth2/v2.0/*",
+    "https://graph.microsoft.com/v1.0/me/*"
+  ],
+  "author": "Shridhar",
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAqgOeieQeQWZRxeoAGGLjXGCutm354BFj5jX7XmQdfUlfAsxYeLiQpvXH0dk9SgIpIVfiGJoI59oKhlixbwUTs8Zp/v0NQaMQc3MhhvRtYz+UjQuPajR59HyoVzZB3+/2ESe0RC+LT3sEXUVSNxy7Zoc8RUOkLW4+53hsQkVtVvOrFUB+jTdn9Tlk7nLSnFBit510pmR8/tvVusDRnLcvqlTObF+axpgmi+kyciqc/cXiYqKzOU75Y2nWot7E8XfjhGXmMbm4jG24gGejNgazERpBEjb6U1WK+sAO9ZO23C1kjaVuqllEnzjTz08do+Fa9rgmUC5Lr05sbQJ/kMKV9wIDAQAB"
 }

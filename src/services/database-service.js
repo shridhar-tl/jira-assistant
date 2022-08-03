@@ -51,7 +51,7 @@ class DatabaseService extends Dexie {
                 const exLog = await this.appSettings.get([SystemUserId, SettingsCategory.Advanced, 'enableExceptionLogging']);
 
                 this.$analytics.setUserId(instId?.value || user.instId);
-                this.$analytics.setIfEnabled(anLog.value !== false, exLog.value !== false);
+                this.$analytics.setIfEnabled(anLog?.value !== false, exLog?.value !== false);
             }
         });
 

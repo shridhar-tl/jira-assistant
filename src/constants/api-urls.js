@@ -32,6 +32,8 @@ export const ApiUrls = {
     sprintListOpen: "~/rest/greenhopper/1.0/integration/teamcalendars/sprint/list?jql=project+in+({0})+and+Sprint+not+in+closedSprints()",
     getSprintIssues: "~/rest/agile/1.0/sprint/{0}/issue",
     rapidViews: "~/rest/greenhopper/1.0/rapidview",
+    scrumBoards: "~/rest/agile/1.0/board?maxResults=500",
+    sprintListByBoard: "~/rest/agile/1.0/board/{0}/sprint",
     burndownChart: "~/rest/greenhopper/1.0/rapid/charts/scopechangeburndownchart.json?rapidViewId={0}&sprintId={1}",
     googleLogoutUrl: "https://accounts.google.com/o/oauth2/revoke?token={0}",
     outlookLogoutUrl: "https://login.microsoftonline.com/common/oauth2/v2.0/logout"
