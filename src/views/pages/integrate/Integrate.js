@@ -6,6 +6,8 @@ import { ContactUsUrl } from '../../../constants/urls';
 import { ApiUrls } from '../../../constants/api-urls';
 import BackupImporter from '../../../layouts/DefaultLayout/BackupImporter';
 import { getJiraCloudOAuthAuthorizeUrl } from '../../../constants/oauth';
+import { getOriginFromUrl } from '../../../common/utils';
+import Dialog, { CustomDialog } from '../../../dialogs';
 
 const settingsIconStyles = {
     fontSize: '18px', position: 'absolute', right: '20px', top: '35px'
@@ -38,9 +40,6 @@ class Integrate extends PureComponent {
                 this.setState({ jiraUrl: root });
             }
         });
-
-        await this.$storage.untilInit();
-        console.log('Storage initialized');
     }
 
     importBackup() {
@@ -70,9 +69,14 @@ class Integrate extends PureComponent {
 
     integrate = () => {
         const root = this.state.jiraUrl.trim().clearEnd('/').clearEnd('\\');
+        this.tryIntegrate(root);
+    };
+
+    async tryIntegrate(root) {
         this.setState({ jiraUrl: root });
         this.$session.rootUrl = root;
         this.setState({ isLoading: true });
+        const hasPermission = await this.$jaBrowserExtn.requestPermission(null, root);
         this.$ajax.get(ApiUrls.mySelf)
             .then(data => this.$user.createUser(data, root).then(this.openDashboard, this.handleDBError)
                 , (response) => {
@@ -81,11 +85,29 @@ class Integrate extends PureComponent {
                         this.$message.warning("You are not authenticated with Jira to integrate.", "Unauthorized");
                     }
                     else {
-                        this.$message.error("This is not a valid Jira server url or the server does not respond.", "Unknown server");
+                        const origin = getOriginFromUrl(root)?.clearEnd('/');
+                        if (origin && origin !== root) {
+                            Dialog.yesNo(`"${root}" is not a valid Jira Api base path. Would you like to try with "${origin}" instead?`, "Change URL").then(() => {
+                                this.tryIntegrate(origin);
+                            });
+                        } else {
+                            if (!hasPermission) {
+                                let msg = 'Permission denied to access this Url. ';
+                                if (this.props.isWebBuild) {
+                                    msg += "Try integrating directly from extension using JA icon or manually grant permission and retry.";
+                                } else {
+                                    msg += 'Manually grant permission and then retry. For more details, visit #214 in GitHub issue tracker.';
+                                }
+
+                                this.$message.error(msg, "Permission Denied");
+                            } else {
+                                this.$message.error("This is not a valid Jira server url or the server does not respond.", "Unknown server");
+                            }
+                        }
                     }
                 })
             .then(() => this.setState({ isLoading: false }));
-    };
+    }
 
     handleDBError = (err) => {
         this.$message.error("Unable to save the changes. Verify if you have sufficient free space in your drive", "Allocation failed");
@@ -98,8 +120,12 @@ class Integrate extends PureComponent {
         }
         await this.$settings.set("CurrentJiraUrl", this.state.jiraUrl);
         await this.$settings.set("CurrentUserId", id);
-        this.$jaBrowserExtn.openTab("/index.html");
-        window.close();
+        if (this.props.setAuthType) {
+            this.props.setAuthType('1');
+        } else {
+            this.$jaBrowserExtn.openTab("/index.html");
+            window.close();
+        }
     };
 
     render() {
@@ -143,7 +169,7 @@ class Integrate extends PureComponent {
                                                     title="Click to open youtube video guiding you to setup Jira Assistant"> Help setup</a>
                                             </span> |
                                             <span>
-                                                <i className="fa fa-phone" />
+                                                <i className="fa fa-phone margin-l-5" />
                                                 <a href={`${ContactUsUrl}?entry.1426640786=${version}&entry.972533768=${browser}`}
                                                     target="_blank" rel="noopener noreferrer" title="Click to report about any issues or ask a question"> Contact us</a>
                                             </span>
@@ -154,13 +180,10 @@ class Integrate extends PureComponent {
                         </div>
                     </div>
                 </div>
+                <CustomDialog />
             </div>
         );
     }
 }
-
-Integrate.propTypes = {
-
-};
 
 export default Integrate;

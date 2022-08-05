@@ -21,9 +21,9 @@ export const extnAuth = isWebBuild && document.location.href.indexOf('?authType=
 const DefaultLayout = React.lazy(() => import('./layouts/DefaultLayout'));
 
 // Pages
-const Integrate = React.lazy(() => (isWebBuild ?
-  import('./views/pages/authenticate/ChooseAuthType')
-  : import('./views/pages/integrate/Integrate')));
+const IntegrateExtn = React.lazy(() => import('./views/pages/integrate/Integrate'));
+const IntegrateWeb = isWebBuild && React.lazy(() => import('./views/pages/authenticate/ChooseAuthType'));
+
 const Page401 = React.lazy(() => import('./views/pages/p401/Page401'));
 
 export const AppContext = createContext({});
@@ -75,6 +75,7 @@ class App extends PureComponent {
         const { forWeb, authType: selAuthType } = JSON.parse(atob(state));
         if (forWeb && selAuthType) {
           authType = selAuthType;
+          registerServices(authType || '1');
         } else if (!forWeb) {
           await this.processOAuthForExtn(code);
           return;
@@ -82,6 +83,12 @@ class App extends PureComponent {
       }
     }
 
+    authType = await this.initWeb(authType, oauth);
+
+    this.beginLoad(authType, oauth, code);
+  }
+
+  async initWeb(authType, oauth) {
     if (isWebBuild && !oauth) {
       authType = localStorage.getItem('authType');
 
@@ -94,6 +101,7 @@ class App extends PureComponent {
           newState.authType = '1';
         }
       }
+
       this.setState(newState);
 
       if (!authType || (authType === '1' && !newState.authReady)) {
@@ -103,7 +111,7 @@ class App extends PureComponent {
       }
     }
 
-    this.beginLoad(authType, oauth, code);
+    return authType;
   }
 
   authTypeChosen = (authType) => {
@@ -114,8 +122,9 @@ class App extends PureComponent {
   };
 
   async beginLoad(authType, oauth, code) {
-    registerServices(authType);
+    registerServices(authType || '1');
     inject(this, "AnalyticsService", "SessionService", "AuthService", "MessageService", "SettingsService", "CacheService", "JiraOAuthService");
+
     this.props.history.listen((location) => this.$analytics.trackPageView(location.pathname));
 
     this.$message.onNewMessage((message) => {
@@ -153,7 +162,6 @@ class App extends PureComponent {
       userId = null;
     }
 
-    // For existing users who uses old UI have the menu saved as /dashboard
     if (pathname.endsWith("/dashboard")) {
       forceNavigate = true;
       pathname += "/0"; // Load the default dashboard if their is no dashboard id in url
@@ -166,35 +174,39 @@ class App extends PureComponent {
     if (parts[1] === "integrate") {
       this.setState({ isLoading: false });
     } else {
-      this.$auth.authenticate(userId).then((result) => {
-        this.$analytics.trackPageView();
-
-        if (result) {
-          if (!pathname || pathname === "/") {
-            this.props.history.push(`/${this.$session.userId}/dashboard/0`);
-          }
-          else if (forceNavigate) {
-            if (pathname.startsWith("/dashboard")) {
-              pathname = `/${this.$session.userId}${pathname}`;
-            }
-            this.props.history.push(pathname);
-          }
-          else if (!userId) {
-            this.props.history.push(`/${this.$session.userId}${pathname}`);
-          }
-        }
-        else {
-          this.props.history.push(this.$session.needIntegration ? "/integrate" : "/401");
-        }
-
-        const sessionUser = this.$session.userId || null;
-        this.setState({ isLoading: false, authenticated: result, jiraUrl: this.$session.rootUrl, userId: sessionUser });
-
-      }, () => {
-        this.props.history.push(this.$session.needIntegration ? "/integrate" : "/401");
-        this.setState({ isLoading: false, needIntegration: this.$session.needIntegration, jiraUrl: this.$session.rootUrl });
-      });
+      this.tryAuthenticate(userId, pathname, forceNavigate);
     }
+  }
+
+  tryAuthenticate(userId, pathname, forceNavigate) {
+    this.$auth.authenticate(userId).then((result) => {
+      this.$analytics.trackPageView();
+
+      if (result) {
+        if (!pathname || pathname === "/") {
+          this.props.history.push(`/${this.$session.userId}/dashboard/0`);
+        }
+        else if (forceNavigate) {
+          if (pathname.startsWith("/dashboard")) {
+            pathname = `/${this.$session.userId}${pathname}`;
+          }
+          this.props.history.push(pathname);
+        }
+        else if (!userId) {
+          this.props.history.push(`/${this.$session.userId}${pathname}`);
+        }
+      }
+      else {
+        this.props.history.push(this.$session.needIntegration ? "/integrate" : "/401");
+      }
+
+      const sessionUser = this.$session.userId || null;
+      this.setState({ isLoading: false, authenticated: result, jiraUrl: this.$session.rootUrl, userId: sessionUser });
+
+    }, () => {
+      this.props.history.push(this.$session.needIntegration ? "/integrate" : "/401");
+      this.setState({ isLoading: false, needIntegration: this.$session.needIntegration, jiraUrl: this.$session.rootUrl });
+    });
   }
 
   render() {
@@ -211,9 +223,9 @@ class App extends PureComponent {
         <AppContext.Provider value={this.contextProps}>
           <React.Suspense fallback={getLoader()}>
             <Switch>
-              {isWebBuild && <Route exact path="/integrate" name="Authenticate Page" render={props => <Integrate {...props} isWebBuild={isWebBuild}
+              {isWebBuild && <Route exact path="/integrate" name="Authenticate Page" render={props => <IntegrateWeb {...props} isWebBuild={isWebBuild}
                 isExtnValid={isExtnValid} extnUnavailable={extnUnavailable} needIntegration={needIntegration} onAuthTypeChosen={this.authTypeChosen} />} />}
-              {!isWebBuild && <Route exact path="/integrate" name="Integrate Page" render={props => <Integrate {...props} />} />}
+              <Route exact path={isWebBuild ? "/integrate/extn" : "/integrate"} name="Integrate Page" render={props => <IntegrateExtn {...props} isWebBuild={isWebBuild} setAuthType={isWebBuild ? this.authTypeChosen : undefined} />} />
               <Route exact path="/401" name="Page 401" render={props => <Page401 {...props} jiraUrl={this.state.jiraUrl} />} />
               {(!isWebBuild || !!authType) && <Route key={userId} path="/:userId" name="Home" render={props => <DefaultLayout {...props} />} />}
             </Switch>

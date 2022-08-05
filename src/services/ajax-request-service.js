@@ -60,7 +60,11 @@ export default class AjaxRequestService {
             });
 
             if (result.ok) {
-                return await result.json();
+                try {
+                    return await result.json();
+                } catch (err) {
+                    return Promise.reject({ status: -1, statusText: err.message, error: err });
+                }
             } else {
                 const { status, statusText, headers } = result;
                 const type = headers.get('content-type');

@@ -24,7 +24,7 @@ class ChooseAuthType extends PureComponent {
                 Some of the features are not supported until you update your extension to latest version. Please update the extension and refresh this page.</div>);
         } else if (needIntegration) {
             return (<div className="auth-type-desc">Required version of extension is already installed but you haven't yet integrated with Jira.
-                Please click on the JA icon in your browser to integrate with Jira. Then refresh this page again.</div>);
+                Please click on the JA icon in your browser or select this option to integrate with Jira. Then refresh this page again.</div>);
         } else {
             return (<div className="auth-type-desc">Required version of extension is already installed and ready to use.
                 Select this option to use Jira Assistant with latest features and bug fixes not yet available in the extension.</div>);
@@ -33,7 +33,13 @@ class ChooseAuthType extends PureComponent {
 
     navigateToStore = () => window.open(this.storeUrl);
 
-    extnSelected = () => this.props.onAuthTypeChosen('1');
+    extnSelected = () => {
+        if (this.props.needIntegration) {
+            this.props.history.push('/integrate/extn');
+        } else {
+            this.props.onAuthTypeChosen('1');
+        }
+    };
 
     oAuthSelected = () => {
         Dialog.yesNo((<span>
@@ -50,8 +56,8 @@ class ChooseAuthType extends PureComponent {
     };
 
     render() {
-        const { version, browser, props: { extnUnavailable, isExtnValid, needIntegration } } = this;
-        const allowExtn = !extnUnavailable && isExtnValid && !needIntegration;
+        const { version, browser, props: { extnUnavailable, isExtnValid } } = this;
+        const allowExtn = !extnUnavailable && isExtnValid;
 
         return (
             <div className="app auth-page flex-row align-items-center">
