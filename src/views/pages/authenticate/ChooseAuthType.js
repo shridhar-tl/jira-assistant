@@ -24,10 +24,10 @@ class ChooseAuthType extends PureComponent {
                 Some of the features are not supported until you update your extension to latest version. Please update the extension and refresh this page.</div>);
         } else if (needIntegration) {
             return (<div className="auth-type-desc">Required version of extension is already installed but you haven't yet integrated with Jira.
-                Please click on the JA icon in your browser or select this option to integrate with Jira. Then refresh this page again.</div>);
+                Select this option to connect and integrate extension with Jira. Or, click JA icon in your browser to integrate with Jira first and then refresh this page again.</div>);
         } else {
             return (<div className="auth-type-desc">Required version of extension is already installed and ready to use.
-                Select this option to use Jira Assistant with latest features and bug fixes not yet available in the extension.</div>);
+                Select this option to connect with Jira Assistant extension and use latest features and bug fixes not yet available in the extension.</div>);
         }
     }
 

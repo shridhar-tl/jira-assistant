@@ -10,7 +10,7 @@ import { getOriginFromUrl } from '../../../common/utils';
 import Dialog, { CustomDialog } from '../../../dialogs';
 
 const settingsIconStyles = {
-    fontSize: '18px', position: 'absolute', right: '20px', top: '35px'
+    fontSize: '18px', position: 'absolute', right: '20px', top: '35px', color: '#0000ff'
 };
 
 class Integrate extends PureComponent {

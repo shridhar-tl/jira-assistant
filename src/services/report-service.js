@@ -17,22 +17,27 @@ export default class ReportService {
     getSavedQueries(ids) { return this.$storage._getReportsWithIds(ids); }
     */
 
-    exportQueries(ids) {
-        return this.$storage.getReportsWithIds(ids).then((qrys) => Promise.all(qrys
-            .filter(qry => !qry.uniqueId)
-            .map(qry => this.saveQuery(qry)))
-            .then(() => {
-                qrys.forEach(qry => {
-                    delete qry.id;
-                    delete qry.createdBy;
-                });
-                const json = JSON.stringify({ exported: new Date(), reports: qrys });
-                let fileName = qrys.length === 1 ? qrys[0].queryName : "JA_Reports";
-                fileName = `${fileName}_${new Date().format('yyyyMMdd')}.jrd`;
-                saveStringAs(json, "jrd", fileName);
-                this.$analytics.trackEvent("Report definition exported", EventCategory.UserActions);
-                return true;
-            }));
+    async exportQueries(ids) {
+        const qrys = this.$storage.getReportsWithIds(ids);
+        await this.prepareDataForExport(qrys);
+
+        const json = JSON.stringify({ exported: new Date(), reports: qrys });
+        let fileName = qrys.length === 1 ? qrys[0].queryName : "JA_Reports";
+        fileName = `${fileName}_${new Date().format('yyyyMMdd')}.jrd`;
+        saveStringAs(json, "jrd", fileName);
+        this.$analytics.trackEvent("Report definition exported", EventCategory.UserActions);
+        return true;
+    }
+
+    async prepareDataForExport(qrys) {
+        await Promise.all(qrys.filter(qry => !qry.uniqueId).map(qry => this.saveQuery(qry, true)));
+
+        qrys.forEach(qry => {
+            delete qry.id;
+            delete qry.createdBy;
+        });
+
+        return qrys;
     }
 
     getReportsList() {
@@ -49,7 +54,7 @@ export default class ReportService {
 
     getReportDefinition(id) { return this.$storage.getSingleReportById(id); }
 
-    async saveQuery(query) {
+    async saveQuery(query, noTrack) {
         query.createdBy = this.$session.userId;
         let updateId = true;
         if (!query.uniqueId) {
@@ -79,7 +84,9 @@ export default class ReportService {
             eventName = "Report created";
         }
 
-        this.$analytics.trackEvent(eventName, EventCategory.UserActions, query.advanced ? "Report builder" : "Custom report");
+        if (noTrack !== true) {
+            this.$analytics.trackEvent(eventName, EventCategory.UserActions, query.advanced ? "Report builder" : "Custom report");
+        }
         return reportId;
     }
 }

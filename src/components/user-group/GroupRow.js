@@ -27,7 +27,10 @@ class GroupRow extends PureComponent {
 
         const existingUsers = users.map(u => getUserName(u, true));
         selectedUsers.removeAll(u => existingUsers.indexOf(getUserName(u, true)) > -1);
-        users.addRange(selectedUsers);
+        selectedUsers.forEach(user => {
+            const { accountId, avatarUrls, displayName, emailAddress, timeZone, locale, name } = user;
+            users.push({ accountId, avatarUrls, displayName, emailAddress, timeZone, locale, name });
+        });
         group.users = users.orderBy(u => u.displayName);
         this.clearSelection();
     }

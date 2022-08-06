@@ -29,7 +29,7 @@ class BackupImporter extends PureComponent {
                 const json = evt.target.result;
                 try {
                     const data = parseCustomJSON(json);
-                    await this.$backup.importData(data);
+                    await this.$backup.importData(data?.value);
                     this.$message.success('Settings imported successfully');
                 }
                 catch (err) {

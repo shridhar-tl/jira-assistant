@@ -1,9 +1,9 @@
 export default class StorageService {
     // This class gets proxied when accessed as webapp
     // When new method is added or method name is changed in this class, this list has to be updated with the method name
-    static availableMethods = "getPendingWorlogByUserId,getWorklogsWithIds,getSingleWorklogWithId,getWorklogsBetween,addOrUpdateWorklog,"
-        + "addWorklog,deleteWorklog,getReportsWithIds,getReportsByUserId,getSingleReportById,getReportByNameForValidation,addOrUpdateReport,addReport,"
-        + "deleteReportsWithIds,getAllUsers,getUser,getUserWithNameAndJiraUrl,getUserWithEmailAndJiraUrl,addUser,addOrUpdateUser,deleteUser,"
+    static availableMethods = "getPendingWorlogByUserId,getWorklogsWithIds,getSingleWorklogWithId,getWorklogsBetween,filterWorklogs,addOrUpdateWorklog,"
+        + "addWorklog,deleteWorklog,getReportsWithIds,getReportsByUserId,getSingleReportById,filterReports,getReportByNameForValidation,addOrUpdateReport,addReport,"
+        + "deleteReportsWithIds,getAllUsers,getUser,getUserWithNameAndJiraUrl,getUserWithEmailAndJiraUrl,filterUsers,addUser,addOrUpdateUser,deleteUser,"
         //+ "setCache,getCache,removeCache,clearCache,getAllCachedValues"
         + "filterSettings,getSetting,addOrUpdateSetting,bulkPutSettings,deleteSetting,deleteAllSettingsWithUserId";
 
@@ -12,8 +12,6 @@ export default class StorageService {
     constructor($db) {
         this.$db = $db;
     }
-
-    untilInit() { return this.$db.initialized; }
 
     //#region Worklog table operations
     getPendingWorlogByUserId(userId) {
@@ -31,6 +29,10 @@ export default class StorageService {
     getWorklogsBetween(fromDate, toDate, userId) {
         return this.$db.worklogs.where("dateStarted").between(fromDate, toDate, true, true)
             .and((w) => w.createdBy === userId).toArray();
+    }
+
+    filterWorklogs(filter) {
+        return this.$db.worklogs.where(filter).toArray();
     }
 
     async addOrUpdateWorklog(entry) {
@@ -69,6 +71,10 @@ export default class StorageService {
 
     getSingleReportById(id) {
         return this.$db.savedFilters.where("id").equals(parseInt(id)).first();
+    }
+
+    filterReports(filter) {
+        return this.$db.savedFilters.where(filter).toArray();
     }
 
     getReportByNameForValidation(name, userId, excludeId) {
@@ -116,6 +122,10 @@ export default class StorageService {
             .filter((u) => (u.email || "").toLowerCase() === email && u.jiraUrl.toLowerCase() === url).first();
     }
 
+    filterUsers(filter) {
+        return this.$db.users.where(filter).toArray();
+    }
+
     async addUser(user) {
         setLastUpdated(user);
         return await this.$db.users.add(user);
@@ -141,8 +151,10 @@ export default class StorageService {
         return this.$db.appSettings.put(setting);
     }
 
-    bulkPutSettings(arr) {
-        setLastUpdated(arr);
+    bulkPutSettings(arr, updateTS) {
+        if (updateTS !== false) {
+            setLastUpdated(arr);
+        }
         return this.$db.appSettings.bulkPut(arr);
     }
 

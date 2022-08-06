@@ -49,6 +49,7 @@ class ExportSettings extends BaseDialog {
         const fileName = `JA_Backup_${new Date().format('yyyyMMdd')}.jab`;
         saveStringAs(json, "jab", fileName);
         this.$analytics.trackEvent("Settings exported", EventCategory.UserActions);
+        this.onHide();
     };
 
     toggleAll = (exportAll) => this.setState({ exportAll });

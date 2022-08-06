@@ -14,9 +14,6 @@ class MyReports extends BaseGadget {
         super(props, 'My Reports', 'fa-filter');
         inject(this, "ReportService", "MessageService", "UserUtils");
         this.state.isLoading = true;
-    }
-
-    UNSAFE_componentWillMount() {
         this.refreshData();
     }
 
@@ -43,7 +40,6 @@ class MyReports extends BaseGadget {
             this.$message.info("Select the reports to be deleted!");
             return;
         }
-
 
         Dialog.confirmDelete("Are you sure to delete the selected report(s)?", "Confirm delete report(s)").then(() => {
             this.setState({ isLoading: true });
