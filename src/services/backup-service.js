@@ -170,56 +170,62 @@ export default class BackupService extends BaseService {
                 const groupsToImport = groups[jiraUrl];
                 if (!Array.isArray(groupsToImport)) { return; }
 
-                const userFromDB = (await this.$storage.filterUsers({ jiraUrl }))[0];
-                if (!userFromDB) {
+                const usersFromDB = (await this.$storage.filterUsers({ jiraUrl }))[0];
+                if (!usersFromDB.length) {
                     logs.push({ type: 'error', message: `Groups import skipped: No integration found for "${jiraUrl}"` });
                     return;
                 }
-                const usrIdFromDb = userFromDB.id;
 
-                let groupsFromDB = (await this.$storage.filterSettings({
-                    userId: usrIdFromDb,
-                    category: SettingsCategory.General,
-                    name: 'groups'
-                }))[0];
-
-                if (!groupsFromDB?.value) {
-                    groupsFromDB = {
-                        userId: usrIdFromDb,
-                        category: SettingsCategory.General,
-                        name: 'groups',
-                        value: []
-                    };
-                }
-
-                groupsToImport.forEach(g => {
-                    const { name, timeZone, users: selUsers } = g;
-                    let curGroup = groupsFromDB.value.filter(gfd => gfd.name?.toLowerCase() === name?.toLowerCase())[0];
-                    if (curGroup) {
-                        curGroup.timeZone = timeZone;
-                    } else {
-                        curGroup = { name, timeZone, users: [] };
-                        groupsFromDB.value.push(curGroup);
-                    }
-
-                    const curGrpUsrs = curGroup.users;
-
-                    selUsers.forEach(u => {
-                        const { costPerHour, locale, timeZone, accountId, emailAddress, displayName, avatarUrls, name: usrName } = u;
-
-                        const curUsr = curGrpUsrs.filter(dbu => dbu.accountId === accountId || dbu.emailAddress === emailAddress)[0];
-                        if (curUsr) {
-                            logs.push({ type: 'info', message: `User "${emailAddress}" already exists in group "${name}"` });
-                        } else {
-                            curGrpUsrs.push({ costPerHour, locale, timeZone, accountId, emailAddress, displayName, avatarUrls, name: usrName });
-                        }
-                    });
+                usersFromDB.forEach(u => {
+                    const usrIdFromDb = u.id;
+                    this.importGroups(usrIdFromDb, groupsToImport, logs);
                 });
-
-                await this.$storage.addOrUpdateSetting(groupsFromDB);
             });
         }
         return logs;
+    }
+
+    async importGroups(usrIdFromDb, groupsToImport, logs) {
+        let groupsFromDB = (await this.$storage.filterSettings({
+            userId: usrIdFromDb,
+            category: SettingsCategory.General,
+            name: 'groups'
+        }))[0];
+
+        if (!groupsFromDB?.value) {
+            groupsFromDB = {
+                userId: usrIdFromDb,
+                category: SettingsCategory.General,
+                name: 'groups',
+                value: []
+            };
+        }
+
+        groupsToImport.forEach(g => {
+            const { name, timeZone, users: selUsers } = g;
+            let curGroup = groupsFromDB.value.filter(gfd => gfd.name?.toLowerCase() === name?.toLowerCase())[0];
+            if (curGroup) {
+                curGroup.timeZone = timeZone;
+            } else {
+                curGroup = { name, timeZone, users: [] };
+                groupsFromDB.value.push(curGroup);
+            }
+
+            const curGrpUsrs = curGroup.users;
+
+            selUsers.forEach(u => {
+                const { costPerHour, locale, timeZone, accountId, emailAddress, displayName, avatarUrls, name: usrName } = u;
+
+                const curUsr = curGrpUsrs.filter(dbu => dbu.accountId === accountId || dbu.emailAddress === emailAddress)[0];
+                if (curUsr) {
+                    logs.push({ type: 'info', message: `User "${emailAddress}" already exists in group "${name}"` });
+                } else {
+                    curGrpUsrs.push({ costPerHour, locale, timeZone, accountId, emailAddress, displayName, avatarUrls, name: usrName });
+                }
+            });
+        });
+
+        await this.$storage.addOrUpdateSetting(groupsFromDB);
     }
 }
 

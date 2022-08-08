@@ -5,25 +5,30 @@ import { inject } from '../../services';
 import { EventCategory } from '../../constants/settings';
 import GroupRow from './GroupRow';
 import GroupFooter from './GroupFooter';
+import { Button } from '../../controls';
+import BackupImporter from '../../layouts/DefaultLayout/BackupImporter';
+import { convertToStorableValue } from '../../common/storage-helpers';
+import { saveStringAs } from '../../common/utils';
 
 class UserGroup extends PureComponent {
     constructor(props) {
         super(props);
-        inject(this, "SessionService", "MessageService", "UserGroupService", "JiraService", "AnalyticsService");
+        inject(this, "SessionService", "MessageService", "UserGroupService", "JiraService", "AnalyticsService", "BackupService");
         const { groups } = props;
 
         const timezones = moment.tz.names().map(t => ({ label: t, value: t }));
         this.groupTimezones = [{ label: 'My local time zone', value: '' }].union([timezones]);
         this.userTimezones = [{ label: 'My local time zone', value: '' }, { label: "Use group's time zone", value: 'GRP_TZ' }].union([timezones]);
         this.state = { groups };
-        this.init();
-    }
-
-    init() {
-        if (!this.state.groups) {
-            this.$usergroup.getUserGroups().then(groups => this.setState({ groups }));
+        if (!groups) {
+            this.loadGroups();
         }
     }
+
+    loadGroups = async () => {
+        const groups = await this.$usergroup.getUserGroups();
+        this.setState({ groups });
+    };
 
     addNewGroup = async (groupName, groupId) => {
         groupName = groupName?.trim();
@@ -79,6 +84,19 @@ class UserGroup extends PureComponent {
         }
     };
 
+    exportGroups = async () => {
+        try {
+            const data = await this.$backup.exportBackup({ [this.$session.userId]: { groups: true } });
+
+            const json = convertToStorableValue(data);
+            const fileName = `JA_Groups_${new Date().format('yyyyMMdd')}.jab`;
+            saveStringAs(json, "jab", fileName);
+            this.$analytics.trackEvent("Groups exported", EventCategory.UserActions);
+        } catch (err) {
+            this.$message.error(err.message);
+        }
+    };
+
     render() {
         const {
             userTimezones,
@@ -87,7 +105,12 @@ class UserGroup extends PureComponent {
         } = this;
 
         return (<ScrollableTable dataset={groups}>
-            <caption>User groups</caption>
+            <caption>User groups
+                <div className="pull-right">
+                    <Button icon="fa fa-download" title="Click to export groups list" onClick={this.exportGroups} />
+                    <BackupImporter>{(chooseFile) => <Button icon="fa fa-upload" title="Click to import groups list" onClick={chooseFile} onImport={this.loadGroups} />}</BackupImporter>
+                </div>
+            </caption>
             <THead>
                 <tr>
                     <th style={{ minWidth: 215 }}>Group / User Name</th>
