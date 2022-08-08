@@ -43,7 +43,7 @@ class ExportSettings extends BaseDialog {
 
     export = async () => {
         const { settings, exportAll } = this.state;
-        const data = await this.$backup.exportData(exportAll || settings);
+        const data = await this.$backup.exportBackup(exportAll || settings);
 
         const json = convertToStorableValue(data);
         const fileName = `JA_Backup_${new Date().format('yyyyMMdd')}.jab`;

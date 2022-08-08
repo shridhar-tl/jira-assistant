@@ -15,7 +15,7 @@ class BaseProxyService {
             this[m] = function () { return executeService(svcName, m, Array.from(arguments)); };
         });
 
-        this.execute = function (m) { return function () { return executeService(svcName, m, Array.from(arguments)); }; };
+        this._executeSvc = function (m) { return function () { return executeService(svcName, m, Array.from(arguments)); }; };
     }
 }
 
@@ -39,9 +39,9 @@ export class StorageProxyService extends BaseProxyService {
     // This function should be removed once users starts using v2.41 of extension
     filterReports = async (filter) => {
         try {
-            return await this.execute('filterReports')(filter);
+            return await this._executeSvc('filterReports')(filter);
         } catch (err) {
-            const reports = await this.execute('getReportsByUserId')(filter.createdBy);
+            const reports = await this._executeSvc('getReportsByUserId')(filter.createdBy);
             const allKeys = Object.keys(filter);
             return reports.filter(u => allKeys.every(k => u[k] === filter[k]));
         }
@@ -50,9 +50,9 @@ export class StorageProxyService extends BaseProxyService {
     // This function should be removed once users starts using v2.41 of extension
     filterUsers = async (filter) => {
         try {
-            return await this.execute('filterUsers')(filter);
+            return await this._executeSvc('filterUsers')(filter);
         } catch (err) {
-            const users = await this.execute('getAllUsers')();
+            const users = await this._executeSvc('getAllUsers')();
             const allKeys = Object.keys(filter);
             return users.filter(u => allKeys.every(k => u[k] === filter[k]));
         }

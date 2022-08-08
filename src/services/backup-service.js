@@ -13,7 +13,7 @@ export default class BackupService extends BaseService {
         this.$report = $report;
     }
 
-    async exportData(settings) {
+    async exportBackup(settings) {
         const currentTime = new Date().getTime();
         const usersFromDB = await this.$storage.getAllUsers();
 
@@ -76,147 +76,148 @@ export default class BackupService extends BaseService {
         return exportData;
     }
 
-    async importData(data, settings) {
+    async importBackup(data, settings, changeLogin) {
         const logs = [];
-        try {
-            const { date, version, users, config, groups, reports } = data;
-            const allowImport = (typeof settings !== 'object') ? () => true : (key, id) => !!(id ? settings[key]?.[id] : settings[key]);
-            if (version !== 1.1) {
-                logs.push({ type: 'error', message: 'Unsupported version of backup' });
-                return logs;
-            }
-            if (date) {
-                logs.push({ type: 'info', message: `Backup created on ${new Date(date).format('dd-MMM-yyyy HH:mm')}` });
-            }
+        const { date, version, users, config, groups, reports } = data;
+        const allowImport = (typeof settings !== 'object') ? () => true : (key, id) => !!(id ? settings[key]?.[id] : settings[key]);
+        if (version !== 1.1) {
+            throw new Error(`Unsupported version of backup. The minimum supported version of backup is v1.1 while you are using ${version}`);
+        }
+        if (date) {
+            logs.push({ type: 'info', message: `Backup v${version} created on ${new Date(date).format('dd-MMM-yyyy HH:mm')}` });
+        }
 
-            if (Array.isArray(users) && allowImport('settings')) {
-                await users.mapAsync(async u => {
-                    const { id, email, jiraUrl, apiUrl, userId, dateCreated, lastLogin } = u;
-                    if (!allowImport('settings', id)) { return; }
+        if (Array.isArray(users) && allowImport('settings')) {
+            let loginDate;
+            await users.mapAsync(async u => {
+                const { id, email, jiraUrl, apiUrl, userId, dateCreated, lastLogin } = u;
+                if (!allowImport('settings', id)) { return; }
 
-                    const isSystemUser = id === SystemUserId;
+                const isSystemUser = id === SystemUserId;
 
-                    const userFromDb = !isSystemUser && await this.$storage.getUserWithNameAndJiraUrl(userId, jiraUrl);
-                    let usrDBId = isSystemUser && id;
+                const userFromDb = !isSystemUser && await this.$storage.getUserWithNameAndJiraUrl(userId, jiraUrl);
+                let usrDBId = isSystemUser && id;
 
-                    if (userFromDb) {
-                        logs.push({ type: 'info', message: `Instance already found: ${userFromDb.jiraUrl} (${userId}), ${userFromDb.email}` });
-                        usrDBId = userFromDb.id;
-                    } else if (!isSystemUser) {
-                        logs.push({ type: 'info', message: `Creating Instance: ${jiraUrl}, ${userId}; ${email}` });
-                        usrDBId = await this.$storage.addUser({ email, jiraUrl, apiUrl, userId, dateCreated, dateUpdated: new Date(), lastLogin });
+                if (userFromDb) {
+                    logs.push({ type: 'info', message: `Instance already found: ${userFromDb.jiraUrl} (${userId}), ${userFromDb.email}` });
+                    usrDBId = userFromDb.id;
+                } else if (!isSystemUser) {
+                    logs.push({ type: 'info', message: `Creating Instance: ${jiraUrl}, ${userId}; ${email}` });
+                    usrDBId = await this.$storage.addUser({ email, jiraUrl, apiUrl, userId, dateCreated, dateUpdated: new Date(), lastLogin });
+                }
+
+                const configToImport = config?.[jiraUrl];
+
+                if (!Array.isArray(configToImport)) { return; }
+
+                const settingsFromDB = await this.$storage.filterSettings({ userId: usrDBId });
+
+                const settingsMap = settingsFromDB.reduce((obj, set) => {
+                    if (set._ts > 2) {
+                        set[`${set.category}_${set.name}`] = set._ts;
                     }
+                    return obj;
+                }, {});
 
-                    const configToImport = config?.[jiraUrl];
+                const configToStore = configToImport.filter(set => {
+                    const { category, name, _ts = date } = set;
+                    const tsFromDB = settingsMap[`${category}_${name}`];
+                    return (!tsFromDB || tsFromDB < _ts);
+                }).map(({ category, name, value, _ts = date }) => ({ userId: usrDBId, category, name, value, _ts }));
 
-                    if (!Array.isArray(configToImport)) { return; }
+                if (changeLogin && jiraUrl && usrDBId && (!loginDate || loginDate < lastLogin?.getTime())) {
+                    configToStore.push({ userId: SystemUserId, category: SettingsCategory.System, name: 'CurrentJiraUrl', value: jiraUrl, _ts: 2 });
+                    configToStore.push({ userId: SystemUserId, category: SettingsCategory.System, name: 'CurrentUserId', value: usrDBId, _ts: 2 });
+                    loginDate = lastLogin?.getTime();
+                }
 
-                    const settingsFromDB = await this.$storage.filterSettings({ userId: usrDBId });
+                await this.$storage.bulkPutSettings(configToStore, false);
+            });
+        } else {
+            logs.push({ type: 'info', message: 'Settings not available in backup' });
+        }
 
-                    const settingsMap = settingsFromDB.reduce((obj, set) => {
-                        if (set._ts > 2) {
-                            set[`${set.category}_${set.name}`] = set._ts;
-                        }
-                        return obj;
-                    }, {});
+        if (typeof reports === 'object') {
+            const insts = Object.keys(reports);
+            await insts.mapAsync(async jiraUrl => {
+                const reportsToImport = reports[jiraUrl];
+                if (!Array.isArray(reportsToImport)) { return; }
+                const userFromDB = (await this.$storage.filterUsers({ jiraUrl }))[0];
+                if (!userFromDB) {
+                    logs.push({ type: 'error', message: `Reports import skipped: No integration found for "${jiraUrl}"` });
+                    return;
+                }
+                const usrIdFromDb = userFromDB.id;
 
-                    const configToStore = configToImport.filter(set => {
-                        const { category, name, _ts = date } = set;
-                        const tsFromDB = settingsMap[`${category}_${name}`];
-                        return (!tsFromDB || tsFromDB < _ts);
-                    }).map(({ category, name, value, _ts = date }) => ({ userId: usrDBId, category, name, value, _ts }));
-
-                    await this.$storage.bulkPutSettings(configToStore);
+                await reportsToImport.mapAsync(async (report) => {
+                    const reportFromDB = (await this.$storage.filterReports({
+                        createdBy: usrIdFromDb,
+                        uniqueId: report.uniqueId,
+                        queryName: report.queryName
+                    }))[0];
+                    if (reportFromDB?._ts <= report._ts) {
+                        report.id = reportFromDB?.id;
+                        report.createdBy = usrIdFromDb;
+                        await this.$storage.addOrUpdateReport(report);
+                    }
                 });
+            });
+        }
 
-            } else {
-                logs.push({ type: 'info', message: 'Settings not available in backup' });
-            }
+        if (typeof groups === 'object') {
+            const insts = Object.keys(groups);
+            await insts.mapAsync(async jiraUrl => {
+                const groupsToImport = groups[jiraUrl];
+                if (!Array.isArray(groupsToImport)) { return; }
 
-            if (typeof reports === 'object') {
-                const insts = Object.keys(reports);
-                await insts.mapAsync(async jiraUrl => {
-                    const reportsToImport = reports[jiraUrl];
-                    if (!Array.isArray(reportsToImport)) { return; }
-                    const userFromDB = (await this.$storage.filterUsers({ jiraUrl }))[0];
-                    if (!userFromDB) {
-                        logs.push({ type: 'error', message: `Reports import skipped: No integration found for "${jiraUrl}"` });
-                        return;
-                    }
-                    const usrIdFromDb = userFromDB.id;
+                const userFromDB = (await this.$storage.filterUsers({ jiraUrl }))[0];
+                if (!userFromDB) {
+                    logs.push({ type: 'error', message: `Groups import skipped: No integration found for "${jiraUrl}"` });
+                    return;
+                }
+                const usrIdFromDb = userFromDB.id;
 
-                    await reportsToImport.mapAsync(async (report) => {
-                        const reportFromDB = (await this.$storage.filterReports({
-                            createdBy: usrIdFromDb,
-                            uniqueId: report.uniqueId,
-                            queryName: report.queryName
-                        }))[0];
-                        if (reportFromDB?._ts <= report._ts) {
-                            report.id = reportFromDB?.id;
-                            report.createdBy = usrIdFromDb;
-                            await this.$storage.addOrUpdateReport(report);
-                        }
-                    });
-                });
-            }
+                let groupsFromDB = (await this.$storage.filterSettings({
+                    userId: usrIdFromDb,
+                    category: SettingsCategory.General,
+                    name: 'groups'
+                }))[0];
 
-            if (typeof groups === 'object') {
-                const insts = Object.keys(groups);
-                await insts.mapAsync(async jiraUrl => {
-                    const groupsToImport = groups[jiraUrl];
-                    if (!Array.isArray(groupsToImport)) { return; }
-
-                    const userFromDB = (await this.$storage.filterUsers({ jiraUrl }))[0];
-                    if (!userFromDB) {
-                        logs.push({ type: 'error', message: `Groups import skipped: No integration found for "${jiraUrl}"` });
-                        return;
-                    }
-                    const usrIdFromDb = userFromDB.id;
-
-                    let groupsFromDB = (await this.$storage.filterSettings({
+                if (!groupsFromDB?.value) {
+                    groupsFromDB = {
                         userId: usrIdFromDb,
                         category: SettingsCategory.General,
-                        name: 'groups'
-                    }))[0];
+                        name: 'groups',
+                        value: []
+                    };
+                }
 
-                    if (!groupsFromDB?.value) {
-                        groupsFromDB = {
-                            userId: usrIdFromDb,
-                            category: SettingsCategory.General,
-                            name: 'groups',
-                            value: []
-                        };
+                groupsToImport.forEach(g => {
+                    const { name, timeZone, users: selUsers } = g;
+                    let curGroup = groupsFromDB.value.filter(gfd => gfd.name?.toLowerCase() === name?.toLowerCase())[0];
+                    if (curGroup) {
+                        curGroup.timeZone = timeZone;
+                    } else {
+                        curGroup = { name, timeZone, users: [] };
+                        groupsFromDB.value.push(curGroup);
                     }
 
-                    groupsToImport.forEach(g => {
-                        const { name, timeZone, users: selUsers } = g;
-                        let curGroup = groupsFromDB.value.filter(gfd => gfd.name?.toLowerCase() === name?.toLowerCase())[0];
-                        if (curGroup) {
-                            curGroup.timeZone = timeZone;
+                    const curGrpUsrs = curGroup.users;
+
+                    selUsers.forEach(u => {
+                        const { costPerHour, locale, timeZone, accountId, emailAddress, displayName, avatarUrls, name: usrName } = u;
+
+                        const curUsr = curGrpUsrs.filter(dbu => dbu.accountId === accountId || dbu.emailAddress === emailAddress)[0];
+                        if (curUsr) {
+                            logs.push({ type: 'info', message: `User "${emailAddress}" already exists in group "${name}"` });
                         } else {
-                            curGroup = { name, timeZone, users: [] };
-                            groupsFromDB.value.push(curGroup);
+                            curGrpUsrs.push({ costPerHour, locale, timeZone, accountId, emailAddress, displayName, avatarUrls, name: usrName });
                         }
-
-                        const curGrpUsrs = curGroup.users;
-
-                        selUsers.forEach(u => {
-                            const { costPerHour, locale, timeZone, accountId, emailAddress, displayName, avatarUrls, name: usrName } = u;
-
-                            const curUsr = curGrpUsrs.filter(dbu => dbu.accountId === accountId || dbu.emailAddress === emailAddress)[0];
-                            if (curUsr) {
-                                logs.push({ type: 'info', message: `User "${emailAddress}" already exists in group "${name}"` });
-                            } else {
-                                curGrpUsrs.push({ costPerHour, locale, timeZone, accountId, emailAddress, displayName, avatarUrls, name: usrName });
-                            }
-                        });
                     });
-
-                    await this.$storage.addOrUpdateSetting(groupsFromDB);
                 });
-            }
-        } catch (err) {
-            logs.push({ type: 'error', message: err.message });
+
+                await this.$storage.addOrUpdateSetting(groupsFromDB);
+            });
         }
         return logs;
     }

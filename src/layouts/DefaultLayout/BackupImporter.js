@@ -2,6 +2,8 @@ import React, { PureComponent } from 'react';
 import { parseCustomJSON } from '../../common/storage-helpers';
 import { inject } from '../../services/injector-service';
 
+const msgFileCorrupted = 'Selected file is invalid or is corrupted. Unable to load the file!';
+
 class BackupImporter extends PureComponent {
     constructor(props) {
         super(props);
@@ -27,17 +29,28 @@ class BackupImporter extends PureComponent {
             reader.readAsText(file, "UTF-8");
             reader.onload = async (evt) => {
                 const json = evt.target.result;
+                let parsed;
                 try {
                     const data = parseCustomJSON(json);
-                    await this.$backup.importData(data?.value);
-                    this.$message.success('Settings imported successfully');
+                    parsed = true;
+                    const logs = await this.$backup.importBackup(data?.value, undefined, this.props.cleanImport);
+                    console.log('Import logs:', logs);
+                    if (this.props.onImport) {
+                        this.props.onImport();
+                    }
+                    this.$message.success('Settings imported successfully. Check console logs for more details.');
                 }
                 catch (err) {
-                    this.$message.error("Selected file is invalid or is corrupted");
+                    console.error('Backup import failed', err);
+                    if (parsed) {
+                        this.$message.error(err.message);
+                    } else {
+                        this.$message.error(msgFileCorrupted);
+                    }
                 }
             };
             reader.onerror = (evt) => {
-                this.$message.error("Selected file is invalid or is corrupted. Unable to load the file!");
+                this.$message.error(msgFileCorrupted);
             };
         } else {
             this.$message.warning('Import operation cancelled');

@@ -8,6 +8,7 @@ import BackupImporter from '../../../layouts/DefaultLayout/BackupImporter';
 import { getJiraCloudOAuthAuthorizeUrl } from '../../../constants/oauth';
 import { getOriginFromUrl } from '../../../common/utils';
 import Dialog, { CustomDialog } from '../../../dialogs';
+import { AppVersionNo } from '../../../constants/common';
 
 const settingsIconStyles = {
     fontSize: '18px', position: 'absolute', right: '20px', top: '35px', color: '#0000ff'
@@ -21,7 +22,7 @@ class Integrate extends PureComponent {
         this.year = new Date().getFullYear();
 
         this.browser = navigator.userAgent;
-        this.state = {};
+        this.state = { version: AppVersionNo };
         this.init();
     }
 
@@ -128,6 +129,14 @@ class Integrate extends PureComponent {
         }
     };
 
+    onSettingsImport = () => {
+        if (this.props.isWebBuild) {
+            this.props.setAuthType('1');
+        } else {
+            document.location.href = '/index.html';
+        }
+    };
+
     render() {
         const { integrate, version, browser, state: { jiraUrl, isLoading } } = this;
 
@@ -138,7 +147,7 @@ class Integrate extends PureComponent {
                         <div className="col-md-6 no-padding no-margin" style={{ maxWidth: 480, minWidth: 460 }}>
                             <div className="card mx-4 no-padding no-margin">
                                 <div className="card-body p-4">
-                                    <BackupImporter>{this.setUploader}</BackupImporter>
+                                    <BackupImporter onImport={this.onSettingsImport} cleanImport={true}>{this.setUploader}</BackupImporter>
                                     <ContextMenu />
                                     <span className="fa fa-cogs pull-right pointer" style={settingsIconStyles} onClick={this.showMenu} onContextMenu={this.showMenu} />
                                     <h1>Jira Assistant</h1>
@@ -148,7 +157,7 @@ class Integrate extends PureComponent {
                                             <span className="input-group-text"><i className="fa fa-external-link" /></span>
                                         </div>
                                         <TextBox className="form-control" value={jiraUrl} onChange={(val) => this.setState({ jiraUrl: val })}
-                                            placeholder="Jira url (eg: https://jira.example.com)" />
+                                            placeholder="Jira root url (eg: https://jira.example.com)" />
                                     </div>
                                     <p className="text-muted">
                                         Login to your Jira in current tab or provide the Url of your Jira server to integrate.
@@ -160,13 +169,13 @@ class Integrate extends PureComponent {
                                 <div className="card-footer p-4">
                                     <div className="row">
                                         <div className="col-6">
-                                            <span>© {this.year} Jira Assistant</span>
+                                            <span>© 2016-{this.year} Jira Assistant</span>
                                         </div>
                                         <div className="col-6" style={{ textAlign: 'right' }}>
                                             <span>
                                                 <i className="fa fa-youtube" />
                                                 <a href="https://www.youtube.com/embed/HsWq7cT3Qq0?rel=0&autoplay=1&showinfo=0&cc_load_policy=1" target="_blank" rel="noopener noreferrer"
-                                                    title="Click to open youtube video guiding you to setup Jira Assistant"> Help setup</a>
+                                                    title="Click to open YouTube video guiding you to setup Jira Assistant"> Help setup</a>
                                             </span> |
                                             <span>
                                                 <i className="fa fa-phone margin-l-5" />

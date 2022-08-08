@@ -3,14 +3,16 @@ import React, { PureComponent } from 'react';
 import Dialog, { CustomDialog } from '../../../dialogs';
 import { BROWSER_NAME } from '../../../common/browsers';
 import { ContactUsUrl, StoreUrls, WebSiteUrl } from '../../../constants/urls';
-import './ChooseAuthType.scss';
 import { getJiraCloudOAuthAuthorizeUrl } from '../../../constants/oauth';
+import { AppVersionNo } from '../../../constants/common';
+import './ChooseAuthType.scss';
 
 class ChooseAuthType extends PureComponent {
     constructor(props) {
         super(props);
         this.storeUrl = StoreUrls[BROWSER_NAME] || WebSiteUrl;
-        this.state = {};
+        this.state = { version: AppVersionNo };
+        this.year = new Date().getFullYear();
     }
 
     getExtensionMessage() {
@@ -81,19 +83,19 @@ class ChooseAuthType extends PureComponent {
                                     <div className="auth-type disabled">
                                         <div className="auth-type-title">Use User id and Password <span className="badge badge-warning">Comming Soon</span></div>
                                         <div className="auth-type-desc">You can use your user id and password to authenticate with Jira.
-                                            On some cases this option may not work if you use single signon for logging in to Jira.</div>
+                                            On some cases this option may not work if you use single sign-on for logging in to Jira.</div>
                                     </div>
                                 </div>
                                 <div className="card-footer p-4">
                                     <div className="row">
                                         <div className="col-6">
-                                            <span>© {this.year} Jira Assistant</span>
+                                            <span>© 2016-{this.year} Jira Assistant</span>
                                         </div>
                                         <div className="col-6" style={{ textAlign: 'right' }}>
                                             <span>
                                                 <i className="fa fa-youtube" />
                                                 <a href="https://www.youtube.com/embed/HsWq7cT3Qq0?rel=0&autoplay=1&showinfo=0&cc_load_policy=1" target="_blank" rel="noopener noreferrer"
-                                                    title="Click to open youtube video guiding you to setup Jira Assistant"> Help setup</a>
+                                                    title="Click to open YouTube video guiding you to setup Jira Assistant"> Help setup</a>
                                             </span> |
                                             <span>
                                                 <i className="fa fa-phone margin-l-5" />
