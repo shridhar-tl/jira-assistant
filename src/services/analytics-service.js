@@ -6,6 +6,8 @@ export default class AnalyticsService {
     static dependencies = ["AppBrowserService"];
 
     constructor($jaBrowserExtn) {
+        this.enableLogging = true;
+        this.enableExceptionLogging = true;
         $jaBrowserExtn.getAppVersion().then((version) => {
             this.versionNumber = version || AppVersionNo;
         }, () => this.versionNumber = AppVersionNo);
