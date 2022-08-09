@@ -27,3 +27,5 @@ export function getJiraCloudOAuthAuthorizeUrl(state) {
     return prepareUrlWithQueryString(jiraCloudAuthorizeUrl, params);
 }
 // #endregion
+
+export const outlookTokenExchangeUrl = `${JAApiBasePath}/outlook/oauth/token`;

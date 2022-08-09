@@ -79,7 +79,7 @@ class SettingsService {
         const result = { ...globalSettings, ...userSettings };
 
         result.hasGoogleCredentials = !!result.dataStore;
-        result.hasOutlookCredentials = !!result.outlookStore;
+        result.hasOutlookCredentials = !!result.OLBT;
 
         return result;
     };

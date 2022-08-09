@@ -15,6 +15,7 @@ import JiraOAuthService from './jira-oauth-service';
 import JiraService from './jira-service';
 import MessageService from './message-service';
 import NotificationService from './notification-service';
+import OutlookOAuthService from './outlook-oauth-service';
 import OutlookCalendar from './outlook-service';
 import QueueService from './queue-service';
 import ReportService from './report-service';
@@ -67,6 +68,7 @@ export default function injectServices(authType) {
     injectable(JiraUpdatesService, "JiraUpdatesService", "$jupdates");
     injectable(MessageService, "MessageService", "$message");
     injectable(NotificationService, "NotificationService", "$noti");
+    injectable(OutlookOAuthService, "OutlookOAuthService", "$msoAuth");
     injectable(OutlookCalendar, "OutlookService", "$outlook");
     injectable(QueueService, "QueueService", "$q", { isSingleton: false });
     injectable(ReportService, "ReportService", "$report");

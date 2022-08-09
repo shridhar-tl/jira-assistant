@@ -18,6 +18,7 @@ import JiraService from './jira-service';
 import JiraUpdatesService from './jira-updates-service';
 import MessageService from './message-service';
 import NotificationService from './notification-service';
+import OutlookOAuthService from './outlook-oauth-service';
 import OutlookCalendar from './outlook-service';
 import QueueService from './queue-service';
 import ReportService from './report-service';
@@ -51,6 +52,7 @@ declare module 'react' {
         $jupdates: JiraUpdatesService
         $message: MessageService
         $noti: NotificationService
+        $msoAuth: OutlookOAuthService
         $outlook: OutlookCalendar
         $q: QueueService
         $report: ReportService

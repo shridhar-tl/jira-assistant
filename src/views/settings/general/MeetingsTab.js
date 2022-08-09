@@ -3,6 +3,7 @@ import TabControlBase from './TabControlBase';
 import { SelectBox, Checkbox } from '../../../controls';
 import { inject } from '../../../services';
 import { ApiUrls } from '../../../constants/api-urls';
+import Dialog from '../../../dialogs';
 
 const intervalList = [
     { value: 5, label: 'Every 5 minutes' },
@@ -50,7 +51,6 @@ class MeetingsTab extends TabControlBase {
     }
 
     intgStatusChanged = (removedIntg) => this.setState({ removedIntg });
-    outlookIntgStatusChanged = (removedOIntg) => this.setState({ removedOIntg });
 
     enableIntegration(key, val) {
         if (val) {
@@ -67,7 +67,7 @@ class MeetingsTab extends TabControlBase {
     }
 
     enableGIntegration = (val) => this.enableIntegration("googleIntegration", val);
-    enableOIntegration = (val) => this.enableIntegration("outlookIntegration", val);
+    enableOIntegration = (val) => this.saveSetting(val, "outlookIntegration");
 
     googleSignIn = () => {
         this.$calendar.authenticate(true).then((result) => {
@@ -79,12 +79,11 @@ class MeetingsTab extends TabControlBase {
     };
 
     outlookSignIn = () => {
-        this.$outlook.authenticate(true).then(async result => {
-            this.saveSetting(true, "hasOutlookCredentials",);
-            this.saveSetting(result, "outlookStore");
+        this.$outlook.authenticate(true).then(() => {
             this.$session.CurrentUser.hasOutlookCredentials = true;
             this.$analytics.trackEvent("Signedin to Outlook Calendar");
             this.$message.success("Successfully integrated with outlook account.");
+            this.setState({ settings: { ...this.state.settings, hasOutlookCredentials: true } });
         }, (err) => {
             console.log("Outlook integration failed with error: ");
             console.error(err);
@@ -103,13 +102,18 @@ class MeetingsTab extends TabControlBase {
     };
 
     removeOutlookIntegration = () => {
-        this.saveSetting(false, "hasOutlookCredentials");
-        this.props.outlookIntgStatusChanged(true); //removedIntg
-    };
-
-    undoOutlookSignout = () => {
-        this.saveSetting(true, "hasOutlookCredentials");
-        this.props.outlookIntgStatusChanged(false); //removedIntg
+        Dialog.confirmDelete(<>
+            Are you sure to remove Outlook Integration?
+            <br />
+            <br />
+            To use it again, you will have to reintegrate with MS Outlook.
+        </>,
+            "Remove Integration")
+            .then(() => {
+                this.$settings.saveGeneralSetting(this.props.userId, 'OLBT', null);
+                this.$settings.saveGeneralSetting(this.props.userId, 'OLRT', null);
+                this.saveSetting(false, "hasOutlookCredentials");
+            });
     };
 
     // ToDo: This method is not yet implemneted / called
@@ -123,21 +127,11 @@ class MeetingsTab extends TabControlBase {
             }
             delete user.dataStore;
         }
-
-        if (!settings.hasOutlookCredentials && user.outlookStore) {
-            const tokken = user.outlookStore.access_token;
-            if (tokken) {
-                this.$ajax.get(ApiUrls.outlookLogoutUrl).then(() => {
-                    console.log("Signedout from outlook");
-                });
-            }
-            delete user.outlookStore;
-        }
     }
 
     render() {
         const {
-            props: { removedIntg, removedOIntg },
+            props: { removedIntg },
             state: { settings }
         } = this;
 
@@ -149,7 +143,7 @@ class MeetingsTab extends TabControlBase {
                 </p>
                 <div className="block">
                     <div className="ui-g ui-fluid">
-                        <div><span className="badge badge-info pull-left">BETA</span><h4>Outlook Calendar</h4></div>
+                        <div><h4>Outlook Calendar</h4></div>
                         <div className="form-label ui-g-12 ui-md-3 ui-lg-3 ui-xl-2">
                             <strong>Enable Outlook calendar</strong>
                         </div>
@@ -164,18 +158,13 @@ class MeetingsTab extends TabControlBase {
                             <strong>Integration Status</strong>
                         </div>
                         <div className="ui-g-12 ui-md-9 ui-lg-9 ui-xl-10">
-                            {!settings.hasOutlookCredentials && !removedOIntg && <div className="form-group">
+                            {!settings.hasOutlookCredentials && <div className="form-group">
                                 <label className="link" onClick={this.outlookSignIn}>Click here to sign in with your microsoft account</label>
                                 <span className="help-block">You will have to sign-in to with your microsoft account to use the calendar.</span>
                             </div>}
-                            {settings.hasOutlookCredentials && !removedOIntg && <div className="form-group">
+                            {settings.hasOutlookCredentials && <div className="form-group">
                                 <label>(Already integrated with an account)</label>
-                                <label className="link" onClick={this.removeOutlookIntegration}>Remove integration</label>
-                            </div>}
-                            {removedOIntg && <div className="form-group">
-                                <label>(You will be signed out from Outlook once you save your changes)</label>
-                                <label className="link" onClick={this.undoOutlookSignout}> Undo signout</label>
-                                <span className="help-block">Note: You will have to authenticate with microsoft again to use the calendar</span>
+                                <label className="link margin-l-5" onClick={this.removeOutlookIntegration}>Remove integration</label>
                             </div>}
                         </div>
                     </div>

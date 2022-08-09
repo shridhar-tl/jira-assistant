@@ -50,7 +50,7 @@ class App extends PureComponent {
 
   getMessanger = () => <Toast ref={(el) => this.messenger = el} baseZIndex={3000} />;
 
-  async processOAuthForExtn(code) {
+  async processJiraOAuthForExtn(code) {
     registerServices('1'); // Register proxy services
     inject(this, 'JiraOAuthService', 'MessageService');
     const { success, message, userId: uid } = await this.$jAuth.integrate(code);
@@ -66,21 +66,34 @@ class App extends PureComponent {
     }
   }
 
+  async processOutlookOAuth(code, state) {
+    registerServices(state.authType); // Register services
+    inject(this, 'OutlookOAuthService', 'MessageService');
+    const token = await this.$msoAuth.getAndSaveToken(code, undefined, state.userId);
+    if (window.opener) {
+      window.opener.postMessage({ type: 'mso_auth', result: !!token }, "*");
+    }
+    window.close();
+  }
+
   async beginInit() {
     let authType;
     const { oauth, code, state } = getCurrentQueryParams();
 
-    if (oauth) {
+    if (oauth === 'jc') {
       if (state) {
         const { forWeb, authType: selAuthType } = JSON.parse(atob(state));
         if (forWeb && selAuthType) {
           authType = selAuthType;
           registerServices(authType || '1');
         } else if (!forWeb) {
-          await this.processOAuthForExtn(code);
+          await this.processJiraOAuthForExtn(code);
           return;
         }
       }
+    } else if (oauth === 'ol') {
+      await this.processOutlookOAuth(code, JSON.parse(atob(state)));
+      return;
     }
 
     authType = await this.initWeb(authType, oauth);
