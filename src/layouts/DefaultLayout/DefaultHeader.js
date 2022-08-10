@@ -20,6 +20,7 @@ import Dialog from '../../dialogs';
 import UpdatesInfo from './UpdatesInfo';
 import LaunchWeb from './LaunchWeb';
 import BackupImporter from './BackupImporter';
+import TimerControl from './header/TimerControl';
 
 const isWebBuild = process.env.REACT_APP_WEB_BUILD === 'true';
 
@@ -100,6 +101,7 @@ class DefaultHeader extends PureComponent {
           title="Would you like to contribute / compensate us for the effort we put in development of this tool? Click to know more">
           <img src="/assets/donate.png" width="145" className="Donate us" alt="Donate us" />
         </NavLink>
+        <TimerControl />
         <Nav className="ml-auto" navbar>
           <BackupImporter>
             {(importSettings) => <SwitchAccountOption instance={this.currentJiraInstance} onLogout={this.props.onLogout} onImport={importSettings} />}

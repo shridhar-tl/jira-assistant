@@ -2,8 +2,10 @@ import React from 'react';
 import { inject } from '../services/injector-service';
 import BaseControl from './BaseControl';
 import { showContextMenu } from 'jsd-report';
+import { WorklogContext } from '../common/context';
 
 class TicketDisplay extends BaseControl {
+    static contextType = WorklogContext;
     constructor(props) {
         super(props);
         inject(this, "UserUtilsService", "BookmarkService");
@@ -27,8 +29,28 @@ class TicketDisplay extends BaseControl {
         </>);
     }
 
+    startTimer = () => this.context.startTimer(this.props.value);
+
     showContext = ($event) => {
-        showContextMenu($event, this.contextMenu);
+        const menus = [...this.contextMenu];
+        try {
+            const result = this.context.getElapsedTimeInSecs();
+
+            const isCurTicket = result?.key === this.props.value;
+            const isRunning = result?.isRunning;
+            if (!isCurTicket) {
+                menus.push({ label: "Start timer", icon: "fa fa-play", command: this.startTimer });
+            } else {
+                if (isRunning) {
+                    menus.push({ label: "Pause timer", icon: "fa fa-pause", command: this.context.pauseTimer });
+                } else {
+                    menus.push({ label: "Resume timer", icon: "fa fa-play", command: this.context.resumeTimer });
+                }
+                menus.push({ label: "Stop timer", icon: "fa fa-stop", command: this.context.stopTimer });
+            }
+        } catch { /* Nothing to do as of now */ }
+
+        showContextMenu($event, menus);
     };
 
     //startProgress() { Dialog.alert("This functionality is not yet implemented!", "Unimplemented functionality!"); }

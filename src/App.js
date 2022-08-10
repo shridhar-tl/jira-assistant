@@ -1,4 +1,4 @@
-import React, { PureComponent, createContext } from 'react';
+import React, { PureComponent } from 'react';
 import { Route, Switch, withRouter } from 'react-router-dom';
 import 'moment-timezone/builds/moment-timezone-with-data.min.js';
 import registerServices, { inject } from './services';
@@ -6,6 +6,7 @@ import getLoader from './components/loader';
 import { Toast } from 'primereact/toast';
 import { getExtnLaunchUrl, validateIfWebApp } from './common/proxy';
 import { getCurrentQueryParams } from './common/utils';
+import { AppContextProvider } from './common/context';
 import 'font-awesome/css/font-awesome.min.css';
 import 'primereact/resources/themes/bootstrap4-light-purple/theme.css';
 import 'primereact/resources/primereact.min.css';
@@ -25,8 +26,6 @@ const IntegrateExtn = React.lazy(() => import('./views/pages/integrate/Integrate
 const IntegrateWeb = isWebBuild && React.lazy(() => import('./views/pages/authenticate/ChooseAuthType'));
 
 const Page401 = React.lazy(() => import('./views/pages/p401/Page401'));
-
-export const AppContext = createContext({});
 
 class App extends PureComponent {
   constructor(props) {
@@ -233,7 +232,7 @@ class App extends PureComponent {
       <>
         {this.getMessanger()}
 
-        <AppContext.Provider value={this.contextProps}>
+        <AppContextProvider value={this.contextProps}>
           <React.Suspense fallback={getLoader()}>
             <Switch>
               {isWebBuild && <Route exact path="/integrate" name="Authenticate Page" render={props => <IntegrateWeb {...props} isWebBuild={isWebBuild}
@@ -243,7 +242,7 @@ class App extends PureComponent {
               {(!isWebBuild || !!authType) && <Route key={userId} path="/:userId" name="Home" render={props => <DefaultLayout {...props} />} />}
             </Switch>
           </React.Suspense>
-        </AppContext.Provider>
+        </AppContextProvider>
       </>
     );
   }

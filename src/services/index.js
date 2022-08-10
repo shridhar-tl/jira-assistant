@@ -28,6 +28,7 @@ import UserGroupService from './usergroups-service';
 import UserUtilsService from './userutils-service';
 import UtilsService from './utils-service';
 import WorklogService from './worklog-service';
+import WorklogTimerService from './worklog-timer-service';
 import SettingsService from './settings-service';
 import StorageService from './storage-service';
 import { AjaxRequestProxyService, BrowserProxyService, StorageProxyService } from './proxy-service';
@@ -83,6 +84,7 @@ export default function injectServices(authType) {
     injectable(UserUtilsService, "UserUtilsService", "$userutils");
     injectable(UtilsService, "UtilsService", "$utils");
     injectable(WorklogService, "WorklogService", "$worklog");
+    injectable(WorklogTimerService, "WorklogTimerService", "$wltimer");
     _isReady = true;
 }
 

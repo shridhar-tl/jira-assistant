@@ -1,8 +1,8 @@
 import React, { PureComponent } from 'react';
 import { DropdownItem, DropdownMenu, DropdownToggle, Nav, UncontrolledDropdown } from 'reactstrap';
 import { inject } from '../../services';
-import { AppContext } from '../../App';
 import { getHostFromUrl } from "../../common/utils";
+import { AppContext } from '../../common/context';
 import { EventCategory } from '../../constants/settings';
 import ExportSettings from './ExportSettings';
 

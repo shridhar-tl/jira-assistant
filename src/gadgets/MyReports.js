@@ -5,7 +5,7 @@ import BaseGadget from './BaseGadget';
 import { Button, TextBox, Checkbox } from '../controls';
 import BaseDialog from "../dialogs/BaseDialog";
 import Dialog from '../dialogs';
-import { AppContext } from "../App";
+import { AppContext } from '../common/context';
 
 class MyReports extends BaseGadget {
     static contextType = AppContext;

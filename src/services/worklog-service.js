@@ -2,11 +2,13 @@ import * as moment from 'moment';
 import { ApiUrls } from '../constants/api-urls';
 import { DummyWLId } from '../constants/common';
 import { getUserName } from '../common/utils';
+import BaseService from './base-service';
 
-export default class WorklogService {
+export default class WorklogService extends BaseService {
     static dependencies = ["UserUtilsService", "JiraService", "SessionService", "StorageService", "TicketService", "AjaxService", "UtilsService", "MessageService"];
 
     constructor($userutils, $jira, $session, $storage, $ticket, $ajax, $utils) {
+        super();
         this.$userutils = $userutils;
         this.$jira = $jira;
         this.$session = $session;

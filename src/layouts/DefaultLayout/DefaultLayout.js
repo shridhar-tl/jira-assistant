@@ -4,7 +4,7 @@ import * as router from 'react-router-dom';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { Container } from 'reactstrap';
-import { CustomDialog } from "../../dialogs";
+import Dialog, { CustomDialog } from "../../dialogs";
 
 import "./DefaultLayout.scss";
 
@@ -25,13 +25,14 @@ import { ContextMenu } from 'jsd-report';
 import AsideUserInfo from './AsideUserInfo';
 import { setStartOfWeek } from '../../common/utils';
 import BuildDate from './BuildDate';
+import { WorklogContextProvider } from '../../common/context';
 
 const DefaultHeader = React.lazy(() => import('./DefaultHeader'));
 
 class DefaultLayout extends PureComponent {
   constructor() {
     super();
-    inject(this, "DashboardService", "SessionService", "SettingsService", "CacheService");
+    inject(this, "DashboardService", "SessionService", "SettingsService", "CacheService", "WorklogTimerService");
     const { userId } = this.$session;
     this.state = { menus: this.getMenus(userId), userId };
     this.initApp();
@@ -41,9 +42,13 @@ class DefaultLayout extends PureComponent {
     const { userId } = this.state;
     setStartOfWeek(this.$session.CurrentUser.startOfWeek);
 
+    this.loadTracker();
+
     this.$dashboard.onChange(() => this.setState({ menus: this.getMenus(userId) }));
     this.initBody();
   }
+
+  loadTracker = () => this.$wltimer.getCurrentTimer().then(this.setTimer);
 
   async initBody() {
     const body = document.body.classList;
@@ -85,48 +90,96 @@ class DefaultLayout extends PureComponent {
     this.props.history.push('/integrate');
   };
 
+  setTimer = (timerEntry) => {
+    this.worklogContextProps = { ...this.worklogContextProps, timerEntry };
+    this.setState({ timerEntry });
+  };
+
+  worklogContextProps = {
+    getElapsedTimeInSecs: () => {
+      const { timerEntry } = this.state;
+      if (!timerEntry) { return null; }
+      const { key, started, lapse, description } = timerEntry;
+      const curTime = new Date().getTime();
+      if (started >= curTime) {
+        throw new Error('Time mismatch: System time has changed since timer has started');
+      }
+      const totalMS = (started > 0 ? (curTime - started) : 0) + (lapse || 0);
+
+      return { key, lapse: Math.round(totalMS / 1000), description, isRunning: started > 0 };
+    },
+    setUpdates: this.setTimer,
+    startTimer: async (key, userId) => {
+      if (!userId) {
+        userId = this.$session.userId;
+      }
+
+      try {
+        let result = await this.$wltimer.startTimer(userId, key);
+        if (result?.isActive) {
+          Dialog.yesNo(<>Already timer is running for "{result?.entry?.key}".
+            <br /><br />
+            Would you like to stop it and start new timer?</>, 'Timer running').then(async () => {
+              result = await this.$wltimer.startTimer(userId, key, null, true);
+              this.setTimer(result);
+            });
+        } else {
+          this.setTimer(result);
+        }
+      }
+      catch (err) {
+        this.$message.error(err.message);
+      }
+    },
+    resumeTimer: async () => this.setTimer(await this.$wltimer.resumeTimer()),
+    pauseTimer: async () => this.setTimer(await this.$wltimer.pauseTimer()),
+    stopTimer: async () => this.setTimer(!(await this.$wltimer.stopTimer()))
+  };
+
   render() {
     const { userId, menus } = this.state;
 
     return (
-      <div className="app">
-        <AppHeader fixed>
-          <Suspense fallback={this.loading()}>
-            <DefaultHeader onLogout={this.signOut} />
-          </Suspense>
-        </AppHeader>
-        <div className="app-body">
-          <AppSidebar fixed display="lg">
-            <AsideUserInfo onLogout={this.signOut} />
-            <Suspense>
-              <AppSidebarNav navConfig={menus} {...this.props} router={router} />
+      <WorklogContextProvider value={this.worklogContextProps} >
+        <div className="app">
+          <AppHeader fixed>
+            <Suspense fallback={this.loading()}>
+              <DefaultHeader onLogout={this.signOut} />
             </Suspense>
-            <AppSidebarMinimizer><BuildDate /></AppSidebarMinimizer>
-          </AppSidebar>
-          <main className="main">
-            <DndProvider backend={HTML5Backend}>
-              <Container fluid>
-                <Suspense fallback={this.loading()}>
-                  <Switch>
-                    {routes.map((route, idx) => (route.component ? (
-                      <Route
-                        key={idx}
-                        path={`/${userId}${route.path}`}
-                        exact={route.exact}
-                        name={route.name}
-                        render={props => (
-                          <route.component {...props} />
-                        )} />
-                    ) : (null)))}
-                  </Switch>
-                </Suspense>
-              </Container>
-            </DndProvider>
-          </main>
+          </AppHeader>
+          <div className="app-body">
+            <AppSidebar fixed display="lg">
+              <AsideUserInfo onLogout={this.signOut} />
+              <Suspense>
+                <AppSidebarNav navConfig={menus} {...this.props} router={router} />
+              </Suspense>
+              <AppSidebarMinimizer><BuildDate /></AppSidebarMinimizer>
+            </AppSidebar>
+            <main className="main">
+              <DndProvider backend={HTML5Backend}>
+                <Container fluid>
+                  <Suspense fallback={this.loading()}>
+                    <Switch>
+                      {routes.map((route, idx) => (route.component ? (
+                        <Route
+                          key={idx}
+                          path={`/${userId}${route.path}`}
+                          exact={route.exact}
+                          name={route.name}
+                          render={props => (
+                            <route.component {...props} />
+                          )} />
+                      ) : (null)))}
+                    </Switch>
+                  </Suspense>
+                </Container>
+              </DndProvider>
+            </main>
+          </div>
+          <ContextMenu />
+          <CustomDialog />
         </div>
-        <ContextMenu />
-        <CustomDialog />
-      </div>
+      </WorklogContextProvider>
     );
   }
 }

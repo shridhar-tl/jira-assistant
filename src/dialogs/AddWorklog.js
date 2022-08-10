@@ -9,8 +9,9 @@ import { EventCategory } from '../constants/settings';
 
 class AddWorklog extends BaseDialog {
     constructor(props) {
-        super(props, "Add worklog", { width: '550px' });
-        inject(this, "SessionService", "SuggestionService", "WorklogService", "MessageService", "UtilsService");
+        const { editTracker } = props;
+        super(props, editTracker ? "Edit Tracker" : "Add worklog", { width: '550px' });
+        inject(this, "SessionService", "SuggestionService", "WorklogService", "WorklogTimerService", "MessageService", "UtilsService");
 
         this.displayDateFormat = "yyyy-MM-dd HH:mm";
         const { commentLength, autoUpload } = this.$session.CurrentUser;
@@ -20,15 +21,19 @@ class AddWorklog extends BaseDialog {
         this.state = this.getState(worklog);
         this.state.uploadImmediately = typeof uploadImmediately === "boolean" ? uploadImmediately : (autoUpload || false);
         this.allTicketList = [];
-        this.init();
+        this.init(editTracker);
     }
 
-    init() {
+    init(editTracker) {
         this.$suggestion.getTicketSuggestion().then(u => {
             this.allTicketList = u;
         });
 
-        this.loadWorklog(this.state.log);
+        if (editTracker) {
+            this.$wltimer.getCurrentTimer().then(entry => this.setState(this.getTrackerState(entry)));
+        } else {
+            this.loadWorklog(this.state.log);
+        }
     }
 
     loadWorklog(log) {
@@ -37,10 +42,19 @@ class AddWorklog extends BaseDialog {
         }
     }
 
+    getTrackerState(entry) {
+        const log = {
+            ticketNo: entry.key,
+            dateStarted: new Date(entry.created),
+            description: entry.description
+        };
+        return { log, vald: { ticketNo: true, dateStarted: true, description: !!log.description } };
+    }
+
     getState(obj) {
         const newState = { showDialog: true, vald: {}, ctlClass: {}, isLoading: false, log: obj };
 
-        if (!obj.id) {
+        if (obj && !obj.id) {
             newState.log = {
                 ticketNo: obj.ticketNo,
                 dateStarted: moment(obj.startTime || obj.dateStarted || new Date()).toDate(),
@@ -123,10 +137,17 @@ class AddWorklog extends BaseDialog {
 
         const ticketNo = this.getTicketNo(log);
         validation = (vald.ticketNo = !(!ticketNo || ticketNo.length < 3)) && validation;
-        validation = (vald.dateStarted = !(!log.dateStarted || log.dateStarted.length < 16)) && validation;
-        vald.overrideTimeSpent = (log.allowOverride && log.overrideTimeSpent && log.overrideTimeSpent.length >= 4);
-        vald.overrideTimeSpent = vald.overrideTimeSpent && this.$worklog.getTimeSpent(log.overrideTimeSpent) > 0;
-        validation = (vald.overrideTimeSpent = vald.overrideTimeSpent || (!log.allowOverride && log.timeSpent && log.timeSpent.length >= 4)) && validation;
+        if (this.props.editTracker) {
+            const ds = moment(log.dateStarted);
+            const startOfDay = moment().startOf('day').toDate();
+            validation = (vald.dateStarted = ds.isValid() && ds.isBetween(startOfDay, new Date())) && validation;
+        } else {
+            validation = (vald.dateStarted = !(!log.dateStarted || log.dateStarted.length < 16)) && validation;
+            vald.overrideTimeSpent = (log.allowOverride && log.overrideTimeSpent && log.overrideTimeSpent.length >= 4);
+            vald.overrideTimeSpent = vald.overrideTimeSpent && this.$worklog.getTimeSpent(log.overrideTimeSpent) > 0;
+            validation = (vald.overrideTimeSpent = vald.overrideTimeSpent || (!log.allowOverride && log.timeSpent && log.timeSpent.length >= 4)) && validation;
+        }
+
         validation = (vald.description = this.minCommentLength < 1 || !(!log.description || log.description.length < this.minCommentLength)) && validation;
         ctlClass.ticketNo = !vald.ticketNo ? 'is-invalid' : 'is-valid';
         ctlClass.dateStarted = !vald.dateStarted ? 'is-invalid' : 'is-valid';
@@ -144,28 +165,33 @@ class AddWorklog extends BaseDialog {
 
         this.setState({ isLoading: true });
 
-        this.$worklog.saveWorklog({
-            ticketNo: this.getTicketNo(worklog),
-            dateStarted: worklog.dateStarted,
-            overrideTimeSpent: worklog.overrideTimeSpent,
-            description: worklog.description,
-            worklogId: worklog.worklogId,
-            isUploaded: worklog.isUploaded,
-            timeSpent: worklog.timeSpent,
-            parentId: worklog.parentId,
-            id: worklog.id
-        }, upload).then((result) => {
-            this.props.onDone(worklog.id > 0 ? { type: GadgetActionType.WorklogModified, edited: result, previousTime: this.previousTime } : { type: GadgetActionType.WorklogModified, added: result });
-            this.onHide();
-        }, (e) => {
-            this.setState({ isLoading: false });
+        if (this.props.editTracker) {
+            const { dateStarted, description } = this.state.log;
+            this.$wltimer.editTrackerInfo(this.getTicketNo(this.state.log), dateStarted, description).then(this.props.onDone);
+        } else {
+            this.$worklog.saveWorklog({
+                ticketNo: this.getTicketNo(worklog),
+                dateStarted: worklog.dateStarted,
+                overrideTimeSpent: worklog.overrideTimeSpent,
+                description: worklog.description,
+                worklogId: worklog.worklogId,
+                isUploaded: worklog.isUploaded,
+                timeSpent: worklog.timeSpent,
+                parentId: worklog.parentId,
+                id: worklog.id
+            }, upload).then((result) => {
+                this.props.onDone(worklog.id > 0 ? { type: GadgetActionType.WorklogModified, edited: result, previousTime: this.previousTime } : { type: GadgetActionType.WorklogModified, added: result });
+                this.onHide();
+            }, (e) => {
+                this.setState({ isLoading: false });
 
-            if (typeof e === "string") {
-                this.$message.error(e);
-            } else {
-                console.error(e);
-            }
-        });
+                if (typeof e === "string") {
+                    this.$message.error(e);
+                } else {
+                    console.error(e);
+                }
+            });
+        }
     };
 
     getTicketNo(worklog) {
@@ -243,6 +269,8 @@ class AddWorklog extends BaseDialog {
             state: { log, vald }
         } = this;
 
+        if (!this.state.log) { return 'Loading...'; }
+
         return super.renderBase(<div className="pad-22" onKeyPress={this.handleKeyPress}>
             <div className="row pad-b">
                 <div className="col-sm-3">
@@ -273,7 +301,7 @@ class AddWorklog extends BaseDialog {
                 </div>
             </div>
 
-            <div className="row pad-b">
+            {!this.props.editTracker && <div className="row pad-b">
                 <div className="col-sm-3">
                     <strong>Actual time spent</strong>
                 </div>
@@ -299,7 +327,7 @@ class AddWorklog extends BaseDialog {
                     <span className={`help-block ${vald.overrideTimeSpent ? '' : 'msg-error'}`}>
                         Provide the time spent on this task (override to change existing)</span>
                 </div>
-            </div>
+            </div>}
 
             <div className="row">
                 <div className="col-sm-3">

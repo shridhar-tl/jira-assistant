@@ -33,6 +33,7 @@ import UserGroupService from './usergroups-service';
 import UserUtilsService from './userutils-service';
 import UtilsService from './utils-service';
 import WorklogService from './worklog-service';
+import WorklogTimerService from './worklog-timer-service';
 
 declare module 'react' {
     interface PureComponent<P = {}, S = {}, SS = any> extends Component<P, S, SS> {
@@ -67,5 +68,6 @@ declare module 'react' {
         $userutils: UserUtilsService
         $utils: UtilsService
         $worklog: WorklogService
+        $wltimer: WorklogTimerService
     }
 }
