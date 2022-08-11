@@ -7,7 +7,7 @@ class DefaultValuesTab extends TabControlBase {
     constructor(props) {
         super(props);
         inject(this, "JiraService");
-        this.state = { settings: props.settings };
+        this.state = {};
         this.loadData();
     }
 
@@ -43,20 +43,22 @@ class DefaultValuesTab extends TabControlBase {
 
     searchRapidView = (query) => {
         query = (query || '').toLowerCase();
-        const { rapidViews, settings } = this.state;
+        const { rapidViews } = this.state;
+        const { settings } = this.props;
         return rapidViews.filter(r => (r.name.toLowerCase().indexOf(query) >= 0 || r.id.toString().startsWith(query))
             && (!settings.rapidViews || !settings.rapidViews.some(v => v.id === r.id)));
     };
 
     searchProject = (query) => {
         query = (query || '').toLowerCase();
-        const { projects, settings } = this.state;
+        const { projects } = this.state;
+        const { settings } = this.props;
         return projects.filter(r => (r.name.toLowerCase().indexOf(query) >= 0 || r.key.toLowerCase().startsWith(query) || r.id.toString().startsWith(query))
             && (!settings.projects || !settings.projects.some(v => v.id === r.id)));
     };
 
     setDefaultValues(numericFields, stringFields) {
-        const { settings, } = this.state;
+        const { settings } = this.props;
         const { storyPointField, epicNameField } = settings;
 
         if (!storyPointField) {
@@ -92,7 +94,10 @@ class DefaultValuesTab extends TabControlBase {
     }
 
     render() {
-        const { state: { settings, numericFields, stringFields, projects, rapidViews } } = this;
+        const {
+            state: { numericFields, stringFields, projects, rapidViews },
+            props: { settings }
+        } = this;
 
         return (<>
             <div className="ui-g ui-fluid">

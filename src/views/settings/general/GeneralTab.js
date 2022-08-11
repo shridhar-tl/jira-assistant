@@ -51,8 +51,7 @@ class GeneralTab extends TabControlBase {
     render() {
         const {
             dateFormats, timeFormats,
-            props: { noDonations },
-            state: { settings },
+            props: { noDonations, settings },
         } = this;
 
         return (

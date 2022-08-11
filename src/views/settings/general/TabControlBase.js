@@ -7,18 +7,7 @@ class TabControlBase extends PureComponent {
         inject(this, "SettingsService", "SessionService");
     }
 
-    saveSetting = (value, field) => {
-        let { settings } = this.props;
-        settings = { ...settings };
-        settings[field] = value;
-
-        this.setState({ settings });
-
-        this.$settings.saveGeneralSetting(this.props.userId, field, value);
-
-        const cUser = this.$session.CurrentUser;
-        cUser[field] = value;
-    };
+    saveSetting = (value, field) => this.props.onSave(value, field);
 
     saveIntSetting = (value, field) => {
         value = parseInt(value);
@@ -27,19 +16,6 @@ class TabControlBase extends PureComponent {
             return;
         }
         this.saveSetting(value, field);
-    };
-
-    setValue = (field, value) => {
-        let { settings } = this.props;
-        if (value) {
-            settings[field] = value;
-        }
-        else {
-            delete settings[field];
-        }
-
-        settings = { ...settings };
-        this.setState({ settings });
     };
 }
 

@@ -39,14 +39,7 @@ const launchList = [
 class MeetingsTab extends TabControlBase {
     constructor(props) {
         super(props);
-        this.state = {
-            settings: {
-                autoLaunch: 0,
-                notifyBefore: 0,
-                checkUpdates: 15,
-                ...props.settings
-            }
-        };
+        this.state = {};
         inject(this, "CalendarService", "AnalyticsService", "MessageService", "SessionService", "OutlookService", "AppBrowserService");
     }
 
@@ -83,7 +76,7 @@ class MeetingsTab extends TabControlBase {
             this.$session.CurrentUser.hasOutlookCredentials = true;
             this.$analytics.trackEvent("Signedin to Outlook Calendar");
             this.$message.success("Successfully integrated with outlook account.");
-            this.setState({ settings: { ...this.state.settings, hasOutlookCredentials: true } });
+            this.props.onChange('hasOutlookCredentials', true); // No need to save this setting. So just update state
         }, (err) => {
             console.log("Outlook integration failed with error: ");
             console.error(err);
@@ -130,10 +123,7 @@ class MeetingsTab extends TabControlBase {
     }
 
     render() {
-        const {
-            props: { removedIntg },
-            state: { settings }
-        } = this;
+        const { removedIntg, settings } = this.props;
 
         return (
             <div>

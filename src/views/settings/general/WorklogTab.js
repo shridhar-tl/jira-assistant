@@ -5,13 +5,8 @@ import TimePicker from '../../../controls/TimePicker';
 import { inject } from '../../../services';
 
 class WorklogTab extends TabControlBase {
-    constructor(props) {
-        super(props);
-        this.state = { settings: props.settings };
-    }
-
     render() {
-        const { state: { settings } } = this;
+        const { settings } = this.props;
 
         return (
             <div className="ui-g ui-fluid">
