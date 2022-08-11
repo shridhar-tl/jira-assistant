@@ -86,7 +86,7 @@ export default class WorklogTimerService extends BaseService {
         return timer;
     }
 
-    async pauseTimer() {
+    async pauseTimer(auto) {
         const timer = await this.getCurrentTimer();
         if (!timer?.started) { return false; }
         const { started } = timer;
@@ -97,16 +97,18 @@ export default class WorklogTimerService extends BaseService {
         const lapse = curTime - started;
         timer.lapse += lapse;
         delete timer.started;
-
+        if (auto) {
+            timer.autoPaused = true;
+        }
         await this.$settings.set('WLTimer', timer);
         return timer;
     }
 
-    async resumeTimer() {
+    async resumeTimer(auto) {
         const timer = await this.getCurrentTimer();
-        if (!timer || timer.started) { return false; }
+        if (!timer || timer.started || (auto && !timer.autoPaused)) { return false; }
         timer.started = new Date().getTime();
-
+        delete timer.autoPaused;
         await this.$settings.set('WLTimer', timer);
         return timer;
     }

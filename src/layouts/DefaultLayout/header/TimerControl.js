@@ -61,8 +61,16 @@ class Lapse extends PureComponent {
         const hours = Math.floor(lapse / 3600);
         const mins = Math.floor((lapse % 3600) / 60);
         const secs = Math.floor(lapse % 60);
+        let display;
+        if (hours) {
+            display = `${hours.pad(2)}:${mins.pad(2)}:${secs.pad(2)}`;
+        } else if (mins) {
+            display = `${mins.pad(2)}:${secs.pad(2)}`;
+        } else {
+            display = `${secs.pad(2)}s`;
+        }
 
-        return { lapse, display: `${hours.pad(2)}:${mins.pad(2)}:${secs.pad(2)}` };
+        return { lapse, display };
     }
 
     componentWillUnmount() {

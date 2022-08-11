@@ -6,7 +6,7 @@ import { convertToStorableValue, convertToUsableValue } from "./storage-helpers"
 
 injectServices();
 const services = {};
-inject(services, 'AjaxRequestService', 'AppBrowserService', 'StorageService', 'MessageService');
+inject(services, 'AjaxRequestService', 'AppBrowserService', 'StorageService', 'SettingsService', 'MessageService');
 startListening();
 
 function startListening() {
@@ -14,6 +14,7 @@ function startListening() {
     if (typeof browser !== 'undefined' && browser.runtime) {
         browser.runtime.onMessage.addListener(onRequestReceived);
     }
+    loadSettings();
     console.log("Started listening for incomming requests");
 }
 
@@ -42,15 +43,24 @@ async function executeCommand(message, sendResponse, logDetails) {
         const { svcName, action, args } = message;
 
         if (svcName === 'SELF') {
-            if (action === 'VERSION') {
-                response.success = await Promise.resolve(convertToStorableValue(AppVersionNo));
-            } else if (action === 'IS_INTEGRATED') {
-                const { $storage } = services;
-                const { value: userId } = await $storage.getSetting(SystemUserId, SettingsCategory.System, 'CurrentUserId') || {};
-                const { value: jiraUrl } = await $storage.getSetting(SystemUserId, SettingsCategory.System, 'CurrentJiraUrl') || {};
-                response.success = convertToStorableValue(userId > 0 && !!jiraUrl);
-            } else {
-                throw new Error(`Unsupported command: ${action}`);
+            switch (action) {
+                case 'VERSION':
+                    response.success = await Promise.resolve(convertToStorableValue(AppVersionNo));
+                    break;
+
+                case 'IS_INTEGRATED':
+                    const { $storage } = services;
+                    const { value: userId } = await $storage.getSetting(SystemUserId, SettingsCategory.System, 'CurrentUserId') || {};
+                    const { value: jiraUrl } = await $storage.getSetting(SystemUserId, SettingsCategory.System, 'CurrentJiraUrl') || {};
+                    response.success = convertToStorableValue(userId > 0 && !!jiraUrl);
+                    break;
+
+                case 'RELOAD':
+                    loadSettings();
+                    break;
+
+                default:
+                    throw new Error(`Unsupported command: ${action}`);
             }
         } else {
             const { $message, [serviceObjectMap[svcName]]: $service } = services;
@@ -60,7 +70,7 @@ async function executeCommand(message, sendResponse, logDetails) {
             response.success = convertToStorableValue(await $service[action].apply($service, convertToUsableValue(args)));
         }
     } catch (ex) {
-        response.error = ex;
+        response.error = convertToStorableValue(ex);
         error(ex);
     }
 
@@ -70,3 +80,49 @@ async function executeCommand(message, sendResponse, logDetails) {
 
 function log() { console.log(arguments); }
 function error() { console.error(arguments); }
+
+let stateChangeAttached = false;
+const settings = {};
+async function loadSettings() {
+    if (chrome.idle) {
+        const TR_PauseOnLock = await services.$settings.get('TR_PauseOnLock');
+        const TR_PauseOnIdle = await services.$settings.get('TR_PauseOnIdle');
+
+        settings.TR_PauseOnLock = TR_PauseOnLock;
+        settings.TR_PauseOnIdle = TR_PauseOnIdle;
+
+        if (TR_PauseOnLock || TR_PauseOnIdle) {
+            if (!services.$wltimer) {
+                inject(services, 'WorklogTimerService');
+            }
+            if (!stateChangeAttached) {
+                chrome.idle.onStateChanged.addListener(systemStateChanged);
+                stateChangeAttached = true;
+            }
+        } else {
+            chrome.idle.onStateChanged.removeListener(systemStateChanged);
+            stateChangeAttached = false;
+        }
+    }
+}
+
+async function systemStateChanged(state) {
+    switch (state?.toLowerCase()) {
+        case 'idle':
+            if (settings.TR_PauseOnIdle) {
+                await services.$wltimer.pauseTimer(true);
+            }
+            break;
+        case 'locked':
+            if (settings.TR_PauseOnLock) {
+                await services.$wltimer.pauseTimer(true);
+            }
+            break;
+        case 'active':
+            await services.$wltimer.resumeTimer(true);
+            break;
+        default:
+            console.warning('Unknown system state received:-', state);
+            break;
+    }
+}

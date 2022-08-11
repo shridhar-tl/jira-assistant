@@ -67,7 +67,8 @@
   ],
   "optional_permissions": [
     "activeTab",
-    "unlimitedStorage"
+    "unlimitedStorage",
+    "idle"
   ],
   "host_permissions": [
     "http://*/",

@@ -37,7 +37,8 @@
   "offline_enabled": true,
   "permissions": [
     "activeTab",
-    "storage"
+    "storage",
+    "idle"
   ],
   "optional_permissions": [
     "tabs",

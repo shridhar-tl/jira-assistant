@@ -44,7 +44,7 @@ export function convertToUsableValue(data, raw) {
     if (raw) {
         return data;
     }
-    if (data) {
+    if (typeof data === 'string') {
         data = parseCustomJSON(data);
         if (data.expires) {
             const exp = moment(data.expires);

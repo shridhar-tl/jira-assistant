@@ -7,6 +7,7 @@ import DefaultValuesTab from './DefaultValuesTab';
 import MeetingsTab from './MeetingsTab';
 import MenuOptionsTab from './MenuOptionsTab';
 import './Common.scss';
+import GlobalTab from './GlobalTab';
 
 const isWebBuild = process.env.REACT_APP_WEB_BUILD === 'true';
 
@@ -41,19 +42,22 @@ class GeneralSettings extends PureComponent {
 
         return (<>
             <TabView styleclass="query-tab" activeindex={currentTabIndex} onChange={this.tabChanged}>
-                <TabPanel header="General" lefticon="fa-filter" selected="true">
+                <TabPanel header="Global" leftIcon="fa fa-globe" selected="true">
+                    <GlobalTab />
+                </TabPanel>
+                <TabPanel header="General" leftIcon="fa fa-cogs" selected="true">
                     <GeneralTab settings={settings} userId={this.userId} noDonations={noDonations} />
                 </TabPanel>
-                <TabPanel header="Worklog" lefticon="fa-clock-o">
+                <TabPanel header="Worklog" leftIcon="fa fa-clock-o">
                     <WorklogTab settings={settings} userId={this.userId} />
                 </TabPanel>
-                <TabPanel header="Default values" lefticon="fa-clock-o">
+                <TabPanel header="Default values" leftIcon="fa fa-list">
                     <DefaultValuesTab settings={settings} userId={this.userId} />
                 </TabPanel >
-                <TabPanel header="Meetings" lefticon="fa-calendar">
+                <TabPanel header="Meetings" leftIcon="fa fa-calendar">
                     <MeetingsTab settings={settings} userId={this.userId} />
                 </TabPanel >
-                {(!isWebBuild || this.isExtnConnected) && <TabPanel header="Menu options" lefticon="fa-calendar">
+                {(!isWebBuild || this.isExtnConnected) && <TabPanel header="Menu options" leftIcon="fa fa-bars">
                     <MenuOptionsTab settings={settings} userId={this.userId} />
                 </TabPanel>}
             </TabView>

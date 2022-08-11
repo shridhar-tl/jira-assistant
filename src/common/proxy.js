@@ -52,7 +52,7 @@ function processResponse(response, $message, resolve, reject) {
         if (success || !error) {
             resolve(convertToUsableValue(success));
         } else {
-            reject(error);
+            reject(convertToUsableValue(error));
         }
     } catch (err) {
         console.error("Extension response error:", err);

@@ -64,7 +64,8 @@
   "optional_permissions": [
     "unlimitedStorage",
     "identity",
-    "tabs"
+    "tabs",
+    "idle"
   ],
   "optional_host_permissions": [
     "http://*/",

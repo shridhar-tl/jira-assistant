@@ -61,7 +61,8 @@
     "https://graph.microsoft.com/v1.0/me/*"
   ],
   "optional_permissions": [
-    "tabs"
+    "tabs",
+    "idle"
   ],
   "developer": {
     "name": "Shridhar",

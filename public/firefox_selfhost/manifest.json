@@ -70,7 +70,8 @@
     "https://graph.microsoft.com/v1.0/me/*"
   ],
   "optional_permissions": [
-    "activeTab"
+    "activeTab",
+    "idle"
   ],
   "developer": {
     "name": "Shridhar",
