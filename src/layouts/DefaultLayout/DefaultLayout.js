@@ -32,7 +32,7 @@ const DefaultHeader = React.lazy(() => import('./DefaultHeader'));
 class DefaultLayout extends PureComponent {
   constructor() {
     super();
-    inject(this, "DashboardService", "SessionService", "SettingsService", "CacheService", "WorklogTimerService");
+    inject(this, "DashboardService", "SessionService", "SettingsService", "CacheService", "WorklogTimerService", "MessageService");
     const { userId } = this.$session;
     this.state = { menus: this.getMenus(userId), userId };
     this.initApp();
@@ -102,7 +102,8 @@ class DefaultLayout extends PureComponent {
       const { key, started, lapse, description } = timerEntry;
       const curTime = new Date().getTime();
       if (started >= curTime) {
-        throw new Error('Time mismatch: System time has changed since timer has started');
+        this.$message.error('System time has changed since timer has started. Please stop and restart the timer.', 'Time mismatch');
+        return { key, lapse: 0, description, isRunning: false, hasError: true };
       }
       const totalMS = (started > 0 ? (curTime - started) : 0) + (lapse || 0);
 

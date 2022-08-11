@@ -10,9 +10,41 @@ export default class WorklogTimerService extends BaseService {
         this.$settings = $settings;
     }
 
-    getCurrentTimer() { return this.$settings.get('WLTimer'); }
+    async getCurrentTimer() {
+        const entry = await this.$settings.get('WLTimer');
+        return this.validateIFDayPast(entry);
+    }
 
-    async startTimer(userId, jiraIssue, description, forceStop) {
+    async validateIFDayPast(entry) {
+        if (!entry) { return; }
+        const today = moment().startOf('day');
+        const { created } = entry;
+        const $created = moment(created);
+        const isDayPast = $created.isBefore(today);
+        if (!isDayPast) { return entry; }
+
+        const { userId, key, description, started } = entry;
+        //const maxHours = await this.$settings.getGeneralSetting(userId, 'maxHours');
+        const endOfDay = parseTime(await this.$settings.getGeneralSetting(userId, 'endOfDay'));
+
+        const logEnd = moment($created).set(endOfDay);
+
+        await this.stopTimerAndCreateWorklog(entry, logEnd.toDate().getTime());
+
+        // If last day's timer is not running, then do not start new timer
+        if (!started) { return; }
+
+        const startOfDay = parseTime(await this.$settings.getGeneralSetting(userId, 'startOfDay'));
+        let startTime = moment().set(startOfDay).toDate().getTime();
+        const now = new Date().getTime();
+        startTime = (startTime > now) ? now : startTime;
+        const newEntry = { userId, key, description, lapse: 0, started: startTime, created: startTime };
+        await this.$settings.set('WLTimer', newEntry);
+
+        return newEntry;
+    }
+
+    async startTimer(userId, key, description, forceStop) {
         /* Ticket validation not really required
         const ticket = this.$ticket.getTicketDetails(jiraIssue);
         if (!ticket) {
@@ -26,9 +58,8 @@ export default class WorklogTimerService extends BaseService {
             return { isActive: true, entry: timer };
         }
 
-        // Check for existing timer
-        const curTime = new Date().getTime();
-        timer = { userId, key: jiraIssue, created: curTime, started: curTime, lapse: 0, description };
+        const created = new Date().getTime();
+        timer = { userId, key, created, started: created, lapse: 0, description };
 
         await this.$settings.set('WLTimer', timer);
 
@@ -87,15 +118,20 @@ export default class WorklogTimerService extends BaseService {
         if (userId && jiraIssue && (timer.userId !== userId || timer.key !== jiraIssue)) {
             return { invalidEntry: true, entry: timer };
         }
+        return this.stopTimerAndCreateWorklog(timer, new Date().getTime());
+    }
 
+    async stopTimerAndCreateWorklog(timer, endTime) {
         const { started } = timer;
         if (started > 0) {
-            const curTime = new Date().getTime();
-            if (started >= curTime) {
-                await this.$settings.set('WLTimer', null);
-                throw new Error('Time mismatch: System time has changed since timer has started');
+            if (started >= endTime) {
+                if (started >= new Date().getTime()) {
+                    await this.$settings.set('WLTimer', null);
+                    throw new Error('Time mismatch: System time has changed since timer has started');
+                }
+                endTime = moment(started).endOf('day').toDate().getTime();
             }
-            const lapse = curTime - started;
+            const lapse = endTime - started;
             timer.lapse += lapse;
             delete timer.started;
         }
@@ -118,4 +154,10 @@ export default class WorklogTimerService extends BaseService {
 
         return true;
     }
+}
+
+function parseTime(value) {
+    if (!value) { return; }
+    const arr = value.split(':');
+    return { hour: parseInt(arr[0]), minute: parseInt(arr[1]), second: 0, millisecond: 0 };
 }
