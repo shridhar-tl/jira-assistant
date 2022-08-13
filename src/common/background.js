@@ -59,6 +59,10 @@ async function executeCommand(message, sendResponse, logDetails) {
                     loadSettings();
                     break;
 
+                case 'GET_CS_SETTINGS':
+                    response.success = await getContentSettings(args, logDetails.sender);
+                    break;
+
                 default:
                     throw new Error(`Unsupported command: ${action}`);
             }
@@ -125,4 +129,24 @@ async function systemStateChanged(state) {
             console.warning('Unknown system state received:-', state);
             break;
     }
+}
+
+async function getContentSettings(basepath) {
+    if (!services.$wltimer) {
+        inject(services, 'WorklogTimerService');
+    }
+    const result = {};
+    const users = await services.$storage.filterUsers({ jiraUrl: basepath });
+    if (users.length === 1) {
+        result.userId = users[0].id;
+    }
+
+    const timer = await services.$wltimer.getCurrentTimer();
+    if (timer?.userId === result.userId) {
+        result.timerKey = timer.key;
+        result.timerStarted = timer.started;
+        result.timerLapse = timer.lapse;
+    }
+
+    return result;
 }
