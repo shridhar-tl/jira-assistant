@@ -90,8 +90,8 @@ class DefaultLayout extends PureComponent {
     this.props.history.push('/integrate');
   };
 
-  setTimer = (timerEntry) => {
-    this.worklogContextProps = { ...this.worklogContextProps, timerEntry };
+  setTimer = (timerEntry, needReload = false) => {
+    this.worklogContextProps = { ...this.worklogContextProps, needReload, timerEntry };
     this.setState({ timerEntry });
   };
 
@@ -122,7 +122,7 @@ class DefaultLayout extends PureComponent {
             <br /><br />
             Would you like to stop it and start new timer?</>, 'Timer running').then(async () => {
               result = await this.$wltimer.startTimer(userId, key, null, true);
-              this.setTimer(result);
+              this.setTimer(result, true);
             });
         } else {
           this.setTimer(result);
@@ -134,7 +134,7 @@ class DefaultLayout extends PureComponent {
     },
     resumeTimer: async () => this.setTimer(await this.$wltimer.resumeTimer()),
     pauseTimer: async () => this.setTimer(await this.$wltimer.pauseTimer()),
-    stopTimer: async () => this.setTimer(!(await this.$wltimer.stopTimer()))
+    stopTimer: async () => this.setTimer(!(await this.$wltimer.stopTimer()), true)
   };
 
   render() {

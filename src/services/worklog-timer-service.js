@@ -138,20 +138,34 @@ export default class WorklogTimerService extends BaseService {
             delete timer.started;
         }
 
-        const timeInMins = parseInt(Math.round(timer.lapse / 60000));
+        let timeInMins = parseInt(Math.round(timer.lapse / 60000));
 
-        const hour = Math.floor(timeInMins / 60);
-        const mins = Math.floor(timeInMins % 60);
-        const timeSpent = `${hour.pad(2)}:${mins.pad(2)}`;
 
-        await this.$storage.addWorklog({
-            timeSpent,
-            ticketNo: timer.key,
-            isUploaded: false,
-            createdBy: timer.userId,
-            dateStarted: new Date(timer.created),
-            description: timer.description
-        });
+        const minTime = parseTimeInMins(await this.$settings.get('TR_MinTime'));
+        if (timeInMins >= minTime) {
+
+            const TR_RoundTime = await this.$settings.get('TR_RoundTime');
+            const TR_RoundOpr = (await this.$settings.get('TR_RoundOpr')) || 5;
+
+            if (TR_RoundOpr && Math[TR_RoundOpr]) {
+                timeInMins = parseInt(Math[TR_RoundOpr](timeInMins / TR_RoundTime) * TR_RoundTime);
+            }
+
+            if (timeInMins >= 1) {
+                const hour = Math.floor(timeInMins / 60);
+                const mins = Math.floor(timeInMins % 60);
+                const timeSpent = `${hour.pad(2)}:${mins.pad(2)}`;
+
+                await this.$storage.addWorklog({
+                    timeSpent,
+                    ticketNo: timer.key,
+                    isUploaded: false,
+                    createdBy: timer.userId,
+                    dateStarted: new Date(timer.created),
+                    description: timer.description
+                });
+            }
+        }
         await this.$settings.set('WLTimer', null);
 
         return true;
@@ -162,4 +176,10 @@ function parseTime(value) {
     if (!value) { return; }
     const arr = value.split(':');
     return { hour: parseInt(arr[0]), minute: parseInt(arr[1]), second: 0, millisecond: 0 };
+}
+
+function parseTimeInMins(value) {
+    const obj = parseTime(value);
+    if (!obj) { return 0; }
+    return (obj.hour * 60) + obj.minute;
 }

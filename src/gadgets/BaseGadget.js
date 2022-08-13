@@ -69,6 +69,7 @@ export class BaseGadget extends PureComponent {
             onDashboardEvent.on("change", this.eventReceived);
             this.$analytics.trackEvent("Gadget loaded", EventCategory.GadgetActions, this.title);
         }
+        this._isMounted = true;
         //this.widgetCtl = $(this.el).closest('.widget-cntr');
         //this.widgetHdrCtl = this.widgetCtl.find('div.ui-panel-titlebar.ui-widget-header');
     }

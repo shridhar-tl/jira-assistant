@@ -6,8 +6,11 @@ import { DatePicker } from '../controls';
 import { ScrollableTable, THead, Column, TBody, NoDataRow } from '../components/ScrollableTable';
 import { showContextMenu } from 'jsd-report';
 import { getQuickDateValue } from '../controls/DatePicker';
+import ChangeTracker from '../components/ChangeTracker';
+import { WorklogContext } from '../common/context';
 
 class DateWiseWorklog extends BaseGadget {
+    static contextType = WorklogContext;
     constructor(props) {
         super(props, 'Daywise worklog', 'fa-list-alt');
         inject(this, "WorklogService", "UtilsService", "UserUtilsService");
@@ -15,9 +18,7 @@ class DateWiseWorklog extends BaseGadget {
             { label: "Upload worklog", icon: "fa fa-clock-o", command: () => this.uploadWorklog() },
             { label: "Add worklog", icon: "fa fa-bookmark", command: () => this.addWorklog() } //ToDo: Add option for move to progress, show in tree view
         ];
-    }
 
-    UNSAFE_componentWillMount() {
         this.refreshData();
     }
 
@@ -37,7 +38,11 @@ class DateWiseWorklog extends BaseGadget {
             return;
         }
 
-        this.setState({ isLoading: true });
+        if (this._isMounted) {
+            this.setState({ isLoading: true });
+        } else {
+            this.state.isLoading = true;
+        }
 
         selDate.dateWise = true;
         this.$worklog.getWorklogs(selDate).then((result) => {
@@ -101,10 +106,10 @@ class DateWiseWorklog extends BaseGadget {
     render() {
         const {
             //settings, removeGadget, isFullScreen, tbl,
-            state: { worklogs }
+            state: { worklogs, isLoading }
         } = this;
 
-        return super.renderBase(
+        return super.renderBase(<>
             <ScrollableTable dataset={worklogs} exportSheetName="Datewise worklog">
                 <THead>
                     <tr>
@@ -117,28 +122,29 @@ class DateWiseWorklog extends BaseGadget {
                 </THead>
                 <TBody>
                     {(b) => <tr key={b.dateLogged} onContextMenu={(e) => this.showContext(e, b)} className={b.rowClass}>
-                            <td>{this.$userutils.formatDate(b.dateLogged)}</td>
-                            <td>{this.$utils.formatTs(b.totalHours)}</td>
-                            <td>{this.$utils.formatTs(b.uploaded)}</td>
-                            <td>{this.$utils.formatTs(b.pendingUpload)}</td>
-                            <td>
-                                <ul className="tags">
-                                    {b.ticketList.map((ld, x) => <li key={x}>
-                                        {ld.worklogId && <a className="link badge badge-pill skin-bg-font" href={this.getWorklogUrl(ld.ticketNo, ld.worklogId)}
-                                            target="_blank" rel="noopener noreferrer" title={ld.comment}>
-                                            <span className="fa fa-clock-o" /> {ld.ticketNo}: {ld.uploaded}
-                                        </a>}
-                                        {!ld.worklogId && <span className="link badge badge-pill skin-bg-font" onClick={() => this.editWorklog(ld.id)} title={ld.comment}>
-                                            <span className="fa fa-clock-o" /> {ld.ticketNo}: {ld.uploaded}
-                                        </span>}
-                                    </li>)}
-                                </ul>
-                            </td>
-                        </tr>}
+                        <td>{this.$userutils.formatDate(b.dateLogged)}</td>
+                        <td>{this.$utils.formatTs(b.totalHours)}</td>
+                        <td>{this.$utils.formatTs(b.uploaded)}</td>
+                        <td>{this.$utils.formatTs(b.pendingUpload)}</td>
+                        <td>
+                            <ul className="tags">
+                                {b.ticketList.map((ld, x) => <li key={x}>
+                                    {ld.worklogId && <a className="link badge badge-pill skin-bg-font" href={this.getWorklogUrl(ld.ticketNo, ld.worklogId)}
+                                        target="_blank" rel="noopener noreferrer" title={ld.comment}>
+                                        <span className="fa fa-clock-o" /> {ld.ticketNo}: {ld.uploaded}
+                                    </a>}
+                                    {!ld.worklogId && <span className="link badge badge-pill skin-bg-font" onClick={() => this.editWorklog(ld.id)} title={ld.comment}>
+                                        <span className="fa fa-clock-o" /> {ld.ticketNo}: {ld.uploaded}
+                                    </span>}
+                                </li>)}
+                            </ul>
+                        </td>
+                    </tr>}
                 </TBody>
                 <NoDataRow span={5}>No worklog exists for selected date range!</NoDataRow>
             </ScrollableTable>
-        );
+            <ChangeTracker key={this.context.timerEntry?.key} enabled={!isLoading && this.context.needReload} onChange={this.refreshData} />
+        </>);
     }
 }
 

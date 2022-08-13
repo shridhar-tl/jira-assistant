@@ -17,6 +17,8 @@ import MeetingDetails from './MeetingDetails';
 import CalendarSettings from './Settings';
 import { DefaultEndOfDay, DefaultStartOfDay, DefaultWorkingDays, EventCategory } from '../../constants/settings';
 import './Calendar.scss';
+import { WorklogContext } from '../../common/context';
+import ChangeTracker from '../../components/ChangeTracker';
 
 //var moment;
 const viewModes = [
@@ -28,6 +30,7 @@ const viewModes = [
 const availablePlugins = [dayGridPlugin, timeGridPlugin, interactionPlugin, listWeekPlugin];
 
 class Calendar extends BaseGadget {
+    static contextType = WorklogContext;
     constructor(props) {
         super(props, "Calendar", "fa-calendar");
         inject(this, "SessionService", "WorklogService", "MessageService", "AnalyticsService", "OutlookService", "CalendarService", "UtilsService", "UserUtilsService", "ConfigService", "TicketService");
@@ -901,7 +904,7 @@ class Calendar extends BaseGadget {
     render() {
         const {
             hideWorklogDialog, addEvent,
-            state: { showAddWorklogPopup, showSettingsPopup, worklogItem, events, showOpEvent }
+            state: { showAddWorklogPopup, showSettingsPopup, worklogItem, events, showOpEvent, isLoading }
         } = this;
 
         return super.renderBase(<>
@@ -914,6 +917,7 @@ class Calendar extends BaseGadget {
             <OverlayPanel className="op-event-details" ref={(el) => { this.opEvent = el; }} showCloseIcon={true} dismissable={true} appendTo={document.body} onHide={this.hideOPEvent}>
                 {showOpEvent && this.currentMeetingItem && <MeetingDetails eventDetails={this.currentMeetingItem} cut={this.$utils.cut} />}
             </OverlayPanel>
+            <ChangeTracker key={this.context.timerEntry?.key} enabled={!isLoading && this.context.needReload} onChange={this.refreshData} />
         </>
         );
     }

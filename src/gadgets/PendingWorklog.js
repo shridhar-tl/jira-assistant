@@ -5,9 +5,11 @@ import { inject } from '../services/injector-service';
 import { showContextMenu } from 'jsd-report';
 import { Button, Checkbox } from '../controls';
 import Dialog from '../dialogs';
+import ChangeTracker from '../components/ChangeTracker';
+import { WorklogContext } from '../common/context';
 
 class PendingWorklog extends BaseGadget {
-    //dateStarted
+    static contextType = WorklogContext;
     constructor(props) {
         super(props, 'Worklog - [Pending upload]', 'fa-clock-o');
         inject(this, "WorklogService", "UtilsService", "UserUtilsService", "MessageService");
@@ -22,15 +24,13 @@ class PendingWorklog extends BaseGadget {
 
         this.state.selAllChk = true;
         this.state.isLoading = true;
-    }
-
-    UNSAFE_componentWillMount() {
         this.refreshData();
     }
 
     refreshData = () => {
-        this.setState({ isLoading: true });
-
+        if (!this.state.isLoading) {
+            this.setState({ isLoading: true });
+        }
         return this.$worklog.getPendingWorklogs()
             .then((worklogs) => {
                 const { selAllChk } = this.state;
@@ -129,9 +129,9 @@ class PendingWorklog extends BaseGadget {
     }
 
     render() {
-        const { worklogs, selAllChk } = this.state;
+        const { worklogs, selAllChk, isLoading } = this.state;
 
-        return super.renderBase(
+        return super.renderBase(<>
             <ScrollableTable dataset={worklogs} exportSheetName="Pending worklogs">
                 <THead>
                     <tr>
@@ -146,22 +146,25 @@ class PendingWorklog extends BaseGadget {
                 </THead>
                 <TBody>
                     {b => <tr key={b.id} onContextMenu={(e) => this.showContext(e, b)} className={b.rowClass}>
-                            <td className="text-center">
-                                {b.selected && <Checkbox checked={true} onChange={() => this.selectRowItem(b)} />}
-                                {!b.selected && <i className="fa fa-ellipsis-v" onClick={(e) => this.showContext(e, b)}></i>}
-                            </td>
-                            <td><a href={b.ticketUrl} rel="noopener noreferrer" className="link strike" target="_blank">{b.ticketNo}</a></td>
-                            <td>{b.summary}</td>
-                            <td>{b.displayDate}</td>
-                            <td>{b.timeSpent}</td>
-                            <td>{b.overrideTimeSpent}</td>
-                            <td>{b.description}</td>
-                        </tr>}
+                        <td className="text-center">
+                            {b.selected && <Checkbox checked={true} onChange={() => this.selectRowItem(b)} />}
+                            {!b.selected && <i className="fa fa-ellipsis-v" onClick={(e) => this.showContext(e, b)}></i>}
+                        </td>
+                        <td><a href={b.ticketUrl} rel="noopener noreferrer" className="link strike" target="_blank">{b.ticketNo}</a></td>
+                        <td>{b.summary}</td>
+                        <td>{b.displayDate}</td>
+                        <td>{b.timeSpent}</td>
+                        <td>{b.overrideTimeSpent}</td>
+                        <td>{b.description}</td>
+                    </tr>}
                 </TBody>
                 <NoDataRow span={7}>No worklog pending to be uploaded!</NoDataRow>
             </ScrollableTable>
+            <ChangeTracker key={this.context.timerEntry?.key} enabled={!isLoading && this.context.needReload} onChange={this.refreshData} />
+        </>
         );
     }
 }
 
 export default PendingWorklog;
+
