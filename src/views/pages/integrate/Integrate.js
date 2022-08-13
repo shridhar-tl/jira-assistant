@@ -33,8 +33,6 @@ class Integrate extends PureComponent {
             { label: "Use Jira OAuth", icon: 'fa fa-external-link fs-16 margin-r-5', command: this.useOAuth.bind(this) },
         ];
 
-        this.$jaBrowserExtn.getAppVersion().then(v => this.setState({ version: v }));
-
         this.$jaBrowserExtn.getCurrentUrl().then((url) => {
             const root = this.getJiraRootUrl(url);
             if (root && root.length > 20 && root.startsWith('http')) {

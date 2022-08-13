@@ -1,8 +1,7 @@
 /* global chrome browser */
 import { FF_STORE_URL } from '../constants/urls';
-import { AppVersionNo } from '../constants/common';
 import BrowserBase from '../common/BrowserBase';
-// ToDo: need to pull url
+
 export default class FirefoxBrowserService extends BrowserBase {
     constructor() {
         super();
@@ -109,21 +108,6 @@ export default class FirefoxBrowserService extends BrowserBase {
 
     openTab(url) {
         this.browser.tabs.create({ url: url });
-    }
-
-    getAppInfo() {
-        const browser = this.browser;
-        if (!browser) {
-            return Promise.reject(null);
-        }
-        return browser.management.getSelf().then((info) => {
-            info.isDevelopment = info.installType === this.browser.management.ExtensionInstallType.DEVELOPMENT;
-            return info;
-        });
-    }
-
-    getAppVersion() {
-        return this.getAppInfo().then(info => info.version, () => AppVersionNo.toString());
     }
 
     getAuthToken(options) {

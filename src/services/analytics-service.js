@@ -3,14 +3,9 @@ import { AnalyticsUrl } from "../constants/urls";
 import { AppVersionNo, AnalyticsTrackingId } from "../constants/common";
 
 export default class AnalyticsService {
-    static dependencies = ["AppBrowserService"];
-
-    constructor($jaBrowserExtn) {
+    constructor() {
         this.enableLogging = true;
         this.enableExceptionLogging = true;
-        $jaBrowserExtn.getAppVersion().then((version) => {
-            this.versionNumber = version || AppVersionNo;
-        }, () => this.versionNumber = AppVersionNo);
         //this.gtag = window.gtag;
         this.gtag = function () { /* Do nothing */ };
         this.temp = { prepareUrlWithQueryString, AnalyticsUrl, AnalyticsTrackingId, removeImageOnLoad }; // Temp: ToDo: remove this
@@ -200,7 +195,7 @@ export default class AnalyticsService {
             console.error("Error tracking", e);
         }
 
-        page = getVirtualUrl(this.versionNumber, page);
+        page = getVirtualUrl(AppVersionNo, page);
         this.currentPage = page;
 
         this.gtag('set', 'page', page);

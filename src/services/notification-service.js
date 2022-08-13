@@ -1,6 +1,7 @@
 import { messagesUrl } from "../constants/urls";
 import { BROWSER_NAME } from "../common/browsers";
 import * as moment from 'moment';
+import { AppVersionNo } from "../constants/common";
 
 export default class NotificationService {
     static dependencies = ["AjaxRequestService", "CacheService", "SettingsService", "AppBrowserService", "UtilsService", "MessageService"];
@@ -11,8 +12,7 @@ export default class NotificationService {
         this.$settings = $settings;
         this.$userutils = $userutils;
         this.$browser = $browser;
-
-        $browser.getAppVersion().then(v => this.version = parseFloat(v));
+        this.version = AppVersionNo;
     }
 
     async getNotifications() {

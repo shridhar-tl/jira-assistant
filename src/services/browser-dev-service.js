@@ -1,5 +1,4 @@
 import { CHROME_WS_URL } from '../constants/urls';
-import { AppVersionNo } from '../constants/common';
 import BrowserBase from '../common/BrowserBase';
 // ToDo: need to pull url
 export default class WebBrowserService extends BrowserBase {
@@ -90,14 +89,6 @@ export default class WebBrowserService extends BrowserBase {
 
     openTab(url) {
         window.open(url);
-    }
-
-    getAppInfo() { // This function is for private use
-        return Promise.resolve({ isDevelopment: process.env.NODE_ENV !== "production", version: AppVersionNo.toString() });
-    }
-
-    getAppVersion() {
-        return this.getAppInfo().then(info => info.version);
     }
 
     getAuthToken(options) {

@@ -33,7 +33,8 @@ class DefaultHeader extends PureComponent {
     this.disableJiraUpdates = cUser.disableJiraUpdates;
     this.userId = cUser.userId;
     this.currentJiraInstance = getHostFromUrl(cUser.jiraUrl);
-    this.state = { versionNumber: isWebBuild ? 'WEB' : `v ${AppVersionNo.toString()}` };
+    this.state = {};
+    this.versionNumber = isWebBuild ? 'WEB' : `v ${AppVersionNo}`;
     this.initComponent();
   }
 
@@ -44,9 +45,6 @@ class DefaultHeader extends PureComponent {
     this.siteUrl = WebSiteUrl;
     this.ratingUrl = this.$jaBrowserExtn.getStoreUrl(true);
     this.storeUrl = this.$jaBrowserExtn.getStoreUrl();
-    if (!isWebBuild) {
-      this.$jaBrowserExtn.getAppVersion().then(v => this.setState({ versionNumber: `v ${v}` }));
-    }
     const subj = encodeURIComponent('Check out "Jira Assistant" in web store');
     const body = encodeURIComponent('Check out "Jira Assistant", a open source extension / add-on for your browser from below url:'
       + `\n\nChrome users: ${CHROME_WS_URL}?utm_source%3Dgmail#`
@@ -82,7 +80,7 @@ class DefaultHeader extends PureComponent {
   render() {
     const {
       ratingUrl, gMailShare, linkedInShare, fackbookShare, twitterShare,
-      state: { versionNumber, showYoutubeVideo, notifications }
+      state: { showYoutubeVideo, notifications }
       //REVISIT: props: { children, ...attributes }
     } = this;
 
@@ -93,7 +91,7 @@ class DefaultHeader extends PureComponent {
         <AppSidebarToggler className="d-lg-none quick-view-hide" display="md" mobile><span className="fa fa-bars" /></AppSidebarToggler>
         <a href={this.siteUrl} className="navbar-brand" target="_blank" rel="noopener noreferrer">
           <img src={logo} width="24" height="24" alt="Jira Assistant" className="navbar-brand-minimized" />
-          <span className="navbar-brand-full">Jira Assistant <span className="v-info badge badge-success" onClick={this.showVersionInfo}>{versionNumber}</span></span>
+          <span className="navbar-brand-full">Jira Assistant <span className="v-info badge badge-success" onClick={this.showVersionInfo}>{this.versionNumber}</span></span>
         </a>
         <AppSidebarToggler className="d-md-down-none quick-view-hide" display="lg"><span className="fa fa-bars" /></AppSidebarToggler>
         <button className="navbar-toggler quick-view-show"><a href="/index.html" target="_blank" title="Open in new tab"><span className="fa fa-external-link" /></a></button>

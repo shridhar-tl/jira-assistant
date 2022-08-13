@@ -1,6 +1,5 @@
 /* global chrome */
 import { CHROME_WS_URL } from '../constants/urls';
-import { AppVersionNo } from '../constants/common';
 import { getOriginFromUrl } from '../common/utils';
 import BrowserBase from '../common/BrowserBase';
 
@@ -162,30 +161,6 @@ export default class ChromeBrowserService extends BrowserBase {
 
     openTab(url) {
         window.open(url); // need to change
-    }
-
-    getAppInfo() { // need to change
-        return new Promise((resolve, reject) => {
-            const { management } = this.chrome;
-            if (management) {
-                management.getSelf((info) => {
-                    if (info) {
-                        info.isDevelopment = info.installType === this.chrome.management.ExtensionInstallType.DEVELOPMENT;
-                        resolve(info);
-                    }
-                    else {
-                        reject(info);
-                    }
-                });
-            }
-            else {
-                reject("Extension do not have access to management api");
-            }
-        });
-    }
-
-    getAppVersion() {
-        return this.getAppInfo().then(info => info.version, () => AppVersionNo.toString());
     }
 
     getAuthToken(options) { // need to change
