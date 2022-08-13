@@ -16,7 +16,7 @@ export default class NotificationService {
     }
 
     async getNotifications() {
-        const { updates_info, notifications } = await this.fetchNotifications();
+        const { updates_info, live_versions, notifications } = await this.fetchNotifications();
 
         if (!notifications) {
             return { count: 0, list: [] };
@@ -77,7 +77,7 @@ export default class NotificationService {
 
         let updatesAvailable;
         if (process.env.REACT_APP_WEB_BUILD !== 'true') {
-            const version = await this.getExtnAvailableUpdates();
+            const version = live_versions?.[BROWSER_NAME];
             let isBeta = true;
             if (version && this.version < version) {
                 const versionInfo = updates_info.filter(u => u.version === version)[0];
@@ -171,17 +171,5 @@ export default class NotificationService {
                 success(data);
             }, 500);
         });
-    }
-
-    async getExtnAvailableUpdates() {
-        let data = this.$cache.get("available_updates");
-
-        if (!data) {
-            data = { version: await this.$browser.hasUpdates() };
-
-            this.$cache.set("available_updates", data, moment().add(4, 'hours'));
-        }
-
-        return data.version;
     }
 }

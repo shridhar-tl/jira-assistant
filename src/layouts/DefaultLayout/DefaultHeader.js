@@ -108,7 +108,7 @@ class DefaultHeader extends PureComponent {
           </BackupImporter>
           <LaunchWeb />
           {!!version && <span className={`update-available badge badge-${isBeta ? "warning" : "success"}`}
-            title={`Click to update to ${isBeta ? 'BETA ' : ''}v${version}`}
+            title={`Jira Assist ${isBeta ? 'BETA ' : ''}v${version} is now available. Click to know more.`}
             onClick={this.showVersionInfo}><i className="fa fa-download" /> Updates available</span>}
           {!this.disableJiraUpdates && <JiraUpdates />}
           {!this.disableNotification && notifications && <Notifications notifications={notifications} />}

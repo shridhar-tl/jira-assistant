@@ -29,7 +29,6 @@ export class BrowserProxyService extends BaseProxyService {
     }
 
     async getAppVersion() { return AppVersionNo; }
-    async hasUpdates() { return false; }
     openTab(url) { window.open(url); }
 }
 
