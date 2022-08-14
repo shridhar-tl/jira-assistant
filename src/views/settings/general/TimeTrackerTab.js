@@ -37,12 +37,13 @@ class GlobalTab extends TabControlBase {
         const TR_RoundOpr = await this.$settings.get('TR_RoundOpr');
 
         let TR_AttachCS = await this.$settings.get('TR_AttachCS');
-        if (TR_AttachCS !== false) {
-            TR_AttachCS = true;
-        }
+        let TR_ShowTimer = await this.$settings.get('TR_ShowTimer');
+        if (TR_AttachCS !== false) { TR_AttachCS = true; }
+        if (TR_ShowTimer !== false) { TR_ShowTimer = true; }
+
         const TR_CSDelay = await this.$settings.get('TR_CSDelay');
 
-        this.setState({ TR_PauseOnLock, TR_PauseOnIdle, TR_MinTime, TR_RoundTime, TR_RoundOpr, TR_AttachCS, TR_CSDelay });
+        this.setState({ TR_PauseOnLock, TR_PauseOnIdle, TR_MinTime, TR_RoundTime, TR_RoundOpr, TR_AttachCS, TR_CSDelay, TR_ShowTimer });
     }
 
     lockChanged = async (value, field) => {
@@ -54,6 +55,10 @@ class GlobalTab extends TabControlBase {
             }
         }
 
+        await this.saveSettingAndReload(value, field);
+    };
+
+    saveSettingAndReload = async (value, field) => {
         await this.saveSetting(value, field);
 
         try {
@@ -73,7 +78,7 @@ class GlobalTab extends TabControlBase {
         const {
             TR_PauseOnLock, TR_PauseOnIdle, TR_MinTime,
             TR_RoundTime, TR_RoundOpr,
-            TR_AttachCS, TR_CSDelay
+            TR_AttachCS, TR_CSDelay, TR_ShowTimer
         } = this.state;
 
         return (
@@ -122,6 +127,10 @@ class GlobalTab extends TabControlBase {
                     <div className="form-group">
                         <Checkbox checked={TR_AttachCS} field="TR_AttachCS" onChange={this.saveSetting} label="Attach tracker functionality within Jira" />
                         <span className="help-block">Enabling this would inject tracking functionality in some pages of Jira from where you can control time tracking</span>
+                    </div>
+                    <div className="form-group">
+                        <Checkbox checked={TR_ShowTimer} disabled={!TR_AttachCS} field="TR_ShowTimer" onChange={this.saveSetting} label="Show timer in Jira" />
+                        <span className="help-block">Enabling this would show running timer in Jira</span>
                     </div>
                     <div className="form-group">
                         Delay attaching functionality for

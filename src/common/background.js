@@ -168,6 +168,7 @@ async function getContentSettings(basepath) {
 
     if (users.length === 1) {
         result.userId = users[0].id;
+        result.jiraUrl = users[0].jiraUrl;
     }
 
     const timer = await services.$wltimer.getCurrentTimer();
@@ -179,6 +180,7 @@ async function getContentSettings(basepath) {
     }
 
     result.attachDelay = (parseInt(await services.$settings.get('TR_CSDelay')) * 1000) || 2000;
+    result.showTimer = (await services.$settings.get('TR_ShowTimer')) !== false;
 
     return result;
 }

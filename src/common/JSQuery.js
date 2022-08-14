@@ -3,6 +3,7 @@ class JSQuery {
     constructor(selector) {
         if (typeof selector === 'string') {
             this.elements = document.querySelectorAll(selector);
+            this.element = this.elements[0];
         } else if (selector instanceof NodeList) {
             this.elements = selector;
             this.element = selector[0];
@@ -17,8 +18,15 @@ class JSQuery {
         this.length = this.elements.length;
     }
 
-    attr(name) {
-        return this.element?.attributes?.getNamedItem(name)?.value;
+    attr(name, value) {
+        if (typeof value === 'string') {
+            if (!this.element) { return this; }
+            this.element.setAttribute(name, value);
+            return this;
+        } else {
+            if (!this.element) { return null; }
+            return this.element?.attributes?.getNamedItem(name)?.value;
+        }
     }
 
     find(selector) {
@@ -35,6 +43,13 @@ class JSQuery {
     }
 
     text() { return this.element?.innerText || ''; }
+    html(str) {
+        if (typeof str === 'string' && this.element) {
+            this.element.innerHTML = str;
+        } else {
+            return this.element?.innerText || '';
+        }
+    }
     width() { return this.element?.clientWidth; }
     get(index) { return this.elements[index]; }
     each(func) { this.elements.forEach((el, i) => func(i, el)); }
@@ -51,7 +66,10 @@ class JSQuery {
         return new JSQuery(child);
     }
     click(func) {
-        this.element.addEventListener('click', func);
+        if (this.element) {
+            this.element.addEventListener('click', func);
+        }
+        return this;
     }
     closest(selector) {
         return new JSQuery(this.element.closest(selector));
