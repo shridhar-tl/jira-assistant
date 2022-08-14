@@ -34,6 +34,7 @@
       "http://local.jiraassistant.com/*"
     ]
   },
+  "options_page": "index.html#/advanced",
   "background": {
     "service_worker": "/static/js/background.js"
   },
@@ -45,6 +46,15 @@
       "matches": [
         "https://*.jiraassistant.com/*",
         "http://local.jiraassistant.com/*"
+      ]
+    },
+    {
+      "resources": [
+        "/assets/*",
+        "/static/js/jira_cs.js"
+      ],
+      "matches": [
+        "<all_urls>"
       ]
     }
   ],
@@ -65,7 +75,8 @@
     "unlimitedStorage",
     "identity",
     "tabs",
-    "idle"
+    "idle",
+    "scripting"
   ],
   "optional_host_permissions": [
     "http://*/",

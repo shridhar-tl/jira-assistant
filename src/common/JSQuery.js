@@ -13,6 +13,8 @@ class JSQuery {
             this.element = selector;
             this.elements = [selector];
         }
+
+        this.length = this.elements.length;
     }
 
     attr(name) {
@@ -53,6 +55,9 @@ class JSQuery {
     }
     closest(selector) {
         return new JSQuery(this.element.closest(selector));
+    }
+    remove() {
+        this.elements.forEach((el, i) => el.remove());
     }
 }
 

@@ -2,12 +2,12 @@ import React, { PureComponent } from 'react';
 import { TabView, TabPanel } from 'primereact/tabview';
 import { inject } from '../../../services';
 import GeneralTab from './GeneralTab';
+import GlobalTab from './TimeTrackerTab';
 import WorklogTab from './WorklogTab';
 import DefaultValuesTab from './DefaultValuesTab';
 import MeetingsTab from './MeetingsTab';
 import MenuOptionsTab from './MenuOptionsTab';
 import './Common.scss';
-import GlobalTab from './GlobalTab';
 
 const isWebBuild = process.env.REACT_APP_WEB_BUILD === 'true';
 
@@ -65,11 +65,11 @@ class GeneralSettings extends PureComponent {
 
         return (<>
             <TabView styleclass="query-tab" activeindex={currentTabIndex} onChange={this.tabChanged}>
-                <TabPanel header="Global" leftIcon="fa fa-globe" selected="true">
-                    <GlobalTab />
-                </TabPanel>
                 <TabPanel header="General" leftIcon="fa fa-cogs" selected="true">
                     <GeneralTab settings={settings} userId={this.userId} noDonations={noDonations} onSave={this.saveSetting} />
+                </TabPanel>
+                <TabPanel header="Time tracker" leftIcon="fa fa-clock-o">
+                    <GlobalTab />
                 </TabPanel>
                 <TabPanel header="Worklog" leftIcon="fa fa-clock-o">
                     <WorklogTab settings={settings} userId={this.userId} onSave={this.saveSetting} />

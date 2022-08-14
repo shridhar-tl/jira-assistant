@@ -18,6 +18,28 @@
     "default_title": "Jira Assistant",
     "default_popup": "/menu.html"
   },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://*.jiraassistant.com/*",
+        "http://local.jiraassistant.com/*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "run_at": "document_start"
+    }
+  ],
+  "options_page": "index.html#/advanced",
+  "background": {
+    "persistent": true,
+    "scripts": [
+      "/static/js/background.js"
+    ]
+  },
+  "web_accessible_resources": [
+    "index.html"
+  ],
   "commands": {
     "open-ja-dashboard": {
       "suggested_key": {
@@ -38,7 +60,8 @@
   "permissions": [
     "activeTab",
     "storage",
-    "idle"
+    "idle",
+    "scripting"
   ],
   "optional_permissions": [
     "tabs",

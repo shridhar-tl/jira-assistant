@@ -3,16 +3,19 @@ import injectServices, { serviceObjectMap, inject } from "../services/index.back
 import { AppVersionNo, SystemUserId } from "../constants/common";
 import { SettingsCategory } from "../constants/settings";
 import { convertToStorableValue, convertToUsableValue } from "./storage-helpers";
+import './extensions';
 
 injectServices();
 const services = {};
-inject(services, 'AjaxRequestService', 'AppBrowserService', 'StorageService', 'SettingsService', 'MessageService');
+inject(services, 'AjaxRequestService', 'AppBrowserService', 'StorageService', 'SettingsService', 'MessageService', 'WorklogTimerService');
 startListening();
 
 function startListening() {
     chrome.runtime.onMessageExternal.addListener(onRequestReceived);
     if (typeof browser !== 'undefined' && browser.runtime) {
         browser.runtime.onMessage.addListener(onRequestReceived);
+    } else {
+        chrome.runtime.onMessage.addListener(onRequestReceived);
     }
     loadSettings();
     console.log("Started listening for incomming requests");
@@ -26,8 +29,9 @@ function onRequestReceived(message, sender, sendResponse) {
         origin = new URL(sender.url).origin;
     }
     origin = origin.toLowerCase();
-    if (!origin.endsWith('.jiraassistant.com')) {
-        log("Denied to serve request from unknown origin: ", sender.origin);
+    if (!origin.endsWith('.jiraassistant.com') && !origin.endsWith('.atlassian.net')
+        && !['SELF', 'WorklogTimerService'].includes(message.svcName)) {
+        log("Denied to serve request from unknown origin: ", message, sender.origin);
         return;
     }
 
@@ -40,7 +44,8 @@ async function executeCommand(message, sendResponse, logDetails) {
     logDetails.response = response;
 
     try {
-        const { svcName, action, args } = message;
+        const { svcName, action } = message;
+        const args = convertToUsableValue(message.args);
 
         if (svcName === 'SELF') {
             switch (action) {
@@ -60,7 +65,7 @@ async function executeCommand(message, sendResponse, logDetails) {
                     break;
 
                 case 'GET_CS_SETTINGS':
-                    response.success = await getContentSettings(args, logDetails.sender);
+                    response.success = await getContentSettings(args[0]);
                     break;
 
                 default:
@@ -71,10 +76,10 @@ async function executeCommand(message, sendResponse, logDetails) {
 
             $message.onNewMessage((msg) => response.messages.push(msg));
 
-            response.success = convertToStorableValue(await $service[action].apply($service, convertToUsableValue(args)));
+            response.success = convertToStorableValue(await $service[action].apply($service, args));
         }
     } catch (ex) {
-        response.error = convertToStorableValue(ex);
+        response.error = convertToStorableValue({ message: ex.message, err: ex.toString() });
         error(ex);
     }
 
@@ -82,8 +87,8 @@ async function executeCommand(message, sendResponse, logDetails) {
     logDetails.sent = true;
 }
 
-function log() { console.log(arguments); }
-function error() { console.error(arguments); }
+function log() { console.log(...arguments); }
+function error() { console.error(...arguments); }
 
 let stateChangeAttached = false;
 const settings = {};
@@ -96,9 +101,6 @@ async function loadSettings() {
         settings.TR_PauseOnIdle = TR_PauseOnIdle;
 
         if (TR_PauseOnLock || TR_PauseOnIdle) {
-            if (!services.$wltimer) {
-                inject(services, 'WorklogTimerService');
-            }
             if (!stateChangeAttached) {
                 chrome.idle.onStateChanged.addListener(systemStateChanged);
                 stateChangeAttached = true;
@@ -106,6 +108,35 @@ async function loadSettings() {
         } else {
             chrome.idle.onStateChanged.removeListener(systemStateChanged);
             stateChangeAttached = false;
+        }
+    }
+
+    if (chrome.scripting) {
+        const attachCS = (await services.$settings.get('TR_AttachCS')) !== false;
+        if (attachCS) {
+            const users = await services.$storage.getAllUsers();
+
+            const matches = (await Promise.all(users.map(async u => {
+                if (u.id === SystemUserId) { return null; }
+                const url = `${u.jiraUrl.clearEnd('/')}/*`;
+                const hasPermission = await services.$jaBrowserExtn.hasPermission(services.$jaBrowserExtn.getPermissionObj(null, url));
+                if (hasPermission) {
+                    return url;
+                }
+            }))).filter(Boolean);
+
+            await chrome.scripting.unregisterContentScripts();
+
+            if (matches.length) {
+                log('Attaching CS for ', matches);
+                await chrome.scripting.registerContentScripts([
+                    {
+                        id: 'jira-plugin',
+                        js: ['/static/js/jira_cs.js'],
+                        matches
+                    }
+                ]);
+            }
         }
     }
 }
@@ -132,21 +163,22 @@ async function systemStateChanged(state) {
 }
 
 async function getContentSettings(basepath) {
-    if (!services.$wltimer) {
-        inject(services, 'WorklogTimerService');
-    }
     const result = {};
     const users = await services.$storage.filterUsers({ jiraUrl: basepath });
+
     if (users.length === 1) {
         result.userId = users[0].id;
     }
 
     const timer = await services.$wltimer.getCurrentTimer();
-    if (timer?.userId === result.userId) {
+
+    if (timer && timer.userId === result.userId) {
         result.timerKey = timer.key;
         result.timerStarted = timer.started;
         result.timerLapse = timer.lapse;
     }
+
+    result.attachDelay = (parseInt(await services.$settings.get('TR_CSDelay')) * 1000) || 2000;
 
     return result;
 }

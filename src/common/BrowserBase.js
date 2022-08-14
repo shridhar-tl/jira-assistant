@@ -13,6 +13,27 @@ class BrowserBase {
     }
 
     async getLaunchUrl() { return ''; }
+
+    on(event, func) {
+        if (!this.listeners) {
+            this.listeners = {};
+            this.listenForMessages();
+        }
+
+        if (!this.listeners[event]) {
+            this.listeners[event] = [];
+        }
+        this.listeners[event].push(func);
+    }
+
+    off() {
+        this.clearListeners();
+        delete this.listeners;
+    }
+
+    messageReceived = () => {
+        //
+    };
 }
 
 export default BrowserBase;

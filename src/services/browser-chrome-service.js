@@ -141,7 +141,7 @@ export default class ChromeBrowserService extends BrowserBase {
 
     getPermissionObj(permissions, url) {
         if (!permissions) {
-            permissions = ['tabs'];
+            permissions = ['tabs', 'scripting'];
         }
 
         const result = { permissions };

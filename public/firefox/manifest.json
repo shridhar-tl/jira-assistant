@@ -39,6 +39,7 @@
       "run_at": "document_start"
     }
   ],
+  "options_page": "index.html#/advanced",
   "background": {
     "persistent": true,
     "scripts": [
@@ -46,7 +47,9 @@
     ]
   },
   "web_accessible_resources": [
-    "index.html"
+    "index.html",
+    "/assets/*",
+    "/static/js/jira_cs.js"
   ],
   "content_security_policy": "script-src 'self' ; object-src 'self';",
   "permissions": [
@@ -62,7 +65,8 @@
   ],
   "optional_permissions": [
     "tabs",
-    "idle"
+    "idle",
+    "scripting"
   ],
   "developer": {
     "name": "Shridhar",

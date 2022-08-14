@@ -3,6 +3,8 @@ import { inject } from '../../../services';
 import { getGitHubIssueUrl } from '../../../constants/utils';
 import "./P401.scss";
 
+const isWebBuild = process.env.REACT_APP_WEB_BUILD === 'true';
+
 class Page401 extends PureComponent {
     constructor(props) {
         super(props);
@@ -48,11 +50,11 @@ class Page401 extends PureComponent {
                     </p>}
                     {!hasPermission && <p>
                         Extension is not granted permission to access "{jiraUrl}".
-                        Please grant permission before trying to access it.
+                        Please {isWebBuild ? 'open Jira Assist extension and ' : ''} grant permission before trying to access it.
                         More details available in issue {issueLink}</p>}
                     <a className="btn btn-primary margin-r-5" href="index.html">
                         <i className="fa fa-angle-left"></i> Dashboard</a>
-                    {!hasPermission && <button className="btn btn-warning" onClick={this.grantPermission}>
+                    {!isWebBuild && !hasPermission && <button className="btn btn-warning" onClick={this.grantPermission}>
                         <i className="fa fa-unlock"></i> Grant permission</button>}
                     <a className="btn btn-success pull-right" href={jiraUrl} target="_blank" rel="noopener noreferrer">
                         <i className="fa fa-external-link"></i> Open Jira</a>

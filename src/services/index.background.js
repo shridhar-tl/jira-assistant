@@ -23,5 +23,6 @@ export default function injectServices() {
 export const serviceObjectMap = {
     AjaxRequestService: "$request",
     AppBrowserService: "$jaBrowserExtn",
-    StorageService: "$storage"
+    StorageService: "$storage",
+    WorklogTimerService: "$wltimer"
 };

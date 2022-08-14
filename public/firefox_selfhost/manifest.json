@@ -38,6 +38,7 @@
       "run_at": "document_start"
     }
   ],
+  "options_page": "index.html#/advanced",
   "background": {
     "persistent": true,
     "scripts": [
@@ -71,7 +72,8 @@
   ],
   "optional_permissions": [
     "activeTab",
-    "idle"
+    "idle",
+    "scripting"
   ],
   "developer": {
     "name": "Shridhar",
