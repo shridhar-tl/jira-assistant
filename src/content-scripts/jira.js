@@ -1,3 +1,4 @@
+/* eslint-disable no-alert */
 import $ from '../common/JSQuery';
 import { icons, Pages, regexSet } from './constants';
 import { executeJASvc, getIconHtml, until, waitAndGet } from './utils';
@@ -68,7 +69,13 @@ async function triggerWLTracking(e) {
     const issueKey = issueEl.attr('data-issue-key');
 
     if (action === 'START') {
-        await executeJASvc('WorklogTimerService', 'startTimer', settings.userId, issueKey);
+        const result = await executeJASvc('WorklogTimerService', 'startTimer', settings.userId, issueKey);
+        if (result && result.isActive) {
+            // eslint-disable-next-line no-restricted-globals
+            if (confirm(`Already timer is running for "${result?.entry?.key}".\n\nWould you like to stop it and start new timer?`)) {
+                await executeJASvc('WorklogTimerService', 'startTimer', settings.userId, issueKey, null, true);
+            }
+        }
     } else {
         await executeJASvc('WorklogTimerService', (action === 'STOP') ? 'stopTimer' : ((action === 'RESUME') ? 'resumeTimer' : 'pauseTimer'));
     }
