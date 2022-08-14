@@ -20,14 +20,16 @@ if (isCloud) {
     }
 }
 
-async function applyModifications(firstTime) {
+async function applyModifications(firstTime, noPull) {
     if (firstTime) {
         console.log('JA: Current page code:-', currentPage);
     }
 
     if (!currentPage) { return; }
-    settings = await executeJASvc('SELF', 'GET_CS_SETTINGS', origin);
-    console.log('JA: Settings received:-', settings);
+    if (!noPull) {
+        settings = await executeJASvc('SELF', 'GET_CS_SETTINGS', origin);
+        console.log('JA: Settings received:-', settings);
+    }
 
     if (firstTime) {
         await until(settings.attachDelay || 2000);
@@ -82,3 +84,13 @@ async function triggerWLTracking(e) {
 
     applyModifications();
 }
+
+
+window.addEventListener('focus', async function () {
+    const newSett = await executeJASvc('SELF', 'GET_CS_SETTINGS', origin);
+    if (JSON.stringify(settings) !== JSON.stringify(newSett)) {
+        console.log('JA: About to apply modifications');
+        settings = newSett;
+        applyModifications(false, true);
+    }
+});

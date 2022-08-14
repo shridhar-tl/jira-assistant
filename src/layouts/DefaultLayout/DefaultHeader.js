@@ -97,7 +97,7 @@ class DefaultHeader extends PureComponent {
         <button className="navbar-toggler quick-view-show"><a href="/index.html" target="_blank" title="Open in new tab"><span className="fa fa-external-link" /></a></button>
         <NavLink to={`/${this.userId}/contribute`} className="btn-donate"
           title="Would you like to contribute / compensate us for the effort we put in development of this tool? Click to know more">
-          <img src="/assets/donate.png" width="145" className="Donate us" alt="Donate us" />
+          <img src="/assets/donate.png" width="145" className="margin-r-5" alt="Donate us" />
         </NavLink>
         <TimerControl />
         <Nav className="ml-auto" navbar>

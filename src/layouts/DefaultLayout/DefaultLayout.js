@@ -43,12 +43,16 @@ class DefaultLayout extends PureComponent {
     setStartOfWeek(this.$session.CurrentUser.startOfWeek);
 
     this.loadTracker();
+    window.addEventListener('focus', this.loadTracker);
 
     this.$dashboard.onChange(() => this.setState({ menus: this.getMenus(userId) }));
     this.initBody();
   }
 
-  loadTracker = () => this.$wltimer.getCurrentTimer().then(this.setTimer);
+  loadTracker = () => this.$wltimer.getCurrentTimer().then((entry) => {
+    const oldKey = this.state.timerEntry?.key;
+    this.setTimer(entry, oldKey && oldKey !== entry?.key);
+  });
 
   async initBody() {
     const body = document.body.classList;
