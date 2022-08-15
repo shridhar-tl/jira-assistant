@@ -18,6 +18,7 @@ class JSQuery {
 
             this.length = this.elements.length;
         } else {
+            this.elements = [];
             this.length = 0;
         }
     }
@@ -82,7 +83,7 @@ class JSQuery {
         this.elements.forEach((el, i) => el.remove());
     }
     parent() {
-        return new JSQuery(this.element.parentNode);
+        return new JSQuery(this.element?.parentNode);
     }
 }
 

@@ -1,9 +1,9 @@
-import $ from '../common/JSQuery';
-import { curOrigin, Pages, regexSet, styles } from './constants';
+import { curOrigin, Pages, regexSet } from './constants';
 import { applyBoardLogic } from './jira-board';
 import { applyIssueLogic } from './jira-issue';
 import { createTimerBox } from './timer-box';
-import { executeJASvc, getPathName, injectPollyfill, until } from './utils';
+import { executeJASvc, getPathName, injectCss, injectPollyfill, until } from './utils';
+import './jira.scss';
 
 console.log('Attached JA Functionalities');
 let currentPage, applying, settings = {};
@@ -18,11 +18,11 @@ function loadLocationInfo() {
     }
 
     console.log('JA: Current page code:-', currentPage);
-    $(document.head).append(styles);
     applyModifications(true);
 }
 
 injectPollyfill();
+injectCss();
 loadLocationInfo();
 window.addEventListener('ja-locationchange', loadLocationInfo);
 

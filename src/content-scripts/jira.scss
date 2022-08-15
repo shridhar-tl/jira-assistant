@@ -1,0 +1,67 @@
+// Jira board styles
+
+// Running Timer widget
+.ja-timer-box {
+    position: fixed;
+    right: 16px;
+    bottom: 2px;
+    padding: 5px;
+    z-index: 9999;
+    cursor: pointer;
+    opacity: 0.4;
+
+    &:hover {
+        opacity: 1;
+    }
+}
+
+
+div.ja-timer-ctl {
+    border: 2px solid grey;
+    background-color: aliceblue;
+    color: black;
+    border-radius: 20px;
+    padding: 5px 8px 5px 12px;
+
+    .ja-ticket-no {
+        font-weight: bold;
+        margin-right: 12px;
+    }
+
+    .ja-time-lapsed {
+        color: #000;
+    }
+
+    .ja-icon-close {
+        margin-left: 3px;
+    }
+}
+
+// Jira issue page styles
+
+.ja-issue-tmr-ctl {
+    margin-left: 5px;
+    padding-top: 3px;
+    display: inline-block;
+}
+
+
+// Common styles
+.ja-timer-box .ja-icon,
+.ja-issue-tmr-ctl .ja-icon {
+    cursor: pointer;
+    display: inline-block;
+    margin: 0 3px;
+}
+
+.margin-x-3 {
+    margin-right: 3px;
+    margin-left: 3px;
+}
+
+// Styles specific to datacenter version of jira
+.ja-dcv {
+    &.ja-issue-tmr-ctl {
+        margin-top: 12px;
+    }
+}

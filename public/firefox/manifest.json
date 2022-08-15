@@ -50,7 +50,8 @@
     "api-pollyfill.js",
     "index.html",
     "/assets/*",
-    "/static/js/jira_cs.js"
+    "/static/js/jira_cs.js",
+    "/static/css/jira_cs.css"
   ],
   "content_security_policy": "script-src 'self' ; object-src 'self';",
   "permissions": [

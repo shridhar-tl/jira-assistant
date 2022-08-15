@@ -108,7 +108,7 @@ export default class FirefoxBrowserService extends BrowserBase {
 
     async requestPermission(permissions, ...url) {
         try {
-            const pObj = this.getPermissionObj(permissions, url);
+            const pObj = this.getPermissionObj(permissions, ...url);
             const result = await this.hasPermission(pObj);
 
             if (result) {

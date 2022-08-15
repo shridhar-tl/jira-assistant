@@ -41,7 +41,8 @@
     "index.html",
     "api-pollyfill.js",
     "/assets/*",
-    "/static/js/jira_cs.js"
+    "/static/js/jira_cs.js",
+    "/static/css/jira_cs.css"
   ],
   "commands": {
     "open-ja-dashboard": {

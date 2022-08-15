@@ -30,7 +30,7 @@ const cloudRegexSet = {
 
 // This has to be updated
 const dsRegexSet = {
-    board: /^\/jira\/software\/c\/projects\/([A-Z0-9-]+)\/boards\/(\d+)/gi,
+    board: /^.*\/secure\/RapidBoard.jspa.*$/gi,
     issue: /browse\/([A-Z]+-\d+)[/?]?.*$/gi
 };
 
@@ -40,49 +40,3 @@ export const Pages = {
     Board: 'board',
     Issue: 'issue'
 };
-
-export const styles = `<style id="ja-style-node" type="text/css">
-.ja-timer-box {
-position: fixed;
-right: 16px;
-bottom: 4px;
-padding: 5px;
-z-index:9999;
-opacity: 0.4;
-cursor:pointer;
-}
-
-.ja-timer-box:hover{opacity: 1;}
-
-div.ja-timer-ctl {
-border: 2px solid grey;
-background-color: aliceblue;
-color: black;
-border-radius: 20px;
-padding: 5px 8px 5px 12px;
-}
-
-.ja-ticket-no{
-font-weight: bold;
-margin-right: 12px;
-}
-
-.ja-time-lapsed{
-color:#000;
-}
-
-.ja-icon-close {
-margin-left: 3px;
-}
-
-.ja-issue-tmr-ctl {
-margin-left: 5px;
-padding-top: 3px;
-}
-
-.ja-timer-box .ja-icon, .ja-issue-tmr-ctl .ja-icon {
-cursor: pointer;
-display:inline-block;
-margin:0 3px;
-}
-</style>`;

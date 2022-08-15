@@ -10,7 +10,7 @@ class BrowserBase {
         return true;
     }
 
-    getPermissionObj(permissions, urls) {
+    getPermissionObj(permissions, ...urls) {
         if (!permissions) {
             permissions = ['tabs', 'scripting', 'idle'];
         }

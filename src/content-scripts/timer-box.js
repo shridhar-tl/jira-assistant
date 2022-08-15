@@ -1,5 +1,5 @@
 import $ from "../common/JSQuery";
-import { icons } from "./constants";
+import { icons, isCloud } from "./constants";
 import { triggerWLTracking } from "./issue-utils";
 import { clearEnd, executeJASvc, pad } from "./utils";
 
@@ -76,7 +76,7 @@ function getLapsed(lapse) {
 function getDiv(settings, lapse) {
     const { timerKey, timerStarted } = settings;
 
-    return `<div class="ja-timer-box">
+    return `<div class="ja-timer-box ${isCloud ? 'ja-cloudv' : 'ja-dcv'}">
 <div class="ja-timer-ctl">
 <a class="ja-ticket-no" href="${getTicketUrl(timerKey)}" target="_blank" rel="noreferrer noopener">${timerKey}</a>
 <span class="ja-time-lapsed" style="margin-right: 12px;">${getLapsed(lapse)}</span>

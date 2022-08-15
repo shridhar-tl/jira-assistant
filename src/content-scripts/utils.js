@@ -2,7 +2,7 @@
 /* global chrome browser */
 import $ from '../common/JSQuery';
 import { processResponse } from '../common/proxy-helper';
-import { Pages } from './constants';
+import { isCloud, Pages } from './constants';
 
 const chr = chrome || browser;
 
@@ -26,7 +26,7 @@ export async function waitAndGet(selector, timeout = 5000) {
 }
 
 export function getIconHtml(issueKey, issueId, jaAction, icon, curPage) {
-    const css = curPage === Pages.Board ? 'ghx-field' : '';
+    const css = curPage === Pages.Board ? (isCloud ? 'ghx-field' : 'margin-x-3') : '';
     return `<span class="${css} ja-ctl-el ja-issue-el" data-issue-key="${issueKey}" data-ja-action="${jaAction}" data-issue-id="${issueId}" style="cursor:pointer">${icon}</span>`;
 }
 
@@ -42,6 +42,10 @@ export function injectPollyfill() {
     el.id = 'ja-script-node';
     el.src = chr.runtime.getURL('api-pollyfill.js');
     document.body.appendChild(el);
+}
+
+export function injectCss() {
+    $(document.head).append(`<link rel="stylesheet" href="${chr.runtime.getURL('/static/css/jira_cs.css')}" media="all">`);
 }
 
 export function clearEnd(s, str) {

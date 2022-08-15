@@ -1,9 +1,9 @@
 import $ from "../common/JSQuery";
-import { icons, Pages } from "./constants";
+import { icons, isCloud, Pages } from "./constants";
 import { executeJASvc, getIconHtml } from "./utils";
 
 export function addTimerControls(currentPage, controls, issueKey, settings, issueId, triggerFunc) {
-    const convert = currentPage !== Pages.Board;
+    const convert = currentPage !== Pages.Board || !isCloud;
     if (issueKey === settings.timerKey) {
         if (settings.timerStarted) {
             convertTooltip(convert, controls.append(getIconHtml(issueKey, issueId, 'PAUSE', icons.pause, currentPage)).click(triggerFunc));

@@ -52,7 +52,8 @@
       "resources": [
         "api-pollyfill.js",
         "/assets/*",
-        "/static/js/jira_cs.js"
+        "/static/js/jira_cs.js",
+        "/static/css/jira_cs.css"
       ],
       "matches": [
         "<all_urls>"

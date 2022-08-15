@@ -1,13 +1,11 @@
 import $ from '../common/JSQuery';
-import { Pages } from "./constants";
+import { isCloud, Pages } from "./constants";
 import { addTimerControls, triggerWLTracking } from './issue-utils';
 import { waitAndGet } from "./utils";
 
 export async function applyBoardLogic(currentPage, settings, firstTime, applyModifications) {
     if (currentPage === Pages.Board) {
-        if (!firstTime) {
-            $('.ghx-columns .ui-sortable div.js-issue .ja-issue-el').remove();
-        }
+        $('.ghx-columns .ui-sortable div.js-issue .ja-issue-el').remove();
 
         const triggerFunc = triggerWLTracking.bind({ settings, applyModifications });
 
@@ -17,7 +15,8 @@ export async function applyBoardLogic(currentPage, settings, firstTime, applyMod
             el = $(el);
             const issueKey = el.attr('data-issue-key');
             const issueId = el.attr('data-issue-id');
-            const controls = el.find('.ghx-stat-fields .ghx-row:first-child');
+
+            const controls = el.find(isCloud ? '.ghx-stat-fields .ghx-row:first-child' : '.ghx-card-footer');
             addTimerControls(currentPage, controls, issueKey, settings, issueId, triggerFunc);
         });
     }
