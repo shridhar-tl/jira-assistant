@@ -1,21 +1,23 @@
 import $ from "../common/JSQuery";
 import { icons } from "./constants";
-import { triggerWLTracking } from "./jira-board";
-import { clearEnd, pad } from "./utils";
+import { triggerWLTracking } from "./issue-utils";
+import { clearEnd, executeJASvc, pad } from "./utils";
 
 let curTimer, settings, curLapse = 0;
 
 export function createTimerBox(_settings, applyModifications) {
     settings = _settings;
-    if (curTimer && (!settings.timerKey || !settings.timerStarted)) {
+    const { timerKey, timerStarted, showTimer } = settings;
+
+    if (curTimer && (!timerKey || !timerStarted || !showTimer)) {
         clearInterval(curTimer);
         curTimer = null;
     }
 
     $('div.ja-timer-box').remove();
 
-    if (settings.showTimer && settings.timerKey) {
-        const { timerStarted, timerLapse } = settings;
+    if (showTimer && timerKey) {
+        const { timerLapse } = settings;
         const curTime = new Date().getTime();
         curLapse = Math.round(((timerStarted > 0 ? (curTime - timerStarted) : 0) + (timerLapse || 0)) / 1000) + 1;
 
@@ -30,9 +32,17 @@ export function createTimerBox(_settings, applyModifications) {
 
 function attachEvents(timerDiv, applyModifications) {
     const func = triggerWLTracking.bind({ settings, applyModifications, elSelector: 'div.ja-icon' });
+    const hideTimerFunc = hideTimer.bind({ settings, applyModifications, elSelector: 'div.ja-icon' });
     timerDiv.find('div.ja-icon-resume').click(func).attr('data-ja-action', 'RESUME');
     timerDiv.find('div.ja-icon-pause').click(func).attr('data-ja-action', 'PAUSE');
     timerDiv.find('div.ja-icon-stop').click(func).attr('data-ja-action', 'STOP');
+    timerDiv.find('div.ja-icon-close').click(hideTimerFunc);
+}
+
+async function hideTimer() {
+    await executeJASvc('SettingsService', 'set', 'TR_ShowTimer', false);
+    settings.showTimer = false;
+    createTimerBox(settings, this.applyModifications);
 }
 
 function updateTimer(noUpdate) {

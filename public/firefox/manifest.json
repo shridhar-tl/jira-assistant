@@ -47,6 +47,7 @@
     ]
   },
   "web_accessible_resources": [
+    "api-pollyfill.js",
     "index.html",
     "/assets/*",
     "/static/js/jira_cs.js"

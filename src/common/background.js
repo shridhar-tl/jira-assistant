@@ -5,6 +5,8 @@ import { SettingsCategory } from "../constants/settings";
 import { convertToStorableValue, convertToUsableValue } from "./storage-helpers";
 import './extensions';
 
+const svcAllowedFromUnknownPage = ['SELF', 'WorklogTimerService', 'SettingsService'];
+
 injectServices();
 const services = {};
 inject(services, 'AjaxRequestService', 'AppBrowserService', 'StorageService', 'SettingsService', 'MessageService', 'WorklogTimerService');
@@ -29,8 +31,8 @@ function onRequestReceived(message, sender, sendResponse) {
         origin = new URL(sender.url).origin;
     }
     origin = origin.toLowerCase();
-    if (!origin.endsWith('.jiraassistant.com') && !origin.endsWith('.atlassian.net')
-        && !['SELF', 'WorklogTimerService'].includes(message.svcName)) {
+    if (!origin.endsWith('.jiraassistant.com') //&& !origin.endsWith('.atlassian.net')
+        && !svcAllowedFromUnknownPage.includes(message.svcName)) {
         log("Denied to serve request from unknown origin: ", message, sender.origin);
         return;
     }

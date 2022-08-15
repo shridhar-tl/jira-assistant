@@ -14,7 +14,7 @@ export const icons = {
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" width="18px" height="18px" fill="#ff0000">
     <path d="M400 32H48C21.5 32 0 53.5 0 80v352c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V80c0-26.5-21.5-48-48-48z"></path>
     </svg></div>`,
-    close: `<div class="ja-icon ja-icon-close" data-tooltip="Jira Assist: Hide timer">
+    close: `<div class="ja-icon ja-icon-close" title="Hide timer. You can change it from JA general settings">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 352 512" width="18px" height="18px" fill="#df438f">
     <path d="M242.72 256l100.07-100.07c12.28-12.28 12.28-32.19 0-44.48l-22.24-22.24c-12.28-12.28-32.19-12.28-44.48 0L176 189.28 75.93 89.21c-12.28-12.28-32.19-12.28-44.48 0L9.21 111.45c-12.28 12.28-12.28 32.19 0 44.48L109.28 256 9.21 356.07c-12.28 12.28-12.28 32.19 0 44.48l22.24 22.24c12.28 12.28 32.2 12.28 44.48 0L176 322.72l100.07 100.07c12.28 12.28 32.2 12.28 44.48 0l22.24-22.24c12.28-12.28 12.28-32.19 0-44.48L242.72 256z"></path>
     </svg></div>`
@@ -24,12 +24,14 @@ export const curOrigin = document.location.origin;
 export const isCloud = curOrigin.endsWith('.atlassian.net');
 
 const cloudRegexSet = {
-    board: /^\/jira\/software\/c\/projects\/([A-Z0-9-]+)\/boards\/(\d+)/gi
+    board: /^\/jira\/software\/c\/projects\/([A-Z0-9-]+)\/boards\/(\d+)/gi,
+    issue: /browse\/([A-Z]+-\d+)[/?]?.*$/gi
 };
 
 // This has to be updated
 const dsRegexSet = {
-    board: /^\/jira\/software\/c\/projects\/([A-Z0-9-]+)\/boards\/(\d+)/gi
+    board: /^\/jira\/software\/c\/projects\/([A-Z0-9-]+)\/boards\/(\d+)/gi,
+    issue: /browse\/([A-Z]+-\d+)[/?]?.*$/gi
 };
 
 export const regexSet = isCloud ? cloudRegexSet : dsRegexSet;
@@ -73,7 +75,12 @@ color:#000;
 margin-left: 3px;
 }
 
-.ja-timer-box .ja-icon {
+.ja-issue-tmr-ctl {
+margin-left: 5px;
+padding-top: 3px;
+}
+
+.ja-timer-box .ja-icon, .ja-issue-tmr-ctl .ja-icon {
 cursor: pointer;
 display:inline-block;
 margin:0 3px;

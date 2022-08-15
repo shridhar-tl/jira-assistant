@@ -2,6 +2,7 @@
 /* global chrome browser */
 import $ from '../common/JSQuery';
 import { processResponse } from '../common/proxy-helper';
+import { Pages } from './constants';
 
 const chr = chrome || browser;
 
@@ -24,29 +25,23 @@ export async function waitAndGet(selector, timeout = 5000) {
     return waitAndGet(selector, timeout - 1000);
 }
 
-export function getIconHtml(issueKey, issueId, jaAction, icon) {
-    return `<span class="ghx-field ja-ctl-el ja-issue-el" data-issue-key="${issueKey}" data-ja-action="${jaAction}" data-issue-id="${issueId}" style="cursor:pointer">${icon}</span>`;
+export function getIconHtml(issueKey, issueId, jaAction, icon, curPage) {
+    const css = curPage === Pages.Board ? 'ghx-field' : '';
+    return `<span class="${css} ja-ctl-el ja-issue-el" data-issue-key="${issueKey}" data-ja-action="${jaAction}" data-issue-id="${issueId}" style="cursor:pointer">${icon}</span>`;
 }
 
-export function prepareForLocationChange() {
-    const pushState = history.pushState;
-    const replaceState = history.replaceState;
+export function getPathName() {
+    const curUrl = document.location.href;
+    const uri = new URL(curUrl);
+    return uri.pathname;
+}
 
-    history.pushState = function () {
-        pushState.apply(history, arguments);
-        window.dispatchEvent(new Event('pushstate'));
-        window.dispatchEvent(new Event('locationchange'));
-    };
-
-    history.replaceState = function () {
-        replaceState.apply(history, arguments);
-        window.dispatchEvent(new Event('replacestate'));
-        window.dispatchEvent(new Event('locationchange'));
-    };
-
-    window.addEventListener('popstate', function () {
-        window.dispatchEvent(new Event('locationchange'));
-    });
+export function injectPollyfill() {
+    const el = document.createElement('script');
+    el.setAttribute('type', 'text/javascript');
+    el.id = 'ja-script-node';
+    el.src = chr.runtime.getURL('api-pollyfill.js');
+    document.body.appendChild(el);
 }
 
 export function clearEnd(s, str) {

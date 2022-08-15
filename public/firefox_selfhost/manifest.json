@@ -46,7 +46,10 @@
     ]
   },
   "web_accessible_resources": [
-    "index.html"
+    "index.html",
+    "api-pollyfill.js",
+    "/assets/*",
+    "/static/js/jira_cs.js"
   ],
   "commands": {
     "open-ja-dashboard": {

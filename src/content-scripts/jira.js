@@ -1,30 +1,36 @@
 import $ from '../common/JSQuery';
 import { curOrigin, Pages, regexSet, styles } from './constants';
 import { applyBoardLogic } from './jira-board';
+import { applyIssueLogic } from './jira-issue';
 import { createTimerBox } from './timer-box';
-import { executeJASvc, prepareForLocationChange, until } from './utils';
+import { executeJASvc, getPathName, injectPollyfill, until } from './utils';
 
 console.log('Attached JA Functionalities');
-let currentPage;
-let settings = {};
+let currentPage, applying, settings = {};
 
 function loadLocationInfo() {
-    const curUrl = document.location.href;
-    const uri = new URL(curUrl);
-    const curPathname = uri.pathname;
+    const curPathname = getPathName();
+
     if (regexSet.board.test(curPathname)) {
         currentPage = Pages.Board;
+    } else if (regexSet.issue.test(curPathname)) {
+        currentPage = Pages.Issue;
     }
+
     console.log('JA: Current page code:-', currentPage);
     $(document.head).append(styles);
     applyModifications(true);
 }
 
-prepareForLocationChange();
+injectPollyfill();
 loadLocationInfo();
-window.addEventListener('locationchange', loadLocationInfo);
+window.addEventListener('ja-locationchange', loadLocationInfo);
 
 async function applyModifications(firstTime, noPull) {
+    // This is to workaround issue caused by pushState and popState triggered by Jira
+    if (applying) { return; }
+    applying = true;
+
     if (!noPull) {
         settings = await executeJASvc('SELF', 'GET_CS_SETTINGS', curOrigin);
         console.log('JA: Settings received:-', settings);
@@ -34,8 +40,11 @@ async function applyModifications(firstTime, noPull) {
         await until(settings.attachDelay || 2000);
     }
 
-    applyBoardLogic(currentPage, settings, firstTime, applyModifications);
+    await applyBoardLogic(currentPage, settings, firstTime, applyModifications);
+    applyIssueLogic(currentPage, settings, firstTime, applyModifications);
     createTimerBox(settings, applyModifications);
+
+    applying = false;
 }
 
 window.addEventListener('focus', async function () {

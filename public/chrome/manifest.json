@@ -50,6 +50,7 @@
     },
     {
       "resources": [
+        "api-pollyfill.js",
         "/assets/*",
         "/static/js/jira_cs.js"
       ],

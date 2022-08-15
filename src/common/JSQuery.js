@@ -1,21 +1,25 @@
 // Need to remove JQuery and use this instead in exporters
 class JSQuery {
     constructor(selector) {
-        if (typeof selector === 'string') {
-            this.elements = document.querySelectorAll(selector);
-            this.element = this.elements[0];
-        } else if (selector instanceof NodeList) {
-            this.elements = selector;
-            this.element = selector[0];
-        } else if (selector instanceof HTMLElement) {
-            this.element = selector;
-            this.elements = [selector];
-        } else {
-            this.element = selector;
-            this.elements = [selector];
-        }
+        if (selector) {
+            if (typeof selector === 'string') {
+                this.elements = document.querySelectorAll(selector);
+                this.element = this.elements[0];
+            } else if (selector instanceof NodeList) {
+                this.elements = selector;
+                this.element = selector[0];
+            } else if (selector instanceof HTMLElement) {
+                this.element = selector;
+                this.elements = [selector];
+            } else {
+                this.element = selector;
+                this.elements = [selector];
+            }
 
-        this.length = this.elements.length;
+            this.length = this.elements.length;
+        } else {
+            this.length = 0;
+        }
     }
 
     attr(name, value) {
@@ -76,6 +80,9 @@ class JSQuery {
     }
     remove() {
         this.elements.forEach((el, i) => el.remove());
+    }
+    parent() {
+        return new JSQuery(this.element.parentNode);
     }
 }
 

@@ -24,5 +24,6 @@ export const serviceObjectMap = {
     AjaxRequestService: "$request",
     AppBrowserService: "$jaBrowserExtn",
     StorageService: "$storage",
-    WorklogTimerService: "$wltimer"
+    WorklogTimerService: "$wltimer",
+    SettingsService: "$settings"
 };
