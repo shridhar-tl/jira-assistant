@@ -100,6 +100,31 @@ export default class FirefoxBrowserService extends BrowserBase {
         });
     }
 
+    hasPermission(permissions) {
+        return new Promise((resolve) => {
+            this.browser.permissions.contains(permissions, resolve);
+        });
+    }
+
+    async requestPermission(permissions, ...url) {
+        try {
+            const pObj = this.getPermissionObj(permissions, url);
+            const result = await this.hasPermission(pObj);
+
+            if (result) {
+                return true;
+            } else {
+                console.log("Requesting permission for: ", pObj);
+                return new Promise((resolve) => {
+                    this.browser.permissions.request(pObj, resolve);
+                });
+            }
+        }
+        catch (err) {
+            return Promise.reject(err);
+        }
+    }
+
     replaceTabUrl(url) {
         return this.getCurrentTab().then((tab) => {
             this.chrome.tabs.update(tab.id, { url: url });

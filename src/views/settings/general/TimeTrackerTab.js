@@ -5,6 +5,8 @@ import { inject } from '../../../services/injector-service';
 import { executeService } from '../../../common/proxy';
 import { InputMask } from 'primereact/inputmask';
 
+const isWebBuild = process.env.REACT_APP_WEB_BUILD === 'true';
+
 const defaultMinTimeToTrack = '00:05';
 const defaultAttachDelay = 2;
 const roundList = [
@@ -47,16 +49,30 @@ class GlobalTab extends TabControlBase {
     }
 
     lockChanged = async (value, field) => {
-        if (value) {
-            const granted = await this.$jaBrowserExtn.requestPermission(['idle']);
-            if (!granted) {
-                this.$message.error('Permission denied for JA to track system state.', 'Permission denied');
-                return;
-            }
+        if (value && !(await this.requestPermission())) {
+            return;
         }
 
         await this.saveSettingAndReload(value, field);
     };
+
+    async requestPermissionAndSave(value, field) {
+        if (value && !(await this.requestPermission())) {
+            return;
+        }
+
+        await this.saveSetting(value, field);
+    }
+
+    async requestPermission() {
+        const granted = await this.$jaBrowserExtn.requestPermission();
+        if (!granted) {
+            this.$message.error(`Permission denied for JA to track system state.${isWebBuild ? ' This settings would work only with JA extension v2.41 or above.' : ''}`, 'Permission denied');
+            return;
+        }
+
+        return true;
+    }
 
     saveSettingAndReload = async (value, field) => {
         await this.saveSetting(value, field);
@@ -125,7 +141,7 @@ class GlobalTab extends TabControlBase {
                 </div>
                 <div className="ui-g-12 ui-md-9 ui-lg-9 ui-xl-10">
                     <div className="form-group">
-                        <Checkbox checked={TR_AttachCS} field="TR_AttachCS" onChange={this.saveSetting} label="Attach tracker functionality within Jira" />
+                        <Checkbox checked={TR_AttachCS} field="TR_AttachCS" onChange={this.requestPermissionAndSave} label="Attach tracker functionality within Jira" />
                         <span className="help-block">Enabling this would inject tracking functionality in some pages of Jira from where you can control time tracking</span>
                     </div>
                     <div className="form-group">

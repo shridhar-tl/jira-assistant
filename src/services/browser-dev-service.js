@@ -1,5 +1,6 @@
-import { CHROME_WS_URL } from '../constants/urls';
+import { CHROME_WS_URL, StoreUrls } from '../constants/urls';
 import BrowserBase from '../common/BrowserBase';
+import { BROWSER_NAME } from '../common/browsers';
 // ToDo: need to pull url
 export default class WebBrowserService extends BrowserBase {
     constructor() {
@@ -119,7 +120,7 @@ export default class WebBrowserService extends BrowserBase {
     }
 
     getStoreUrl(forRating) {
-        return CHROME_WS_URL;
+        return StoreUrls[BROWSER_NAME] || CHROME_WS_URL;
     }
 
     extractAccessToken(redirectUri) { // This function is for private use

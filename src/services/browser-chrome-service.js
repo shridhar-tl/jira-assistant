@@ -1,6 +1,5 @@
 /* global chrome */
 import { CHROME_WS_URL } from '../constants/urls';
-import { getOriginFromUrl } from '../common/utils';
 import BrowserBase from '../common/BrowserBase';
 
 export default class ChromeBrowserService extends BrowserBase {
@@ -120,7 +119,7 @@ export default class ChromeBrowserService extends BrowserBase {
         });
     }
 
-    async requestPermission(permissions, url) {
+    async requestPermission(permissions, ...url) {
         try {
             const pObj = this.getPermissionObj(permissions, url);
             const result = await this.hasPermission(pObj);
@@ -137,20 +136,6 @@ export default class ChromeBrowserService extends BrowserBase {
         catch (err) {
             return Promise.reject(err);
         }
-    }
-
-    getPermissionObj(permissions, url) {
-        if (!permissions) {
-            permissions = ['tabs', 'scripting'];
-        }
-
-        const result = { permissions };
-
-        if (url) {
-            result.origins = [getOriginFromUrl(url)];
-        }
-
-        return result;
     }
 
     replaceTabUrl(url) {
