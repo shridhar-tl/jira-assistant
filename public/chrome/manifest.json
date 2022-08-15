@@ -71,14 +71,15 @@
   },
   "offline_enabled": true,
   "permissions": [
-    "storage"
+    "activeTab",
+    "storage",
+    "idle",
+    "scripting"
   ],
   "optional_permissions": [
     "unlimitedStorage",
     "identity",
-    "tabs",
-    "idle",
-    "scripting"
+    "tabs"
   ],
   "optional_host_permissions": [
     "http://*/",

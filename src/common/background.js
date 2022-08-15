@@ -131,13 +131,7 @@ async function loadSettings() {
 
             if (matches.length) {
                 log('Attaching CS for ', matches);
-                await chrome.scripting.registerContentScripts([
-                    {
-                        id: 'jira-plugin',
-                        js: ['/static/js/jira_cs.js'],
-                        matches
-                    }
-                ]);
+                await services.$jaBrowserExtn.registerContentScripts('jira-plugin', ['/static/js/jira_cs.js'], matches);
             }
         }
     }

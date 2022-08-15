@@ -138,6 +138,16 @@ export default class ChromeBrowserService extends BrowserBase {
         }
     }
 
+    async registerContentScripts(id, js, matches) {
+        return await this.chrome.scripting.registerContentScripts([
+            {
+                id, js, matches,
+                runAt: "document_end",
+                allFrames: true
+            }
+        ]);
+    }
+
     replaceTabUrl(url) {
         return this.getCurrentTab().then((tab) => {
             this.chrome.tabs.update(tab.id, { url: url });

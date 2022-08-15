@@ -6,6 +6,7 @@ import { executeService } from '../../../common/proxy';
 import { InputMask } from 'primereact/inputmask';
 
 const isWebBuild = process.env.REACT_APP_WEB_BUILD === 'true';
+const isExtnIntg = !isWebBuild || localStorage.getItem('authType') === '1';
 
 const defaultMinTimeToTrack = '00:05';
 const defaultAttachDelay = 2;
@@ -48,32 +49,6 @@ class GlobalTab extends TabControlBase {
         this.setState({ TR_PauseOnLock, TR_PauseOnIdle, TR_MinTime, TR_RoundTime, TR_RoundOpr, TR_AttachCS, TR_CSDelay, TR_ShowTimer });
     }
 
-    lockChanged = async (value, field) => {
-        if (value && !(await this.requestPermission())) {
-            return;
-        }
-
-        await this.saveSettingAndReload(value, field);
-    };
-
-    async requestPermissionAndSave(value, field) {
-        if (value && !(await this.requestPermission())) {
-            return;
-        }
-
-        await this.saveSetting(value, field);
-    }
-
-    async requestPermission() {
-        const granted = await this.$jaBrowserExtn.requestPermission();
-        if (!granted) {
-            this.$message.error(`Permission denied for JA to track system state.${isWebBuild ? ' This settings would work only with JA extension v2.41 or above.' : ''}`, 'Permission denied');
-            return;
-        }
-
-        return true;
-    }
-
     saveSettingAndReload = async (value, field) => {
         await this.saveSetting(value, field);
 
@@ -100,19 +75,6 @@ class GlobalTab extends TabControlBase {
         return (
             <div className="ui-g ui-fluid">
                 <div className="form-label ui-g-12 ui-md-3 ui-lg-3 ui-xl-2">
-                    <strong>System Events</strong>
-                </div>
-                <div className="ui-g-12 ui-md-9 ui-lg-9 ui-xl-10">
-                    <div className="form-group">
-                        <Checkbox checked={TR_PauseOnLock} field="TR_PauseOnLock" onChange={this.lockChanged} label="Pause time tracker when system is locked" />
-                        <span className="help-block">Timer will be paused when system is locked and it would be resumed when unlocked</span>
-                    </div>
-                    <div className="form-group">
-                        <Checkbox checked={TR_PauseOnIdle} field="TR_PauseOnIdle" onChange={this.lockChanged} label="Pause time tracker when system is idle" />
-                        <span className="help-block">Timer will be paused when system goes to idle state and resumed when active</span>
-                    </div>
-                </div>
-                <div className="form-label ui-g-12 ui-md-3 ui-lg-3 ui-xl-2">
                     <strong>Minimum time spent</strong>
                 </div>
                 <div className="ui-g-12 ui-md-9 ui-lg-9 ui-xl-10">
@@ -136,26 +98,41 @@ class GlobalTab extends TabControlBase {
                         <span className="help-block">Round the tracked time to x minute as selected</span>
                     </div>
                 </div>
-                <div className="form-label ui-g-12 ui-md-3 ui-lg-3 ui-xl-2">
-                    <strong>Show tracker functionality within Jira</strong>
-                </div>
-                <div className="ui-g-12 ui-md-9 ui-lg-9 ui-xl-10">
-                    <div className="form-group">
-                        <Checkbox checked={TR_AttachCS} field="TR_AttachCS" onChange={this.requestPermissionAndSave} label="Attach tracker functionality within Jira" />
-                        <span className="help-block">Enabling this would inject tracking functionality in some pages of Jira from where you can control time tracking</span>
+                {isExtnIntg && <>
+                    <div className="form-label ui-g-12 ui-md-3 ui-lg-3 ui-xl-2">
+                        <strong>System Events</strong>
                     </div>
-                    <div className="form-group">
-                        <Checkbox checked={TR_ShowTimer} disabled={!TR_AttachCS} field="TR_ShowTimer" onChange={this.saveSetting} label="Show timer in Jira" />
-                        <span className="help-block">Enabling this would show running timer in Jira</span>
+                    <div className="ui-g-12 ui-md-9 ui-lg-9 ui-xl-10">
+                        <div className="form-group">
+                            <Checkbox checked={TR_PauseOnLock} field="TR_PauseOnLock" onChange={this.saveSettingAndReload} label="Pause time tracker when system is locked" />
+                            <span className="help-block">Timer will be paused when system is locked and it would be resumed when unlocked</span>
+                        </div>
+                        <div className="form-group">
+                            <Checkbox checked={TR_PauseOnIdle} field="TR_PauseOnIdle" onChange={this.saveSettingAndReload} label="Pause time tracker when system is idle" />
+                            <span className="help-block">Timer will be paused when system goes to idle state and resumed when active</span>
+                        </div>
                     </div>
-                    <div className="form-group">
-                        Delay attaching functionality for
-                        <InputMask mask="99" value={TR_CSDelay} onChange={(e) => this.saveSetting(e.value, 'TR_CSDelay')}
-                            placeholder={defaultAttachDelay} maxLength={2}
-                            style={{ 'width': '30px', 'display': 'inline-block', marginLeft: '3px' }} /> seconds.
-                        <span className="help-block">Increase it if your Jira server is slow and you do not see tracker functionality in any pages</span>
+                    <div className="form-label ui-g-12 ui-md-3 ui-lg-3 ui-xl-2">
+                        <strong>Show tracker functionality within Jira</strong>
                     </div>
-                </div>
+                    <div className="ui-g-12 ui-md-9 ui-lg-9 ui-xl-10">
+                        <div className="form-group">
+                            <Checkbox checked={TR_AttachCS} field="TR_AttachCS" onChange={this.saveSettingAndReload} onClick={this.requestPermission} label="Attach tracker functionality within Jira" />
+                            <span className="help-block">Enabling this would inject tracking functionality in some pages of Jira from where you can control time tracking</span>
+                        </div>
+                        <div className="form-group">
+                            <Checkbox checked={TR_ShowTimer} disabled={!TR_AttachCS} field="TR_ShowTimer" onChange={this.saveSetting} label="Show timer in Jira" />
+                            <span className="help-block">Enabling this would show running timer in Jira</span>
+                        </div>
+                        <div className="form-group">
+                            Delay attaching functionality for
+                            <InputMask mask="99" value={TR_CSDelay} onChange={(e) => this.saveSetting(e.value, 'TR_CSDelay')}
+                                placeholder={defaultAttachDelay} maxLength={2}
+                                style={{ 'width': '30px', 'display': 'inline-block', marginLeft: '3px' }} /> seconds.
+                            <span className="help-block">Increase it if your Jira server is slow and you do not see tracker functionality in any pages</span>
+                        </div>
+                    </div>
+                </>}
             </div>
         );
     }

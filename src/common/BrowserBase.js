@@ -12,7 +12,7 @@ class BrowserBase {
 
     getPermissionObj(permissions, ...urls) {
         if (!permissions) {
-            permissions = ['tabs', 'scripting', 'idle'];
+            permissions = ['tabs'];
         }
 
         const result = { permissions };

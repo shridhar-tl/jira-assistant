@@ -63,15 +63,11 @@
     "http://*/",
     "https://*/",
     "storage",
-    "http://calendar.google.com/calendar/*",
-    "https://calendar.google.com/calendar/*",
-    "https://login.microsoftonline.com/common/oauth2/v2.0/*",
-    "https://graph.microsoft.com/v1.0/me/*"
-  ],
-  "optional_permissions": [
-    "tabs",
     "idle",
     "scripting"
+  ],
+  "optional_permissions": [
+    "tabs"
   ],
   "developer": {
     "name": "Shridhar",

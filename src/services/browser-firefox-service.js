@@ -100,29 +100,15 @@ export default class FirefoxBrowserService extends BrowserBase {
         });
     }
 
-    hasPermission(permissions) {
-        return new Promise((resolve) => {
-            this.browser.permissions.contains(permissions, resolve);
-        });
-    }
-
-    async requestPermission(permissions, ...url) {
-        try {
-            const pObj = this.getPermissionObj(permissions, ...url);
-            const result = await this.hasPermission(pObj);
-
-            if (result) {
-                return true;
-            } else {
-                console.log("Requesting permission for: ", pObj);
-                return new Promise((resolve) => {
-                    this.browser.permissions.request(pObj, resolve);
-                });
+    async registerContentScripts(id, js, matches) {
+        return await this.browser.scripting.registerContentScripts([
+            {
+                id, js, matches,
+                persistAcrossSessions: false,
+                runAt: "document_end",
+                allFrames: true
             }
-        }
-        catch (err) {
-            return Promise.reject(err);
-        }
+        ]);
     }
 
     replaceTabUrl(url) {

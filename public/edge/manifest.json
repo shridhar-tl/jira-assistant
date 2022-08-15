@@ -75,13 +75,13 @@
     "identity",
     "storage",
     "background",
-    "notifications"
+    "notifications",
+    "idle",
+    "scripting"
   ],
   "optional_permissions": [
     "activeTab",
-    "unlimitedStorage",
-    "idle",
-    "scripting"
+    "unlimitedStorage"
   ],
   "host_permissions": [
     "http://*/",
