@@ -29,6 +29,7 @@ class Integrate extends PureComponent {
     async init() {
         this.settingsMenu = [
             { label: "Import Settings", icon: 'fa fa-upload fs-16 margin-r-5', command: this.importBackup.bind(this) },
+            { label: "Options", icon: 'fa fa-cogs fs-16 margin-r-5', command: this.launchOptionsPage.bind(this) },
             { separator: true },
             { label: "Use Jira OAuth", icon: 'fa fa-external-link fs-16 margin-r-5', command: this.useOAuth.bind(this) },
         ];
@@ -39,6 +40,10 @@ class Integrate extends PureComponent {
                 this.setState({ jiraUrl: root });
             }
         });
+    }
+
+    launchOptionsPage() {
+        window.open('/index.html#/options');
     }
 
     importBackup() {

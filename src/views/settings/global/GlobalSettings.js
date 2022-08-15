@@ -44,7 +44,11 @@ class GlobalSettings extends PureComponent {
         }
 
         if (typeof value === "string") {
-            value = value.trim() || undefined;
+            if (field === 'jiraUrl') {
+                value = value.trim().clearEnd('/');
+            } else {
+                value = value.trim() || undefined;
+            }
         }
 
         user[field] = value;
@@ -193,7 +197,7 @@ class GlobalSettings extends PureComponent {
                     <Button className="pull-right" icon="fa fa-save" label="Save settings" type="success" onClick={this.saveSettings} />
                     <strong>Note:</strong>
                     <br />Changing these settings may cause application stability issues or lose in data. Be cautious with the changes you make.
-                    <br />Some settings would take effect only the next time when you revisit.
+                    <br />Some settings would take effect only once you reopen Jira Assistant.
                 </div>
             </div>
         );

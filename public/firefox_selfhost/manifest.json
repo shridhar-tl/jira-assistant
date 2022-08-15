@@ -38,7 +38,10 @@
       "run_at": "document_start"
     }
   ],
-  "options_page": "index.html#/advanced",
+  "options_ui": {
+    "page": "index.html#/options",
+    "browser_style": true
+  },
   "background": {
     "persistent": true,
     "scripts": [

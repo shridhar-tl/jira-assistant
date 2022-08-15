@@ -24,6 +24,7 @@ const DefaultLayout = React.lazy(() => import('./layouts/DefaultLayout'));
 // Pages
 const IntegrateExtn = React.lazy(() => import('./views/pages/integrate/Integrate'));
 const IntegrateWeb = isWebBuild && React.lazy(() => import('./views/pages/authenticate/ChooseAuthType'));
+const OptionsPage = React.lazy(() => import('./views/settings/global/GlobalSettings'));
 
 const Page401 = React.lazy(() => import('./views/pages/p401/Page401'));
 
@@ -183,7 +184,7 @@ class App extends PureComponent {
       forceNavigate = true;
     }
 
-    if (parts[1] === "integrate") {
+    if (parts[1] === "integrate" || parts[1] === "options") {
       this.setState({ isLoading: false });
     } else {
       this.tryAuthenticate(userId, pathname, forceNavigate);
@@ -239,6 +240,7 @@ class App extends PureComponent {
                 isExtnValid={isExtnValid} extnUnavailable={extnUnavailable} needIntegration={needIntegration} onAuthTypeChosen={this.authTypeChosen} />} />}
               <Route exact path={isWebBuild ? "/integrate/extn" : "/integrate"} name="Integrate Page" render={props => <IntegrateExtn {...props} isWebBuild={isWebBuild} setAuthType={isWebBuild ? this.authTypeChosen : undefined} />} />
               <Route exact path="/401" name="Page 401" render={props => <Page401 {...props} jiraUrl={this.state.jiraUrl} />} />
+              <Route exact path="/options" name="Options Page" render={props => <OptionsPage {...props} />} />
               {(!isWebBuild || !!authType) && <Route key={userId} path="/:userId" name="Home" render={props => <DefaultLayout {...props} />} />}
             </Switch>
           </React.Suspense>

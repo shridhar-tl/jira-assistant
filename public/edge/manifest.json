@@ -34,7 +34,7 @@
       "http://local.jiraassistant.com/*"
     ]
   },
-  "options_page": "index.html#/advanced",
+  "options_page": "index.html#/options",
   "background": {
     "service_worker": "/static/js/background.js"
   },
