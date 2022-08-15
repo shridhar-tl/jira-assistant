@@ -9,10 +9,14 @@ import { getJiraCloudOAuthAuthorizeUrl } from '../../../constants/oauth';
 import { getOriginFromUrl } from '../../../common/utils';
 import Dialog, { CustomDialog } from '../../../dialogs';
 import { AppVersionNo } from '../../../constants/common';
+import { executeService } from '../../../common/proxy';
 
 const settingsIconStyles = {
     fontSize: '18px', position: 'absolute', right: '20px', top: '35px', color: '#0000ff'
 };
+
+const isQuickView = document.location.href.indexOf('?quick=true') > -1;
+const containerStyle = isQuickView ? { minHeight: '380px', maxHeight: '380px' } : {};
 
 class Integrate extends PureComponent {
     constructor(props) {
@@ -122,6 +126,14 @@ class Integrate extends PureComponent {
         if (id <= 0) {
             return;
         }
+
+        // This block is to apply content scripts immediately to new Jira Instance
+        try {
+            await executeService('SELF', 'RELOAD', [], this.$message);
+        } catch (err) {
+            console.error('Unable to reload BG Listeners', err);
+        }
+
         await this.$settings.set("CurrentJiraUrl", this.state.jiraUrl);
         await this.$settings.set("CurrentUserId", id);
         if (this.props.setAuthType) {
@@ -144,7 +156,7 @@ class Integrate extends PureComponent {
         const { integrate, version, browser, state: { jiraUrl, isLoading } } = this;
 
         return (
-            <div className="app flex-row align-items-center">
+            <div className="app flex-row align-items-center" style={containerStyle}>
                 <div className="container">
                     <div className="row justify-content-center">
                         <div className="col-md-6 no-padding no-margin" style={{ maxWidth: 480, minWidth: 460 }}>

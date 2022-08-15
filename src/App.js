@@ -41,7 +41,7 @@ class App extends PureComponent {
       let url = document.location.hash.substring(2);
       url = url.substring(url.indexOf("/"));
       url = `/${userId}${url}`;
-      this.authenticateUser(url, true);
+      this.authenticateUser(url, true, true);
     },
     navigate: (url, userbased) => {
       this.props.history.push(userbased ? `/${this.$session.userId}${url}` : url);
@@ -168,7 +168,7 @@ class App extends PureComponent {
     this.authenticateUser(this.props.location.pathname);
   }
 
-  authenticateUser(pathname, forceNavigate) {
+  authenticateUser(pathname, forceNavigate, switchUser) {
     const parts = pathname.split("/");
     let userId = parseInt(parts[1]);
     if (!userId || isNaN(userId) || pathname === '/401') {
@@ -187,13 +187,15 @@ class App extends PureComponent {
     if (parts[1] === "integrate" || parts[1] === "options") {
       this.setState({ isLoading: false });
     } else {
-      this.tryAuthenticate(userId, pathname, forceNavigate);
+      this.tryAuthenticate(userId, pathname, forceNavigate, switchUser);
     }
   }
 
-  tryAuthenticate(userId, pathname, forceNavigate) {
+  tryAuthenticate(userId, pathname, forceNavigate, switchUser) {
     this.$auth.authenticate(userId).then((result) => {
       this.$analytics.trackPageView();
+
+      const sessionUser = this.$session.userId || null;
 
       if (result) {
         if (!pathname || pathname === "/") {
@@ -208,12 +210,21 @@ class App extends PureComponent {
         else if (!userId) {
           this.props.history.push(`/${this.$session.userId}${pathname}`);
         }
+        try {
+          if (switchUser && sessionUser) {
+            (async () => {
+              await this.$settings.set("CurrentJiraUrl", this.$session.rootUrl);
+              await this.$settings.set("CurrentUserId", sessionUser);
+            })();
+          }
+        } catch (err) {
+          console.error('Unable to save default user:', err);
+        }
       }
       else {
         this.props.history.push(this.$session.needIntegration ? "/integrate" : "/401");
       }
 
-      const sessionUser = this.$session.userId || null;
       this.setState({ isLoading: false, authenticated: result, jiraUrl: this.$session.rootUrl, userId: sessionUser });
 
     }, () => {

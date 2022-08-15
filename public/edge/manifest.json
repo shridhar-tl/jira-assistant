@@ -76,11 +76,11 @@
     "storage",
     "background",
     "notifications",
+    "activeTab",
     "idle",
     "scripting"
   ],
   "optional_permissions": [
-    "activeTab",
     "unlimitedStorage"
   ],
   "host_permissions": [

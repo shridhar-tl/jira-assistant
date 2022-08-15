@@ -106,10 +106,12 @@ async function loadSettings() {
             if (!stateChangeAttached) {
                 chrome.idle.onStateChanged.addListener(systemStateChanged);
                 stateChangeAttached = true;
+                log('Listening for system state changes');
             }
-        } else {
+        } else if (stateChangeAttached) {
             chrome.idle.onStateChanged.removeListener(systemStateChanged);
             stateChangeAttached = false;
+            log('Deregistered listening to system state');
         }
     }
 
@@ -133,11 +135,14 @@ async function loadSettings() {
                 log('Attaching CS for ', matches);
                 await services.$jaBrowserExtn.registerContentScripts('jira-plugin', ['/static/js/jira_cs.js'], matches);
             }
+        } else {
+            await chrome.scripting.unregisterContentScripts();
         }
     }
 }
 
 async function systemStateChanged(state) {
+    log('System state changed to ', state);
     switch (state?.toLowerCase()) {
         case 'idle':
             if (settings.TR_PauseOnIdle) {

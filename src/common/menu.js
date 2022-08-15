@@ -18,11 +18,10 @@ import { JAWebRootUrl } from '../constants/urls';
   if (!CurrentJiraUrl || !currentUserId) {
     // Check and see if browser has activeTab permission. If not then redirect to integrate page
     hasTabAccess().then(hasPermission => {
-      const integrateUrl = `${indexPageUrl}#/pages/integrate`;
       if (hasPermission) {
-        document.location.href = integrateUrl;
+        document.location.href = `${indexPageUrl}?quick=true#/pages/integrate`;
       } else {
-        $jaBrowserExtn.openTab(integrateUrl);
+        $jaBrowserExtn.openTab(`${indexPageUrl}#/pages/integrate`);
         window.close();
       }
     });
