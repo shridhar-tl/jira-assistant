@@ -1,6 +1,8 @@
-import { BROWSER_NAME } from '../common/browsers';
+import browser, { BROWSER_NAME } from '../common/browsers';
 import { processResponse } from './proxy-helper';
 import { convertToStorableValue } from './storage-helpers';
+
+const isWebBuild = process.env.REACT_APP_WEB_BUILD === 'true';
 
 const extensionId = {
     chrome: 'momjbjbjpbcbnepbgkkiaofkgimihbii',
@@ -23,9 +25,13 @@ export function executeService(svcName, action, args, $message) {
     args = convertToStorableValue(args);
     return new Promise((resolve, reject) => {
         const responder = (response) => processResponse(response, $message, resolve, reject);
+
         try {
             if (injected) {
                 window._executeJASvc(extnId, { svcName, action, args }, responder, reject);
+            }
+            else if (!isWebBuild && browser.isFirefox) {
+                chr.runtime.sendMessage({ svcName, action, args }, responder);
             }
             else {
                 chr.runtime.sendMessage(extnId, { svcName, action, args }, responder);
