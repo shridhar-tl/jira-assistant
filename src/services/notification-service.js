@@ -77,7 +77,7 @@ export default class NotificationService {
 
         let updatesAvailable;
         if (process.env.REACT_APP_WEB_BUILD !== 'true') {
-            const version = live_versions?.[BROWSER_NAME];
+            let version = live_versions?.[BROWSER_NAME];
             let isBeta = true;
             if (version && this.version < version) {
                 const versionInfo = updates_info.filter(u => u.version === version)[0];
@@ -95,6 +95,8 @@ export default class NotificationService {
                         whatsnew: ["Information not available yet"]
                     });
                 }
+            } else {
+                version = undefined;
             }
             updatesAvailable = { version, isBeta };
         }
