@@ -33,11 +33,11 @@ import SettingsService from './settings-service';
 import StorageService from './storage-service';
 import { AjaxRequestProxyService, BrowserProxyService, StorageProxyService } from './proxy-service';
 import { injectable, inject, injectProdBrowserServices } from './index.common';
+import { isWebBuild } from '../constants/build-info';
 
 export { inject };
 
 let _isReady = false;
-const isWebBuild = process.env.REACT_APP_WEB_BUILD === 'true';
 
 // Any new classes injected should be added in index.d.ts file as well to support intellisense in VS Code.
 export default function injectServices(authType) {

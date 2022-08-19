@@ -21,8 +21,7 @@ import UpdatesInfo from './UpdatesInfo';
 import LaunchWeb from './LaunchWeb';
 import BackupImporter from './BackupImporter';
 import TimerControl from './header/TimerControl';
-
-const isWebBuild = process.env.REACT_APP_WEB_BUILD === 'true';
+import { isWebBuild } from '../../constants/build-info';
 
 class DefaultHeader extends PureComponent {
   constructor(props) {

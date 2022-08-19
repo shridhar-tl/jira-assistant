@@ -1,8 +1,7 @@
 import browser, { BROWSER_NAME } from '../common/browsers';
+import { isWebBuild } from '../constants/build-info';
 import { processResponse } from './proxy-helper';
 import { convertToStorableValue } from './storage-helpers';
-
-const isWebBuild = process.env.REACT_APP_WEB_BUILD === 'true';
 
 const extensionId = {
     chrome: 'momjbjbjpbcbnepbgkkiaofkgimihbii',
@@ -44,7 +43,7 @@ export function executeService(svcName, action, args, $message) {
 }
 
 export async function validateIfWebApp(state) {
-    if (process.env.REACT_APP_WEB_BUILD === 'true') {
+    if (isWebBuild) {
         state.extnUnavailable = true;
         state.isExtnValid = false;
 

@@ -4,8 +4,8 @@ import { Checkbox, SelectBox } from '../../../controls';
 import { inject } from '../../../services/injector-service';
 import { executeService } from '../../../common/proxy';
 import { InputMask } from 'primereact/inputmask';
+import { isWebBuild } from '../../../constants/build-info';
 
-const isWebBuild = process.env.REACT_APP_WEB_BUILD === 'true';
 const isExtnIntg = !isWebBuild || localStorage.getItem('authType') === '1';
 
 const defaultMinTimeToTrack = '00:05';

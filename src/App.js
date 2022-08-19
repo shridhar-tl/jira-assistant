@@ -7,6 +7,7 @@ import { Toast } from 'primereact/toast';
 import { getExtnLaunchUrl, validateIfWebApp } from './common/proxy';
 import { getCurrentQueryParams } from './common/utils';
 import { AppContextProvider } from './common/context';
+import { isWebBuild } from './constants/build-info';
 import 'font-awesome/css/font-awesome.min.css';
 import 'primereact/resources/themes/bootstrap4-light-purple/theme.css';
 import 'primereact/resources/primereact.min.css';
@@ -15,7 +16,6 @@ import 'jsd-report/build/css/style.css';
 import './scss/style.scss';
 import './App.scss';
 
-const isWebBuild = process.env.REACT_APP_WEB_BUILD === 'true';
 export const extnAuth = isWebBuild && document.location.href.indexOf('?authType=1') > 0;
 
 // Layout

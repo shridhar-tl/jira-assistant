@@ -2,6 +2,7 @@ import { messagesUrl } from "../constants/urls";
 import { BROWSER_NAME } from "../common/browsers";
 import * as moment from 'moment';
 import { AppVersionNo } from "../constants/common";
+import { isWebBuild } from "../constants/build-info";
 
 export default class NotificationService {
     static dependencies = ["AjaxRequestService", "CacheService", "SettingsService", "AppBrowserService", "UtilsService", "MessageService"];
@@ -76,8 +77,8 @@ export default class NotificationService {
         }
 
         let updatesAvailable;
-        if (process.env.REACT_APP_WEB_BUILD !== 'true') {
-            let version = live_versions?.[BROWSER_NAME];
+        if (!isWebBuild) {
+            const version = live_versions?.[BROWSER_NAME];
             let isBeta = true;
             if (version && this.version < version) {
                 const versionInfo = updates_info.filter(u => u.version === version)[0];
@@ -95,10 +96,8 @@ export default class NotificationService {
                         whatsnew: ["Information not available yet"]
                     });
                 }
-            } else {
-                version = undefined;
+                updatesAvailable = { version, isBeta };
             }
-            updatesAvailable = { version, isBeta };
         }
 
         return {

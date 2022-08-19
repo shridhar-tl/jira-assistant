@@ -1,5 +1,6 @@
 import moment from "moment";
 import { prepareUrlWithQueryString } from "../common/utils";
+import { isWebBuild } from "../constants/build-info";
 import { EventCategory } from "../constants/settings";
 
 // https://docs.microsoft.com/en-us/graph/api/resources/calendar?view=graph-rest-1.0
@@ -18,8 +19,6 @@ const redirect_uri = 'https://www.jiraassistant.com/oauth/outlook';
 //const calendarListUrl = `${apiBasePath}calendars`;
 //const eventsListUrl = `${apiBasePath}calendar/events?$top=200&$expand=&$filter=&$orderby=&$select=`;
 //const groupEventsListUrl = `${apiBasePath}/calendarGroup/calendars/{0}/events`;
-
-const isWebBuild = process.env.REACT_APP_WEB_BUILD === 'true';
 
 export default class OutlookCalendar {
     static dependencies = ["AjaxRequestService", "AnalyticsService", "MessageService", "OutlookOAuthService", "SessionService"];

@@ -1,10 +1,10 @@
 import React, { PureComponent } from 'react';
 import { withRouter } from 'react-router-dom';
 import { UncontrolledDropdown, DropdownItem, DropdownMenu, DropdownToggle, Nav } from 'reactstrap';
+import { isWebBuild } from '../../constants/build-info';
 import { JAWebLaunchUrl } from '../../constants/urls';
 import { inject } from '../../services/injector-service';
 
-const isWebBuild = process.env.REACT_APP_WEB_BUILD === 'true';
 const options = isWebBuild ? {
     btnText: 'Web',
     btnTooltip: 'Go back to extension',

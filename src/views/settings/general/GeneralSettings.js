@@ -7,9 +7,8 @@ import WorklogTab from './WorklogTab';
 import DefaultValuesTab from './DefaultValuesTab';
 import MeetingsTab from './MeetingsTab';
 import MenuOptionsTab from './MenuOptionsTab';
+import { isWebBuild } from '../../../constants/build-info';
 import './Common.scss';
-
-const isWebBuild = process.env.REACT_APP_WEB_BUILD === 'true';
 
 class GeneralSettings extends PureComponent {
     constructor(props) {

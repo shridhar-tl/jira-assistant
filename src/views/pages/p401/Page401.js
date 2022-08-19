@@ -1,9 +1,8 @@
 import React, { PureComponent } from 'react';
 import { inject } from '../../../services';
 import { getGitHubIssueUrl } from '../../../constants/utils';
+import { isWebBuild } from '../../../constants/build-info';
 import "./P401.scss";
-
-const isWebBuild = process.env.REACT_APP_WEB_BUILD === 'true';
 
 class Page401 extends PureComponent {
     constructor(props) {

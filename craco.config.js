@@ -6,7 +6,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const env = require('react-scripts/config/env')('/').raw;
 
-const isWebBuild = env.REACT_APP_WEB_BUILD === 'true';
+const isWebBuild = env.REACT_APP_BUILD_MODE === 'WEB';
 const analyzeBundles = process.env.ANALYZE_BUNDLES === "true";
 const shouldUseSourceMap = process.env.GENERATE_SOURCEMAP === 'true';
 const shouldUseSourceMap_CSS = process.env.GENERATE_CSS_SOURCEMAP === 'true';
