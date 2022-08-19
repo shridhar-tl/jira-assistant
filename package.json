@@ -56,7 +56,9 @@
         "start": "react-scripts start",
         "build": "react-scripts build",
         "test": "react-scripts test",
-        "eject": "react-scripts eject"
+        "eject": "react-scripts eject",
+        "craco-build": "craco build",
+        "postcraco-build": "node post-build.js",
     },
     "eslintConfig": {
         "extends": "react-app",
