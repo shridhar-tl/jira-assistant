@@ -1,4 +1,4 @@
-﻿/* global chrome browser */
+/* global chrome browser */
 import injectServices, { serviceObjectMap, inject } from "../services/index.background";
 import { AppVersionNo, SystemUserId } from "../constants/common";
 import { SettingsCategory } from "../constants/settings";

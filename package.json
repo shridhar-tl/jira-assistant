@@ -22,7 +22,7 @@
         "@fullcalendar/timegrid": "^5.11.2",
         "bootstrap": "^4.6.2",
         "bootstrap-daterangepicker": "^3.1.0",
-        "chart.js": "^3.9.0",
+        "chart.js": "^3.9.1",
         "classnames": "^2.3.1",
         "dexie": "^3.2.2",
         "espree": "^9.3.3",
