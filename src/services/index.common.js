@@ -8,15 +8,15 @@ function injectProdBrowserServices() {
     if (process.env.NODE_ENV === "production") {
         if (browsers.isEdge) {
             console.log("Edge Browser service injected");
-            injectable(EdgeService, "AppBrowserService", "$jaBrowserExtn", { isSingleton: false });
+            injectable(EdgeService, "AppBrowserService", "$jaBrowserExtn", { isSingleton: true });
         }
         else if (browsers.isFirefox) {
             console.log("Firefox Browser service injected");
-            injectable(FirefoxService, "AppBrowserService", "$jaBrowserExtn", { isSingleton: false });
+            injectable(FirefoxService, "AppBrowserService", "$jaBrowserExtn", { isSingleton: true });
         }
         else {
             console.log("Chrome Browser service injected");
-            injectable(ChromeService, "AppBrowserService", "$jaBrowserExtn", { isSingleton: false });
+            injectable(ChromeService, "AppBrowserService", "$jaBrowserExtn", { isSingleton: true });
         }
     }
 }

@@ -46,7 +46,7 @@ class TextBox extends PureComponent {
 
     render() {
         const { value } = this.state;
-        const { keyfilter, style, className, maxLength, placeholder, multiline, rows, autoResize, readOnly, disabled, autoFocus } = this.props;
+        const { type, keyfilter, style, className, maxLength, placeholder, multiline, rows, autoResize, readOnly, disabled, autoFocus } = this.props;
 
         if (multiline) {
             return (
@@ -57,7 +57,7 @@ class TextBox extends PureComponent {
         }
         else {
             return (
-                <InputText value={value} keyfilter={keyfilter} style={style} maxLength={maxLength} className={className} placeholder={placeholder}
+                <InputText type={type} value={value} keyfilter={keyfilter} style={style} maxLength={maxLength} className={className} placeholder={placeholder}
                     onChange={this.onChange} onKeyDown={this.keyPress} readOnly={readOnly} disabled={disabled} onBlur={this.props.onBlur} autoFocus={autoFocus} />
             );
         }

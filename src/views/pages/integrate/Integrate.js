@@ -2,14 +2,13 @@ import React, { PureComponent } from 'react';
 import { showContextMenu, ContextMenu } from 'jsd-report';
 import { inject } from '../../../services';
 import { Button, TextBox } from '../../../controls';
-import { ContactUsUrl } from '../../../constants/urls';
 import { ApiUrls } from '../../../constants/api-urls';
 import BackupImporter from '../../../layouts/DefaultLayout/BackupImporter';
 import { getJiraCloudOAuthAuthorizeUrl } from '../../../constants/oauth';
 import { getOriginFromUrl } from '../../../common/utils';
 import Dialog, { CustomDialog } from '../../../dialogs';
-import { AppVersionNo } from '../../../constants/common';
 import { executeService } from '../../../common/proxy';
+import Footer from '../Footer';
 
 const settingsIconStyles = {
     fontSize: '18px', position: 'absolute', right: '20px', top: '35px', color: '#0000ff'
@@ -22,11 +21,7 @@ class Integrate extends PureComponent {
     constructor(props) {
         super(props);
         inject(this, "AjaxService", "StorageService", "MessageService", "SettingsService", "AppBrowserService", "SessionService", "SettingsService", "UserService");
-
-        this.year = new Date().getFullYear();
-
-        this.browser = navigator.userAgent;
-        this.state = { version: AppVersionNo };
+        this.state = {};
         this.init();
     }
 
@@ -36,6 +31,7 @@ class Integrate extends PureComponent {
             { label: "Options", icon: 'fa fa-cogs fs-16 margin-r-5', command: this.launchOptionsPage.bind(this) },
             { separator: true },
             { label: "Use Jira OAuth", icon: 'fa fa-external-link fs-16 margin-r-5', command: this.useOAuth.bind(this) },
+            { label: "Use Basic Auth", icon: 'fa fa-user fs-16 margin-r-5', command: () => this.props.history.push('/integrate/basic/1') }
         ];
 
         this.$jaBrowserExtn.getCurrentUrl().then((url) => {
@@ -153,7 +149,7 @@ class Integrate extends PureComponent {
     };
 
     render() {
-        const { integrate, version, browser, state: { jiraUrl, isLoading } } = this;
+        const { integrate, state: { jiraUrl, isLoading } } = this;
 
         return (
             <div className="app flex-row align-items-center" style={containerStyle}>
@@ -181,25 +177,7 @@ class Integrate extends PureComponent {
                                     <Button type="success" className="btn-block" icon={isLoading ? "fa fa-spinner fa-spin" : "fa fa-unlock-alt"} disabled={!jiraUrl || isLoading}
                                         onClick={integrate} label="Integrate" />
                                 </div>
-                                <div className="card-footer p-4">
-                                    <div className="row">
-                                        <div className="col-6">
-                                            <span>© 2016-{this.year} Jira Assistant</span>
-                                        </div>
-                                        <div className="col-6" style={{ textAlign: 'right' }}>
-                                            <span>
-                                                <i className="fa fa-youtube" />
-                                                <a href="https://www.youtube.com/embed/HsWq7cT3Qq0?rel=0&autoplay=1&showinfo=0&cc_load_policy=1" target="_blank" rel="noopener noreferrer"
-                                                    title="Click to open YouTube video guiding you to setup Jira Assistant"> Help setup</a>
-                                            </span> |
-                                            <span>
-                                                <i className="fa fa-phone margin-l-5" />
-                                                <a href={`${ContactUsUrl}?entry.1426640786=${version}&entry.972533768=${browser}`}
-                                                    target="_blank" rel="noopener noreferrer" title="Click to report about any issues or ask a question"> Contact us</a>
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
+                                <Footer />
                             </div>
                         </div>
                     </div>

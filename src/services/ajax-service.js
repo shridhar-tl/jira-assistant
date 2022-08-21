@@ -2,7 +2,7 @@
 import { prepareUrlWithQueryString } from '../common/utils';
 
 export default class AjaxService {
-    static dependencies = ["SessionService", "MessageService", "AjaxRequestService", "JiraOAuthService"];
+    static dependencies = ["SessionService", "MessageService", "AjaxRequestService", "JiraAuthService"];
 
     constructor($session, $message, $request, $jAuth) {
         this.$session = $session;

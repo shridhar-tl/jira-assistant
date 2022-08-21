@@ -2,17 +2,16 @@ import classNames from 'classnames';
 import React, { PureComponent } from 'react';
 import Dialog, { CustomDialog } from '../../../dialogs';
 import { BROWSER_NAME } from '../../../common/browsers';
-import { ContactUsUrl, StoreUrls, WebSiteUrl } from '../../../constants/urls';
+import { StoreUrls, WebSiteUrl } from '../../../constants/urls';
 import { getJiraCloudOAuthAuthorizeUrl } from '../../../constants/oauth';
-import { AppVersionNo } from '../../../constants/common';
+import { isAppBuild } from '../../../constants/build-info';
+import Footer from '../Footer';
 import './ChooseAuthType.scss';
 
 class ChooseAuthType extends PureComponent {
     constructor(props) {
         super(props);
         this.storeUrl = StoreUrls[BROWSER_NAME] || WebSiteUrl;
-        this.state = { version: AppVersionNo };
-        this.year = new Date().getFullYear();
     }
 
     getExtensionMessage() {
@@ -43,6 +42,8 @@ class ChooseAuthType extends PureComponent {
         }
     };
 
+    basicAuthSelected = () => this.props.history.push('/integrate/basic');
+
     oAuthSelected = () => {
         Dialog.yesNo((<span>
             You will be redirected to Jira Cloud where you can Authorize Jira Assistant to access Jira API's.
@@ -58,7 +59,7 @@ class ChooseAuthType extends PureComponent {
     };
 
     render() {
-        const { version, browser, props: { extnUnavailable, isExtnValid } } = this;
+        const { props: { extnUnavailable, isExtnValid } } = this;
         const allowExtn = !extnUnavailable && isExtnValid;
 
         return (
@@ -70,12 +71,14 @@ class ChooseAuthType extends PureComponent {
                                 <div className="card-body p-4">
                                     <h1>Jira Assistant</h1>
                                     <p className="text-muted">Choose the way you would like to <strong>Integration</strong> with your Jira</p>
-                                    {extnUnavailable && <span className="badge badge-success" onClick={this.navigateToStore} title="Click to visit webstore and install the extension">Install Extension</span>}
-                                    {!extnUnavailable && !isExtnValid && !allowExtn && <span className="badge badge-success" onClick={this.navigateToStore} title="Click to visit webstore and update the extension">Update Extension</span>}
-                                    <div className={classNames("auth-type", !allowExtn && "disabled")} onClick={allowExtn ? this.extnSelected : undefined}>
-                                        <div className="auth-type-title">Use Jira Assistant Extension</div>
-                                        {this.getExtensionMessage()}
-                                    </div>
+                                    {!isAppBuild && <>
+                                        {extnUnavailable && <span className="badge badge-success" onClick={this.navigateToStore} title="Click to visit webstore and install the extension">Install Extension</span>}
+                                        {!extnUnavailable && !isExtnValid && !allowExtn && <span className="badge badge-success" onClick={this.navigateToStore} title="Click to visit webstore and update the extension">Update Extension</span>}
+                                        <div className={classNames("auth-type", !allowExtn && "disabled")} onClick={allowExtn ? this.extnSelected : undefined}>
+                                            <div className="auth-type-title">Use Jira Assistant Extension</div>
+                                            {this.getExtensionMessage()}
+                                        </div>
+                                    </>}
                                     <div className="auth-type" onClick={this.oAuthSelected}>
                                         <div className="auth-type-title">Use OAuth2 (Jira Cloud only)</div>
                                         <div className="auth-type-desc">Using OAuth option will let authorize this tool to Integrate with Jira without need to store credentials in this tool. This is more secured than using userid and password</div>
@@ -86,25 +89,7 @@ class ChooseAuthType extends PureComponent {
                                             On some cases this option may not work if you use single sign-on for logging in to Jira.</div>
                                     </div>
                                 </div>
-                                <div className="card-footer p-4">
-                                    <div className="row">
-                                        <div className="col-6">
-                                            <span>© 2016-{this.year} Jira Assistant</span>
-                                        </div>
-                                        <div className="col-6" style={{ textAlign: 'right' }}>
-                                            <span>
-                                                <i className="fa fa-youtube" />
-                                                <a href="https://www.youtube.com/embed/HsWq7cT3Qq0?rel=0&autoplay=1&showinfo=0&cc_load_policy=1" target="_blank" rel="noopener noreferrer"
-                                                    title="Click to open YouTube video guiding you to setup Jira Assistant"> Help setup</a>
-                                            </span> |
-                                            <span>
-                                                <i className="fa fa-phone margin-l-5" />
-                                                <a href={`${ContactUsUrl}?entry.1426640786=${version}&entry.972533768=${browser}`}
-                                                    target="_blank" rel="noopener noreferrer" title="Click to report about any issues or ask a question"> Contact us</a>
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
+                                <Footer />
                             </div>
                         </div>
                     </div>

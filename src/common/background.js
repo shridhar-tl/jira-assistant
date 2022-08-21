@@ -52,14 +52,14 @@ async function executeCommand(message, sendResponse, logDetails) {
         if (svcName === 'SELF') {
             switch (action) {
                 case 'VERSION':
-                    response.success = await Promise.resolve(convertToStorableValue(AppVersionNo));
+                    response.success = await Promise.resolve(AppVersionNo);
                     break;
 
                 case 'IS_INTEGRATED':
                     const { $storage } = services;
                     const { value: userId } = await $storage.getSetting(SystemUserId, SettingsCategory.System, 'CurrentUserId') || {};
                     const { value: jiraUrl } = await $storage.getSetting(SystemUserId, SettingsCategory.System, 'CurrentJiraUrl') || {};
-                    response.success = convertToStorableValue(userId > 0 && !!jiraUrl);
+                    response.success = userId > 0 && !!jiraUrl;
                     break;
 
                 case 'RELOAD':
@@ -81,7 +81,8 @@ async function executeCommand(message, sendResponse, logDetails) {
             response.success = convertToStorableValue(await $service[action].apply($service, args));
         }
     } catch (ex) {
-        response.error = convertToStorableValue({ message: ex.message, err: ex.toString() });
+        const { message, status, statusText, error: err } = ex;
+        response.error = convertToStorableValue({ message, status, statusText, error: err });
         error(ex);
     }
 

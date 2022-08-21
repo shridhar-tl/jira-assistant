@@ -11,7 +11,7 @@ import ConfigService from './config-service';
 import DashboardService from './dashboard-service';
 import DatabaseService from './database-service';
 import JiraUpdatesService from './jira-updates-service';
-import JiraOAuthService from './jira-oauth-service';
+import JiraAuthService from './jira-oauth-service';
 import JiraService from './jira-service';
 import MessageService from './message-service';
 import NotificationService from './notification-service';
@@ -33,7 +33,7 @@ import SettingsService from './settings-service';
 import StorageService from './storage-service';
 import { AjaxRequestProxyService, BrowserProxyService, StorageProxyService } from './proxy-service';
 import { injectable, inject, injectProdBrowserServices } from './index.common';
-import { isWebBuild } from '../constants/build-info';
+import { isAppBuild, isWebBuild } from '../constants/build-info';
 
 export { inject };
 
@@ -42,12 +42,12 @@ let _isReady = false;
 // Any new classes injected should be added in index.d.ts file as well to support intellisense in VS Code.
 export default function injectServices(authType) {
     const injectProxy = isWebBuild && authType === '1';
-    injectable(injectProxy ? AjaxRequestProxyService : AjaxRequestService, "AjaxRequestService", "$request", { isSingleton: false });
+    injectable(injectProxy ? AjaxRequestProxyService : AjaxRequestService, "AjaxRequestService", "$request", { isSingleton: true });
     injectable(AjaxService, "AjaxService", "$ajax");
     injectable(AnalyticsService, "AnalyticsService", "$analytics", { isSingleton: true });
-    if (injectProxy) {
+    if (injectProxy || isAppBuild) {
         console.log("Proxy Browser service injected");
-        injectable(BrowserProxyService, "AppBrowserService", "$jaBrowserExtn", { isSingleton: false });
+        injectable(BrowserProxyService, "AppBrowserService", "$jaBrowserExtn", { isSingleton: true });
     }
     else if (!isWebBuild && process.env.NODE_ENV === "production") {
         injectProdBrowserServices();
@@ -63,28 +63,28 @@ export default function injectServices(authType) {
     injectable(CalendarService, "CalendarService", "$calendar");
     injectable(ConfigService, "ConfigService", "$config");
     injectable(DashboardService, "DashboardService", "$dashboard");
-    injectable(DatabaseService, "DatabaseService", "$db");
-    injectable(JiraOAuthService, "JiraOAuthService", "$jAuth");
+    injectable(DatabaseService, "DatabaseService", "$db", { isSingleton: true });
+    injectable(JiraAuthService, "JiraAuthService", "$jAuth", { isSingleton: true });
     injectable(JiraService, "JiraService", "$jira");
     injectable(JiraUpdatesService, "JiraUpdatesService", "$jupdates");
-    injectable(MessageService, "MessageService", "$message");
-    injectable(NotificationService, "NotificationService", "$noti");
+    injectable(MessageService, "MessageService", "$message", { isSingleton: true });
+    injectable(NotificationService, "NotificationService", "$noti", { isSingleton: true });
     injectable(OutlookOAuthService, "OutlookOAuthService", "$msoAuth");
     injectable(OutlookCalendar, "OutlookService", "$outlook");
     injectable(QueueService, "QueueService", "$q", { isSingleton: false });
     injectable(ReportService, "ReportService", "$report");
     injectable(ReportConfigService, "ReportConfigService", "$reportConfig");
     injectable(SessionService, "SessionService", "$session");
-    injectable(SettingsService, "SettingsService", "$settings");
+    injectable(SettingsService, "SettingsService", "$settings", { isSingleton: true });
     injectable(injectProxy ? StorageProxyService : StorageService, "StorageService", "$storage", { isSingleton: true });
     injectable(SuggestionService, "SuggestionService", "$suggestion");
     injectable(TicketService, "TicketService", "$ticket");
-    injectable(UserService, "UserService", "$user");
+    injectable(UserService, "UserService", "$user", { isSingleton: true });
     injectable(UserGroupService, "UserGroupService", "$usergroup");
     injectable(UserUtilsService, "UserUtilsService", "$userutils");
-    injectable(UtilsService, "UtilsService", "$utils");
+    injectable(UtilsService, "UtilsService", "$utils", { isSingleton: true });
     injectable(WorklogService, "WorklogService", "$worklog");
-    injectable(WorklogTimerService, "WorklogTimerService", "$wltimer");
+    injectable(WorklogTimerService, "WorklogTimerService", "$wltimer", { isSingleton: true });
     _isReady = true;
 }
 

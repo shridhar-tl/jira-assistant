@@ -78,25 +78,5 @@ export default class AjaxRequestService {
             console.error(err);
             return Promise.reject({ status: 0, statusText: err.message, error: err });
         }
-        /* Removed usage of AJAX and used fetch instead. This has to be removed later if all works well
-        return new Promise((resolve, reject) => {
-            $.ajax({
-                type: method,
-                url: url,
-                data: JSON.stringify(body),
-                success: resolve,
-                error: reject,
-                dataType: json !== false ? "json" : undefined,
-                xhrFields: {
-                    withCredentials: withCredentials !== false
-                },
-                beforeSend: (request) => {
-                    const { headers } = this.httpOptions;
-                    const allHeaders = { ...headers, ...remainingHeaders };
-                    //request.setRequestHeader('X-Atlassian-Token', 'no-check');
-                    Object.keys(allHeaders).forEach(h => request.setRequestHeader(h, allHeaders[h]));
-                }
-            });
-        });*/
     }
 }

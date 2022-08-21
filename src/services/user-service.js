@@ -121,9 +121,15 @@ export default class UserService {
         return user;
     }
 
-    async createUser(profile, root, apiUrl) {
+    async createUser(profile, root, options) {
         const name = getUserName(profile);
         const email = profile.emailAddress;
+        const optIsObj = options && typeof options === 'object';
+        const apiUrl = !optIsObj ? options : undefined;
+
+        if (!optIsObj) {
+            options = undefined;
+        }
 
         let user = await this.getUserFromDB(root, name, email);
         if (!user) {
@@ -132,10 +138,14 @@ export default class UserService {
                 userId: name,
                 email: email,
                 lastLogin: new Date(),
-                dateCreated: new Date()
+                dateCreated: new Date(),
+                ...options
             };
 
-            if (apiUrl) { user.apiUrl = apiUrl; }
+            if (apiUrl) {
+                user.authType = 'O';
+                user.apiUrl = apiUrl;
+            }
 
             const id = await this.$storage.addUser(user);
 
@@ -162,9 +172,18 @@ export default class UserService {
             user.lastLogin = new Date();
 
             if (apiUrl) {
+                user.authType = 'O';
                 user.apiUrl = apiUrl;
+            } else if (options) {
+                user.authType = options.authType;
+                user.uid = options.uid;
+                user.pwd = options.pwd;
+                delete user.apiUrl;
             } else {
                 delete user.apiUrl;
+                delete user.authType;
+                delete user.uid;
+                delete user.pwd;
             }
 
             await this.$storage.addOrUpdateUser(user);

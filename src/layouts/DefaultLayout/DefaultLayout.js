@@ -26,6 +26,7 @@ import AsideUserInfo from './AsideUserInfo';
 import { setStartOfWeek } from '../../common/utils';
 import BuildDate from './BuildDate';
 import { WorklogContextProvider } from '../../common/context';
+import { isWebBuild } from '../../constants/build-info';
 
 const DefaultHeader = React.lazy(() => import('./DefaultHeader'));
 
@@ -91,7 +92,13 @@ class DefaultLayout extends PureComponent {
   signOut = (e) => {
     e.preventDefault();
     this.$cache.clear();
-    this.props.history.push('/integrate');
+    this.$settings.set('CurrentUserId');
+    this.$settings.set('CurrentJiraUrl');
+    if (isWebBuild) {
+      document.location.href = '/';
+    } else {
+      this.props.history.push('/integrate');
+    }
   };
 
   setTimer = (timerEntry, needReload = false) => {

@@ -19,9 +19,9 @@ import { JAWebRootUrl } from '../constants/urls';
     // Check and see if browser has activeTab permission. If not then redirect to integrate page
     hasTabAccess().then(hasPermission => {
       if (hasPermission) {
-        document.location.href = `${indexPageUrl}?quick=true#/pages/integrate`;
+        document.location.href = `${indexPageUrl}?quick=true#/integrate`;
       } else {
-        $jaBrowserExtn.openTab(`${indexPageUrl}#/pages/integrate`);
+        $jaBrowserExtn.openTab(`${indexPageUrl}#/integrate`);
         window.close();
       }
     });

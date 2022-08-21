@@ -13,7 +13,7 @@ import CacheService from './cache-service';
 import CalendarService from './calendar-service';
 import ConfigService from './config-service';
 import DashboardService from './dashboard-service';
-import JiraOAuthService from './jira-oauth-service';
+import JiraAuthService from './jira-oauth-service';
 import JiraService from './jira-service';
 import JiraUpdatesService from './jira-updates-service';
 import MessageService from './message-service';
@@ -48,7 +48,7 @@ declare module 'react' {
         $calendar: CalendarService
         $config: ConfigService
         $dashboard: DashboardService
-        $jAuth: JiraOAuthService
+        $jAuth: JiraAuthService
         $jira: JiraService
         $jupdates: JiraUpdatesService
         $message: MessageService

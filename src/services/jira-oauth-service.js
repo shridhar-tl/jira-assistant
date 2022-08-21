@@ -2,13 +2,25 @@ import { ApiUrls } from "../constants/api-urls";
 import { jaJiraTokenExchangeUrl } from "../constants/oauth";
 import BaseService from "./base-service";
 
-export default class JiraOAuthService extends BaseService {
+export default class JiraAuthService extends BaseService {
     static dependencies = ['AjaxRequestService', 'SettingsService', 'UserService'];
     constructor($request, $settings, $user) {
         super();
         this.$request = $request;
         this.$settings = $settings;
         this.$user = $user;
+    }
+
+    async integrateWithCred(url, uid, pwd) {
+        const profile = await this.$request.execute('GET',
+            url.clearEnd('/') + ApiUrls.mySelf.substring(1),
+            null, getBasicTokenHeader(uid, pwd));
+        const userId = await this.$user.createUser(profile, url, { authType: 'C', uid, pwd: btoa(pwd) });
+
+        await this.$settings.set("CurrentJiraUrl", url);
+        await this.$settings.set("CurrentUserId", userId);
+
+        return userId;
     }
 
     async integrate(code) {
@@ -71,7 +83,10 @@ export default class JiraOAuthService extends BaseService {
         }
 
         const user = await this.$user.getUser(userId);
-        if (user.apiUrl) {
+        if (user.authType === 'C') {
+            customHeaders = { ...customHeaders, ...getBasicTokenHeader(user.uid, atob(user.pwd)) };
+        }
+        else if (user.apiUrl) {
             let auth = await this.$settings.getGeneralSetting(userId, 'JOAT');
             if (auth) {
                 // Handle simultaneous multi executions of 
@@ -88,7 +103,7 @@ export default class JiraOAuthService extends BaseService {
 
                 const { token } = auth;
 
-                customHeaders = { ...customHeaders, ...getBearerTokenHeader(token), withCredentials: false };
+                customHeaders = { ...customHeaders, ...getBearerTokenHeader(token) };
             }
         }
 
@@ -97,5 +112,9 @@ export default class JiraOAuthService extends BaseService {
 }
 
 function getBearerTokenHeader(token) {
-    return { 'Authorization': `Bearer ${token}` };
+    return { 'Authorization': `Bearer ${token}`, withCredentials: false };
+}
+
+function getBasicTokenHeader(uid, pwd) {
+    return { 'Authorization': `Basic ${btoa(`${uid}:${pwd}`)}`, withCredentials: false };
 }

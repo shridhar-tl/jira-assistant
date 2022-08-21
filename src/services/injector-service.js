@@ -21,11 +21,15 @@ export const injector = (function () {
         return svcObj;
     };
 
-    svc.resolve = function (name, path) {
+    svc.resolve = function (name, path, onlySingleton) {
         const svcObj = svc.getRef(name);
 
         if (svcObj.isSingleton && svcObj.instance) {
             return svcObj.instance;
+        }
+
+        if (onlySingleton && !svcObj.isSingleton) {
+            throw new Error(`"${name}" is not a singleton service. Source: ${path[path.length - 1]}`);
         }
 
         let instance = null;
@@ -40,7 +44,7 @@ export const injector = (function () {
                 if (path && path.indexOf(depToResolve) > -1) {
                     throw new Error(`Circular dependency not supported. Error resolving: ${newPath.join('->')}`);
                 }
-                dependencies[i + 1] = svc.resolve(depToResolve, newPath);
+                dependencies[i + 1] = svc.resolve(depToResolve, newPath, svcObj.isSingleton);
             }
 
             instance = new (svcObj.type.bind.apply(svcObj.type, dependencies))();
