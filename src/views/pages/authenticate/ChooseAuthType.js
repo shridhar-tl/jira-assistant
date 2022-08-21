@@ -83,8 +83,8 @@ class ChooseAuthType extends PureComponent {
                                         <div className="auth-type-title">Use OAuth2 (Jira Cloud only)</div>
                                         <div className="auth-type-desc">Using OAuth option will let authorize this tool to Integrate with Jira without need to store credentials in this tool. This is more secured than using userid and password</div>
                                     </div>
-                                    <div className="auth-type disabled">
-                                        <div className="auth-type-title">Use User id and Password <span className="badge badge-warning">Comming Soon</span></div>
+                                    <div className={`auth-type${isAppBuild ? '' : ' disabled'}`} onClick={isAppBuild ? this.basicAuthSelected : undefined}>
+                                        <div className="auth-type-title">Use User id and Password</div>
                                         <div className="auth-type-desc">You can use your user id and password to authenticate with Jira.
                                             On some cases this option may not work if you use single sign-on for logging in to Jira.</div>
                                     </div>
