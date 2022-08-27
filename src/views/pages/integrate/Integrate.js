@@ -81,6 +81,8 @@ class Integrate extends PureComponent {
         this.$session.rootUrl = root;
         this.setState({ isLoading: true });
         const hasPermission = await this.$jaBrowserExtn.requestPermission(null, root);
+        // Session userId has to be cleared to avoid JiraAuthService from interfering
+        delete this.$session.userId;
         this.$ajax.get(ApiUrls.mySelf)
             .then(data => this.$user.createUser(data, root).then(this.openDashboard, this.handleDBError)
                 , (response) => {

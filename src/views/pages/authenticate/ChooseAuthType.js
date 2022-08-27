@@ -70,7 +70,7 @@ class ChooseAuthType extends PureComponent {
                             <div className="card mx-4 no-padding no-margin">
                                 <div className="card-body p-4">
                                     <h1>Jira Assistant</h1>
-                                    <p className="text-muted">Choose the way you would like to <strong>Integration</strong> with your Jira</p>
+                                    <p className="text-muted">Choose the way you would like to <strong>Integrate</strong> with your Jira</p>
                                     {!isAppBuild && <>
                                         {extnUnavailable && <span className="badge badge-success" onClick={this.navigateToStore} title="Click to visit webstore and install the extension">Install Extension</span>}
                                         {!extnUnavailable && !isExtnValid && !allowExtn && <span className="badge badge-success" onClick={this.navigateToStore} title="Click to visit webstore and update the extension">Update Extension</span>}
@@ -81,11 +81,11 @@ class ChooseAuthType extends PureComponent {
                                     </>}
                                     <div className="auth-type" onClick={this.oAuthSelected}>
                                         <div className="auth-type-title">Use OAuth2 (Jira Cloud only)</div>
-                                        <div className="auth-type-desc">Using OAuth option will let authorize this tool to Integrate with Jira without need to store credentials in this tool. This is more secured than using userid and password</div>
+                                        <div className="auth-type-desc">Using OAuth option will let authorize this tool to Integrate with Jira without need to store login credentials in this tool. This is more secured than using userid and password</div>
                                     </div>
                                     <div className={`auth-type${isAppBuild ? '' : ' disabled'}`} onClick={isAppBuild ? this.basicAuthSelected : undefined}>
                                         <div className="auth-type-title">Use User id and Password</div>
-                                        <div className="auth-type-desc">You can use your user id and password to authenticate with Jira.
+                                        <div className="auth-type-desc">You can use your user id and password / api token to authenticate with Jira.
                                             On some cases this option may not work if you use single sign-on for logging in to Jira.</div>
                                     </div>
                                 </div>

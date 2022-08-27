@@ -1,4 +1,6 @@
+import { executeService } from "../common/proxy";
 import { ApiUrls } from "../constants/api-urls";
+import { isAppBuild } from "../constants/build-info";
 import { jaJiraTokenExchangeUrl } from "../constants/oauth";
 import BaseService from "./base-service";
 
@@ -15,7 +17,14 @@ export default class JiraAuthService extends BaseService {
         const profile = await this.$request.execute('GET',
             url.clearEnd('/') + ApiUrls.mySelf.substring(1),
             null, getBasicTokenHeader(uid, pwd));
-        const userId = await this.$user.createUser(profile, url, { authType: 'C', uid, pwd: btoa(pwd) });
+
+        if (isAppBuild) {
+            pwd = await executeService('SELF', 'encryptData', [pwd]);
+        } else {
+            pwd = btoa(pwd);
+        }
+
+        const userId = await this.$user.createUser(profile, url, { authType: 'C', uid, pwd: pwd });
 
         await this.$settings.set("CurrentJiraUrl", url);
         await this.$settings.set("CurrentUserId", userId);
@@ -84,7 +93,15 @@ export default class JiraAuthService extends BaseService {
 
         const user = await this.$user.getUser(userId);
         if (user.authType === 'C') {
-            customHeaders = { ...customHeaders, ...getBasicTokenHeader(user.uid, atob(user.pwd)) };
+            let pwd;
+
+            if (isAppBuild) {
+                pwd = await executeService('SELF', 'decryptData', [user.pwd]);
+            } else {
+                pwd = user.pwd && atob(user.pwd);
+            }
+
+            customHeaders = { ...customHeaders, ...getBasicTokenHeader(user.uid, pwd) };
         }
         else if (user.apiUrl) {
             let auth = await this.$settings.getGeneralSetting(userId, 'JOAT');

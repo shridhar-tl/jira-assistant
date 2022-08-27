@@ -1,4 +1,6 @@
 import browser from '../common/browsers';
+import { executeService } from '../common/proxy';
+import { isAppBuild } from '../constants/build-info';
 
 export default class AjaxRequestService {
     // This class gets proxied when accessed as webapp
@@ -51,28 +53,34 @@ export default class AjaxRequestService {
             headers['Content-Type'] = 'application/json';
         }
         try {
-            const result = await fetch(url, {
+            const request = {
                 method,
                 body: JSON.stringify(body),
                 credentials: withCredentials !== false ? 'include' : undefined,
                 referrerPolicy: 'no-referrer',
                 headers,
-            });
+            };
 
-            if (result.ok) {
-                try {
-                    return await result.json();
-                } catch (err) {
-                    return Promise.reject({ status: -1, statusText: err.message, error: err });
-                }
+            if (isAppBuild) {
+                return await executeService('AjaxRequestService', 'execute', [url, request]);
             } else {
-                const { status, statusText, headers } = result;
-                const type = headers.get('content-type');
-                let error;
-                if (type?.includes('json')) {
-                    error = await result.json();
+                const result = await fetch(url, request);
+
+                if (result.ok) {
+                    try {
+                        return await result.json();
+                    } catch (err) {
+                        return Promise.reject({ status: -1, statusText: err.message, error: err });
+                    }
+                } else {
+                    const { status, statusText, headers } = result;
+                    const type = headers.get('content-type');
+                    let error;
+                    if (type?.includes('json')) {
+                        error = await result.json();
+                    }
+                    return Promise.reject({ status, statusText, error });
                 }
-                return Promise.reject({ status, statusText, error });
             }
         } catch (err) {
             console.error(err);

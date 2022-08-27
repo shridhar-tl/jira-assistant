@@ -7,6 +7,7 @@ import { executeService } from '../../../common/proxy';
 import { ApiTokenHelpPage } from '../../../constants/urls';
 import registerServices from '../../../services';
 import Footer from '../Footer';
+import { isDevBuild, isExtnBuild } from '../../../constants/build-info';
 
 const isQuickView = document.location.href.indexOf('?quick=true') > -1;
 const containerStyle = isQuickView ? { minHeight: '380px', maxHeight: '380px' } : {};
@@ -66,9 +67,11 @@ class Integrate extends PureComponent {
 
         if (this.props.setAuthType) {
             this.props.setAuthType(this.useExtn ? '1' : '2');
-        } else {
+        } else if (isExtnBuild) {
             this.$jaBrowserExtn.openTab("/index.html");
             window.close();
+        } else {
+            window.location.href = '/index.html';
         }
     };
 

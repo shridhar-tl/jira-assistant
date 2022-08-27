@@ -11,13 +11,13 @@ export { inject };
 // Any new classes injected should be added in index.d.ts file as well to support intellisense in VS Code.
 export default function injectServices() {
     injectProdBrowserServices();
-    injectable(AjaxRequestService, "AjaxRequestService", "$request");
-    injectable(AnalyticsServiceFake, "AnalyticsService", "$analytics", { isSingleton: false });
-    injectable(DatabaseService, "DatabaseService", "$db");
-    injectable(MessageService, "MessageService", "$message");
-    injectable(SettingsService, "SettingsService", "$settings");
-    injectable(StorageService, "StorageService", "$storage");
-    injectable(WorklogTimerService, "WorklogTimerService", "$wltimer");
+    injectable(AjaxRequestService, "AjaxRequestService", "$request", { isSingleton: true });
+    injectable(AnalyticsServiceFake, "AnalyticsService", "$analytics", { isSingleton: true });
+    injectable(DatabaseService, "DatabaseService", "$db", { isSingleton: true });
+    injectable(MessageService, "MessageService", "$message", { isSingleton: true });
+    injectable(SettingsService, "SettingsService", "$settings", { isSingleton: true });
+    injectable(StorageService, "StorageService", "$storage", { isSingleton: true });
+    injectable(WorklogTimerService, "WorklogTimerService", "$wltimer", { isSingleton: true });
 }
 
 export const serviceObjectMap = {

@@ -9,9 +9,9 @@ export { inject };
 // Any new classes injected should be added in index.d.ts file as well to support intellisense in VS Code.
 export default function injectServices() {
     injectProdBrowserServices();
-    injectable(MessageService, "MessageService", "$message");
-    injectable(SettingsService, "SettingsService", "$settings");
-    injectable(StorageService, "StorageService", "$storage");
-    injectable(DatabaseService, "DatabaseService", "$db");
-    injectable(AnalyticsServiceFake, "AnalyticsService", "$analytics", { isSingleton: false });
+    injectable(MessageService, "MessageService", "$message", { isSingleton: true });
+    injectable(SettingsService, "SettingsService", "$settings", { isSingleton: true });
+    injectable(StorageService, "StorageService", "$storage", { isSingleton: true });
+    injectable(DatabaseService, "DatabaseService", "$db", { isSingleton: true });
+    injectable(AnalyticsServiceFake, "AnalyticsService", "$analytics", { isSingleton: true });
 }

@@ -21,7 +21,7 @@ import UpdatesInfo from './UpdatesInfo';
 import LaunchWeb from './LaunchWeb';
 import BackupImporter from './BackupImporter';
 import TimerControl from './header/TimerControl';
-import { isWebBuild } from '../../constants/build-info';
+import { isAppBuild, isWebBuild } from '../../constants/build-info';
 
 class DefaultHeader extends PureComponent {
   constructor(props) {
@@ -103,7 +103,7 @@ class DefaultHeader extends PureComponent {
           <BackupImporter>
             {(importSettings) => <SwitchAccountOption instance={this.currentJiraInstance} onLogout={this.props.onLogout} onImport={importSettings} />}
           </BackupImporter>
-          <LaunchWeb />
+          {!isAppBuild && <LaunchWeb />}
           {!!version && <span className={`update-available badge badge-${isBeta ? "warning" : "success"}`}
             title={`Jira Assist ${isBeta ? 'BETA ' : ''}v${version} is now available. Click to know more.`}
             onClick={this.showVersionInfo}><i className="fa fa-download" /> Updates available</span>}

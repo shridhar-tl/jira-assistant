@@ -1,19 +1,26 @@
 const fs = require('fs-extra');
 const path = require('path');
 const paths = require('react-scripts/config/paths');
+process.env.NODE_ENV = 'production';
+const env = require('react-scripts/config/env')('/').raw;
 
 const appDirectory = fs.realpathSync(process.cwd());
 const resolveApp = relativePath => path.resolve(appDirectory, relativePath);
+const resolveBuildPath = relativePath => path.resolve(paths.appBuild, relativePath);
 //const resolvePath = relativePath => path.resolve(paths.appBuild, relativePath);
 
 const browsersList = ["chrome", "edge", "opera", "firefox", "firefox_selfhost"];
 
 const sourceMapPath = resolveApp('source_map');
 
-if (process.env.REACT_APP_BUILD_MODE === 'WEB') {
+if (env.REACT_APP_BUILD_MODE === 'WEB') {
     cleanupForWebApp(false);
-} else if (process.env.REACT_APP_BUILD_MODE === 'APP') {
-    // Nothing for now
+    cleanupBrowserFolders();
+} else if (env.REACT_APP_BUILD_MODE === 'APP') {
+    cleanupForWebApp(false);
+    cleanupBrowserFolders();
+    const { name, version, description, homepage, author, bugs } = require('./package.json');
+    fs.writeJsonSync(resolveApp('build/package.json'), { name, version, description, homepage, author, bugs });
 } else {
     movePackages(paths.appBuild, sourceMapPath);
 }
@@ -119,4 +126,16 @@ function cleanupForWebApp(printLogs) {
     getFiles(paths.appBuild, allFilesList);
 
     deleteUnnecessaryFiles(allFilesList, printLogs);
+}
+
+function cleanupBrowserFolders() {
+    browsersList.forEach(folder => {
+        folder = resolveBuildPath(folder);
+        fs.emptyDirSync(folder);
+        fs.rmdirSync(folder);
+    });
+
+    fs.unlinkSync(resolveBuildPath('content.js'));
+    fs.unlinkSync(resolveBuildPath('api-pollyfill.js'));
+    fs.unlinkSync(resolveBuildPath('menu.html'));
 }

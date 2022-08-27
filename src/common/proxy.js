@@ -1,5 +1,6 @@
-import browser, { BROWSER_NAME } from '../common/browsers';
-import { isWebBuild } from '../constants/build-info';
+/* global chrome browser */
+import browserInfo, { BROWSER_NAME } from '../common/browsers';
+import { isAppBuild, isWebBuild } from '../constants/build-info';
 import { processResponse } from './proxy-helper';
 import { convertToStorableValue } from './storage-helpers';
 
@@ -11,7 +12,7 @@ const extensionId = {
 };
 
 const extnId = extensionId[BROWSER_NAME];
-const chr = window.chrome || window.browser;
+const chr = typeof chrome !== 'undefined' ? chrome : browser;
 
 function hasInjection() { return typeof window._executeJASvc === 'function'; }
 
@@ -20,16 +21,17 @@ export function executeService(svcName, action, args, $message) {
     if (!injected && !chr?.runtime) {
         throw new Error("Unable to connect to extension. Ensure if Jira Assistant extension is installed and not disabled!");
     }
-
-    args = convertToStorableValue(args);
+    if (!isAppBuild) {
+        args = convertToStorableValue(args);
+    }
     return new Promise((resolve, reject) => {
-        const responder = (response) => processResponse(response, $message, resolve, reject);
+        const responder = isAppBuild ? resolve : (response) => processResponse(response, $message, resolve, reject);
 
         try {
             if (injected) {
                 window._executeJASvc(extnId, { svcName, action, args }, responder, reject);
             }
-            else if (!isWebBuild && browser.isFirefox) {
+            else if (!isWebBuild && browserInfo.isFirefox) {
                 chr.runtime.sendMessage({ svcName, action, args }, responder);
             }
             else {
