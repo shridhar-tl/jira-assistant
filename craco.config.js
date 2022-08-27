@@ -19,7 +19,6 @@ const appDirectory = fs.realpathSync(process.cwd());
 const resolvePath = relativePath => path.resolve(appDirectory, relativePath);
 
 const modulesWithoutHashName = ['background', 'content', 'jira_cs', 'electron', 'preload'];
-console.log(isExtnBuild ? 'Building extension' : 'Building for app');
 
 module.exports = {
     style: shouldUseSourceMap && !shouldUseSourceMap_CSS && {
@@ -75,7 +74,7 @@ module.exports = {
             }
 
             if (isAppBuild) {
-                const config = [wpConfig, getElectronConfig(wpConfig)];
+                const config = [wpConfig, getElectronMain(wpConfig), getElectronRenderer(wpConfig)];
                 config.output = { publicPath: wpConfig.publicPath };
                 return config;
             } else {
@@ -101,15 +100,22 @@ function getEntryObject(paths) {
 
 // No inner property should be modified directly in this method.
 // Alternatively do deep clone instead
-function getElectronConfig(config) {
-    config = { ...config };
-    config.target = 'node';
-    config.entry = {
-        electron: resolvePath('src/electron/index.js'),
-        preload: resolvePath('src/electron/preload.js')
-    };
+function getElectronConfig(config, target, entry) {
+    config = { ...config, target, entry };
     config.output = { ...config.output, filename: '[name].js' };
     return config;
+}
+
+function getElectronMain(config) {
+    return getElectronConfig(config, 'electron-main', {
+        electron: resolvePath('src/electron/index.js')
+    });
+}
+
+function getElectronRenderer(config) {
+    return getElectronConfig(config, 'electron-renderer', {
+        preload: resolvePath('src/electron/preload.js')
+    });
 }
 
 function getPlugins() {

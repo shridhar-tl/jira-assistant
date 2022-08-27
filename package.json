@@ -1,8 +1,8 @@
 {
     "name": "jira-assistant",
     "version": "2.41.0",
-    "description": "Contains source code for the browser extension Jira Assistant",
-    "homepage": "https://www.jiraassistant.com",
+    "description": "Help to track & upload work done on a Jira Ticket on timely basis and generate Worklog, Sprint and other custom reports",
+    "homepage": "./",
     "author": {
         "name": "Shridhar TL",
         "email": "shridhar.tl@gmail.com"
@@ -11,7 +11,45 @@
         "url": "https://www.jiraassistant.com/contactus"
     },
     "private": true,
+    "license": "MIT",
     "types": "./src/services/index.d.ts",
+    "main": "./src/electron/index.js",
+    "build": {
+        "extends": null,
+        "appId": "com.opensource.jiraassistant",
+        "productName": "Jira Assistant",
+        "mac": {
+            "category": "public.app-category.developer-tools"
+        },
+        "dmg": {
+            "icon": false
+        },
+        "linux": {
+            "target": [
+                "AppImage"
+            ],
+            "category": "Utility"
+        },
+        "files": [
+            "build/**/*",
+            "**/node_modules/electron",
+            "!**/node_modules/*/{CHANGELOG.md,README.md,README,readme.md,readme}",
+            "!**/node_modules/*/{test,__tests__,tests,powered-test,example,examples}",
+            "!**/node_modules/*.d.ts",
+            "!**/node_modules/.bin"
+        ],
+        "extraMetadata": {
+            "main": "./build/electron.js"
+        },
+        "win": {
+            "target": {
+                "target": "zip",
+                "arch": [
+                    "x64"
+                ]
+            }
+        }
+    },
     "dependencies": {
         "@coreui/coreui": "^2.1.16",
         "@coreui/react": "^2.5.7",
@@ -28,6 +66,9 @@
         "chart.js": "^3.9.1",
         "classnames": "^2.3.1",
         "dexie": "^3.2.2",
+        "electron-about-window": "^1.15.2",
+        "electron-is-dev": "^2.0.0",
+        "electron-updater": "^5.2.1",
         "espree": "^9.4.0",
         "exceljs": "^4.3.0",
         "font-awesome": "^4.7.0",
@@ -62,6 +103,9 @@
         "craco-start": "craco start",
         "build": "craco build",
         "postbuild": "node post-build.js",
+        "dev": "concurrently -k \"npm start\" \"npm:electron\"",
+        "electron": "wait-on tcp:80 && electron .",
+        "postinstall": "electron-builder install-app-deps"
     },
     "eslintConfig": {
         "extends": "react-app",
@@ -115,6 +159,7 @@
     },
     "browserslist": {
         "production": [
+            "last 1 electron version",
             "last 1 chrome version",
             "last 1 firefox version",
             "last 1 safari version",
@@ -127,5 +172,13 @@
             "last 1 firefox version",
             "last 1 safari version"
         ]
+    },
+    "devDependencies": {
+        "concurrently": "^7.3.0",
+        "cross-env": "^7.0.3",
+        "electron": "^20.0.3",
+        "electron-builder": "^23.3.3",
+        "electronmon": "^2.0.2",
+        "wait-on": "^6.0.1"
     }
 }
