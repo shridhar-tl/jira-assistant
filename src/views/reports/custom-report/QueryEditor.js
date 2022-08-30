@@ -51,7 +51,8 @@ class QueryEditor extends BaseGadget {
         this.setState(this.getClearState(!!clear, this.props));
     };
 
-    UNSAFE_componentWillMount() {
+    componentDidMount() {
+        super.componentDidMount();
         this.$jira.getCustomFields().then(this.processJson);
         if (!this.props.builderOnly) {
             this.fillQueriesList();

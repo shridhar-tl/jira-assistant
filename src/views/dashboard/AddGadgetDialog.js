@@ -14,20 +14,20 @@ class AddGadgetDialog extends BaseDialog {
         this.state.gadgetList = GadgetList;
     }
 
-    UNSAFE_componentWillMount() {
+    componentDidMount() {
         this.$report.getReportsList().then(reports => {
             if (reports && reports.length) {
                 const list = reports.map(r => ({
-                        id: (r.advanced ? "AR:" : (r.isNew ? "CR:" : "SQ:")) + r.id,
-                        icon: "fa fa-filter",
-                        name: r.queryName,
-                        isOld: !(r.isNew || r.advanced),
-                        details: (!r.advanced ?
-                            `${r.outputCount} columns displayed in table format${r.isNew
-                                ? ' with interactive option to sort and group based on columns.'
-                                : ' (deprecated, not allowed to add to dashboard)'}`
-                            : "<no details available>")
-                    }));
+                    id: (r.advanced ? "AR:" : (r.isNew ? "CR:" : "SQ:")) + r.id,
+                    icon: "fa fa-filter",
+                    name: r.queryName,
+                    isOld: !(r.isNew || r.advanced),
+                    details: (!r.advanced ?
+                        `${r.outputCount} columns displayed in table format${r.isNew
+                            ? ' with interactive option to sort and group based on columns.'
+                            : ' (deprecated, not allowed to add to dashboard)'}`
+                        : "<no details available>")
+                }));
 
                 const gadgetList = [...GadgetList, ...list];
                 this.setState({ gadgetList });

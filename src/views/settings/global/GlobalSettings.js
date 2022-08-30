@@ -14,9 +14,10 @@ class GlobalSettings extends PureComponent {
         super(props);
         inject(this, 'UserService', 'SettingsService', 'MessageService');
         this.state = { users: [], intgUsers: [] };
+        this.loadSettings();
     }
 
-    async UNSAFE_componentWillMount() {
+    async loadSettings() {
         let users = await this.$user.getAllUsers();
         users = await Promise.all(users.map(async u => {
             const { id, userId, jiraUrl, email, lastLogin } = u;
@@ -69,7 +70,7 @@ class GlobalSettings extends PureComponent {
     saveSettings = () => {
         const { users } = this.state;
         this.$user.saveGlobalSettings(users).then(() => {
-            this.UNSAFE_componentWillMount();
+            this.loadSettings();
             this.$message.success("Settings saved successfully. Some changes will reflect only after you refresh the page.");
         });
     };

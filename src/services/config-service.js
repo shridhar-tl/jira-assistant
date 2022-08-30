@@ -1,11 +1,10 @@
 import { SettingsCategory } from '../constants/settings';
 
 export default class ConfigService {
-    static dependencies = ["SessionService", "AuthService", "SettingsService"];
+    static dependencies = ["SessionService", "SettingsService"];
 
-    constructor($session, $auth, $settings) {
+    constructor($session, $settings) {
         this.$session = $session;
-        this.$auth = $auth;
         this.$settings = $settings;
     }
 

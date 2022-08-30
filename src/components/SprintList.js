@@ -6,11 +6,10 @@ class SprintList extends PureComponent {
     constructor(props) {
         super(props);
         inject(this, "JiraService");
-
         this.state = {};
     }
 
-    UNSAFE_componentWillMount() {
+    componentDidMount() {
         this.pullSprintList(this.props);
     }
 

@@ -20,7 +20,6 @@ import './Calendar.scss';
 import { WorklogContext } from '../../common/context';
 import ChangeTracker from '../../components/ChangeTracker';
 
-//var moment;
 const viewModes = [
     { value: 'dayGridMonth', label: 'Month' }, { value: 'timeGridWeek', label: 'Week' }, { value: 'timeGridDay', label: 'Day' },
     { value: 'listMonth', label: 'Month List' }, { value: 'listWeek', label: 'Week List' }, { value: 'listDay', label: 'Day List' },

@@ -29,7 +29,8 @@ class ReportBuilder extends BaseGadget {
 
     getApi = api => (this.builderAPI = api);
 
-    UNSAFE_componentWillMount() {
+    componentDidMount() {
+        super.componentDidMount();
         const { match: { params } } = this.props;
 
         const reportId = parseInt(params['reportId'] || 0) || null;

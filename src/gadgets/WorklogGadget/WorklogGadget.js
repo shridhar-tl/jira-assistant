@@ -35,7 +35,8 @@ class WorklogGadget extends BaseGadget {
         this.epicNameField = (epicNameField || {}).id;
     }
 
-    UNSAFE_componentWillMount() {
+    componentDidMount() {
+        super.componentDidMount();
         this.$usergroup.getUserGroups().then(groups => this.setState({ groups }));
     }
 

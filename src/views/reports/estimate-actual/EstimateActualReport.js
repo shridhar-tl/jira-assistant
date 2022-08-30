@@ -129,7 +129,8 @@ class EstimateActualReport extends BaseGadget {
         this.state = { groups: [], disableRefresh: true, dateRange: {}, chartData: {}, estimationField: 'timeoriginalestimate', projects: this.$session.CurrentUser.projects };
     }
 
-    UNSAFE_componentWillMount() {
+    componentDidMount() {
+        super.componentDidMount();
         this.$usergroup.getUserGroups().then(groups => this.setState({ groups: groups || [] }));
         this.$jira.getProjects().then((projectsList) => {
             projectsList = projectsList.map((d) => ({ name: d.name, key: d.key, id: d.id })).orderBy((d) => d.name);

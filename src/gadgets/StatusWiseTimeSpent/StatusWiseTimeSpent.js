@@ -22,7 +22,7 @@ class StatusWiseTimeSpent extends PureComponent {
         this.state = {};
     }
 
-    UNSAFE_componentWillMount() {
+    componentDidMount() {
         this.fetchData();
     }
 

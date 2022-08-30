@@ -10,10 +10,6 @@ class GroupedDataGrid extends PureComponent {
         this.state = { groupedData: this.generateGroupData(props) };
     }
 
-    UNSAFE_componentWillMount() {
-        this.setState({ groupedData: this.generateGroupData(this.props) });
-    }
-
     UNSAFE_componentWillReceiveProps(props) {
         this.setState({ groupedData: this.generateGroupData(props) });
     }

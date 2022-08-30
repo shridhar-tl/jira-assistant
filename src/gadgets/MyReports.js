@@ -14,6 +14,10 @@ class MyReports extends BaseGadget {
         super(props, 'My Reports', 'fa-filter');
         inject(this, "ReportService", "MessageService", "UserUtils");
         this.state.isLoading = true;
+    }
+
+    componentDidMount() {
+        super.componentDidMount();
         this.refreshData();
     }
 

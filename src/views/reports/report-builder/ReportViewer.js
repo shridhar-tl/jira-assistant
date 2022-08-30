@@ -24,7 +24,8 @@ class ReportViewer extends BaseGadget {
         this.state.definition = definition;
     }
 
-    UNSAFE_componentWillMount() {
+    componentDidMount() {
+        super.componentDidMount();
         this.refreshData();
     }
 

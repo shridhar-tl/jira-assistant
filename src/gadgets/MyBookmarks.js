@@ -30,7 +30,8 @@ class MyBookmarks extends BaseGadget {
         this.setState({ bookmarksList });
     }
 
-    UNSAFE_componentWillMount() {
+    componentDidMount() {
+        super.componentDidMount();
         this.refreshData();
     }
 
@@ -129,23 +130,23 @@ class MyBookmarks extends BaseGadget {
                 </THead>
                 <TBody>
                     {(b, i) => <tr key={b.ticketNo} onContextMenu={(e) => this.showContext(e, b)} className={b.rowClass}>
-                            <td className="text-center">
-                                {b.selected && <Checkbox checked={true} onChange={() => this.selectTicket(b)} />}
-                                {!b.selected && <i className="fa fa-ellipsis-v" onClick={(e) => this.showContext(e, b)}></i>}
-                            </td>
-                            <td>
-                                <a href={b.ticketUrl} rel="noopener noreferrer" className="link strike" target="_blank">{b.ticketNo}</a>
-                            </td>
-                            <td>{b.issuetypeIcon && <Image src={b.issuetypeIcon} />}{b.issuetype}</td>
-                            <td>{b.summary}</td>
-                            <td>{b.assigneeName}</td>
-                            <td>{b.reporterName}</td>
-                            <td>{b.priorityIcon && <Image src={b.priorityIcon} />}{b.priority}</td>
-                            <td>{b.statusIcon && <Image src={b.statusIcon} />}{b.status}</td>
-                            <td>{b.resolutionIcon && <Image src={b.resolutionIcon} />}{b.resolution}</td>
-                            <td>{b.created}</td>
-                            <td>{b.updated}</td>
-                        </tr>}
+                        <td className="text-center">
+                            {b.selected && <Checkbox checked={true} onChange={() => this.selectTicket(b)} />}
+                            {!b.selected && <i className="fa fa-ellipsis-v" onClick={(e) => this.showContext(e, b)}></i>}
+                        </td>
+                        <td>
+                            <a href={b.ticketUrl} rel="noopener noreferrer" className="link strike" target="_blank">{b.ticketNo}</a>
+                        </td>
+                        <td>{b.issuetypeIcon && <Image src={b.issuetypeIcon} />}{b.issuetype}</td>
+                        <td>{b.summary}</td>
+                        <td>{b.assigneeName}</td>
+                        <td>{b.reporterName}</td>
+                        <td>{b.priorityIcon && <Image src={b.priorityIcon} />}{b.priority}</td>
+                        <td>{b.statusIcon && <Image src={b.statusIcon} />}{b.status}</td>
+                        <td>{b.resolutionIcon && <Image src={b.resolutionIcon} />}{b.resolution}</td>
+                        <td>{b.created}</td>
+                        <td>{b.updated}</td>
+                    </tr>}
                 </TBody>
                 <NoDataRow span={11}>You have not yet bookmarked any tickets. Bookmark your frequently used tickets</NoDataRow>
             </ScrollableTable>

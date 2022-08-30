@@ -12,8 +12,7 @@ class SprintWiseWorklog extends PureComponent {
         this.state = { showSubtask: false, showIncomplete: false, excludeNonSprintHrs: false };
     }
 
-
-    UNSAFE_componentWillMount() {
+    componentDidMount() {
         this.updateGroups(this.props.groups);
     }
 
