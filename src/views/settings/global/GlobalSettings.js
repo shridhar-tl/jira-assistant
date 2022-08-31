@@ -14,6 +14,9 @@ class GlobalSettings extends PureComponent {
         super(props);
         inject(this, 'UserService', 'SettingsService', 'MessageService');
         this.state = { users: [], intgUsers: [] };
+    }
+
+    componentDidMount() {
         this.loadSettings();
     }
 

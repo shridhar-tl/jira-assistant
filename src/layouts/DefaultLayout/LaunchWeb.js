@@ -1,8 +1,8 @@
 import React, { PureComponent } from 'react';
-import { withRouter } from 'react-router-dom';
 import { UncontrolledDropdown, DropdownItem, DropdownMenu, DropdownToggle, Nav } from 'reactstrap';
 import { isWebBuild } from '../../constants/build-info';
 import { JAWebLaunchUrl } from '../../constants/urls';
+import { withRouter } from '../../pollyfills';
 import { inject } from '../../services/injector-service';
 
 const options = isWebBuild ? {
@@ -26,10 +26,9 @@ class LaunchWeb extends PureComponent {
         super(props);
         this.state = { switched: false };
         inject(this, 'SettingsService', 'AppBrowserService');
-        this.init();
     }
 
-    async init() {
+    async componentDidMount() {
         this.usingExtn = isWebBuild && localStorage.getItem('authType') === '1';
         if (isWebBuild) {
             const launchUrl = await this.$jaBrowserExtn.getLaunchUrl('index.html');

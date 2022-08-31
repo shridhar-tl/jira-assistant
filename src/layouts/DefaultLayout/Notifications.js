@@ -58,7 +58,7 @@ class Notifications extends PureComponent {
                 <DropdownToggle nav onClick={this.trackViewList}>
                     <i className="fa fa-bell"></i>{unread > 0 && <span className="badge badge-danger">{unread}</span>}
                 </DropdownToggle>
-                <DropdownMenu right className="messages">
+                <DropdownMenu end className="messages">
                     <DropdownItem header tag="div">
                         <div className="text-center"><strong>You have {unread || total} {unread ? "unread" : ""} messages</strong></div>
                     </DropdownItem>

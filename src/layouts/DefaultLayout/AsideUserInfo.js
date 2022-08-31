@@ -35,7 +35,7 @@ class AsideUserInfo extends PureComponent {
                             </div>
                         </div>
                     </DropdownToggle>
-                    <DropdownMenu right>
+                    <DropdownMenu end>
                         <SwitchAccountMenu />
                     </DropdownMenu>
                 </UncontrolledDropdown>

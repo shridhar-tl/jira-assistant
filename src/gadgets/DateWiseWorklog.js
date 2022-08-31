@@ -18,7 +18,10 @@ class DateWiseWorklog extends BaseGadget {
             { label: "Upload worklog", icon: "fa fa-clock-o", command: () => this.uploadWorklog() },
             { label: "Add worklog", icon: "fa fa-bookmark", command: () => this.addWorklog() } //ToDo: Add option for move to progress, show in tree view
         ];
+    }
 
+    componentDidMount() {
+        super.componentDidMount();
         this.refreshData();
     }
 

@@ -34,10 +34,9 @@ class DefaultHeader extends PureComponent {
     this.currentJiraInstance = getHostFromUrl(cUser.jiraUrl);
     this.state = {};
     this.versionNumber = isWebBuild ? 'WEB' : `v ${AppVersionNo}`;
-    this.initComponent();
   }
 
-  initComponent() {
+  componentDidMount() {
     this.$noti.getNotifications().then(notifications => this.setState({ notifications }),
       (err) => { console.error("Error fetching notifications: ", err); });
 
@@ -116,7 +115,7 @@ class DefaultHeader extends PureComponent {
             <DropdownToggle nav>
               <i className="fa fa-adjust"></i>
             </DropdownToggle>
-            <DropdownMenu right>
+            <DropdownMenu end>
               <SkinPicker />
             </DropdownMenu>
           </UncontrolledDropdown>
@@ -124,7 +123,7 @@ class DefaultHeader extends PureComponent {
             <DropdownToggle nav>
               <i className="fa fa-share-alt"></i>
             </DropdownToggle>
-            <DropdownMenu right>
+            <DropdownMenu end>
               <DropdownItem header tag="div" className="text-center">
                 <strong className="share-header-text">Share or rate this tool</strong>
               </DropdownItem>

@@ -16,10 +16,9 @@ class SwitchAccountMenu extends PureComponent {
         this.state = {
             profileUrl: this.$userutils.getProfileUrl()
         };
-        this.init();
     }
 
-    async init() {
+    async componentDidMount() {
         const users = await this.$user.getUsersList();
         this.setState({ users: users.filter(u => u.id !== this.currentUserId) });
     }

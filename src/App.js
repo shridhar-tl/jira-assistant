@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react';
-import { Route, Switch, withRouter } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import 'moment-timezone/builds/moment-timezone-with-data.min.js';
+import { getWatcher, withRouter } from './pollyfills';
 import registerServices, { inject } from './services';
 import getLoader from './components/loader';
 import { Toast } from 'primereact/toast';
@@ -19,7 +20,7 @@ import './App.scss';
 export const extnAuth = isWebBuild && document.location.href.indexOf('?authType=1') > 0;
 
 // Layout
-const DefaultLayout = React.lazy(() => import('./layouts/DefaultLayout'));
+const DefaultLayout = React.lazy(() => import('./layouts/DefaultLayout/DefaultLayout'));
 
 // Pages
 const IntegrateExtn = !isAppBuild && React.lazy(() => import('./views/pages/integrate/Integrate'));
@@ -145,7 +146,7 @@ class App extends PureComponent {
     registerServices(authType || '1');
     inject(this, "AnalyticsService", "SessionService", "AuthService", "MessageService", "SettingsService", "CacheService", "JiraAuthService");
 
-    this.props.history.listen((location) => this.$analytics.trackPageView(location.pathname));
+    this.urlWatcher = getWatcher((location) => this.$analytics.trackPageView(location.pathname));
 
     this.$message.onNewMessage((message) => {
       let { detail } = message;
@@ -247,27 +248,30 @@ class App extends PureComponent {
       return <>{this.getMessanger()}{getLoader('Loading... Please wait...')}</>;
     }
 
+    const UrlWatcher = this.urlWatcher;
+
     return (
       <>
         {this.getMessanger()}
+        <UrlWatcher />
 
         <AppContextProvider value={this.contextProps}>
           <React.Suspense fallback={getLoader()}>
-            <Switch>
-              {!isExtnBuild && <Route exact path="/integrate" name="Authenticate Page" render={props => <IntegrateWeb {...props}
+            <Routes>
+              {!isExtnBuild && <Route exact path="/integrate" name="Authenticate Page" element={<IntegrateWeb
                 isWebBuild={isWebBuild} isExtnValid={isExtnValid} extnUnavailable={extnUnavailable}
                 needIntegration={needIntegration} onAuthTypeChosen={this.authTypeChosen} />} />}
 
               {!isAppBuild && <Route exact path={isWebBuild ? "/integrate/extn" : "/integrate"} name="Integrate Page"
-                render={props => <IntegrateExtn {...props} isWebBuild={isWebBuild} setAuthType={isWebBuild ? this.authTypeChosen : undefined} />} />}
+                element={<IntegrateExtn isWebBuild={isWebBuild} setAuthType={isWebBuild ? this.authTypeChosen : undefined} />} />}
 
               <Route exact path="/integrate/basic/:store?" name="Basic Auth Page"
-                render={props => <BasicAuth {...props} isWebBuild={isWebBuild} setAuthType={isWebBuild ? this.authTypeChosen : undefined} />} />
+                element={<BasicAuth isWebBuild={isWebBuild} setAuthType={isWebBuild ? this.authTypeChosen : undefined} />} />
 
-              <Route exact path="/401" name="Page 401" render={props => <Page401 {...props} jiraUrl={this.state.jiraUrl} />} />
-              <Route exact path="/options" name="Options Page" render={props => <OptionsPage {...props} />} />
-              {(!isWebBuild || !!authType) && <Route key={userId} path="/:userId" name="Home" render={props => <DefaultLayout {...props} />} />}
-            </Switch>
+              <Route exact path="/401" name="Page 401" element={<Page401 jiraUrl={this.state.jiraUrl} />} />
+              <Route exact path="/options" name="Options Page" element={<OptionsPage />} />
+              {(!isWebBuild || !!authType) && <Route key={userId} path="/:userId/*" name="Home" element={<DefaultLayout />} />}
+            </Routes>
           </React.Suspense>
         </AppContextProvider>
       </>

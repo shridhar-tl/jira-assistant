@@ -9,10 +9,9 @@ class JiraUpdates extends PureComponent {
         super(props);
         inject(this, "JiraUpdatesService", "AnalyticsService", "UtilsService");
         this.state = {};
-        this.loadUpdates();
     }
 
-    loadUpdates() {
+    componentDidMount() {
         this.$jupdates.getRescentUpdates().then(res => {
             this.setState(res);
         });

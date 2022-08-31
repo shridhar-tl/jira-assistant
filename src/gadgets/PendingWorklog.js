@@ -24,6 +24,10 @@ class PendingWorklog extends BaseGadget {
 
         this.state.selAllChk = true;
         this.state.isLoading = true;
+    }
+
+    componentDidMount() {
+        super.componentDidMount();
         this.refreshData();
     }
 

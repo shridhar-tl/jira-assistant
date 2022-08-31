@@ -1,5 +1,5 @@
 import React, { PureComponent, Suspense } from 'react';
-import { Route, Switch } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import * as router from 'react-router-dom';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
@@ -27,6 +27,7 @@ import { setStartOfWeek } from '../../common/utils';
 import BuildDate from './BuildDate';
 import { WorklogContextProvider } from '../../common/context';
 import { isWebBuild } from '../../constants/build-info';
+import { withRouter } from '../../pollyfills';
 
 const DefaultHeader = React.lazy(() => import('./DefaultHeader'));
 
@@ -36,10 +37,9 @@ class DefaultLayout extends PureComponent {
     inject(this, "DashboardService", "SessionService", "SettingsService", "CacheService", "WorklogTimerService", "MessageService");
     const { userId } = this.$session;
     this.state = { menus: this.getMenus(userId), userId };
-    this.initApp();
   }
 
-  initApp() {
+  componentDidMount() {
     const { userId } = this.state;
     setStartOfWeek(this.$session.CurrentUser.startOfWeek);
 
@@ -149,7 +149,7 @@ class DefaultLayout extends PureComponent {
   };
 
   render() {
-    const { userId, menus } = this.state;
+    const { menus } = this.state;
 
     return (
       <WorklogContextProvider value={this.worklogContextProps} >
@@ -171,18 +171,19 @@ class DefaultLayout extends PureComponent {
               <DndProvider backend={HTML5Backend}>
                 <Container fluid>
                   <Suspense fallback={this.loading()}>
-                    <Switch>
-                      {routes.map((route, idx) => (route.component ? (
-                        <Route
-                          key={idx}
-                          path={`/${userId}${route.path}`}
-                          exact={route.exact}
-                          name={route.name}
-                          render={props => (
-                            <route.component {...props} />
-                          )} />
-                      ) : (null)))}
-                    </Switch>
+                    <Routes>
+                      {routes.map((route, idx) => {
+                        const Component = withRouter(route.component);
+                        return (
+                          <Route
+                            key={idx}
+                            path={route.path}
+                            exact={route.exact || false}
+                            name={route.name}
+                            element={<Component />} />
+                        );
+                      })}
+                    </Routes>
                   </Suspense>
                 </Container>
               </DndProvider>

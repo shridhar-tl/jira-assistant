@@ -41,6 +41,10 @@ class SprintReport extends BaseGadget {
         inject(this, "JiraService", "UserUtilsService", "SessionService", "UserGroupService", "AnalyticsService");
 
         this.state = { disableRefresh: true, selectedRapidViews: this.$session.CurrentUser.rapidViews, selectedSprints: null };
+    }
+
+    componentDidMount() {
+        super.componentDidMount();
         this.$usergroup.getUserGroups().then(groups => this.setState({ groups }));
     }
 
