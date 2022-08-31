@@ -69,6 +69,7 @@ class DefaultLayout extends PureComponent {
 
   componentWillUnmount() {
     this.$dashboard.onChange(() => { /* Nothing to be done here */ });
+    window.removeEventListener('focus', this.loadTracker);
   }
 
   getMenus(userId) {

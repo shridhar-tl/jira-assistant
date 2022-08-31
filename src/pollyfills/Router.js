@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import {
     useLocation,
     useNavigate,
@@ -24,20 +24,20 @@ function withRouter(Component) {
         );
     }
 
-    return ComponentWithRouterProp;
+    return React.memo(ComponentWithRouterProp);
 }
 function getWatcher(onChange) {
     if (typeof onChange !== 'function') {
         throw Error('onChange handler is required and should be a function');
     }
 
-    return function UrlWatcher() {
+    return React.memo(function UrlWatcher() {
         const location = useLocation();
 
         useEffect(() => onChange(location), [location]);
 
         return null;
-    };
+    });
 }
 
 export { withRouter, getWatcher };

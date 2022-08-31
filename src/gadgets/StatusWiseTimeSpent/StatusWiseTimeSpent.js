@@ -44,57 +44,61 @@ class StatusWiseTimeSpent extends PureComponent {
 
         if (setLoader) { setLoader(true); }
 
-        const tickets = await this.$jira.searchTickets(jql, this.fieldNames, 0, { expand: ["changelog"] });
-        const currentTime = new Date().getTime();
+        try {
+            const tickets = await this.$jira.searchTickets(jql, this.fieldNames, 0, { expand: ["changelog"] });
+            const currentTime = new Date().getTime();
 
-        const reportData = tickets.map(t => {
-            const { key, changelog: { histories } = {}, fields: {
-                summary, status, issuetype, assignee, reporter, created, project, parent,
-                timeestimate, aggregatetimeestimate, timeoriginalestimate, aggregatetimeoriginalestimate,
-                [this.epicNameField]: epic, [this.storyPointField]: storyPoint } } = t;
-            const changelog = [];
-            let ix = histories.length;
-            while (--ix >= 0) {
-                const { created, items } = histories[ix];
+            const reportData = tickets.map(t => {
+                const { key, changelog: { histories } = {}, fields: {
+                    summary, status, issuetype, assignee, reporter, created, project, parent,
+                    timeestimate, aggregatetimeestimate, timeoriginalestimate, aggregatetimeoriginalestimate,
+                    [this.epicNameField]: epic, [this.storyPointField]: storyPoint } } = t;
+                const changelog = [];
+                let ix = histories.length;
+                while (--ix >= 0) {
+                    const { created, items } = histories[ix];
 
-                items.filter(i => i.field === "status")
-                    .forEach(i => {
-                        const { fromString: from, toString: to } = i;
-                        changelog.push({ date: moment(created).toDate().getTime(), from, to });
-                    });
-            }
-
-            let prevTime = moment(created).toDate().getTime();
-            const arrLen = changelog.length - 1;
-            const statusData = changelog.reduce((obj, cur, i) => {
-                const { date, from, to } = cur;
-                obj[from] = (obj[from] || 0) + (date - prevTime);
-                prevTime = date;
-                if (arrLen === i) {
-                    obj[to] = (obj[to] || 0) + (currentTime - prevTime);
+                    items.filter(i => i.field === "status")
+                        .forEach(i => {
+                            const { fromString: from, toString: to } = i;
+                            changelog.push({ date: moment(created).toDate().getTime(), from, to });
+                        });
                 }
-                return obj;
-            }, {});
 
-            Object.keys(statusData).forEach(key => {
-                if (!statusData[key]) {
-                    delete statusData[key];
-                }
+                let prevTime = moment(created).toDate().getTime();
+                const arrLen = changelog.length - 1;
+                const statusData = changelog.reduce((obj, cur, i) => {
+                    const { date, from, to } = cur;
+                    obj[from] = (obj[from] || 0) + (date - prevTime);
+                    prevTime = date;
+                    if (arrLen === i) {
+                        obj[to] = (obj[to] || 0) + (currentTime - prevTime);
+                    }
+                    return obj;
+                }, {});
+
+                Object.keys(statusData).forEach(key => {
+                    if (!statusData[key]) {
+                        delete statusData[key];
+                    }
+                });
+
+                return {
+                    key, summary, status, issuetype, assignee, reporter, created, project, parent,
+                    timeestimate, aggregatetimeestimate, timeoriginalestimate, aggregatetimeoriginalestimate,
+                    statusData, changelog, epic, storyPoint
+                };
             });
 
-            return {
-                key, summary, status, issuetype, assignee, reporter, created, project, parent,
-                timeestimate, aggregatetimeestimate, timeoriginalestimate, aggregatetimeoriginalestimate,
-                statusData, changelog, epic, storyPoint
-            };
-        });
+            const projectList = reportData.distinct(t => t.project.key);
+            const statusList = await this.getStatuses(projectList);
+            this.columnList = this.getFieldList(statusList);
 
-        const projectList = reportData.distinct(t => t.project.key);
-        const statusList = await this.getStatuses(projectList);
-        this.columnList = this.getFieldList(statusList);
-
-        if (setLoader) { setLoader(false); }
-        this.setState({ reportData, statusList });
+            this.setState({ reportData, statusList });
+        }
+        finally {
+            if (setLoader) { setLoader(false); }
+        }
     }
 
     getFieldList(statusList) {
