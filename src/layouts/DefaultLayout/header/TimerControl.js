@@ -28,7 +28,7 @@ class TimerControl extends PureComponent {
 
         return (
             <div className="timer-ctl">
-                <a className="ticket-no" href={this.$userutils.getTicketUrl(curTime.key)} target="_blank" rel="noreferrer noopener">{curTime.key}</a>
+                <a className="ticket-no link" href={this.$userutils.getTicketUrl(curTime.key)} target="_blank" rel="noreferrer noopener">{curTime.key}</a>
                 <Lapse key={`${curTime.key}_${curTime.isRunning ? 'R' : 'S'}`} isRunning={curTime.isRunning} lapse={curTime.lapse} title={curTime.description} />
                 {!curTime.isRunning && <span className="fa fa-play" title="Resume time tracking" onClick={this.context.resumeTimer} />}
                 {curTime.isRunning && <span className="fa fa-pause" title="Pause time tracking" onClick={this.context.pauseTimer} />}
