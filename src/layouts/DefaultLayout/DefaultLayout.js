@@ -1,11 +1,6 @@
-import React, { PureComponent, Suspense } from 'react';
-import { Route, Routes } from 'react-router-dom';
+import React, { PureComponent } from 'react';
 import * as router from 'react-router-dom';
-import { DndProvider } from 'react-dnd';
-import { HTML5Backend } from 'react-dnd-html5-backend';
-import { Container } from 'reactstrap';
 import Dialog, { CustomDialog } from "../../dialogs";
-
 import "./DefaultLayout.scss";
 
 import {
@@ -19,7 +14,6 @@ import {
 // sidebar nav config
 import navigation, { getDashboardMenu } from '../../_nav';
 // routes config
-import routes from '../../routes';
 import { inject } from '../../services/injector-service';
 import { ContextMenu } from 'jsd-report';
 import AsideUserInfo from './AsideUserInfo';
@@ -27,7 +21,7 @@ import { setStartOfWeek } from '../../common/utils';
 import BuildDate from './BuildDate';
 import { WorklogContextProvider } from '../../common/context';
 import { isWebBuild } from '../../constants/build-info';
-import { withRouter } from '../../pollyfills';
+import AppContent from './AppContent';
 
 const DefaultHeader = React.lazy(() => import('./DefaultHeader'));
 
@@ -156,38 +150,16 @@ class DefaultLayout extends PureComponent {
       <WorklogContextProvider value={this.worklogContextProps} >
         <div className="app">
           <AppHeader fixed>
-            <Suspense fallback={this.loading()}>
-              <DefaultHeader onLogout={this.signOut} />
-            </Suspense>
+            <DefaultHeader onLogout={this.signOut} />
           </AppHeader>
           <div className="app-body">
             <AppSidebar fixed display="lg">
               <AsideUserInfo onLogout={this.signOut} />
-              <Suspense>
-                <AppSidebarNav navConfig={menus} {...this.props} router={router} />
-              </Suspense>
+              <AppSidebarNav navConfig={menus} {...this.props} router={router} />
               <AppSidebarMinimizer><BuildDate /></AppSidebarMinimizer>
             </AppSidebar>
             <main className="main">
-              <DndProvider backend={HTML5Backend}>
-                <Container fluid>
-                  <Suspense fallback={this.loading()}>
-                    <Routes>
-                      {routes.map((route, idx) => {
-                        const Component = withRouter(route.component);
-                        return (
-                          <Route
-                            key={idx}
-                            path={route.path}
-                            exact={route.exact || false}
-                            name={route.name}
-                            element={<Component />} />
-                        );
-                      })}
-                    </Routes>
-                  </Suspense>
-                </Container>
-              </DndProvider>
+              <AppContent loader={this.loading} />
             </main>
           </div>
           <ContextMenu />

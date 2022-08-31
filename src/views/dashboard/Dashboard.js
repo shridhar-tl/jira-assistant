@@ -29,7 +29,7 @@ class Dashboard extends PureComponent {
     tabViewChanged = (isTabView) => this.setState({ isTabView });
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const newIndex = newProps.match.params.index;
+        const newIndex = parseInt(newProps.match.params.index || 0);
         if (newIndex !== this.state.dashboardIndex) {
             this.setState(this.loadDashboard(newIndex));
         }
