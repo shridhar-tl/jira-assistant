@@ -218,6 +218,9 @@
   div.gadget .p-panel-header,
   div.scroll-table-container caption,
   div.scroll-table-container .scroll-table tfoot,
+  div.src-editable-grid-container caption,
+  div.src-editable-grid-container .src-editable-grid tfoot,
+  div.src-editable-grid-container .src-editable-grid tbody tr td,
   .pnl-footer,
   .p-dialog .p-dialog-content,
   .p-dialog,
@@ -246,6 +249,8 @@
 
   div.scroll-table-container .scroll-table thead tr,
   div.scroll-table-container .scroll-table thead tr th,
+  div.src-editable-grid-container .src-editable-grid thead tr,
+  div.src-editable-grid-container .src-editable-grid thead tr th,
   .fc th,
   tr.grouped-row,
   .p-tabview.p-tabview-top .p-tabview-nav li a,
@@ -278,6 +283,7 @@
   }
 
   div.scroll-table-container .scroll-table tbody tr:nth-child(even),
+  div.src-editable-grid-container .src-editable-grid tbody tr:nth-child(even),
   .fc-widget-header,
   .fc .fc-divider {
     background: $background-secondary;
@@ -287,6 +293,8 @@
   .p-dropdown-panel,
   .table-bordered th,
   .table-bordered td,
+  .src-editable-grid th,
+  .src-editable-grid td,
   .p-panel .p-panel-content,
   .p-panel .p-panel-header,
   .p-tabview .p-tabview-panels,
@@ -295,7 +303,10 @@
   .page-header,
   .app-header,
   .table-bordered,
+  .src-editable-grid,
   div.scroll-table-container .scroll-table tfoot tr:first-child td,
+  div.src-editable-grid-container .src-editable-grid tbody tr td,
+  div.src-editable-grid-container .src-editable-grid thead tr th,
   .fc td.fc-head-container,
   .fc .fc-divider,
   .daterangepicker,
