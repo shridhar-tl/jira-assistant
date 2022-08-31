@@ -135,7 +135,7 @@
 
   .skin-bg-font {
     background-color: $primary-color;
-    color: $font-color !important;
+    color: $font-color  !important;
   }
 
   /*.ui-widget-header .ui-button, .ui-widget-content .ui-button, .ui-widget.ui-button, .ui-button {
@@ -425,13 +425,45 @@
   @include base-style($header-logo-bg, $header-bg);
 }
 
-
 .skin-blue2 {
   $header-logo-bg: #557a95;
   $header-bg: #7395ae;
   @include base-style($header-logo-bg, $header-bg);
 }
 
+.skin-cust2 {
+  $header-logo-bg: #5d5c61;
+  $header-bg: #379683;
+  @include base-style($header-logo-bg, $header-bg);
+}
+
+.skin-cust3 {
+  $header-logo-bg: #ffe400;
+  $header-bg: #747474;
+  @include base-style($header-logo-bg, $header-bg);
+}
+
+.skin-cust5 {
+  $header-logo-bg: #7e685a;
+  $header-bg: #afd275;
+  @include base-style($header-logo-bg, $header-bg);
+}
+
+.skin-cust8 {
+  $header-logo-bg: #64485c;
+  $header-bg: #83677b;
+  @include base-style($header-logo-bg, $header-bg);
+}
+
+.skin-dark {
+  $dark-color: #2f353a;
+  $second-dark-color: rgba(0, 0, 0, 0.2);
+  $primary-color: #64afd8;
+  $font-color: #ffffff;
+  @include deep-style($dark-color, $second-dark-color, $primary-color, $font-color);
+}
+
+/*
 .skin-blue3 {
   $header-logo-bg: #240090;
   $header-bg: #3500d3;
@@ -450,28 +482,10 @@
   @include base-style($header-logo-bg, $header-bg);
 }
 
-.skin-cust2 {
-  $header-logo-bg: #5d5c61;
-  $header-bg: #379683;
-  @include base-style($header-logo-bg, $header-bg);
-}
-
-.skin-cust3 {
-  $header-logo-bg: #ffe400;
-  $header-bg: #747474;
-  @include base-style($header-logo-bg, $header-bg);
-}
-
-/*.skin-cust4 {
+.skin-cust4 {
   $header-logo-bg: #c2b9b0;
   $header-bg: #c2cad0;
   @include base-style($header-logo-bg,$header-bg);
-}*/
-
-.skin-cust5 {
-  $header-logo-bg: #7e685a;
-  $header-bg: #afd275;
-  @include base-style($header-logo-bg, $header-bg);
 }
 
 .skin-cust6 {
@@ -484,21 +498,7 @@
   $header-logo-bg: #2e151b;
   $header-bg: #da7b93;
   @include base-style($header-logo-bg, $header-bg);
-}
-
-.skin-cust8 {
-  $header-logo-bg: #64485c;
-  $header-bg: #83677b;
-  @include base-style($header-logo-bg, $header-bg);
-}
-
-.skin-dark {
-  $dark-color: #2f353a;
-  $second-dark-color: rgba(0, 0, 0, 0.2);
-  $primary-color: #64afd8;
-  $font-color: #ffffff;
-  @include deep-style($dark-color, $second-dark-color, $primary-color, $font-color);
-}
+}*/
 
 .skins {
   z-index: 1500 !important;
