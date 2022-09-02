@@ -34,7 +34,7 @@ class LaunchWeb extends PureComponent {
             const launchUrl = await this.$jaBrowserExtn.getLaunchUrl('index.html');
             this.setState({ launchUrl });
         } else {
-            this.state.launchUrl = JAWebLaunchUrl;
+            this.setState({ launchUrl: JAWebLaunchUrl });
         }
         const switched = await this.$settings.get('useWebVersion');
         this.setState({ switched });
@@ -46,7 +46,7 @@ class LaunchWeb extends PureComponent {
     }
 
     switchToWeb = async () => {
-        await this.$settings.set('useWebVersion', !isWebBuild);
+        await this.$settings.set('useWebVersion', !isWebBuild || null);
         window.location.href = this.getLaunchPath();
     };
 

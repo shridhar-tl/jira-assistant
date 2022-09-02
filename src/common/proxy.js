@@ -12,7 +12,7 @@ const extensionId = {
 };
 
 const extnId = extensionId[BROWSER_NAME];
-const chr = typeof chrome !== 'undefined' ? chrome : browser;
+const chr = typeof chrome !== 'undefined' ? chrome : typeof browser !== 'undefined' ? browser : {};
 
 function hasInjection() { return typeof window._executeJASvc === 'function'; }
 
