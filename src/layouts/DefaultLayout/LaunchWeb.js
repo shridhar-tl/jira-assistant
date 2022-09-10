@@ -1,12 +1,12 @@
 import React, { PureComponent } from 'react';
 import { UncontrolledDropdown, DropdownItem, DropdownMenu, DropdownToggle, Nav } from 'reactstrap';
-import { isWebBuild } from '../../constants/build-info';
+import { isExtnBuild, isWebBuild } from '../../constants/build-info';
 import { JAWebLaunchUrl } from '../../constants/urls';
 import { withRouter } from '../../pollyfills';
 import { inject } from '../../services/injector-service';
 
 const options = isWebBuild ? {
-    btnText: 'Web',
+    btnText: 'Extn',
     btnTooltip: 'Go back to extension',
     launchText: 'Launch Extension',
     switchText: 'Switch back',
@@ -52,7 +52,7 @@ class LaunchWeb extends PureComponent {
 
     showOptions() {
         const { switched, launchUrl } = this.state;
-        return (!isWebBuild || this.usingExtn) && !!launchUrl && (!isWebBuild || switched);
+        return !!launchUrl && (isExtnBuild || (this.usingExtn && switched));
     }
 
     render() {

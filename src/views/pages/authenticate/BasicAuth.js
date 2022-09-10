@@ -7,7 +7,7 @@ import { executeService } from '../../../common/proxy';
 import { ApiTokenHelpPage } from '../../../constants/urls';
 import registerServices from '../../../services';
 import Footer from '../Footer';
-import { isDevBuild, isExtnBuild } from '../../../constants/build-info';
+import { isExtnBuild } from '../../../constants/build-info';
 
 const isQuickView = document.location.href.indexOf('?quick=true') > -1;
 const containerStyle = isQuickView ? { minHeight: '380px', maxHeight: '380px' } : {};

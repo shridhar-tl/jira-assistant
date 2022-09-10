@@ -1,13 +1,12 @@
 //const { whenDev, whenProd, ESLINT_MODES, POSTCSS_MODES } = require("@craco/craco");
 const fs = require('fs');
 const path = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
-const env = require('react-scripts/config/env')('/').raw;
 
-const isWebBuild = env.REACT_APP_BUILD_MODE === 'WEB';
-const isAppBuild = env.REACT_APP_BUILD_MODE === 'APP';
+process.env.REACT_APP_BUILD_DATE = new Date().getTime();
+const buildMode = process.env.REACT_APP_BUILD_MODE;
+const isWebBuild = buildMode === 'WEB';
+const isAppBuild = buildMode === 'APP';
 const isExtnBuild = !isWebBuild && !isAppBuild;
 
 const writeToDisk = process.env.WRITE_TO_DISK === "true";
@@ -133,6 +132,7 @@ function getPlugins() {
     }
 
     if (analyzeBundles) {
+        const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
         pluginsToAdd.push(new BundleAnalyzerPlugin({
             analyzerMode: "static",
             generateStatsFile: true,
@@ -150,6 +150,7 @@ function getPlugins() {
 // Util functions
 
 function getHTMLWebpackPlugin(filename, template, chunks, isEnvProduction) {
+    const HtmlWebpackPlugin = require('html-webpack-plugin');
     return new HtmlWebpackPlugin(
         Object.assign(
             {},

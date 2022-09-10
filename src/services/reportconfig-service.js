@@ -50,12 +50,12 @@ export default class ReportConfigService {
             useExternalDnDProvider: true,
             customFunctions: !selfHandleScriptExecution,
             subReports: (defn) => this.$report.getReportsList().then((result) => {
-                    result = result.filter(q => q.advanced).map(q => ({ id: q.id, name: q.queryName }));
-                    if (defn && defn.id) {
-                        result = result.filter(r => r.id !== defn.id);
-                    }
-                    return result;
-                }),
+                result = result.filter(q => q.advanced).map(q => ({ id: q.id, name: q.queryName }));
+                if (defn && defn.id) {
+                    result = result.filter(r => r.id !== defn.id);
+                }
+                return result;
+            }),
             resolveReportDefinition: (reportId) => this.$report.getReportDefinition(reportId),
             resolveHttpRequest: (method, url, data, headers) => this.$http.request(method, url, data, headers),
             builtInFields: {
@@ -65,8 +65,9 @@ export default class ReportConfigService {
             },
             commonFunctions: {
                 getUsersFromGroup: { value: (group) => { /*ToDo: Yet to implement */ } },
-                getJiraIssueUrl: { value: (jiraIssueKey) => this.$userutils.getTicketUrl(jiraIssueKey) },
-                getUserProfileUrl: { value: (userName) => { /*ToDo: Yet to implement */ } },
+                getJiraIssueUrl: { value: this.$userutils.getTicketUrl },
+                getUserProfileUrl: { value: this.$userutils.getProfileUrl },
+                getUserProfileImageUrl: { value: this.$userutils.getProfileImgUrl },
                 getTicketDetails: { value: (ticketsList, fields) => this.$report.fetchTicketDetails(ticketsList, fields) },
                 executeJQL: { value: (jql, fields) => this.$jira.searchTickets(jql, fields) },
                 getRapidSprintList: { value: (rapidIds) => this.$jira.getRapidSprintList(rapidIds) },
@@ -75,6 +76,8 @@ export default class ReportConfigService {
                 searchUsers: { value: (text, maxResult = 10, startAt = 0) => this.$jira.searchUsers(text, maxResult, startAt) },
                 addWorklog: { value: (obj) => this.eventPipe.emit("addWorklog", typeof obj === "string" ? { ticketNo: obj } : obj) },
                 getWorklogs: { value: (jiraKey) => this.$jira.getWorklogs(jiraKey) },
+                getDays: { value: this.$userutils.getDays },
+                isHoliday: { value: this.$userutils.isHoliday },
                 bookmarkTicket: {
                     value: (jiraKey) => this.$bookmark.addBookmark([jiraKey]).then(() => {
                         this.eventPipe.emit("gadgetAction", GadgetActionType.TicketBookmarked);
@@ -82,7 +85,7 @@ export default class ReportConfigService {
                 },
                 formatDate: { value: this.$userutils.formatDate },
                 formatTime: { value: this.$userutils.formatTime },
-                formatDateTime: { value: this.$userutils.formatDateTime },
+                formatDateTime: { value: this.$userutils.formatDateTime }
             }
         };
         initReportBuilder(defaultConfig);
@@ -94,10 +97,10 @@ export default class ReportConfigService {
             JQL: {
                 label: "JQL search result",
                 resolveSchema: (datasetTypes.JQL || ((name, props, data) => new Promise((resolve, reject) => {
-                        this.eventPipe.emit("resolveSchema_JQL", { name, props, data, schema: { resolve, reject } });
-                    }))),
+                    this.eventPipe.emit("resolveSchema_JQL", { name, props, data, schema: { resolve, reject } });
+                }))),
                 resolveData: (qry, parametersValues, { parameterTemplate }) => this.$jira.searchTickets(this.prepareJQL(qry.jql, parametersValues, parameterTemplate), qry.outputFields.map(f => f.id))
-                        .then(this.processSearchData)
+                    .then(this.processSearchData)
             },
             FLT: true,
             PLS: {
@@ -201,14 +204,14 @@ export default class ReportConfigService {
     }
 
     processSearchData = (data) => data.map(d => {
-            const fields = d.fields;
-            fields.key = d.key;
-            if (fields.worklog && fields.worklog.worklogs) {
-                fields.worklogs = fields.worklog.worklogs;
-                delete fields.worklog;
-            }
-            return fields;
-        });
+        const fields = d.fields;
+        fields.key = d.key;
+        if (fields.worklog && fields.worklog.worklogs) {
+            fields.worklogs = fields.worklog.worklogs;
+            delete fields.worklog;
+        }
+        return fields;
+    });
 
     prepareJQL(jql, parameters, parameterTemplate) {
         const usedParams = jql.match(/@Parameters.([a-zA-Z_\d.]+[|a-zA-Z_\d.()"',-//]+)\$/g); // Revisit: Escape charactors removed due to warning

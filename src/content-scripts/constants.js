@@ -25,13 +25,13 @@ export const isCloud = curOrigin.endsWith('.atlassian.net');
 
 const cloudRegexSet = {
     board: /^\/jira\/software\/c\/projects\/([A-Z0-9-]+)\/boards\/(\d+)/gi,
-    issue: /browse\/([A-Z]+-\d+)[/?]?.*$/gi
+    issue: /browse\/([A-Z0-9]+-\d+)[/?]?.*$/gi
 };
 
 // This has to be updated
 const dsRegexSet = {
-    board: /^.*\/secure\/RapidBoard.jspa.*$/gi,
-    issue: /browse\/([A-Z]+-\d+)[/?]?.*$/gi
+    board: /^.*\/secure\/RapidBoard\.jspa.*$/gi,
+    issue: /browse\/([A-Z0-9]+-\d+)[/?]?.*$/gi
 };
 
 export const regexSet = isCloud ? cloudRegexSet : dsRegexSet;

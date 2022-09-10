@@ -7,6 +7,7 @@ import { getJiraCloudOAuthAuthorizeUrl } from '../../../constants/oauth';
 import { isAppBuild } from '../../../constants/build-info';
 import Footer from '../Footer';
 import './ChooseAuthType.scss';
+import { withRouter } from '../../../pollyfills';
 
 class ChooseAuthType extends PureComponent {
     constructor(props) {
@@ -100,5 +101,5 @@ class ChooseAuthType extends PureComponent {
     }
 }
 
-export default ChooseAuthType;
+export default withRouter(ChooseAuthType);
 
