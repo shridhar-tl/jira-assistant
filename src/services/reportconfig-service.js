@@ -1,5 +1,5 @@
 import React from 'react';
-import { initReportBuilder } from 'jsd-report';
+import { initReportBuilder } from '../externals/jsd-report';
 import EventEmitter from 'events';
 import { GadgetActionType } from '../gadgets/_constants';
 import { getUserName } from '../common/utils';

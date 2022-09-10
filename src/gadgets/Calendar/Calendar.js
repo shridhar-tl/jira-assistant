@@ -10,7 +10,7 @@ import interactionPlugin from '@fullcalendar/interaction';
 import * as moment from 'moment';
 import Button from '../../controls/Button';
 import SelectBox from '../../controls/SelectBox';
-import { hideContextMenu, showContextMenu } from 'jsd-report';
+import { hideContextMenu, showContextMenu } from '../../externals/jsd-report';
 import AddWorklog from '../../dialogs/AddWorklog';
 import { OverlayPanel } from 'primereact/overlaypanel';
 import MeetingDetails from './MeetingDetails';

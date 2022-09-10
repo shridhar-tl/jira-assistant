@@ -1,6 +1,6 @@
 import React from 'react';
 import { inject } from '../../../services';
-import { ReportBuilder as JSReportBuilder } from 'jsd-report';
+import { ReportBuilder as JSReportBuilder } from '../../../externals/jsd-report';
 import BaseGadget from '../../../gadgets/BaseGadget';
 import ReportViewer from './ReportViewer';
 import { Button, SelectBox } from '../../../controls';

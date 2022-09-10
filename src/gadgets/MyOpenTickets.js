@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { inject } from '../services/injector-service';
 import BaseGadget, { GadgetActionType } from './BaseGadget';
 import { ScrollableTable, THead, TBody, Column, NoDataRow } from '../components/ScrollableTable';
-import { showContextMenu } from 'jsd-report';
+import { showContextMenu } from '../externals/jsd-report';
 import { TicketDisplay } from '../display-controls';
 import { Image } from '../controls';
 

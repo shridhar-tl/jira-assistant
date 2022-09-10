@@ -13,7 +13,6 @@ import 'font-awesome/css/font-awesome.min.css';
 import 'primereact/resources/themes/bootstrap4-light-purple/theme.css';
 import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
-import 'jsd-report/build/css/style.css';
 import './scss/style.scss';
 import './App.scss';
 

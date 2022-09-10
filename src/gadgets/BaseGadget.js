@@ -3,7 +3,7 @@ import { Panel } from 'primereact/panel';
 import { EventEmitter } from 'events';
 import Button from '../controls/Button';
 import classNames from "classnames";
-import { showContextMenu } from 'jsd-report';
+import { showContextMenu } from '../externals/jsd-report';
 import "./BaseGadget.scss";
 import { ExportHelper } from '../common/ExportHelper';
 import { ExportFormat } from '../common/Exporter';

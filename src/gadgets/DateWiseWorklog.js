@@ -4,7 +4,7 @@ import { inject } from '../services';
 import moment from 'moment';
 import { DatePicker } from '../controls';
 import { ScrollableTable, THead, Column, TBody, NoDataRow } from '../components/ScrollableTable';
-import { showContextMenu } from 'jsd-report';
+import { showContextMenu } from '../externals/jsd-report';
 import { getQuickDateValue } from '../controls/DatePicker';
 import ChangeTracker from '../components/ChangeTracker';
 import { WorklogContext } from '../common/context';
