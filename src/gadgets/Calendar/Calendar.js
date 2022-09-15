@@ -10,7 +10,7 @@ import interactionPlugin from '@fullcalendar/interaction';
 import * as moment from 'moment';
 import Button from '../../controls/Button';
 import SelectBox from '../../controls/SelectBox';
-import { hideContextMenu, showContextMenu } from 'jsd-report';
+import { hideContextMenu, showContextMenu } from '../../externals/jsd-report';
 import AddWorklog from '../../dialogs/AddWorklog';
 import { OverlayPanel } from 'primereact/overlaypanel';
 import MeetingDetails from './MeetingDetails';
@@ -60,6 +60,16 @@ class Calendar extends BaseGadget {
         this.fullCalendarOpts = this.getCalendarOptions();
 
         //moment = (date) => toMoment(date, this.calendar)
+    }
+
+    getHint() {
+        return (<ul className="gadget-hint">
+            <li>Pressing left Alt and drag drop worklog will copy the worklog to target slot</li>
+            <li>One click <span className="fa fa-clock-o" /> icon to create worklog entry for meetings</li>
+            <li>You can set "Default meeting ticket" in General Settings &#8680; Worklog tab</li>
+            <li>Drag and drop or resize the worklog to edit it</li>
+            <li>Right click worklog to see more options</li>
+        </ul>);
     }
 
     async setMenuItems() {

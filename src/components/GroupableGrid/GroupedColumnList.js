@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
-import { Sortable } from 'jsd-report';
+import { Sortable } from '../../externals/jsd-report';
 import PropTypes from 'prop-types';
-import { showContextMenu } from 'jsd-report';
+import { showContextMenu } from '../../externals/jsd-report';
 
 const emptyGroupPlaceholder = <div className="empty-group-msg">Drag and drop column here to group data</div>;
 const addGroupItemPlaceholder = <span>Drag and drop more columns here</span>;

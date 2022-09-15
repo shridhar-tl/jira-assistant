@@ -1,22 +1,25 @@
 import React, { PureComponent } from 'react';
 import { Panel } from 'primereact/panel';
+import { Tooltip } from 'primereact/tooltip';
 import { EventEmitter } from 'events';
 import Button from '../controls/Button';
 import classNames from "classnames";
-import { showContextMenu } from 'jsd-report';
-import "./BaseGadget.scss";
+import { showContextMenu } from '../externals/jsd-report';
 import { ExportHelper } from '../common/ExportHelper';
 import { ExportFormat } from '../common/Exporter';
 import { GadgetActionType } from './_constants';
 import { inject } from '../services';
 import { EventCategory } from '../constants/settings';
+import "./BaseGadget.scss";
 
 export const onDashboardEvent = new EventEmitter();
+let instanceId = 0;
 
 export class BaseGadget extends PureComponent {
     constructor(props, title, iconClass) {
         super(props);
         inject(this, "AnalyticsService");
+        this.instanceId = ++instanceId;
 
         this.title = title;
         this.iconClass = iconClass;
@@ -167,6 +170,17 @@ export class BaseGadget extends PureComponent {
 
     showGadgetGontextMenu = (e) => showContextMenu(e, this.getContextMenu());
 
+    getTooltipElement() {
+        if (!this.getHint) { return null; }
+
+        return (<>
+            <Tooltip target={`.icon-hint-${this.instanceId}`} >
+                {this.getHint()}
+            </Tooltip>
+            <i className={`fa fa-info-circle icon-hint icon-hint-${this.instanceId}`} data-pr-position="bottom" />
+        </>);
+    }
+
     getHeader = () => {
         const { title, subTitle, isGadget, props: { draggableHandle } } = this;
         const className = `gadget-header${draggableHandle ? " movable" : ""}`;
@@ -175,6 +189,7 @@ export class BaseGadget extends PureComponent {
             <div ref={draggableHandle} className={className} onContextMenu={!isGadget ? null : this.showGadgetGontextMenu} onDoubleClick={this.toggleFullScreen}>
                 <i className={`fa ${this.iconClass}`}></i> {title} {subTitle && <span> - {subTitle}</span>}
                 <div className="pull-right">
+                    {this.getTooltipElement()}
                     {this.renderCustomActions && this.renderCustomActions(isGadget)}
                     {!this.hideRefresh && this.getRefreshButton()}
                     {!this.hideMenu && <Button icon="fa fa-wrench" onClick={e => showContextMenu(e, this.getContextMenu())} />}

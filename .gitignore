@@ -30,3 +30,6 @@ yarn.lock
 # ignore IntelliJ IDEA, WebStorm, etc. project files
 .idea
 *.iml
+
+# ignore referenced external files used while development
+src/externals/refs

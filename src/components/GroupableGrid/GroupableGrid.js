@@ -2,7 +2,7 @@ import React, { PureComponent, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import * as moment from 'moment';
-import { Draggable } from 'jsd-report';
+import { Draggable } from '../../externals/jsd-report';
 import { ScrollableTable, THead, TRow, Column, TBody, NoDataRow } from '../ScrollableTable';
 import GroupedColumnList from './GroupedColumnList';
 import ColumnList from './ColumnList';

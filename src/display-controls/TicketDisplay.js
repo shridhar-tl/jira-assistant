@@ -1,7 +1,7 @@
 import React from 'react';
 import { inject } from '../services/injector-service';
 import BaseControl from './BaseControl';
-import { showContextMenu } from 'jsd-report';
+import { showContextMenu } from '../externals/jsd-report';
 import { WorklogContext } from '../common/context';
 
 class TicketDisplay extends BaseControl {

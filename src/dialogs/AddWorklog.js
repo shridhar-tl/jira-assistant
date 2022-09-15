@@ -336,7 +336,8 @@ class AddWorklog extends BaseDialog {
                 <div className="col-sm-9">
                     <TextBox multiline={true} rows={5} value={log.description || ""} className={`form-control ${vald.description ? '' : 'ctl-error'}`}
                         onChange={(val) => this.setValue("description", val)}
-                        placeholder={`Provide a brief info about the task you had done.${minCommentLength ? ` Should be atleast ${minCommentLength} chars is length.` : ''}`} />
+                        placeholder={`Provide a brief info about the task you had done.${minCommentLength
+                            ? ` Should be atleast ${minCommentLength} chars is length. You can change this settings from General settings -> Worklog tab` : ''}`} />
                 </div>
             </div>
         </div>

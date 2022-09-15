@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { inject } from '../services/injector-service';
 import BaseGadget, { GadgetActionType } from './BaseGadget';
 import { ScrollableTable, THead, TBody, Column, NoDataRow } from '../components/ScrollableTable';
-import { showContextMenu } from 'jsd-report';
+import { showContextMenu } from '../externals/jsd-report';
 import { TicketDisplay } from '../display-controls';
 import { Image } from '../controls';
 
@@ -18,6 +18,14 @@ class MyOpenTickets extends BaseGadget {
     componentDidMount() {
         super.componentDidMount();
         this.refreshData();
+    }
+
+    getHint() {
+        return (<ul className="gadget-hint">
+            <li>By default, unresolved ticket list assigned to you are shown in this gadget</li>
+            <li>You can control the list of tickets to be shown, by editing "Open tickets JQL" in Advanced Settings</li>
+            <li>Right click on any ticket to start time tracking or see more options</li>
+        </ul>);
     }
 
     render() {
@@ -46,35 +54,37 @@ class MyOpenTickets extends BaseGadget {
         );
     }
 
-    refreshData = (refresh) => {
+    refreshData = async (refresh) => {
         this.setState({ isLoading: true });
 
-        this.$jira.getOpenTickets(refresh)
-            .then((result) => {
-                const ticketList = result.map(t => {
-                    const fields = t.fields;
-                    return {
-                        ticketNo: t.key,
-                        ticketUrl: this.$userutils.getTicketUrl(t.key),
-                        issuetypeIcon: (fields.issuetype || {}).iconUrl,
-                        issuetype: (fields.issuetype || {}).name,
-                        summary: fields.summary,
-                        reporter: (fields.reporter || {}).displayName,
-                        priorityIcon: (fields.priority || {}).iconUrl,
-                        priority: (fields.priority || {}).name,
-                        statusIcon: (fields.status || {}).iconUrl,
-                        status: (fields.status || {}).name,
-                        resolutionIcon: (fields.resolution || {}).iconUrl,
-                        resolution: (fields.resolution || {}).name,
-                        createdSortable: fields.created,
-                        updatedSortable: fields.updated,
-                        created: this.$userutils.formatDateTime(fields.created),
-                        updated: this.$userutils.formatDateTime(fields.updated)
-                    };
-                });
-
-                this.setState({ ticketList, isLoading: false });
+        try {
+            const result = await this.$jira.getOpenTickets(refresh);
+            const ticketList = result.map(t => {
+                const fields = t.fields;
+                return {
+                    ticketNo: t.key,
+                    ticketUrl: this.$userutils.getTicketUrl(t.key),
+                    issuetypeIcon: (fields.issuetype || {}).iconUrl,
+                    issuetype: (fields.issuetype || {}).name,
+                    summary: fields.summary,
+                    reporter: (fields.reporter || {}).displayName,
+                    priorityIcon: (fields.priority || {}).iconUrl,
+                    priority: (fields.priority || {}).name,
+                    statusIcon: (fields.status || {}).iconUrl,
+                    status: (fields.status || {}).name,
+                    resolutionIcon: (fields.resolution || {}).iconUrl,
+                    resolution: (fields.resolution || {}).name,
+                    createdSortable: fields.created,
+                    updatedSortable: fields.updated,
+                    created: this.$userutils.formatDateTime(fields.created),
+                    updated: this.$userutils.formatDateTime(fields.updated)
+                };
             });
+
+            this.setState({ ticketList, isLoading: false });
+        } finally {
+            this.setState({ isLoading: false });
+        }
     };
 
     showContext($event, b) {

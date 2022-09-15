@@ -9,7 +9,7 @@ import BaseGadget, { onDashboardEvent } from '../../gadgets/BaseGadget';
 import { TabView, TabPanel } from 'primereact/tabview';
 import CustomReport from '../reports/custom-groupable/ReportViewer';
 import AdvancedReport from '../reports/report-builder/ReportViewer';
-import { Sortable } from 'jsd-report';
+import { Sortable } from '../../externals/jsd-report';
 
 class Dashboard extends PureComponent {
     constructor(props) {

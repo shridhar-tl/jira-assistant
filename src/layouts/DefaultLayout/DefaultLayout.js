@@ -15,7 +15,7 @@ import {
 import navigation, { getDashboardMenu } from '../../_nav';
 // routes config
 import { inject } from '../../services/injector-service';
-import { ContextMenu } from 'jsd-report';
+import { ContextMenu } from '../../externals/jsd-report';
 import AsideUserInfo from './AsideUserInfo';
 import { setStartOfWeek } from '../../common/utils';
 import BuildDate from './BuildDate';

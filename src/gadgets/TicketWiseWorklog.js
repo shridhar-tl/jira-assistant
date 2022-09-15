@@ -2,7 +2,7 @@ import React from 'react';
 import * as moment from 'moment';
 import BaseGadget from './BaseGadget';
 import { inject } from '../services';
-import { showContextMenu } from 'jsd-report';
+import { showContextMenu } from '../externals/jsd-report';
 import { ScrollableTable, THead, TBody, NoDataRow, Column } from '../components/ScrollableTable';
 import { DatePicker } from '../controls';
 import { DateDisplay } from '../display-controls';

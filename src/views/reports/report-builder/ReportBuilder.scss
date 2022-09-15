@@ -1,12 +1,17 @@
 .report-builder {
-    height: calc(100vh - 140px) !important;
+  height: calc(100vh - 140px) !important;
 
-    .report-controls-cntr {
-      width: 265px !important;
-    }
-
-    .report-display-cntr {
-      width: calc(100% - 267px) !important;
-      overflow: auto;
-    }
+  .report-controls-cntr {
+    width: 265px !important;
   }
+
+  .report-display-cntr {
+    width: calc(100% - 267px) !important;
+    overflow: auto;
+  }
+
+  // This style is to remove the gadget specific overrides
+  .p-panel-content {
+    height: auto !important;
+  }
+}

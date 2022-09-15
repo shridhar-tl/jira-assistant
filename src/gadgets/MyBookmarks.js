@@ -2,13 +2,15 @@ import React from 'react';
 import BaseGadget from './BaseGadget';
 import { GadgetActionType } from '.';
 import { ScrollableTable, THead, TBody, Column, NoDataRow } from '../components/ScrollableTable';
-import { showContextMenu } from 'jsd-report';
+import { showContextMenu } from '../externals/jsd-report';
 import { inject } from '../services/injector-service';
 import { Button, Checkbox, Image } from '../controls';
 import AddBookmark from '../dialogs/AddBookmark';
 import Dialog from '../dialogs';
+import { WorklogContext } from '../common/context';
 
 class MyBookmarks extends BaseGadget {
+    static contextType = WorklogContext;
     constructor(props) {
         super(props, 'My Bookmarks', 'fa-bookmark');
         inject(this, "JiraService", "BookmarkService", "UtilsService", "UserUtilsService", "MessageService");
@@ -52,9 +54,31 @@ class MyBookmarks extends BaseGadget {
             });
     };
 
+    startTimer = () => this.context.startTimer(this.selectedTicket.ticketNo);
+
     showContext($event, b) {
         this.selectedTicket = b;
-        showContextMenu($event, this.contextMenu);
+
+        const menus = [...this.contextMenu];
+
+        try {
+            const result = this.context.getElapsedTimeInSecs();
+
+            const isCurTicket = result?.key === b.ticketNo;
+            const isRunning = result?.isRunning;
+            if (!isCurTicket) {
+                menus.push({ label: "Start timer", icon: "fa fa-play", command: this.startTimer });
+            } else {
+                if (isRunning) {
+                    menus.push({ label: "Pause timer", icon: "fa fa-pause", command: this.context.pauseTimer });
+                } else {
+                    menus.push({ label: "Resume timer", icon: "fa fa-play", command: this.context.resumeTimer });
+                }
+                menus.push({ label: "Stop timer", icon: "fa fa-stop", command: this.context.stopTimer });
+            }
+        } catch { /* Nothing to do as of now */ }
+
+        showContextMenu($event, menus);
     }
 
     selectAll = (selAllChk) => {

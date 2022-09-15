@@ -2,7 +2,7 @@ import React from 'react';
 import BaseGadget, { GadgetActionType } from './BaseGadget';
 import { ScrollableTable, THead, TBody, Column, NoDataRow } from '../components/ScrollableTable';
 import { inject } from '../services/injector-service';
-import { showContextMenu } from 'jsd-report';
+import { showContextMenu } from '../externals/jsd-report';
 import { Button, Checkbox } from '../controls';
 import Dialog from '../dialogs';
 import ChangeTracker from '../components/ChangeTracker';
@@ -29,6 +29,13 @@ class PendingWorklog extends BaseGadget {
     componentDidMount() {
         super.componentDidMount();
         this.refreshData();
+    }
+
+    getHint() {
+        return (<ul className="gadget-hint">
+            <li>List of worklog entries created and yet to be uploaded to Jira are shown here</li>
+            <li>You can upload, edit or delete the entries from here or from worklog calendar</li>
+        </ul>);
     }
 
     refreshData = () => {

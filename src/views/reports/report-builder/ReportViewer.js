@@ -2,7 +2,7 @@ import React from 'react';
 import BaseGadget from '../../../gadgets/BaseGadget';
 import { inject } from '../../../services';
 import { Button } from '../../../controls';
-import { ReportViewer as JSRViewer } from "jsd-report";
+import { ReportViewer as JSRViewer } from '../../../externals/jsd-report';
 import GroupEditor from '../../../dialogs/GroupEditor';
 import "./ReportViewer.scss";
 import AddWorklog from '../../../dialogs/AddWorklog';

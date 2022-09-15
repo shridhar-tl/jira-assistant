@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { showContextMenu, ContextMenu } from 'jsd-report';
+import { showContextMenu, ContextMenu } from '../../../externals/jsd-report';
 import { inject } from '../../../services';
 import { Button, TextBox } from '../../../controls';
 import { ApiUrls } from '../../../constants/api-urls';
