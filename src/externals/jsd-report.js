@@ -1,4 +1,4 @@
-import { Draggable, Sortable, showContextMenu, hideContextMenu, ContextMenu, initReportBuilder, ReportBuilder, ReportViewer } from 'jsd-report';
+import { ReportBuilder, ReportViewer, initReportBuilder, Sortable, Droppable, Draggable, ContextMenu, showContextMenu, hideContextMenu, Table } from 'jsd-report';
 import 'jsd-report/build/css/style.css';
 
-export { Draggable, Sortable, showContextMenu, hideContextMenu, ContextMenu, initReportBuilder, ReportBuilder, ReportViewer };
+export { ReportBuilder, ReportViewer, initReportBuilder, Sortable, Droppable, Draggable, ContextMenu, showContextMenu, hideContextMenu, Table };

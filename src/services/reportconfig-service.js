@@ -45,6 +45,9 @@ export default class ReportConfigService {
                 return Function(...sandbox, code)();
             };
 
+        const { dateFormat, timeFormat, jiraUrl } = this.$session.CurrentUser;
+        const dateTimeFormat = `${dateFormat} ${timeFormat}`;
+
         const defaultConfig = {
             selfHandleScriptExecution, compiler,
             useExternalDnDProvider: true,
@@ -59,9 +62,10 @@ export default class ReportConfigService {
             resolveReportDefinition: (reportId) => this.$report.getReportDefinition(reportId),
             resolveHttpRequest: (method, url, data, headers) => this.$http.request(method, url, data, headers),
             builtInFields: {
-                UserDateFormat: { value: this.$session.CurrentUser.dateFormat, helpText: "Provides the date format of the current user" },
-                UserTimeFormat: { value: this.$session.CurrentUser.timeFormat },
-                UserDateTimeFormat: { value: `${this.$session.CurrentUser.dateFormat} ${this.$session.CurrentUser.timeFormat}` }
+                UserDateFormat: { value: dateFormat, helpText: `Provides the date format of the current user (${dateFormat})` },
+                UserTimeFormat: { value: timeFormat, helpText: `Provides the time format of the current user (${timeFormat})` },
+                UserDateTimeFormat: { value: dateTimeFormat, helpText: `Provides the date time format of the current user (${dateTimeFormat})` },
+                CurrentJiraRoot: { value: jiraUrl, helpText: `Returns Jira root url (${jiraUrl})` }
             },
             commonFunctions: {
                 getUsersFromGroup: { value: (group) => { /*ToDo: Yet to implement */ } },

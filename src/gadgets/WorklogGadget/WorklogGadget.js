@@ -26,7 +26,7 @@ class WorklogGadget extends BaseGadget {
             pageSettings.timeZone = '1';
         }
 
-        this.state.dateRange = {};
+        this.state.dateRange = pageSettings.dateRange || {};
         this.state.pageSettings = pageSettings;
         const { maxHours, epicNameField, name } = this.$session.CurrentUser;
         this.currentUserName = name.toLowerCase();
@@ -42,9 +42,18 @@ class WorklogGadget extends BaseGadget {
 
     dateSelected = (date) => {
         if (!date) { return; }
+        const { quickDate, fromDate, toDate } = date;
 
-        if (date.fromDate && date.toDate) {
-            this.setState({ dateRange: date }, this.refreshData);
+        if (fromDate && toDate) {
+            let { pageSettings } = this.state;
+            if (quickDate) {
+                pageSettings = { ...pageSettings, dateRange: { quickDate } };
+            } else {
+                pageSettings = { ...pageSettings, dateRange: date };
+            }
+
+            this.setState({ dateRange: date, pageSettings }, this.refreshData);
+            this.saveSettings(pageSettings);
         }
     };
 
@@ -260,10 +269,13 @@ class WorklogGadget extends BaseGadget {
         const { groupBy, groupFoldable, displayColumns, sortField, isDesc } = grpSet;
         let { pageSettings } = this.state;
         pageSettings = { ...pageSettings, flatTableSettings: { groupBy, groupFoldable, displayColumns, sortField, isDesc } };
+        this.saveSettings(pageSettings);
+    };
 
+    saveSettings(pageSettings) {
         this.$config.saveSettings('reports_UserDayWise', pageSettings);
         this.settingsChanged(pageSettings);
-    };
+    }
 
     addWorklog = (user, ticketNo, dateStarted, logged) => {
         let timeSpent = (this.maxSecsPerDay || 0) - (logged || 0);

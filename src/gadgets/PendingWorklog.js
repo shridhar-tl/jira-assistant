@@ -31,6 +31,13 @@ class PendingWorklog extends BaseGadget {
         this.refreshData();
     }
 
+    getHint() {
+        return (<ul className="gadget-hint">
+            <li>List of worklog entries created and yet to be uploaded to Jira are shown here</li>
+            <li>You can upload, edit or delete the entries from here or from worklog calendar</li>
+        </ul>);
+    }
+
     refreshData = () => {
         if (!this.state.isLoading) {
             this.setState({ isLoading: true });
