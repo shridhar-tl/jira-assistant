@@ -29,6 +29,7 @@ const BasicAuth = React.lazy(() => import('./views/pages/authenticate/BasicAuth'
 const OptionsPage = React.lazy(() => import('./views/settings/global/GlobalSettings'));
 
 const Page401 = React.lazy(() => import('./views/pages/p401/Page401'));
+const Poker = React.lazy(() => import('./views/poker/Poker'));
 
 class App extends PureComponent {
   constructor(props) {
@@ -186,6 +187,10 @@ class App extends PureComponent {
     if (pathname.endsWith("/dashboard")) {
       forceNavigate = true;
       pathname += "/0"; // Load the default dashboard if their is no dashboard id in url
+    } else if (userId && pathname.includes(`/poker`)) {
+      userId = null;
+      pathname = pathname.substring(pathname.indexOf('/poker'));
+      this.props.navigate(pathname);
     }
 
     if (pathname.startsWith("/dashboard")) {
@@ -208,6 +213,7 @@ class App extends PureComponent {
         if (pathname.startsWith("/dashboard")) {
           pathname = `/${this.$session.userId}${pathname}`;
         }
+
         this.props.navigate(pathname);
       }
       else if (!userId) {
@@ -277,9 +283,12 @@ class App extends PureComponent {
                   element={<BasicAuth isWebBuild={isWebBuild} setAuthType={isWebBuild ? this.authTypeChosen : undefined} />} />
               </Route>
 
-              <Route exact path="/401" name="Page 401" element={<Page401 jiraUrl={this.state.jiraUrl} />} />
               <Route exact path="/options" name="Options Page" element={<OptionsPage />} />
-              {(!isWebBuild || !!authType) && <Route key={userId} path="/:userId/*" name="Home" element={<DefaultLayout />} />}
+              <Route exact path="/401" name="Page 401" element={<Page401 jiraUrl={this.state.jiraUrl} />} />
+
+              <Route path="/poker/*" name="Planning Poker" element={<Poker hasExtensionSupport={!isWebBuild || isExtnValid} />} />
+
+              {(!isWebBuild || !!authType) && <Route path="/:userId/*" name="Home" element={<DefaultLayout key={userId} />} />}
             </Routes>
             <CustomDialog />
           </React.Suspense>

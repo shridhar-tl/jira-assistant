@@ -56,6 +56,17 @@ export const navigation = [
         }
     },
     {
+        name: 'Poker',
+        id: 'PLP',
+        url: '/poker',
+        icon: 'fa fa-ticket',
+        badge: {
+            variant: 'info',
+            text: 'BETA'
+        },
+        attributes: { target: '_blank', rel: "noopener" }
+    },
+    {
         title: true,
         name: 'Reports'
     },

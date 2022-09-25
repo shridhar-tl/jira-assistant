@@ -1,0 +1,82 @@
+body {
+    overflow: auto;
+}
+
+.poker-start {
+    min-height: 100vh;
+    width: 100%;
+    max-width: 1250px;
+    margin-left: auto;
+    margin-right: auto;
+
+    .ja-header {
+        padding: 45px;
+
+        img {
+            height: 36px;
+            width: 36px;
+        }
+    }
+
+    .footer {
+        color: #fff;
+        padding: 30px 50px 0 50px;
+
+        .copyright {
+            padding: 12px;
+        }
+    }
+
+    .poker-create {
+        height: 100%;
+        width: 100%;
+
+        .card {
+            min-width: 500px;
+            padding: 30px;
+        }
+
+        .card .p-fluid {
+            margin-top: 2rem;
+
+            button {
+                margin-top: 25px !important;
+                height: 35px;
+                width: 300px;
+                border-radius: 15px;
+                display: block;
+                margin-left: auto;
+                margin-right: auto;
+            }
+        }
+
+        .card .field {
+            margin-bottom: 1.5rem;
+        }
+
+        @media screen and (max-width: 992px) {
+            .card {
+                width: 70%;
+            }
+        }
+
+        @media screen and (max-width: 980px) {
+            .card {
+                width: 80%;
+            }
+        }
+
+        @media screen and (max-width: 840px) {
+            .card {
+                width: 90%;
+            }
+        }
+
+        @media screen and (max-width: 640px) {
+            .card {
+                width: 100%;
+                min-width: 0;
+            }
+        }
+    }
+}
