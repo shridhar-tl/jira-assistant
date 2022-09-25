@@ -23,10 +23,11 @@ export default class AjaxService {
             params = params[0];
         }
 
-        if (params && Array.isArray(params) && params.length > 0) {
+        const isArray = params && Array.isArray(params);
+        if (isArray && params.length > 0) {
             urlStr = urlStr.format(params);
         }
-        else if (params && typeof params === "object") {
+        else if (!isArray && params && typeof params === "object") {
             urlStr = prepareUrlWithQueryString(urlStr, params);
         }
 

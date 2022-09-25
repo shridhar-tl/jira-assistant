@@ -5,28 +5,34 @@ import SaveReportDialog from '../../../dialogs/SaveReportDialog';
 import Dialog from '../../../dialogs';
 import ReportViewer from './ReportViewer';
 import { EventCategory } from '../../../constants/settings';
+import { withRouter } from '../../../pollyfills';
 import './Common.scss';
 
 class CustomReport extends PureComponent {
     constructor(props) {
         super();
-        inject(this, "ReportService", "MessageService", "AnalyticsService");
-        let { match: { params: { reportId } } } = props;
+        inject(this, "ReportService", "MessageService", "AnalyticsService", "SessionService");
 
+        const reportId = this.getReportIdFromParams(props);
+
+        this.state = this.getEmptyReport(reportId);
+    }
+
+    getReportIdFromParams(props) {
+        let reportId = props.match?.params?.reportId;
         if (reportId) {
             reportId = parseInt(reportId);
         }
 
-        this.state = this.getEmptyReport(reportId);
+        return reportId;
+    }
 
-        this.loadReport(reportId);
+    componentDidMount() {
+        this.loadReport(this.getReportIdFromParams(this.props));
     }
 
     UNSAFE_componentWillReceiveProps(props) {
-        let { match: { params: { reportId } } } = props;
-        if (reportId) {
-            reportId = parseInt(reportId);
-        }
+        const reportId = this.getReportIdFromParams(props);
         if (this.state.reportId !== reportId) {
             this.loadReport(reportId);
         }
@@ -67,21 +73,14 @@ class CustomReport extends PureComponent {
     };
 
     querySelected = (reportId) => {
-        const { history } = this.props;
-        let { match: { path } } = this.props;
-
-        if (path.indexOf(':reportId') >= 0) {
-            path = path.replace(':reportId', reportId).clearEnd('/');
-        }
-        else if (reportId) {
-            path = `${path}/${reportId}`;
+        if (reportId) {
+            const { navigate } = this.props;
+            navigate(`/${this.$session.userId}/reports/custom/${reportId}`);
         }
         else { // When report id is not available then user clicked on New Query button
             this.setState(this.getEmptyReport());
             return;
         }
-
-        history.push(path);
     };
 
     queryChanged = (query) => this.setState({ query, hasUnsavedChanges: true });
@@ -191,4 +190,4 @@ class CustomReport extends PureComponent {
     }
 }
 
-export default CustomReport;
+export default withRouter(CustomReport);

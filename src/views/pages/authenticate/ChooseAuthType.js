@@ -37,13 +37,13 @@ class ChooseAuthType extends PureComponent {
 
     extnSelected = () => {
         if (this.props.needIntegration) {
-            this.props.history.push('/integrate/extn');
+            this.props.navigate('/integrate/extn');
         } else {
             this.props.onAuthTypeChosen('1');
         }
     };
 
-    basicAuthSelected = () => this.props.history.push('/integrate/basic');
+    basicAuthSelected = () => this.props.navigate('/integrate/basic');
 
     oAuthSelected = () => {
         Dialog.yesNo((<span>

@@ -2,7 +2,7 @@ import { DummyWLId } from '../constants/common';
 import { defaultSettings, defaultJiraFields } from '../constants/settings';
 import { ApiUrls } from '../constants/api-urls';
 import * as moment from 'moment';
-import { prepareUrlWithQueryString, waitFor } from '../common/utils';
+import { mergeUrl, prepareUrlWithQueryString, viewIssueUrl, waitFor } from '../common/utils';
 
 export default class JiraService {
     static dependencies = ["AjaxService", "CacheService", "MessageService", "SessionService"];
@@ -344,9 +344,28 @@ export default class JiraService {
         }
     }
 
-    async searchIssueForPicker(query, project = '') {
-        const result = await this.$ajax.get(ApiUrls.searchIssueForPicker, query, project);
-        return result.sections[0].issues;
+    lookupIssues = async (query, options) => {
+        const url = prepareUrlWithQueryString(ApiUrls.searchIssueForPicker, {
+            ...options,
+            query
+        });
+
+        const { sections } = await this.$ajax.get(url);
+        const root = this.$session.CurrentUser.jiraUrl?.clearEnd('/');
+        sections.forEach(s => s.issues.forEach(issue => {
+            issue.root = root;
+            if (issue.img) {
+                issue.img = mergeUrl(root, issue.img);
+                issue.url = viewIssueUrl(root, issue.key);
+            }
+        }));
+
+        return sections;
+    };
+
+    async searchIssueForPicker(query, options) {
+        const result = await this.lookupIssues(query, options);
+        return result[0].issues;
     }
 
     async searchUsers(text, maxResult = 10, startAt = 0) {

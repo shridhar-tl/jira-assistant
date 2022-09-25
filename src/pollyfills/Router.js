@@ -11,7 +11,6 @@ function withRouter(Component) {
         const navigate = useNavigate();
         const params = useParams();
         const match = { params };
-        const history = { push: navigate };
 
         return (
             <Component
@@ -19,7 +18,6 @@ function withRouter(Component) {
                 location={location}
                 match={match}
                 navigate={navigate}
-                history={history}
             />
         );
     }

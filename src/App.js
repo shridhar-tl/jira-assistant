@@ -15,6 +15,7 @@ import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
 import './scss/style.scss';
 import './App.scss';
+import { CustomDialog } from './dialogs';
 
 export const extnAuth = isWebBuild && document.location.href.indexOf('?authType=1') > 0;
 
@@ -51,7 +52,7 @@ class App extends PureComponent {
       this.authenticateUser(url, true, true);
     },
     navigate: (url, userbased) => {
-      this.props.history.push(userbased ? `/${this.$session.userId}${url}` : url);
+      this.props.navigate(userbased ? `/${this.$session.userId}${url}` : url);
     }
   };
 
@@ -126,7 +127,7 @@ class App extends PureComponent {
 
       if (!authType || (authType === '1' && !newState.authReady)) {
         this.setState({ isLoading: false });
-        this.props.history.push(`/integrate`);
+        this.props.navigate(`/integrate`);
         return;
       }
     }
@@ -137,7 +138,7 @@ class App extends PureComponent {
   authTypeChosen = (authType) => {
     localStorage.setItem('authType', authType);
     this.setState({ authType, needIntegration: false });
-    this.props.history.push('/');
+    this.props.navigate('/');
     this.beginLoad(authType);
   };
 
@@ -198,44 +199,50 @@ class App extends PureComponent {
     }
   }
 
+  navigatePostLogin(userId, result, pathname, forceNavigate, switchUser, sessionUser) {
+    if (result) {
+      if (!pathname || pathname === "/") {
+        this.props.navigate(`/${this.$session.userId}/dashboard/0`);
+      }
+      else if (forceNavigate) {
+        if (pathname.startsWith("/dashboard")) {
+          pathname = `/${this.$session.userId}${pathname}`;
+        }
+        this.props.navigate(pathname);
+      }
+      else if (!userId) {
+        this.props.navigate(`/${this.$session.userId}${pathname}`);
+      }
+      try {
+        if (switchUser && sessionUser) {
+          (async () => {
+            await this.$settings.set("CurrentJiraUrl", this.$session.rootUrl);
+            await this.$settings.set("CurrentUserId", sessionUser);
+          })();
+        }
+      } catch (err) {
+        console.error('Unable to save default user:', err);
+      }
+    }
+    else {
+      this.props.navigate(this.$session.needIntegration ? "/integrate" : "/401");
+    }
+  }
+
   tryAuthenticate(userId, pathname, forceNavigate, switchUser) {
     this.$auth.authenticate(userId).then((result) => {
       this.$analytics.trackPageView();
 
       const sessionUser = this.$session.userId || null;
 
-      if (result) {
-        if (!pathname || pathname === "/") {
-          this.props.history.push(`/${this.$session.userId}/dashboard/0`);
-        }
-        else if (forceNavigate) {
-          if (pathname.startsWith("/dashboard")) {
-            pathname = `/${this.$session.userId}${pathname}`;
-          }
-          this.props.history.push(pathname);
-        }
-        else if (!userId) {
-          this.props.history.push(`/${this.$session.userId}${pathname}`);
-        }
-        try {
-          if (switchUser && sessionUser) {
-            (async () => {
-              await this.$settings.set("CurrentJiraUrl", this.$session.rootUrl);
-              await this.$settings.set("CurrentUserId", sessionUser);
-            })();
-          }
-        } catch (err) {
-          console.error('Unable to save default user:', err);
-        }
-      }
-      else {
-        this.props.history.push(this.$session.needIntegration ? "/integrate" : "/401");
+      if (!pathname?.startsWith('/poker')) {
+        this.navigatePostLogin(userId, result, pathname, forceNavigate, switchUser, sessionUser);
       }
 
       this.setState({ isLoading: false, authenticated: result, jiraUrl: this.$session.rootUrl, userId: sessionUser });
 
     }, () => {
-      this.props.history.push(this.$session.needIntegration ? "/integrate" : "/401");
+      this.props.navigate(this.$session.needIntegration ? "/integrate" : "/401");
       this.setState({ isLoading: false, needIntegration: this.$session.needIntegration, jiraUrl: this.$session.rootUrl });
     });
   }
@@ -252,7 +259,7 @@ class App extends PureComponent {
     return (
       <>
         {this.getMessanger()}
-        <UrlWatcher />
+        {!!UrlWatcher && <UrlWatcher />}
 
         <AppContextProvider value={this.contextProps}>
           <React.Suspense fallback={getLoader()}>
@@ -264,13 +271,17 @@ class App extends PureComponent {
               {!isAppBuild && <Route exact path={isWebBuild ? "/integrate/extn" : "/integrate"} name="Integrate Page"
                 element={<IntegrateExtn isWebBuild={isWebBuild} setAuthType={isWebBuild ? this.authTypeChosen : undefined} />} />}
 
-              <Route exact path="/integrate/basic/:store?" name="Basic Auth Page"
-                element={<BasicAuth isWebBuild={isWebBuild} setAuthType={isWebBuild ? this.authTypeChosen : undefined} />} />
+              <Route exact path="/integrate/basic" name="Basic Auth Page"
+                element={<BasicAuth isWebBuild={isWebBuild} setAuthType={isWebBuild ? this.authTypeChosen : undefined} />}>
+                <Route exact path=":store" name="Basic Auth Page"
+                  element={<BasicAuth isWebBuild={isWebBuild} setAuthType={isWebBuild ? this.authTypeChosen : undefined} />} />
+              </Route>
 
               <Route exact path="/401" name="Page 401" element={<Page401 jiraUrl={this.state.jiraUrl} />} />
               <Route exact path="/options" name="Options Page" element={<OptionsPage />} />
               {(!isWebBuild || !!authType) && <Route key={userId} path="/:userId/*" name="Home" element={<DefaultLayout />} />}
             </Routes>
+            <CustomDialog />
           </React.Suspense>
         </AppContextProvider>
       </>

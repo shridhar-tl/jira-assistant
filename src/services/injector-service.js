@@ -113,7 +113,17 @@ export function injectable(service, serviceName, defaultName, opts) {
 }
 
 export function inject(instance, ...dependencies) {
+    if (typeof instance === 'string') {
+        dependencies.splice(0, 0, instance);
+        instance = {};
+    }
+
+    if (!instance) {
+        instance = {};
+    }
+
     injector.inject(instance, dependencies);
+    return instance;
 }
 
 export function resolveDependency(component) {

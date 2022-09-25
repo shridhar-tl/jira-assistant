@@ -1,10 +1,9 @@
 export default class SuggestionService {
-    static dependencies = ["JiraService", "BookmarkService", "UserUtilsService"];
+    static dependencies = ["JiraService", "BookmarkService"];
 
-    constructor($jira, $bookmark, $userutils) {
+    constructor($jira, $bookmark) {
         this.$jira = $jira;
         this.$bookmark = $bookmark;
-        this.$userutils = $userutils;
     }
 
     async getTicketSuggestion(query, maxItems = 10, project = '') {
@@ -26,10 +25,10 @@ export default class SuggestionService {
                 obj[t.key] = true;
                 return obj;
             }, {});
-            const issues = await this.$jira.searchIssueForPicker(query, project);
-            const mapUrl = this.$userutils.mapJiraUrl;
+            const issues = await this.$jira.searchIssueForPicker(query, project ? { currentProjectId: project } : undefined);
+
             result.addRange(issues.filter(t => !tMap[t.key])
-                .map(t => ({ value: t.key, label: `${t.key} - ${t.summaryText}`, iconUrl: mapUrl(t.img) })));
+                .map(t => ({ value: t.key, label: `${t.key} - ${t.summaryText}`, iconUrl: t.img })));
         }
 
         return result;

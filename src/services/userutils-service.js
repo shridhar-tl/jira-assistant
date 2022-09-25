@@ -1,4 +1,4 @@
-import { getUserName } from "../common/utils";
+import { getUserName, mergeUrl, viewIssueUrl } from "../common/utils";
 import moment from "moment";
 import { DefaultWorkingDays } from "../constants/settings";
 
@@ -10,22 +10,9 @@ export default class UserUtilsService {
         this.$utils = $utils;
     }
 
-    getTicketUrl = (ticketNo) => {
-        if (!ticketNo) {
-            return;
-        }
-        return this.$session.CurrentUser.ticketViewUrl + ticketNo;
-    };
+    getTicketUrl = (ticketNo) => viewIssueUrl(this.$session.CurrentUser.jiraUrl, ticketNo);
 
-    mapJiraUrl = (url) => {
-        if (!url || (url.startsWith('http') && url.indexOf(':') > 3)) {
-            return url;
-        }
-        if (!url.startsWith('/')) {
-            url = `/${url}`;
-        }
-        return this.$session.CurrentUser.jiraUrl + url;
-    };
+    mapJiraUrl = (url) => mergeUrl(this.$session.CurrentUser.jiraUrl, url);
 
     isHoliday = (date) => {
         const weekDay = date.getDay();

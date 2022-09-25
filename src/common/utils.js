@@ -113,7 +113,9 @@ export function prepareUrlWithQueryString(url, params) {
 }
 
 export function encodeAsQuerystring(params) {
-    return Object.keys(params).map((key) => `${key}=${encodeURIComponent(params[key])}`).join('&');
+    return Object.keys(params)
+        .filter(p => params[p] !== undefined)
+        .map((key) => `${key}=${encodeURIComponent(params[key])}`).join('&');
 }
 
 export function getCurrentQueryParams() {
@@ -235,4 +237,23 @@ export function convertToDate(value) {
             return dateObj.toDate();
         }
     }
+}
+
+export function mergeUrl(root, url) {
+    if (!url || (url.startsWith('http') && url.indexOf(':') > 3)) {
+        return url;
+    }
+    if (!url.startsWith('/')) {
+        url = `/${url}`;
+    }
+
+    return root?.clearEnd('/') + url;
+}
+
+export function viewIssueUrl(root, key) {
+    if (!root || !key) {
+        return;
+    }
+
+    return mergeUrl(root, `/browse/${key}`);
 }
