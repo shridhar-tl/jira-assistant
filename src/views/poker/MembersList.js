@@ -14,14 +14,16 @@ const MembersList = React.memo(({ members, votes, issueId, moderatorId }) => (
 const Member = React.memo(function ({ data, vote: score, issueId, isModerator }) {
     const { avatarUrl, avatarId, name, [`vote_${issueId}`]: state } = data;
 
+    const hasScore = (!!score || score === 0) && score !== '?' && score !== '~';
+
     return (
         <div className={`member${isModerator ? ' moderator' : ''}`}>
             <Avatar avatarUrl={avatarUrl} avatarId={avatarId} name={name} />
             <div className="member-state">
                 {score === '?' && <span className="score fa fa-question" />}
                 {score === '~' && <span className="score fa fa-coffee" />}
-                {!isNaN(score) && <span className="score">{score}</span>}
-                {!score && <span className="state-logo">{!state ? Icons.thinking : Icons.thumbsUp}</span>}
+                {hasScore && <span className="score">{score}</span>}
+                {!score && !hasScore && <span className="state-logo">{!state ? Icons.thinking : Icons.thumbsUp}</span>}
             </div>
             <span className="member-name">{name}</span>
         </div>

@@ -38,20 +38,20 @@ const maxScoresList = [
     { value: 55, label: '55' },
     { value: 89, label: '89' }
 ];
-const Settings = connect(function ({ autoReveal, showHalfScore, maxPoints, saveSettings }) {
+const Settings = connect(function ({ autoReveal, showHalfScore, maxPoints, scoreType, saveSettings }) {
     return (<>
         <h3>Settings</h3>
         <div className="poker-settings">
-            <div><Checkbox checked={showHalfScore} field="showHalfScore" label="Show 0.5 story point" onChange={saveSettings} /></div>
+            {scoreType < 3 && <div><Checkbox checked={showHalfScore} field="showHalfScore" label="Show 0.5 story point" onChange={saveSettings} /></div>}
             <div><Checkbox checked={autoReveal} field="autoReveal" label="Auto reveal after voting" onChange={saveSettings} /></div>
-            <div>
+            {scoreType < 3 && <div>
                 <label>Max score</label>
                 <SelectBox value={maxPoints} field="maxPoints" dataset={maxScoresList} onChange={saveSettings} />
-            </div>
+            </div>}
         </div>
     </>);
-}, ({ autoReveal, showHalfScore, maxPoints }) =>
-    ({ autoReveal, showHalfScore, maxPoints }),
+}, ({ autoReveal, scoreType, showHalfScore, maxPoints }) =>
+    ({ autoReveal, scoreType, showHalfScore, maxPoints }),
     { saveSettings });
 
 function Issue({

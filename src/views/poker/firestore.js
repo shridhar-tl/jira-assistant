@@ -14,13 +14,14 @@ const db = getFirestore(pockerApp);
 //const pokerDB = collection(db, dbName);
 
 export async function insertRoomRecord(state) {
-    const { roomId, roomName, sid, token } = state;
+    const { roomId, roomName, sid, token, scoreType } = state;
     const now = new Date().getTime();
     const roomInfo = {
         roomName,
+        scoreType,
         moderatorId: sid,
         autoReveal: false,
-        showHalfScore: true,
+        showHalfScore: parseInt(scoreType) === 2,
         created: now,
         currentIssueId: null,
         lastActivity: serverTimestamp(),
@@ -40,7 +41,6 @@ async function insertRecord(data, ...path) {
 }
 
 export async function joinAsMember(roomId, user) {
-    //const docRoomRef = doc(db, dbName, roomId);
     return await insertUserRecord(roomId, user);
 }
 

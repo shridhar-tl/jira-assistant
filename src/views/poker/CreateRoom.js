@@ -3,6 +3,7 @@ import classNames from 'classnames';
 import { RadioButton, TextBox, Button } from '../../controls';
 import { connect } from './store';
 import { createRoom } from './actions';
+import { scoresList } from './constants';
 
 class CreateRoom extends PureComponent {
     constructor(props) {
@@ -68,15 +69,15 @@ class CreateRoom extends PureComponent {
                             </div>
                             <div>
                                 <RadioButton value={scoreType} field="scoreType" defaultValue={1}
-                                    label="Fibonacci (0, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89)" onChange={this.setValue} />
+                                    label={`Fibonacci (${scoresList[1].join(', ')})`} onChange={this.setValue} />
                             </div>
                             <div>
                                 <RadioButton value={scoreType} field="scoreType" defaultValue={2}
-                                    label="Short Fibonacci (0, ½, 1, 2, 3, 5, 8, 13, 20, 40, 100)" onChange={this.setValue} />
+                                    label={`Short Fibonacci (${scoresList[2].join(', ')})`} onChange={this.setValue} />
                             </div>
                             <div>
                                 <RadioButton value={scoreType} field="scoreType" defaultValue={3}
-                                    label="T-Shirt (XXS, XS, S, M, L, XL, XXL)" onChange={this.setValue} />
+                                    label={`T-Shirt (${scoresList[3].join(', ')})`} onChange={this.setValue} />
                             </div>
 
                             <Button label="CREATE ROOM" className="mt-2" disabled={hasError} onClick={this.createRoom} />

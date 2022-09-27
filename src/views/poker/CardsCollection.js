@@ -3,17 +3,24 @@ import classNames from 'classnames';
 import { Dock } from 'primereact/dock';
 import { connect } from './store';
 import { submitVote } from './actions';
+import { scoresList } from './constants';
 
-const storypoints = [0, .5, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89];
+const CardsCollection = function ({ allowVoting, min = 0, max = 89, value, showHalfScore, scoreType, submitVote }) {
+    let storypoints = scoresList[scoreType];
 
-const CardsCollection = function ({ allowVoting, min = 0, max = 89, value, showHalfScore, submitVote }) {
-    const cards = storypoints.filter(p => (p >= min && p <= max) && (showHalfScore || p !== 0.5))
-        .map((p, i) => ({
-            label: value,
-            icon: <Card key={p} className={`card-color-${(i + (i % 2)) / 2}`}
-                value={p} selected={value === p}
-                submitVote={submitVote} allowVoting={allowVoting} />
-        }));
+    if (!storypoints) {
+        return null;
+    }
+
+    if (scoreType < 3) {
+        storypoints = storypoints.filter(p => (p >= min && p <= max) && (showHalfScore || p !== 0.5));
+    }
+
+    const cards = storypoints.map((p, i) => ({
+        icon: <Card key={p} className={`card-color-${(i + (i % 2)) / 2}`}
+            value={p} selected={value === p}
+            submitVote={submitVote} allowVoting={allowVoting} />
+    }));
     cards.push({
         label: 'Not Sure',
         icon: <Card className="card-other icon-red" icon="fa fa-question" value="?"
@@ -47,9 +54,9 @@ const Card = React.memo(function ({ className, value, icon, selected, allowVotin
 });
 
 export default connect(React.memo(CardsCollection),
-    ({ votesMap, sid, currentIssueId, viewingIssueId, maxPoints, showHalfScore }) => ({
+    ({ votesMap, sid, currentIssueId, viewingIssueId, maxPoints, scoreType, showHalfScore }) => ({
         value: votesMap[viewingIssueId]?.[sid],
         allowVoting: currentIssueId === viewingIssueId,
-        max: maxPoints, showHalfScore
+        max: maxPoints, scoreType, showHalfScore
     }),
     { submitVote });
