@@ -59,18 +59,20 @@ class AC extends PureComponent {
             onChange, filterResult,
             props: { multiple, dropdown, displayField, children, placeholder, title,
                 className, style, size, maxLength, scrollHeight, disabled, onCustomValue,
-                autoFocus, onKeyUp, onFocus, onBlur, onSelect, onShow, onHide },
+                autoFocus, onKeyUp, onFocus, onBlur, onSelect, onShow, onHide, forceSelection,
+                optionGroupChildren, optionGroupTemplate, optionGroupLabel },
             state: { value, list }
         } = this;
 
         return (
-            <AutoComplete appendTo={document.body} multiple={multiple}
+            <AutoComplete appendTo={document.body} multiple={multiple} optionGroupChildren={optionGroupChildren}
+                optionGroupTemplate={optionGroupTemplate} optionGroupLabel={optionGroupLabel}
                 itemTemplate={children} dropdown={dropdown} field={displayField} placeholder={placeholder}
-                tooltip={title} className={className} style={style} size={size} maxlength={maxLength}
+                tooltip={title} className={className} style={style} size={size} maxLength={maxLength}
                 scrollHeight={scrollHeight} disabled={disabled} value={value} onChange={onChange}
                 suggestions={list} completeMethod={filterResult} autoFocus={autoFocus}
                 onKeyUp={onCustomValue ? this.onKeyUp : onKeyUp} onFocus={onFocus} onBlur={onBlur}
-                onSelect={onSelect} onShow={onShow} onHide={onHide} />
+                onSelect={onSelect} onShow={onShow} onHide={onHide} forceSelection={forceSelection} />
         );
     }
 }

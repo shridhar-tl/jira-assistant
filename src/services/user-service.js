@@ -89,7 +89,6 @@ export default class UserService {
         const sessionUser = {
             userId: currentUser.id,
             jiraUrl: currentUser.jiraUrl,
-            ticketViewUrl: `${currentUser.jiraUrl}/browse/`,
             profileUrl: `${currentUser.jiraUrl}/secure/ViewProfile.jspa`,
             feedbackUrl: `${feedbackUrl}&emb=true` //&embedded=true for directly using google forms
         };

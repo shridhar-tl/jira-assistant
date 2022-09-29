@@ -56,6 +56,7 @@ export async function validateIfWebApp(state) {
 
         try {
             const version = await executeService('SELF', 'VERSION');
+            state.extnVersion = version;
             // This value should never be changed as this is the first version where this feature is introduced
             state.extnUnavailable = !version || !(version >= 2.38);
             // This version can be changed when specific change is available only after a specific version

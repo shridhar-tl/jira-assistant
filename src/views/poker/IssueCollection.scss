@@ -1,0 +1,126 @@
+.config-settings {
+    &.p-sidebar {
+        width: 250px;
+
+        .p-sidebar-content {
+            padding: 0;
+        }
+
+        h3 {
+            margin-left: 8px;
+        }
+
+        .poker-settings {
+            padding-left: 12px;
+
+            .p-dropdown {
+                width: 70px;
+                margin-left: 10px;
+            }
+        }
+    }
+
+}
+
+.issues-collection {
+    max-height: 400px;
+    min-height: 250px;
+    width: 100%;
+    background-color: white;
+    border-radius: 0 5px 5px 0;
+    float: left;
+    display: block;
+    overflow: auto;
+    margin-top: 0;
+
+    .list-header {
+        padding: 5px;
+        padding-left: 10px;
+        font-size: 16px;
+        font-weight: bold;
+        border-bottom: 2px solid rgb(50, 140, 224);
+    }
+
+    .empty-list {
+        padding: 4px 20px;
+        font-style: italic;
+    }
+
+    .add-key {
+        .issue-picker {
+            width: calc(100% - 28px);
+        }
+
+        .fa-times {
+            float: right;
+            font-size: 20px;
+            padding: 5px 8px 5px 2px;
+            color: red;
+            cursor: pointer;
+        }
+    }
+
+    .issue-list {
+        max-height: 320px;
+        overflow: auto;
+
+        .issue {
+            padding: 3px 5px 3px 10px;
+            background-color: #abd0f3;
+            margin: 3px 2px;
+            border-radius: 8px;
+            cursor: pointer;
+
+            &:hover {
+                opacity: 0.8;
+            }
+
+            &.selected {
+                background-color: #e08ce0;
+            }
+
+            .issue-info {
+                font-size: 16px;
+                vertical-align: top;
+
+                &>img {
+                    vertical-align: middle;
+                    height: 20px;
+                    width: 20px;
+                }
+
+                &>.key {
+                    vertical-align: bottom;
+                }
+            }
+
+            .fa {
+                font-size: 25px;
+
+                &.fa-times {
+                    color: red;
+                    margin-right: 5px;
+                }
+
+                &.icon-sel-ind {
+                    float: right;
+                }
+
+                &.fa-external-link {
+                    font-size: 14px;
+                }
+            }
+        }
+    }
+
+    .add-issue {
+        padding: 5px 5px;
+        cursor: pointer;
+        font-weight: bold;
+        color: #c348b4;
+
+        &:hover {
+            color: #4c4cb8;
+        }
+    }
+}

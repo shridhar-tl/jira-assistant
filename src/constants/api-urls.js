@@ -18,7 +18,7 @@ export const ApiUrls = {
     searchUser: "~/rest/api/2/user/search?maxResults={1}&startAt={2}&query={0}",
     searchUser_Alt: "~/rest/api/2/user/search?maxResults={1}&startAt={2}&username={0}",
     searchGroup: "~/rest/api/2/groups/picker?maxResults={1}&query={0}",
-    searchIssueForPicker: "~/rest/api/2/issue/picker?currentProjectId={1}&showSubTaskParent=true&showSubTasks=true&currentIssueKey=null&query={0}",
+    searchIssueForPicker: "~/rest/api/2/issue/picker",
     getGroupMembers: "~/rest/api/2/group/member?maxResults={1}&includeInactiveUsers=true&groupId={0}",
     getCustomFields: "~/rest/api/2/field",
     getJQLAutocomplete: "~/rest/api/2/jql/autocompletedata",

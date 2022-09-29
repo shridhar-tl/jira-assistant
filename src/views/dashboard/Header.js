@@ -45,7 +45,7 @@ class Header extends PureComponent {
 
     async deleteDashboard() {
         await this.$dashboard.deleteDashboard(this.state.index);
-        this.props.history.push(`/${this.props.userId}/dashboard/0`);
+        this.props.navigate(`/${this.props.userId}/dashboard/0`);
     }
 
     async setAsQuickView(quickViewLink) {

@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import * as router from 'react-router-dom';
-import Dialog, { CustomDialog } from "../../dialogs";
+import Dialog from "../../dialogs";
 import "./DefaultLayout.scss";
 
 import {
@@ -22,6 +22,7 @@ import BuildDate from './BuildDate';
 import { WorklogContextProvider } from '../../common/context';
 import { isWebBuild } from '../../constants/build-info';
 import AppContent from './AppContent';
+import { withRouter } from '../../pollyfills';
 
 const DefaultHeader = React.lazy(() => import('./DefaultHeader'));
 
@@ -92,7 +93,7 @@ class DefaultLayout extends PureComponent {
     if (isWebBuild) {
       document.location.href = '/';
     } else {
-      this.props.history.push('/integrate');
+      this.props.navigate('/integrate');
     }
   };
 
@@ -163,11 +164,10 @@ class DefaultLayout extends PureComponent {
             </main>
           </div>
           <ContextMenu />
-          <CustomDialog />
         </div>
       </WorklogContextProvider>
     );
   }
 }
 
-export default DefaultLayout;
+export default withRouter(DefaultLayout);

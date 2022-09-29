@@ -8,6 +8,7 @@ import { ApiTokenHelpPage } from '../../../constants/urls';
 import registerServices from '../../../services';
 import Footer from '../Footer';
 import { isExtnBuild } from '../../../constants/build-info';
+import { withRouter } from '../../../pollyfills';
 
 const isQuickView = document.location.href.indexOf('?quick=true') > -1;
 const containerStyle = isQuickView ? { minHeight: '380px', maxHeight: '380px' } : {};
@@ -126,4 +127,4 @@ class Integrate extends PureComponent {
     }
 }
 
-export default Integrate;
+export default withRouter(Integrate);

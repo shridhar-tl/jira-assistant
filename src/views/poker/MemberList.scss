@@ -1,0 +1,93 @@
+.member-avatar {
+    width: 70px;
+    height: 70px;
+    margin-left: auto;
+    margin-right: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background-color: #efe0f4;
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+.members-list {
+    max-width: 1150px;
+    width: 80vw;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 50px 8px 8px 8px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+
+    .member {
+        width: 130px;
+        height: 130px;
+        border: 1px solid #3b9436;
+        border-radius: 5px;
+        border-top-left-radius: 45%;
+        border-top-right-radius: 45%;
+        background-color: #c3edc1;
+        position: relative;
+        margin: 0 15px 80px 15px;
+
+        &.moderator {
+            background-color: #ffb752;
+            border-color: #e06f20;
+
+            .member-name {
+                border: 2px solid #e06f20;
+            }
+        }
+
+        .p-avatar {
+            margin-top: -30px;
+            margin-bottom: 5px;
+            margin-left: 30px;
+        }
+
+        .member-state {
+            display: flex;
+
+            .score {
+                display: block;
+                margin-left: auto;
+                margin-right: auto;
+                font-size: 50px;
+                font-weight: bold;
+                margin-top: -8px;
+
+                &.fa {
+                    margin-top: 8px;
+                    font-weight: normal;
+                }
+            }
+
+            .state-logo {
+                display: block;
+                margin-left: auto;
+                margin-right: auto;
+                font-size: 65px;
+                margin-top: -20px;
+            }
+        }
+
+        .member-name {
+            font-size: 16px;
+            width: 90%;
+            border: 2px solid #3b9436;
+            border-radius: 10px;
+            background-color: #fff;
+            margin-left: 7px;
+            min-height: 35px;
+            max-height: 55px;
+            padding: 2px 4px;
+            position: absolute;
+            bottom: 0;
+            margin-bottom: -22%;
+            text-align: center;
+            overflow: hidden;
+        }
+    }
+}

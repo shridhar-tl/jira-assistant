@@ -1,0 +1,197 @@
+body {
+    background-color: #322d2d;
+}
+
+.poker-fallback {
+    display: none;
+}
+
+@media (max-width:1249px),
+(max-height:480px) {
+    .poker-fallback {
+        display: block;
+        height: 100vh;
+        width: 100vw;
+        color: white;
+        font-size: 30px;
+        text-align: center;
+    }
+
+    .poker-container {
+        display: none;
+    }
+}
+
+.ja-header {
+    h1 {
+        color: #fff;
+    }
+}
+
+.card-other {
+    background-color: #acf487;
+}
+
+.card-color-0 {
+    background-color: #e7edf3;
+}
+
+.card-color-1 {
+    background-color: #9dd49a;
+}
+
+.card-color-2 {
+    background-color: #a3dff2;
+}
+
+.card-color-3 {
+    background-color: #9ec8fe;
+}
+
+.card-color-4 {
+    background-color: #f4dd94;
+}
+
+.card-color-5 {
+    background-color: #f39893;
+}
+
+.card-color-6 {
+    background-color: #f9645c;
+}
+
+.icon-red * {
+    color: #ec291e;
+}
+
+.icon-purple * {
+    color: #4c4cb8;
+}
+
+.icon-reveal * {
+    color: #16a91c;
+}
+
+.icon-start {
+    color: green;
+}
+
+.icon-reset * {
+    color: #c348b4;
+}
+
+.icon-invite * {
+    color: #2f3fc3;
+}
+
+.icon-exit * {
+    color: red;
+}
+
+.help-tooltip .p-tooltip-text {
+    background-color: #d668d6;
+}
+
+.control-box {
+    div.control-icon {
+        display: block;
+        height: 60px;
+        width: 60px;
+        border-radius: 8px;
+        cursor: pointer;
+        background-color: #d5bc7d;
+        display: flex;
+        padding: 7px;
+
+        span.fa {
+            font-size: 45px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+    }
+}
+
+.cards-list {
+    .p-dock-bottom.p-dock a.p-dock-action {
+        height: auto !important;
+        width: auto !important;
+    }
+
+    &.disabled {
+        .card {
+            cursor: not-allowed;
+        }
+    }
+
+    &:not(.disabled) {
+        .card {
+            &:hover {
+                opacity: 1;
+                box-shadow: 0 0 12px 0 #d3d3d3;
+            }
+        }
+    }
+
+    .card {
+        border: 1px solid;
+        border-radius: 5px;
+        margin: 0;
+        transition: margin 1s ease-in-out;
+        height: 90px;
+        width: 72px;
+        color: black;
+        cursor: pointer;
+
+        &.selected {
+            border-style: dashed;
+            box-shadow: grey 0px 0px 12px 0px;
+            border-width: 2px;
+            margin-top: 0;
+        }
+
+        &:not(.selected) {
+            opacity: 0.7;
+        }
+
+
+        &.card-icon {
+            &:nth-last-child(2) {
+                margin-left: 100px;
+            }
+        }
+
+        .card-content {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+
+            .card-val-tl {
+                font-size: 16px;
+                margin-left: 5px;
+                padding-top: 5px;
+            }
+
+            .card-val-m,
+            .card-val-icon {
+                font-size: 28px;
+                font-weight: bold;
+                margin-left: auto;
+                margin-right: auto;
+                display: block;
+            }
+
+            .card-val-icon {
+                font-size: 45px;
+            }
+
+            .card-val-br {
+                font-size: 16px;
+                margin-right: 5px;
+                padding-bottom: 2px;
+                display: flex;
+                justify-content: flex-end;
+            }
+        }
+    }
+}

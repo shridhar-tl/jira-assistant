@@ -1,20 +1,26 @@
-import React, { PureComponent } from 'react';
+import React from 'react';
 import classNames from 'classnames';
+import { useState } from 'react';
 
-class Image extends PureComponent {
-    render() {
-        const { src } = this.props;
+function Image(props) {
+    const { src, fallback } = props;
+    const [fb, setFallback] = useState({});
 
-        if (!src || getPathName(src).length < 3) { return null; }
+    if (!src || getPathName(src).length < 3) { return fallback || null; }
 
-        const { alt = "", className, title } = this.props;
+    const { alt = "", className, title } = props;
 
-        return (
-            <img src={src} alt={alt} title={title}
-                className={classNames('img-x16', className)}
-            />
-        );
+    const useFallbackEl = (el) => setFallback({ src, fallback: true });
+
+    if (fallback && fb.fallback && fb.src === src) {
+        return fallback;
     }
+
+    return (
+        <img src={src} alt={alt} title={title} onError={useFallbackEl}
+            className={classNames('img-x16', className)}
+        />
+    );
 }
 
 export default Image;

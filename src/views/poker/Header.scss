@@ -1,0 +1,51 @@
+.header {
+    width: 100%;
+    height: 75px;
+    background-color: #c1ccfb;
+    box-shadow: 0 4px #ced3e9;
+    padding: 5px 20px;
+
+    .fa.fa-cogs {
+        font-size: 35px;
+        margin: 15px 8px;
+        cursor: pointer;
+        float: left;
+    }
+
+    .header-txt {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+
+        h1 {
+            display: flex;
+            justify-content: center;
+
+            img {
+                margin-right: 10px;
+            }
+        }
+    }
+
+    .p-avatar {
+        float: right;
+    }
+}
+
+.panel-avarars {
+    width: 500px;
+
+    .p-avatar {
+        float: left;
+        margin: 5px;
+        cursor: pointer;
+    }
+}
+
+.avatars-overlay {
+    background-color: #383434;
+
+    &:after {
+        border-bottom-color: #383434;
+    }
+}

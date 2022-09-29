@@ -9,6 +9,8 @@ import { getOriginFromUrl } from '../../../common/utils';
 import Dialog, { CustomDialog } from '../../../dialogs';
 import { executeService } from '../../../common/proxy';
 import Footer from '../Footer';
+import { withRouter } from '../../../pollyfills';
+import { isExtnBuild, isWebBuild } from '../../../constants/build-info';
 
 const settingsIconStyles = {
     fontSize: '18px', position: 'absolute', right: '20px', top: '35px', color: '#0000ff'
@@ -31,19 +33,21 @@ class Integrate extends PureComponent {
             { label: "Options", icon: 'fa fa-cogs fs-16 margin-r-5', command: this.launchOptionsPage.bind(this) },
             { separator: true },
             { label: "Use Jira OAuth", icon: 'fa fa-external-link fs-16 margin-r-5', command: this.useOAuth.bind(this) },
-            { label: "Use Basic Auth", icon: 'fa fa-user fs-16 margin-r-5', command: () => this.props.history.push('/integrate/basic/1') }
+            { label: "Use Basic Auth", icon: 'fa fa-user fs-16 margin-r-5', command: () => this.props.navigate('/integrate/basic/1') }
         ];
 
-        this.$jaBrowserExtn.getCurrentUrl().then((url) => {
-            const root = this.getJiraRootUrl(url);
-            if (root && root.length > 20 && root.startsWith('http')) {
-                this.setState({ jiraUrl: root });
-            }
-        });
+        if (isExtnBuild) {
+            this.$jaBrowserExtn.getCurrentUrl().then((url) => {
+                const root = this.getJiraRootUrl(url);
+                if (root && root.length > 20 && root.startsWith('http')) {
+                    this.setState({ jiraUrl: root });
+                }
+            });
+        }
     }
 
     launchOptionsPage() {
-        window.open('/index.html#/options');
+        window.open(isWebBuild ? '/options' : '/index.html#/options');
     }
 
     importBackup() {
@@ -190,4 +194,4 @@ class Integrate extends PureComponent {
     }
 }
 
-export default Integrate;
+export default withRouter(Integrate);

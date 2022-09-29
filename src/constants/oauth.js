@@ -1,12 +1,11 @@
 import { prepareUrlWithQueryString } from "../common/utils";
-import { JAApiBasePath } from "./urls";
+import { JAApiBasePath, JAWebRootUrl } from "./urls";
 
 // #region Jira Cloud OAuth2
 export const jiraCloudAuthorizeUrl = 'https://auth.atlassian.com/authorize';
 export const jiraCloudScopes = 'offline_access read:jira-user read:jira-work write:jira-work read:sprint:jira-software';
 export const jiraCloudClientId = 'WcuXzz2GICjwK6ZUMSlJwcDbTaIC31B6';
-export const jiraCloudRedirectUrl = 'https://app.jiraassistant.com?oauth=jc';
-
+export const jiraCloudRedirectUrl = `${JAWebRootUrl}?oauth=jc`;
 export const jaJiraTokenExchangeUrl = `${JAApiBasePath}/jira/oauth/token`;
 
 export function getJiraCloudOAuthAuthorizeUrl(state) {
@@ -29,3 +28,4 @@ export function getJiraCloudOAuthAuthorizeUrl(state) {
 // #endregion
 
 export const outlookTokenExchangeUrl = `${JAApiBasePath}/outlook/oauth/token`;
+export const pokerTokenExchangeUrl = `${JAApiBasePath}/poker/oauth/token`;

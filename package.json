@@ -2,7 +2,7 @@
     "name": "jira-assistant",
     "version": "2.42.0",
     "description": "Help to track & upload work done on a Jira Ticket on timely basis and generate Worklog, Sprint and other custom reports",
-    "homepage": "./",
+    "homepage": "/",
     "author": {
         "name": "Shridhar TL",
         "email": "shridhar.tl@gmail.com"
@@ -70,6 +70,7 @@
         "electron-updater": "^5.2.1",
         "espree": "9.4.0",
         "exceljs": "4.3.0",
+        "firebase": "9.10.0",
         "font-awesome": "4.7.0",
         "jquery": "3.6.1",
         "jsd-report": "0.1.11",

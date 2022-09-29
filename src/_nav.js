@@ -1,3 +1,5 @@
+import { isWebBuild } from "./constants/build-info";
+
 export function getDashboardMenu(d, idx, userId) {
     if (!d) { return null; }
 
@@ -54,6 +56,17 @@ export const navigation = [
             variant: 'info',
             text: 'BETA'
         }
+    },
+    {
+        name: 'Poker',
+        id: 'PLP',
+        url: isWebBuild ? '/../poker' : '/poker',
+        icon: 'fa fa-ticket',
+        badge: {
+            variant: 'info',
+            text: 'BETA'
+        },
+        attributes: { target: '_blank', rel: "noopener" }
     },
     {
         title: true,

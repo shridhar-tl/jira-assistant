@@ -1,0 +1,53 @@
+.info-box {
+    max-width: 60%;
+    height: 40px;
+    top: 0;
+    background-color: #edc1ee;
+    display: block;
+    padding: 8px;
+    margin-top: 0;
+    margin-left: auto;
+    margin-right: auto;
+    border-radius: 0 0 30px 30px;
+    overflow: hidden;
+
+    .issue-details {
+        padding-left: 10px;
+        width: calc(100% - 400px);
+        overflow: hidden;
+        font-size: 18px;
+
+        img {
+            width: 20px;
+            height: 20px;
+            vertical-align: middle;
+            margin-bottom: 5px;
+        }
+
+        .issue-key {
+            font-weight: bold;
+        }
+    }
+
+    .est-info {
+        float: right;
+        margin-right: 15px;
+
+        .block {
+            float: right;
+            padding: 2px 5px;
+
+            .label {
+                font-weight: bold;
+                font-size: 18px;
+            }
+
+            .value {
+                font-weight: bold;
+                font-size: 18px;
+                padding-left: 5px;
+                color: #8a34eb;
+            }
+        }
+    }
+}
