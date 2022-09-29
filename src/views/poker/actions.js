@@ -206,7 +206,7 @@ export function copyUrl(_, getState) {
     return function () {
         const roomId = getState('roomId');
         if (navigator.clipboard?.writeText) {
-            navigator.clipboard.writeText(`${JAWebRootUrl}#/pocker/${roomId}`);
+            navigator.clipboard.writeText(`${JAWebRootUrl}/pocker/${roomId}`);
         }
     };
 }

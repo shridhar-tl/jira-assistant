@@ -47,6 +47,10 @@ import { JAWebRootUrl } from '../constants/urls';
 
             $jaBrowserExtn.openTab(url);
             window.close();
+          }, () => {
+            // Workaround fix: Some times chrome doesn't return the current url
+            $jaBrowserExtn.openTab(url);
+            window.close();
           });
         } else {
           $jaBrowserExtn.openTab(url);

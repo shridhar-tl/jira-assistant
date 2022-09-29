@@ -5,6 +5,7 @@ import { getHostFromUrl } from "../../common/utils";
 import { AppContext } from '../../common/context';
 import { EventCategory } from '../../constants/settings';
 import ExportSettings from './ExportSettings';
+import { isWebBuild } from '../../constants/build-info';
 
 class SwitchAccountMenu extends PureComponent {
     static contextType = AppContext;
@@ -43,7 +44,7 @@ class SwitchAccountMenu extends PureComponent {
                     </div>
                 </DropdownItem>)}
 
-                <DropdownItem tag="a" href="/index.html#/integrate" title="Integrate with new instance of Jira">
+                <DropdownItem tag="a" href={isWebBuild ? '/integrate' : '/index.html#/integrate'} title="Integrate with new instance of Jira">
                     <i className="fa fa-plug"></i> Integrate</DropdownItem>
                 {/*<DropdownItem><i className="fa fa-envelope-o"></i> Messages<Badge color="success">42</Badge></DropdownItem>
                         <DropdownItem><i className="fa fa-tasks"></i> Tasks<Badge color="danger">42</Badge></DropdownItem>

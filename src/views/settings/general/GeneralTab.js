@@ -6,6 +6,7 @@ import { inject } from '../../../services';
 import { dateFormats, DefaultEndOfDay, DefaultStartOfDay, timeFormats } from '../../../constants/settings';
 import { setStartOfWeek } from '../../../common/utils';
 import TabControlBase from './TabControlBase';
+import { isWebBuild } from '../../../constants/build-info';
 
 const WeekDaysArray = [
     { val: 0, label: 'Default' },
@@ -122,7 +123,7 @@ class GeneralTab extends TabControlBase {
                             <Checkbox checked={settings.hideDonateMenu} field="hideDonateMenu" onChange={this.saveSetting} label="Hide Donate button in header" />
                         </div>
                         <div>
-                            <a href={`/index.html#/${this.props.userId}/contribute`}
+                            <a href={isWebBuild ? `/${this.props.userId}/contribute` : `/index.html#/${this.props.userId}/contribute`}
                                 title="Would you like to contribute / compensate us for the effort we put in development of this tool? Click to know more">
                                 <img src="/assets/donate.png" width={145} className="Donate us" alt="Donate us" />
                             </a>

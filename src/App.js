@@ -164,7 +164,7 @@ class App extends PureComponent {
       const { success, message, userId: uid } = await this.$jAuth.integrate(code);
       if (success) { // ToDo: if its extension handle it differently
         localStorage.setItem('authType', authType);
-        document.location.href = `/${isWebBuild ? '' : 'index.html'}#/${uid}/dashboard/0`;
+        document.location.href = `/${isWebBuild ? '' : 'index.html#'}/${uid}/dashboard/0`;
         return;
       } else {
         const newState = {};

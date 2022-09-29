@@ -10,7 +10,7 @@ import Dialog, { CustomDialog } from '../../../dialogs';
 import { executeService } from '../../../common/proxy';
 import Footer from '../Footer';
 import { withRouter } from '../../../pollyfills';
-import { isExtnBuild } from '../../../constants/build-info';
+import { isExtnBuild, isWebBuild } from '../../../constants/build-info';
 
 const settingsIconStyles = {
     fontSize: '18px', position: 'absolute', right: '20px', top: '35px', color: '#0000ff'
@@ -47,7 +47,7 @@ class Integrate extends PureComponent {
     }
 
     launchOptionsPage() {
-        window.open('/index.html#/options');
+        window.open(isWebBuild ? '/options' : '/index.html#/options');
     }
 
     importBackup() {

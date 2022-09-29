@@ -16,10 +16,11 @@ console.log(`Build mode set to: ${buildMode}`);
 if (buildMode === 'WEB') {
     cleanupForWebApp(false);
     cleanupBrowserFolders();
+    fs.copyFileSync(resolveBuildPath('index.html'), resolveBuildPath('404.html'));
 } else if (buildMode === 'APP') {
     cleanupForWebApp(false);
     cleanupBrowserFolders();
-    const { name, version, description, homepage, author, bugs, build } = require('./package.json');
+    const { name, version, description, author, bugs, build } = require('./package.json');
 
     build.extraMetadata.main = './electron.js';
     delete build.files;
@@ -30,7 +31,7 @@ if (buildMode === 'WEB') {
 
     fs.writeJsonSync(resolveApp('build/package.json'), {
         name, version, description,
-        homepage, author, bugs, build,
+        homepage: './', author, bugs, build,
         scripts, main: './electron.js'
     });
 
