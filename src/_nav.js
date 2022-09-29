@@ -1,3 +1,5 @@
+import { isWebBuild } from "./constants/build-info";
+
 export function getDashboardMenu(d, idx, userId) {
     if (!d) { return null; }
 
@@ -58,7 +60,7 @@ export const navigation = [
     {
         name: 'Poker',
         id: 'PLP',
-        url: '/poker',
+        url: isWebBuild ? '/../poker' : '/poker',
         icon: 'fa fa-ticket',
         badge: {
             variant: 'info',
