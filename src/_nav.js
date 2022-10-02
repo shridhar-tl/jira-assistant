@@ -61,7 +61,7 @@ export const navigation = [
         name: 'Poker',
         id: 'PLP',
         url: isWebBuild ? '/../poker' : '/poker',
-        icon: 'fa fa-ticket',
+        icon: 'fa fa-gamepad',
         badge: {
             variant: 'info',
             text: 'BETA'
@@ -127,22 +127,6 @@ export const navigation = [
         id: 'S-AD',
         url: '/settings/global',
         icon: 'fa fa-cogs'
-    },
-    {
-        title: true,
-        name: 'Other'
-    },
-    /*{
-        name: 'Help / FAQ',
-        id: 'FAQ',
-        url: '/faq',
-        icon: 'fa fa-question'
-    },*/
-    {
-        name: 'Contact us',
-        id: 'SUP',
-        url: '/contactus',
-        icon: 'fa fa-phone'
     }
 ];
 

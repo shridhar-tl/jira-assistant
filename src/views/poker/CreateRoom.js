@@ -9,18 +9,17 @@ class CreateRoom extends PureComponent {
     constructor(props) {
         super(props);
         this.state = {
-            scoreType: 1, hasError: true,
-            roomName: 'Optimus',
-            name: 'Shridhar',
-            email: 'shridhar_tl@ymail.com',
+            scoreType: 1, hasError: true
         };
     }
 
     createRoom = async () => {
         try {
+            this.setState({ isLoading: true });
             const { roomId } = await this.props.createRoom(this.state);
             this.props.navigate(`/poker/${roomId}`);
         } catch (err) {
+            this.setState({ isLoading: false });
             console.error(err);
         }
     };
@@ -38,7 +37,7 @@ class CreateRoom extends PureComponent {
     };
 
     render() {
-        const { roomName, name, email, scoreType, roomError, nameError, hasError } = this.state;
+        const { isLoading, roomName, name, email, scoreType, roomError, nameError, hasError } = this.state;
 
         return (
             <div className="poker-create">
@@ -80,7 +79,7 @@ class CreateRoom extends PureComponent {
                                     label={`T-Shirt (${scoresList[3].join(', ')})`} onChange={this.setValue} />
                             </div>
 
-                            <Button label="CREATE ROOM" className="mt-2" disabled={hasError} onClick={this.createRoom} />
+                            <Button label="CREATE ROOM" className="mt-2" disabled={hasError || isLoading} onClick={this.createRoom} isLoading={isLoading} />
                         </div>
                     </div>
                 </div>

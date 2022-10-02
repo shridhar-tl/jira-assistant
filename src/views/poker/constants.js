@@ -23,3 +23,8 @@ export const scoresList = {
     2: [0, .5, 1, 2, 3, 5, 8, 13, 20, 40, 100],
     3: ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL']
 };
+
+export const maxScores = {
+    1: scoresList[1].map(x => x >= 3 && ({ value: x, label: x })).filter(Boolean),
+    2: scoresList[2].map(x => x >= 3 && ({ value: x, label: x })).filter(Boolean)
+};

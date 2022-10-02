@@ -26,7 +26,7 @@ const MemberAvator = connect(React.memo(function ({ setAvatar }) {
         <OverlayPanel className="avatars-overlay" ref={op} showCloseIcon dismissable>
             <div className="panel-avarars">
                 <UserAvatar avatarId={null} onClick={setAvatar} />
-                {Avatars.map((_, i) => <Avatar key={i} avatarId={i} onClick={() => setAvatar(i)} />)}
+                {Avatars.map((_, i) => <Avatar key={i} avatarId={i} onClick={(e) => { setAvatar(i); showAvatars(e); }} />)}
             </div>
         </OverlayPanel></>);
 }), null, { setAvatar });

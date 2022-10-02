@@ -90,6 +90,11 @@ body {
 
 .help-tooltip .p-tooltip-text {
     background-color: #d668d6;
+    max-width: 550px;
+}
+
+.p-sidebar-left {
+    z-index: 500 !important;
 }
 
 .control-box {

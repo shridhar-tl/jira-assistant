@@ -12,15 +12,15 @@ function InfoBox() {
 
 export default InfoBox;
 
-const VoteInfo = connect(function ({ vote: { average, finalScore } }) {
+const VoteInfo = connect(function ({ vote: { reveal, average, finalScore } }) {
     return (<div className="est-info">
         <div className="block">
             <span className="label">Final score:</span>
-            <span className="value">{finalScore}</span>
+            <span className="value">{reveal ? finalScore : 'N/A'}</span>
         </div>
         <div className="block">
             <span className="label">Average:</span>
-            <span className="value">{average}</span>
+            <span className="value">{reveal ? average : 'N/A'}</span>
         </div>
         <div className="block">
             <span className="label">Status:</span>
@@ -28,7 +28,7 @@ const VoteInfo = connect(function ({ vote: { average, finalScore } }) {
         </div>
     </div>);
 }, ({ viewingIssueId: vID, votesMap
-}) => ({ vote: votesMap[vID] || { average: 'N/A', finalScore: 'N/A' } }));
+}) => ({ vote: votesMap[vID] || {} }));
 
 const IssueDetail = connect(React.memo(function ({ issue: { key, icon, url, summary } = {} }) {
     return (<div className="issue-details">
