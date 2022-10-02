@@ -283,6 +283,10 @@ class WorklogGadget extends BaseGadget {
             timeSpent = "01:00";
         }
 
+        if (moment(dateStarted).isSame(moment(), 'day')) {
+            dateStarted = new Date();
+        }
+
         // ToDo: need to support adding worklog for different user
         this.worklogItem = { ticketNo, dateStarted, timeSpent };
         this.setState({ showWorklogPopup: true });

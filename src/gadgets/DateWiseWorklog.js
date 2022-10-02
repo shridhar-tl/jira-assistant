@@ -88,7 +88,11 @@ class DateWiseWorklog extends BaseGadget {
     }
 
     addWorklog() {
-        const date = moment(this.selectedDay.dateLogged).toDate();
+        let date = moment(this.selectedDay.dateLogged).toDate();
+        if (moment(date).isSame(moment(), 'day')) {
+            date = new Date();
+        }
+
         let hrsRemaining = null;
         if (this.selectedDay.pendingUpload > 0) {
             hrsRemaining = this.$utils.formatTs(this.selectedDay.pendingUpload, true);
