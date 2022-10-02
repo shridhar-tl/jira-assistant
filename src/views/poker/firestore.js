@@ -1,6 +1,10 @@
 
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection, doc, setDoc, writeBatch, query, updateDoc, where, onSnapshot, serverTimestamp, arrayUnion } from "firebase/firestore";
+import {
+    getFirestore, collection, doc, setDoc,
+    writeBatch, query, updateDoc, where, onSnapshot,
+    serverTimestamp, arrayUnion, deleteDoc
+} from "firebase/firestore";
 import { getAuth, signInWithCustomToken, signOut } from "firebase/auth";
 import config from './firebase.json';
 
@@ -10,6 +14,7 @@ const votesCollectionName = 'votes';
 
 // Initialize Firebase
 const pockerApp = initializeApp(config);
+const auth = getAuth();
 const db = getFirestore(pockerApp);
 //const pokerDB = collection(db, dbName);
 
@@ -77,12 +82,11 @@ export function subscribePointerChanges(roomId, callback) {
 }
 
 async function signinWithToken(token) {
-    const auth = getAuth();
     await signInWithCustomToken(auth, token);
 }
 
 export function signOutUser() {
-    signOut(getAuth());
+    signOut(auth);
 }
 
 function subscribe(q, callback) {
@@ -154,18 +158,32 @@ export async function beginEstimate(roomId, issueId, room) {
 
     batch.delete(doc(db, dbName, roomId, votesCollectionName, issueId));
     const docVote = doc(db, dbName, roomId, votesCollectionName, room.currentIssueId);
-    batch.set(docVote, { reveal: false });
+    batch.set(docVote, { id: room.currentIssueId, reveal: false });
 
     // update all the users to clear estimates
 
     await batch.commit();
 }
 
-export async function clearAndExit(roomId, sid, isModerator) {
-    if (isModerator) {
-        // delete document and clear sessions
+export async function clearAndExit(roomId, sid, subCollections) {
+    if (subCollections) {
+        const batch = writeBatch(db);
+
+        subCollections.votesList.forEach(v =>
+            batch.delete(doc(db, dbName, roomId, votesCollectionName, v))
+        );
+
+        subCollections.membersList.forEach(m =>
+            batch.delete(doc(db, dbName, roomId, membersCollectionName, m))
+        );
+
+        // Delete the room data
+        batch.delete(doc(db, dbName, roomId));
+
+        await batch.commit();
     } else {
-        // remove user status
+        await deleteDoc(doc(db, dbName, roomId, membersCollectionName, sid));
+        signOutUser();
     }
 }
 

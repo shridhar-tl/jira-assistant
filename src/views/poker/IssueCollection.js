@@ -7,6 +7,7 @@ import { addNewIssue, selectIssue, removeIssue, hideSettings, saveSettings } fro
 import { IssuePicker } from '../../jira-controls/IssuePicker';
 import { Dialog } from '../../dialogs/CommonDialog';
 import { Checkbox, SelectBox } from '../../controls';
+import { maxScores } from './constants';
 import './IssueCollection.scss';
 
 function IssueCollection({ showConfigs, currentIssueId,
@@ -30,14 +31,6 @@ function IssueCollection({ showConfigs, currentIssueId,
     </Sidebar>);
 }
 
-const maxScoresList = [
-    { value: 8, label: '8' },
-    { value: 13, label: '13' },
-    { value: 21, label: '21' },
-    { value: 34, label: '34' },
-    { value: 55, label: '55' },
-    { value: 89, label: '89' }
-];
 const Settings = connect(function ({ autoReveal, showHalfScore, maxPoints, scoreType, saveSettings }) {
     return (<>
         <h3>Settings</h3>
@@ -46,7 +39,7 @@ const Settings = connect(function ({ autoReveal, showHalfScore, maxPoints, score
             <div><Checkbox checked={autoReveal} field="autoReveal" label="Auto reveal after voting" onChange={saveSettings} /></div>
             {scoreType < 3 && <div>
                 <label>Max score</label>
-                <SelectBox value={maxPoints} field="maxPoints" dataset={maxScoresList} onChange={saveSettings} />
+                <SelectBox value={maxPoints} field="maxPoints" dataset={maxScores[scoreType]} onChange={saveSettings} />
             </div>}
         </div>
     </>);
@@ -88,11 +81,16 @@ function AddNewIssue({ addNewIssue }) {
     const [isEditMode, setIsEditMode] = useState(false);
 
     const toggleMode = useCallback(() => setIsEditMode(!isEditMode), [isEditMode]);
+    const addIssue = useCallback(({ value } = {}) => {
+        if (!value) { return; }
+        addNewIssue(value);
+        setIsEditMode(false);
+    }, [addNewIssue, setIsEditMode]);
 
     if (isEditMode) {
         return (<div className="add-key">
             <span onClick={toggleMode} className="fa fa-times" />
-            <IssuePicker value="" className="issue-picker" onChange={addNewIssue} />
+            <IssuePicker value="" className="issue-picker" onSelect={addIssue} />
         </div>);
     } else {
         return (<div className="add-issue" onClick={toggleMode}>

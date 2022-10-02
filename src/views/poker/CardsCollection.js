@@ -56,7 +56,7 @@ const Card = React.memo(function ({ className, value, icon, selected, allowVotin
 export default connect(React.memo(CardsCollection),
     ({ votesMap, sid, currentIssueId, viewingIssueId, maxPoints, scoreType, showHalfScore }) => ({
         value: votesMap[viewingIssueId]?.[sid],
-        allowVoting: currentIssueId === viewingIssueId,
+        allowVoting: currentIssueId && currentIssueId === viewingIssueId,
         max: maxPoints, scoreType, showHalfScore
     }),
     { submitVote });

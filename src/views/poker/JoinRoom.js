@@ -20,9 +20,11 @@ class JoinRoom extends PureComponent {
 
     joinRoom = async () => {
         try {
+            this.setState({ isLoading: true });
             const { roomId } = await this.props.joinRoom(this.state);
             this.props.navigate(`/poker/${roomId}`);
         } catch (err) {
+            this.setState({ isLoading: false });
             console.error(err);
         }
     };
@@ -40,7 +42,7 @@ class JoinRoom extends PureComponent {
     };
 
     render() {
-        const { roomId, name, email, roomError, nameError, emailError, hasError } = this.state;
+        const { isLoading, roomId, name, email, roomError, nameError, emailError, hasError } = this.state;
 
         return (
             <div className="poker-create">
@@ -70,7 +72,7 @@ class JoinRoom extends PureComponent {
                                 </span>
                             </div>
 
-                            <Button label="JOIN ROOM" className="mt-2" disabled={hasError} onClick={this.joinRoom} />
+                            <Button label="JOIN ROOM" className="mt-2" disabled={hasError || isLoading} onClick={this.joinRoom} isLoading={isLoading} />
                         </div>
                     </div>
                 </div>

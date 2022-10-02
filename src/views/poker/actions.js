@@ -1,12 +1,13 @@
-/* eslint-disable no-unused-vars */
+import { isWebBuild } from "../../constants/build-info";
 import { JAWebRootUrl } from "../../constants/urls";
+import { Dialog } from "../../dialogs/CommonDialog";
 import {
     insertRoomRecord, joinAsMember, addIssue, beginEstimate,
     subscribeRoomChanges, updateVote, updateRevealStatus,
     subscribeUserChanges, signOutUser, subscribePointerChanges,
-    clearAndExit, updateIssues, updateAvatar, updateRoom
+    clearAndExit, updateIssues, updateAvatar, updateRoom,
 } from "./firestore";
-import { storeAuthInfo, getAuthDetails, loadAuthInfo } from './utils';
+import { storeAuthInfo, getAuthDetails, loadAuthInfo, clearAuthInfo } from './utils';
 
 export function createRoom(setState) {
     return async function ({ email, roomName, name, scoreType, avatarUrl, avatarId }) {
@@ -51,8 +52,16 @@ function mapReduce(arr) {
 export function watchRoom(setState, getState) {
     return async function (roomId) {
         const usRoom = subscribeRoomChanges(roomId, function (data) {
-            const { viewingIssueId: vID, currentIssueId: cID } = getState();
-            const { currentIssueId, issues } = data;
+            const { viewingIssueId: vID, currentIssueId: cID, sid, moderatorId: mid } = getState();
+            const { currentIssueId, issues, moderatorId, created } = data;
+            const isModerator = sid === mid;
+            if (!moderatorId || !created) {
+                unsubscribe();
+                if (!isModerator) {
+                    clearSession(isModerator);
+                }
+                return;
+            }
 
             // Update the current viewing issue if nothing is being viewed
             // or if moderator has changed the issue being estimated
@@ -67,12 +76,15 @@ export function watchRoom(setState, getState) {
 
         function getVotesMap(members, votes) {
             const ids = members.map(({ id }) => id);
+
             return votes.reduce((obj, cur) => {
                 obj[cur.id] = cur;
-                const allVotes = ids.map(id => cur[`vote_${id}`]).filter(vote => typeof vote === 'number');
+                if (cur.reveal) {
+                    const allVotes = ids.map(id => cur[id]).filter(vote => typeof vote === 'number');
 
-                cur.average = allVotes.avg();
-                cur.maxVote = allVotes.max();
+                    cur.average = allVotes.avg();
+                    cur.maxVote = allVotes.max();
+                }
                 return obj;
             }, getState('votesMap'));
         }
@@ -96,11 +108,13 @@ export function watchRoom(setState, getState) {
             setState({ votes, votesMap });
         });
 
-        return function () {
+        function unsubscribe() {
             usRoom();
             usUsers();
             usVotes();
-        };
+        }
+
+        return unsubscribe;
     };
 }
 
@@ -137,6 +151,8 @@ const getNewId = () => (Math.random() + 1).toString(36).substring(7);
 
 export function addNewIssue(_, getState) {
     return async function (issue) {
+        if (!issue) { return; }
+
         if (typeof issue === 'string') {
             issue = { key: issue };
         }
@@ -144,7 +160,7 @@ export function addNewIssue(_, getState) {
         const { root, key, url, img: icon, summaryText: summary } = issue;
         const toAdd = { root, id: getNewId(), key, url, icon, summary };
 
-        await addIssue(getState('roomId'), toAdd, !getState('currentIssueId'));
+        await addIssue(getState('roomId'), toAdd, false);
     };
 }
 
@@ -196,9 +212,21 @@ export function restartEstimation(_, getState) {
     };
 }
 
-export function exitRoom() {
+export function exitRoom(_, getState) {
     return async function () {
-        clearAndExit();
+        const { roomId, sid, moderatorId, votesMap, members } = getState();
+        const isModerator = moderatorId === sid;
+
+        await clearAndExit(roomId, sid, isModerator && {
+            votesList: Object.keys(votesMap),
+            membersList: members.map(({ id }) => id),
+        });
+
+        if (isModerator) {
+            clearSession(isModerator);
+        } else {
+            closePoker();
+        }
     };
 }
 
@@ -240,3 +268,19 @@ export function saveSettings(_, getState) {
         updateRoom(getState('roomId'), { [field]: value });
     };
 }
+
+// #region Private functions
+
+function clearSession(isModerator) {
+    signOutUser();
+    const msg = `This room is closed${isModerator ? ' by the moderator' : ''}. Please close this window.`;
+    Dialog.alert(msg, "Room Closed").then(closePoker);
+}
+
+function closePoker() {
+    clearAuthInfo();
+    window.close();
+    document.location.href = isWebBuild ? '/poker' : '/index.html#/poker';
+}
+
+// #endregion
