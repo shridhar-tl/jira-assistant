@@ -10,11 +10,12 @@ import { TabView, TabPanel } from 'primereact/tabview';
 import FlatDataGrid from './FlatDataGrid';
 import GroupedDataGrid from './GroupedDataGrid';
 import WorklogReportInfo from './WorklogReportInfo';
-import "./WorklogGadget.scss";
 import UserProjectWiseSummary from './UserProjectWiseSummary';
 import { EventCategory } from '../../constants/settings';
 import { getUserName } from '../../common/utils';
 import AddWorklog from '../../dialogs/AddWorklog';
+import { getQuickDateValue } from '../../controls/DatePicker';
+import "./WorklogGadget.scss";
 
 class WorklogGadget extends BaseGadget {
     constructor(props) {
@@ -26,7 +27,15 @@ class WorklogGadget extends BaseGadget {
             pageSettings.timeZone = '1';
         }
 
-        this.state.dateRange = pageSettings.dateRange || {};
+        let { dateRange } = pageSettings;
+        dateRange = { ...(dateRange || {}) };
+        if (dateRange.quickDate) {
+            const [fromDate, toDate] = getQuickDateValue(dateRange.quickDate);
+            dateRange.fromDate = fromDate;
+            dateRange.toDate = toDate;
+        }
+
+        this.state.dateRange = dateRange;
         this.state.pageSettings = pageSettings;
         const { maxHours, epicNameField, name } = this.$session.CurrentUser;
         this.currentUserName = name.toLowerCase();

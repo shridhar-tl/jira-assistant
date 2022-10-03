@@ -4,6 +4,7 @@ import { Checkbox, SelectBox } from '../../../controls';
 import { inject } from '../../../services/injector-service';
 import { executeService } from '../../../common/proxy';
 import { InputMask } from 'primereact/inputmask';
+import { InputNumber } from 'primereact/inputnumber';
 import { isWebBuild } from '../../../constants/build-info';
 
 const isExtnIntg = !isWebBuild || localStorage.getItem('authType') === '1';
@@ -61,8 +62,8 @@ class GlobalTab extends TabControlBase {
     };
 
     saveSetting = async (value, field) => {
-        await this.$settings.set(field, value);
         this.setState({ [field]: value });
+        await this.$settings.set(field, value);
     };
 
     render() {
@@ -126,9 +127,10 @@ class GlobalTab extends TabControlBase {
                         </div>
                         <div className="form-group">
                             Delay attaching functionality for
-                            <InputMask mask="99" value={TR_CSDelay} onChange={(e) => this.saveSetting(e.value, 'TR_CSDelay')}
-                                placeholder={defaultAttachDelay} maxLength={2}
-                                style={{ 'width': '30px', 'display': 'inline-block', marginLeft: '3px' }} /> seconds.
+                            <InputNumber maxFractionDigits={0} value={TR_CSDelay} onChange={(e) => this.saveSetting(e.value, 'TR_CSDelay')}
+                                placeholder={defaultAttachDelay} min={1} max={20} step={1} allowEmpty={false}
+                                style={{ 'width': '35px', 'display': 'inline-block', marginLeft: '3px' }} />
+                            seconds
                             <span className="help-block">Increase it if your Jira server is slow and you do not see tracker functionality in any pages</span>
                         </div>
                     </div>
