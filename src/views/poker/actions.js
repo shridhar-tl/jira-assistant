@@ -273,7 +273,7 @@ export function saveSettings(_, getState) {
 
 function clearSession(isModerator) {
     signOutUser();
-    const msg = `This room is closed${isModerator ? ' by the moderator' : ''}. Please close this window.`;
+    const msg = `This room is closed${!isModerator ? ' by the moderator' : ''}. Please close this window.`;
     Dialog.alert(msg, "Room Closed").then(closePoker);
 }
 
