@@ -2,6 +2,8 @@ import AjaxRequestService from "./ajax-request-service";
 import BrowserBase from "../common/BrowserBase";
 import StorageService from "./storage-service";
 import { executeService } from "../common/proxy";
+import { CHROME_WS_URL, StoreUrls } from "../constants/urls";
+import { BROWSER_NAME } from "../common/browsers";
 
 class BaseProxyService {
     constructor(svcName, methods) {
@@ -28,6 +30,8 @@ export class BrowserProxyService extends BaseProxyService {
     }
 
     openTab(url) { window.open(url); }
+
+    getStoreUrl() { return StoreUrls[BROWSER_NAME] || CHROME_WS_URL; }
 }
 
 export class StorageProxyService extends BaseProxyService {

@@ -34,7 +34,7 @@ import { JAWebRootUrl } from '../constants/urls';
     }
 
     function openUrl(url) {
-      url = `${indexPageUrl}#${url}`;
+      url = `${indexPageUrl}${switched ? '/' : '#'}${url}`;
 
       hasTabAccess().then(hasAccess => {
         if (hasAccess) {

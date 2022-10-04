@@ -9,13 +9,13 @@ import { getExtnLaunchUrl, validateIfWebApp } from './common/proxy';
 import { getCurrentQueryParams } from './common/utils';
 import { AppContextProvider } from './common/context';
 import { isAppBuild, isExtnBuild, isWebBuild } from './constants/build-info';
+import { CustomDialog } from './dialogs';
 import 'font-awesome/css/font-awesome.min.css';
 import 'primereact/resources/themes/bootstrap4-light-purple/theme.css';
 import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
 import './scss/style.scss';
 import './App.scss';
-import { CustomDialog } from './dialogs';
 
 export const extnAuth = isWebBuild && document.location.href.indexOf('?authType=1') > 0;
 
@@ -47,7 +47,7 @@ class App extends PureComponent {
 
   contextProps = {
     switchUser: (userId) => {
-      let url = document.location.hash.substring(2);
+      let url = this.props.location.pathname.substring(2);
       url = url.substring(url.indexOf("/"));
       url = `/${userId}${url}`;
       this.authenticateUser(url, true, true);

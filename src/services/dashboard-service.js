@@ -70,10 +70,10 @@ export default class DashboardService {
 
         if (dashboard.isQuickView) {
             const firstBoard = this.$session.CurrentUser.dashboards[index ? 0 : 1];
-            this.setAsQuickView(firstBoard, 0);
-        } else {
-            await this.updateSessionDashboards();
+            await this.setAsQuickView(firstBoard, 0);
         }
+
+        await this.updateSessionDashboards();
     }
 
     getQuickViewBoardIndex() {
