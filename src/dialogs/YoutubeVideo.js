@@ -1,6 +1,7 @@
 import React from 'react';
 import BaseDialog from './BaseDialog';
 import { EventCategory } from '../constants/settings';
+import { withRouter } from '../pollyfills';
 
 const videoList = [
     { videoId: "xNYNXWUgCeA", module: "Dashboard", route: "dashboard" },
@@ -27,7 +28,7 @@ class YoutubeVideo extends BaseDialog {
     }
 
     setVideoUrl() {
-        const route = document.location.hash.substring(2);
+        const route = this.props.location.pathname.substring(2);
 
         let videoDetails = videoList.first((video) => ~route.indexOf(video.route));
 
@@ -78,4 +79,4 @@ class YoutubeVideo extends BaseDialog {
     }
 }
 
-export default YoutubeVideo;
+export default withRouter(YoutubeVideo);

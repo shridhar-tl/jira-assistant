@@ -1,6 +1,7 @@
 import { prepareUrlWithQueryString } from "../common/utils";
 import { AnalyticsUrl } from "../constants/urls";
 import { AppVersionNo, AnalyticsTrackingId } from "../constants/common";
+import { isWebBuild } from "../constants/build-info";
 
 export default class AnalyticsService {
     constructor() {
@@ -168,7 +169,10 @@ export default class AnalyticsService {
     }
 
     getCurrentRouteUrl() {
-        let page = document.location.hash.substring(1);
+        let page = (isWebBuild ? document.location.pathname : document.location.hash).substring(1);
+        if (isWebBuild && !page) {
+            page = document.location.hash;
+        }
 
         if (page === "/") {
             page = "/dashboard";
