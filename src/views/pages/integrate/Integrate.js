@@ -62,7 +62,7 @@ class Integrate extends PureComponent {
             authType: '1'
         });
 
-        if (isWebBuild) {
+        if (isWebBuild || !isQuickView) {
             document.location.href = url;
         } else {
             window.open(url, 'JAOAuth2Win');
