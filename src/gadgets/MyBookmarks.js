@@ -88,6 +88,7 @@ class MyBookmarks extends BaseGadget {
         this.setState({ selAllChk, bookmarksList });
     };
 
+    deleteSelection = () => this.deleteBookmark();
     deleteBookmark(ticketNo) {
         let ids;
         if (ticketNo) {
@@ -128,7 +129,7 @@ class MyBookmarks extends BaseGadget {
     renderCustomActions() {
         return <>
             <Button icon="fa fa-plus" onClick={this.showAddPopup} title="Add ticket to bookmarks" />
-            <Button type="danger" icon="fa fa-trash-o" onClick={() => this.deleteBookmark()} title="Remove selected ticket(s) from bookmarks" />
+            <Button type="danger" icon="fa fa-trash-o" onClick={this.deleteSelection} title="Remove selected ticket(s) from bookmarks" />
         </>;
     }
 
@@ -153,7 +154,7 @@ class MyBookmarks extends BaseGadget {
                     </tr>
                 </THead>
                 <TBody>
-                    {(b, i) => <tr key={b.ticketNo} onContextMenu={(e) => this.showContext(e, b)} className={b.rowClass}>
+                    {(b, i) => <tr key={b.ticketNo} data-test-id={b.ticketNo} onContextMenu={(e) => this.showContext(e, b)} className={b.rowClass}>
                         <td className="text-center">
                             {b.selected && <Checkbox checked={true} onChange={() => this.selectTicket(b)} />}
                             {!b.selected && <i className="fa fa-ellipsis-v" onClick={(e) => this.showContext(e, b)}></i>}

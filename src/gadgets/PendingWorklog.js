@@ -156,7 +156,7 @@ class PendingWorklog extends BaseGadget {
                     </tr>
                 </THead>
                 <TBody>
-                    {b => <tr key={b.id} onContextMenu={(e) => this.showContext(e, b)} className={b.rowClass}>
+                    {b => <tr key={b.id} onContextMenu={(e) => this.showContext(e, b)} className={b.rowClass} data-test-id={b.ticketNo}>
                         <td className="text-center">
                             {b.selected && <Checkbox checked={true} onChange={() => this.selectRowItem(b)} />}
                             {!b.selected && <i className="fa fa-ellipsis-v" onClick={(e) => this.showContext(e, b)}></i>}

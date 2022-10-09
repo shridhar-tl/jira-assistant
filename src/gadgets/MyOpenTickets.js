@@ -103,7 +103,7 @@ class TicketRow extends PureComponent {
         const { ticket: b, onAddWorklog, onBookmark } = this.props;
 
         return (
-            <tr onContextMenu={this.showContext}>
+            <tr onContextMenu={this.showContext} data-test-id={b.ticketNo}>
                 <TicketDisplay ref={this.setRef} value={b.ticketNo} onAddWorklog={onAddWorklog} onBookmark={onBookmark} />
                 <td><Image src={b.issuetypeIcon} />{b.issuetype}</td>
                 <td>{b.summary}</td>

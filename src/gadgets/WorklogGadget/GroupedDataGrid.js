@@ -244,7 +244,7 @@ class GroupedDataGrid extends PureComponent {
                         {!!showEpic && <th>Epic</th>}
                         {!!showAssignee && <th>Assignee</th>}
                         {!!showReporter && <th>Reporter</th>}
-                        {dates.map((day, i) => <th key={i} style={{ minWidth: 35 }}>{day.display}</th>)}
+                        {dates.map((day, i) => <th key={i} data-test-id={day.prop} style={{ minWidth: 35 }}>{day.display}</th>)}
                     </tr>
                 </THead>
                 <TBody>
@@ -367,7 +367,7 @@ class UserRow extends PureComponent {
 
         return (
             <>
-                <tr className="pointer auto-wrap" onClick={this.toggleDisplay}>
+                <tr className="pointer auto-wrap" onClick={this.toggleDisplay} data-current-user={u.isCurrentUser ? '1' : '0'} data-row-id="user">
                     <td className="data-left" colSpan={colSpan}>
                         <div className="user-info" style={{ paddingLeft: 0 }}>
                             <i className={`pull-left drill-down fa ${expanded ? 'fa-chevron-circle-down' : 'fa-chevron-circle-right'}`}
@@ -378,13 +378,13 @@ class UserRow extends PureComponent {
                         </div>
                     </td>
 
-                    {!costView && dates.map((day, i) => <td key={i} className={`${u.logClass[day.prop]} day-wl-block`} exportType={timeExportFormat}>
+                    {!costView && dates.map((day, i) => <td key={i} className={`${u.logClass[day.prop]} day-wl-block`} exportType={timeExportFormat} data-test-id={day.prop}>
                         {u.isCurrentUser && <span className="fa fa-clock-o add-wl" title="Click to add worklog" onClick={() => this.addWorklog(null, day)} />}
                         {convertSecs(u.total[day.prop])}</td>)}
-                    {!costView && <td exportType={timeExportFormat}>{convertSecs(u.grandTotal)}</td>}
+                    {!costView && <td exportType={timeExportFormat} data-test-id="total">{convertSecs(u.grandTotal)}</td>}
 
-                    {costView && dates.map((day, i) => <td key={i} className={`${u.logClass[day.prop]} day-wl-block`}>{u.totalCost[day.prop]}</td>)}
-                    {costView && <td>{u.grandTotalCost}</td>}
+                    {costView && dates.map((day, i) => <td key={i} className={`${u.logClass[day.prop]} day-wl-block`} data-test-id={day.prop}>{u.totalCost[day.prop]}</td>)}
+                    {costView && <td data-test-id="total">{u.grandTotalCost}</td>}
                 </tr>
 
                 {expanded &&
@@ -396,7 +396,7 @@ class UserRow extends PureComponent {
                         const estTitle = `Original Estimate: ${oe || 0}\nRemaining: ${re || 0}\nTotal Logged: ${logged}\nEstimate Variance: ${variance}`;
 
                         return (
-                            <tr key={i} className="auto-wrap">
+                            <tr key={i} className="auto-wrap" data-row-id="ticket" data-current-user={u.isCurrentUser ? '1' : '0'} data-test-id={t.ticketNo}>
                                 <td className="data-left">
                                     {!showParentSummary && t.parent && <a href={t.parentUrl} className="link" target="_blank" rel="noopener noreferrer">{t.parent} - </a>}
                                     <a href={t.url} className="link" target="_blank" rel="noopener noreferrer">{t.ticketNo}</a> -
@@ -413,17 +413,17 @@ class UserRow extends PureComponent {
                                 {!!showAssignee && <td>{t.assignee}</td>}
                                 {!!showReporter && <td>{t.reporter}</td>}
 
-                                {!costView && dates.map((day, j) => <td key={j} className="day-wl-block" exportType={timeExportFormat}>
+                                {!costView && dates.map((day, j) => <td key={j} className="day-wl-block" exportType={timeExportFormat} data-test-id={day.prop}>
                                     {u.isCurrentUser && <span className="fa fa-clock-o add-wl" title="Click to add worklog" onClick={() => this.addWorklog(t.ticketNo, day)} />}
                                     {breakupMode !== '2' && <span title={this.getComments(t.logs[day.prop])}>{convertSecs(this.getTotalTime(t.logs[day.prop]))}</span>}
                                     {breakupMode === '2' && <div> {this.getLogEntries(t.logs[day.prop])}</div>}
                                 </td>)}
-                                {!costView && <td exportType={timeExportFormat}>{convertSecs(t.totalHours)}</td>}
+                                {!costView && <td exportType={timeExportFormat} data-test-id="total">{convertSecs(t.totalHours)}</td>}
 
-                                {costView && dates.map((day, j) => <td key={j} className="day-wl-block">
+                                {costView && dates.map((day, j) => <td key={j} className="day-wl-block" data-test-id={day.prop}>
                                     <span title={this.getComments(t.logs[day.prop], costView)}>{this.getTotalCost(t.logs[day.prop])}</span>
                                 </td>)}
-                                {costView && <td>{t.totalCost}</td>}
+                                {costView && <td data-test-id="total">{t.totalCost}</td>}
                             </tr>
                         );
                     })

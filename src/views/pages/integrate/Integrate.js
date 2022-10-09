@@ -6,7 +6,7 @@ import { ApiUrls } from '../../../constants/api-urls';
 import BackupImporter from '../../../layouts/DefaultLayout/BackupImporter';
 import { getJiraCloudOAuthAuthorizeUrl } from '../../../constants/oauth';
 import { getOriginFromUrl } from '../../../common/utils';
-import Dialog, { CustomDialog } from '../../../dialogs';
+import Dialog from '../../../dialogs';
 import { executeService } from '../../../common/proxy';
 import Footer from '../Footer';
 import { withRouter } from '../../../pollyfills';
@@ -58,11 +58,16 @@ class Integrate extends PureComponent {
 
     useOAuth() {
         const url = getJiraCloudOAuthAuthorizeUrl({
-            forWeb: false,
-            authType: '2'
+            forWeb: isWebBuild,
+            authType: '1'
         });
-        window.open(url, 'JAOAuth2Win');
-        window.close();
+
+        if (isWebBuild) {
+            document.location.href = url;
+        } else {
+            window.open(url, 'JAOAuth2Win');
+            window.close();
+        }
     }
 
     showMenu = (e) => showContextMenu(e, this.settingsMenu);
@@ -188,7 +193,6 @@ class Integrate extends PureComponent {
                         </div>
                     </div>
                 </div>
-                <CustomDialog />
             </div>
         );
     }

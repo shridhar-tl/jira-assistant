@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { inject } from '../../../services';
 import { Button, TextBox } from '../../../controls';
 import { getOriginFromUrl } from '../../../common/utils';
-import Dialog, { CustomDialog } from '../../../dialogs';
+import Dialog from '../../../dialogs';
 import { executeService } from '../../../common/proxy';
 import { ApiTokenHelpPage } from '../../../constants/urls';
 import registerServices from '../../../services';
@@ -121,7 +121,6 @@ class Integrate extends PureComponent {
                         </div>
                     </div>
                 </div>
-                <CustomDialog />
             </div>
         );
     }

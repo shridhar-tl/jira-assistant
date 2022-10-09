@@ -148,6 +148,7 @@ class Dashboard extends PureComponent {
 
         const props = {
             key: `${name}_${nameOpts[0]}`,
+            gadgetType: name,
             tabLayout,
             index: i,
             model: w,

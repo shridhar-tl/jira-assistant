@@ -7,25 +7,23 @@ export default class MessageService {
         this.handler = callback;
     }
 
-    warning(message, title) {
-        const msg = { life: 5000, summary: title, detail: message, severity: "warn" };
-        this.handler(msg);
+    show(detail, summary, severity, life = 5000) {
+        if (!detail) { return; }
+        this.handler({ life, summary, detail, severity });
     }
+
+    success(message, title) { this.show(message, title, "success", 4000); }
+
+    info(message, title) { this.show(message, title, "info"); }
+
+    warning(message, title) { this.show(message, title, "warn"); }
+
     error(message, title, suspendable) {
         const curErrTime = new Date().getTime();
         if (suspendable && this.lastErrorTime + 500 > curErrTime) {
             return;
         }
         this.lastErrorTime = curErrTime;
-        const msg = { life: 6000, summary: title, detail: message, severity: "error" };
-        this.handler(msg);
-    }
-    success(message, title) {
-        const msg = { life: 4000, summary: title, detail: message, severity: "success" };
-        this.handler(msg);
-    }
-    info(message, title) {
-        const msg = { life: 5000, summary: title, detail: message, severity: "info" };
-        this.handler(msg);
+        this.show(message, title, "error", 6000);
     }
 }
