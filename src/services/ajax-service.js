@@ -43,7 +43,13 @@ export default class AjaxService {
             if (!quiet && e.status === 0) {
                 this.$message.error("Unable to connect to server. Please check your network connectivity.", "Network error");
             }
-            const { error, statusText: response, status } = e;
+            const { error, status } = e;
+            let { statusText: response } = e;
+
+            if (!error && !response && status) {
+                response = `Server response was ${status}`;
+            }
+
             return Promise.reject({ error, response, status, ref: e });
         });
     }

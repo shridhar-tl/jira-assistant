@@ -56,9 +56,9 @@ export default class AjaxRequestService {
             const request = {
                 method,
                 body: JSON.stringify(body),
-                credentials: withCredentials !== false ? 'include' : undefined,
+                credentials: withCredentials !== false && needsPermission !== false ? 'include' : 'omit',
                 referrerPolicy: 'no-referrer',
-                headers,
+                headers
             };
 
             if (isAppBuild) {

@@ -211,7 +211,7 @@ export class BaseGadget extends PureComponent {
     renderBase(childern) {
         const { fullWidth, fullHeight, isLoading, isFullScreen } = this.state;
         const {
-            isGadget, props: { tabLayout }
+            isGadget, props: { tabLayout, gadgetType }
         } = this;
 
         if (tabLayout) {
@@ -233,7 +233,7 @@ export class BaseGadget extends PureComponent {
             "full-screen": isFullScreen
         });
 
-        return (<div ref={this.setRef} className={className}>
+        return (<div ref={this.setRef} className={className} data-test-id={gadgetType}>
             {isLoading && <div className="data-loader"><i className="fa fa-refresh fa-spin"></i></div>}
             <Panel header={this.getHeader()}>
                 {childern}

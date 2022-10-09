@@ -1,13 +1,13 @@
 import classNames from 'classnames';
 import React, { PureComponent } from 'react';
-import Dialog, { CustomDialog } from '../../../dialogs';
+import Dialog from '../../../dialogs';
 import { BROWSER_NAME } from '../../../common/browsers';
 import { StoreUrls, WebSiteUrl } from '../../../constants/urls';
 import { getJiraCloudOAuthAuthorizeUrl } from '../../../constants/oauth';
 import { isAppBuild } from '../../../constants/build-info';
 import Footer from '../Footer';
-import './ChooseAuthType.scss';
 import { withRouter } from '../../../pollyfills';
+import './ChooseAuthType.scss';
 
 class ChooseAuthType extends PureComponent {
     constructor(props) {
@@ -75,16 +75,16 @@ class ChooseAuthType extends PureComponent {
                                     {!isAppBuild && <>
                                         {extnUnavailable && <span className="badge badge-success" onClick={this.navigateToStore} title="Click to visit webstore and install the extension">Install Extension</span>}
                                         {!extnUnavailable && !isExtnValid && !allowExtn && <span className="badge badge-success" onClick={this.navigateToStore} title="Click to visit webstore and update the extension">Update Extension</span>}
-                                        <div className={classNames("auth-type", !allowExtn && "disabled")} onClick={allowExtn ? this.extnSelected : undefined}>
+                                        <div className={classNames("auth-type", !allowExtn && "disabled")} onClick={allowExtn ? this.extnSelected : undefined} data-test-id="extn-auth">
                                             <div className="auth-type-title">Use Jira Assistant Extension</div>
                                             {this.getExtensionMessage()}
                                         </div>
                                     </>}
-                                    <div className="auth-type" onClick={this.oAuthSelected}>
+                                    <div className="auth-type" onClick={this.oAuthSelected} data-test-id="o-auth">
                                         <div className="auth-type-title">Use OAuth2 (Jira Cloud only)</div>
                                         <div className="auth-type-desc">Using OAuth option will let authorize this tool to Integrate with Jira without need to store login credentials in this tool. This is more secured than using userid and password</div>
                                     </div>
-                                    <div className={`auth-type${isAppBuild ? '' : ' disabled'}`} onClick={isAppBuild ? this.basicAuthSelected : undefined}>
+                                    <div className="auth-type" onClick={this.basicAuthSelected} data-test-id="basic-auth">
                                         <div className="auth-type-title">Use User id and Password</div>
                                         <div className="auth-type-desc">You can use your user id and password / api token to authenticate with Jira.
                                             On some cases this option may not work if you use single sign-on for logging in to Jira.</div>
@@ -95,7 +95,6 @@ class ChooseAuthType extends PureComponent {
                         </div>
                     </div>
                 </div>
-                <CustomDialog />
             </div >
         );
     }

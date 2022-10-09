@@ -50,7 +50,6 @@ export async function validateIfWebApp(state) {
         state.isExtnValid = false;
 
         if (!window.chrome && !window.browser && !hasInjection()) {
-            state.extnUnavailable = true;
             return state;
         }
 
@@ -67,6 +66,7 @@ export async function validateIfWebApp(state) {
         } catch (err) {
             console.error('Webapp validation error:', err);
         }
+
         return state;
     }
     return false;

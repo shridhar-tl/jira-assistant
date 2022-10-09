@@ -823,8 +823,8 @@ class Calendar extends BaseGadget {
                 .then(() => {
                     this.$message.success(`${worklogs.length} worklog(s) uploaded successfully!`);
                     this.$analytics.trackEvent("Worklog uploaded: All", EventCategory.UserActions);
-                    this.refreshData();
-                }, this.refreshData);
+                }, (err) => err.response && this.$message.error(err.response))
+                .finally(this.refreshData);
         }
         else {
             this.$worklog.uploadWorklogs([this.currentWLItem.id], true)
@@ -836,7 +836,12 @@ class Calendar extends BaseGadget {
                     events.removeAll(w => w.entryType === 1 && w.id.toString() === this.currentWLItem.id.toString());
                     this.addEvent({ added: this.$worklog.getWLCalendarEntry(wl[0]) });
                     this.$analytics.trackEvent("Worklog uploaded: Individual", EventCategory.UserActions);
-                }, () => this.setState({ uploading: false }));
+                }, (err) => {
+                    this.setState({ uploading: false });
+                    if (err.response) {
+                        this.$message.error(err.response);
+                    }
+                });
         }
     }
 

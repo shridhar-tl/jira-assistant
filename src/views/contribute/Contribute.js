@@ -74,13 +74,10 @@ class Contribute extends PureComponent {
                             </p>
                         </div>
                         <div>
-                            <h4>I am not interested to donate. This donate button irritate me.</h4>
-                            <p>
-                                Our sole intention to develop this tool is to help you. We feel sorry to see you getting annoyed / irritated.
-                            </p>
+                            <h4>I am not interested to donate. I want to hide this button.</h4>
                             <p>
                                 If you don't want this button to be visible any more then we provide you with an option to hide it forever.
-                                Please navigate to Settings -&gt; General and you will see an option to hide it forever.
+                                Please navigate to Settings -&gt; General and you will see an option to hide it from header.
                             </p>
                         </div>
                     </div>

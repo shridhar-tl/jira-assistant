@@ -10,10 +10,11 @@ class CommonDialog extends BaseDialog {
         this.state = { showDialog: false };
         this.style = { width: "485px" };
 
-        DialogConfig.onChange((body, title, footer, onClose, style) => {
+        DialogConfig.onChange((body, title, footer, onClose, style, dialogId) => {
             style = style || {};
             this.onClose = onClose;
             this.style = { ...this.style, ...style };
+            this.className = dialogId;
 
             if (body) {
                 this.title = title;
@@ -58,7 +59,7 @@ class DialogConfig {
         DialogConfig.changeEvent = e;
     }
 
-    custom(message, title, footer, styles) {
+    custom(message, title, footer, styles, dialogId = 'dlg-custom') {
         if (message && typeof message === "string") {
             message = message.replace(/\n/g, "<br />");
         }
@@ -83,7 +84,7 @@ class DialogConfig {
             this.scope = this.tmpScope;
             this.tmpScope = null;
 
-            DialogConfig.changeEvent(message, title, footer, whenHide, styles);
+            DialogConfig.changeEvent(message, title, footer, whenHide, styles, dialogId);
         });
 
         return { then };
@@ -103,7 +104,7 @@ class DialogConfig {
         }
 
         const footer = (ok) => <Button waitFor={config?.waitFor} type="success" icon="fa fa-check" label="Ok" onClick={ok} />;
-        return this.custom(message, title, footer, styles);
+        return this.custom(message, title, footer, styles, 'dlg-alert');
     }
 
     confirmDelete(message, title, styles, config) {
@@ -116,7 +117,7 @@ class DialogConfig {
             <Button type="danger" icon="fa fa-trash" label="Delete" onClick={confirm} waitFor={config?.waitFor} />
         </>;
 
-        return this.custom(message, title, footer, styles);
+        return this.custom(message, title, footer, styles, 'dlg-delete');
     }
 
     yesNo(message, title, styles) {
@@ -129,7 +130,7 @@ class DialogConfig {
             <Button type="danger" icon="fa fa-check" label="Yes" onClick={yes} />
         </>;
 
-        return this.custom(message, title, footer, styles);
+        return this.custom(message, title, footer, styles, 'dlg-yesNo');
     }
 
     okCancel(message, title, styles) {
@@ -142,7 +143,7 @@ class DialogConfig {
             <Button type="danger" icon="fa fa-check" label="Ok" onClick={ok} />
         </>;
 
-        return this.custom(message, title, footer, styles);
+        return this.custom(message, title, footer, styles, 'dlg-okCancel');
     }
 }
 

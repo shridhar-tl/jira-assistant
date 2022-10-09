@@ -12,6 +12,7 @@ class AddWorklog extends BaseDialog {
         const { editTracker } = props;
         super(props, editTracker ? "Edit Tracker" : "Add worklog", { width: '550px' });
         inject(this, "SessionService", "SuggestionService", "WorklogService", "WorklogTimerService", "MessageService", "UtilsService");
+        this.className = "add-worklog-popup";
 
         this.displayDateFormat = "yyyy-MM-dd HH:mm";
         const { commentLength, autoUpload } = this.$session.CurrentUser;
@@ -188,6 +189,9 @@ class AddWorklog extends BaseDialog {
                 if (typeof e === "string") {
                     this.$message.error(e);
                 } else {
+                    if (e.response) {
+                        this.$message.error(e.response);
+                    }
                     console.error(e);
                 }
             });
