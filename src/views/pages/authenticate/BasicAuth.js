@@ -7,7 +7,7 @@ import { executeService } from '../../../common/proxy';
 import { ApiTokenHelpPage } from '../../../constants/urls';
 import registerServices from '../../../services';
 import Footer from '../Footer';
-import { isExtnBuild } from '../../../constants/build-info';
+import { isExtnBuild, isWebBuild } from '../../../constants/build-info';
 import { withRouter } from '../../../pollyfills';
 
 const isQuickView = document.location.href.indexOf('?quick=true') > -1;
@@ -72,7 +72,7 @@ class Integrate extends PureComponent {
             this.$jaBrowserExtn.openTab("/index.html");
             window.close();
         } else {
-            window.location.href = '/index.html';
+            window.location.href = isWebBuild ? '/' : '/index.html';
         }
     };
 
