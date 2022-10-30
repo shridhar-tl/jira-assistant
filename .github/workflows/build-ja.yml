@@ -32,6 +32,7 @@ jobs:
     #- run: npm run build-app
     #- run: npm run deploy-app
     - run: npm run build
+    - run: npm run publish-extn
     - name: Extract version
       id: extract_version
       uses: Saionaro/extract-package-version@v1.0.6
