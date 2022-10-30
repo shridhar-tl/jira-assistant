@@ -20,7 +20,6 @@ class Dashboard extends PureComponent {
         this.rapidViews = this.$session.CurrentUser.rapidViews || [];
 
         const { match: { params } } = props;
-        //this.isQuickView = parseInt(params['isQuickView'] || 0) === 1;
         this.isQuickView = this.$session.isQuickView;
         this.state = this.loadDashboard(parseInt(params['index'] || 0));
         this.setGadgetsList();

@@ -34,7 +34,7 @@ import { JAWebRootUrl } from '../constants/urls';
     }
 
     function openUrl(url) {
-      url = `${indexPageUrl}${switched ? '/' : '#'}${url}`;
+      url = `${indexPageUrl}${switched ? '' : '#'}${url}`;
 
       hasTabAccess().then(hasAccess => {
         if (hasAccess) {
@@ -89,7 +89,7 @@ import { JAWebRootUrl } from '../constants/urls';
             break;
           case 2: openUrl(menu.url || '/dashboard/0'); break;
           case 3:
-            document.location.href = `${indexHtml}?quick=true#/dashboard/${(menu.index || 0)}/1`;
+            document.location.href = `${indexHtml}?quick=true#/dashboard/${(menu.index || 0)}`;
             break;
         }
       } catch (err) { console.error(err); bindEvents(); }

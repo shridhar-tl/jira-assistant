@@ -32,6 +32,10 @@ class DefaultLayout extends PureComponent {
     inject(this, "DashboardService", "SessionService", "SettingsService", "CacheService", "WorklogTimerService", "MessageService");
     const { userId } = this.$session;
     this.state = { menus: this.getMenus(userId), userId };
+
+    if (document.location.href.indexOf('?quick=true') > -1) {
+      this.$session.isQuickView = true;
+    }
   }
 
   componentDidMount() {
@@ -53,8 +57,7 @@ class DefaultLayout extends PureComponent {
   async initBody() {
     const body = document.body.classList;
 
-    if (document.location.href.indexOf('?quick=true') > -1) {
-      this.$session.isQuickView = true;
+    if (this.$session.isQuickView) {
       body.add('quick-view');
     }
 

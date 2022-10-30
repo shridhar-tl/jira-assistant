@@ -28,13 +28,8 @@ export const isQuickView = document.location.href.indexOf('?quick=true') > -1;
 
 const sessionBasedRoute = [
     {
-        path: '/dashboard/:index/:isQuickView',
-        component: DashboardComponent
-    },
-    {
         path: '/dashboard/:index',
-        component: DashboardComponent,
-        isExact: true
+        component: DashboardComponent
     },
     {
         path: '/calendar',
