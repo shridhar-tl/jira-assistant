@@ -85,7 +85,7 @@ class ReportBuilder extends BaseGadget {
     queryChanged = (reportId) => this.$report.getReportDefinition(reportId).then(this.setReportDefinition);
 
     deleteQuery = () => {
-        Dialog.confirmDelete(`Are you sure to delete the report named "${this.state.reportDefinition.queryName}" permenantly?`)
+        Dialog.confirmDelete(`Are you sure to delete the report named "${this.state.reportDefinition.queryName}" permanently?`)
             .then(() => {
                 this.$report.deleteSavedQuery(this.state.selQueryId).then(q => {
                     this.$message.success('Report deleted successfully!');

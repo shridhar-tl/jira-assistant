@@ -233,8 +233,8 @@ class GroupedDataGrid extends PureComponent {
                     <tr className="data-center pad-min auto-wrap">
                         <th style={{ minWidth: 260 + (addlColCount * 120) }} rowSpan={addlColCount > 1 ? 1 : 2} colSpan={addlColCount}>User Details</th>
                         {months.map((day, i) => <th key={i} style={{ minWidth: 35 }} colSpan={day.days}>{day.monthName}</th>)}
-                        {!costView && <th style={{ minWidth: 50 }} rowSpan={2}>Total Hours</th>}
-                        {costView && <th style={{ minWidth: 50 }} rowSpan={2}>Total Cost</th>}
+                        {!costView && <th style={{ minWidth: 50, maxWidth: 100 }} rowSpan={2}>Total Hours</th>}
+                        {costView && <th style={{ minWidth: 50, maxWidth: 100 }} rowSpan={2}>Total Cost</th>}
                     </tr>
                     <tr className="pad-min auto-wrap">
                         {addlColCount > 1 && <th style={{ minWidth: 380 }} >Issue details</th>}

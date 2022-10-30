@@ -28,7 +28,7 @@ export function getDefaultColumns(addlProps, settings) {
         { field: 'selected', displayText: '#', width: 30, style: { minWidth: '30px', paddingLeft: '4px' }, editable: false, ...addlProps.selected },
         { field: 'issuekey', fieldType: 'key', displayText: 'Key', ...settings, headerEditable: false },
         { field: 'clone', displayText: <span className="fa fa-copy" title="Clone selected tickets" />, editable: false, ...colSpecialProps.clone, ...addlProps.clone },
-        { field: 'delete', displayText: <span className="fa fa-trash" title="Permenantly delete selected tickets" />, editable: false, ...colSpecialProps.delete, ...addlProps.delete },
+        { field: 'delete', displayText: <span className="fa fa-trash" title="Permanently delete selected tickets" />, editable: false, ...colSpecialProps.delete, ...addlProps.delete },
         { field: 'project', fieldType: 'project', displayText: 'Project', ...settings, headerEditable: false, ...colSpecialProps.project },
         { field: 'issuetype', fieldType: 'issuetype', displayText: 'Issue Type', ...settings, headerEditable: false, ...colSpecialProps.issuetype },
         { field: 'parent', fieldType: 'key', displayText: 'Parent', ...settings, headerEditable: false, ...colSpecialProps.parent },

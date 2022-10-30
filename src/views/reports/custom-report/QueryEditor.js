@@ -392,7 +392,7 @@ class QueryEditor extends BaseGadget {
     };
 
     deleteQuery = () => {
-        Dialog.confirmDelete(`Are you sure to delete the report named "${this.state.reportQuery.queryName}" permenantly?`)
+        Dialog.confirmDelete(`Are you sure to delete the report named "${this.state.reportQuery.queryName}" permanently?`)
             .then(() => {
                 this.$report.deleteSavedQuery(this.state.selReportId).then(q => {
                     this.$message.success('Report deleted successfully!');

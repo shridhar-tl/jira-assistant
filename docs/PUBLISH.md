@@ -20,4 +20,4 @@ As of now only Shridhar (developer) can publish the package to web store. This s
 
 The build package generated from above step can be used to load the extension temporarily for testing. Use the appropriate version for individual browser like Chrome, Firefox, Edge. For Opera, as of today, same package as that of chrome can be used. Later, when necessary, a seperate folder for Opera would be created.
 
-Note: Some browser like Firefox, would automatically remove the temporarily loaded addon when the browser is closed. Hence this option can only be used for testing and cannot be used as permenant option.
+Note: Some browser like Firefox, would automatically remove the temporarily loaded addon when the browser is closed. Hence this option can only be used for testing and cannot be used as permanent option.
