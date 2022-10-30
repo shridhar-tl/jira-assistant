@@ -100,7 +100,7 @@
         "start-app": "concurrently -k npm:app:*",
         "build": "cross-env REACT_APP_BUILD_MODE=EXTN GENERATE_SOURCEMAP=false INLINE_RUNTIME_CHUNK=false craco build",
         "postbuild": "cross-env REACT_APP_BUILD_MODE=EXTN node post-build.js",
-        "publish-extn": "gh-pages -b extn-build -d build",
+        "publish-extn": "gh-pages -b ja-extn -d build",
         "build-web": "cross-env REACT_APP_BUILD_MODE=WEB GENERATE_SOURCEMAP=false INLINE_RUNTIME_CHUNK=false craco build",
         "postbuild-web": "cross-env REACT_APP_BUILD_MODE=WEB node post-build.js",
         "deploy-web": "echo app.jiraassistant.com > ./build/CNAME && gh-pages -d build",
