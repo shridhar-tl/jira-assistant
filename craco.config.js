@@ -118,11 +118,12 @@ function getElectronRenderer(config) {
 }
 
 function getPlugins() {
-    const plugins = {
-        remove: ['WebpackManifestPlugin']
-    };
-
-    const pluginsToAdd = [];
+    const pluginsToAdd = [
+        [
+            getHTMLWebpackPlugin("index.html", resolvePath('public/index.html'), ['index'], true),
+            'prepend'
+        ]
+    ];
 
     if (isExtnBuild) {
         pluginsToAdd.push([
@@ -140,11 +141,10 @@ function getPlugins() {
         }));
     }
 
-    if (pluginsToAdd.length) {
-        plugins.add = pluginsToAdd;
-    }
-
-    return plugins;
+    return {
+        remove: ['WebpackManifestPlugin', 'HtmlWebpackPlugin'],
+        add: pluginsToAdd
+    };
 }
 
 // Util functions

@@ -51,7 +51,7 @@ class DefaultHeader extends PureComponent {
       + `\n\nOpera users: ${OPERA_STORE_URL}`
       + `\n\nFor source code or to know more about the extension visit: ${WebSiteUrl}`
       + `\n\n\nThis would help you to track your worklog and generate reports from Jira easily with lots of customizations. `
-      + `Also has lot more features like Google Calendar integration, Jira comment & meeting + worklog notifications, Worklog, Sprint and custom report generations, etc..`);
+      + `Also has lot more features like Calendar integration, Jira comment & meeting + worklog notifications, Worklog, Sprint and custom report generations, etc..`);
     const storeUrl = encodeURIComponent(this.storeUrl);
     this.gMailShare = `https://mail.google.com/mail/u/0/?view=cm&tf=1&fs=1&su=${subj}&body=${body}`;
     this.linkedInShare = `https://www.linkedin.com/shareArticle?mini=true&url=${storeUrl}&title=${subj}&summary=${body}&source=`;
@@ -92,7 +92,7 @@ class DefaultHeader extends PureComponent {
           <span className="navbar-brand-full">Jira Assistant <span className="v-info badge badge-success" onClick={this.showVersionInfo}>{this.versionNumber}</span></span>
         </a>
         <AppSidebarToggler className="d-md-down-none quick-view-hide" display="lg"><span className="fa fa-bars" /></AppSidebarToggler>
-        <button className="navbar-toggler quick-view-show"><a href="/index.html" target="_blank" title="Open in new tab"><span className="fa fa-external-link" /></a></button>
+        <button className="navbar-toggler quick-view-show"><a href={isWebBuild ? "/" : "/index.html"} target="_blank" title="Open in new tab" rel="noreferrer"><span className="fa fa-external-link" /></a></button>
         <NavLink to={`/${this.userId}/contribute`} className="btn-donate"
           title="Would you like to contribute / compensate us for the effort we put in development of this tool? Click to know more">
           <img src="/assets/donate.png" width="145" className="margin-r-5" alt="Donate us" />
@@ -131,7 +131,7 @@ class DefaultHeader extends PureComponent {
                 <a href={ratingUrl} target="_blank" rel="noopener noreferrer" title="Click to rate this tool or add a comment in chrome web store">
                   <i className="fa fa-star pull-left"></i>
                 </a>
-                <a href={gMailShare} target="_blank" rel="noopener noreferrer" title="Share with GMail">
+                <a href={gMailShare} target="_blank" rel="noopener noreferrer" title="Share with Gmail">
                   <i className="fa fa-envelope pull-left"></i>
                 </a>
                 <a href={linkedInShare} target="_blank" rel="noopener noreferrer" title="Share with Linked in">
