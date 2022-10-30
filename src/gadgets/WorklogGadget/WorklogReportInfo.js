@@ -7,12 +7,12 @@ class WorklogReportInfo extends PureComponent {
             <ul>
                 <li>
                     Choose a date for which you would like to view the report or click the refresh
-                      ( <i className="fa fa-refresh"></i> ) icon to load the report if date is already selected.
-                 </li>
+                    ( <i className="fa fa-refresh"></i> ) icon to load the report if date is already selected.
+                </li>
                 <li>You can choose the list of users by clicking the ( <i className="fa fa-users"></i> ) icon.</li>
                 <li>
                     Click on Settings <i className="fa fa-arrow-right"></i> User groups from left hand menu to add users
-                    permenantly to a group and use it in future.
+                    permanently to a group and use it in future.
                 </li>
                 <li>Click on ( <i className="fa fa-cogs"></i> ) icon to change the settings of the report.</li>
                 <li>

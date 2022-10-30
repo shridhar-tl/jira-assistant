@@ -99,10 +99,26 @@ export class THead extends PureComponent {
     static contextType = TableContext;
     state = {};
 
+    setRef = (el) => this.el = el;
+
+    componentDidMount() {
+        this.componentDidUpdate();
+    }
+
+    componentDidUpdate() {
+        const rows = this.el.querySelectorAll('tr:not(:first-child)');
+        rows.forEach((row, i) => {
+            const cells = row.querySelectorAll('th');
+            this.setScrollTop(cells, 31 * (i + 1));
+        });
+    }
+
+    setScrollTop(cells, defTop) { cells.forEach(c => c.style.top = `${(c.offsetTop || defTop)}px`); }
+
     render() {
         const { className, style, children } = this.props;
 
-        return (<thead className={className} style={style}>
+        return (<thead ref={this.setRef} className={className} style={style}>
             {children}
         </thead>);
     }

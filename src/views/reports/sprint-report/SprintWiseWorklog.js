@@ -434,7 +434,7 @@ class SubtaskList extends PureComponent {
                 <td exportType="number" className="data-center">{convertSecs(task.estimate)}</td>
                 {groups.map((grp, i) => <Fragment key={i}>
                     {grp.users.map((user, j) => <td key={j} className="data-center">{grp.include && user.include ? convertSecs((task.worklogs[getUserName(user)] || 0).total) : null}</td>)}
-                    <td exportType="number" className="data-center"><strong>{convertSecs((issue.groupTotal || {})[i])}</strong></td>
+                    <td exportType="number" className="data-center"><strong>{convertSecs((task.groupTotal || {})[i])}</strong></td>
                 </Fragment>)}
                 <td exportType="number" className="data-center"><strong>{convertSecs(task.grandTotal)}</strong></td>
             </tr>)

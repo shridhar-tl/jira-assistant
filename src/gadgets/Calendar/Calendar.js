@@ -749,7 +749,7 @@ class Calendar extends BaseGadget {
 
     renderEventContent = (e) => {
         const { timeText, event, view: { type } } = e;
-        const entryType = event.extendedProps.entryType;
+        const { entryType } = event.extendedProps;
 
         if (entryType === 3) { return undefined; }
 
@@ -802,7 +802,7 @@ class Calendar extends BaseGadget {
 
         if (type === 'timeGridWeek' || type === 'timeGridDay') {
             return (<div ref={(e) => e?.parentElement?.parentElement?.addEventListener('contextmenu', contextEvent)}
-                className="fc-content pad-8" title={title}>
+                className="fc-content pad-8" title={title} data-jira-key={srcObj?.ticketNo} data-jira-wl-id={srcObj?.worklogId}>
                 {leftIcon}
                 <div className="fc-time">
                     <span>{timeText}</span>
