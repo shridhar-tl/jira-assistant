@@ -68,7 +68,11 @@ export default class AjaxRequestService {
 
                 if (result.ok) {
                     try {
-                        return await result.json();
+                        if (result.status !== 204) {
+                            return await result.json();
+                        } else {
+                            return {};
+                        }
                     } catch (err) {
                         return Promise.reject({ status: -1, statusText: err.message, error: err });
                     }
