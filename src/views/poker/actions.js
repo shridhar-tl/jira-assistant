@@ -32,7 +32,7 @@ export function joinRoom(setState) {
         setState(authInfo);
 
         const user = { sid, roomId, name, email, avatarUrl, avatarId };
-        await joinAsMember(roomId, user);
+        await joinAsMember(authInfo, user);
 
         return user;
     };

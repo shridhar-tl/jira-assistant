@@ -45,7 +45,8 @@ async function insertRecord(data, ...path) {
     return await setDoc(docRoomRef, data);
 }
 
-export async function joinAsMember(roomId, user) {
+export async function joinAsMember({ token, roomId }, user) {
+    await signinWithToken(token);
     return await insertUserRecord(roomId, user);
 }
 
