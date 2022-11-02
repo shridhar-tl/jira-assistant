@@ -128,7 +128,9 @@ class App extends PureComponent {
 
       if (!authType || (authType === '1' && !newState.authReady)) {
         this.setState({ isLoading: false });
-        this.props.navigate(`/integrate`);
+        if (pathname !== '/poker') {
+          this.props.navigate(`/integrate`);
+        }
         return newState.extnUnavailable ? 2 : undefined;
       }
     }
