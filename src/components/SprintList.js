@@ -20,9 +20,13 @@ class SprintList extends PureComponent {
     }
 
     pullSprintList = (props) => {
-        const { rapidViews } = props;
+        let { rapidViews } = props;
 
         this.rapidViews = rapidViews;
+
+        if (rapidViews && !Array.isArray(rapidViews)) {
+            rapidViews = [rapidViews];
+        }
 
         if (!rapidViews || rapidViews.length === 0) {
             this.setState({ sprints: null });

@@ -84,17 +84,19 @@ class SelectBox extends PureComponent {
 
         let { dataset } = this.props;
 
-        let itemTemplate = null;
+        let itemTemplate = undefined;
 
         if (group) {
             dataset = groupedDataset;
-            itemTemplate = (itm, i) => {
-                if (itm.isGroup) {
-                    return children[1](itm.value, i);
-                } else {
-                    return children[0](itm, i);
-                }
-            };
+            if (children?.length) {
+                itemTemplate = (itm, i) => {
+                    if (itm.isGroup) {
+                        return children[1](itm.value, i);
+                    } else {
+                        return children[0](itm, i);
+                    }
+                };
+            }
         }
 
         const filter = dataset && dataset.length >= 15;

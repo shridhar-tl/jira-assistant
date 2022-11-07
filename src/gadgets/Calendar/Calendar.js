@@ -64,7 +64,7 @@ class Calendar extends BaseGadget {
 
     getHint() {
         return (<ul className="gadget-hint">
-            <li>Pressing left Alt and drag drop worklog will copy the worklog to target slot</li>
+            <li>Pressing left Alt + drag drop worklog will copy the worklog to target slot</li>
             <li>One click <span className="fa fa-clock-o" /> icon to create worklog entry for meetings</li>
             <li>You can set "Default meeting ticket" in General Settings &#8680; Worklog tab</li>
             <li>Drag and drop or resize the worklog to edit it</li>
