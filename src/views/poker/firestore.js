@@ -86,8 +86,8 @@ async function signinWithToken(token) {
     await signInWithCustomToken(auth, token);
 }
 
-export function signOutUser() {
-    signOut(auth);
+export async function signOutUser() {
+    await signOut(auth);
 }
 
 function subscribe(q, callback) {
@@ -184,8 +184,9 @@ export async function clearAndExit(roomId, sid, subCollections) {
         await batch.commit();
     } else {
         await deleteDoc(doc(db, dbName, roomId, membersCollectionName, sid));
-        signOutUser();
     }
+
+    await signOutUser();
 }
 
 /*

@@ -29,10 +29,11 @@ export function joinRoom(setState) {
 
         const authInfo = { token, sid, roomId, name };
         storeAuthInfo(authInfo);
-        setState(authInfo);
 
         const user = { sid, roomId, name, email, avatarUrl, avatarId };
         await joinAsMember(authInfo, user);
+
+        setState(authInfo);
 
         return user;
     };
