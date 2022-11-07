@@ -39,8 +39,8 @@ const initialData = {
     showConfigs: false
 };
 
-const PokerDataStore = function ({ children, hasExtensionSupport }) {
-    const [state, setState] = useState(() => ({ ...initialData, hasExtensionSupport }));
+const PokerDataStore = function ({ children, ...otherProps }) {
+    const [state, setState] = useState(() => ({ ...initialData, ...otherProps }));
     subscribe((changes) => setState((cur) => ({ ...cur, ...changes })), () => state);
     return (<PokerContextProvider value={state}>{children}</PokerContextProvider>);
 };
