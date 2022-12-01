@@ -11,13 +11,16 @@ class WorklogTab extends TabControlBase {
         return (
             <div className="ui-g ui-fluid">
                 <div className="form-label ui-g-12 ui-md-3 ui-lg-3 ui-xl-2">
-                    <strong>Max hours to log</strong>
+                    <strong>Min & Max hours to log</strong>
                 </div>
                 <div className="ui-g-12 ui-md-9 ui-lg-9 ui-xl-10">
                     <div className="form-group">
+                        <TimePicker value={settings.minHours} field="minHours" onChange={this.saveSetting}
+                            placeholder="Choose min hours" />
+                        <span> - </span>
                         <TimePicker value={settings.maxHours} field="maxHours" onChange={this.saveSetting}
                             placeholder="Choose max hours" />
-                        <span className="help-block">Specify the maximum number of hours to be logged per day</span>
+                        <span className="help-block">Specify the minimum and maximum number of hours to be logged per day</span>
                     </div>
                 </div>
                 <div className="form-label ui-g-12 ui-md-3 ui-lg-3 ui-xl-2">

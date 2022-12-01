@@ -11,7 +11,7 @@ class TicketDisplay extends BaseControl {
         inject(this, "UserUtilsService", "BookmarkService");
 
         this.contextMenu = [
-            !props.hideWorklog && { label: "Add worklog", icon: "fa fa-clock-o", command: () => this.props.onAddWorklog(this.props.value) },
+            !props.hideWorklog && { label: "Add worklog", icon: "fa fa-clock-o", command: this.addWorklog.bind(this) },
             { label: "Bookmark", icon: "fa fa-bookmark", command: () => this.addBookmark() }
             //{ label: "Start progress", icon: "fa fa-play", command: () => this.startProgress() } //ToDo: Add option for move to progress, show in tree view
         ].filter(Boolean);
@@ -54,6 +54,15 @@ class TicketDisplay extends BaseControl {
     };
 
     //startProgress() { Dialog.alert("This functionality is not yet implemented!", "Unimplemented functionality!"); }
+
+    addWorklog() {
+        const { onAddWorklog, value } = this.props;
+        if (onAddWorklog) {
+            onAddWorklog(value);
+        } else {
+            console.error('Add worklog function is not yet implemented');
+        }
+    }
 
     addBookmark() {
         const { value, onBookmark } = this.props;

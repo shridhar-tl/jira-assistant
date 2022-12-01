@@ -53,7 +53,7 @@ export const navigation = [
         url: '/import/issue',
         icon: 'fa fa-ticket',
         badge: {
-            variant: 'info',
+            variant: 'success',
             text: 'BETA'
         }
     },
@@ -63,7 +63,7 @@ export const navigation = [
         url: isWebBuild ? '/../poker' : '/poker',
         icon: 'fa fa-gamepad',
         badge: {
-            variant: 'info',
+            variant: 'success',
             text: 'BETA'
         },
         attributes: { target: '_blank', rel: "noopener" }
@@ -77,6 +77,16 @@ export const navigation = [
         id: 'R-UD',
         url: '/reports/userdaywise',
         icon: 'fa fa-users'
+    },
+    {
+        name: 'Worklog Report',
+        id: 'R-WL',
+        url: '/reports/worklog',
+        icon: 'fa fa-users',
+        badge: {
+            variant: 'success',
+            text: 'BETA'
+        }
     },
     {
         name: 'Sprint Report',
@@ -102,7 +112,7 @@ export const navigation = [
         url: '/reports/advanced',
         icon: 'fa fa-table',
         badge: {
-            variant: 'info',
+            variant: 'success',
             text: 'BETA'
         }
     },

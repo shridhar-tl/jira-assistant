@@ -151,11 +151,11 @@ export default class UserService {
             const defaultSettings = [
                 { userId: id, category: SettingsCategory.General, name: 'dateFormat', value: 'dd-MMM-yyyy', _ts: 2 },
                 { userId: id, category: SettingsCategory.General, name: 'timeFormat', value: ' hh:mm:ss tt', _ts: 2 },
+                { userId: id, category: SettingsCategory.General, name: 'minHours', value: 8, _ts: 2 },
                 { userId: id, category: SettingsCategory.General, name: 'maxHours', value: 8, _ts: 2 },
                 { userId: id, category: SettingsCategory.General, name: 'startOfDay', value: '09:00', _ts: 2 },
                 { userId: id, category: SettingsCategory.General, name: 'endOfDay', value: '17:00', _ts: 2 },
                 { userId: id, category: SettingsCategory.General, name: 'startOfWeek', value: 1, _ts: 2 },
-                { userId: id, category: SettingsCategory.General, name: 'maxHours', value: 8, _ts: 2 },
                 { userId: SystemUserId, category: SettingsCategory.System, name: 'CurrentJiraUrl', value: root, _ts: 2 },
                 { userId: SystemUserId, category: SettingsCategory.System, name: 'CurrentUserId', value: id, _ts: 2 },
             ];

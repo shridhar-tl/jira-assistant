@@ -13,6 +13,7 @@ const CustomReportComponent = React.lazy(() => import('./views/reports/custom-gr
 const EstimateActualComponent = React.lazy(() => import('./views/reports/estimate-actual/EstimateActualReport'));
 const SprintReportComponent = React.lazy(() => import('./views/reports/sprint-report/SprintReport'));
 const WorklogReportComponent = React.lazy(() => import('./views/reports/worklog-report/WorklogReport'));
+const NewWorklogReportComponent = React.lazy(() => import('./views/reports/worklog-report/NewWorklogReport'));
 const ReportBuilderComponent = React.lazy(() => import('./views/reports/report-builder/ReportBuilder'));
 
 // Settings
@@ -38,6 +39,10 @@ const sessionBasedRoute = [
     {
         path: '/reports/userdaywise',
         component: WorklogReportComponent
+    },
+    {
+        path: '/reports/worklog',
+        component: NewWorklogReportComponent
     },
     {
         path: '/reports/estimateactual',

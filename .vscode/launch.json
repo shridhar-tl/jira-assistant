@@ -8,14 +8,14 @@
             "name": "Launch WebApp-Extn",
             "request": "launch",
             "type": "chrome",
-            "url": "http://local.jiraassistant.com:8080",
+            "url": "http://local.jiraassistant.com",
             "webRoot": "${workspaceFolder}"
         },
         {
             "type": "pwa-chrome",
             "request": "launch",
             "name": "Launch Chrome",
-            "url": "http://localhost:8080",
+            "url": "http://local.jiraassistant.com",
             "webRoot": "${workspaceFolder}",
             "runtimeArgs": [
                 "--disable-web-security",

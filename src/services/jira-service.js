@@ -1,3 +1,4 @@
+import Queue from 'queue';
 import { DummyWLId } from '../constants/common';
 import { defaultSettings, defaultJiraFields } from '../constants/settings';
 import { ApiUrls } from '../constants/api-urls';
@@ -265,7 +266,7 @@ export default class JiraService {
         return this.$ajax.put(ApiUrls.individualIssue, issue, key);
     }
 
-    getRapidSprintList(rapidIds) {
+    getRapidSprintList = (rapidIds, asObj) => {
         const reqArr = rapidIds.map((rapidId) => this.$jaCache.session.getPromise(`rapidSprintList${rapidId}`)
             .then(async (value) => {
                 if (value) {
@@ -280,15 +281,36 @@ export default class JiraService {
                     result = await this.$ajax.get(ApiUrls.rapidSprintList, rapidId);
                 }
 
-                const sprints = result.sprints || result.values;
-                sprints.forEach((sp) => { sp.rapidId = rapidId; });
+                let sprints = result.sprints || result.values;
+                sprints.forEach((sp) => {
+                    sp.rapidId = rapidId;
+                    if (sp.startDate) {
+                        sp.startDate = new Date(sp.startDate);
+                    }
+                    if (sp.endDate) {
+                        sp.endDate = new Date(sp.endDate);
+                    }
+                    if (sp.completeDate) {
+                        sp.completeDate = new Date(sp.completeDate);
+                    }
+                });
+
+                // By default sort the sprint in desc order
+                sprints = sprints.sortBy(s => s.startDate?.getTime(), true);
+
                 this.$jaCache.session.set(`rapidSprintList${rapidId}`, sprints, 10);
 
                 return sprints;
             }));
 
-        return Promise.all(reqArr).then((results) => results.union());
-    }
+        return Promise.all(reqArr).then((results) => (
+            asObj ? (rapidIds.reduce((obj, bid, i) => {
+                obj[bid] = results[i];
+                return obj;
+            }, {}))
+                : results.union()
+        ));
+    };
 
     getSprintList(projects) {
         if (Array.isArray(projects)) {
@@ -307,8 +329,13 @@ export default class JiraService {
         return this.$ajax.get(ApiUrls.rapidSprintDetails, rapidViewId, sprintId);
     }
 
-    getSprintIssues(sprintId) {
-        return this.$ajax.get(ApiUrls.getSprintIssues, sprintId);
+    async getSprintIssues(sprintId, options) {
+        const { issues } = await this.$ajax.get(ApiUrls.getSprintIssues.format(sprintId), options);
+        if (options?.fields?.indexOf("worklog") > -1) {
+            await this.fillMissingWorklogs(issues);
+        }
+
+        return issues;
     }
 
     getOpenTickets(refresh) {
@@ -423,6 +450,19 @@ export default class JiraService {
         }
     }
 
+    async fillMissingWorklogs(issues) {
+        issues = issues.filter((iss) => !iss.fields?.worklog || iss.fields?.worklog?.worklogs?.length < iss.fields?.worklog?.total);
+        await runOnQueue(issues, 3, async (issue) => {
+            const res = await this.getWorklogs(issue.key);
+            console.log(`Success fetching worklog for ${issue.key}`);
+            if (!issue.fields) {
+                issue.fields = {};
+            }
+
+            issue.fields.worklog = res;
+        });
+    }
+
     fillWL(issue) {
         console.log(`Started fetching worklog for ${issue.key}`);
         return this.getWorklogs(issue.key).then((res) => {
@@ -504,4 +544,19 @@ export default class JiraService {
     getWorklog(worklogId, ticketNo) {
         return this.$ajax.get(ApiUrls.individualWorklog, ticketNo, worklogId);
     }
+}
+
+function runOnQueue(items, concurrent, execute) {
+    return new Promise((done, reject) => {
+        const queue = Queue({ results: [] });
+        queue.concurrency = concurrent;
+        items.forEach(t => queue.push(() => execute(t)));
+        queue.start((err) => {
+            if (err) {
+                reject(err);
+            } else {
+                done();
+            }
+        });
+    });
 }

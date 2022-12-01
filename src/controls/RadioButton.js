@@ -10,8 +10,8 @@ class RadioButton extends PureComponent {
     }
 
     onChange = (e) => {
-        const { defaultValue, field } = this.props;
-        this.props.onChange(defaultValue, field);
+        const { defaultValue, field, args } = this.props;
+        this.props.onChange(defaultValue, field, args);
     };
 
     render() {

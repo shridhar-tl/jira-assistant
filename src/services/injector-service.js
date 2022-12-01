@@ -118,6 +118,11 @@ export function inject(instance, ...dependencies) {
         instance = {};
     }
 
+    if (!dependencies.length && Array.isArray(instance)) {
+        dependencies = instance;
+        instance = {};
+    }
+
     if (!instance) {
         instance = {};
     }
