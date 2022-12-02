@@ -13,7 +13,13 @@ import { JAWebRootUrl } from '../constants/urls';
   const indexPageUrl = switched ? JAWebRootUrl : indexHtml;
   const currentUserId = (await $settings.get('CurrentUserId')) || localStorage.getItem('CurrentUserId');
   const CurrentJiraUrl = (await $settings.get('CurrentJiraUrl')) || localStorage.getItem('CurrentJiraUrl');
-  const hasTabAccess = () => $jaBrowserExtn.hasPermission({ permissions: ["activeTab"] });
+  const hasTabAccess = () => {
+    try {
+      return $jaBrowserExtn.hasPermission({ permissions: ["activeTab"] });
+    } catch {
+      return Promise.resolve(false);
+    }
+  };
 
   if (!CurrentJiraUrl || !currentUserId) {
     // Check and see if browser has activeTab permission. If not then redirect to integrate page
@@ -35,27 +41,22 @@ import { JAWebRootUrl } from '../constants/urls';
 
     function openUrl(url) {
       url = `${indexPageUrl}${switched ? '' : '#'}${url}`;
+      const handleError = () => false;
 
       hasTabAccess().then(hasAccess => {
         if (hasAccess) {
-          $jaBrowserExtn.getCurrentUrl().then(curUrl => {
-            if (!curUrl || replacePattern.indexOf(curUrl.toLowerCase()) > -1) {
-              $jaBrowserExtn.replaceTabUrl(url);
-              window.close();
-              return;
-            }
-
-            $jaBrowserExtn.openTab(url);
-            window.close();
-          }, () => {
-            // Workaround fix: Some times chrome doesn't return the current url
-            $jaBrowserExtn.openTab(url);
-            window.close();
-          });
+          return $jaBrowserExtn.getCurrentUrl().then(curUrl =>
+            (!curUrl || replacePattern.indexOf(curUrl.toLowerCase()) > -1), handleError);
+        } else {
+          return false;
+        }
+      }, handleError).then((replace) => {
+        if (replace) {
+          $jaBrowserExtn.replaceTabUrl(url);
         } else {
           $jaBrowserExtn.openTab(url);
-          window.close();
         }
+        window.close();
       });
     }
 
