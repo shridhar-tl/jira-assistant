@@ -1,0 +1,1 @@
+"use strict";(globalThis.webpackChunkjira_assistant=globalThis.webpackChunkjira_assistant||[]).push([[686],{1034:(s,a,e)=>{e.r(a),e.d(a,{default:()=>c});var t=e(7313),n=e(2973),r=e(6417);class i extends t.PureComponent{render(){return(0,r.jsx)(n.dL,{className:"widget-cntr",isGadget:!1})}}const c=i}}]);
