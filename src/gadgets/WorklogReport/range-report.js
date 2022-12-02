@@ -7,9 +7,9 @@ import { getFieldsToFetch } from "./utils";
 /* eslint-disable no-unused-vars */
 export function generateRangeReport(setState, getState) {
     return async function () {
-        const newState = { isLoading: false };
+        const newState = { loadingData: false };
         try {
-            setState({ isLoading: true });
+            setState({ loadingData: true });
 
             const { userGroups, dateRange: { fromDate, toDate } } = getState();
 
@@ -29,7 +29,7 @@ async function generateWorklogReportForDateRange(fromDate, toDate, userGroup, st
 
     const { $session: { CurrentUser: { name } } } = inject('JiraService', 'SessionService');
 
-    const { userwiseLog } = getUserWiseWorklog(issues, fromDate, toDate, name?.toLowerCase());
+    const { userwiseLog } = getUserWiseWorklog(issues, fromDate, toDate, name?.toLowerCase(), state);
     const settings = {
         fromDate: fromDate.toDate(),
         toDate: toDate.toDate()

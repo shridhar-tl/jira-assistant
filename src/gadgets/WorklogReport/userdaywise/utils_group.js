@@ -2,12 +2,46 @@ import moment from 'moment';
 import { calcCostPerSecs, getUserName, viewIssueUrl } from "../../../common/utils";
 import { inject } from '../../../services/injector-service';
 
-export function getUserWiseWorklog(issues, fromDate, toDate, currentUser) {
+function getWorklogFilter(fromDate, toDate, state) {
+    const { logFilterType, filterThrsType, filterDays, wlDateSelection } = state;
+
+    let { filterDate } = state;
+    if (filterThrsType === '1') {
+        filterDate = null;
+    } else if (filterThrsType === '2') {
+        filterDate = moment(toDate).clone().add(filterDays, 'days');
+    }
+
+    if (filterDate) {
+        filterDate = moment(filterDate).endOf('day');
+    }
+
+    const isInRange = (worklog) => moment(worklog.started).isBetween(fromDate, toDate);
+
+    if (logFilterType === '1') {
+        return isInRange;
+    } else {
+        const before = logFilterType === '2';
+        const useUpdatedDate = wlDateSelection !== '2';
+        return function (worklog) {
+            if (!isInRange(worklog)) {
+                return false;
+            }
+
+            const threshold = filterDate || moment(worklog.started).add(filterDays, 'days').endOf('day');
+
+            return before === moment(useUpdatedDate ? (worklog.updated || worklog.created) : worklog.created).isBefore(threshold);
+        };
+    }
+}
+
+export function getUserWiseWorklog(issues, fromDate, toDate, currentUser, state) {
     const svc = inject('UserUtilsService', 'SessionService');
     const epicNameField = svc.$session.CurrentUser.epicNameField;
     const options = { epicNameField, ...svc };
-
+    const isWorklogInRange = getWorklogFilter(fromDate, toDate, state);
     const report = {};
+
     issues.forEach(issue => {
         const fields = issue.fields || {};
         const worklogs = fields.worklog?.worklogs || [];
@@ -19,7 +53,7 @@ export function getUserWiseWorklog(issues, fromDate, toDate, currentUser) {
         const toAppend = { originalestimate, remainingestimate, totalLogged, estVariance };
 
         worklogs.forEach(worklog => {
-            if (!moment(worklog.started).isBetween(fromDate, toDate)) {
+            if (!isWorklogInRange(worklog)) {
                 return;
             }
 

@@ -1,14 +1,18 @@
 import React from 'react';
+import { inject } from '../../services/injector-service';
+import AddWorklog from '../../dialogs/AddWorklog';
+import GroupEditor from '../../dialogs/GroupEditor';
 import { Button } from '../../controls';
 import BaseGadget from '../BaseGadget';
 import { getSettingsObj, withProvider } from './datastore';
+import {
+    fetchData, getSprintsList, setStateValue, worklogAdded,
+    hideWorklog, groupsChanged, getSettingsToStore
+} from './actions';
 import CustomActions from './settings/CustomActions';
 import Settings from './settings/Settings';
-import { fetchData, getSprintsList, setStateValue, worklogAdded, hideWorklog, groupsChanged, getSettingsToStore } from './actions';
-import { inject } from '../../services/injector-service';
 import Report from './Report';
-import AddWorklog from '../../dialogs/AddWorklog';
-import GroupEditor from '../../dialogs/GroupEditor';
+import WorklogReportInfo from './WorklogReportInfo';
 
 class WorklogReport extends BaseGadget {
     constructor(props) {
@@ -63,14 +67,15 @@ class WorklogReport extends BaseGadget {
     }
 
     render() {
-        const { showWorklogPopup, worklogItem, worklogAdded, hideWorklog, userGroups } = this.props;
+        const { showWorklogPopup, worklogItem, worklogAdded, hideWorklog, userGroups, reportLoaded } = this.props;
         const { showSettings, showGroupsPopup, isLoading } = this.state;
 
         return super.renderBase(
             <div className="worklog-report-container">
                 {showSettings && <Settings onHide={this.settingsChanged} />}
                 {showGroupsPopup && <GroupEditor groups={userGroups} onHide={this.groupsChanged} />}
-                {!isLoading && <Report isLoading={isLoading} />}
+                {!reportLoaded && !isLoading && <WorklogReportInfo />}
+                {reportLoaded && <Report isLoading={isLoading} />}
                 {showWorklogPopup && <AddWorklog worklog={worklogItem} onDone={worklogAdded}
                     onHide={hideWorklog} uploadImmediately={true} />}
             </div>
@@ -80,6 +85,6 @@ class WorklogReport extends BaseGadget {
 
 export default withProvider(WorklogReport,
     ({
-        selSprints, dateRange, loadingData: isLoading, showWorklogPopup, worklogItem, userGroups
-    }) => ({ selSprints, dateRange, isLoading, showWorklogPopup, worklogItem, userGroups }),
+        selSprints, dateRange, loadingData: isLoading, reportLoaded, showWorklogPopup, worklogItem, userGroups
+    }) => ({ selSprints, dateRange, isLoading, reportLoaded, showWorklogPopup, worklogItem, userGroups }),
     { fetchData, setStateValue, worklogAdded, hideWorklog, getSettingsToStore, groupsChanged });

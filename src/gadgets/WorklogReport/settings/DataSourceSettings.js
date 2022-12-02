@@ -3,7 +3,9 @@ import RapidViewList from '../../../components/RapidViewList';
 import { DatePicker } from '../../../controls';
 import { renderCheckbox } from './actions';
 
-function DataSourceSettings({ setValue, setBoards, state: { userListMode, timeframeType, jql, dateRange, sprintBoards } }) {
+function DataSourceSettings({ setValue, setBoards, state }) {
+    const { userListMode, timeframeType, dateRange, sprintBoards } = state;
+
     return (<div className="settings-group">
         <div className="form-group row">
             <label className="col-md-3 col-form-label">User List</label>
@@ -40,10 +42,7 @@ function DataSourceSettings({ setValue, setBoards, state: { userListMode, timefr
             </div>
         </div>
         <TimeFrameComponent timeframeType={timeframeType} dateRange={dateRange} sprintBoards={sprintBoards} setValue={setValue} setBoards={setBoards} />
-        {userListMode === '1' && timeframeType === '2' && <div>
-            <strong>Caution:</strong> Pulling worklogs of all the users on a specific timerange could result in pulling huge data and cause performance issues.
-            {(jql ? "Ensure you have necessary filters in JQL." : "Use JQL to add additional filters as necessary.")}
-        </div>}
+        <ReportGrouping state={state} setValue={setValue} />
     </div>
     );
 }
@@ -78,3 +77,33 @@ const SprintListComponent = React.memo(function ({ setBoards, sprintBoards }) {
         </div>
     </div>);
 });
+
+function ReportGrouping({ setValue, state: { userListMode, timeframeType, reportUserGrp, jql } }) {
+    if (userListMode !== '1' || timeframeType !== '2') {
+        return null;
+    }
+
+    return (<>
+        <div className="form-group row">
+            <label className="col-md-3 col-form-label">User grouping</label>
+            <div className="col-md-9 col-form-label">
+                <div className="form-check">
+                    <label className="form-check-label">
+                        {renderCheckbox('reportUserGrp', '1', reportUserGrp, setValue)}
+                        Do not group the users
+                    </label>
+                </div>
+                <div className="form-check">
+                    <label className="form-check-label">
+                        {renderCheckbox('reportUserGrp', '2', reportUserGrp, setValue)}
+                        Group the users based on project
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div className="col-md-12">
+            <strong>Caution:</strong> Pulling worklogs of all the users on a specific timerange could result in pulling huge data and cause performance issues.
+            {(jql ? "Ensure you have necessary filters in JQL." : "Use JQL to add additional filters as necessary.")}
+        </div>
+    </>);
+}

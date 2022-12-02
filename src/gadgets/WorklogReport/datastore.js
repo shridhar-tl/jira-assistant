@@ -5,6 +5,7 @@ const initialData = {
     userListMode: '1', // display users based on worklog or not
     timeframeType: '1', // Sprint wise or daterange wise
     userGroups: [], // user groups for date range
+    reportUserGrp: '1', // 1=no grouping, 2=group users by project
     dateRange: {}, // user selected date range
     logFormat: '1', // worklog display format
     breakupMode: '1', // combine individual worklogs or not
@@ -18,6 +19,7 @@ const initialData = {
     filterThrsType: '1', // 1=x days from log date,2=x days from last date,3=use date selected
     filterDays: 5, // number of days to use
     filterDate: new Date(), // Date to use
+    wlDateSelection: '1', // 1=Use updated date for filtering
 
     loadingData: false, // Whether currently report data is being pulled
     reportLoaded: false, // Is report data pulled for selected input
