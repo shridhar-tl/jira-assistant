@@ -37,6 +37,7 @@ const genericSettings = [
     'workingDays',
     'startOfDay',
     'endOfDay',
+    'minHours',
     'maxHours',
     'commentLength',
 ];
@@ -45,6 +46,7 @@ const settingsDefaultValues = {
     workingDays: DefaultWorkingDays,
     dateFormat: dateFormats[0],
     timeFormat: timeFormats[0],
+    minHours: 8,
     maxHours: 8,
     commentLength: 5,
     startOfDay: DefaultStartOfDay,

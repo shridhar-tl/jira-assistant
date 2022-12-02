@@ -201,6 +201,7 @@ function processExpressions(fields) {
                 {
                     'this': fields[f.exprField],
                     Fields: fields,
+                    JSON,
                     Utils: this.utils,
                     parseInt,
                     parseFloat,

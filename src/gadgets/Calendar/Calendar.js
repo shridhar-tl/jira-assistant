@@ -53,8 +53,12 @@ class Calendar extends BaseGadget {
         this.CurrentUser = this.$session.CurrentUser;
         //this.defaultView = this.state.settings.viewMode || "month";
         this.maxTime = this.CurrentUser.maxHours;
+        this.minTime = this.CurrentUser.minHours || this.maxTime;
         if (this.maxTime) {
             this.maxTime = this.maxTime * 60 * 60;
+        }
+        if (this.minTime) {
+            this.minTime = this.minTime * 60 * 60;
         }
 
         this.fullCalendarOpts = this.getCalendarOptions();
@@ -332,8 +336,14 @@ class Calendar extends BaseGadget {
         const time = this.getTimeSpent(arr);
         obj.logged = time;
         let title = `Logged: ${this.$utils.formatSecs(time)}`;
-        obj.diff = time - this.maxTime;
-        if (this.maxTime && obj.diff) {
+        if (time > this.maxTime) {
+            obj.diff = time - this.maxTime;
+        } else if (time < this.minTime) {
+            obj.diff = time - this.minTime;
+        } else {
+            obj.diff = 0;
+        }
+        if (obj.diff) {
             title += ` (${obj.diff > 0 ? "+" : "-"}${this.$utils.formatSecs(Math.abs(obj.diff))})`;
         }
         this.setInfoColor(obj, this.state.settings);
@@ -342,7 +352,7 @@ class Calendar extends BaseGadget {
     }
 
     setInfoColor(obj, ps) {
-        if (this.maxTime && obj.diff) {
+        if (obj.diff) {
             obj.backgroundColor = obj.diff > 0 ? ps.infoColor_high : ps.infoColor_less;
         }
         else {

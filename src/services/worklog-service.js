@@ -410,12 +410,20 @@ export default class WorklogService extends BaseService {
                     ticketList: $values.map((d) => ({ id: d.id, ticketNo: d.ticketNo, uploaded: (d.overrideTimeSpent || d.timeSpent), comment: d.description, worklogId: d.worklogId }))
                 };
             }).filter(Boolean).orderByDescending((l) => l.key);
-        let maxHours = this.$session.CurrentUser.maxHours;
+
+        let { maxHours, minHours = maxHours } = this.$session.CurrentUser;
         maxHours = maxHours * 60 * 60 * 1000;
+        minHours = minHours * 60 * 60 * 1000;
+
         entries.forEach((d) => {
             //d.pendingUpload = d.totalHours - d.uploaded;
-            if (maxHours !== null && maxHours > 0) {
+            if (maxHours && d.totalHours > maxHours) {
                 const diff = d.totalHours - maxHours;
+                if (diff !== 0) {
+                    d.difference = diff;
+                }
+            } else if (minHours && d.totalHours < minHours) {
+                const diff = d.totalHours - minHours;
                 if (diff !== 0) {
                     d.difference = diff;
                 }

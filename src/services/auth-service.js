@@ -83,7 +83,8 @@ export default class AuthService {
             reports_UserDayWise: this.parseIfJson(
                 settings.page_reports_UserDayWise,
                 { logFormat: '1', breakupMode: '1', groupMode: '1' }
-            )
+            ),
+            reports_WorklogReport: this.parseIfJson(settings.page_reports_WorklogReport, {})
         };
 
         let lastVisisted = await this.$settings.get('LV');

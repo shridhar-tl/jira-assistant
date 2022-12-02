@@ -194,7 +194,6 @@ function signInUser() {
     return new Promise((resolve, reject) => {
         const auth = getAuth();
         onAuthStateChanged(auth, (user, b) => {
-            debugger;
             if (!user) { return; }
             const roomId = UUID.generate().replace(/-/g, '').substring(0, 10);
             resolve({ success: true, sid: user.uid, roomId });
