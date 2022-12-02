@@ -11,6 +11,7 @@ import { executeService } from '../../../common/proxy';
 import Footer from '../Footer';
 import { withRouter } from '../../../pollyfills';
 import { isExtnBuild, isWebBuild } from '../../../constants/build-info';
+import config from '../../../customize';
 
 const settingsIconStyles = {
     fontSize: '18px', position: 'absolute', right: '20px', top: '35px', color: '#0000ff'
@@ -23,7 +24,7 @@ class Integrate extends PureComponent {
     constructor(props) {
         super(props);
         inject(this, "AjaxService", "StorageService", "MessageService", "SettingsService", "AppBrowserService", "SessionService", "SettingsService", "UserService");
-        this.state = {};
+        this.state = { jiraUrl: config.settings.defaultIntegratUrl || '' };
         this.init();
     }
 
@@ -37,12 +38,14 @@ class Integrate extends PureComponent {
         ];
 
         if (isExtnBuild) {
-            this.$jaBrowserExtn.getCurrentUrl().then((url) => {
-                const root = this.getJiraRootUrl(url);
-                if (root && root.length > 20 && root.startsWith('http')) {
-                    this.setState({ jiraUrl: root });
-                }
-            });
+            if (!this.state.jiraUrl) {
+                this.$jaBrowserExtn.getCurrentUrl().then((url) => {
+                    const root = this.getJiraRootUrl(url);
+                    if (root && root.length > 20 && root.startsWith('http')) {
+                        this.setState({ jiraUrl: root });
+                    }
+                });
+            }
         }
     }
 
