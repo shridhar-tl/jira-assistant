@@ -38,7 +38,7 @@ function WorklogReportInfo() {
         <div>
             <strong>What is new?</strong>
             <ul>
-                <li>Viewing report based on sprint as an additional option along with date range selection</li>
+                <li>Viewing report based on sprint as an alternate option instead of date range selection</li>
                 <li>Option to eliminate or identify the worklogs created after the threshold date</li>
                 <li>Options to pull the report without specifiying the user group</li>
                 <li>Automatically group the users based on project when user group is not provided and worklog pulled based on date range</li>
