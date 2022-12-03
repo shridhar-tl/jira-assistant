@@ -35,3 +35,11 @@
         padding: 0;
     }
 }
+
+.no-boards-message {
+    font-size: 16px;
+
+    .fa.warn {
+        color: red;
+    }
+}

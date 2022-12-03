@@ -8,6 +8,16 @@
     }
   }
 
+  .p-tabview.multi-view {
+    .scroll-table-container {
+      height: calc(100vh - 156px);
+
+      &.flat-data-grid {
+        height: calc(100vh - 203px);
+      }
+    }
+  }
+
   span.estimate {
     padding-left: 5px;
   }

@@ -12,7 +12,7 @@ function GroupRow({
     return (
         <>
             {!hidden && !grp.isDummy && <tr className="grouped-row left" title="Click to hide user details">
-                <td colSpan={isSprint ? 1 : dates?.length + 2} onClick={toggleDisplay}>
+                <td colSpan={isSprint ? colSpan : dates?.length + 1 + colSpan} onClick={toggleDisplay}>
                     <i className="pull-left drill-down fa fa-chevron-circle-down" />
                     {grp.name}
                 </td>

@@ -18,7 +18,7 @@ function Report({ selSprints, isLoading, useSprint, hasData }) {
         const boards = Object.keys(selSprints).filter(k => selSprints[k]?.selected);
 
         if (boards.length > 1) {
-            reportData = (<TabView className="no-padding" renderActiveOnly={false}>
+            reportData = (<TabView className="no-padding multi-view" renderActiveOnly={false}>
                 {boards.map(boardId => <TabPanel header={selSprints[boardId].name} contentClassName="no-padding">
                     <ReportData boardId={boardId} />
                 </TabPanel>)}
@@ -53,5 +53,5 @@ const ReportData = connect(function ({ boardId, hasData, showCostReport }) {
     const { timeframeType, fields: { showCostReport },
         [timeframeType === '1' ? `sprintsList_${boardId}` : 'reportLoaded']: hasData
     } = state;
-    return { hasData: !!hasData, showCostReport };
+    return { hasData: !!hasData, showCostReport: showCostReport && timeframeType !== '1' };
 });
