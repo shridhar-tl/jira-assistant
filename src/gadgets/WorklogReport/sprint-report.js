@@ -6,7 +6,8 @@ import { getFieldsToFetch } from './utils';
 
 export function generateSprintReport(setState, getState) {
     return async function () {
-        const sel = getState('selSprints');
+        const curState = getState();
+        const { selSprints: sel } = curState;
 
         const selBoards = Object.keys(sel).filter(bid => sel[bid]?.selected);
         if (!selBoards.length) { return; }
@@ -32,8 +33,12 @@ export function generateSprintReport(setState, getState) {
                     const { id, startDate, endDate, completeDate = endDate } = sprint;
                     const fromDate = moment(startDate), toDate = moment(completeDate);
 
-                    const issuesList = await pullIssuesFromSprint(id);
-                    const { userwiseLog, userwiseLogArr } = getUserWiseWorklog(issuesList, fromDate, toDate, name?.toLowerCase(), getState());
+                    const issuesList = await pullIssuesFromSprint(id, curState);
+                    if (!issuesList.length) {
+                        newState[`groupReport_${id}`] = null;
+                        continue;
+                    }
+                    const { userwiseLog, userwiseLogArr } = getUserWiseWorklog(issuesList, fromDate, toDate, name?.toLowerCase(), curState);
 
                     const settings = {
                         fromDate: fromDate.toDate(),
@@ -154,10 +159,14 @@ function getSprintsSelected(boardId, boards, allSprints) {
     }
 }
 
-async function pullIssuesFromSprint(sprintId) {
+async function pullIssuesFromSprint(sprintId, state) {
     const { $jira } = inject('JiraService');
     const { fieldsToFetch } = getFieldsToFetch();
-    const issues = await $jira.getSprintIssues(sprintId, { maxResults: 1000, fields: fieldsToFetch });
+    const request = { maxResults: 1000, fields: fieldsToFetch };
+    if (state.jql?.trim()) {
+        request.jql = state.jql?.trim();
+    }
+    const issues = await $jira.getSprintIssues(sprintId, request);
 
     return issues;
 }
