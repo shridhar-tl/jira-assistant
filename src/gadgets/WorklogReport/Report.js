@@ -5,12 +5,12 @@ import { connect } from './datastore';
 import './WorklogGadget.scss';
 
 const loader = (<div className="pad-15">Loading... please wait while the report is being loaded.
-    It may take few seconds / minute based on the range you had selected.</div>);
+    It may take few seconds / minute based on the range/filters you had selected.</div>);
+
+const noData = (<div className="pad-15">No data available to display.</div>);
 
 function Report({ selSprints, isLoading, useSprint, hasData }) {
-    if (isLoading) {
-        return loader;
-    }
+    if (isLoading) { return loader; }
     if (!hasData) { return null; }
 
     let reportData = null;
@@ -39,7 +39,7 @@ export default connect(Report, ({ reportLoaded: hasData, timeframeType, selSprin
 
 
 const ReportData = connect(function ({ boardId, hasData, showCostReport }) {
-    if (!hasData) { return null; }
+    if (!hasData) { return noData; }
 
     return (<TabView className="no-padding" renderActiveOnly={false}>
         <TabPanel header="Grouped - [User daywise]" contentClassName="no-padding">
@@ -51,7 +51,7 @@ const ReportData = connect(function ({ boardId, hasData, showCostReport }) {
     </TabView>);
 }, (state, { boardId }) => {
     const { timeframeType, fields: { showCostReport },
-        [timeframeType === '1' ? `sprintsList_${boardId}` : 'reportLoaded']: hasData
+        [timeframeType === '1' ? `sprintsList_${boardId}` : 'groupReport']: hasData
     } = state;
     return { hasData: !!hasData, showCostReport: showCostReport && timeframeType !== '1' };
 });

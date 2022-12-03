@@ -65,6 +65,7 @@ class Settings extends BaseDialog {
     getFinalStateToSave() {
         const { settings: { reportLoaded, userListMode, timeframeType } } = this.props;
         const { modifiedSettings, allSettings } = this.state;
+
         if (reportLoaded) {
             // Clear the report
             modifiedSettings.reportLoaded =
@@ -74,6 +75,22 @@ class Settings extends BaseDialog {
                 && (!modifiedSettings.timeframeType || modifiedSettings.timeframeType === timeframeType)
                 ;
         }
+
+        // Clear the selSprints object when corresponding board is removed
+        const { sprintBoards, selSprints } = allSettings;
+        const selectedBoards = sprintBoards?.reduce((obj, cur) => {
+            obj[cur.id] = true;
+            return obj;
+        }, {}) || {};
+        const keysToDel = Object.keys(selSprints).filter(k => !selectedBoards[k]);
+
+        if (keysToDel.length) {
+            const newSelSprints = { ...allSettings.selSprints };
+            keysToDel.forEach(k => delete newSelSprints[k]);
+            modifiedSettings.selSprints = newSelSprints;
+            allSettings.selSprints = newSelSprints;
+        }
+
         this.props.setStateValue(modifiedSettings);
         const settings = getSettingsObj(allSettings);
         return settings;
