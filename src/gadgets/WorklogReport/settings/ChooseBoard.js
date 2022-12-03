@@ -22,7 +22,18 @@ function ChooseBoard({ sprintBoards, selSprints: savedSprints, setValue, onChang
     const [selSprints, setSprints] = useState({ ...savedSprints });
     const boardSelected = (selected, id, name) => setSprints({ ...selSprints, [id]: { range: 0, custom: [], ...selSprints[id], selected, name } });
     const updateSprints = !hasBoards ? undefined : (_, sprints) => setSprints(sprints);
-    const updateReport = !hasBoards || selSprints === savedSprints ? undefined : () => setValue('selSprints', selSprints);
+    const updateReport = !hasBoards || selSprints === savedSprints ? undefined : () => {
+        // If custom is choosen and no sprints are selected, then clear the board selection
+        Object.keys(selSprints).forEach(k => {
+            const sprint = selSprints[k];
+            if (sprint.range === -1 && !Object.keys(sprint.custom || {}).length) {
+                delete selSprints[k];
+            }
+        });
+
+        // Update state with current selections
+        setValue('selSprints', selSprints);
+    };
 
     return (<>
         <span className="link margin-r-8" title="Click to choose list of sprints" onClick={showOP}>Choose sprint</span>
