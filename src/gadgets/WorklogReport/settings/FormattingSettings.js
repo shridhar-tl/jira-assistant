@@ -1,5 +1,5 @@
 import React from 'react';
-import { renderCheckbox } from './actions';
+import { renderRadioButton } from './actions';
 
 function FormattingSettings({ setValue, state: { logFormat, breakupMode, timeZone, userDisplayFormat } }) {
     return (<div className="settings-group">
@@ -8,13 +8,13 @@ function FormattingSettings({ setValue, state: { logFormat, breakupMode, timeZon
             <div className="col-md-9 col-form-label">
                 <div className="form-check">
                     <label className="form-check-label">
-                        {renderCheckbox('logFormat', '1', logFormat, setValue)}
+                        {renderRadioButton('logFormat', '1', logFormat, setValue)}
                         Format hours (2h 30m)
                     </label>
                 </div>
                 <div className="form-check">
                     <label className="form-check-label">
-                        {renderCheckbox('logFormat', '2', logFormat, setValue)}
+                        {renderRadioButton('logFormat', '2', logFormat, setValue)}
                         Show in hours (2.5)
                     </label>
                 </div>
@@ -25,13 +25,13 @@ function FormattingSettings({ setValue, state: { logFormat, breakupMode, timeZon
             <div className="col-md-9 col-form-label">
                 <div className="form-check">
                     <label className="form-check-label">
-                        {renderCheckbox('breakupMode', '1', breakupMode, setValue)}
+                        {renderRadioButton('breakupMode', '1', breakupMode, setValue)}
                         Single entry (Sum worklog added for same ticket on same day)
                     </label>
                 </div>
                 <div className="form-check">
                     <label className="form-check-label">
-                        {renderCheckbox('breakupMode', '2', breakupMode, setValue)}
+                        {renderRadioButton('breakupMode', '2', breakupMode, setValue)}
                         Individual entry (Display individual entry for each of the worklog)
                     </label>
                 </div>
@@ -42,19 +42,19 @@ function FormattingSettings({ setValue, state: { logFormat, breakupMode, timeZon
             <div className="col-md-9 col-form-label">
                 <div className="form-check">
                     <label className="form-check-label">
-                        {renderCheckbox('timeZone', '1', timeZone, setValue)}
+                        {renderRadioButton('timeZone', '1', timeZone, setValue)}
                         Use my local time zone for all users
                     </label>
                 </div>
                 <div className="form-check">
                     <label className="form-check-label">
-                        {renderCheckbox('timeZone', '2', timeZone, setValue)}
+                        {renderRadioButton('timeZone', '2', timeZone, setValue)}
                         Use containing groups timezone for all users
                     </label>
                 </div>
                 <div className="form-check">
                     <label className="form-check-label">
-                        {renderCheckbox('timeZone', '3', timeZone, setValue)}
+                        {renderRadioButton('timeZone', '3', timeZone, setValue)}
                         Use individual users timezone
                     </label>
                 </div>
@@ -65,13 +65,13 @@ function FormattingSettings({ setValue, state: { logFormat, breakupMode, timeZon
             <div className="col-md-9 col-form-label">
                 <div className="form-check">
                     <label className="form-check-label">
-                        {renderCheckbox('userDisplayFormat', '1', userDisplayFormat, setValue)}
+                        {renderRadioButton('userDisplayFormat', '1', userDisplayFormat, setValue)}
                         Show user display name only
                     </label>
                 </div>
                 <div className="form-check">
                     <label className="form-check-label">
-                        {renderCheckbox('userDisplayFormat', '2', userDisplayFormat, setValue)}
+                        {renderRadioButton('userDisplayFormat', '2', userDisplayFormat, setValue)}
                         Show user display name with avatar
                     </label>
                 </div>

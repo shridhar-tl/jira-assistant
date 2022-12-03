@@ -112,6 +112,7 @@ export function generateUserDayWiseData(data, groups, pageSettings) {
             grandTotalCost: 0,
             users: null
         };
+        if (grp.isDummy) { grpInfo.isDummy = grp.isDummy; }
 
         grpInfo.users = grp.users.map(usr => {
             let curTimeZone = null;

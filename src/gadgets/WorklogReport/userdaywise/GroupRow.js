@@ -11,7 +11,7 @@ function GroupRow({
 
     return (
         <>
-            {!hidden && <tr className="grouped-row left" title="Click to hide user details">
+            {!hidden && !grp.isDummy && <tr className="grouped-row left" title="Click to hide user details">
                 <td colSpan={isSprint ? 1 : dates?.length + 2} onClick={toggleDisplay}>
                     <i className="pull-left drill-down fa fa-chevron-circle-down" />
                     {grp.name}
@@ -25,7 +25,7 @@ function GroupRow({
                 addWorklog={addWorklog} timeExportFormat={timeExportFormat} boardId={boardId} costView={costView}
             />)}
 
-            <tr className="grouped-row right auto-wrap" onClick={hidden ? toggleDisplay : null}>
+            {!grp.isDummy && <tr className="grouped-row right auto-wrap" onClick={hidden ? toggleDisplay : null}>
                 <td colSpan={colSpan}>
                     {hidden && <div>
                         <i className="pull-left drill-down fa fa-chevron-circle-right" title="Click to show user details" />
@@ -39,7 +39,7 @@ function GroupRow({
 
                 {isSprint && costView && <td>{grp.grandTotalCost}</td>}
                 {isSprint && !costView && <td>{convertSecs(grp.grandTotalHours)}</td>}
-            </tr>
+            </tr>}
         </>
     );
 }

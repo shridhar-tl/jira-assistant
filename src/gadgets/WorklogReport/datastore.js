@@ -11,7 +11,6 @@ const initialData = {
     breakupMode: '1', // combine individual worklogs or not
     userDisplayFormat: '1', // User details display format
     fields: {}, // additional fields to be displayed in report
-    costView: false, // Show cost view or not
     timeZone: '1',
 
     // Filter settings
@@ -62,19 +61,22 @@ export function getSettingsObj(data) {
         return {};
     }
 
-    const { userListMode,
+    const {
+        userListMode,
         timeframeType,
+        reportUserGrp,
         dateRange,
         logFormat,
         breakupMode,
         timeZone,
         userDisplayFormat,
         fields,
+        jql,
         logFilterType,
         filterThrsType,
         filterDays,
         filterDate,
-        jql,
+        wlDateSelection,
         sprintBoards,
         sprintList,
         selSprints = {}
@@ -83,17 +85,19 @@ export function getSettingsObj(data) {
     const toStore = removeUndefined({
         userListMode,
         timeframeType,
+        reportUserGrp,
         dateRange,
         logFormat,
         breakupMode,
         timeZone,
         userDisplayFormat,
         fields,
+        jql,
         logFilterType,
         filterThrsType,
         filterDays,
         filterDate,
-        jql,
+        wlDateSelection,
         sprintBoards,
         sprintList,
         selSprints
