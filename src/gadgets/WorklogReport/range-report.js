@@ -11,10 +11,10 @@ export function generateRangeReport(setState, getState) {
         try {
             setState({ loadingData: true });
 
-            const { userGroups, dateRange: { fromDate, toDate } } = getState();
+            const { dateRange: { fromDate, toDate } } = getState();
 
             newState.groupReport = await generateWorklogReportForDateRange(moment(fromDate).startOf('day'),
-                moment(toDate).endOf('day'), userGroups, getState());
+                moment(toDate).endOf('day'), getState());
 
             newState.reportLoaded = true;
         } finally {
@@ -23,23 +23,111 @@ export function generateRangeReport(setState, getState) {
     };
 }
 
-async function generateWorklogReportForDateRange(fromDate, toDate, userGroup, state) {
-    const userList = getUniqueUsersFromGroup(userGroup);
-    const issues = await getIssuesWithWorklogFor(fromDate, toDate, userList, state);
+async function generateWorklogReportForDateRange(fromDate, toDate, state) {
+    const { $session: { CurrentUser: { name, epicNameField } } } = inject('JiraService', 'SessionService');
+    const issues = await getIssuesWithWorklogFor(fromDate, toDate, state, epicNameField?.id);
+    const { userListMode, userGroups: savedGroups, reportUserGrp } = state;
+    const useGroups = userListMode !== '1';
+    if (reportUserGrp !== '1') {
+        const { groupByFunc, getGroupName } = getGroupingFunction(reportUserGrp, epicNameField?.id);
 
-    const { $session: { CurrentUser: { name } } } = inject('JiraService', 'SessionService');
+        return issues.groupBy(groupByFunc)
+            .reduce((obj, { values: issues }) => {
+                const { months, dates, groupedData: g } = formGroupedWorklogs(issues, fromDate, toDate, name?.toLowerCase(), state, useGroups && savedGroups);
+                obj.months = months;
+                obj.dates = dates;
 
-    const { userwiseLog } = getUserWiseWorklog(issues, fromDate, toDate, name?.toLowerCase(), state);
+                // Add the item in the grouplist to our array of groups
+                const [grp] = g;
+                grp.name = getGroupName(issues);
+                delete grp.isDummy;
+                const { groupedData } = obj;
+                groupedData.push(grp);
+
+                // Sumup other extended properties in array
+                groupedData.grandTotal = (groupedData.grandTotal || 0) + (g.grandTotal || 0);
+                groupedData.grandTotalCost = (groupedData.grandTotalCost || 0) + (g.grandTotalCost || 0);
+                groupedData.total = sumAndMergeObjectProps(groupedData.total, g.total);
+                groupedData.totalCost = sumAndMergeObjectProps(groupedData.totalCost, g.totalCost);
+
+                return obj;
+            }, { groupedData: [] });
+    } else {
+        return formGroupedWorklogs(issues, fromDate, toDate, name?.toLowerCase(), state, useGroups && savedGroups);
+    }
+}
+
+function getGroupingFunction(reportUserGrp, epicNameField) {
+    if (reportUserGrp === '3') { // group by issuetype
+        return {
+            getGroupName: (issues) => {
+                const { name } = issues[0].fields.issuetype;
+                return name;
+            },
+            groupByFunc: issue => issue.fields.issuetype.id
+        };
+    } else if (reportUserGrp === '4' && epicNameField) { // group by epic
+        return {
+            getGroupName: (issues) => {
+                const epic = issues[0].fields[epicNameField];
+                return epic || '<No epic assigned>';
+            },
+            groupByFunc: issue => issue.fields[epicNameField]
+        };
+    } else { // group by project
+        return {
+            getGroupName: (issues) => {
+                const { name, key } = issues[0].fields.project;
+                return `${name} (${key})`;
+            },
+            groupByFunc: issue => issue.fields.project.key
+        };
+    }
+}
+
+function sumAndMergeObjectProps(obj1, obj2) {
+    if (!obj1) {
+        return obj2;
+    } else if (!obj2) {
+        return obj1;
+    } else {
+        const newObj = { ...obj1 };
+        Object.keys(obj2).forEach(k => {
+            newObj[k] = (newObj[k] || 0) + (obj2[k] || 0);
+        });
+        return newObj;
+    }
+}
+
+function formGroupedWorklogs(issues, fromDate, toDate, name, state, userGroups) {
+    const { userwiseLog, userwiseLogArr } = getUserWiseWorklog(issues, fromDate, toDate, name, state);
+    if (!userGroups) {
+        userGroups = [createGroupObjectWithUsers(userwiseLogArr)];
+    }
+
     const settings = {
         fromDate: fromDate.toDate(),
         toDate: toDate.toDate()
     };
 
-    return generateUserDayWiseData(userwiseLog, userGroup, settings);
+    return generateUserDayWiseData(userwiseLog, userGroups, settings);
 }
 
-function getUniqueUsersFromGroup(userGroup) {
-    const userList = userGroup.union(grps => {
+function createGroupObjectWithUsers(users) {
+    const result = users.reduce((obj, u) => {
+        obj.totalHours += (u.totalHours || 0);
+        obj.totalCost += (u.totalCost || 0);
+        return obj;
+    }, { totalHours: 0, totalCost: 0 });
+
+    return { isDummy: true, name: '<No group name>', users, ...result };
+}
+
+function getUniqueUsersFromGroup(state) {
+    const { userGroups, userListMode } = state;
+    if (userListMode === '1') { return null; }
+
+    const userList = userGroups.union(grps => {
         grps.users.forEach(gu => gu.groupName = grps.name);
         return grps.users;
     });
@@ -47,12 +135,14 @@ function getUniqueUsersFromGroup(userGroup) {
     return userList.map(u => getUserName(u, true)).distinct();
 }
 
-async function getIssuesWithWorklogFor(fromDate, toDate, userList, state) {
+async function getIssuesWithWorklogFor(fromDate, toDate, state, epicNameField) {
     const svc = inject('JiraService');
 
-    const { fieldsToFetch, additionalJQL } = getFieldsToFetch(state); // ToDo: pass state appropriately
+    const { fieldsToFetch, additionalJQL } = getFieldsToFetch(state, epicNameField);
 
-    const jql = `worklogAuthor in ("${userList.join('","')}") and worklogDate >= '${fromDate.clone().add(-1, 'days').format("YYYY-MM-DD")}' and worklogDate < '${toDate.clone().add(1, 'days').format("YYYY-MM-DD")}'${additionalJQL}`;
+    const userList = getUniqueUsersFromGroup(state);
+    const author = userList ? `worklogAuthor in ("${userList.join('","')}") and ` : '';
+    const jql = `${author}worklogDate >= '${fromDate.clone().add(-1, 'days').format("YYYY-MM-DD")}' and worklogDate < '${toDate.clone().add(1, 'days').format("YYYY-MM-DD")}'${additionalJQL}`;
 
     return await svc.$jira.searchTickets(jql, fieldsToFetch);
 }

@@ -6,16 +6,31 @@ import { Checkbox, RadioButton } from '../../../controls';
 import { useState } from 'react';
 import './ChooseBoard.scss';
 
-function ChooseBoard({ sprintBoards, selSprints, setValue, onChange }) {
+function ChooseBoard({ sprintBoards, selSprints: savedSprints, setValue, onChange }) {
     const op = useRef(null);
     const showOP = (e) => op.current.toggle(e);
+    const renderRef = useRef(true);
+    const { current: isFirstRender } = renderRef;
 
-    const boardSelected = (selected, id, name) => setValue('selSprints', { ...selSprints, [id]: { range: 0, custom: [], ...selSprints[id], selected, name } });
+    useEffect(() => {
+        renderRef.current = false;
+        !isFirstRender && onChange();
+    }, [savedSprints]); // eslint-disable-line react-hooks/exhaustive-deps
+
+    const hasBoards = !!sprintBoards?.length;
+
+    const [selSprints, setSprints] = useState({ ...savedSprints });
+    const boardSelected = (selected, id, name) => setSprints({ ...selSprints, [id]: { range: 0, custom: [], ...selSprints[id], selected, name } });
+    const updateSprints = !hasBoards ? undefined : (_, sprints) => setSprints(sprints);
+    const updateReport = !hasBoards || selSprints === savedSprints ? undefined : () => setValue('selSprints', selSprints);
 
     return (<>
-        <span className="link" title="Click to choose list of sprints" onClick={showOP}>Choose sprint</span>
-        <OverlayPanel ref={op} showCloseIcon id="overlay_panel" style={{ width: '450px' }} onHide={onChange} className="op-sprint-list">
-            <div className="board-list">
+        <span className="link margin-r-8" title="Click to choose list of sprints" onClick={showOP}>Choose sprint</span>
+        <OverlayPanel ref={op} showCloseIcon id="overlay_panel" style={{ width: '450px' }} onHide={updateReport} className="op-sprint-list">
+            {!hasBoards && <div className="pad-22 no-boards-message">
+                <span className="fa fa-exclamation-triangle warn" /> No agile boards selected. Click <span className="fa fa-cogs" /> icon to choose one or more agile boards.
+            </div>}
+            {hasBoards && <div className="board-list">
                 <table>
                     <thead>
                         <tr>
@@ -27,17 +42,17 @@ function ChooseBoard({ sprintBoards, selSprints, setValue, onChange }) {
                     <tbody>
                         <tr>
                             {sprintBoards.map(g => <td key={g.id} className="board-col">
-                                <ChooseSprintRange board={g} selSprints={selSprints} setValue={setValue} disabled={!selSprints[g.id]?.selected} />
+                                <ChooseSprintRange board={g} selSprints={selSprints} setValue={updateSprints} disabled={!selSprints[g.id]?.selected} />
                             </td>)}
                         </tr>
                     </tbody>
                 </table>
-            </div>
+            </div>}
         </OverlayPanel>
     </>);
 }
 
-export default connect(ChooseBoard,
+export default connect(React.memo(ChooseBoard),
     ({ selSprints, sprintBoards }) =>
         ({ selSprints, sprintBoards }),
     { setValue });

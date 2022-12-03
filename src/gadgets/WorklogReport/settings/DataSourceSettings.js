@@ -1,7 +1,7 @@
 import React from 'react';
 import RapidViewList from '../../../components/RapidViewList';
 import { DatePicker } from '../../../controls';
-import { renderCheckbox } from './actions';
+import { renderRadioButton } from './actions';
 
 function DataSourceSettings({ setValue, setBoards, state }) {
     const { userListMode, timeframeType, dateRange, sprintBoards } = state;
@@ -12,13 +12,13 @@ function DataSourceSettings({ setValue, setBoards, state }) {
             <div className="col-md-9 col-form-label">
                 <div className="form-check">
                     <label className="form-check-label">
-                        {renderCheckbox('userListMode', '1', userListMode, setValue)}
+                        {renderRadioButton('userListMode', '1', userListMode, setValue)}
                         Show all users who logged work
                     </label>
                 </div>
                 <div className="form-check">
                     <label className="form-check-label">
-                        {renderCheckbox('userListMode', '2', userListMode, setValue)}
+                        {renderRadioButton('userListMode', '2', userListMode, setValue)}
                         Show only selected users
                     </label>
                 </div>
@@ -29,13 +29,13 @@ function DataSourceSettings({ setValue, setBoards, state }) {
             <div className="col-md-9 col-form-label">
                 <div className="form-check">
                     <label className="form-check-label">
-                        {renderCheckbox('timeframeType', '1', timeframeType, setValue)}
+                        {renderRadioButton('timeframeType', '1', timeframeType, setValue)}
                         Based on specific sprint
                     </label>
                 </div>
                 <div className="form-check">
                     <label className="form-check-label">
-                        {renderCheckbox('timeframeType', '2', timeframeType, setValue)}
+                        {renderRadioButton('timeframeType', '2', timeframeType, setValue)}
                         Based on selected time range
                     </label>
                 </div>
@@ -71,7 +71,7 @@ function DateRangeComponent({ setValue, dateRange }) {
 
 const SprintListComponent = React.memo(function ({ setBoards, sprintBoards }) {
     return (<div className="form-group row">
-        <label className="col-md-3 col-form-label">Choose Agile board</label>
+        <label className="col-md-3 col-form-label">Choose Agile board *</label>
         <div className="col-md-9 col-form-label">
             <RapidViewList value={sprintBoards} onChange={setBoards} />
         </div>
@@ -85,18 +85,30 @@ function ReportGrouping({ setValue, state: { userListMode, timeframeType, report
 
     return (<>
         <div className="form-group row">
-            <label className="col-md-3 col-form-label">User grouping</label>
+            <label className="col-md-3 col-form-label">Worklogs grouping</label>
             <div className="col-md-9 col-form-label">
                 <div className="form-check">
                     <label className="form-check-label">
-                        {renderCheckbox('reportUserGrp', '1', reportUserGrp, setValue)}
-                        Do not group the users
+                        {renderRadioButton('reportUserGrp', '1', reportUserGrp, setValue)}
+                        Do not group worklogs
                     </label>
                 </div>
                 <div className="form-check">
                     <label className="form-check-label">
-                        {renderCheckbox('reportUserGrp', '2', reportUserGrp, setValue)}
-                        Group the users based on project
+                        {renderRadioButton('reportUserGrp', '2', reportUserGrp, setValue)}
+                        Group worklogs based on project
+                    </label>
+                </div>
+                <div className="form-check">
+                    <label className="form-check-label">
+                        {renderRadioButton('reportUserGrp', '3', reportUserGrp, setValue)}
+                        Group worklogs based on Issue type
+                    </label>
+                </div>
+                <div className="form-check">
+                    <label className="form-check-label">
+                        {renderRadioButton('reportUserGrp', '4', reportUserGrp, setValue)}
+                        Group by Epic (JIRA Epic field name must be selected in general settings)
                     </label>
                 </div>
             </div>

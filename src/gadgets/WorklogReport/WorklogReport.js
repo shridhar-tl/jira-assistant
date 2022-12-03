@@ -17,16 +17,8 @@ import WorklogReportInfo from './WorklogReportInfo';
 class WorklogReport extends BaseGadget {
     constructor(props) {
         super(props, 'Worklog Report', 'fa-clock-o');
-        inject(this, 'SessionService', 'ConfigService', 'UserGroupService');
+        inject(this, 'ConfigService');
         this.selSprints = props.selSprints;
-    }
-
-    async componentDidMount() {
-        const settings = getSettingsObj(this.$session.pageSettings.reports_WorklogReport);
-        const addl = getSprintsList(settings);
-
-        const userGroups = await this.$usergroup.getUserGroups();
-        this.props.setStateValue({ userGroups, ...settings, ...addl });
     }
 
     UNSAFE_componentWillReceiveProps(changes) {
@@ -48,7 +40,7 @@ class WorklogReport extends BaseGadget {
         this.props.fetchData();
     };
     inputChanged = () => {
-        if (this.selSprints !== this.props.selSprints && this.dateRange !== this.props.dateRange) {
+        if (this.selSprints !== this.props.selSprints || this.dateRange !== this.props.dateRange) {
             this.saveSettings();
             this.refreshData();
         }
@@ -87,4 +79,14 @@ export default withProvider(WorklogReport,
     ({
         selSprints, dateRange, loadingData: isLoading, reportLoaded, showWorklogPopup, worklogItem, userGroups
     }) => ({ selSprints, dateRange, isLoading, reportLoaded, showWorklogPopup, worklogItem, userGroups }),
-    { fetchData, setStateValue, worklogAdded, hideWorklog, getSettingsToStore, groupsChanged });
+    { fetchData, setStateValue, worklogAdded, hideWorklog, getSettingsToStore, groupsChanged },
+    null,
+    async () => {
+        const { $session, $usergroup } = inject('SessionService', 'ConfigService', 'UserGroupService');
+
+        const settings = getSettingsObj($session.pageSettings.reports_WorklogReport);
+        const addl = getSprintsList(settings);
+
+        const userGroups = await $usergroup.getUserGroups();
+        return { userGroups, ...settings, ...addl };
+    });

@@ -18,7 +18,7 @@ function Report({ selSprints, isLoading, useSprint, hasData }) {
         const boards = Object.keys(selSprints).filter(k => selSprints[k]?.selected);
 
         if (boards.length > 1) {
-            reportData = (<TabView className="no-padding" renderActiveOnly={false}>
+            reportData = (<TabView className="no-padding multi-view" renderActiveOnly={false}>
                 {boards.map(boardId => <TabPanel header={selSprints[boardId].name} contentClassName="no-padding">
                     <ReportData boardId={boardId} />
                 </TabPanel>)}
@@ -38,17 +38,20 @@ export default connect(Report, ({ reportLoaded: hasData, timeframeType, selSprin
 }));
 
 
-const ReportData = connect(function ({ boardId, hasData }) {
+const ReportData = connect(function ({ boardId, hasData, showCostReport }) {
     if (!hasData) { return null; }
 
     return (<TabView className="no-padding" renderActiveOnly={false}>
         <TabPanel header="Grouped - [User daywise]" contentClassName="no-padding">
             <GroupedDataGrid exportSheetName="Grouped - [User daywise]" boardId={boardId} />
         </TabPanel>
+        {showCostReport && <TabPanel header="Cost Report" contentClassName="no-padding">
+            <GroupedDataGrid exportSheetName="Cost Report" boardId={boardId} costView={true} />
+        </TabPanel>}
     </TabView>);
 }, (state, { boardId }) => {
-    const { timeframeType,
+    const { timeframeType, fields: { showCostReport },
         [timeframeType === '1' ? `sprintsList_${boardId}` : 'reportLoaded']: hasData
     } = state;
-    return { hasData: !!hasData };
+    return { hasData: !!hasData, showCostReport: showCostReport && timeframeType !== '1' };
 });

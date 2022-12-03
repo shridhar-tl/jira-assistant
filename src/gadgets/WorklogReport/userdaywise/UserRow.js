@@ -32,8 +32,8 @@ function UserRow({
             </td>
 
             {isSprint && sprintsList.map(({ id }) => <UserDatesDisplay key={id} sprintId={id} uid={uid}
-                boardId={boardId} convertSecs={convertSecs} groupIndex={groupIndex} />)}
-            {!isSprint && <UserDatesDisplay uid={uid} convertSecs={convertSecs} groupIndex={groupIndex} />}
+                boardId={boardId} convertSecs={convertSecs} groupIndex={groupIndex} costView={costView} />)}
+            {!isSprint && <UserDatesDisplay uid={uid} convertSecs={convertSecs} groupIndex={groupIndex} costView={costView} />}
 
             {isSprint && costView && <td>{u.allSprintTotalCost}</td>}
             {isSprint && !costView && <td>{convertSecs(u.allSprintTotalHours)}</td>}

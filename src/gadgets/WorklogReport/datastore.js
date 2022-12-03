@@ -2,8 +2,8 @@ import moment from "moment";
 import createStore from "../../common/store";
 
 const initialData = {
-    userListMode: '1', // display users based on worklog or not
-    timeframeType: '1', // Sprint wise or daterange wise
+    userListMode: '2', // display users based on worklog or not
+    timeframeType: '2', // Sprint wise or daterange wise
     userGroups: [], // user groups for date range
     reportUserGrp: '1', // 1=no grouping, 2=group users by project
     dateRange: {}, // user selected date range
@@ -11,10 +11,10 @@ const initialData = {
     breakupMode: '1', // combine individual worklogs or not
     userDisplayFormat: '1', // User details display format
     fields: {}, // additional fields to be displayed in report
-    costView: false, // Show cost view or not
     timeZone: '1',
 
     // Filter settings
+    jql: '',
     logFilterType: '1', // 1=Show all worklogs, 2=Logged before, 3=Logged after
     filterThrsType: '1', // 1=x days from log date,2=x days from last date,3=use date selected
     filterDays: 5, // number of days to use
@@ -61,44 +61,61 @@ export function getSettingsObj(data) {
         return {};
     }
 
-    const { userListMode,
+    const {
+        userListMode,
         timeframeType,
+        reportUserGrp,
         dateRange,
         logFormat,
         breakupMode,
         timeZone,
         userDisplayFormat,
+        fields,
+        jql,
         logFilterType,
         filterThrsType,
         filterDays,
         filterDate,
-        jql,
+        wlDateSelection,
         sprintBoards,
         sprintList,
         selSprints = {}
     } = data;
 
-    const toStore = {
+    const toStore = removeUndefined({
         userListMode,
         timeframeType,
+        reportUserGrp,
         dateRange,
         logFormat,
         breakupMode,
         timeZone,
         userDisplayFormat,
+        fields,
+        jql,
         logFilterType,
         filterThrsType,
         filterDays,
         filterDate,
-        jql,
+        wlDateSelection,
         sprintBoards,
         sprintList,
         selSprints
-    };
+    });
 
-    if (moment(filterDate).isSame(new Date(), 'day')) {
+    if (filterDate && moment(filterDate).isSame(new Date(), 'day')) {
         delete toStore.filterDate;
     }
 
     return toStore;
+}
+
+function removeUndefined(obj) {
+    Object.keys(obj).forEach(k => {
+        if (typeof obj[k] === 'undefined') {
+            delete obj[k];
+        }
+    });
+
+    return obj;
 }

@@ -33,7 +33,7 @@ export function generateSprintReport(setState, getState) {
                     const fromDate = moment(startDate), toDate = moment(completeDate);
 
                     const issuesList = await pullIssuesFromSprint(id);
-                    const { userwiseLog, userwiseLogArr } = getUserWiseWorklog(issuesList, fromDate, toDate, name?.toLowerCase());
+                    const { userwiseLog, userwiseLogArr } = getUserWiseWorklog(issuesList, fromDate, toDate, name?.toLowerCase(), getState());
 
                     const settings = {
                         fromDate: fromDate.toDate(),

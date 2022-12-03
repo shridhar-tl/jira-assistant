@@ -37,7 +37,7 @@ function getWorklogFilter(fromDate, toDate, state) {
 
 export function getUserWiseWorklog(issues, fromDate, toDate, currentUser, state) {
     const svc = inject('UserUtilsService', 'SessionService');
-    const epicNameField = svc.$session.CurrentUser.epicNameField;
+    const epicNameField = svc.$session.CurrentUser.epicNameField?.id;
     const options = { epicNameField, ...svc };
     const isWorklogInRange = getWorklogFilter(fromDate, toDate, state);
     const report = {};
@@ -112,6 +112,7 @@ export function generateUserDayWiseData(data, groups, pageSettings) {
             grandTotalCost: 0,
             users: null
         };
+        if (grp.isDummy) { grpInfo.isDummy = grp.isDummy; }
 
         grpInfo.users = grp.users.map(usr => {
             let curTimeZone = null;

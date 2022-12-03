@@ -1,7 +1,7 @@
 import React from 'react';
 import { InputNumber } from 'primereact/inputnumber';
 import { DatePicker } from '../../../controls';
-import { renderCheckbox } from './actions';
+import { renderRadioButton } from './actions';
 
 function LogFilterSettings({ setValue, state: { logFilterType, filterThrsType, filterDays, filterDate, wlDateSelection } }) {
     return (<div className="settings-group">
@@ -10,19 +10,19 @@ function LogFilterSettings({ setValue, state: { logFilterType, filterThrsType, f
             <div className="col-md-9 col-form-label">
                 <div className="form-check">
                     <label className="form-check-label">
-                        {renderCheckbox('logFilterType', '1', logFilterType, setValue)}
+                        {renderRadioButton('logFilterType', '1', logFilterType, setValue)}
                         Show all worklogs
                     </label>
                 </div>
                 <div className="form-check">
                     <label className="form-check-label">
-                        {renderCheckbox('logFilterType', '2', logFilterType, setValue)}
+                        {renderRadioButton('logFilterType', '2', logFilterType, setValue)}
                         Show worklogs logged before the threshold
                     </label>
                 </div>
                 <div className="form-check">
                     <label className="form-check-label">
-                        {renderCheckbox('logFilterType', '3', logFilterType, setValue)}
+                        {renderRadioButton('logFilterType', '3', logFilterType, setValue)}
                         Show worklogs logged after the threshold
                     </label>
                 </div>
@@ -33,13 +33,13 @@ function LogFilterSettings({ setValue, state: { logFilterType, filterThrsType, f
             <div className="col-md-9 col-form-label">
                 <div className="form-check">
                     <label className="form-check-label">
-                        {renderCheckbox('wlDateSelection', '1', wlDateSelection, setValue)}
+                        {renderRadioButton('wlDateSelection', '1', wlDateSelection, setValue)}
                         Use updated date of worklog if its modified after creation
                     </label>
                 </div>
                 <div className="form-check">
                     <label className="form-check-label">
-                        {renderCheckbox('wlDateSelection', '2', wlDateSelection, setValue)}
+                        {renderRadioButton('wlDateSelection', '2', wlDateSelection, setValue)}
                         Always use worklog creation date only
                     </label>
                 </div>
@@ -50,19 +50,19 @@ function LogFilterSettings({ setValue, state: { logFilterType, filterThrsType, f
             <div className="col-md-9 col-form-label">
                 <div className="form-check">
                     <label className="form-check-label">
-                        {renderCheckbox('filterThrsType', '1', filterThrsType, setValue)}
+                        {renderRadioButton('filterThrsType', '1', filterThrsType, setValue)}
                         X number of days from the log date
                     </label>
                 </div>
                 <div className="form-check">
                     <label className="form-check-label">
-                        {renderCheckbox('filterThrsType', '2', filterThrsType, setValue)}
+                        {renderRadioButton('filterThrsType', '2', filterThrsType, setValue)}
                         X number of days from the last date
                     </label>
                 </div>
                 <div className="form-check">
                     <label className="form-check-label">
-                        {renderCheckbox('filterThrsType', '3', filterThrsType, setValue)}
+                        {renderRadioButton('filterThrsType', '3', filterThrsType, setValue)}
                         On a specific date selected
                     </label>
                 </div>
