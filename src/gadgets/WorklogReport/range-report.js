@@ -25,9 +25,8 @@ export function generateRangeReport(setState, getState) {
 
 async function generateWorklogReportForDateRange(fromDate, toDate, userGroup, state) {
     const userList = getUniqueUsersFromGroup(userGroup);
-    const issues = await getIssuesWithWorklogFor(fromDate, toDate, userList, state);
-
-    const { $session: { CurrentUser: { name } } } = inject('JiraService', 'SessionService');
+    const { $session: { CurrentUser: { name, epicNameField } } } = inject('JiraService', 'SessionService');
+    const issues = await getIssuesWithWorklogFor(fromDate, toDate, userList, state, epicNameField?.id);
 
     const { userwiseLog } = getUserWiseWorklog(issues, fromDate, toDate, name?.toLowerCase(), state);
     const settings = {
@@ -47,10 +46,10 @@ function getUniqueUsersFromGroup(userGroup) {
     return userList.map(u => getUserName(u, true)).distinct();
 }
 
-async function getIssuesWithWorklogFor(fromDate, toDate, userList, state) {
+async function getIssuesWithWorklogFor(fromDate, toDate, userList, state, epicNameField) {
     const svc = inject('JiraService');
 
-    const { fieldsToFetch, additionalJQL } = getFieldsToFetch(state); // ToDo: pass state appropriately
+    const { fieldsToFetch, additionalJQL } = getFieldsToFetch(state, epicNameField);
 
     const jql = `worklogAuthor in ("${userList.join('","')}") and worklogDate >= '${fromDate.clone().add(-1, 'days').format("YYYY-MM-DD")}' and worklogDate < '${toDate.clone().add(1, 'days').format("YYYY-MM-DD")}'${additionalJQL}`;
 

@@ -22,7 +22,7 @@ function GroupRow({
             </tr>}
 
             {!hidden && grp.users.map((u, i) => <UserRow key={i} groupIndex={index} index={i} colSpan={colSpan} user={u}
-                addWorklog={addWorklog} timeExportFormat={timeExportFormat} boardId={boardId}
+                addWorklog={addWorklog} timeExportFormat={timeExportFormat} boardId={boardId} costView={costView}
             />)}
 
             <tr className="grouped-row right auto-wrap" onClick={hidden ? toggleDisplay : null}>
@@ -34,8 +34,8 @@ function GroupRow({
                     {!hidden && <div>{grp.name} <i className="fa fa-arrow-right" /> Total <i className="fa fa-arrow-right" /></div>}
                 </td>
                 {isSprint && sprintsList.map(({ id }) => <DayWiseCells key={id} sprintId={id} boardId={boardId}
-                    convertSecs={convertSecs} timeExportFormat={timeExportFormat} />)}
-                {!isSprint && <DayWiseCells convertSecs={convertSecs} timeExportFormat={timeExportFormat} />}
+                    convertSecs={convertSecs} timeExportFormat={timeExportFormat} costView={costView} groupIndex={index} />)}
+                {!isSprint && <DayWiseCells convertSecs={convertSecs} timeExportFormat={timeExportFormat} costView={costView} groupIndex={index} />}
 
                 {isSprint && costView && <td>{grp.grandTotalCost}</td>}
                 {isSprint && !costView && <td>{convertSecs(grp.grandTotalHours)}</td>}
@@ -80,11 +80,11 @@ const DayWiseCells = connect(function ({
             <td exportType={timeExportFormat}>{convertSecs(grp.grandTotal)}</td>
         </>);
     }
-}, (state, { sprintId }) => {
+}, (state, { sprintId, groupIndex }) => {
     const { costView, timeframeType,
         [timeframeType === '1' ? `groupReport_${sprintId}` : 'groupReport']:
         { dates, groupedData: group }
     } = state;
 
-    return { costView, dates, group };
+    return { costView, dates, group: group[groupIndex] };
 });

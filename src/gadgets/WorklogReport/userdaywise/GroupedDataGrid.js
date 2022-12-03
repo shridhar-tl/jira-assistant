@@ -4,7 +4,7 @@ import { connect } from "../datastore";
 import GroupBody from './GroupBody';
 import GroupHead from './GroupHead';
 
-function GroupedDataGrid({ boardId, fields, exportSheetName }) {
+function GroupedDataGrid({ boardId, fields, exportSheetName, costView }) {
     const { showProject, showParentSummary, showIssueType, showEpic, showAssignee, showReporter } = fields || {};
     const addlColCount = 1
         + (showProject ? 1 : 0)
@@ -17,7 +17,7 @@ function GroupedDataGrid({ boardId, fields, exportSheetName }) {
     return (
         <ScrollableTable exportSheetName={exportSheetName}>
             <GroupHead addlColCount={addlColCount} boardId={boardId} />
-            <GroupBody addlColCount={addlColCount} boardId={boardId} />
+            <GroupBody addlColCount={addlColCount} boardId={boardId} costView={costView} />
         </ScrollableTable>
     );
 }

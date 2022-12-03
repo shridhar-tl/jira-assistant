@@ -38,17 +38,20 @@ export default connect(Report, ({ reportLoaded: hasData, timeframeType, selSprin
 }));
 
 
-const ReportData = connect(function ({ boardId, hasData }) {
+const ReportData = connect(function ({ boardId, hasData, showCostReport }) {
     if (!hasData) { return null; }
 
     return (<TabView className="no-padding" renderActiveOnly={false}>
         <TabPanel header="Grouped - [User daywise]" contentClassName="no-padding">
             <GroupedDataGrid exportSheetName="Grouped - [User daywise]" boardId={boardId} />
         </TabPanel>
+        {showCostReport && <TabPanel header="Cost Report" contentClassName="no-padding">
+            <GroupedDataGrid exportSheetName="Cost Report" boardId={boardId} costView={true} />
+        </TabPanel>}
     </TabView>);
 }, (state, { boardId }) => {
-    const { timeframeType,
+    const { timeframeType, fields: { showCostReport },
         [timeframeType === '1' ? `sprintsList_${boardId}` : 'reportLoaded']: hasData
     } = state;
-    return { hasData: !!hasData };
+    return { hasData: !!hasData, showCostReport };
 });

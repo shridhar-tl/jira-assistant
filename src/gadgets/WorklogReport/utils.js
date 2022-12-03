@@ -1,10 +1,9 @@
-export function getFieldsToFetch(pageSettings, epicNameField, jql) {
+export function getFieldsToFetch(state, epicNameField) {
     const fieldsToFetch = ["summary", "worklog", "issuetype", "parent", "project", "status", "assignee", "reporter"];
 
-    // ToDo: Use state appropriately
-    if (pageSettings) {
-        const hideEstimate = pageSettings.hideEstimate;
-        let additionalJQL = (jql || '').trim();
+    if (state) {
+        const hideEstimate = state.fields.hideEstimate;
+        let additionalJQL = state.jql?.trim() || '';
         if (additionalJQL) {
             additionalJQL = ` AND (${additionalJQL})`;
         }

@@ -35,6 +35,13 @@ class Settings extends BaseDialog {
         this.updateState(modifiedSettings);
     };
 
+    setFieldValue = (checked, field) => {
+        this.setValue('fields', {
+            ...this.state.allSettings.fields,
+            [field]: checked
+        });
+    };
+
     setBoards = (boards) => {
         const { allSettings: { sprintList }, modifiedSettings } = this.state;
 
@@ -73,7 +80,7 @@ class Settings extends BaseDialog {
     }
 
     render() {
-        const { setValue, setBoards } = this;
+        const { setValue, setFieldValue, setBoards } = this;
         const { allSettings } = this.state;
 
         return super.renderBase(
@@ -85,7 +92,7 @@ class Settings extends BaseDialog {
                     <FormattingSettings state={allSettings} setValue={setValue} />
                 </TabPanel>
                 <TabPanel header="Fields list" leftIcon="fa fa-cog" contentClassName="pad-22">
-                    <FieldsListSettings state={allSettings} setValue={setValue} />
+                    <FieldsListSettings fields={allSettings.fields} setFieldValue={setFieldValue} />
                 </TabPanel>
                 <TabPanel header="Log filter" leftIcon="fa fa-filter" contentClassName="pad-22">
                     <LogFilterSettings state={allSettings} setValue={setValue} />
