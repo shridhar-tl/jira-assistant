@@ -2,7 +2,7 @@ import moment from 'moment';
 import { getUserName } from '../../common/utils';
 import { inject } from "../../services/injector-service";
 import { generateUserDayWiseData, getUserWiseWorklog } from './userdaywise/utils_group';
-import { getFieldsToFetch } from './utils';
+import { generateFlatWorklogData, getFieldsToFetch } from './utils';
 
 export function generateSprintReport(setState, getState) {
     return async function () {
@@ -28,6 +28,8 @@ export function generateSprintReport(setState, getState) {
 
                 const totalUsersList = [];
                 const usersIndex = {};
+                const flatWorklogs_board = [];
+                newState[`flatWorklogs_${boardId}`] = flatWorklogs_board;
 
                 for (const sprint of sprintsList) {
                     const { id, startDate, endDate, completeDate = endDate } = sprint;
@@ -45,7 +47,8 @@ export function generateSprintReport(setState, getState) {
                         toDate: toDate.toDate()
                     };
 
-                    const groupReport = generateSprintGroupReport(sprint, userwiseLog, settings, curState);
+                    const { groupReport, flatWorklogs } = generateSprintGroupReport(sprint, userwiseLog, settings, curState);
+                    flatWorklogs_board.addRange(flatWorklogs);
 
                     //newState[`rawData_${id}`] = issuesList;
                     //newState[`userwiseLog_${id}`] = userwiseLog;
@@ -183,9 +186,11 @@ async function pullIssuesFromSprint(sprintId, state) {
 
 function generateSprintGroupReport(sprint, data, settings, { userListMode, userGroups }) {
     const groups = userListMode === '2' ? userGroups : generateGroupForSprint(sprint, data, settings);
-    const groupedData = generateUserDayWiseData(data, groups, settings);
 
-    return groupedData;
+    const groupReport = generateUserDayWiseData(data, groups, settings);
+    const flatWorklogs = generateFlatWorklogData(data, groups, sprint.name);
+
+    return { groupReport, flatWorklogs };
 }
 
 function generateGroupForSprint(sprint, data) {

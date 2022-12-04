@@ -3,6 +3,7 @@ import { TabPanel, TabView } from 'primereact/tabview';
 import GroupedDataGrid from './userdaywise/GroupedDataGrid';
 import { connect } from './datastore';
 import './WorklogGadget.scss';
+import FlatGroupableWorklog from './FlatGroupableWorklog';
 
 const loader = (<div className="pad-15">Loading... please wait while the report is being loaded.
     It may take few seconds / minute based on the range/filters you had selected.</div>);
@@ -48,6 +49,9 @@ const ReportData = connect(function ({ boardId, hasData, showCostReport }) {
         {showCostReport && <TabPanel header="Cost Report" contentClassName="no-padding">
             <GroupedDataGrid exportSheetName="Cost Report" boardId={boardId} costView={true} />
         </TabPanel>}
+        <TabPanel header="Flat (Groupable)" contentClassName="no-padding">
+            <FlatGroupableWorklog exportSheetName="Flat (Groupable)" boardId={boardId} />
+        </TabPanel>
     </TabView>);
 }, (state, { boardId }) => {
     const { userListMode, timeframeType, fields: { showCostReport },
