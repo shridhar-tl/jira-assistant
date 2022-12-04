@@ -45,7 +45,7 @@ export function generateSprintReport(setState, getState) {
                         toDate: toDate.toDate()
                     };
 
-                    const groupReport = generateSprintGroupReport(sprint, userwiseLog, settings);
+                    const groupReport = generateSprintGroupReport(sprint, userwiseLog, settings, curState);
 
                     //newState[`rawData_${id}`] = issuesList;
                     //newState[`userwiseLog_${id}`] = userwiseLog;
@@ -62,14 +62,7 @@ export function generateSprintReport(setState, getState) {
                     });
                 }
 
-                const sprints = getCollectiveSprints(sprintsList, newState);
-                const { grandTotalHours, grandTotalCost, users } = getCollectiveUsers(totalUsersList, sprints, newState);
-                newState[`userGroup_${boardId}`] = [
-                    {
-                        name: 'Sprint', users,
-                        grandTotalHours, grandTotalCost, sprints
-                    }
-                ];
+                newState[`userGroup_${boardId}`] = formUserGroupToDisplay(sprintsList, newState, totalUsersList, curState);
             }
 
             newState.reportLoaded = true;
@@ -89,6 +82,23 @@ function getCollectiveSprints(sprintsList, newState) {
 
         return { id, name, days: dates.length };
     });
+}
+
+function formUserGroupToDisplay(sprintsList, newState, totalUsersList, { userListMode, userGroups }) {
+    const sprints = getCollectiveSprints(sprintsList, newState);
+
+    function mapGroup(name, totalUsers) {
+        const { grandTotalHours, grandTotalCost, users, usersMap } =
+            getCollectiveUsers(totalUsers, sprints, newState);
+
+        return { name, users, usersMap, grandTotalHours, grandTotalCost, sprints };
+    }
+
+    if (userListMode === '2') {
+        return userGroups.map(grp => mapGroup(grp.name, grp.users));
+    } else {
+        return [mapGroup('Sprint', totalUsersList)];
+    }
 }
 
 function getCollectiveUsers(totalUsersList, sprints, newState) {
@@ -171,8 +181,8 @@ async function pullIssuesFromSprint(sprintId, state) {
     return issues;
 }
 
-function generateSprintGroupReport(sprint, data, settings) {
-    const groups = generateGroupForSprint(sprint, data, settings);
+function generateSprintGroupReport(sprint, data, settings, { userListMode, userGroups }) {
+    const groups = userListMode === '2' ? userGroups : generateGroupForSprint(sprint, data, settings);
     const groupedData = generateUserDayWiseData(data, groups, settings);
 
     return groupedData;

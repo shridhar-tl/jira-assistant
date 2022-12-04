@@ -1,6 +1,6 @@
 export default class MessageService {
     constructor() {
-        this.handler = (msgObj) => { console.log(msgObj); };
+        this.handler = () => { /* Do nothing */ };
     }
 
     onNewMessage(callback) {

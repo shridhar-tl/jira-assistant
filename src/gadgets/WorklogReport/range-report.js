@@ -31,18 +31,20 @@ async function generateWorklogReportForDateRange(fromDate, toDate, state) {
     }
     const { userListMode, userGroups: savedGroups, reportUserGrp } = state;
     const useGroups = userListMode !== '1';
-    if (reportUserGrp !== '1') {
+    if (!useGroups && reportUserGrp !== '1') {
         const { groupByFunc, getGroupName } = getGroupingFunction(reportUserGrp, epicNameField?.id);
 
         return issues.groupBy(groupByFunc)
-            .reduce((obj, { values: issues }) => {
+            .map(({ values }) => ({ issues: values, grpName: getGroupName(issues) })) // Create object with group names
+            .sortBy(({ grpName }) => grpName) // Sort with group names
+            .reduce((obj, { grpName, issues }) => {
                 const { months, dates, groupedData: g } = formGroupedWorklogs(issues, fromDate, toDate, name?.toLowerCase(), state, useGroups && savedGroups);
                 obj.months = months;
                 obj.dates = dates;
 
                 // Add the item in the grouplist to our array of groups
                 const [grp] = g;
-                grp.name = getGroupName(issues);
+                grp.name = grpName;
                 delete grp.isDummy;
                 const { groupedData } = obj;
                 groupedData.push(grp);

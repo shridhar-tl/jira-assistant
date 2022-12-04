@@ -1,12 +1,12 @@
 import React, { useState, useCallback } from 'react';
 import { getUserName } from '../../../common/utils';
 import { connect } from '../datastore';
-import { addWorklog } from '../actions';
+import { addWorklog, convertSecs } from '../actions';
 import TicketRow from './TicketRow';
 
 function UserRow({
     isSprint, groupIndex, boardId, user, user: u, colSpan, userDisplayFormat, sprintsList, costView,
-    convertSecs, addWorklog
+    timeExportFormat, convertSecs, addWorklog
 }) {
     const [expanded, setExpanded] = useState(false);
     const toggleDisplay = useCallback(() => setExpanded(e => !e), [setExpanded]);
@@ -32,14 +32,17 @@ function UserRow({
             </td>
 
             {isSprint && sprintsList.map(({ id }) => <UserDatesDisplay key={id} sprintId={id} uid={uid}
-                boardId={boardId} convertSecs={convertSecs} groupIndex={groupIndex} costView={costView} />)}
-            {!isSprint && <UserDatesDisplay uid={uid} convertSecs={convertSecs} groupIndex={groupIndex} costView={costView} />}
+                boardId={boardId} convertSecs={convertSecs} groupIndex={groupIndex} costView={costView}
+                timeExportFormat={timeExportFormat} addNewWorklog={addNewWorklog} />)}
+            {!isSprint && <UserDatesDisplay uid={uid} convertSecs={convertSecs} groupIndex={groupIndex}
+                costView={costView} timeExportFormat={timeExportFormat} addNewWorklog={addNewWorklog} />}
 
-            {isSprint && costView && <td>{u.allSprintTotalCost}</td>}
-            {isSprint && !costView && <td>{convertSecs(u.allSprintTotalHours)}</td>}
+            {isSprint && costView && <td exportType="float">{u.allSprintTotalCost}</td>}
+            {isSprint && !costView && <td exportType={timeExportFormat}>{convertSecs(u.allSprintTotalHours)}</td>}
         </tr>
 
-        {expanded && <UserTickets isSprint={isSprint} groupIndex={groupIndex} boardId={boardId} uid={uid} user={u} sprintsList={sprintsList} addNewWorklog={addNewWorklog} />}
+        {expanded && <UserTickets isSprint={isSprint} groupIndex={groupIndex} boardId={boardId} uid={uid} user={u}
+            sprintsList={sprintsList} addNewWorklog={addNewWorklog} convertSecs={convertSecs} timeExportFormat={timeExportFormat} />}
     </>);
 }
 
@@ -55,11 +58,7 @@ export default connect(UserRow,
 
         return result;
     },
-    { addWorklog },
-    [
-        'UtilsService',
-        ({ $utils: { convertSecs } }) => ({ convertSecs })
-    ]
+    { addWorklog, convertSecs }
 );
 
 
@@ -68,8 +67,9 @@ const UserDatesDisplay = connect(function ({
     timeExportFormat, addNewWorklog, convertSecs
 }) {
     if (costView) {
-        return (<>{dates.map((day, i) => <td key={i} className={`${u.logClass[day.prop]} day-wl-block`} data-test-id={day.prop}>{u.totalCost[day.prop]}</td>)}
-            <td data-test-id="total">{u.grandTotalCost}</td></>);
+        return (<>{dates.map((day, i) => <td key={i} className={`${u.logClass[day.prop]} day-wl-block`}
+            data-test-id={day.prop} exportType="float">{u.totalCost[day.prop]}</td>)}
+            <td data-test-id="total" exportType="float">{u.grandTotalCost}</td></>);
     } else {
         return (<>{dates.map((day, i) => <td key={i} className={`${u.logClass[day.prop]} day-wl-block`} exportType={timeExportFormat} data-test-id={day.prop}>
             {u.isCurrentUser && <span className="fa fa-clock-o add-wl" title="Click to add worklog" onClick={() => addNewWorklog(null, day)} />}
@@ -88,7 +88,7 @@ const UserDatesDisplay = connect(function ({
     };
 });
 
-function UserTickets({ user, isSprint, groupIndex, sprintsList, uid, addNewWorklog }) {
+function UserTickets({ user, isSprint, groupIndex, sprintsList, uid, timeExportFormat, addNewWorklog, convertSecs }) {
     return user.tickets.map((t, i) => <TicketRow key={i} isSprint={isSprint} groupIndex={groupIndex} issue={t} user={user} uid={uid}
-        addNewWorklog={addNewWorklog} sprintsList={sprintsList} />);
+        addNewWorklog={addNewWorklog} sprintsList={sprintsList} timeExportFormat={timeExportFormat} convertSecs={convertSecs} />);
 }

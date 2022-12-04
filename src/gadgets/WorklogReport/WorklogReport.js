@@ -65,7 +65,7 @@ class WorklogReport extends BaseGadget {
         return super.renderBase(
             <div className="worklog-report-container">
                 {showSettings && <Settings onHide={this.settingsChanged} />}
-                {showGroupsPopup && <GroupEditor groups={userGroups} onHide={this.groupsChanged} />}
+                {showGroupsPopup && <GroupEditor groups={userGroups} onHide={this.hideGroups} />}
                 {!reportLoaded && !isLoading && <WorklogReportInfo />}
                 {reportLoaded && <Report isLoading={isLoading} />}
                 {showWorklogPopup && <AddWorklog worklog={worklogItem} onDone={worklogAdded}

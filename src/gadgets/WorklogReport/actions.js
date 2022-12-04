@@ -1,3 +1,5 @@
+import moment from 'moment';
+import { inject } from "../../services/injector-service";
 import { getSettingsObj } from "./datastore";
 import { generateRangeReport } from "./range-report";
 import { generateSprintReport } from "./sprint-report";
@@ -23,21 +25,33 @@ export function groupsChanged(setState) {
     };
 }
 
-export function addWorklog() {
-    return function () {
-        //
+export function addWorklog(setState) {
+    const { $session: { CurrentUser: { maxHours } } } = inject('SessionService');
+    const maxSecsPerDay = (maxHours || 8) * 60 * 60;
+
+    return function (user, ticketNo, dateStarted, logged) {
+        let timeSpent = (maxSecsPerDay || 0) - (logged || 0);
+        if (timeSpent < 60) {
+            timeSpent = "01:00";
+        }
+
+        if (moment(dateStarted).isSame(moment(), 'day')) {
+            dateStarted = new Date();
+        }
+
+        setState({ showWorklogPopup: true, worklogItem: { ticketNo, dateStarted, timeSpent } });
     };
 }
 
-export function worklogAdded() {
+export function worklogAdded(setState) {
     return function () {
-        //
+        setState({ showWorklogPopup: false, worklogItem: null });
     };
 }
 
-export function hideWorklog() {
+export function hideWorklog(setState) {
     return function () {
-        //
+        setState({ showWorklogPopup: false, worklogItem: null });
     };
 }
 
@@ -64,5 +78,17 @@ export function fetchData(setState, getState) {
         } else {
             await generateRangeReport(setState, getState)();
         }
+    };
+}
+
+export function convertSecs(_, getState) {
+    const { $utils: { convertSecs: cs } } = inject('UtilsService');
+
+    return (val) => {
+        if (!val && val !== 0) {
+            return val;
+        }
+
+        return cs(val, { format: getState('logFormat') === "1" });
     };
 }

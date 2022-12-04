@@ -3,10 +3,10 @@ import { connect } from '../datastore';
 
 function TicketRow({
     isSprint, groupIndex, issue: t, user: u, uid, sprintsList, costView,
-    convertSecs, formatTime, addNewWorklog,
+    timeExportFormat, convertSecs, formatTime, addNewWorklog,
     fields: {
-        hideEstimate, showProject, showParentSummary, showIssueType, showEpic,
-        showAssignee, showReporter
+        hideEstimate, showProject, showParentSummary, showIssueType,
+        showEpic, showAssignee, showReporter
     }
 }) {
     return (
@@ -21,9 +21,9 @@ function TicketRow({
             {!!showReporter && <td>{t.reporter}</td>}
 
             {isSprint && sprintsList.map(({ id }) => <IssueDays key={id} convertSecs={convertSecs} groupIndex={groupIndex}
-                sprintId={id} uid={uid} formatTime={formatTime} ticketNo={t.ticketNo} isSprint={isSprint}
+                sprintId={id} uid={uid} formatTime={formatTime} ticketNo={t.ticketNo} isSprint={isSprint} timeExportFormat={timeExportFormat}
                 addNewWorklog={addNewWorklog} />)}
-            {!isSprint && <IssueDays convertSecs={convertSecs} groupIndex={groupIndex}
+            {!isSprint && <IssueDays convertSecs={convertSecs} groupIndex={groupIndex} timeExportFormat={timeExportFormat}
                 uid={uid} formatTime={formatTime} ticketNo={t.ticketNo} isSprint={isSprint}
                 addNewWorklog={addNewWorklog} />}
 
@@ -33,17 +33,10 @@ function TicketRow({
     );
 }
 
-export default connect(TicketRow,
-    ({ fields, costView }) => ({ fields, costView }),
-    null,
+export default connect(TicketRow, ({ fields, costView }) => ({ fields, costView }), null,
     [
-        'UtilsService',
         'UserUtilsService',
-        ({
-            $utils: { convertSecs },
-            $userutils: { formatTime }
-        }) =>
-            ({ convertSecs, formatTime })
+        ({ $userutils: { formatTime } }) => ({ formatTime })
     ]
 );
 
@@ -60,10 +53,10 @@ const IssueDays = connect(function ({ costView, dates, timeExportFormat,
 
     if (costView) {
         return (<>
-            {dates.map((day, j) => <td key={j} className="day-wl-block" data-test-id={day.prop}>
+            {dates.map((day, j) => <td key={j} className="day-wl-block" data-test-id={day.prop} exportType="float">
                 <span title={getComments(t.logs[day.prop], costView)}>{getTotalCost(t.logs[day.prop])}</span>
             </td>)}
-            <td data-test-id="total">{t.totalCost}</td>
+            <td data-test-id="total" exportType="float">{t.totalCost}</td>
         </>);
     } else {
         return (<>
@@ -76,7 +69,7 @@ const IssueDays = connect(function ({ costView, dates, timeExportFormat,
         </>);
     }
 }, (state, { isSprint, groupIndex, sprintId, uid, ticketNo }) => {
-    const { costView, breakupMode, timeExportFormat,
+    const { costView, breakupMode,
         [isSprint ? `groupReport_${sprintId}` : 'groupReport']: {
             dates,
             groupedData: {
@@ -89,15 +82,12 @@ const IssueDays = connect(function ({ costView, dates, timeExportFormat,
     } = state;
 
     return {
-        costView, breakupMode, timeExportFormat, dates, user,
+        costView, breakupMode, dates, user,
         ticket: user?.ticketsMap?.[ticketNo] || {}
     };
 });
 
-function IssueInfo({
-    issue: t, showParentSummary, hideEstimate,
-    convertSecs
-}) {
+function IssueInfo({ issue: t, showParentSummary, hideEstimate, convertSecs }) {
     const oe = convertSecs(t.originalestimate);
     const re = convertSecs(t.remainingestimate);
     const logged = convertSecs(t.totalLogged) || 0;
