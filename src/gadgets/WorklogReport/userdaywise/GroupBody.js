@@ -15,7 +15,7 @@ function GroupBody({ boardId, isSprint,
     return (<TBody>
         {groupRows}
 
-        {!isSprint && <tr className="grouped-row right auto-wrap">
+        {groupedData.length > 1 && <tr className="grouped-row right auto-wrap">
             <td colSpan={addlColCount}>Grand Total <i className="fa fa-arrow-right" /></td>
             {isSprint && sprintsList?.map(({ id }) => <GroupTotalCells key={id} sprintId={id} timeExportFormat={timeExportFormat} costView={costView} />)}
             {!isSprint && <GroupTotalCells timeExportFormat={timeExportFormat} costView={costView} />}

@@ -92,3 +92,43 @@ export function convertSecs(_, getState) {
         return cs(val, { format: getState('logFormat') === "1" });
     };
 }
+
+export function flatGridSettingsChanged(setState) {
+    return function (flatTableSettings) { setState({ flatTableSettings }); };
+}
+
+export function getColumnSettings(_, getState) {
+    const formatSecs = convertSecs(_, getState);
+    const { $userutils: { formatDateTime } } = inject('UserUtilsService');
+
+    return function (formatTicket) {
+        const { userListMode, timeframeType } = getState();
+        const includeGroup = userListMode === '2';
+        const includeSprint = timeframeType === '1';
+        const timeFormat = getState('logFormat') === '1' ? 'string' : 'number';
+
+        //displayFormat: null, sortValueFun: null, groupValueFunc: null
+        //, allowSorting: true, allowGrouping: true
+        return [
+            includeGroup && { field: "groupName", displayText: "Group Name", type: "string" },
+            includeSprint && { field: "sprintName", displayText: "Sprint Name", type: "string" },
+            { field: "projectName", displayText: "Project Name", type: "string" },
+            { field: "issueType", displayText: "Issue Type", type: "string" },
+            { field: "epicDisplay", displayText: "Epic", type: "string", format: (text, row) => formatTicket(text, row.epicUrl) },
+            { field: "parent", displayText: "Parent", type: "string", format: (text, row) => formatTicket(text, row.parentUrl) },
+            { field: "ticketNo", displayText: "Ticket No", type: "string", format: (text, row) => formatTicket(text, row.ticketUrl) },
+            { field: "statusName", displayText: "Status", type: "string" },
+            { field: "summary", displayText: "Summary", type: "string" },
+            { field: "logTime", displayText: "Log Date & Time", type: "datetime", format: (val) => formatDateTime(val) },
+            { field: "userDisplay", displayText: "Log user", type: "string" },
+            { field: "assignee", displayText: "Assignee", type: "string" },
+            { field: "reporter", displayText: "Reporter", type: "string" },
+            { field: "timeSpent", displayText: "Hr. Spent", type: timeFormat, format: formatSecs },
+            { field: "originalestimate", displayText: "Ori. Estm.", type: timeFormat, format: formatSecs },
+            { field: "totalLogged", displayText: "Total Worklogs", type: timeFormat, format: formatSecs },
+            { field: "remainingestimate", displayText: "Rem. Estm.", type: timeFormat, format: formatSecs },
+            { field: "estVariance", displayText: "Estm. Variance", type: 'string', format: (value) => (value > 0 ? "+" : "") + formatSecs(value) },
+            { field: "comment", displayText: "Comment" },
+        ].filter(Boolean);
+    };
+}

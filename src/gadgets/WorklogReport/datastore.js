@@ -2,8 +2,8 @@ import moment from "moment";
 import createStore from "../../common/store";
 
 const initialData = {
-    userListMode: '2', // display users based on worklog or not
-    timeframeType: '2', // Sprint wise or daterange wise
+    userListMode: '2', // 1=all logged users, 2=users from group
+    timeframeType: '2', // 1=Sprint wise, 2=daterange wise
     userGroups: [], // user groups for date range
     reportUserGrp: '1', // 1=no grouping, 2=group users by project
     dateRange: {}, // user selected date range
