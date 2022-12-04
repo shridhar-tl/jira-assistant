@@ -80,7 +80,7 @@ export function getUserWiseWorklog(issues, fromDate, toDate, currentUser, state)
             const userData = report[k];
             userData.totalHours = userData.logData.sum((t) => t.totalHours);
             return userData;
-        })
+        }).sortBy(u => u.displayName)
     };
 }
 

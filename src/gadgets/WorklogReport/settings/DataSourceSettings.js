@@ -1,10 +1,9 @@
 import React from 'react';
 import RapidViewList from '../../../components/RapidViewList';
-import { DatePicker } from '../../../controls';
 import { renderRadioButton } from './actions';
 
 function DataSourceSettings({ setValue, setBoards, state }) {
-    const { userListMode, timeframeType, dateRange, sprintBoards } = state;
+    const { userListMode, timeframeType, sprintBoards } = state;
 
     return (<div className="settings-group">
         <div className="form-group row">
@@ -41,33 +40,13 @@ function DataSourceSettings({ setValue, setBoards, state }) {
                 </div>
             </div>
         </div>
-        <TimeFrameComponent timeframeType={timeframeType} dateRange={dateRange} sprintBoards={sprintBoards} setValue={setValue} setBoards={setBoards} />
-        <ReportGrouping state={state} setValue={setValue} />
+        {timeframeType === '1' && <SprintListComponent sprintBoards={sprintBoards} setBoards={setBoards} />}
+        {userListMode === '1' && timeframeType === '2' && <ReportGrouping state={state} setValue={setValue} />}
     </div>
     );
 }
 
 export default DataSourceSettings;
-
-
-function TimeFrameComponent({ timeframeType, dateRange, sprintBoards, setValue, setBoards }) {
-    if (timeframeType === '2') {
-        return (<DateRangeComponent dateRange={dateRange} setValue={setValue} />);
-    } else {
-        return (<SprintListComponent sprintBoards={sprintBoards} setBoards={setBoards} />);
-    }
-}
-
-function DateRangeComponent({ setValue, dateRange }) {
-    return (<div className="form-group row">
-        <label className="col-md-3 col-form-label">Choose date range</label>
-        <div className="col-md-9 col-form-label">
-            <label className="form-check-label">
-                <DatePicker value={dateRange} range={true} onChange={(val) => setValue('dateRange', val)} />
-            </label>
-        </div>
-    </div>);
-}
 
 const SprintListComponent = React.memo(function ({ setBoards, sprintBoards }) {
     return (<div className="form-group row">
@@ -78,11 +57,7 @@ const SprintListComponent = React.memo(function ({ setBoards, sprintBoards }) {
     </div>);
 });
 
-function ReportGrouping({ setValue, state: { userListMode, timeframeType, reportUserGrp, jql } }) {
-    if (userListMode !== '1' || timeframeType !== '2') {
-        return null;
-    }
-
+function ReportGrouping({ setValue, state: { reportUserGrp, jql } }) {
     return (<>
         <div className="form-group row">
             <label className="col-md-3 col-form-label">Worklogs grouping</label>
@@ -108,7 +83,7 @@ function ReportGrouping({ setValue, state: { userListMode, timeframeType, report
                 <div className="form-check">
                     <label className="form-check-label">
                         {renderRadioButton('reportUserGrp', '4', reportUserGrp, setValue)}
-                        Group by Epic (JIRA Epic field name must be selected in general settings)
+                        Group by Epic (JIRA Epic field name must be configured in general settings)
                     </label>
                 </div>
             </div>

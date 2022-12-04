@@ -1,10 +1,11 @@
 import React, { Fragment, useState, useCallback } from 'react';
 import { connect } from '../datastore';
+import { convertSecs } from '../actions';
 import UserRow from './UserRow';
 
 function GroupRow({
     group: grp, index, dates, sprintsList, convertSecs, isSprint, boardId, costView,
-    addWorklog, timeExportFormat, colSpan
+    timeExportFormat, colSpan
 }) {
     const [hidden, setVisibility] = useState(false);
     const toggleDisplay = useCallback(() => setVisibility((h) => !h), [setVisibility]);
@@ -22,7 +23,7 @@ function GroupRow({
             </tr>}
 
             {!hidden && grp.users.map((u, i) => <UserRow key={i} groupIndex={index} index={i} colSpan={colSpan} user={u}
-                addWorklog={addWorklog} timeExportFormat={timeExportFormat} boardId={boardId} costView={costView}
+                timeExportFormat={timeExportFormat} boardId={boardId} costView={costView}
             />)}
 
             {!grp.isDummy && <tr className="grouped-row right auto-wrap" onClick={hidden ? toggleDisplay : null}>
@@ -37,8 +38,8 @@ function GroupRow({
                     convertSecs={convertSecs} timeExportFormat={timeExportFormat} costView={costView} groupIndex={index} />)}
                 {!isSprint && <DayWiseCells convertSecs={convertSecs} timeExportFormat={timeExportFormat} costView={costView} groupIndex={index} />}
 
-                {isSprint && costView && <td>{grp.grandTotalCost}</td>}
-                {isSprint && !costView && <td>{convertSecs(grp.grandTotalHours)}</td>}
+                {isSprint && costView && <td exportType="float">{grp.grandTotalCost}</td>}
+                {isSprint && !costView && <td exportType={timeExportFormat}>{convertSecs(grp.grandTotalHours)}</td>}
             </tr>}
         </>
     );
@@ -48,30 +49,23 @@ export default connect(GroupRow,
     (state, { boardId }) => {
         const isSprint = state.timeframeType === '1';
         if (isSprint) {
-            const { [`sprintsList_${boardId}`]: sprintsList, costView, timeExportFormat } = state;
+            const { [`sprintsList_${boardId}`]: sprintsList, costView } = state;
 
-            return ({ isSprint, sprintsList, costView, timeExportFormat });
+            return ({ isSprint, sprintsList, costView });
         } else {
-            const { groupReport: { dates }, costView, timeExportFormat } = state;
+            const { groupReport: { dates }, costView } = state;
 
-            return ({ isSprint, dates, costView, timeExportFormat });
+            return ({ isSprint, dates, costView });
         }
-    },
-    null,
-    [
-        'UtilsService',
-        ({ $utils: { convertSecs } }) =>
-            ({ convertSecs })
-    ]
-);
+    }, { convertSecs });
 
 const DayWiseCells = connect(function ({
     group: grp, costView, dates, timeExportFormat, convertSecs
 }) {
     if (costView) {
         return (<>
-            {dates.map((day, i) => <td key={i}>{grp.totalCost[day.prop]}</td>)}
-            <td>{grp.grandTotalCost}</td>
+            {dates.map((day, i) => <td key={i} exportType="float">{grp.totalCost[day.prop]}</td>)}
+            <td exportType="float">{grp.grandTotalCost}</td>
         </>);
 
     } else {

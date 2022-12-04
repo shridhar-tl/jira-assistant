@@ -1,6 +1,7 @@
 import React from 'react';
 import { TBody } from '../../../components/ScrollableTable';
 import { connect } from '../datastore';
+import { convertSecs } from '../actions';
 import GroupRow from './GroupRow';
 
 function GroupBody({ boardId, isSprint,
@@ -43,8 +44,8 @@ export default connect(GroupBody,
 const GroupTotalCells = connect(function ({ groupedData, dates, timeExportFormat, costView, convertSecs }) {
     if (costView) {
         return (<>
-            {dates.map((day, i) => <td key={i} exportType={timeExportFormat}>{groupedData.totalCost[day.prop]}</td>)}
-            <td>{groupedData.grandTotalCost}</td>
+            {dates.map((day, i) => <td key={i} exportType="float">{groupedData.totalCost[day.prop]}</td>)}
+            <td exportType="float">{groupedData.grandTotalCost}</td>
         </>);
     } else {
         return (<>
@@ -60,10 +61,4 @@ const GroupTotalCells = connect(function ({ groupedData, dates, timeExportFormat
     } = state;
 
     return { dates, groupedData };
-}, null,
-    [
-        'UtilsService',
-        ({
-            $utils: { convertSecs }
-        }) => ({ convertSecs })
-    ]);
+}, { convertSecs });

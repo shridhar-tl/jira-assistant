@@ -124,7 +124,18 @@ export default class JiraService {
             return result;
         }
         try {
-            result = await this.$ajax.get(ApiUrls.scrumBoards);
+            let startAt = 0, maxLoop = 10;
+            let data = null;
+
+            do {
+                data = await this.$ajax.get(`${ApiUrls.scrumBoards}&startAt=${encodeURIComponent(startAt)}`);
+                startAt = data.maxResults + data.startAt;
+
+                if (!result) { result = data; }
+                else {
+                    result.values.push(...data.values);
+                }
+            } while (data.total > startAt && --maxLoop > 0);
         }
         catch (err) {
             console.warn("Getting board list failed. Trying alternate option", err);
@@ -180,7 +191,7 @@ export default class JiraService {
                 success(onlyOne ? result[projects[0]] : result);
             }
             else {
-                return this.$ajax.get(ApiUrls.getProjectImportMetadata + projectsToPull.join(","))
+                return this.$ajax.get(ApiUrls.getProjectImportMetadata + encodeURIComponent(projectsToPull.join(",")))
                     .then((metadata) => {
                         result = metadata.projects.reduce((r, prj) => {
                             prj.issuetypesObj = prj.issuetypes.reduce((types, type) => {

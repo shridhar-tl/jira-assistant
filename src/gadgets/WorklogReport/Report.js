@@ -50,8 +50,8 @@ const ReportData = connect(function ({ boardId, hasData, showCostReport }) {
         </TabPanel>}
     </TabView>);
 }, (state, { boardId }) => {
-    const { timeframeType, fields: { showCostReport },
+    const { userListMode, timeframeType, fields: { showCostReport },
         [timeframeType === '1' ? `sprintsList_${boardId}` : 'groupReport']: hasData
     } = state;
-    return { hasData: !!hasData, showCostReport: showCostReport && timeframeType !== '1' };
+    return { hasData: !!hasData, showCostReport: showCostReport && userListMode !== '1' };
 });
