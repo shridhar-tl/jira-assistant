@@ -42,7 +42,7 @@ async function generateWorklogReportForDateRange(fromDate, toDate, state) {
 
         const flatWorklogs = [];
         const groupReport = issues.groupBy(groupByFunc)
-            .map(({ values }) => ({ issues: values, grpName: getGroupName(issues) })) // Create object with group names
+            .map(({ values }) => ({ issues: values, grpName: getGroupName(values) })) // Create object with group names
             .sortBy(({ grpName }) => grpName) // Sort with group names
             .reduce((obj, { grpName, issues }) => {
                 const {
