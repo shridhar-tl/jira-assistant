@@ -12,6 +12,9 @@ export function generateRangeReport(setState, getState) {
             setState({ loadingData: true });
 
             const { dateRange: { fromDate, toDate } } = getState();
+            if (!fromDate || !toDate) {
+                return null;
+            }
 
             const { groupReport, flatWorklogs } = await generateWorklogReportForDateRange(moment(fromDate).startOf('day'),
                 moment(toDate).endOf('day'), getState());

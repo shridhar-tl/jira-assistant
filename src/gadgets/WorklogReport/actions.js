@@ -56,6 +56,10 @@ export function hideWorklog(setState) {
 }
 
 export function getSprintsList({ sprintBoards, sprintList }) {
+    if (!sprintBoards || !sprintList) {
+        return { sprints: [], allSprints: {} };
+    }
+
     const sprints = sprintBoards.map(b => ({
         label: b.name,
         isGroup: true,
