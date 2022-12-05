@@ -2,8 +2,19 @@
     padding: 0 8px 15px 20px;
     overflow-x: auto;
 
+    .board-list-table {
+        thead {
+            tr>th>div {
+                width: 100%;
+                max-width: 250px;
+                overflow: hidden;
+            }
+        }
+    }
+
     .board-col {
         padding-top: 15px;
+        padding-right: 15px;
 
         .sprint-range {
             width: 180px;
@@ -15,8 +26,9 @@
             .sprints-custom {
                 margin-top: -3px;
                 padding: 0 5px 0 0;
-                height: 146px;
+                height: 170px;
                 max-width: 250px;
+                overflow: auto;
 
                 div {
                     max-width: 100%;
