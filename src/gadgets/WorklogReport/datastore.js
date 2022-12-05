@@ -13,6 +13,9 @@ const initialData = {
     fields: {}, // additional fields to be displayed in report
     timeZone: '1',
 
+    sprintStartRounding: '1',
+    sprintEndRounding: '1',
+
     // Filter settings
     jql: '',
     logFilterType: '1', // 1=Show all worklogs, 2=Logged before, 3=Logged after
@@ -69,6 +72,8 @@ export function getSettingsObj(data) {
         logFormat,
         breakupMode,
         timeZone,
+        sprintStartRounding,
+        sprintEndRounding,
         userDisplayFormat,
         fields,
         jql,
@@ -90,6 +95,8 @@ export function getSettingsObj(data) {
         logFormat,
         breakupMode,
         timeZone,
+        sprintStartRounding,
+        sprintEndRounding,
         userDisplayFormat,
         fields,
         jql,

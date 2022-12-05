@@ -3,7 +3,7 @@ import RapidViewList from '../../../components/RapidViewList';
 import { renderRadioButton } from './actions';
 
 function DataSourceSettings({ setValue, setBoards, state }) {
-    const { userListMode, timeframeType, sprintBoards } = state;
+    const { userListMode, timeframeType, sprintBoards, sprintStartRounding, sprintEndRounding } = state;
 
     return (<div className="settings-group">
         <div className="form-group row">
@@ -24,7 +24,7 @@ function DataSourceSettings({ setValue, setBoards, state }) {
             </div>
         </div>
         <div className="form-group row">
-            <label className="col-md-3 col-form-label">Time frame</label>
+            <label className="col-md-3 col-form-label">Time frame type</label>
             <div className="col-md-9 col-form-label">
                 <div className="form-check">
                     <label className="form-check-label">
@@ -40,6 +40,64 @@ function DataSourceSettings({ setValue, setBoards, state }) {
                 </div>
             </div>
         </div>
+        {timeframeType === '1' && <div className="form-group row">
+            <label className="col-md-3 col-form-label">Sprint start date rounding</label>
+            <div className="col-md-9 col-form-label">
+                <div className="form-check">
+                    <label className="form-check-label">
+                        {renderRadioButton('sprintStartRounding', '1', sprintStartRounding, setValue)}
+                        Match exact start date time of sprint
+                    </label>
+                </div>
+                <div className="form-check">
+                    <label className="form-check-label">
+                        {renderRadioButton('sprintStartRounding', '2', sprintStartRounding, setValue)}
+                        Consider start of day as start date
+                    </label>
+                </div>
+                <div className="form-check">
+                    <label className="form-check-label">
+                        {renderRadioButton('sprintStartRounding', '3', sprintStartRounding, setValue)}
+                        Consider start of next day as start date
+                    </label>
+                </div>
+                <div className="form-check">
+                    <label className="form-check-label">
+                        {renderRadioButton('sprintStartRounding', '4', sprintStartRounding, setValue)}
+                        Use end of previous sprint (if available)
+                    </label>
+                </div>
+            </div>
+        </div>}
+        {timeframeType === '1' && <div className="form-group row">
+            <label className="col-md-3 col-form-label">Sprint end date rounding</label>
+            <div className="col-md-9 col-form-label">
+                <div className="form-check">
+                    <label className="form-check-label">
+                        {renderRadioButton('sprintEndRounding', '1', sprintEndRounding, setValue)}
+                        Match exact end date time of sprint
+                    </label>
+                </div>
+                <div className="form-check">
+                    <label className="form-check-label">
+                        {renderRadioButton('sprintEndRounding', '2', sprintEndRounding, setValue)}
+                        Consider end of day as end date
+                    </label>
+                </div>
+                <div className="form-check">
+                    <label className="form-check-label">
+                        {renderRadioButton('sprintEndRounding', '3', sprintEndRounding, setValue)}
+                        Consider end of previous day as end date
+                    </label>
+                </div>
+                <div className="form-check">
+                    <label className="form-check-label">
+                        {renderRadioButton('sprintEndRounding', '4', sprintEndRounding, setValue)}
+                        Use start of next sprint (if available)
+                    </label>
+                </div>
+            </div>
+        </div>}
         {timeframeType === '1' && <SprintListComponent sprintBoards={sprintBoards} setBoards={setBoards} />}
         {userListMode === '1' && timeframeType === '2' && <ReportGrouping state={state} setValue={setValue} />}
     </div>

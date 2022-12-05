@@ -320,6 +320,22 @@ export default class JiraService {
                 // By default sort the sprint in desc order
                 sprints = sprints.sortBy(s => s.startDate?.getTime(), true);
 
+                // Assign prev and next sprint start & end dates
+                let prevSprint = null;
+                sprints.forEach(cur => {
+                    const prevEndDate = prevSprint?.completeDate || prevSprint?.endDate;
+                    if (prevEndDate) {
+                        cur.previousSprintEnd = prevEndDate;
+                    }
+
+                    const curStartDate = cur.startDate;
+                    if (prevSprint && curStartDate) {
+                        prevSprint.nextSprintStart = curStartDate;
+                    }
+
+                    prevSprint = cur;
+                });
+
                 this.$jaCache.session.set(`rapidSprintList${rapidId}`, sprints, 10);
 
                 return sprints;
