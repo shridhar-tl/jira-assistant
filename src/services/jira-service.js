@@ -285,7 +285,18 @@ export default class JiraService {
                 }
                 let result;
                 try {
-                    result = await this.$ajax.get(ApiUrls.sprintListByBoard, rapidId);
+                    let startAt = 0, maxLoop = 15;
+                    let data = null;
+
+                    do {
+                        data = await this.$ajax.get(ApiUrls.sprintListByBoard, rapidId, startAt);
+                        startAt = data.maxResults + data.startAt;
+
+                        if (!result) { result = data; }
+                        else {
+                            result.values.push(...data.values);
+                        }
+                    } while (!data.isLast && --maxLoop > 0);
                 }
                 catch (err) {
                     console.warn('Getting rapid sprint list failed. Using alternate api.', err);

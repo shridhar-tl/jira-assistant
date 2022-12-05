@@ -42,12 +42,12 @@ function ChooseBoard({ sprintBoards, selSprints: savedSprints, setValue, onChang
                 <span className="fa fa-exclamation-triangle warn" /> No agile boards selected. Click <span className="fa fa-cogs" /> icon to choose one or more agile boards.
             </div>}
             {hasBoards && <div className="board-list">
-                <table>
+                <table className="board-list-table">
                     <thead>
                         <tr>
-                            {sprintBoards.map(g => <th key={g.id}>
+                            {sprintBoards.map(g => <th key={g.id}><div>
                                 <Checkbox label={g.name} field={g.id} args={g.name} checked={selSprints[g.id]?.selected} onChange={boardSelected} />
-                            </th>)}
+                            </div></th>)}
                         </tr>
                     </thead>
                     <tbody>
@@ -109,18 +109,28 @@ function ChooseSprintRange({ board, selSprints, disabled, setValue }) {
 }
 
 const ChooseSprints = connect(function ({ boardId, selSprints, getRapidSprintList, onChange, disabled }) {
+    const [isLoading, setLoading] = useState(false);
     const [sprints, setSprints] = useState([]);
 
     useEffect(() => {
         (async function () {
-            const data = await getRapidSprintList([boardId]);
-            setSprints(data);
+            try {
+                setLoading(true);
+                const data = await getRapidSprintList([boardId]);
+                setSprints(data);
+            } catch (err) {
+                console.error('Error pulling sprint for board:', boardId, err);
+            }
+            finally {
+                setLoading(false);
+            }
         })();
     }, [boardId, getRapidSprintList]);
 
     const customSprints = selSprints[boardId]?.custom || {};
 
     return (<div className="sprints-custom">
+        {isLoading && <span>Loading...</span>}
         {sprints.map((s, i) => <div key={i}>
             <Checkbox label={s.name}
                 checked={!!customSprints[s.id]} field={s.id} args={-1}
