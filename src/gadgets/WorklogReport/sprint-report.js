@@ -7,7 +7,7 @@ import { generateFlatWorklogData, getFieldsToFetch } from './utils';
 export function generateSprintReport(setState, getState) {
     return async function () {
         const curState = getState();
-        const { selSprints: sel } = curState;
+        const { selSprints: sel, sprintStartRounding, sprintEndRounding } = curState;
 
         const selBoards = Object.keys(sel).filter(bid => sel[bid]?.selected);
         if (!selBoards.length) { return; }
@@ -32,7 +32,7 @@ export function generateSprintReport(setState, getState) {
                 newState[`flatWorklogs_${boardId}`] = flatWorklogs_board;
 
                 for (const sprint of sprintsList) {
-                    const { id, startDate, endDate, completeDate = endDate } = sprint;
+                    const { id, startDate, endDate, completeDate = endDate, previousSprintEnd, nextSprintStart } = sprint;
                     const fromDate = moment(startDate), toDate = moment(completeDate);
 
                     const issuesList = await pullIssuesFromSprint(id, curState);
@@ -47,6 +47,22 @@ export function generateSprintReport(setState, getState) {
                         toDate: toDate.toDate()
                     };
 
+                    if (sprintStartRounding === '2') {
+                        settings.fromDate = fromDate.startOf('day').toDate();
+                    } else if (sprintStartRounding === '3') {
+                        settings.fromDate = fromDate.startOf('day').add(1, 'days').toDate();
+                    } else if (sprintStartRounding === '4' && previousSprintEnd && previousSprintEnd instanceof Date) {
+                        settings.fromDate = moment(new Date(previousSprintEnd)).add(1, 'seconds').toDate();
+                    }
+
+                    if (sprintEndRounding === '2') {
+                        settings.toDate = toDate.endOf('day').toDate();
+                    } else if (sprintEndRounding === '3') {
+                        settings.toDate = toDate.endOf('day').add(-1, 'days').toDate();
+                    } else if (sprintEndRounding === '4' && nextSprintStart && nextSprintStart instanceof Date) {
+                        settings.toDate = moment(new Date(nextSprintStart)).add(-1, 'seconds').toDate();
+                    }
+                    console.log('Using date time', fromDate, toDate, settings);
                     const { groupReport, flatWorklogs } = generateSprintGroupReport(sprint, userwiseLog, settings, curState);
                     flatWorklogs_board.addRange(flatWorklogs);
 
