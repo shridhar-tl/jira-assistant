@@ -26,6 +26,7 @@ class AnalyticsServiceFake {
     trackEvent() { /* Fake service. Nothing to do here */ }
     trackError() { /* Fake service. Nothing to do here */ }
     setUserId() { /* Fake service. Nothing to do here */ }
+    trackPageView() { /* Fake service. Nothing to do here */ }
 }
 
 export { AnalyticsServiceFake, injectable, inject, injectProdBrowserServices };

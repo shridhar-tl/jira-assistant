@@ -32,19 +32,28 @@ import WorklogTimerService from './worklog-timer-service';
 import SettingsService from './settings-service';
 import StorageService from './storage-service';
 import { AjaxRequestProxyService, BrowserProxyService, StorageProxyService } from './proxy-service';
-import { injectable, inject, injectProdBrowserServices } from './index.common';
+import { injectable, inject, injectProdBrowserServices, AnalyticsServiceFake } from './index.common';
 import { isAppBuild, isWebBuild } from '../constants/build-info';
+import config from '../customize';
 
 export { inject };
 
 let _isReady = false;
+
+const allowAnalytics = config.features.common.analytics !== false;
 
 // Any new classes injected should be added in index.d.ts file as well to support intellisense in VS Code.
 export default function injectServices(authType) {
     const injectProxy = isWebBuild && authType === '1';
     injectable(injectProxy ? AjaxRequestProxyService : AjaxRequestService, "AjaxRequestService", "$request", { isSingleton: true });
     injectable(AjaxService, "AjaxService", "$ajax");
-    injectable(AnalyticsService, "AnalyticsService", "$analytics", { isSingleton: true });
+
+    if (allowAnalytics) {
+        injectable(AnalyticsService, "AnalyticsService", "$analytics", { isSingleton: true });
+    } else {
+        injectable(AnalyticsServiceFake, "AnalyticsService", "$analytics", { isSingleton: true });
+    }
+
     if (injectProxy || isAppBuild) {
         console.log("Proxy Browser service injected");
         injectable(BrowserProxyService, "AppBrowserService", "$jaBrowserExtn", { isSingleton: true });

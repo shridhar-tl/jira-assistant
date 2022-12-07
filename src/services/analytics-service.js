@@ -183,7 +183,7 @@ export default class AnalyticsService {
 
     trackPageView(page) {
         if (!this.enableLogging) {
-            return false;
+            return;
         }
 
         if (!page) {
