@@ -63,7 +63,7 @@ class GeneralSettings extends PureComponent {
         }
 
         return (<>
-            <TabView styleclass="query-tab" activeindex={currentTabIndex} onChange={this.tabChanged}>
+            <TabView activeindex={currentTabIndex} onChange={this.tabChanged}>
                 <TabPanel header="General" leftIcon="fa fa-cogs" selected="true">
                     <GeneralTab settings={settings} userId={this.userId} noDonations={noDonations} onSave={this.saveSetting} />
                 </TabPanel>

@@ -1,5 +1,13 @@
 .worklog-settings {
     .settings-group {
-        padding: 30px;
+        padding: 0px;
+    }
+
+    div.show-more-link {
+        cursor: pointer;
+
+        span.fa {
+            width: 12px;
+        }
     }
 }

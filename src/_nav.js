@@ -88,12 +88,6 @@ export const navigation = [
         title: true,
         name: 'Reports'
     },
-    worklogReportOld && {
-        name: 'Worklog Report',
-        id: 'R-UD',
-        url: '/reports/userdaywise',
-        icon: 'fa fa-users'
-    },
     worklogReport && {
         name: 'Worklog Report',
         id: 'R-WL',
@@ -101,7 +95,17 @@ export const navigation = [
         icon: 'fa fa-users',
         badge: {
             variant: 'success',
-            text: 'BETA'
+            text: 'NEW'
+        }
+    },
+    worklogReportOld && {
+        name: 'Worklog Report',
+        id: 'R-UD',
+        url: '/reports/userdaywise',
+        icon: 'fa fa-users',
+        badge: {
+            variant: 'danger',
+            text: 'OLD'
         }
     },
     sprintReport && {

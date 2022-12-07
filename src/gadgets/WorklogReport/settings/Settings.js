@@ -101,7 +101,7 @@ class Settings extends BaseDialog {
         const { allSettings } = this.state;
 
         return super.renderBase(
-            <TabView styleclass="worklog-settings">
+            <TabView className="worklog-settings">
                 <TabPanel header="Datasource" leftIcon="fa fa-cog" contentClassName="pad-22">
                     <DataSourceSettings state={allSettings} setValue={setValue} setBoards={setBoards} />
                 </TabPanel>
