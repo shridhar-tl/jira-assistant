@@ -57,7 +57,7 @@ class WorklogTab extends TabControlBase {
                 <div className="ui-g-12 ui-md-9 ui-lg-9 ui-xl-10">
                     <div className="form-group">
                         <TicketNo value={settings.meetingTicket} field="meetingTicket" onChange={this.saveSetting} />
-                        <span className="help-block">Provide the list of meeting tickets seperated by ',' for which you would add worklog.</span>
+                        <span className="help-block">Provide the list of meeting tickets seperated by ',' for which you would add worklog</span>
                     </div>
                 </div>
                 <div className="form-label ui-g-12 ui-md-3 ui-lg-3 ui-xl-2">

@@ -76,7 +76,7 @@ class GlobalTab extends TabControlBase {
         return (
             <div className="ui-g ui-fluid">
                 <div className="form-label ui-g-12 ui-md-3 ui-lg-3 ui-xl-2">
-                    <strong>Minimum time spent</strong>
+                    <strong>Minimum time spent (HH:MM)</strong>
                 </div>
                 <div className="ui-g-12 ui-md-9 ui-lg-9 ui-xl-10">
                     <div className="form-group">
@@ -131,7 +131,7 @@ class GlobalTab extends TabControlBase {
                                 placeholder={defaultAttachDelay} min={1} max={20} step={1} allowEmpty={false}
                                 style={{ 'width': '35px', 'display': 'inline-block', marginLeft: '3px' }} />
                             seconds
-                            <span className="help-block">Increase it if your Jira server is slow and you do not see tracker functionality in any pages</span>
+                            <span className="help-block">Increase it if your JIRA response time is slow and you do not see tracker functionality in any pages</span>
                         </div>
                     </div>
                 </>}

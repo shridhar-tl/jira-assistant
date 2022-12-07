@@ -117,7 +117,7 @@ class DefaultValuesTab extends TabControlBase {
             </div>
             <div className="ui-g ui-fluid">
                 <div className="form-label ui-g-12 ui-md-3 ui-lg-3 ui-xl-2">
-                    <strong>Rapid board</strong>
+                    <strong>Agile boards</strong>
                 </div>
                 <div className="ui-g-12 ui-md-9 ui-lg-9 ui-xl-10">
                     <div className="form-group">
@@ -126,7 +126,7 @@ class DefaultValuesTab extends TabControlBase {
                             placeholder="start typing the board name here"
                             size={35} maxLength={25} styleclass="autocomplete-350" scrollHeight="300px"
                             disabled={!rapidViews || rapidViews.length === 0} />
-                        <span className="help-block">Add one or more rapid view board which you are interested in</span>
+                        <span className="help-block">Add one or more Agile boards which you are interested in</span>
                     </div>
                 </div>
             </div>

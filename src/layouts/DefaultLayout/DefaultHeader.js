@@ -1,12 +1,11 @@
 import React, { PureComponent } from 'react';
 import { NavLink } from 'react-router-dom';
-import { UncontrolledDropdown, DropdownItem, DropdownMenu, DropdownToggle, Nav, NavItem } from 'reactstrap';
+import { UncontrolledDropdown, DropdownMenu, DropdownToggle, Nav, NavItem } from 'reactstrap';
 
 import { AppSidebarToggler } from '@coreui/react';
 import logo from '../../img/logo-symbol.png';
 import { AppVersionNo } from '../../constants/common';
-import { EventCategory } from '../../constants/settings';
-import { CHROME_WS_URL, FF_STORE_URL, EDGE_STORE_URL, WebSiteUrl, OPERA_STORE_URL } from '../../constants/urls';
+import { WebSiteUrl } from '../../constants/urls';
 
 import './DefaultHeader.scss';
 import { inject } from '../../services/injector-service';
@@ -22,48 +21,41 @@ import LaunchWeb from './LaunchWeb';
 import BackupImporter from './BackupImporter';
 import TimerControl from './header/TimerControl';
 import { isAppBuild, isWebBuild } from '../../constants/build-info';
+import config from '../../customize';
+import ShareWithOthers from './header/ShareWithOthers';
+
+const allowWebVersion = config.features.common.allowWebVersion !== false;
 
 class DefaultHeader extends PureComponent {
   constructor(props) {
     super(props);
     inject(this, "AppBrowserService", "SessionService", "NotificationService", "AnalyticsService");
     const cUser = this.$session.CurrentUser;
-    this.disableNotification = cUser.disableDevNotification;
+    this.disableNotification = !config.features.header.devUpdates || cUser.disableDevNotification;
     this.disableJiraUpdates = cUser.disableJiraUpdates;
     this.userId = cUser.userId;
     this.currentJiraInstance = getHostFromUrl(cUser.jiraUrl);
     this.state = {};
     this.versionNumber = isWebBuild ? 'WEB' : `v ${AppVersionNo}`;
+
+    this.showShareOption = config.features.header.shareWithOthers !== false;
+    this.showYoutubeOption = config.features.header.youtubeHelp !== false;
+    this.showContactUs = config.modules.contactUs !== false;
+
+    this.siteUrl = this.showShareOption ? WebSiteUrl : undefined;
   }
 
   componentDidMount() {
-    this.$noti.getNotifications().then(notifications => this.setState({ notifications }),
-      (err) => { console.error("Error fetching notifications: ", err); });
-
-    this.siteUrl = WebSiteUrl;
-    this.ratingUrl = this.$jaBrowserExtn.getStoreUrl(true);
-    this.storeUrl = this.$jaBrowserExtn.getStoreUrl();
-    const subj = encodeURIComponent('Check out "Jira Assistant" in web store');
-    const body = encodeURIComponent('Check out "Jira Assistant", a open source extension / add-on for your browser from below url:'
-      + `\n\nChrome users: ${CHROME_WS_URL}?utm_source%3Dgmail#`
-      + `\n\nFirefox users: ${FF_STORE_URL}`
-      + `\n\nEdge users: ${EDGE_STORE_URL}`
-      + `\n\nOpera users: ${OPERA_STORE_URL}`
-      + `\n\nFor source code or to know more about the extension visit: ${WebSiteUrl}`
-      + `\n\n\nThis would help you to track your worklog and generate reports from Jira easily with lots of customizations. `
-      + `Also has lot more features like Calendar integration, Jira comment & meeting + worklog notifications, Worklog, Sprint and custom report generations, etc..`);
-    const storeUrl = encodeURIComponent(this.storeUrl);
-    this.gMailShare = `https://mail.google.com/mail/u/0/?view=cm&tf=1&fs=1&su=${subj}&body=${body}`;
-    this.linkedInShare = `https://www.linkedin.com/shareArticle?mini=true&url=${storeUrl}&title=${subj}&summary=${body}&source=`;
-    this.fackbookShare = `https://www.facebook.com/sharer/sharer.php?u=${this.storeUrl}&title=${subj}&description=${body}`;
-    this.twitterShare = `https://twitter.com/intent/tweet?text=${body}`;
+    if (!this.disableNotification) {
+      this.$noti.getNotifications().then(notifications => this.setState({ notifications }),
+        (err) => { console.error("Error fetching notifications: ", err); });
+    }
 
     if (this.$session.CurrentUser.hideDonateMenu) { // When this settings is changed, below class will be removed from body in settings page
       document.body.classList.add('no-donation');
     }
   }
 
-  trackShare = () => this.$analytics.trackEvent("Share option viewed", EventCategory.HeaderActions);
   showYoutubeHelp = () => this.setState({ showYoutubeVideo: true });
   hideYoutube = () => this.setState({ showYoutubeVideo: false });
 
@@ -77,7 +69,6 @@ class DefaultHeader extends PureComponent {
 
   render() {
     const {
-      ratingUrl, gMailShare, linkedInShare, fackbookShare, twitterShare,
       state: { showYoutubeVideo, notifications }
       //REVISIT: props: { children, ...attributes }
     } = this;
@@ -102,15 +93,15 @@ class DefaultHeader extends PureComponent {
           <BackupImporter>
             {(importSettings) => <SwitchAccountOption instance={this.currentJiraInstance} onLogout={this.props.onLogout} onImport={importSettings} />}
           </BackupImporter>
-          {!isAppBuild && <LaunchWeb />}
+          {allowWebVersion && !isAppBuild && <LaunchWeb />}
           {!!version && <span className={`update-available badge badge-${isBeta ? "warning" : "success"}`}
             title={`Jira Assist ${isBeta ? 'BETA ' : ''}v${version} is now available. Click to know more.`}
             onClick={this.showVersionInfo}><i className="fa fa-download" /> Updates available</span>}
           {!this.disableJiraUpdates && <JiraUpdates />}
           {!this.disableNotification && notifications && <Notifications notifications={notifications} />}
-          <NavItem className="d-md-down-none">
+          {this.showYoutubeOption && <NavItem className="d-md-down-none">
             <span className="nav-link" onClick={this.showYoutubeHelp}><i className="fa fa-youtube-play"></i></span>
-          </NavItem>
+          </NavItem>}
           <UncontrolledDropdown nav direction="down">
             <DropdownToggle nav>
               <i className="fa fa-adjust"></i>
@@ -119,36 +110,10 @@ class DefaultHeader extends PureComponent {
               <SkinPicker />
             </DropdownMenu>
           </UncontrolledDropdown>
-          <UncontrolledDropdown nav direction="down" onClick={this.trackShare}>
-            <DropdownToggle nav>
-              <i className="fa fa-share-alt"></i>
-            </DropdownToggle>
-            <DropdownMenu end>
-              <DropdownItem header tag="div" className="text-center">
-                <strong className="share-header-text">Share or rate this tool</strong>
-              </DropdownItem>
-              <div className="share-items">
-                <a href={ratingUrl} target="_blank" rel="noopener noreferrer" title="Click to rate this tool or add a comment in chrome web store">
-                  <i className="fa fa-star pull-left"></i>
-                </a>
-                <a href={gMailShare} target="_blank" rel="noopener noreferrer" title="Share with Gmail">
-                  <i className="fa fa-envelope pull-left"></i>
-                </a>
-                <a href={linkedInShare} target="_blank" rel="noopener noreferrer" title="Share with Linked in">
-                  <i className="fa fa-linkedin-square pull-left"></i>
-                </a>
-                <a href={fackbookShare} target="_blank" rel="noopener noreferrer" title="Share with Facebook">
-                  <i className="fa fa-facebook-square pull-left"></i>
-                </a>
-                <a href={twitterShare} target="_blank" rel="noopener noreferrer" title="Share with Twitter" >
-                  <i className="fa fa-twitter-square pull-left"></i>
-                </a>
-              </div>
-            </DropdownMenu>
-          </UncontrolledDropdown>
-          <NavItem className="d-md-down-none">
+          {this.showShareOption && <ShareWithOthers />}
+          {this.showContactUs && <NavItem className="d-md-down-none">
             <NavLink to={`/${this.userId}/contactus`} className="nav-link"><i className="fa fa-phone" title="Contact us"></i></NavLink>
-          </NavItem>
+          </NavItem>}
         </Nav>
         {showYoutubeVideo && <YoutubeVideo onHide={this.hideYoutube} />}
         {/*<AppAsideToggler className="d-md-down-none"><span className="fa fa-bars" /></AppAsideToggler>*/}

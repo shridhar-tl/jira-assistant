@@ -101,7 +101,7 @@ class GeneralTab extends TabControlBase {
                 <div className="ui-g-12 ui-md-9 ui-lg-9 ui-xl-10">
                     <div className="form-group">
                         <WeekDaysSelector value={settings.workingDays} field="workingDays" onChange={this.saveSetting} />
-                        <span className="help-block">Select the days in week you would be working.</span>
+                        <span className="help-block">Select the days in week you would be working</span>
                     </div>
                 </div>
                 <div className="form-label ui-g-12 ui-md-3 ui-lg-3 ui-xl-2">
@@ -111,7 +111,7 @@ class GeneralTab extends TabControlBase {
                     <div className="form-group">
                         <SelectBox dataset={WeekDaysArray} className="form-control select" valueField="val" displayField="label"
                             value={settings.startOfWeek} field="startOfWeek" onChange={this.setStartOfweek} style={{ width: 180, display: 'inline-block' }} />
-                        <span className="help-block">Select the starting day of your week. If nothing is selected then default will be taken.</span>
+                        <span className="help-block">Select the starting day of your week. If nothing is selected then default will be taken</span>
                     </div>
                 </div>
                 {!noDonations && <div className="form-label ui-g-12 ui-md-3 ui-lg-3 ui-xl-2">

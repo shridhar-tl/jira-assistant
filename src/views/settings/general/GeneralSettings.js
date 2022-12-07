@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react';
 import { TabView, TabPanel } from 'primereact/tabview';
+import config from '../../../customize';
 import { inject } from '../../../services';
 import GeneralTab from './GeneralTab';
 import GlobalTab from './TimeTrackerTab';
@@ -9,6 +10,9 @@ import MeetingsTab from './MeetingsTab';
 import MenuOptionsTab from './MenuOptionsTab';
 import { isWebBuild } from '../../../constants/build-info';
 import './Common.scss';
+
+const { googleCalendar, outlookCalendar } = config.features.integrations;
+const showMeetingsTab = googleCalendar !== false || outlookCalendar !== false;
 
 class GeneralSettings extends PureComponent {
     constructor(props) {
@@ -76,9 +80,9 @@ class GeneralSettings extends PureComponent {
                 <TabPanel header="Default values" leftIcon="fa fa-list">
                     <DefaultValuesTab settings={settings} userId={this.userId} onSave={this.saveSetting} />
                 </TabPanel >
-                <TabPanel header="Meetings" leftIcon="fa fa-calendar">
+                {showMeetingsTab && <TabPanel header="Meetings" leftIcon="fa fa-calendar">
                     <MeetingsTab settings={settings} userId={this.userId} onSave={this.saveSetting} onChange={this.stateChanged} />
-                </TabPanel >
+                </TabPanel>}
                 {(!isWebBuild || this.isExtnConnected) && <TabPanel header="Menu options" leftIcon="fa fa-bars">
                     <MenuOptionsTab settings={settings} userId={this.userId} onSave={this.saveSetting} />
                 </TabPanel>}
