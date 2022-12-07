@@ -1,8 +1,11 @@
-import React from 'react';
+import React, { useCallback, useState } from 'react';
 import RapidViewList from '../../../components/RapidViewList';
 import { renderRadioButton } from './actions';
 
 function DataSourceSettings({ setValue, setBoards, state }) {
+    const [showMore, setShowMore] = useState(false);
+    const toggleMore = useCallback(() => setShowMore(!showMore), [showMore, setShowMore]);
+
     const { userListMode, timeframeType, sprintBoards, sprintStartRounding, sprintEndRounding } = state;
 
     return (<div className="settings-group">
@@ -35,12 +38,17 @@ function DataSourceSettings({ setValue, setBoards, state }) {
                 <div className="form-check">
                     <label className="form-check-label">
                         {renderRadioButton('timeframeType', '2', timeframeType, setValue)}
-                        Based on selected time range
+                        Based on selected date range
                     </label>
                 </div>
             </div>
         </div>
-        {timeframeType === '1' && <div className="form-group row">
+        {timeframeType === '1' && <SprintListComponent sprintBoards={sprintBoards} setBoards={setBoards} />}
+        <div onClick={toggleMore} className="show-more-link">
+            <span className={showMore ? 'fa fa-caret-down' : 'fa fa-caret-right'} />
+            <span className="link">{showMore ? 'Hide options' : 'Show more options'}</span>
+        </div>
+        {showMore && timeframeType === '1' && <div className="form-group row">
             <label className="col-md-3 col-form-label">Sprint start date rounding</label>
             <div className="col-md-9 col-form-label">
                 <div className="form-check">
@@ -69,7 +77,7 @@ function DataSourceSettings({ setValue, setBoards, state }) {
                 </div>
             </div>
         </div>}
-        {timeframeType === '1' && <div className="form-group row">
+        {showMore && timeframeType === '1' && <div className="form-group row">
             <label className="col-md-3 col-form-label">Sprint end date rounding</label>
             <div className="col-md-9 col-form-label">
                 <div className="form-check">
@@ -98,7 +106,6 @@ function DataSourceSettings({ setValue, setBoards, state }) {
                 </div>
             </div>
         </div>}
-        {timeframeType === '1' && <SprintListComponent sprintBoards={sprintBoards} setBoards={setBoards} />}
         {userListMode === '1' && timeframeType === '2' && <ReportGrouping state={state} setValue={setValue} />}
     </div>
     );
