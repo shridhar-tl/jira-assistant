@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react';
 import classNames from 'classnames';
+import config from '../../../customize';
 import { ScrollableTable, THead, TBody, TRow, Column } from '../../../components/ScrollableTable';
 import { inject } from '../../../services';
 import { getHostFromUrl } from '../../../common/utils';
@@ -8,6 +9,10 @@ import { defaultSettings, SettingsCategory } from '../../../constants/settings';
 import { SystemUserId } from '../../../constants/common';
 import Dialog from '../../../dialogs';
 import './GlobalSettings.scss';
+
+const showDevUpdates = config.features.header.devUpdates !== false;
+const allowAnalytics = config.features.common.analytics !== false;
+const allowWebVersion = config.features.common.allowWebVersion !== false;
 
 class GlobalSettings extends PureComponent {
     constructor(props) {
@@ -167,28 +172,28 @@ class GlobalSettings extends PureComponent {
                                 value={u.id === SystemUserId ? defaultSettings.jiraUpdatesJQL : (u.jiraUpdatesJQL || "")}
                                 args={u} field="jiraUpdatesJQL" onChange={this.setValue} /></td>)}
                         </TRow>
-                        {!!users[0] && <TRow>
+                        {allowWebVersion && !!users[0] && <TRow>
                             <td>Use Jira Assistant Web version</td>
                             <td colSpan={intgUsers.length + 1}><Checkbox checked={users[0].useWebVersion}
                                 args={users[0]} field="useWebVersion" onChange={this.setValue}
                                 label="Opt to always use Web build with latest updates and fixes" />
                             </td>
                         </TRow>}
-                        {!!users[0] && <TRow>
+                        {allowAnalytics && !!users[0] && <TRow>
                             <td>Enable tracking user actions (Anynmous, Google Analytics)</td>
                             <td colSpan={intgUsers.length + 1}><Checkbox checked={users[0].enableAnalyticsLogging !== false}
                                 args={users[0]} field="enableAnalyticsLogging" onChange={this.setValue}
                                 label="Help developers to identify what features are being used much" />
                             </td>
                         </TRow>}
-                        {!!users[0] && <TRow>
+                        {allowAnalytics && !!users[0] && <TRow>
                             <td>Enable tracking exceptions (Anynmous)</td>
                             <td colSpan={intgUsers.length + 1}><Checkbox checked={users[0].enableExceptionLogging !== false}
                                 args={users[0]} field="enableExceptionLogging" onChange={this.setValue}
                                 label="Help developers to identify what errors occur for users and would help in fixing it soon" />
                             </td>
                         </TRow>}
-                        {!!users[0] && <TRow>
+                        {showDevUpdates && !!users[0] && <TRow>
                             <td>Disable notifications from developer</td>
                             <td colSpan={intgUsers.length + 1}><Checkbox checked={users[0].disableDevNotification}
                                 args={users[0]} field="disableDevNotification" onChange={this.setValue}

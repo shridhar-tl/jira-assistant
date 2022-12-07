@@ -2,6 +2,7 @@ import { ContactUsUrl } from "../constants/urls";
 import { SettingsCategory } from "../constants/settings";
 import { SystemUserId } from "../constants/common";
 import { getUserName } from '../common/utils';
+import config from "../customize";
 
 export default class UserService {
     static dependencies = ["SettingsService", "StorageService"];
@@ -99,7 +100,7 @@ export default class UserService {
 
         const jiraUrlLower = currentUser.jiraUrl.toLowerCase();
 
-        if (jiraUrlLower.indexOf('pearson') >= 0 || jiraUrlLower.indexOf('emoneyadv') >= 0) {
+        if (jiraUrlLower.indexOf('pearson') >= 0 || jiraUrlLower.indexOf('emoneyadv') >= 0 || config.modules.contribute === false) {
             sessionUser.noDonations = true;
             sessionUser.hideDonateMenu = true;
         }

@@ -31,8 +31,7 @@ const config = {
             themes: true,
             youtubeHelp: true,
             devUpdates: true,
-            jiraUpdates: true,
-
+            jiraUpdates: true
         },
         dashboard: {
             manageBoard: true,
@@ -41,6 +40,10 @@ const config = {
         integrations: {
             googleCalendar: true,
             outlookCalendar: true
+        },
+        common: {
+            analytics: true,
+            allowWebVersion: true
         }
     },
     settings: {

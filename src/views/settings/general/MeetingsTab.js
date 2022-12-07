@@ -4,6 +4,7 @@ import { SelectBox, Checkbox } from '../../../controls';
 import { inject } from '../../../services';
 import { ApiUrls } from '../../../constants/api-urls';
 import Dialog from '../../../dialogs';
+import config from '../../../customize';
 
 const intervalList = [
     { value: 5, label: 'Every 5 minutes' },
@@ -35,6 +36,8 @@ const launchList = [
     { value: 5, label: "Before 5 minutes" },
     { value: 10, label: "Before 10 minutes" }
 ];
+
+const { googleCalendar, outlookCalendar } = config.features.integrations;
 
 class MeetingsTab extends TabControlBase {
     constructor(props) {
@@ -132,7 +135,7 @@ class MeetingsTab extends TabControlBase {
                     for the events in your calendar based on your preferences
                 </p>
                 <div className="block">
-                    <div className="ui-g ui-fluid">
+                    {outlookCalendar !== false && <div className="ui-g ui-fluid">
                         <div><h4>Outlook Calendar</h4></div>
                         <div className="form-label ui-g-12 ui-md-3 ui-lg-3 ui-xl-2">
                             <strong>Enable Outlook calendar</strong>
@@ -157,8 +160,8 @@ class MeetingsTab extends TabControlBase {
                                 <label className="link margin-l-5" onClick={this.removeOutlookIntegration}>Remove integration</label>
                             </div>}
                         </div>
-                    </div>
-                    <div className="ui-g ui-fluid">
+                    </div>}
+                    {googleCalendar !== false && <div className="ui-g ui-fluid">
                         <h4>Google Calendar</h4>
                         <div className="form-label ui-g-12 ui-md-3 ui-lg-3 ui-xl-2">
                             <strong>Enable Google calendar</strong>
@@ -188,7 +191,7 @@ class MeetingsTab extends TabControlBase {
                                 <span className="help-block">Note: You will have to authenticate with google again to use the calendar</span>
                             </div>}
                         </div>
-                    </div>
+                    </div>}
                     <div>
                         <h4>General settings</h4>
                         <div className="form-label ui-g-12 ui-md-3 ui-lg-3 ui-xl-2">
