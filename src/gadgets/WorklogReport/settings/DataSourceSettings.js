@@ -3,10 +3,7 @@ import RapidViewList from '../../../components/RapidViewList';
 import { renderRadioButton } from './actions';
 
 function DataSourceSettings({ setValue, setBoards, state }) {
-    const [showMore, setShowMore] = useState(false);
-    const toggleMore = useCallback(() => setShowMore(!showMore), [showMore, setShowMore]);
-
-    const { userListMode, timeframeType, sprintBoards, sprintStartRounding, sprintEndRounding } = state;
+    const { userListMode, timeframeType, sprintBoards } = state;
 
     return (<div className="settings-group">
         <div className="form-group row">
@@ -44,71 +41,9 @@ function DataSourceSettings({ setValue, setBoards, state }) {
             </div>
         </div>
         {timeframeType === '1' && <SprintListComponent sprintBoards={sprintBoards} setBoards={setBoards} />}
-        <div onClick={toggleMore} className="show-more-link">
-            <span className={showMore ? 'fa fa-caret-down' : 'fa fa-caret-right'} />
-            <span className="link">{showMore ? 'Hide options' : 'Show more options'}</span>
-        </div>
-        {showMore && timeframeType === '1' && <div className="form-group row">
-            <label className="col-md-3 col-form-label">Sprint start date rounding</label>
-            <div className="col-md-9 col-form-label">
-                <div className="form-check">
-                    <label className="form-check-label">
-                        {renderRadioButton('sprintStartRounding', '1', sprintStartRounding, setValue)}
-                        Match exact start date time of sprint
-                    </label>
-                </div>
-                <div className="form-check">
-                    <label className="form-check-label">
-                        {renderRadioButton('sprintStartRounding', '2', sprintStartRounding, setValue)}
-                        Consider start of day as start date
-                    </label>
-                </div>
-                <div className="form-check">
-                    <label className="form-check-label">
-                        {renderRadioButton('sprintStartRounding', '3', sprintStartRounding, setValue)}
-                        Consider start of next day as start date
-                    </label>
-                </div>
-                <div className="form-check">
-                    <label className="form-check-label">
-                        {renderRadioButton('sprintStartRounding', '4', sprintStartRounding, setValue)}
-                        Use end of previous sprint (if available)
-                    </label>
-                </div>
-            </div>
-        </div>}
-        {showMore && timeframeType === '1' && <div className="form-group row">
-            <label className="col-md-3 col-form-label">Sprint end date rounding</label>
-            <div className="col-md-9 col-form-label">
-                <div className="form-check">
-                    <label className="form-check-label">
-                        {renderRadioButton('sprintEndRounding', '1', sprintEndRounding, setValue)}
-                        Match exact end date time of sprint
-                    </label>
-                </div>
-                <div className="form-check">
-                    <label className="form-check-label">
-                        {renderRadioButton('sprintEndRounding', '2', sprintEndRounding, setValue)}
-                        Consider end of day as end date
-                    </label>
-                </div>
-                <div className="form-check">
-                    <label className="form-check-label">
-                        {renderRadioButton('sprintEndRounding', '3', sprintEndRounding, setValue)}
-                        Consider end of previous day as end date
-                    </label>
-                </div>
-                <div className="form-check">
-                    <label className="form-check-label">
-                        {renderRadioButton('sprintEndRounding', '4', sprintEndRounding, setValue)}
-                        Use start of next sprint (if available)
-                    </label>
-                </div>
-            </div>
-        </div>}
+        {timeframeType === '1' && <SprintAdditionalOptions state={state} setValue={setValue} />}
         {userListMode === '1' && timeframeType === '2' && <ReportGrouping state={state} setValue={setValue} />}
-    </div>
-    );
+    </div>);
 }
 
 export default DataSourceSettings;
@@ -159,3 +94,73 @@ function ReportGrouping({ setValue, state: { reportUserGrp, jql } }) {
         </div>
     </>);
 }
+
+const SprintAdditionalOptions = React.memo(function ({ setValue, state: { sprintStartRounding, sprintEndRounding } }) {
+    const [showMore, setShowMore] = useState(false);
+    const toggleMore = useCallback(() => setShowMore(!showMore), [showMore, setShowMore]);
+
+    return (<>
+        <div onClick={toggleMore} className="show-more-link">
+            <span className={showMore ? 'fa fa-caret-down' : 'fa fa-caret-right'} />
+            <span className="link">{showMore ? 'Hide options' : 'Show more options'}</span>
+        </div>
+        {showMore && <div className="form-group row">
+            <label className="col-md-3 col-form-label">Sprint start date rounding</label>
+            <div className="col-md-9 col-form-label">
+                <div className="form-check">
+                    <label className="form-check-label">
+                        {renderRadioButton('sprintStartRounding', '1', sprintStartRounding, setValue)}
+                        Match exact start date time of sprint
+                    </label>
+                </div>
+                <div className="form-check">
+                    <label className="form-check-label">
+                        {renderRadioButton('sprintStartRounding', '2', sprintStartRounding, setValue)}
+                        Consider start of day as start date
+                    </label>
+                </div>
+                <div className="form-check">
+                    <label className="form-check-label">
+                        {renderRadioButton('sprintStartRounding', '3', sprintStartRounding, setValue)}
+                        Consider start of next day as start date
+                    </label>
+                </div>
+                <div className="form-check">
+                    <label className="form-check-label">
+                        {renderRadioButton('sprintStartRounding', '4', sprintStartRounding, setValue)}
+                        Use end of previous sprint (if available)
+                    </label>
+                </div>
+            </div>
+        </div>}
+        {showMore && <div className="form-group row">
+            <label className="col-md-3 col-form-label">Sprint end date rounding</label>
+            <div className="col-md-9 col-form-label">
+                <div className="form-check">
+                    <label className="form-check-label">
+                        {renderRadioButton('sprintEndRounding', '1', sprintEndRounding, setValue)}
+                        Match exact end date time of sprint
+                    </label>
+                </div>
+                <div className="form-check">
+                    <label className="form-check-label">
+                        {renderRadioButton('sprintEndRounding', '2', sprintEndRounding, setValue)}
+                        Consider end of day as end date
+                    </label>
+                </div>
+                <div className="form-check">
+                    <label className="form-check-label">
+                        {renderRadioButton('sprintEndRounding', '3', sprintEndRounding, setValue)}
+                        Consider end of previous day as end date
+                    </label>
+                </div>
+                <div className="form-check">
+                    <label className="form-check-label">
+                        {renderRadioButton('sprintEndRounding', '4', sprintEndRounding, setValue)}
+                        Use start of next sprint (if available)
+                    </label>
+                </div>
+            </div>
+        </div>}
+    </>);
+});
