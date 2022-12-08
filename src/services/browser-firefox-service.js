@@ -112,9 +112,8 @@ export default class FirefoxBrowserService extends BrowserBase {
     }
 
     replaceTabUrl(url) {
-        return this.getCurrentTab().then((tab) => {
-            this.chrome.tabs.update(tab.id, { url: url });
-        });
+        return this.getCurrentTab().then((tab) => this.chrome.tabs.update(tab.id, { url: url }))
+            .catch(() => this.openTab(url));
     }
 
     openTab(url) {
