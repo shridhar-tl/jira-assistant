@@ -56,7 +56,7 @@ import { JAWebRootUrl } from '../constants/urls';
         } else {
           $jaBrowserExtn.openTab(url);
         }
-        window.close();
+        setTimeout(() => window.close(), 600);
       });
     }
 
