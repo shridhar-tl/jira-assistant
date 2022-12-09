@@ -292,6 +292,10 @@ export default class JiraService {
                         data = await this.$ajax.get(ApiUrls.sprintListByBoard, rapidId, startAt);
                         startAt = data.maxResults + data.startAt;
 
+                        // Avoid showing sprints of other boards.
+                        // This can happen if a project contains stories which is assigned with sprint of other project
+                        data.values = data.values.filter(s => !s.originBoardId || s.originBoardId === parseInt(rapidId));
+
                         if (!result) { result = data; }
                         else {
                             result.values.push(...data.values);

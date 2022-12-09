@@ -5,6 +5,8 @@ import { withRouter } from '../pollyfills';
 
 const videoList = [
     { videoId: "xNYNXWUgCeA", module: "Dashboard", route: "dashboard" },
+    { videoId: "Ihz4Dm5oiRk", module: "Worklog Timer", route: "~" },
+    { videoId: "WQOHrPBZZiI", module: "Worklog report - Sprint wise", route: "reports/worklog" },
     { videoId: "TxNH1HQtiX0", module: "Worklog report", route: "userdaywise" },
     { videoId: "6hAOtUm1lUk", module: "Worklog import", route: "import/worklog" },
     { videoId: "EFgXFqrGuTI", module: "Issue import", route: "import/issue" },
