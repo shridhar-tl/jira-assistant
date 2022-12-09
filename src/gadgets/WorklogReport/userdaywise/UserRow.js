@@ -4,6 +4,8 @@ import { connect } from '../datastore';
 import { addWorklog, convertSecs } from '../actions';
 import TicketRow from './TicketRow';
 
+function getImageUrl(user) { return user.imageUrl || user.avatarUrls['48x48'] || user.avatarUrls['32x32']; }
+
 function UserRow({
     isSprint, groupIndex, boardId, user, user: u, colSpan, userDisplayFormat, sprintsList, costView,
     timeExportFormat, convertSecs, addWorklog
@@ -25,7 +27,7 @@ function UserRow({
                 <div className={detailedDisp ? "user-info" : "user-info-min"} style={{ paddingLeft: 0 }}>
                     <i className={`pull-left drill-down fa ${expanded ? 'fa-chevron-circle-down' : 'fa-chevron-circle-right'}`}
                         title="Click to toggle ticket details" />
-                    {detailedDisp && <img src={u.imageUrl} height={40} width={40} className="pull-left" alt={u.displayName} />}
+                    {detailedDisp && <img src={getImageUrl(u)} height={40} width={40} className="pull-left" alt={u.displayName} />}
                     <span className="name">{u.displayName}</span>
                     {detailedDisp && <span className="email">({u.emailAddress || u.name}{u.timeZone && <span>, time zone: {u.timeZone}</span>})</span>}
                 </div>
@@ -45,6 +47,8 @@ function UserRow({
             sprintsList={sprintsList} addNewWorklog={addNewWorklog} convertSecs={convertSecs} timeExportFormat={timeExportFormat} />}
     </>);
 }
+
+
 
 export default connect(UserRow,
     (state, { boardId }) => {
