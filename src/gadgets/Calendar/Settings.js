@@ -1,6 +1,10 @@
 import React from 'react';
+import config from '../../customize';
 import BaseDialog from '../../dialogs/BaseDialog';
 import { Checkbox, ColorPicker, Button } from '../../controls';
+
+const { googleCalendar, outlookCalendar } = config.features.integrations;
+const showMeetings = outlookCalendar !== false || googleCalendar !== false;
 
 class CalendarSettings extends BaseDialog {
     constructor(props) {
@@ -40,7 +44,7 @@ class CalendarSettings extends BaseDialog {
 
         return super.renderBase(<div className="pad-22">
             <h3 className="control-sidebar-heading">Item Colors</h3>
-            <div className="form-group row">
+            {showMeetings && <div className="form-group row">
                 <label className="col-md-3 col-form-label">Meeting entry color</label>
                 <div className="col-md-9 col-form-label">
                     <ColorPicker value={settings.eventColor} fieldName="eventColor" onChange={this.setValue} />
@@ -48,7 +52,7 @@ class CalendarSettings extends BaseDialog {
                         Specify the color of the entry for meeting
                     </label>
                 </div>
-            </div>
+            </div>}
             <div className="form-group row">
                 <label className="col-md-3 col-form-label">Worklog entry color</label>
                 <div className="col-md-9 col-form-label">
@@ -84,9 +88,9 @@ class CalendarSettings extends BaseDialog {
                 </div>
             </div>
             <h3 className="control-sidebar-heading">Show / Hide Entries</h3>
-            <div className="form-group">
+            {showMeetings && <div className="form-group">
                 <Checkbox checked={settings.showMeetings || false} onChange={(val) => this.setValue(val, "showMeetings")} label="Display entry for meetings integrated from calendar" />
-            </div>
+            </div>}
             <div className="form-group">
                 <Checkbox checked={settings.showWorklogs || false} onChange={(val) => this.setValue(val, "showWorklogs")} label="Display worklog added by you" />
             </div>

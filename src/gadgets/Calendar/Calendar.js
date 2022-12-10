@@ -1,4 +1,5 @@
 import React from 'react';
+import config from '../../customize';
 import BaseGadget from '../BaseGadget';
 import { inject } from '../../services/injector-service';
 import { GadgetActionType } from '../_constants';
@@ -27,6 +28,14 @@ const viewModes = [
 ];
 
 const availablePlugins = [dayGridPlugin, timeGridPlugin, interactionPlugin, listWeekPlugin];
+
+const { googleCalendar, outlookCalendar } = config.features.integrations;
+const showMeetings = outlookCalendar !== false || googleCalendar !== false;
+
+const meetingInfo = showMeetings && (<>
+    <li>One click <span className="fa fa-clock-o" /> icon to create worklog entry for meetings</li>
+    <li>You can set "Default meeting ticket" in General Settings &#8680; Worklog tab</li>
+</>);
 
 class Calendar extends BaseGadget {
     static contextType = WorklogContext;
@@ -69,8 +78,7 @@ class Calendar extends BaseGadget {
     getHint() {
         return (<ul className="gadget-hint">
             <li>Pressing left Alt + drag drop worklog will copy the worklog to target slot</li>
-            <li>One click <span className="fa fa-clock-o" /> icon to create worklog entry for meetings</li>
-            <li>You can set "Default meeting ticket" in General Settings &#8680; Worklog tab</li>
+            {meetingInfo}
             <li>Drag and drop or resize the worklog to edit it</li>
             <li>Right click worklog to see more options</li>
         </ul>);
@@ -115,7 +123,7 @@ class Calendar extends BaseGadget {
         this.mnuCal_OpenUrl = { label: "Open video call", icon: "fa fa-video-camera", command: () => this.openVideoCall(this.currentMeetingItem) };
         this.calMenuItems = [
             this.mnuCal_AddWL,
-            { label: "Show details", icon: "fa fa-info-circle", command: (e) => this.showCalendarDetails({ extendedProps: { sourceObject: this.currentMeetingItem } }, e.originalEvent, null) },
+            { label: "Show details", icon: "fa fa-info-circle", command: (e) => this.showCalendarDetails({ extendedProps: this.currentMeetingExtdProps }, e.originalEvent, null) },
             this.mnuCal_OpenUrl
         ];
     }
@@ -243,7 +251,7 @@ class Calendar extends BaseGadget {
         const obj = {
             dateStarted: m.start.dateTime,
             timeSpent: `${diff.hours().pad(2)}:${diff.minutes().pad(2)}`,
-            description: m.summary,
+            description: m.subject || m.summary,
             parentId: m.id
         };
 
@@ -672,6 +680,7 @@ class Calendar extends BaseGadget {
             this.showWorklogPopup(event.extendedProps.sourceObject);
         }
         else if (event.extendedProps.entryType === 2) {
+            this.currentMeetingViewItem = jsEvent.srcElement;
             this.showCalendarDetails(event, jsEvent, view);
         }
 
@@ -789,12 +798,13 @@ class Calendar extends BaseGadget {
             const m = srcObj;
             const hasWorklog = this.latestData.some((e) => e.parentId === event.id && e.entryType === 1);
 
-            contextEvent = (e) => {
+            contextEvent = (e, a, d) => {
                 //hideContextMenu();
                 e.stopPropagation();
                 e.preventDefault();
 
                 this.currentMeetingItem = m;
+                this.currentMeetingExtdProps = event.extendedProps;
 
                 this.mnuCal_AddWL.disabled = hasWorklog;
                 this.mnuCal_OpenUrl.disabled = !m.hangoutLink;
