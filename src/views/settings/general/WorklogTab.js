@@ -1,8 +1,12 @@
 import React, { PureComponent } from 'react';
+import config from '../../../customize';
 import TabControlBase from './TabControlBase';
 import { TextBox, Checkbox } from '../../../controls';
 import TimePicker from '../../../controls/TimePicker';
 import { inject } from '../../../services';
+
+const { googleCalendar, outlookCalendar } = config.features.integrations;
+const showMeetings = outlookCalendar !== false || googleCalendar !== false;
 
 class WorklogTab extends TabControlBase {
     render() {
@@ -51,16 +55,18 @@ class WorklogTab extends TabControlBase {
                         <span className="help-block">Provide the minimum count of characters to be used for worklog comments</span>
                     </div>
                 </div>
-                <div className="form-label ui-g-12 ui-md-3 ui-lg-3 ui-xl-2">
-                    <strong>Default meeting ticket for worklog</strong>
-                </div>
-                <div className="ui-g-12 ui-md-9 ui-lg-9 ui-xl-10">
-                    <div className="form-group">
-                        <TicketNo value={settings.meetingTicket} field="meetingTicket" onChange={this.saveSetting} />
-                        <span className="help-block">Provide the list of meeting tickets seperated by ',' for which you would add worklog</span>
+                {showMeetings && <>
+                    <div className="form-label ui-g-12 ui-md-3 ui-lg-3 ui-xl-2">
+                        <strong>Default meeting ticket for worklog</strong>
                     </div>
-                </div>
-                <div className="form-label ui-g-12 ui-md-3 ui-lg-3 ui-xl-2">
+                    <div className="ui-g-12 ui-md-9 ui-lg-9 ui-xl-10">
+                        <div className="form-group">
+                            <TicketNo value={settings.meetingTicket} field="meetingTicket" onChange={this.saveSetting} />
+                            <span className="help-block">Provide the list of meeting tickets seperated by ',' for which you would add worklog</span>
+                        </div>
+                    </div>
+                </>}
+                {/*<div className="form-label ui-g-12 ui-md-3 ui-lg-3 ui-xl-2">
                     <strong>Notify for missing worklog</strong>
                 </div>
                 <div className="ui-g-12 ui-md-9 ui-lg-9 ui-xl-10">
@@ -68,7 +74,7 @@ class WorklogTab extends TabControlBase {
                         <Checkbox checked={settings.notifyWL} field="notifyWL" onChange={this.saveSetting} label="Enable worklog notification" />
                         <span className="help-block">Notify you to add worklog for previous day if not added</span>
                     </div>
-                </div>
+                </div>*/}
             </div>
         );
     }

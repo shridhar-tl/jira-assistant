@@ -59,6 +59,7 @@ class AddWorklog extends BaseDialog {
             newState.log = {
                 ticketNo: obj.ticketNo,
                 dateStarted: moment(obj.startTime || obj.dateStarted || new Date()).toDate(),
+                description: obj.description?.trim() || '',
                 allowOverride: obj.allowOverride
             };
 
