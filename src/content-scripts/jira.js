@@ -25,7 +25,7 @@ injectPollyfill();
 injectCss();
 loadLocationInfo();
 window.addEventListener('ja-locationchange', loadLocationInfo);
-
+let lastApplied = null;
 async function applyModifications(firstTime, noPull) {
     // This is to workaround issue caused by pushState and popState triggered by Jira
     if (applying) { return; }
@@ -45,13 +45,19 @@ async function applyModifications(firstTime, noPull) {
     createTimerBox(settings, applyModifications);
 
     applying = false;
+    lastApplied = new Date().getTime();
 }
 
 window.addEventListener('focus', async function () {
     const newSett = await executeJASvc('SELF', 'GET_CS_SETTINGS', curOrigin);
-    if (JSON.stringify(settings) !== JSON.stringify(newSett)) {
-        console.log('JA: About to apply modifications');
+    if (shouldUpdate(newSett)) {
+        console.log('JA: About to apply changes');
         settings = newSett;
         applyModifications(false, true);
     }
 });
+
+function shouldUpdate(newSett) {
+    return JSON.stringify(settings) !== JSON.stringify(newSett)
+        || (lastApplied + (15 * 60 * 1000)) < new Date().getTime();
+}
