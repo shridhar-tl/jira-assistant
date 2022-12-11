@@ -6,6 +6,7 @@ import { withRouter } from '../pollyfills';
 const videoList = [
     { videoId: "xNYNXWUgCeA", module: "Dashboard", route: "dashboard" },
     { videoId: "Ihz4Dm5oiRk", module: "Worklog Timer", route: "~" },
+    { videoId: "hJBM5X24sPQ", module: "Worklog Calendar", route: "calendar" },
     { videoId: "WQOHrPBZZiI", module: "Worklog report - Sprint wise", route: "reports/worklog" },
     { videoId: "TxNH1HQtiX0", module: "Worklog report", route: "userdaywise" },
     { videoId: "6hAOtUm1lUk", module: "Worklog import", route: "import/worklog" },
@@ -14,7 +15,6 @@ const videoList = [
 ];
 
 const oldVideoList = [
-    { startAt: 290, videoId: "f2aBSXzbYuA", module: "Calendar", route: "calendar" },
     { startAt: 713, videoId: "f2aBSXzbYuA", module: "Custom report", route: "customgrouped" },
     { startAt: 1069, videoId: "f2aBSXzbYuA", module: "Settings", route: "settings" },
     { startAt: 1147, videoId: "f2aBSXzbYuA", module: "Feedback", route: "feedback" }
