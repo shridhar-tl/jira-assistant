@@ -29,6 +29,9 @@ class BrowserBase {
     }
 
     async getLaunchUrl() { return ''; }
+
+    persistBackground() { /* Do nothing */ }
+    connectAndKeepAlive() { /* Do nothing */ }
 }
 
 export default BrowserBase;

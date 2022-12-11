@@ -20,7 +20,7 @@ function startListening() {
         chrome.runtime.onMessage.addListener(onRequestReceived);
     }
     loadSettings();
-    console.log("Started listening for incomming requests");
+    console.log("Started listening for incomming requests", new Date());
 }
 
 function onRequestReceived(message, sender, sendResponse) {
@@ -114,6 +114,8 @@ async function loadSettings() {
             stateChangeAttached = false;
             log('Deregistered listening to system state');
         }
+
+        services.$jaBrowserExtn.persistBackground(TR_PauseOnIdle || TR_PauseOnLock);
     }
 
     if (chrome.scripting) {
@@ -183,6 +185,8 @@ async function getContentSettings(basepath) {
 
     result.attachDelay = (parseInt(await services.$settings.get('TR_CSDelay')) * 1000) || 2000;
     result.showTimer = (await services.$settings.get('TR_ShowTimer')) !== false;
+
+    result.keepAlive = settings.TR_PauseOnLock || settings.TR_PauseOnIdle;
 
     return result;
 }

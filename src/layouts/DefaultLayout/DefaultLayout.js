@@ -29,7 +29,7 @@ const DefaultHeader = React.lazy(() => import('./DefaultHeader'));
 class DefaultLayout extends PureComponent {
   constructor() {
     super();
-    inject(this, "DashboardService", "SessionService", "SettingsService", "CacheService", "WorklogTimerService", "MessageService");
+    inject(this, "DashboardService", "SessionService", "SettingsService", "CacheService", "WorklogTimerService", "MessageService", "AppBrowserService");
     const { userId } = this.$session;
     this.state = { menus: this.getMenus(userId), userId };
 
@@ -42,6 +42,8 @@ class DefaultLayout extends PureComponent {
     const { userId } = this.state;
     setStartOfWeek(this.$session.CurrentUser.startOfWeek);
 
+    // This is a workaround to keep the background sw alive in chromium
+    this.$jaBrowserExtn.connectAndKeepAlive(this.loadTracker);
     this.loadTracker();
     window.addEventListener('focus', this.loadTracker);
 

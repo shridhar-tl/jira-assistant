@@ -70,6 +70,7 @@
     "identity",
     "http://*/",
     "https://*/",
+    "https://*.atlassian.net/*",
     "storage",
     "notifications",
     "idle",

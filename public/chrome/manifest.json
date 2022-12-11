@@ -31,7 +31,8 @@
   "externally_connectable": {
     "matches": [
       "https://*.jiraassistant.com/*",
-      "http://local.jiraassistant.com/*"
+      "http://local.jiraassistant.com/*",
+      "https://*.atlassian.net/*"
     ]
   },
   "options_page": "/index.html#/options",
