@@ -65,7 +65,8 @@
     "activeTab",
     "storage",
     "idle",
-    "scripting"
+    "scripting",
+    "https://*.atlassian.net/*"
   ],
   "optional_permissions": [
     "tabs",

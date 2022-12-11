@@ -134,6 +134,58 @@ export default class ChromeBrowserService extends BrowserBase {
 
     getLaunchUrl(file) { return Promise.resolve(this.chrome.runtime.getURL(file)); }
 
+    // Listen for port and keep the connection open
+    // This is workaround for keeping background service worker alive and listen to system lock / unlock events
+    persistBackground(persist) {
+        try {
+            if (persist) {
+                this.activePorts = this.activePorts || [];
+                if (!this.listeningForPorts) {
+                    this.listeningForPorts = true;
+                    chrome.runtime.onConnect.addListener((port) => {
+                        this.activePorts.push(port);
+                        console.log('New client connected. Total Alive:', this.activePorts?.length);
+                        port.onMessage.addListener((msg) => { console.log('Message on port:', msg); });
+                        port.onDisconnect.addListener(this.attachToClient);
+                        console.log('Attached keep-alive listener', this.listeningForPorts, this.activePorts);
+                    });
+                    this.attachToClient();
+                }
+            }
+        } catch (err) {
+            console.error('Error trying to persist background pages:', err);
+        }
+    }
+
+    attachToClient = (port) => {
+        if (port && this.activePorts) {
+            const index = this.activePorts.indexOf(port);
+            if (~index) {
+                this.activePorts.splice(index);
+            }
+        }
+
+        // if (this.activePorts?.length) { return; }
+        // ToDo: Find some pages and attach CScript to that page
+    };
+
+    connectAndKeepAlive(onChange) {
+        try {
+            if (this.clientPort) {
+                this.clientPort.disconnect();
+                this.clientPort = null;
+            }
+            const port = chrome.runtime.connect({ name: "keep-alive" });
+            port.onMessage.addListener(() => { if (onChange) { onChange(); } });
+            this.clientPort = port;
+            port.postMessage("keep-alive");
+            port.onDisconnect.addListener(() => setTimeout(() => this.connectAndKeepAlive(onChange), 20000));
+            console.log('Keeping SW alive', new Date());
+        } catch (err) {
+            console.log('Unable to keep-alive', err);
+        }
+    }
+
     /* Commented as no usage found
     getStorageInfo() {
         return navigator.storage.estimate().then((estimate) => {

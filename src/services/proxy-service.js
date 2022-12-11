@@ -32,6 +32,10 @@ export class BrowserProxyService extends BaseProxyService {
     openTab(url) { window.open(url); }
 
     getStoreUrl() { return StoreUrls[BROWSER_NAME] || CHROME_WS_URL; }
+
+    connectAndKeepAlive(onChange) {
+        // ToDo: Keep alive function has to be added from content script for it to work
+    }
 }
 
 export class StorageProxyService extends BaseProxyService {
