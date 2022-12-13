@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { inject } from '../../services';
 import { AppSidebarHeader } from '@coreui/react';
 import { UncontrolledDropdown, DropdownMenu, DropdownToggle } from 'reactstrap';
-import SwitchAccountMenu from './SwitchAccountMenu';
+import { SwitchAccountMenu } from './SwitchAccountMenu';
 
 class AsideUserInfo extends PureComponent {
     constructor(props) {
