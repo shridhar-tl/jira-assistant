@@ -64,6 +64,8 @@ export default class WorklogService extends BaseService {
                                     parent: (fields.parent || "").key,
                                     summary: fields.summary,
                                     logTime: startedTime,
+                                    logCreated: moment(worklog.created).toDate(),
+                                    logUpdated: moment(worklog.updated || worklog.created).toDate(),
                                     comment: worklog.comment,
                                     totalHours: `${parseInt((mins / 60).toString()).pad(2)}:${parseInt((mins % 60).toString()).pad(2)}`,
                                     worklogId: worklog.id

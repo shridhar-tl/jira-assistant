@@ -62,7 +62,7 @@ export function generateSprintReport(setState, getState) {
                     } else if (sprintEndRounding === '4' && nextSprintStart && nextSprintStart instanceof Date) {
                         settings.toDate = moment(new Date(nextSprintStart)).add(-1, 'seconds').toDate();
                     }
-                    console.log('Using date time', fromDate, toDate, settings);
+
                     const { groupReport, flatWorklogs } = generateSprintGroupReport(sprint, userwiseLog, settings, curState);
                     flatWorklogs_board.addRange(flatWorklogs);
 

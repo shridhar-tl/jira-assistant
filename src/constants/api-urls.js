@@ -17,7 +17,7 @@ export const ApiUrls = {
     individualWorklog: "~/rest/api/2/issue/{0}/worklog/{1}",
     searchUser: "~/rest/api/2/user/search?maxResults={1}&startAt={2}&query={0}",
     searchUser_Alt: "~/rest/api/2/user/search?maxResults={1}&startAt={2}&username={0}",
-    searchGroup: "~/rest/api/2/groups/picker?maxResults={1}&query={0}",
+    searchGroup: "~/rest/api/2/groups/picker?caseInsensitive=true&maxResults={1}&query={0}",
     searchIssueForPicker: "~/rest/api/2/issue/picker",
     getGroupMembers: "~/rest/api/2/group/member?maxResults={1}&includeInactiveUsers=true&groupId={0}",
     getCustomFields: "~/rest/api/2/field",

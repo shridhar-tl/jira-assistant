@@ -299,6 +299,8 @@ function getLogUserObj(issue, fields, worklog, append, { epicNameField, $useruti
         reporter: fields.reporter?.displayName,
         summary: fields.summary,
         logTime: moment(worklog.started).toDate(),
+        logCreated: moment(worklog.created).toDate(),
+        logUpdated: moment(worklog.updated || worklog.created).toDate(),
         comment: worklog.comment,
         projectName: fields.project.name,
         statusName: fields.status?.name,

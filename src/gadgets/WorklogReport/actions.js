@@ -124,6 +124,8 @@ export function getColumnSettings(_, getState) {
             { field: "statusName", displayText: "Status", type: "string" },
             { field: "summary", displayText: "Summary", type: "string" },
             { field: "logTime", displayText: "Log Date & Time", type: "datetime", format: (val) => formatDateTime(val) },
+            { field: "logCreated", displayText: "Worklog Created", type: "datetime", format: (val) => formatDateTime(val) },
+            { field: "logUpdated", displayText: "Worklog Updated", type: "datetime", format: (val) => formatDateTime(val) },
             { field: "userDisplay", displayText: "Log user", type: "string" },
             { field: "assignee", displayText: "Assignee", type: "string" },
             { field: "reporter", displayText: "Reporter", type: "string" },
