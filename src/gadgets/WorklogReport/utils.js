@@ -57,6 +57,8 @@ function getFlatMapper(usr, groupName, sprintName) {
         projectName: log.projectName,
         statusName: log.statusName,
         logTime: log.logTime,
+        logCreated: log.logCreated,
+        logUpdated: log.logUpdated,
         timeSpent: log.totalHours,
         originalestimate: log.originalestimate,
         remainingestimate: log.remainingestimate,
