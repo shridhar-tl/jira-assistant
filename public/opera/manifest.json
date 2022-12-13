@@ -1,5 +1,6 @@
 {
-  "manifest_version": 2,
+  "manifest_version": 3,
+  "minimum_chrome_version": "102",
   "name": "Jira Assistant: Worklog, Sprint report, etc",
   "short_name": "Jira Assist",
   "version": "2.43",
@@ -9,7 +10,7 @@
     "32": "/assets/icon_32.png",
     "48": "/assets/icon_48.png"
   },
-  "browser_action": {
+  "action": {
     "default_icon": {
       "24": "/assets/icon_24.png",
       "32": "/assets/icon_32.png",
@@ -18,32 +19,6 @@
     "default_title": "Jira Assistant",
     "default_popup": "/menu.html"
   },
-  "content_scripts": [
-    {
-      "matches": [
-        "https://*.jiraassistant.com/*",
-        "http://local.jiraassistant.com/*"
-      ],
-      "js": [
-        "content.js"
-      ],
-      "run_at": "document_start"
-    }
-  ],
-  "options_page": "index.html#/options",
-  "background": {
-    "persistent": true,
-    "scripts": [
-      "/static/js/background.js"
-    ]
-  },
-  "web_accessible_resources": [
-    "index.html",
-    "api-pollyfill.js",
-    "/assets/*",
-    "/static/js/jira_cs.js",
-    "/static/css/jira_cs.css"
-  ],
   "commands": {
     "open-ja-dashboard": {
       "suggested_key": {
@@ -53,27 +28,68 @@
       "description": "Open JiraAssist dashboard page"
     }
   },
+  "externally_connectable": {
+    "matches": [
+      "https://*.jiraassistant.com/*",
+      "http://local.jiraassistant.com/*",
+      "https://*.atlassian.net/*"
+    ]
+  },
+  "options_page": "/index.html#/options",
+  "background": {
+    "service_worker": "/static/js/background.js"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "index.html"
+      ],
+      "matches": [
+        "https://*.jiraassistant.com/*",
+        "http://local.jiraassistant.com/*"
+      ]
+    },
+    {
+      "resources": [
+        "api-pollyfill.js",
+        "/assets/*",
+        "/static/js/jira_cs.js",
+        "/static/css/jira_cs.css"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
+    }
+  ],
   "oauth2": {
     "client_id": "692513716183-s97kv5slq5ihm410jq2kc4r8hr77rcku.apps.googleusercontent.com",
     "scopes": [
       "https://www.googleapis.com/auth/calendar.readonly"
     ]
   },
-  "content_security_policy": "script-src 'self' 'unsafe-eval' ; object-src 'self';",
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' ; object-src 'self';"
+  },
   "offline_enabled": true,
   "permissions": [
     "activeTab",
+    "identity",
     "storage",
     "idle",
     "scripting",
-    "https://*.atlassian.net/*"
-  ],
-  "optional_permissions": [
     "tabs",
-    "identity",
-    "http://*/",
-    "https://*/",
     "unlimitedStorage"
   ],
+  "host_permissions": [
+    "https://*.atlassian.net/*"
+  ],
+  "optional_host_permissions": [
+    "http://*/",
+    "https://*/"
+  ],
+  "developer": {
+    "name": "Shridhar TL",
+    "url": "https://www.jiraassistant.com/"
+  },
   "author": "Shridhar"
 }

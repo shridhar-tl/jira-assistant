@@ -8,7 +8,7 @@ const extensionId = {
     chrome: 'momjbjbjpbcbnepbgkkiaofkgimihbii',
     firefox: '586beec1-c37c-4a1a-820f-a221e8c557ab',
     edge: 'aoenpdbabcjnjbjpegeenodfknllmaoi',
-    opera: ''
+    opera: 'eldbfdnolaccbfiffkefkahicdpjjgfk'
 };
 
 const extnId = extensionId[BROWSER_NAME];
