@@ -93,3 +93,5 @@ class SwitchAccountOption extends PureComponent {
 }
 
 export default SwitchAccountOption;
+
+export { SwitchAccountMenu };
