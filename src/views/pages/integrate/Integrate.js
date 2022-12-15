@@ -10,7 +10,7 @@ import Dialog from '../../../dialogs';
 import { executeService } from '../../../common/proxy';
 import Footer from '../Footer';
 import { withRouter } from '../../../pollyfills';
-import { isExtnBuild, isWebBuild } from '../../../constants/build-info';
+import { buildMode, isExtnBuild, isWebBuild, redirectToRoute } from '../../../constants/build-info';
 import config from '../../../customize';
 
 const settingsIconStyles = {
@@ -61,7 +61,7 @@ class Integrate extends PureComponent {
 
     useOAuth() {
         const url = getJiraCloudOAuthAuthorizeUrl({
-            forWeb: isWebBuild,
+            initSource: buildMode,
             authType: '1'
         });
 
@@ -95,6 +95,7 @@ class Integrate extends PureComponent {
         const hasPermission = await this.$jaBrowserExtn.requestPermission(null, root);
         // Session userId has to be cleared to avoid JiraAuthService from interfering
         delete this.$session.userId;
+
         this.$ajax.get(ApiUrls.mySelf)
             .then(data => this.$user.createUser(data, root).then(this.openDashboard, this.handleDBError)
                 , (response) => {
@@ -111,7 +112,7 @@ class Integrate extends PureComponent {
                         } else {
                             if (!hasPermission) {
                                 let msg = 'Permission denied to access this Url. ';
-                                if (this.props.isWebBuild) {
+                                if (isWebBuild) {
                                     msg += "Try integrating directly from extension using JA icon or manually grant permission and retry.";
                                 } else {
                                     msg += 'Manually grant permission and then retry. For more details, visit #214 in GitHub issue tracker.';
@@ -155,10 +156,10 @@ class Integrate extends PureComponent {
     };
 
     onSettingsImport = () => {
-        if (this.props.isWebBuild) {
+        if (isWebBuild) {
             this.props.setAuthType('1');
         } else {
-            document.location.href = '/index.html';
+            redirectToRoute();
         }
     };
 

@@ -1,6 +1,6 @@
 import moment from "moment";
 import { prepareUrlWithQueryString } from "../common/utils";
-import { isWebBuild } from "../constants/build-info";
+import { buildMode, isWebBuild } from "../constants/build-info";
 import { EventCategory } from "../constants/settings";
 
 // https://docs.microsoft.com/en-us/graph/api/resources/calendar?view=graph-rest-1.0
@@ -33,7 +33,7 @@ export default class OutlookCalendar {
 
     getAddlProps(response_type) {
         const state = btoa(JSON.stringify({
-            forWeb: isWebBuild,
+            initSource: buildMode,
             authType: isWebBuild && localStorage.getItem('authType') !== '1' ? 'mso' : '1',
             userId: this.$session.userId
         }));

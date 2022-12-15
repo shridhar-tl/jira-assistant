@@ -4,7 +4,7 @@ import Dialog from '../../../dialogs';
 import { BROWSER_NAME } from '../../../common/browsers';
 import { StoreUrls, WebSiteUrl } from '../../../constants/urls';
 import { getJiraCloudOAuthAuthorizeUrl } from '../../../constants/oauth';
-import { isAppBuild } from '../../../constants/build-info';
+import { buildMode, isAppBuild } from '../../../constants/build-info';
 import Footer from '../Footer';
 import { withRouter } from '../../../pollyfills';
 import './ChooseAuthType.scss';
@@ -53,7 +53,7 @@ class ChooseAuthType extends PureComponent {
         </span>),
             "Jira Cloud - OAuth2 Integration").then(() => {
                 document.location.href = getJiraCloudOAuthAuthorizeUrl({
-                    forWeb: this.props.isWebBuild,
+                    initSource: buildMode,
                     authType: '2'
                 });
             });

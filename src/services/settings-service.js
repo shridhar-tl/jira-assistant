@@ -1,7 +1,8 @@
-import { get } from "../common/storage-helpers";
+//import { get } from "../common/storage-helpers";
 import { SystemUserId } from "../constants/common";
 import { dateFormats, DefaultEndOfDay, DefaultStartOfDay, DefaultWorkingDays, SettingsCategory, timeFormats } from "../constants/settings";
 
+/* Code commented along with refactoring of App component on 15-Dec-2022 as part of v2.44
 const userSpecificSettings = [
     'allowClosedTickets',
     'favTicketList', 'meetingTicket',
@@ -40,7 +41,7 @@ const genericSettings = [
     'minHours',
     'maxHours',
     'commentLength',
-];
+];*/
 
 const settingsDefaultValues = {
     workingDays: DefaultWorkingDays,
@@ -159,6 +160,7 @@ class SettingsService {
     set = (name, value) => this.saveSetting(SystemUserId, SettingsCategory.System, name, value);
     get = (name) => this.getSetting(SystemUserId, SettingsCategory.System, name);
 
+    /* Code commented along with refactoring of App component on 15-Dec-2022 as part of v2.44
     migrateSettings = async () => {
         const users = await this.$storage.getAllUsers();
 
@@ -296,7 +298,7 @@ class SettingsService {
         }
 
         console.log('Settings migrated successfully');
-    };
+    };*/
 }
 
 export default SettingsService;

@@ -33,19 +33,19 @@ import SettingsService from './settings-service';
 import StorageService from './storage-service';
 import { AjaxRequestProxyService, BrowserProxyService, StorageProxyService } from './proxy-service';
 import { injectable, inject, injectProdBrowserServices, AnalyticsServiceFake } from './index.common';
-import { isAppBuild, isWebBuild } from '../constants/build-info';
+import { isAppBuild, isPluginBuild, isWebBuild } from '../constants/build-info';
 import config from '../customize';
 
 export { inject };
 
-let _isReady = false;
+let _isReady = false, _commonInjected = false;
 
-const allowAnalytics = config.features.common.analytics !== false;
+const allowAnalytics = !isPluginBuild && config.features.common.analytics !== false;
 
 // Any new classes injected should be added in index.d.ts file as well to support intellisense in VS Code.
-export default function injectServices(authType) {
-    const injectProxy = isWebBuild && authType === '1';
-    injectable(injectProxy ? AjaxRequestProxyService : AjaxRequestService, "AjaxRequestService", "$request", { isSingleton: true });
+export default function registerServices() {
+    if (_commonInjected) { return; }
+
     injectable(AjaxService, "AjaxService", "$ajax");
 
     if (allowAnalytics) {
@@ -54,17 +54,6 @@ export default function injectServices(authType) {
         injectable(AnalyticsServiceFake, "AnalyticsService", "$analytics", { isSingleton: true });
     }
 
-    if (injectProxy || isAppBuild) {
-        console.log("Proxy Browser service injected");
-        injectable(BrowserProxyService, "AppBrowserService", "$jaBrowserExtn", { isSingleton: true });
-    }
-    else if (!isWebBuild && process.env.NODE_ENV === "production") {
-        injectProdBrowserServices();
-    }
-    else {
-        console.log("Web Browser service injected");
-        injectable(DevService, "AppBrowserService", "$jaBrowserExtn", { isSingleton: true });
-    }
     injectable(AuthService, "AuthService", "$auth");
     injectable(BackupService, "BackupService", "$backup");
     injectable(BookmarkService, "BookmarkService", "$bookmark");
@@ -85,7 +74,6 @@ export default function injectServices(authType) {
     injectable(ReportConfigService, "ReportConfigService", "$reportConfig");
     injectable(SessionService, "SessionService", "$session");
     injectable(SettingsService, "SettingsService", "$settings", { isSingleton: true });
-    injectable(injectProxy ? StorageProxyService : StorageService, "StorageService", "$storage", { isSingleton: true });
     injectable(SuggestionService, "SuggestionService", "$suggestion");
     injectable(TicketService, "TicketService", "$ticket");
     injectable(UserService, "UserService", "$user", { isSingleton: true });
@@ -94,7 +82,33 @@ export default function injectServices(authType) {
     injectable(UtilsService, "UtilsService", "$utils", { isSingleton: true });
     injectable(WorklogService, "WorklogService", "$worklog");
     injectable(WorklogTimerService, "WorklogTimerService", "$wltimer", { isSingleton: true });
-    _isReady = true;
+
+    _commonInjected = true;
 }
 
-export function readyToInject() { return _isReady; }
+export function registerDepnServices(authType) {
+    if (_isReady === authType) { return; }
+
+    registerServices();
+
+    const injectProxy = isWebBuild && authType === '1';
+
+    injectable(injectProxy ? AjaxRequestProxyService : AjaxRequestService, "AjaxRequestService", "$request", { isSingleton: true });
+    injectable(injectProxy ? StorageProxyService : StorageService, "StorageService", "$storage", { isSingleton: true });
+
+    if (injectProxy || isAppBuild) {
+        console.log("Proxy Browser service injected");
+        injectable(BrowserProxyService, "AppBrowserService", "$jaBrowserExtn", { isSingleton: true });
+    }
+    else if (!isWebBuild && process.env.NODE_ENV === "production") {
+        injectProdBrowserServices();
+    }
+    else {
+        console.log("Web Browser service injected");
+        injectable(DevService, "AppBrowserService", "$jaBrowserExtn", { isSingleton: true });
+    }
+
+    _isReady = authType;
+}
+
+export function readyToInject() { return !!_isReady; }

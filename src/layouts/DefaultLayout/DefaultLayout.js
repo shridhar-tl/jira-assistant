@@ -20,7 +20,7 @@ import AsideUserInfo from './AsideUserInfo';
 import { setStartOfWeek } from '../../common/utils';
 import BuildDate from './BuildDate';
 import { WorklogContextProvider } from '../../common/context';
-import { isWebBuild } from '../../constants/build-info';
+import { isWebBuild, redirectToRoute } from '../../constants/build-info';
 import AppContent from './AppContent';
 import { withRouter } from '../../pollyfills';
 
@@ -96,7 +96,7 @@ class DefaultLayout extends PureComponent {
     this.$settings.set('CurrentUserId');
     this.$settings.set('CurrentJiraUrl');
     if (isWebBuild) {
-      document.location.href = '/';
+      redirectToRoute();
     } else {
       this.props.navigate('/integrate');
     }

@@ -34,6 +34,15 @@ module.exports = {
                 wpConfig.devServer = { writeToDisk: true };
             }
 
+            // Use js specific for build target to be pulled while importing a file
+            if (!isWebBuild) { // As .web.js is already part of module extns, no need to customize for web build
+                // Caution: This may cause issue when there is some .web.js files in any any npm packages
+                const extns = wpConfig.resolve.extensions.filter(ext => !ext.includes('.web.js')); // Remove .web.js
+                const jsIdx = extns.indexOf('.js');
+                extns.splice(jsIdx, 0, `.${buildMode.toLowerCase()}.js`);
+                wpConfig.resolve.extensions = extns;
+            }
+
             // set entry point
             wpConfig.entry = getEntryObject(paths);
 

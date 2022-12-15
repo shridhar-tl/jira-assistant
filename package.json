@@ -96,8 +96,8 @@
         "static-eval": "^2.1.0"
     },
     "scripts": {
-        "start": "cross-env REACT_APP_BUILD_MODE=WEB react-scripts start",
-        "start-extn": "cross-env REACT_APP_BUILD_MODE=EXTN react-scripts start",
+        "start": "cross-env REACT_APP_BUILD_MODE=WEB craco start",
+        "start-extn": "cross-env REACT_APP_BUILD_MODE=EXTN craco start",
         "start-app": "concurrently -k npm:app:*",
         "build": "cross-env REACT_APP_BUILD_MODE=EXTN GENERATE_SOURCEMAP=false INLINE_RUNTIME_CHUNK=false craco build",
         "postbuild": "cross-env REACT_APP_BUILD_MODE=EXTN node post-build.js",
@@ -111,7 +111,7 @@
         "test": "react-scripts test",
         "eject": "react-scripts eject",
         "craco-start": "cross-env REACT_APP_BUILD_MODE=EXTN craco start",
-        "app:web": "cross-env REACT_APP_BUILD_MODE=APP react-scripts start",
+        "app:web": "cross-env REACT_APP_BUILD_MODE=APP craco start",
         "app:electron": "wait-on tcp:80 && electron .",
         "postinstall": "electron-builder install-app-deps"
     },

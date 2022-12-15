@@ -2,13 +2,13 @@ import React, { PureComponent } from 'react';
 import { inject } from '../../../services';
 import { Button, TextBox } from '../../../controls';
 import { getOriginFromUrl } from '../../../common/utils';
-import Dialog from '../../../dialogs';
 import { executeService } from '../../../common/proxy';
 import { ApiTokenHelpPage } from '../../../constants/urls';
-import registerServices from '../../../services';
-import Footer from '../Footer';
-import { isExtnBuild, isWebBuild } from '../../../constants/build-info';
+import { registerDepnServices } from '../../../services';
+import { isExtnBuild, redirectToRoute } from '../../../constants/build-info';
 import { withRouter } from '../../../pollyfills';
+import Dialog from '../../../dialogs';
+import Footer from '../Footer';
 
 const isQuickView = document.location.href.indexOf('?quick=true') > -1;
 const containerStyle = isQuickView ? { minHeight: '380px', maxHeight: '380px' } : {};
@@ -19,9 +19,7 @@ class Integrate extends PureComponent {
         inject(this, "MessageService", "AppBrowserService", "SessionService", "JiraAuthService");
         this.state = {};
         this.useExtn = props.match.params?.store === '1';
-        if (!this.useExtn) {
-            registerServices('2');
-        }
+        registerDepnServices(this.useExtn ? '1' : '2');
     }
 
     integrate = () => {
@@ -72,7 +70,7 @@ class Integrate extends PureComponent {
             this.$jaBrowserExtn.openTab("/index.html");
             window.close();
         } else {
-            window.location.href = isWebBuild ? '/' : '/index.html';
+            redirectToRoute();
         }
     };
 

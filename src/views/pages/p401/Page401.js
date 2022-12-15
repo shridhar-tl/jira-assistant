@@ -1,7 +1,8 @@
 import React, { PureComponent } from 'react';
 import { inject } from '../../../services';
 import { getGitHubIssueUrl } from '../../../constants/utils';
-import { isWebBuild } from '../../../constants/build-info';
+import { isWebBuild, redirectToRoute } from '../../../constants/build-info';
+import { Button } from '../../../controls';
 import "./P401.scss";
 
 class Page401 extends PureComponent {
@@ -24,12 +25,12 @@ class Page401 extends PureComponent {
         const jiraUrl = this.props.jiraUrl;
         const hasPermission = await this.$jaBrowserExtn.requestPermission(null, jiraUrl);
         if (hasPermission) {
-            document.location.href = isWebBuild ? "/" : "/index.html";
+            redirectToRoute();
         }
     };
 
     render() {
-        const { jiraUrl } = this.props;
+        const { jiraUrl, validate } = this.props;
         const { hasPermission } = this.state;
 
         const issueLink = (<a className="link badge badge-warning"
@@ -51,8 +52,8 @@ class Page401 extends PureComponent {
                         Extension is not granted permission to access "{jiraUrl}".
                         Please {isWebBuild ? 'open Jira Assist extension and ' : ''} grant permission before trying to access it.
                         More details available in issue {issueLink}</p>}
-                    <a className="btn btn-primary margin-r-5" href={isWebBuild ? "/" : "index.html"}>
-                        <i className="fa fa-angle-left"></i> Dashboard</a>
+                    <Button className="margin-r-5" icon="fa fa-refresh" label="Try Again"
+                        onClick={validate} style={{ height: 35 }} />
                     {!isWebBuild && !hasPermission && <button className="btn btn-warning" onClick={this.grantPermission}>
                         <i className="fa fa-unlock"></i> Grant permission</button>}
                     <a className="btn btn-success pull-right" href={jiraUrl} target="_blank" rel="noopener noreferrer">
