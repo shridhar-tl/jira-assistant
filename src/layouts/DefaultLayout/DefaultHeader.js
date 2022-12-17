@@ -1,8 +1,7 @@
-import React, { PureComponent } from 'react';
+import React, { PureComponent, useCallback } from 'react';
 import { NavLink } from 'react-router-dom';
 import { UncontrolledDropdown, DropdownMenu, DropdownToggle, Nav, NavItem } from 'reactstrap';
 
-import { AppSidebarToggler } from '@coreui/react';
 import logo from '../../img/logo-symbol.png';
 import { AppVersionNo } from '../../constants/common';
 import { WebSiteUrl } from '../../constants/urls';
@@ -124,3 +123,11 @@ class DefaultHeader extends PureComponent {
 }
 
 export default DefaultHeader;
+
+function AppSidebarToggler({ className, display }) {
+  const onClick = useCallback(() => {
+    document.body.classList.toggle(`sidebar-${display}-show`);
+  }, [display]);
+
+  return (<span className={className} style={{ marginLeft: 17, paddingTop: 2, cursor: 'pointer' }} onClick={onClick}><span className="fa fa-bars" /></span>);
+}

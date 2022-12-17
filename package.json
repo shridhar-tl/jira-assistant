@@ -51,8 +51,10 @@
         }
     },
     "dependencies": {
+        "@atlaskit/avatar": "^21.1.3",
+        "@atlaskit/css-reset": "^6.3.16",
+        "@atlaskit/side-navigation": "^1.4.1",
         "@coreui/coreui": "^2.1.16",
-        "@coreui/react": "^2.5.7",
         "@fullcalendar/core": "5.11.2",
         "@fullcalendar/daygrid": "5.11.2",
         "@fullcalendar/interaction": "5.11.2",

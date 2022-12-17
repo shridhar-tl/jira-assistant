@@ -1,38 +1,5 @@
 // #region Core UI Overrides
 
-.app-header {
-    color: #fff !important;
-
-    .fa-bars {
-        color: #fff !important;
-    }
-
-    .nav-item {
-        min-width: 35px;
-    }
-
-    &.navbar {
-        height: 44px !important;
-
-        .navbar-nav .nav-link,
-        .navbar-toggler-icon {
-            color: #fff !important;
-        }
-    }
-
-    i.fa {
-        font-size: 16px;
-    }
-
-    .navbar-brand {
-        width: 200px;
-
-        .navbar-brand-full {
-            color: #fff !important;
-        }
-    }
-}
-
 .form-control {
     padding: 0;
 }

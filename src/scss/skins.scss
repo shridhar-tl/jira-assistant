@@ -1,15 +1,15 @@
 @mixin base-style($header-logo-bg, $header-bg) {
   .app-header.navbar .navbar-brand {
-    background-color: $header-logo-bg  !important;
+    background-color: $header-logo-bg !important;
   }
 
   .app-header.navbar,
   .sidebar .nav-link:hover {
-    background-color: $header-bg  !important;
+    background-color: $header-bg !important;
   }
 
   .sidebar .nav-link.active i {
-    color: $header-logo-bg  !important;
+    color: $header-logo-bg !important;
   }
 
   .ui-panel.ui-widget .ui-panel-titlebar {
@@ -19,16 +19,20 @@
 
   .sidebar .nav-link.active,
   .sidebar-minimized .sidebar .nav-link {
-    border-left: 3px solid $header-bg  !important;
+    border-left: 3px solid $header-bg !important;
   }
 
   .link,
   .table i.fa-ellipsis-v {
-    color: $header-bg  !important;
+    color: $header-bg !important;
   }
 
   ul.right-menus li:hover {
     background-color: $header-logo-bg;
+  }
+
+  div.gadget .p-panel-header {
+    border-top: 3px solid $header-bg;
   }
 
   .dashboard-icons div.d-icon {
@@ -59,7 +63,7 @@
   }*/
   div.daysinweek {
     >div.day:hover {
-      background-color: $header-bg  !important;
+      background-color: $header-bg !important;
     }
 
     >div.day.day-on {
@@ -82,18 +86,18 @@
   color: $font-color;
 
   .app-header.navbar .navbar-brand {
-    background-color: $background-color  !important;
+    background-color: $background-color !important;
   }
 
   .app-header.navbar,
   .sidebar .nav-link:hover {
-    background-color: $background-secondary  !important;
+    background-color: $background-secondary !important;
     color: $font-color;
 
   }
 
   .sidebar .nav-link.active i {
-    color: $primary-color  !important;
+    color: $primary-color !important;
   }
 
   .ui-panel.ui-widget .ui-panel-titlebar {
@@ -103,12 +107,12 @@
 
   .sidebar .nav-link.active,
   .sidebar-minimized .sidebar .nav-link {
-    border-left: 3px solid $primary-color  !important;
+    border-left: 3px solid $primary-color !important;
   }
 
   .link,
   .table i.fa-ellipsis-v {
-    color: $primary-color  !important;
+    color: $primary-color !important;
   }
 
   ul.right-menus li:hover {
@@ -135,7 +139,7 @@
 
   .skin-bg-font {
     background-color: $primary-color;
-    color: $font-color  !important;
+    color: $font-color !important;
   }
 
   /*.ui-widget-header .ui-button, .ui-widget-content .ui-button, .ui-widget.ui-button, .ui-button {
@@ -144,7 +148,7 @@
   }*/
   div.daysinweek {
     >div.day:hover {
-      background-color: $primary-color  !important;
+      background-color: $primary-color !important;
     }
 
     >div.day.day-on {
@@ -296,7 +300,7 @@
   .src-editable-grid th,
   .src-editable-grid td,
   .p-panel .p-panel-content,
-  .p-panel .p-panel-header,
+  div.gadget .p-panel .p-panel-header,
   .p-tabview .p-tabview-panels,
   .p-tabview.p-tabview-top .p-tabview-nav li.p-highlight:hover a,
   .p-tabview.p-tabview-top .p-tabview-nav li.p-highlight a,
@@ -360,7 +364,7 @@
   }
 
   td.col-holiday {
-    background-color: $background-secondary  !important;
+    background-color: $background-secondary !important;
   }
 }
 
@@ -385,7 +389,8 @@
   @include base-style($header-logo-bg, $header-bg);
 }
 
-.skin-green {
+.skin-green,
+.skin-green2 {
   $header-logo-bg: #008d4c;
   $header-bg: #00a65a;
 
@@ -421,12 +426,6 @@
 .skin-sea {
   $header-logo-bg: #2d7776; //#296e6d
   $header-bg: #379392;
-  @include base-style($header-logo-bg, $header-bg);
-}
-
-.skin-green2 {
-  $header-logo-bg: #2b954b; //#288b46
-  $header-bg: #33b35a;
   @include base-style($header-logo-bg, $header-bg);
 }
 

@@ -1,9 +1,3 @@
-export const defaultSettings = {
-    openTicketsJQL: "assignee=currentUser() AND resolution=Unresolved and status != Closed",
-    jiraUpdatesJQL: `(comment ~ currentUser() or summary ~ currentUser() or description ~ currentUser() or assignee = currentUser() `
-        + `or reporter = currentUser()) and updatedDate >= $date$ and (lastViewed is null or lastViewed <= $date$) order by lastViewed`
-};
-
 export const EventCategory = {
     Temporary: "Temporary actions",
     Instance: "Instance actions",
@@ -22,6 +16,53 @@ export const SettingsCategory = {
     Advanced: 'ADVN',
     Dashboard: 'DBORD',
     PageSettings: 'PSET',
+};
+
+export const defaultSettings = {
+    openTicketsJQL: "assignee=currentUser() AND resolution=Unresolved and status != Closed",
+    jiraUpdatesJQL: `(comment ~ currentUser() or summary ~ currentUser() or description ~ currentUser() or assignee = currentUser() `
+        + `or reporter = currentUser()) and updatedDate >= $date$ and (lastViewed is null or lastViewed <= $date$) order by lastViewed`
+};
+
+export const sett_page_calendar = {
+    viewMode: 'timeGridWeek',
+    showWorklogs: true,
+    showMeetings: true,
+    showInfo: true,
+    eventColor: '#51b749',
+    worklogColor: '#9a9cff',
+    infoColor_valid: '#3a87ad',
+    infoColor_less: '#f0d44f',
+    infoColor_high: '#f06262'
+};
+
+export const sett_page_reports_UserDayWise = { logFormat: '1', breakupMode: '1', groupMode: '1' };
+
+export const commonSettings = {
+    [SettingsCategory.General]: {
+        dateFormat: 'dd-MMM-yyyy', timeFormat: ' hh:mm:ss tt',
+        minHours: 8, maxHours: 8,
+        startOfDay: '09:00', endOfDay: '17:00',
+        startOfWeek: 1,
+    },
+    [SettingsCategory.System]: {
+        CurrentJiraUrl: 'https://example.atlassian.net',
+        CurrentUserId: 2
+    },
+    [SettingsCategory.Advanced]: {
+        disableDevNotification: true,
+        disableJiraUpdates: true,
+        enableAnalyticsLogging: false,
+        enableExceptionLogging: false,
+        ...defaultSettings
+    },
+    [SettingsCategory.Dashboard]: {
+
+    },
+    [SettingsCategory.PageSettings]: {
+        page_calendar: sett_page_calendar,
+        page_reports_UserDayWise: sett_page_reports_UserDayWise
+    }
 };
 
 export const dateFormats = [

@@ -83,19 +83,3 @@ body:not(.quick-view) .quick-view-show {
         }
     }
 }
-
-.build-date {
-    color: #fff;
-    float: left;
-    font-size: 8px;
-
-    &:hover {
-        font-size: 11px;
-    }
-}
-
-.sidebar-minimized {
-    .build-date {
-        display: none;
-    }
-}

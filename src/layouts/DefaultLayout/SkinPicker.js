@@ -43,7 +43,6 @@ class SkinPicker extends PureComponent {
                 <div title="violet" skin="skin-violet" onClick={this.skinSelected} style={{ borderColor: '#7a4889', backgroundColor: '#9055A2' }}>V</div>
                 <div title="sea" skin="skin-sea" onClick={this.skinSelected} style={{ borderColor: '#2d7776', backgroundColor: '#379392' }}>S</div>
                 <div title="green" skin="skin-green" onClick={this.skinSelected} style={{ borderColor: '#008d4c', backgroundColor: '#00a65a' }}>G</div>
-                <div title="green" skin="skin-green2" onClick={this.skinSelected} style={{ borderColor: '#2b954b', backgroundColor: '#33b35a' }}>G</div>
                 <div title="red" skin="skin-red" onClick={this.skinSelected} style={{ borderColor: '#d73925', backgroundColor: '#dd4b39' }}>R</div>
                 <div title="yellow" skin="skin-yellow" onClick={this.skinSelected} style={{ borderColor: '#e08e0b', backgroundColor: '#f39c12' }}>Y</div>
                 <div title="pink" skin="skin-pink" onClick={this.skinSelected} style={{ borderColor: '#ec2f6c', backgroundColor: '#ef5285' }}>P</div>
