@@ -41,7 +41,8 @@ class Calendar extends BaseGadget {
     static contextType = WorklogContext;
     constructor(props) {
         super(props, "Calendar", "fa-calendar");
-        inject(this, "SessionService", "WorklogService", "MessageService", "AnalyticsService", "OutlookService", "CalendarService", "UtilsService", "UserUtilsService", "ConfigService", "TicketService");
+        inject(this, "SessionService", "WorklogService", "MessageService", "AnalyticsService", "OutlookService", "CalendarService",
+            "UtilsService", "UserUtilsService", "ConfigService", "TicketService", "AppBrowserService");
 
         this.hideMenu = !props.isGadget;
         this.hideRefresh = true;
