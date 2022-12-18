@@ -128,7 +128,7 @@ class WorklogGadget extends BaseGadget {
         if (epicNameField) {
             fieldsToFetch.push(epicNameField);
         }
-        return this.$jira.searchTickets(jql, fieldsToFetch) //, "status", "assignee"
+        return this.$jira.searchTickets(jql, fieldsToFetch, 0, { worklogStartDate: mfromDate.toDate(), worklogEndDate: mtoDate.toDate() }) //, "status", "assignee"
             .then((issues) => {
                 const arr = userList.map((u) => {
                     const usr = { logData: [], userName: u.toLowerCase() };

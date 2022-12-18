@@ -79,7 +79,7 @@ export default class ReportConfigService {
                 getRapidSprintDetails: { value: (rapidViewId, sprintId) => this.$jira.getRapidSprintDetails(rapidViewId, sprintId) },
                 searchUsers: { value: (text, maxResult = 10, startAt = 0) => this.$jira.searchUsers(text, maxResult, startAt) },
                 addWorklog: { value: (obj) => this.eventPipe.emit("addWorklog", typeof obj === "string" ? { ticketNo: obj } : obj) },
-                getWorklogs: { value: (jiraKey) => this.$jira.getWorklogs(jiraKey) },
+                getWorklogs: { value: (jiraKey, startDate, endDate) => this.$jira.getWorklogs(jiraKey, startDate, endDate) },
                 getDays: { value: this.$userutils.getDays },
                 isHoliday: { value: this.$userutils.isHoliday },
                 bookmarkTicket: {

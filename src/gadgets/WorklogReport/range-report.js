@@ -164,5 +164,5 @@ async function getIssuesWithWorklogFor(fromDate, toDate, state, epicNameField) {
     const author = userList ? `worklogAuthor in ("${userList.join('","')}") and ` : '';
     const jql = `${author}worklogDate >= '${fromDate.clone().add(-1, 'days').format("YYYY-MM-DD")}' and worklogDate < '${toDate.clone().add(1, 'days').format("YYYY-MM-DD")}'${additionalJQL}`;
 
-    return await svc.$jira.searchTickets(jql, fieldsToFetch);
+    return await svc.$jira.searchTickets(jql, fieldsToFetch, 0, { worklogStartDate: fromDate.toDate(), worklogEndDate: toDate.toDate() });
 }
