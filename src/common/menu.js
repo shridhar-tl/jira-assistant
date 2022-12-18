@@ -12,7 +12,7 @@ import { JAWebRootUrl } from '../constants/urls';
   const indexHtml = "/index.html";
   const indexPageUrl = switched ? JAWebRootUrl : indexHtml;
   const currentUserId = (await $settings.get('CurrentUserId')) || localStorage.getItem('CurrentUserId');
-  const CurrentJiraUrl = (await $settings.get('CurrentJiraUrl')) || localStorage.getItem('CurrentJiraUrl');
+  //const CurrentJiraUrl = (await $settings.get('CurrentJiraUrl')) || localStorage.getItem('CurrentJiraUrl');
   const hasTabAccess = () => {
     try {
       return $jaBrowserExtn.hasPermission({ permissions: ["activeTab"] });
@@ -21,7 +21,7 @@ import { JAWebRootUrl } from '../constants/urls';
     }
   };
 
-  if (!CurrentJiraUrl || !currentUserId) {
+  if (!currentUserId) {//!CurrentJiraUrl || 
     // Check and see if browser has activeTab permission. If not then redirect to integrate page
     hasTabAccess().then(hasPermission => {
       if (hasPermission) {

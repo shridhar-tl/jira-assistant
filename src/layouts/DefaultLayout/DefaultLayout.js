@@ -87,7 +87,7 @@ class DefaultLayout extends PureComponent {
     e.preventDefault();
     this.$cache.clear();
     this.$settings.set('CurrentUserId');
-    this.$settings.set('CurrentJiraUrl');
+    //this.$settings.set('CurrentJiraUrl');
     if (isWebBuild) {
       redirectToRoute();
     } else {

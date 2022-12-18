@@ -145,7 +145,7 @@ class Integrate extends PureComponent {
             console.error('Unable to reload BG Listeners', err);
         }
 
-        await this.$settings.set("CurrentJiraUrl", this.state.jiraUrl);
+        //await this.$settings.set("CurrentJiraUrl", this.state.jiraUrl);
         await this.$settings.set("CurrentUserId", id);
         if (this.props.setAuthType) {
             this.props.setAuthType('1');

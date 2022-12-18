@@ -46,8 +46,9 @@ export const commonSettings = {
         startOfWeek: 1,
     },
     [SettingsCategory.System]: {
-        CurrentJiraUrl: 'https://example.atlassian.net',
-        CurrentUserId: 2
+        //CurrentJiraUrl: 'https://api.atlassian.net',
+        CurrentUserId: 2,
+        skin: 'skin-blue'
     },
     [SettingsCategory.Advanced]: {
         disableDevNotification: true,

@@ -64,18 +64,22 @@ async function authenticateUser(userIdFromPath, authInfo, pathname, navigate) {
 
     try {
         const authenticated = await $auth.authenticate(userIdFromPath);
-        const userId = $session.userId || null;
-        const jiraUrl = $session.rootUrl;
+        if (authenticated) {
+            const userId = $session.userId || null;
+            const jiraUrl = $session.rootUrl;
 
-        if (!userIdFromPath && userId) {
-            navigate(userId + pathname);
-        } else if (userIdFromPath) { // If userid comes from url, then update the user id in db
-            // ToDo: Ensuring if value from db is different would be more appropriate
-            await $settings.set("CurrentJiraUrl", jiraUrl);
-            await $settings.set("CurrentUserId", userId);
+            if (!userIdFromPath && userId) {
+                navigate(userId + pathname);
+            } else if (userIdFromPath && userId) { // If userid comes from url, then update the user id in db
+                // ToDo: Ensuring if value from db is different would be more appropriate
+                //await $settings.set("CurrentJiraUrl", jiraUrl);
+                await $settings.set("CurrentUserId", userId);
+            }
+
+            return { authenticated, jiraUrl, userId };
         }
 
-        return { authenticated, jiraUrl, userId };
+        return { authenticated };
     } catch {
         const { needIntegration, rootUrl: jiraUrl } = $session;
 

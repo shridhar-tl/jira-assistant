@@ -126,7 +126,7 @@ export default class BackupService extends BaseService {
                 }).map(({ category, name, value, _ts = date }) => ({ userId: usrDBId, category, name, value, _ts }));
 
                 if (changeLogin && jiraUrl && usrDBId && (!loginDate || loginDate < lastLogin?.getTime())) {
-                    configToStore.push({ userId: SystemUserId, category: SettingsCategory.System, name: 'CurrentJiraUrl', value: jiraUrl, _ts: 2 });
+                    //configToStore.push({ userId: SystemUserId, category: SettingsCategory.System, name: 'CurrentJiraUrl', value: jiraUrl, _ts: 2 });
                     configToStore.push({ userId: SystemUserId, category: SettingsCategory.System, name: 'CurrentUserId', value: usrDBId, _ts: 2 });
                     loginDate = lastLogin?.getTime();
                 }

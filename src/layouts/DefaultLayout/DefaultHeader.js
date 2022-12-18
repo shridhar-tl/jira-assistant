@@ -25,6 +25,11 @@ import './DefaultHeader.scss';
 
 const allowWebVersion = config.features.common.allowWebVersion !== false;
 
+const showShareOption = config.features.header.shareWithOthers !== false;
+const showYoutubeOption = config.features.header.youtubeHelp !== false;
+const showContactUs = config.modules.contactUs !== false;
+const siteUrl = showShareOption ? WebSiteUrl : undefined;
+
 class DefaultHeader extends PureComponent {
   constructor(props) {
     super(props);
@@ -36,12 +41,6 @@ class DefaultHeader extends PureComponent {
     this.currentJiraInstance = getHostFromUrl(cUser.jiraUrl);
     this.state = {};
     this.versionNumber = isWebBuild ? 'WEB' : `v ${AppVersionNo}`;
-
-    this.showShareOption = config.features.header.shareWithOthers !== false;
-    this.showYoutubeOption = config.features.header.youtubeHelp !== false;
-    this.showContactUs = config.modules.contactUs !== false;
-
-    this.siteUrl = this.showShareOption ? WebSiteUrl : undefined;
   }
 
   componentDidMount() {
@@ -77,7 +76,7 @@ class DefaultHeader extends PureComponent {
     return (
       <>
         <AppSidebarToggler className="d-lg-none quick-view-hide" display="md" mobile><span className="fa fa-bars" /></AppSidebarToggler>
-        <a href={this.siteUrl} className="navbar-brand" target="_blank" rel="noopener noreferrer">
+        <a href={siteUrl} className="navbar-brand" target="_blank" rel="noopener noreferrer">
           <img src={logo} width="24" height="24" alt="Jira Assistant" className="navbar-brand-minimized" />
           <span className="navbar-brand-full">Jira Assistant <span className="v-info badge badge-success" onClick={this.showVersionInfo}>{this.versionNumber}</span></span>
         </a>
@@ -98,7 +97,7 @@ class DefaultHeader extends PureComponent {
             onClick={this.showVersionInfo}><i className="fa fa-download" /> Updates available</span>}
           {!this.disableJiraUpdates && <JiraUpdates />}
           {!this.disableNotification && notifications && <Notifications notifications={notifications} />}
-          {this.showYoutubeOption && <NavItem className="d-md-down-none">
+          {showYoutubeOption && <NavItem className="d-md-down-none">
             <span className="nav-link" onClick={this.showYoutubeHelp}><i className="fa fa-youtube-play"></i></span>
           </NavItem>}
           <UncontrolledDropdown nav direction="down">
@@ -109,12 +108,12 @@ class DefaultHeader extends PureComponent {
               <SkinPicker />
             </DropdownMenu>
           </UncontrolledDropdown>
-          {this.showShareOption && <ShareWithOthers />}
-          {this.showContactUs && <NavItem className="d-md-down-none">
+          {showShareOption && <ShareWithOthers />}
+          {showContactUs && <NavItem className="d-md-down-none">
             <NavLink to={`/${this.userId}/contactus`} className="nav-link"><i className="fa fa-phone" title="Contact us"></i></NavLink>
           </NavItem>}
         </Nav>
-        {showYoutubeVideo && <YoutubeVideo onHide={this.hideYoutube} />}
+        {showYoutubeOption && showYoutubeVideo && <YoutubeVideo onHide={this.hideYoutube} />}
       </>
     );
   }
