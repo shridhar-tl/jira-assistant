@@ -37,7 +37,7 @@ export default class WorklogService extends BaseService {
         if (!fields || fields.length === 0) {
             fields = ["worklog"];
         } //, "summary", "issuetype", "parent", "status", "assignee"
-        return this.$jira.searchTickets(jql, fields)
+        return this.$jira.searchTickets(jql, fields, 0, { worklogStartDate: fromDate, worklogEndDate: toDate })
             .then((issues) => {
                 const arr = userList.map((u) => ({ logData: [], userName: u.toLowerCase() }));
                 const report = {};

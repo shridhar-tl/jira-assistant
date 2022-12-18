@@ -18,6 +18,7 @@ export default class JiraService {
 
     searchTickets(jql, fields, startAt, opts) {
         startAt = startAt || 0;
+        const { worklogStartDate, worklogEndDate } = opts || {};
         return new Promise((resolve, reject) => {
             const postData = { jql, fields, maxResults: opts?.maxResults || 1000 };
             if (opts?.expand?.length) {
@@ -48,7 +49,7 @@ export default class JiraService {
                             }
                             else if (prevCount > remaining || --retryCount >= 0) {
                                 prevCount = remaining;
-                                this.fillWorklogs(isus, cback);
+                                this.fillWorklogs(isus, worklogStartDate, worklogEndDate, cback);
                             }
                             else {
                                 reject(null);
@@ -72,7 +73,7 @@ export default class JiraService {
         }).then((result) => {
             const issues = result.issues;
             if ((issues.length + result.startAt) < result.total && issues.length > 0) {
-                return this.searchTickets(jql, fields, result.startAt + issues.length).then(res => issues.addRange(res));
+                return this.searchTickets(jql, fields, result.startAt + issues.length, opts).then(res => issues.addRange(res));
             }
             else {
                 return issues;
@@ -80,8 +81,25 @@ export default class JiraService {
         });
     }
 
-    getWorklogs(jiraKey) {
-        return this.$ajax.get(ApiUrls.issueWorklog, jiraKey);
+    getWorklogs(jiraKey, startDate, endDate) {
+        const url = this.$ajax.prepareUrl(ApiUrls.issueWorklog, jiraKey);
+
+        const reqObj = {
+            maxResults: 5000,
+            startAt: 0
+        };
+
+        const threshold = 24 * 60 * 60 * 1000; // have 24 hours threshold to avoid timezone issues while pulling worklogs
+
+        if (startDate && startDate instanceof Date) {
+            reqObj.startedAfter = startDate.getTime() - threshold; // Pull from 24 hours before the given time
+        }
+
+        if (endDate && endDate instanceof Date) {
+            reqObj.startedBefore = endDate.getTime() + threshold; // pull till next 24 hours
+        }
+
+        return this.$ajax.get(url, reqObj);
     }
 
     async getJQLAutocomplete() {
@@ -372,9 +390,10 @@ export default class JiraService {
     }
 
     async getSprintIssues(sprintId, options) {
-        const { issues } = await this.$ajax.get(ApiUrls.getSprintIssues.format(sprintId), options);
+        const { worklogStartDate, worklogEndDate, ...opts } = options;
+        const { issues } = await this.$ajax.get(ApiUrls.getSprintIssues.format(sprintId), opts);
         if (options?.fields?.indexOf("worklog") > -1) {
-            await this.fillMissingWorklogs(issues);
+            await this.fillMissingWorklogs(issues, worklogStartDate, worklogEndDate);
         }
 
         return issues;
@@ -465,7 +484,7 @@ export default class JiraService {
         return result?.values;
     }
 
-    fillWorklogs(issues, callback) {
+    fillWorklogs(issues, startDate, endDate, callback) {
         issues = issues.filter((iss) => !(iss.fields || {}).worklog || (((iss.fields || {}).worklog || {}).worklogs || []).length < iss.fields.worklog.total);
         let pendCount = issues.length;
         let successCount = 0;
@@ -485,17 +504,17 @@ export default class JiraService {
         };
 
         for (let i = 0; i < pendCount; i++) {
-            this.fillWL(issues[i]).then(onSuccess);
+            this.fillWL(issues[i], startDate, endDate).then(onSuccess);
         }
         if (issues.length === 0) {
             callback(issues.length);
         }
     }
 
-    async fillMissingWorklogs(issues) {
+    async fillMissingWorklogs(issues, startDate, endDate) {
         issues = issues.filter((iss) => !iss.fields?.worklog || iss.fields?.worklog?.worklogs?.length < iss.fields?.worklog?.total);
         await runOnQueue(issues, 3, async (issue) => {
-            const res = await this.getWorklogs(issue.key);
+            const res = await this.getWorklogs(issue.key, startDate, endDate);
             console.log(`Success fetching worklog for ${issue.key}`);
             if (!issue.fields) {
                 issue.fields = {};
@@ -505,9 +524,9 @@ export default class JiraService {
         });
     }
 
-    fillWL(issue) {
-        console.log(`Started fetching worklog for ${issue.key}`);
-        return this.getWorklogs(issue.key).then((res) => {
+    fillWL(issue, startDate, endDate) {
+        console.log(`Started fetching worklog for ${issue.key} between ${startDate} & ${endDate}`);
+        return this.getWorklogs(issue.key, startDate, endDate).then((res) => {
             console.log(`Success fetching worklog for ${issue.key}`);
             if (!issue.fields) {
                 issue.fields = {};
