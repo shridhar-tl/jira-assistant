@@ -43,6 +43,9 @@ if (buildMode === 'WEB') {
         fs.mkdirSync(resolveBuildPath('.github', 'workflows'));
         fs.copyFileSync(sourceActionPath, resolveBuildPath(appBuildActionFile));
     }
+} else if (buildMode === 'PLUGIN') {
+    cleanupForPlugin(false);
+    cleanupBrowserFolders();
 } else {
     movePackages(paths.appBuild);
 }
@@ -141,14 +144,16 @@ function getFiles(path, files) {
 function deleteUnnecessaryFiles(allFilesList, printLogs) {
     const deleteFileTypes = /([.]txt|[.]svg)$/;
     // Delete all the txt and svg files which are unnecessary
-    allFilesList
-        .filter(f => deleteFileTypes.test(f))
-        .forEach(f => {
-            if (printLogs) {
-                console.log(`Deleting file ${f}`);
-            }
-            fs.unlinkSync(f);
-        });
+    deleteAllFiles(allFilesList.filter(f => deleteFileTypes.test(f)), printLogs);
+}
+
+function deleteAllFiles(filesList, printLogs) {
+    filesList.forEach(f => {
+        if (printLogs) {
+            console.log(`Deleting file ${f}`);
+        }
+        fs.unlinkSync(f);
+    });
 }
 
 function cleanupForWebApp(printLogs) {
@@ -157,6 +162,16 @@ function cleanupForWebApp(printLogs) {
     getFiles(paths.appBuild, allFilesList);
 
     deleteUnnecessaryFiles(allFilesList, printLogs);
+}
+
+function cleanupForPlugin(printLogs) {
+    cleanupForWebApp(printLogs);
+
+    fs.unlinkSync(resolveBuildPath('favicon.ico'));
+
+    // Cleanup assets folder
+    fs.emptyDirSync(resolveBuildPath('assets'));
+    fs.rmdirSync(resolveBuildPath('assets'));
 }
 
 function cleanupBrowserFolders() {

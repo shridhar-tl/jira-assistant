@@ -18,7 +18,7 @@ import UpdatesInfo from './UpdatesInfo';
 import LaunchWeb from './LaunchWeb';
 import BackupImporter from './BackupImporter';
 import TimerControl from './header/TimerControl';
-import { isAppBuild, isWebBuild } from '../../constants/build-info';
+import { isAppBuild, isPluginBuild, isWebBuild } from '../../constants/build-info';
 import config from '../../customize';
 import ShareWithOthers from './header/ShareWithOthers';
 import './DefaultHeader.scss';
@@ -89,9 +89,9 @@ class DefaultHeader extends PureComponent {
         </NavLink>
         <TimerControl />
         <Nav className="ml-auto" navbar>
-          <BackupImporter>
+          {!isPluginBuild && <BackupImporter>
             {(importSettings) => <SwitchAccountOption instance={this.currentJiraInstance} onLogout={this.props.onLogout} onImport={importSettings} />}
-          </BackupImporter>
+          </BackupImporter>}
           {allowWebVersion && !isAppBuild && <LaunchWeb />}
           {!!version && <span className={`update-available badge badge-${isBeta ? "warning" : "success"}`}
             title={`Jira Assist ${isBeta ? 'BETA ' : ''}v${version} is now available. Click to know more.`}

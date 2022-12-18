@@ -8,6 +8,7 @@ import {
     Section,
     SideNavigation
 } from '@atlaskit/side-navigation';
+import { isPluginBuild } from '../../constants/build-info';
 import AsideUserInfo from './AsideUserInfo';
 import BuildDate from './BuildDate';
 import './NavSideBar.scss';
@@ -24,9 +25,9 @@ const NavSideBar = function ({ onLogout, menus, navigate, location }) {
 
     return (<div className="sidebar-container sidebar">
         <SideNavigation label="Navigation Menus" testId="side-navigation">
-            <NavigationHeader className="nav-header">
+            {!isPluginBuild && <NavigationHeader className="nav-header">
                 <AsideUserInfo onLogout={onLogout} />
-            </NavigationHeader>
+            </NavigationHeader>}
             <NestableNavigationContent initialStack={[]} testId="nestable-navigation-content"            >
                 {menus.map((section, i) => (<Section key={i} title={section.name}>
                     {section.items.map(renderMenu)}

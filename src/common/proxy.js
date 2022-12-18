@@ -1,6 +1,6 @@
 /* global chrome browser */
 import browserInfo, { BROWSER_NAME } from '../common/browsers';
-import { isAppBuild, isWebBuild } from '../constants/build-info';
+import { isAppBuild, isPluginBuild, isWebBuild } from '../constants/build-info';
 import { processResponse } from './proxy-helper';
 import { convertToStorableValue } from './storage-helpers';
 
@@ -21,11 +21,11 @@ export function executeService(svcName, action, args, $message) {
     if (!injected && !chr?.runtime) {
         throw new Error("Unable to connect to extension. Ensure if Jira Assistant extension is installed and not disabled!");
     }
-    if (!isAppBuild) {
+    if (!isAppBuild && !isPluginBuild) {
         args = convertToStorableValue(args);
     }
     return new Promise((resolve, reject) => {
-        const responder = isAppBuild ? resolve : (response) => processResponse(response, $message, resolve, reject);
+        const responder = isAppBuild || isPluginBuild ? resolve : (response) => processResponse(response, $message, resolve, reject);
 
         try {
             if (injected) {

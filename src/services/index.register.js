@@ -29,11 +29,12 @@ import WorklogService from './worklog-service';
 import WorklogTimerService from './worklog-timer-service';
 import SettingsService from './settings-service';
 import { injectable, AnalyticsServiceFake } from './index.common';
+import { isPluginBuild } from '../constants/build-info';
 import config from '../customize';
 
 let _commonInjected = false;
 
-const allowAnalytics = config.features.common.analytics !== false;
+const allowAnalytics = !isPluginBuild && config.features.common.analytics !== false;
 
 // Any new classes injected should be added in index.d.ts file as well to support intellisense in VS Code.
 export default function registerServices() {

@@ -7,7 +7,8 @@ process.env.REACT_APP_BUILD_DATE = new Date().getTime();
 const buildMode = process.env.REACT_APP_BUILD_MODE;
 const isWebBuild = buildMode === 'WEB';
 const isAppBuild = buildMode === 'APP';
-const isExtnBuild = !isWebBuild && !isAppBuild;
+const isPluginBuild = buildMode === 'PLUGIN';
+const isExtnBuild = !isWebBuild && !isAppBuild && !isPluginBuild;
 
 const writeToDisk = process.env.WRITE_TO_DISK === "true";
 const analyzeBundles = process.env.ANALYZE_BUNDLES === "true";
@@ -101,6 +102,8 @@ function getEntryObject(paths) {
         result.background = resolvePath('src/common/background.js');
         result.menu = resolvePath('src/common/menu.js');
         result.jira_cs = resolvePath('src/content-scripts/jira.js');
+    } else if (isPluginBuild) {
+        result.index = resolvePath('src/index.plugin.js');
     }
 
     return result;

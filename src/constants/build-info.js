@@ -12,13 +12,12 @@ function redirectToRoute(route) {
 }
 
 function getRouteUrl(route) {
-    const webRoute = (isWebBuild || isPluginBuild);
     route = route || '/';
-    if (!webRoute && route === '/') {
+    if (!isWebBuild && route === '/') {
         route = '';
     }
 
-    return webRoute ? route : (`/index.html${route ? '#' : ''}${route}`);
+    return isWebBuild ? route : (`${isPluginBuild ? '' : '/index.html'}${route ? '#' : ''}${route}`);
 }
 
 export { isWebBuild, isAppBuild, isExtnBuild, isPluginBuild, buildMode, isProdBuild, isDevBuild, redirectToRoute, getRouteUrl };
