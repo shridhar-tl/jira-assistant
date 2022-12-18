@@ -1,16 +1,16 @@
 import React, { PureComponent } from 'react';
 import Dialog from "../../dialogs";
-import "./DefaultLayout.scss";
 // sidebar nav config
 import navigation, { getDashboardMenu } from '../../_nav';
 import { inject } from '../../services/injector-service';
 import { ContextMenu } from '../../externals/jsd-report';
 import { setStartOfWeek } from '../../common/utils';
 import { WorklogContextProvider } from '../../common/context';
-import { isPluginBuild, isWebBuild, redirectToRoute } from '../../constants/build-info';
+import { isWebBuild, redirectToRoute } from '../../constants/build-info';
 import AppContent from './AppContent';
 import { withRouter } from '../../pollyfills';
 import NavSideBar from './NavSideBar';
+import "./DefaultLayout.scss";
 
 const DefaultHeader = React.lazy(() => import('./DefaultHeader'));
 
@@ -146,11 +146,11 @@ class DefaultLayout extends PureComponent {
     const { menus } = this.state;
 
     return (
-      <WorklogContextProvider value={this.worklogContextProps} >
+      <WorklogContextProvider value={this.worklogContextProps}>
         <div className="app">
-          {!isPluginBuild && <header className="app-header navbar">
+          <header className="app-header navbar">
             <DefaultHeader onLogout={this.signOut} />
-          </header>}
+          </header>
           <div className="app-body">
             <NavSideBar onLogout={this.signOut} menus={menus} navigate={this.props.navigate} location={this.props.location} />
             <main className="main">

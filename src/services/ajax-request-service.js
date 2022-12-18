@@ -56,39 +56,46 @@ export default class AjaxRequestService {
             const request = {
                 method,
                 body: JSON.stringify(body),
+                headers,
                 credentials: withCredentials !== false && needsPermission !== false ? 'include' : 'omit',
-                referrerPolicy: 'no-referrer',
-                headers
+                referrerPolicy: 'no-referrer'
             };
 
             if (isAppBuild) {
-                return await executeService('AjaxRequestService', 'execute', [url, request]);
+                return executeService('AjaxRequestService', 'execute', [url, request]);
             } else {
-                const result = await fetch(url, request);
-
-                if (result.ok) {
-                    try {
-                        if (result.status !== 204) {
-                            return await result.json();
-                        } else {
-                            return {};
-                        }
-                    } catch (err) {
-                        return Promise.reject({ status: -1, statusText: err.message, error: err });
-                    }
-                } else {
-                    const { status, statusText, headers } = result;
-                    const type = headers.get('content-type');
-                    let error;
-                    if (type?.includes('json')) {
-                        error = await result.json();
-                    }
-                    return Promise.reject({ status, statusText, error });
-                }
+                const result = await this.httpFetch(url, request);
+                return this._processResult(result);
             }
         } catch (err) {
             console.error(err);
             return Promise.reject({ status: 0, statusText: err.message, error: err });
+        }
+    }
+
+    httpFetch(url, request) {
+        return fetch(url, request);
+    }
+
+    async _processResult(result) {
+        if (result.ok) {
+            try {
+                if (result.status !== 204) {
+                    return await result.json();
+                } else {
+                    return {};
+                }
+            } catch (err) {
+                return Promise.reject({ status: -1, statusText: err.message, error: err });
+            }
+        } else {
+            const { status, statusText, headers } = result;
+            const type = headers.get('content-type');
+            let error;
+            if (type?.includes('json')) {
+                error = await result.json();
+            }
+            return Promise.reject({ status, statusText, error });
         }
     }
 }

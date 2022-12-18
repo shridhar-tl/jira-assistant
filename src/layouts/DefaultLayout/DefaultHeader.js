@@ -6,7 +6,6 @@ import logo from '../../img/logo-symbol.png';
 import { AppVersionNo } from '../../constants/common';
 import { WebSiteUrl } from '../../constants/urls';
 
-import './DefaultHeader.scss';
 import { inject } from '../../services/injector-service';
 import YoutubeVideo from '../../dialogs/YoutubeVideo';
 import SkinPicker from './SkinPicker';
@@ -22,6 +21,7 @@ import TimerControl from './header/TimerControl';
 import { isAppBuild, isWebBuild } from '../../constants/build-info';
 import config from '../../customize';
 import ShareWithOthers from './header/ShareWithOthers';
+import './DefaultHeader.scss';
 
 const allowWebVersion = config.features.common.allowWebVersion !== false;
 
@@ -75,7 +75,7 @@ class DefaultHeader extends PureComponent {
     const { version, isBeta } = notifications?.updatesAvailable || {};
 
     return (
-      <React.Fragment>
+      <>
         <AppSidebarToggler className="d-lg-none quick-view-hide" display="md" mobile><span className="fa fa-bars" /></AppSidebarToggler>
         <a href={this.siteUrl} className="navbar-brand" target="_blank" rel="noopener noreferrer">
           <img src={logo} width="24" height="24" alt="Jira Assistant" className="navbar-brand-minimized" />
@@ -115,9 +115,7 @@ class DefaultHeader extends PureComponent {
           </NavItem>}
         </Nav>
         {showYoutubeVideo && <YoutubeVideo onHide={this.hideYoutube} />}
-        {/*<AppAsideToggler className="d-md-down-none"><span className="fa fa-bars" /></AppAsideToggler>*/}
-        {/*<AppAsideToggler className="d-lg-none" mobile />*/}
-      </React.Fragment >
+      </>
     );
   }
 }

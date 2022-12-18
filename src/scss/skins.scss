@@ -32,7 +32,7 @@
   }
 
   div.gadget .p-panel-header {
-    border-top: 3px solid $header-bg;
+    border-top-color: $header-bg;
   }
 
   .dashboard-icons div.d-icon {
@@ -350,7 +350,7 @@
 
   td.log-good,
   tr.log-good {
-    background-color: $background-color + #0f300f !important;
+    background-color: #0f300f !important; // $background-color +#0f300f !important;
   }
 
   td.log-less,
@@ -360,7 +360,7 @@
 
   td.log-high,
   tr.log-high {
-    background-color: $background-color + #804740 !important;
+    background-color: #804740 !important; // $background-color + #804740 !important;
   }
 
   td.col-holiday {
