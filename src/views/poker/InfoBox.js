@@ -2,6 +2,7 @@ import React from 'react';
 import { connect } from './store';
 import { Image } from '../../controls';
 import './InfoBox.scss';
+import Link from '../../controls/Link';
 
 function InfoBox() {
     return (<div className="info-box">
@@ -34,7 +35,7 @@ const IssueDetail = connect(React.memo(function ({ issue: { key, icon, url, summ
     return (<div className="issue-details">
         <Image src={icon} />
         <span className="issue-key">
-            <a href={url} target="_blank" rel="noreferrer"> {key}</a>
+            <Link href={url}> {key}</Link>
         </span>
         {!!summary && <span className="issue-summary"> - {summary}</span>}
     </div>);

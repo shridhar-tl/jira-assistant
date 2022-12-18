@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react';
 import { TextBox, Button, SelectBox } from '../../controls';
 import { getUserName } from '../../common/utils';
+import Link from '../../controls/Link';
 
 class UserRow extends PureComponent {
     constructor(props) {
@@ -36,8 +37,8 @@ class UserRow extends PureComponent {
             <td>
                 <div className="group-user">
                     <img src={user.avatarUrls['32x32'] || user.avatarUrls['48x48']} alt="" height={32} width={32} className="pull-left" />
-                    <a href={user.self} target="_blank" rel="noopener noreferrer"
-                        className={isActive ? "link" : "link strike-out"}>{user.displayName}</a>
+                    <Link href={user.self}
+                        className={isActive ? "link" : "link strike-out"}>{user.displayName}</Link>
                 </div>
             </td>
             <td>{user.emailAddress}</td>

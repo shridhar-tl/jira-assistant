@@ -14,6 +14,7 @@ import { getDefaultColumns, noRowMessage } from './helpers';
 import './ImportIssue.scss';
 import DateEditor from '../../../editor-controls/DateEditor';
 import classNames from 'classnames';
+import Link from '../../../controls/Link';
 /**
  Scenarios to handle
 
@@ -193,7 +194,7 @@ class ImportIssue extends BaseImport {
         </span>);
 
         if ((field === 'issuekey' || field === 'parent') && !val.error) {
-            return (<a href={this.$userutils.getTicketUrl(val.value)} target="_blank" rel="noreferrer">{val.displayText || val.value}</a>);
+            return (<Link href={this.$userutils.getTicketUrl(val.value)}>{val.displayText || val.value}</Link>);
         } else if (Array.isArray(val.value)) {
             return val.value.map(getVal);
         } else {

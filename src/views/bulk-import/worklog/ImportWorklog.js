@@ -5,6 +5,7 @@ import { inject } from '../../../services/injector-service';
 import { Button, Checkbox } from '../../../controls';
 import "./ImportWorklog.scss";
 import { parseTimespent, exportCsv } from '../../../common/utils';
+import Link from '../../../controls/Link';
 //import { EditableGrid, THead, TBody, Column } from '../../../components/EditableGrid/EditableGrid';
 
 const wlStatus_WillImport = "Will Import";
@@ -346,7 +347,7 @@ class ImportWorklog extends BaseImport {
     getWorklogLink(row) {
         const { ticketNo, worklogId, status } = row;
 
-        return <a className="link" href={this.$userutils.getWorklogUrl(ticketNo, worklogId)} target="_blank" rel="noopener noreferrer">{status}</a>;
+        return <Link className="link" href={this.$userutils.getWorklogUrl(ticketNo, worklogId)}>{status}</Link>;
     }
 
     render() {

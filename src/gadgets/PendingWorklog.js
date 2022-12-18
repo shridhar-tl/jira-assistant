@@ -7,6 +7,7 @@ import { Button, Checkbox } from '../controls';
 import Dialog from '../dialogs';
 import ChangeTracker from '../components/ChangeTracker';
 import { WorklogContext } from '../common/context';
+import Link from '../controls/Link';
 
 class PendingWorklog extends BaseGadget {
     static contextType = WorklogContext;
@@ -161,7 +162,7 @@ class PendingWorklog extends BaseGadget {
                             {b.selected && <Checkbox checked={true} onChange={() => this.selectRowItem(b)} />}
                             {!b.selected && <i className="fa fa-ellipsis-v" onClick={(e) => this.showContext(e, b)}></i>}
                         </td>
-                        <td><a href={b.ticketUrl} rel="noopener noreferrer" className="link strike" target="_blank">{b.ticketNo}</a></td>
+                        <td><Link href={b.ticketUrl} className="link strike" >{b.ticketNo}</Link></td>
                         <td>{b.summary}</td>
                         <td>{b.displayDate}</td>
                         <td>{b.timeSpent}</td>

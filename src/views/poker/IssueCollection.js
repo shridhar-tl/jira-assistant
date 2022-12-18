@@ -9,6 +9,7 @@ import { Dialog } from '../../dialogs/CommonDialog';
 import { Checkbox, SelectBox } from '../../controls';
 import { maxScores } from './constants';
 import './IssueCollection.scss';
+import Link from '../../controls/Link';
 
 function IssueCollection({ showConfigs, currentIssueId,
     viewingIssueId, issues, isModerator,
@@ -67,9 +68,9 @@ function Issue({
             <span className="issue-info">
                 <Image src={icon} />
                 <span className="key"> {key} </span>
-                <a href={url} target="_blank" rel="noreferrer" onClick={stop}>
+                <Link href={url}>
                     <span className="fa fa-external-link" />
-                </a>
+                </Link>
             </span>
         </div>
     );

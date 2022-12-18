@@ -2,6 +2,7 @@ import React from 'react';
 import { inject } from '../services/injector-service';
 import BaseControl from './BaseControl';
 import { Image } from '../controls';
+import Link from '../controls/Link';
 
 class IssueDisplay extends BaseControl {
     constructor(props) {
@@ -45,12 +46,12 @@ class IssueDisplay extends BaseControl {
         }
 
         return (
-            <a href={this.getTicketUrl(key)} title={title} rel="noopener noreferrer"
-                className={`link ${className}`} target="_blank">
+            <Link href={this.getTicketUrl(key)} title={title}
+                className={`link ${className}`}>
                 {!!iconUrl && <Image src={iconUrl} title={issueTypeName} />}
                 <span title={summary}>{disp} {status}</span>
                 {badge}
-            </a>
+            </Link>
         );
     }
 }

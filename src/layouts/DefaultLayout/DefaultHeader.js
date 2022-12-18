@@ -22,6 +22,7 @@ import { isAppBuild, isWebBuild } from '../../constants/build-info';
 import config from '../../customize';
 import ShareWithOthers from './header/ShareWithOthers';
 import './DefaultHeader.scss';
+import Link from '../../controls/Link';
 
 const allowWebVersion = config.features.common.allowWebVersion !== false;
 
@@ -76,12 +77,12 @@ class DefaultHeader extends PureComponent {
     return (
       <>
         <AppSidebarToggler className="d-lg-none quick-view-hide" display="md" mobile><span className="fa fa-bars" /></AppSidebarToggler>
-        <a href={siteUrl} className="navbar-brand" target="_blank" rel="noopener noreferrer">
+        <Link href={siteUrl} className="navbar-brand">
           <img src={logo} width="24" height="24" alt="Jira Assistant" className="navbar-brand-minimized" />
           <span className="navbar-brand-full">Jira Assistant <span className="v-info badge badge-success" onClick={this.showVersionInfo}>{this.versionNumber}</span></span>
-        </a>
+        </Link>
         <AppSidebarToggler className="d-md-down-none quick-view-hide" display="lg"><span className="fa fa-bars" /></AppSidebarToggler>
-        <button className="navbar-toggler quick-view-show"><a href={isWebBuild ? "/" : "/index.html"} target="_blank" title="Open in new tab" rel="noreferrer"><span className="fa fa-external-link" /></a></button>
+        <button className="navbar-toggler quick-view-show"><Link href={isWebBuild ? "/" : "/index.html"} title="Open in new tab"><span className="fa fa-external-link" /></Link></button>
         <NavLink to={`/${this.userId}/contribute`} className="btn-donate"
           title="Would you like to contribute / compensate us for the effort we put in development of this tool? Click to know more">
           <img src="/assets/donate.png" width="145" className="margin-r-5" alt="Donate us" />

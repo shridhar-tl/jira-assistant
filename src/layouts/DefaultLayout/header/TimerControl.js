@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react';
 import { WorklogContext } from '../../../common/context';
+import Link from '../../../controls/Link';
 import AddWorklog from '../../../dialogs/AddWorklog';
 import { inject } from '../../../services/injector-service';
 import './Common.scss';
@@ -28,7 +29,7 @@ class TimerControl extends PureComponent {
 
         return (
             <div className="timer-ctl">
-                <a className="ticket-no link" href={this.$userutils.getTicketUrl(curTime.key)} target="_blank" rel="noreferrer noopener">{curTime.key}</a>
+                <Link className="ticket-no link" href={this.$userutils.getTicketUrl(curTime.key)}>{curTime.key}</Link>
                 <Lapse key={`${curTime.key}_${curTime.isRunning ? 'R' : 'S'}`} isRunning={curTime.isRunning} lapse={curTime.lapse} title={curTime.description} />
                 {!curTime.isRunning && <span className="fa fa-play" title="Resume time tracking" onClick={this.context.resumeTimer} />}
                 {curTime.isRunning && <span className="fa fa-pause" title="Pause time tracking" onClick={this.context.pauseTimer} />}

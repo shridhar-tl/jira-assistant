@@ -1,6 +1,7 @@
 import React from 'react';
 import BaseControl from './BaseControl';
 import { parseJiraCustomCSV } from '../common/utils';
+import Link from '../controls/Link';
 
 const CSV_OBJECT_TESTER = /^com\..*\[.*\].*$/;
 
@@ -15,12 +16,11 @@ class TagsDisplay extends BaseControl {
                 if (val === 0 && hideZero) { return null; }
 
                 const data = (
-                    <a href={a[hrefProp] || undefined}
+                    <Link href={a[hrefProp] || undefined}
                         title={titleProp ? a[titleProp] : undefined}
-                        rel="noopener noreferrer" target="_blank"
                         className="link badge badge-pill skin-bg-font">
                         {icon} {val}
-                    </a>
+                    </Link>
                 );
 
                 if (isObject) { return data; }

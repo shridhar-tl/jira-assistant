@@ -7,6 +7,7 @@ import { ScrollableTable, THead, TBody, NoDataRow, Column } from '../components/
 import { DatePicker } from '../controls';
 import { DateDisplay } from '../display-controls';
 import { GadgetActionType } from './_constants';
+import Link from '../controls/Link';
 
 class TicketWiseWorklog extends BaseGadget {
     constructor(props) {
@@ -110,7 +111,7 @@ class TicketWiseWorklog extends BaseGadget {
                 </THead>
                 <TBody>
                     {(b) => <tr key={b.ticketNo} onContextMenu={(e) => this.showContext(e, b)} className={b.rowClass}>
-                        <td><a href={b.ticketUrl} rel="noopener noreferrer" className="link strike" target="_blank">{b.ticketNo}</a></td>
+                        <td><Link href={b.ticketUrl} className="link strike">{b.ticketNo}</Link></td>
                         <td>{b.summary}</td>
                         <td>{b.totalHours}</td>
                         <td>{b.uploaded}</td>
@@ -119,10 +120,10 @@ class TicketWiseWorklog extends BaseGadget {
                         <td>
                             <ul className="tags">
                                 {b.logData.map((ld, x) => <li key={x}>
-                                    {ld.worklogId && <a className="link badge badge-pill skin-bg-font" href={this.getWorklogUrl(b.ticketNo, ld.worklogId)}
-                                        target="_blank" rel="noopener noreferrer" title={ld.comments}>
+                                    {ld.worklogId && <Link className="link badge badge-pill skin-bg-font" href={this.getWorklogUrl(b.ticketNo, ld.worklogId)}
+                                        title={ld.comments}>
                                         <span className="fa fa-clock-o" />  <DateDisplay tag="span" value={ld.dateLogged} />: {ld.uploaded}
-                                    </a>}
+                                    </Link>}
                                     {!ld.worklogId && <span className="link badge badge-pill skin-bg-font" onClick={() => this.editWorklog(ld.id)} title={ld.comments}>
                                         <span className="fa fa-clock-o" /> <DateDisplay tag="span" value={ld.dateLogged} />: {ld.uploaded}
                                     </span>}

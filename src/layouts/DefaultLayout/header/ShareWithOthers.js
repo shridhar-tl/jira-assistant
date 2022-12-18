@@ -2,6 +2,7 @@ import React from 'react';
 import { UncontrolledDropdown, DropdownItem, DropdownMenu, DropdownToggle } from 'reactstrap';
 import { EventCategory } from '../../../constants/settings';
 import { CHROME_WS_URL, FF_STORE_URL, EDGE_STORE_URL, WebSiteUrl, OPERA_STORE_URL } from '../../../constants/urls';
+import Link from '../../../controls/Link';
 import { inject } from '../../../services/injector-service';
 
 function ShareWithOthers() {
@@ -36,21 +37,21 @@ function ShareWithOthers() {
                 <strong className="share-header-text">Share or rate this tool</strong>
             </DropdownItem>
             <div className="share-items">
-                <a href={ratingUrl} target="_blank" rel="noopener noreferrer" title="Click to rate this tool or add a comment in chrome web store">
+                <Link href={ratingUrl} title="Click to rate this tool or add a comment in chrome web store">
                     <i className="fa fa-star pull-left"></i>
-                </a>
-                <a href={gMailShare} target="_blank" rel="noopener noreferrer" title="Share with Gmail">
+                </Link>
+                <Link href={gMailShare} title="Share with Gmail">
                     <i className="fa fa-envelope pull-left"></i>
-                </a>
-                <a href={linkedInShare} target="_blank" rel="noopener noreferrer" title="Share with Linked in">
+                </Link>
+                <Link href={linkedInShare} title="Share with Linked in">
                     <i className="fa fa-linkedin-square pull-left"></i>
-                </a>
-                <a href={fackbookShare} target="_blank" rel="noopener noreferrer" title="Share with Facebook">
+                </Link>
+                <Link href={fackbookShare} title="Share with Facebook">
                     <i className="fa fa-facebook-square pull-left"></i>
-                </a>
-                <a href={twitterShare} target="_blank" rel="noopener noreferrer" title="Share with Twitter" >
+                </Link>
+                <Link href={twitterShare} title="Share with Twitter" >
                     <i className="fa fa-twitter-square pull-left"></i>
-                </a>
+                </Link>
             </div>
         </DropdownMenu>
     </UncontrolledDropdown>);

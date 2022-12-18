@@ -1,5 +1,6 @@
 import { PureComponent } from "react";
 import { getGitHubIssueUrl } from "../constants/utils";
+import Link from "../controls/Link";
 
 class TextParser extends PureComponent {
     render() { return parseText(this.props.message); }
@@ -22,7 +23,7 @@ function parseText(msg) {
         const idx = testResult.index;
         msgArr.push(msg.substring(startIdx, idx));
         const url = (str.startsWith('#')) ? getGitHubIssueUrl(str) : str;
-        msgArr.push(<a href={url} target="_blank" rel="noreferrer" onClick={stopPropagation}>{str}</a>);
+        msgArr.push(<Link href={url}>{str}</Link>);
         startIdx = idx + str.length;
     }
 
@@ -32,5 +33,3 @@ function parseText(msg) {
 
     return msgArr.length ? msgArr : msg;
 }
-
-function stopPropagation(e) { e.stopPropagation(); }

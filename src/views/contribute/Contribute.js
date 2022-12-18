@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react';
 import { SelectBox } from '../../controls';
+import Link from '../../controls/Link';
 import './Contribute.scss';
 
 const currencies = [
@@ -32,16 +33,16 @@ class Contribute extends PureComponent {
                     <div className="donate-block">
                         <div className="donate-cntr">
                             <span>Are you a paypal user?</span>
-                            <a href="https://paypal.me/shridhartl" target="_blank" rel="noopener noreferrer">
+                            <Link href="https://paypal.me/shridhartl">
                                 <img className="paypal" src="/assets/donate_paypal.png" alt="Donate now" />
-                            </a>
+                            </Link>
                         </div>
                         <div className="seperator"><span>(or)</span></div>
                         <div className="donate-cntr">
                             <span>Choose your currency to pay:</span>
                             <SelectBox dataset={currencies} value={selectedCurrency} valueField="value" onChange={this.currencySelected} />
-                            <a className="dbox-button" href={`https://donorbox.org/donate-jira-assistant-extension-${selectedCurrency}`}
-                                target="_blank" rel="noopener noreferrer">Donate</a>
+                            <Link className="dbox-button" href={`https://donorbox.org/donate-jira-assistant-extension-${selectedCurrency}`}
+                            >Donate</Link>
                         </div>
                     </div>
                     <div className="content-block">

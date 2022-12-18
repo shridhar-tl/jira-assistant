@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import GroupableGrid from '../../components/GroupableGrid/GroupableGrid';
 import { connect } from "./datastore";
 import { getColumnSettings, flatGridSettingsChanged } from './actions';
+import Link from '../../controls/Link';
 
 const estimateFieldsToBeHidden = ["-originalestimate", "-totalLogged", "-remainingestimate", "-estVariance"];
-const formatTicket = (text, url) => text && <a href={url} className="link" target="_blank" rel="noopener noreferrer">{text}</a>;
+const formatTicket = (text, url) => text && <Link href={url} className="link">{text}</Link>;
 
 function FlatGroupableWorklog({
     exportSheetName,

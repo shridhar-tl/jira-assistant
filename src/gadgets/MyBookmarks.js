@@ -8,6 +8,7 @@ import { Button, Checkbox, Image } from '../controls';
 import AddBookmark from '../dialogs/AddBookmark';
 import Dialog from '../dialogs';
 import { WorklogContext } from '../common/context';
+import Link from '../controls/Link';
 
 class MyBookmarks extends BaseGadget {
     static contextType = WorklogContext;
@@ -160,7 +161,7 @@ class MyBookmarks extends BaseGadget {
                             {!b.selected && <i className="fa fa-ellipsis-v" onClick={(e) => this.showContext(e, b)}></i>}
                         </td>
                         <td>
-                            <a href={b.ticketUrl} rel="noopener noreferrer" className="link strike" target="_blank">{b.ticketNo}</a>
+                            <Link href={b.ticketUrl} className="link strike">{b.ticketNo}</Link>
                         </td>
                         <td>{b.issuetypeIcon && <Image src={b.issuetypeIcon} />}{b.issuetype}</td>
                         <td>{b.summary}</td>
