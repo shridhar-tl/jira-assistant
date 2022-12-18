@@ -35,13 +35,6 @@ export function generateSprintReport(setState, getState) {
                     const { id, startDate, endDate, completeDate = endDate, previousSprintEnd, nextSprintStart } = sprint;
                     const fromDate = moment(startDate), toDate = moment(completeDate);
 
-                    const issuesList = await pullIssuesFromSprint(id, curState);
-                    if (!issuesList.length) {
-                        newState[`groupReport_${id}`] = null;
-                        continue;
-                    }
-                    const { userwiseLog, userwiseLogArr } = getUserWiseWorklog(issuesList, fromDate, toDate, name?.toLowerCase(), curState);
-
                     const settings = {
                         fromDate: fromDate.toDate(),
                         toDate: toDate.toDate()
@@ -63,6 +56,13 @@ export function generateSprintReport(setState, getState) {
                         settings.toDate = moment(new Date(nextSprintStart)).add(-1, 'seconds').toDate();
                     }
 
+                    const issuesList = await pullIssuesFromSprint(id, settings.fromDate, settings.toDate, curState);
+                    if (!issuesList.length) {
+                        newState[`groupReport_${id}`] = null;
+                        continue;
+                    }
+                    const { userwiseLog, userwiseLogArr } = getUserWiseWorklog(issuesList, moment(settings.fromDate), moment(settings.toDate), name?.toLowerCase(), curState);
+
                     const { groupReport, flatWorklogs } = generateSprintGroupReport(sprint, userwiseLog, settings, curState);
                     flatWorklogs_board.addRange(flatWorklogs);
 
@@ -79,6 +79,8 @@ export function generateSprintReport(setState, getState) {
                             usersIndex[name] = true;
                         }
                     });
+
+                    sprint.settings = settings;
                 }
 
                 newState[`userGroup_${boardId}`] = formUserGroupToDisplay(sprintsList, newState, totalUsersList, curState);
@@ -99,11 +101,11 @@ function getCollectiveSprints(sprintsList, newState) {
 
         const { dates } = newState[`groupReport_${id}`];
 
-        return { id, name, days: dates.length };
+        return { id, name: getSprintName(name, s.settings), days: dates.length };
     });
 }
 
-function formUserGroupToDisplay(sprintsList, newState, totalUsersList, { userListMode, userGroups }) {
+function formUserGroupToDisplay(sprintsList, newState, totalUsersList, { userListMode, userGroups }, settings) {
     const sprints = getCollectiveSprints(sprintsList, newState);
 
     function mapGroup(name, totalUsers) {
@@ -188,10 +190,10 @@ function getSprintsSelected(boardId, boards, allSprints) {
     }
 }
 
-async function pullIssuesFromSprint(sprintId, state) {
+async function pullIssuesFromSprint(sprintId, worklogStartDate, worklogEndDate, state) {
     const { $jira } = inject('JiraService');
     const { fieldsToFetch } = getFieldsToFetch();
-    const request = { maxResults: 1000, fields: fieldsToFetch };
+    const request = { maxResults: 1000, fields: fieldsToFetch, worklogStartDate, worklogEndDate };
     if (state.jql?.trim()) {
         request.jql = state.jql?.trim();
     }
@@ -209,11 +211,19 @@ function generateSprintGroupReport(sprint, data, settings, { userListMode, userG
     return { groupReport, flatWorklogs };
 }
 
-function generateGroupForSprint(sprint, data) {
+function generateGroupForSprint(sprint, data, settings) {
     return [
         {
-            name: sprint.name,
+            name: getSprintName(sprint.name, settings),
             users: Object.keys(data).map(k => data[k])
         }
     ];
+}
+
+function getSprintName(name, settings) {
+    if (!settings?.fromDate) { return name; }
+
+    const { fromDate, toDate } = settings;
+    const { $userutils } = inject('UserUtilsService');
+    return `${name} (${$userutils.formatDateTime(fromDate)} - ${$userutils.formatDateTime(toDate)})`;
 }
