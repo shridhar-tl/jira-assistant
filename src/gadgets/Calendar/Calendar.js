@@ -41,7 +41,7 @@ class Calendar extends BaseGadget {
     static contextType = WorklogContext;
     constructor(props) {
         super(props, "Calendar", "fa-calendar");
-        inject(this, "SessionService", "WorklogService", "MessageService", "AnalyticsService", "OutlookService", "CalendarService", "UtilsService", "UserUtilsService", "ConfigService", "TicketService");
+        inject(this, "SessionService", "WorklogService", "MessageService", "AnalyticsService", "OutlookService", "CalendarService", "UtilsService", "UserUtilsService", "ConfigService", "TicketService", "AppBrowserService");
 
         this.hideMenu = !props.isGadget;
         this.hideRefresh = true;
@@ -402,7 +402,7 @@ class Calendar extends BaseGadget {
 
     openTicket(obj) {
         const url = this.$userutils.getTicketUrl(obj.ticketNo);
-        window.open(url);
+        this.$jaBrowserExtn.openTab(url);
     }
 
     showWorklogPopup(obj) {
@@ -663,7 +663,7 @@ class Calendar extends BaseGadget {
     openVideoCall(meeting) {
         hideContextMenu();
         if (meeting && meeting.hangoutLink) {
-            window.open(meeting.hangoutLink);
+            this.$jaBrowserExtn.openTab(meeting.hangoutLink);
         }
     }
 

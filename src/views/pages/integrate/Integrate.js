@@ -50,7 +50,7 @@ class Integrate extends PureComponent {
     }
 
     launchOptionsPage() {
-        window.open(isWebBuild ? '/options' : '/index.html#/options');
+        this.$jaBrowserExtn.openTab(isWebBuild ? '/options' : '/index.html#/options');
     }
 
     importBackup() {
@@ -68,7 +68,7 @@ class Integrate extends PureComponent {
         if (isWebBuild || !isQuickView) {
             document.location.href = url;
         } else {
-            window.open(url, 'JAOAuth2Win');
+            this.$jaBrowserExtn.openTab(url, 'JAOAuth2Win');
             window.close();
         }
     }

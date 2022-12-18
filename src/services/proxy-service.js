@@ -29,7 +29,9 @@ export class BrowserProxyService extends BaseProxyService {
         super("AppBrowserService", BrowserBase.availableMethods);
     }
 
-    openTab(url) { window.open(url); }
+    openTab(url, name, opts) {
+        window.open(url, name, opts);
+    }
 
     getStoreUrl() { return StoreUrls[BROWSER_NAME] || CHROME_WS_URL; }
 

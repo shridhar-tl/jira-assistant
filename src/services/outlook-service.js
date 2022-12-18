@@ -21,7 +21,7 @@ const redirect_uri = 'https://www.jiraassistant.com/oauth/outlook';
 //const groupEventsListUrl = `${apiBasePath}/calendarGroup/calendars/{0}/events`;
 
 export default class OutlookCalendar {
-    static dependencies = ["AjaxRequestService", "AnalyticsService", "MessageService", "OutlookOAuthService", "SessionService"];
+    static dependencies = ["AjaxRequestService", "AnalyticsService", "MessageService", "OutlookOAuthService", "SessionService", "AppBrowserService"];
 
     constructor($request, $analytics, $message, $msoAuth, $session) {
         this.$request = $request;
@@ -70,7 +70,7 @@ export default class OutlookCalendar {
             };
             window.addEventListener("message", handler, false);
 
-            window.open(url, "oAuthHandler", "height=610,width=500");
+            this.$jaBrowserExtn.openTab(url, "oAuthHandler", "height=610,width=500");
         });
     }
 

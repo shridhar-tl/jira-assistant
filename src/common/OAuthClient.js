@@ -32,7 +32,7 @@ class OAuthClient {
                     resolve(this.parseQueryString(result.clearStart("#")));
                 };
 
-                window.open(url, "oAuthHandler", "height=610,width=500");
+                this.$jaBrowserExtn.openTab(url, "oAuthHandler", "height=610,width=500");
             }
         });
     }
