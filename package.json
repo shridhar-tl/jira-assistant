@@ -65,7 +65,7 @@
         "@fullcalendar/timegrid": "5.11.2",
         "bootstrap": "^4.6.2",
         "bootstrap-daterangepicker": "^3.1.0",
-        "chart.js": "^4.0.1",
+        "chart.js": "^4.1.1",
         "classnames": "^2.3.2",
         "dexie": "^3.2.2",
         "electron-about-window": "^1.15.2",
@@ -75,7 +75,7 @@
         "exceljs": "^4.3.0",
         "firebase": "^9.15.0",
         "font-awesome": "^4.7.0",
-        "jquery": "^3.6.1",
+        "jquery": "^3.6.2",
         "jsd-report": "^0.1.11",
         "jspdf": "^2.5.1",
         "jspdf-autotable": "^3.5.28",
@@ -93,7 +93,7 @@
         "react-dnd": "^14.0.4",
         "react-dnd-html5-backend": "^14.0.2",
         "react-dom": "^18.2.0",
-        "react-router-dom": "^6.4.5",
+        "react-router-dom": "^6.5.0",
         "react-scripts": "^5.0.1",
         "reactstrap": "^9.1.5",
         "static-eval": "^2.1.0"
@@ -199,7 +199,7 @@
         "electronmon": "^2.0.2",
         "gh-pages": "^4.0.0",
         "node-sass": "^8.0.0",
-        "wait-on": "^6.0.1",
+        "wait-on": "^7.0.1",
         "webpack-bundle-analyzer": "^4.7.0"
     }
 }

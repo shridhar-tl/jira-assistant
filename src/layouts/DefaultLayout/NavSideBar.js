@@ -16,9 +16,10 @@ import './NavSideBar.scss';
 const NavSideBar = function ({ onLogout, menus, navigate, location }) {
     const renderMenu = menu => {
         const Item = menu.external ? LinkItem : ButtonItem;
+        const isSelected = menu.url === location.pathname;
         return (<Item key={menu.id} testId={menu.id} href={menu.url} target="_blank" rel="noreferrer noopener"
-            className="btn-menu" onClick={menu.external ? undefined : () => navigate(menu.url)}
-            iconBefore={<span className={menu.icon} />} isSelected={menu.url === location.pathname}
+            className={`${isSelected ? "selected " : ""}btn-menu`} onClick={menu.external ? undefined : () => navigate(menu.url)}
+            iconBefore={<span className={menu.icon} />} isSelected={isSelected}
             iconAfter={menu.badge ? (<span className={`badge bg-${menu.badge.variant}`}>{menu.badge.text}</span>) : undefined}
         >{menu.name}</Item>);
     };
@@ -28,7 +29,7 @@ const NavSideBar = function ({ onLogout, menus, navigate, location }) {
             {!isPluginBuild && <NavigationHeader className="nav-header">
                 <AsideUserInfo onLogout={onLogout} />
             </NavigationHeader>}
-            <NestableNavigationContent initialStack={[]} testId="nestable-navigation-content"            >
+            <NestableNavigationContent initialStack={[]} testId="nestable-navigation-content">
                 {menus.map((section, i) => (<Section key={i} title={section.name}>
                     {section.items.map(renderMenu)}
                 </Section>))}
