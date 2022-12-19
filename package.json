@@ -112,7 +112,7 @@
         "postbuild-app": "cross-env REACT_APP_BUILD_MODE=APP node post-build.js",
         "deploy-app": "gh-pages -d build --dotfiles true -b ja-app",
         "start-plugin": "cross-env REACT_APP_BUILD_MODE=PLUGIN PORT=6060 craco start",
-        "build-plugin": "cross-env REACT_APP_BUILD_MODE=PLUGIN GENERATE_SOURCEMAP=false INLINE_RUNTIME_CHUNK=false craco build",
+        "build-plugin": "cross-env REACT_APP_BUILD_MODE=PLUGIN PUBLIC_URL=. GENERATE_SOURCEMAP=false INLINE_RUNTIME_CHUNK=false craco build",
         "postbuild-plugin": "cross-env REACT_APP_BUILD_MODE=PLUGIN node post-build.js",
         "test": "react-scripts test",
         "eject": "react-scripts eject",

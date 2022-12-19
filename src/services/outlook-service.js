@@ -23,12 +23,13 @@ const redirect_uri = 'https://www.jiraassistant.com/oauth/outlook';
 export default class OutlookCalendar {
     static dependencies = ["AjaxRequestService", "AnalyticsService", "MessageService", "OutlookOAuthService", "SessionService", "AppBrowserService"];
 
-    constructor($request, $analytics, $message, $msoAuth, $session) {
+    constructor($request, $analytics, $message, $msoAuth, $session, $browser) {
         this.$request = $request;
         this.$analytics = $analytics;
         this.$message = $message;
         this.$msoAuth = $msoAuth;
         this.$session = $session;
+        this.$jaBrowserExtn = $browser;
     }
 
     getAddlProps(response_type) {

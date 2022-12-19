@@ -44,7 +44,7 @@ class Integrate extends PureComponent {
                     if (root && root.length > 20 && root.startsWith('http')) {
                         this.setState({ jiraUrl: root });
                     }
-                });
+                }, console.error);
             }
         }
     }

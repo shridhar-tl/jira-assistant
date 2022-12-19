@@ -8,6 +8,8 @@ import getLoader from '../../components/loader';
 
 // Takes care of initializing the web app with oAuth related preprocessing and proxy info
 const withInitParams = function (Component) {
+    registerServices();
+
     return React.memo(function () {
         const location = useLocation();
         const navigate = useNavigate();
@@ -16,15 +18,18 @@ const withInitParams = function (Component) {
         const authTypeChosen = useCallback((authType) => {
             localStorage.setItem('authType', authType);
             registerDepnServices(authType);
+            if (initValue) {
+                setInitValue({ ...initValue, authType });
+            }
             navigate('/');
-        }, [navigate]);
+        }, [navigate, initValue]);
 
         useEffect(() => {
             initializeApp(location, navigate).then(setInitValue);
         }, []);// eslint-disable-line react-hooks/exhaustive-deps
 
         if (initValue) {
-            return (<Component initValue={initValue} authTypeChosen={authTypeChosen} />);
+            return (<Component key={initValue.authType || '1'} initValue={initValue} authTypeChosen={authTypeChosen} />);
         } else {
             return getLoader('Loading... Please wait...');
         }
@@ -35,7 +40,6 @@ export default withInitParams;
 
 async function initializeApp(location, navigate) {
     const { oauth, code, state } = parseQueryParams();
-    registerServices();
 
     if (oauth === 'jc') {
         await processJiraCloudOAuth(code, state);
@@ -44,7 +48,7 @@ async function initializeApp(location, navigate) {
         return;
     } else {
         const authType = localStorage.getItem('authType');
-        registerDepnServices(authType);
+        registerDepnServices(authType || '1');
     }
 
     return validateIfExtnReadyForUse(location.pathname, navigate);
@@ -100,7 +104,7 @@ async function processJiraCloudOAuth(code, state) {
 // #region Outlook oAuth
 
 async function processOutlookOAuth(code, state) {
-    registerDepnServices(state.authType); // Register services
+    registerDepnServices(state.authType || '1'); // Register services
 
     const { $msoAuth } = inject('OutlookOAuthService');
 
@@ -124,7 +128,7 @@ async function validateIfExtnReadyForUse(pathname, navigate) {
 
     const newState = { authType };
     //const pathname = this.props.location?.pathname;
-    if (((authType || '1') === '1' || pathname === '/integrate') && await validateIfWebApp(newState)) {
+    if (((authType || '1') === '1' || pathname.startsWith('/integrate')) && await validateIfWebApp(newState)) {
         if (extnAuth && !authType && newState.authReady) {
             localStorage.setItem('authType', 1);
             newState.authType = '1';
@@ -136,7 +140,6 @@ async function validateIfExtnReadyForUse(pathname, navigate) {
         if (!pathname?.startsWith('/poker')) {
             navigate(`/integrate`);
         }
-        return newState.extnUnavailable ? 2 : undefined;
     }
 
     return newState;

@@ -1,6 +1,6 @@
 export const injector = (function () {
     const services = {};
-    const defaultOpts = { isSingleton: true };
+    const defaultOpts = { isSingleton: true, retain: false };
     const svc = {};
 
     svc.getRef = function (name) {
@@ -92,15 +92,29 @@ export const injector = (function () {
 
         opts = { ...defaultOpts, ...opts };
 
-        const svcRef = {
+        // Check if this service is already registered and instance is maintained
+        const hasOldInstance = services[name]?.instance;
+
+        services[name] = {
             isSingleton: opts.isSingleton,
+            retain: opts.retain,
             type: type,
             instance: null,
             dependency: dependency,
             name: name,
             defaultName
         };
-        services[name] = svcRef;
+
+        if (hasOldInstance) {
+            // if a single ton instance is changed, then all the existing instances should be cleared
+            const names = Object.keys(services);
+            for (const sname of names) {
+                const svc = services[sname];
+                if (svc.instance && !svc.retain) {
+                    delete svc.instance;
+                }
+            }
+        }
     };
 
     return svc;

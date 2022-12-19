@@ -73,5 +73,5 @@ export async function validateIfWebApp(state) {
 }
 
 export async function getExtnLaunchUrl(userId, $message) {
-    return await executeService('AppBrowserService', 'getLaunchUrl', [`/index.html#/${userId}/dashboard`], $message);
+    return await executeService('AppBrowserService', 'getLaunchUrl', [`/index.html#/${userId}/dashboard/0`], $message);
 }

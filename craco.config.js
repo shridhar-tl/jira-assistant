@@ -35,6 +35,8 @@ module.exports = {
                 wpConfig.devServer = { writeToDisk: true };
             }
 
+            console.log('Homepage configured=', wpConfig.output.publicPath);
+
             // Use js specific for build target to be pulled while importing a file
             if (!isWebBuild) { // As .web.js is already part of module extns, no need to customize for web build
                 // Caution: This may cause issue when there is some .web.js files in any any npm packages

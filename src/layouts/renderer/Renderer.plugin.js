@@ -9,14 +9,13 @@ const OptionsPage = React.lazy(() => import('../../views/settings/global/GlobalS
 
 const Poker = React.lazy(() => import('../../views/poker/Poker'));
 
-export default function Renderer({ userId }) {
+export default function Renderer({ authInfo: { userId } }) {
     const layout = (<DefaultLayout key={userId} />);
     return (<Routes>
         <Route exact path="/options" name="Options Page" element={<OptionsPage />} />
 
         <Route path="/poker/*" name="Planning Poker" element={<Poker hasExtensionSupport={false} />} />
 
-        <Route path="/*" name="Home" element={layout} />
         <Route path="/:userId/*" name="Home" element={layout} />
     </Routes>);
 }

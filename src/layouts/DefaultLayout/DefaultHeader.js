@@ -36,8 +36,8 @@ class DefaultHeader extends PureComponent {
     super(props);
     inject(this, "AppBrowserService", "SessionService", "NotificationService", "AnalyticsService");
     const cUser = this.$session.CurrentUser;
-    this.disableNotification = !config.features.header.devUpdates || cUser.disableDevNotification;
-    this.disableJiraUpdates = cUser.disableJiraUpdates;
+    this.disableNotification = !config.features?.header?.devUpdates || cUser.disableDevNotification;
+    this.disableJiraUpdates = config.features?.header?.jiraUpdates === false || cUser.disableJiraUpdates;
     this.userId = cUser.userId;
     this.currentJiraInstance = getHostFromUrl(cUser.jiraUrl);
     this.state = {};
@@ -127,5 +127,5 @@ function AppSidebarToggler({ className, display }) {
     document.body.classList.toggle(`sidebar-${display}-show`);
   }, [display]);
 
-  return (<span className={className} style={{ marginLeft: 17, paddingTop: 2, cursor: 'pointer' }} onClick={onClick}><span className="fa fa-bars" /></span>);
+  return (<span className={className} style={{ marginLeft: 17, marginRight: 17, paddingTop: 2, cursor: 'pointer' }} onClick={onClick}><span className="fa fa-bars" /></span>);
 }

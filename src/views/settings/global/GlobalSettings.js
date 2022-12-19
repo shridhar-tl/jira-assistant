@@ -9,10 +9,12 @@ import { defaultSettings, SettingsCategory } from '../../../constants/settings';
 import { SystemUserId } from '../../../constants/common';
 import Dialog from '../../../dialogs';
 import './GlobalSettings.scss';
+import { isPluginBuild } from '../../../constants/build-info';
 
 const showDevUpdates = config.features.header.devUpdates !== false;
 const allowAnalytics = config.features.common.analytics !== false;
 const allowWebVersion = config.features.common.allowWebVersion !== false;
+const allowJiraUpdates = config.features?.header?.jiraUpdates !== false;
 
 class GlobalSettings extends PureComponent {
     constructor(props) {
@@ -113,9 +115,9 @@ class GlobalSettings extends PureComponent {
                             <Column>Default</Column>
                             {intgUsers.map(u => <Column key={u.id}>
                                 {getHostFromUrl(u.jiraUrl)}
-                                <span className={classNames('fa pull-right delete-account', u.deleted ? 'fa-undo' : 'fa-trash')}
+                                {!isPluginBuild && <span className={classNames('fa pull-right delete-account', u.deleted ? 'fa-undo' : 'fa-trash')}
                                     title={u.deleted ? 'Undo delete' : 'Delete this integration'}
-                                    onClick={() => this.toggleDelete(u)} />
+                                    onClick={() => this.toggleDelete(u)} />}
                             </Column>)}
                         </TRow>
                     </THead>
@@ -157,21 +159,21 @@ class GlobalSettings extends PureComponent {
                                 value={u.id === SystemUserId ? defaultSettings.openTicketsJQL : (u.suggestionJQL || "")}
                                 args={u} field="suggestionJQL" onChange={this.setValue} disabled={u.deleted} /></td>)}
                         </TRow>
-                        <TRow>
+                        {allowJiraUpdates && <TRow>
                             <td>Disable Jira issue updates</td>
                             {users.map(u => <td key={u.id}><Checkbox checked={u.disableJiraUpdates}
                                 args={u} field="disableJiraUpdates" onChange={this.setValue} disabled={u.deleted}
                                 label="Disable Jira issue updates"
                                 title="Do not show updates about changes for any issues happend in Jira" />
                             </td>)}
-                        </TRow>
-                        <TRow>
+                        </TRow>}
+                        {allowJiraUpdates && <TRow>
                             <td>Jira updates JQL (used to fetch updates from Jira)</td>
                             {users.map(u => <td key={u.id}><TextBox multiline placeholder={defaultSettings.jiraUpdatesJQL} readOnly={u.id === SystemUserId}
                                 disabled={u.disableJiraUpdates || u.deleted}
                                 value={u.id === SystemUserId ? defaultSettings.jiraUpdatesJQL : (u.jiraUpdatesJQL || "")}
                                 args={u} field="jiraUpdatesJQL" onChange={this.setValue} /></td>)}
-                        </TRow>
+                        </TRow>}
                         {allowWebVersion && !!users[0] && <TRow>
                             <td>Use Jira Assistant Web version</td>
                             <td colSpan={intgUsers.length + 1}><Checkbox checked={users[0].useWebVersion}

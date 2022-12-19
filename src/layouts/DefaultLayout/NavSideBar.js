@@ -19,7 +19,7 @@ const NavSideBar = function ({ onLogout, menus, navigate, location }) {
         return (<Item key={menu.id} testId={menu.id} href={menu.url} target="_blank" rel="noreferrer noopener"
             className="btn-menu" onClick={menu.external ? undefined : () => navigate(menu.url)}
             iconBefore={<span className={menu.icon} />} isSelected={menu.url === location.pathname}
-            iconAfter={menu.badge ? (<span class={`badge bg-${menu.badge.variant}`}>{menu.badge.text}</span>) : undefined}
+            iconAfter={menu.badge ? (<span className={`badge bg-${menu.badge.variant}`}>{menu.badge.text}</span>) : undefined}
         >{menu.name}</Item>);
     };
 

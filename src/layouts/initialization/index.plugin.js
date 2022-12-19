@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { requestJira } from '@forge/bridge';
 import { ApiUrls } from '../../constants/api-urls';
 import { inject, registerDepnServices } from '../../services';
 import getLoader from '../../components/loader';
@@ -30,22 +31,34 @@ const withInitParams = function (Component) {
 
 export default withInitParams;
 
-const dummyInstUrl = 'https://api.atlassian.net';
 
 async function initializeApp() {
     try {
         const { $user } = inject('UserService');
-        const user = await $user.getUsersList();
+        const users = await $user.getUsersList();
 
-        if (!user.length) { // If no user is created in db so far, then create new user
+        if (!users.length) { // If no user is created in db so far, then create new user
             const { $request } = inject('AjaxRequestService');
-            const profile = await $request.execute('GET', ApiUrls.mySelf.replace('~', dummyInstUrl));
-            await $user.createUser(profile, dummyInstUrl);
+            const jiraUrl = await getInstanceUrl();
+            const profile = await $request.execute('GET', ApiUrls.mySelf.replace('~', jiraUrl));
+            await $user.createUser(profile, jiraUrl);
         }
 
         return true;
     } catch (err) {
         console.error('Error setting up Jira Assistant:', err);
         return err.toString();
+    }
+}
+
+const dummyInstUrl = 'https://api.atlassian.net';
+
+async function getInstanceUrl() {
+    try {
+        const response = await requestJira('/rest/api/3/serverInfo'); // XML Response: `/rest/applinks/latest/manifest`
+        const result = await response.json();
+        return result.baseUrl.clearEnd('/') || dummyInstUrl;
+    } catch {
+        return dummyInstUrl;
     }
 }

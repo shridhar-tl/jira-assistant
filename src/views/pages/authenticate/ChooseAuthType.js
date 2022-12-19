@@ -59,10 +59,21 @@ class ChooseAuthType extends PureComponent {
             });
     };
 
-    render() {
+    getExtensionItem() {
         const { props: { extnUnavailable, isExtnValid } } = this;
         const allowExtn = !extnUnavailable && isExtnValid;
 
+        return (<>
+            {extnUnavailable && <span className="badge badge-success" onClick={this.navigateToStore} title="Click to visit webstore and install the extension">Install Extension</span>}
+            {!extnUnavailable && !isExtnValid && !allowExtn && <span className="badge badge-success" onClick={this.navigateToStore} title="Click to visit webstore and update the extension">Update Extension</span>}
+            <div className={classNames("auth-type", !allowExtn && "disabled")} onClick={allowExtn ? this.extnSelected : undefined} data-test-id="extn-auth">
+                <div className="auth-type-title">Use Jira Assistant Extension</div>
+                {this.getExtensionMessage()}
+            </div>
+        </>);
+    }
+
+    render() {
         return (
             <div className="app auth-page flex-row align-items-center">
                 <div className="container">
@@ -72,14 +83,7 @@ class ChooseAuthType extends PureComponent {
                                 <div className="card-body p-4">
                                     <h1>Jira Assistant</h1>
                                     <p className="text-muted">Choose the way you would like to <strong>Integrate</strong> with your Jira</p>
-                                    {!isAppBuild && <>
-                                        {extnUnavailable && <span className="badge badge-success" onClick={this.navigateToStore} title="Click to visit webstore and install the extension">Install Extension</span>}
-                                        {!extnUnavailable && !isExtnValid && !allowExtn && <span className="badge badge-success" onClick={this.navigateToStore} title="Click to visit webstore and update the extension">Update Extension</span>}
-                                        <div className={classNames("auth-type", !allowExtn && "disabled")} onClick={allowExtn ? this.extnSelected : undefined} data-test-id="extn-auth">
-                                            <div className="auth-type-title">Use Jira Assistant Extension</div>
-                                            {this.getExtensionMessage()}
-                                        </div>
-                                    </>}
+                                    {!isAppBuild && this.getExtensionItem()}
                                     <div className="auth-type" onClick={this.oAuthSelected} data-test-id="o-auth">
                                         <div className="auth-type-title">Use OAuth2 (Jira Cloud only)</div>
                                         <div className="auth-type-desc">Using OAuth option will let authorize this tool to Integrate with Jira without need to store login credentials in this tool. This is more secured than using userid and password</div>

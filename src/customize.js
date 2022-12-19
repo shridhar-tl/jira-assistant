@@ -29,23 +29,23 @@ const config = {
     },
     features: {
         header: {
-            shareWithOthers: !isPluginBuild,
+            shareWithOthers: true,
             themes: true,
             youtubeHelp: !isPluginBuild,
             devUpdates: !isPluginBuild,
-            jiraUpdates: !isPluginBuild
+            jiraUpdates: true
         },
         dashboard: {
             manageBoard: true,
             manageGadgets: true
         },
         integrations: {
-            googleCalendar: true,
-            outlookCalendar: true
+            googleCalendar: !isPluginBuild,
+            outlookCalendar: !isPluginBuild
         },
         common: {
-            analytics: true,
-            allowWebVersion: true
+            analytics: !isPluginBuild,
+            allowWebVersion: !isPluginBuild
         }
     },
     settings: {

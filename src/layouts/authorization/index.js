@@ -24,6 +24,11 @@ const withAuthInfo = function (Component) {
                 authenticateUser(userId, authInfo, pathname, props.navigate).then((result) => {
                     if (result !== undefined) {
                         setAuthInfo(result);
+
+                        // If user is not integrated yet, then navigate to integrate page
+                        if (result.needIntegration && !pathname.startsWith('/integrate')) {
+                            props.navigate('/integrate');
+                        }
                     }
                 });
             }
@@ -34,7 +39,7 @@ const withAuthInfo = function (Component) {
         if (shouldAuth) {
             if (!authInfo) {
                 return getLoader('Authorizing... Please wait...');
-            } else if (!authInfo.authenticated) {
+            } else if (!authInfo.authenticated && !authInfo.needIntegration) {
                 return (<Page401 jiraUrl={authInfo.jiraUrl} validate={() => { setAuthInfo(false); tryAuthorize(); }} />);
             }
         }
@@ -79,14 +84,9 @@ async function authenticateUser(userIdFromPath, authInfo, pathname, navigate) {
             return { authenticated, jiraUrl, userId };
         }
 
-        return { authenticated };
+        return { authenticated, needIntegration: $session.needIntegration };
     } catch {
         const { needIntegration, rootUrl: jiraUrl } = $session;
-
-        if (needIntegration) {
-            navigate('/integrate');
-        }
-
         return { needIntegration, jiraUrl };
     }
 }

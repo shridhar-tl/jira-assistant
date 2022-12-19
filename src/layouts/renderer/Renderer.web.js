@@ -12,15 +12,17 @@ const OptionsPage = React.lazy(() => import('../../views/settings/global/GlobalS
 
 const Poker = React.lazy(() => import('../../views/poker/Poker'));
 
-export default function Renderer({
-    isExtnValid, extnUnavailable, needIntegration, authType,
-    userId, authTypeChosen }) {
+export default function Renderer({ initValue, authInfo, authTypeChosen }) {
+    const { isExtnValid, extnUnavailable, authType } = initValue;
+
+    const { userId } = authInfo;
+
     return (<Routes>
         <Route exact path="/integrate" name="Authenticate Page" element={<ChooseAuthType
             isExtnValid={isExtnValid} extnUnavailable={extnUnavailable}
-            needIntegration={needIntegration} onAuthTypeChosen={authTypeChosen} />} />
+            needIntegration={initValue.needIntegration} onAuthTypeChosen={authTypeChosen} />} />
 
-        <Route exact path={"/integrate/extn"} name="Integrate Page"
+        <Route exact path="/integrate/extn" name="Integrate Page"
             element={<IntegrateExtn setAuthType={authTypeChosen} />} />
 
         <Route exact path="/integrate/basic" name="Basic Auth Page"
@@ -33,6 +35,6 @@ export default function Renderer({
 
         <Route path="/poker/*" name="Planning Poker" element={<Poker hasExtensionSupport={isExtnValid} />} />
 
-        {!!authType && <Route path="/:userId/*" name="Home" element={<DefaultLayout key={userId} />} />}
+        {!!authType && userId && <Route path="/:userId/*" name="Home" element={<DefaultLayout key={userId} />} />}
     </Routes>);
 }

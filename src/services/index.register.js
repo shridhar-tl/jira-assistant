@@ -37,6 +37,7 @@ let _commonInjected = false;
 const allowAnalytics = !isPluginBuild && config.features.common.analytics !== false;
 
 // Any new classes injected should be added in index.d.ts file as well to support intellisense in VS Code.
+// IMPORTANT - As of now all services are singleton only unless explicitely marked false
 export default function registerServices() {
     if (_commonInjected) { return; }
 
@@ -59,7 +60,7 @@ export default function registerServices() {
     injectable(JiraAuthService, "JiraAuthService", "$jAuth", { isSingleton: true });
     injectable(JiraService, "JiraService", "$jira");
     injectable(JiraUpdatesService, "JiraUpdatesService", "$jupdates");
-    injectable(MessageService, "MessageService", "$message", { isSingleton: true });
+    injectable(MessageService, "MessageService", "$message", { isSingleton: true, retain: true }); // Message service instance should be retained
     injectable(NotificationService, "NotificationService", "$noti", { isSingleton: true });
     injectable(OutlookOAuthService, "OutlookOAuthService", "$msoAuth");
     injectable(OutlookCalendar, "OutlookService", "$outlook");

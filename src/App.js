@@ -23,17 +23,14 @@ class App extends PureComponent {
   onRouteChanged = (location) => this.$analytics.trackPageView(location.pathname);
 
   render() {
-    const { isExtnValid, extnUnavailable, authType } = this.props.initValue || {};
-    const { userId, needIntegration } = this.props.authInfo || {};
+    const { initValue, authInfo } = this.props;
 
     return (<>
       <MessageBox $message={this.$message} />
       {!isPluginBuild && <UrlWatcher onChange={this.onRouteChanged} />}
 
-      <Renderer isExtnValid={isExtnValid}
-        extnUnavailable={extnUnavailable} needIntegration={needIntegration}
-        authType={authType} userId={userId} authTypeChosen={this.props.authTypeChosen}
-        $session={this.$session}
+      <Renderer initValue={initValue} authInfo={authInfo}
+        authTypeChosen={this.props.authTypeChosen} $session={this.$session}
       />
     </>);
   }

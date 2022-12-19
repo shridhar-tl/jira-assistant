@@ -17,10 +17,10 @@ const containerStyle = isQuickView ? { minHeight: '380px', maxHeight: '380px' } 
 class Integrate extends PureComponent {
     constructor(props) {
         super(props);
-        inject(this, "MessageService", "AppBrowserService", "SessionService", "JiraAuthService");
         this.state = {};
         this.useExtn = props.match.params?.store === '1';
         registerDepnServices(this.useExtn ? '1' : '2');
+        inject(this, "MessageService", "AppBrowserService", "SessionService", "JiraAuthService");
     }
 
     integrate = () => {
