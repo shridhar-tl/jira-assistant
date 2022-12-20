@@ -28,6 +28,7 @@ const allowWebVersion = config.features.common.allowWebVersion !== false;
 
 const showShareOption = config.features.header.shareWithOthers !== false;
 const showYoutubeOption = config.features.header.youtubeHelp !== false;
+const showDonateButton = !!config.modules.contribute;
 const showContactUs = config.modules.contactUs !== false;
 const siteUrl = showShareOption ? WebSiteUrl : undefined;
 
@@ -83,10 +84,10 @@ class DefaultHeader extends PureComponent {
         </Link>
         <AppSidebarToggler className="d-md-down-none quick-view-hide" display="lg"><span className="fa fa-bars" /></AppSidebarToggler>
         <button className="navbar-toggler quick-view-show"><Link href={isWebBuild ? "/" : "/index.html"} title="Open in new tab"><span className="fa fa-external-link" /></Link></button>
-        <NavLink to={`/${this.userId}/contribute`} className="btn-donate"
+        {showDonateButton && <NavLink to={`/${this.userId}/contribute`} className="btn-donate"
           title="Would you like to contribute / compensate us for the effort we put in development of this tool? Click to know more">
           <img src="/assets/donate.png" width="145" className="margin-r-5" alt="Donate us" />
-        </NavLink>
+        </NavLink>}
         <TimerControl />
         <Nav className="ml-auto" navbar>
           {!isPluginBuild && <BackupImporter>
