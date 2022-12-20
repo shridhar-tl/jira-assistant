@@ -53,7 +53,7 @@ class WorklogReport extends BaseGadget {
 
     renderCustomActions() {
         return <>
-            <CustomActions onInputChanged={this.inputChanged} showGroupsPopup={this.showGroups} />
+            {!this.state.showSettings && <CustomActions onInputChanged={this.inputChanged} showGroupsPopup={this.showGroups} />}
             <Button icon="fa fa-cogs" onClick={this.showSettings} title="Show settings" />
         </>;
     }
