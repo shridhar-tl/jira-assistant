@@ -82,7 +82,7 @@ export default class JiraService {
     }
 
     getWorklogs(jiraKey, startDate, endDate) {
-        const url = this.$ajax.prepareUrl(ApiUrls.issueWorklog, jiraKey);
+        const url = this.$ajax.prepareUrl(ApiUrls.issueWorklog, [jiraKey]);
 
         const reqObj = {
             maxResults: 5000,
