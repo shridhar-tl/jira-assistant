@@ -19,7 +19,7 @@ function ChooseBoard({ sprintBoards, selSprints: savedSprints, setValue, onChang
 
     const hasBoards = !!sprintBoards?.length;
 
-    const [selSprints, setSprints] = useState({ ...savedSprints });
+    const [selSprints, setSprints] = useState(savedSprints);
     const boardSelected = (selected, id, name) => setSprints({ ...selSprints, [id]: { range: 0, custom: [], ...selSprints[id], selected, name } });
     const updateSprints = !hasBoards ? undefined : (_, sprints) => setSprints(sprints);
     const updateReport = !hasBoards || selSprints === savedSprints ? undefined : () => {
