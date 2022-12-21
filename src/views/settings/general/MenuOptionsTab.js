@@ -2,7 +2,7 @@ import React from 'react';
 import TabControlBase from './TabControlBase';
 import { Checkbox, SelectBox, RadioButton } from '../../../controls';
 import { ListBox } from 'primereact/listbox';
-import { navigation } from '../../../_nav';
+import navigation from '../../../_nav';
 import { inject } from '../../../services';
 
 class MenuOptionsTab extends TabControlBase {
@@ -44,22 +44,25 @@ class MenuOptionsTab extends TabControlBase {
             dashboardMenus.push({ value: id, label: d.name, icon: d.icon });
         });
 
-        const launchMenus = [{ label: "Dashboards", items: dashboardMenus }];
-        let lastGroup = null;
-        navigation.forEach(menu => {
-            if (menu.name && !menu.isDashboard) {
+        const launchMenus = navigation.map(group => {
+            const { id, name } = group;
+            const mnuObj = { id, name, isHead: true };
+            if (group.isDashboard) {
+                menus.splice(0, 0, mnuObj);
+            } else {
+                menus.push(mnuObj);
+            }
+
+            const items = group.isDashboard ? dashboardMenus : group.items.map(menu => {
                 menus.push({
                     id: menu.id, isHead: menu.title, name: menu.name, icon: menu.icon,
                     url: menu.url, selected: selMenus.indexOf(menu.id) > -1
                 });
-                if (menu.title) {
-                    lastGroup = { label: menu.name, items: [] };
-                    launchMenus.push(lastGroup);
-                }
-                else {
-                    lastGroup.items.push({ value: menu.id, label: menu.name, icon: menu.icon });
-                }
-            }
+
+                return { value: menu.id, label: menu.name, icon: menu.icon };
+            });
+
+            return { label: name, items };
         });
 
         this.menus = menus;

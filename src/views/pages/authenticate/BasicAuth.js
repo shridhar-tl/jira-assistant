@@ -2,13 +2,14 @@ import React, { PureComponent } from 'react';
 import { inject } from '../../../services';
 import { Button, TextBox } from '../../../controls';
 import { getOriginFromUrl } from '../../../common/utils';
-import Dialog from '../../../dialogs';
 import { executeService } from '../../../common/proxy';
 import { ApiTokenHelpPage } from '../../../constants/urls';
-import registerServices from '../../../services';
-import Footer from '../Footer';
-import { isExtnBuild, isWebBuild } from '../../../constants/build-info';
+import { registerDepnServices } from '../../../services';
+import { isExtnBuild, redirectToRoute } from '../../../constants/build-info';
 import { withRouter } from '../../../pollyfills';
+import Dialog from '../../../dialogs';
+import Footer from '../Footer';
+import Link from '../../../controls/Link';
 
 const isQuickView = document.location.href.indexOf('?quick=true') > -1;
 const containerStyle = isQuickView ? { minHeight: '380px', maxHeight: '380px' } : {};
@@ -16,12 +17,10 @@ const containerStyle = isQuickView ? { minHeight: '380px', maxHeight: '380px' } 
 class Integrate extends PureComponent {
     constructor(props) {
         super(props);
-        inject(this, "MessageService", "AppBrowserService", "SessionService", "JiraAuthService");
         this.state = {};
         this.useExtn = props.match.params?.store === '1';
-        if (!this.useExtn) {
-            registerServices('2');
-        }
+        registerDepnServices(this.useExtn ? '1' : '2');
+        inject(this, "MessageService", "AppBrowserService", "SessionService", "JiraAuthService");
     }
 
     integrate = () => {
@@ -72,7 +71,7 @@ class Integrate extends PureComponent {
             this.$jaBrowserExtn.openTab("/index.html");
             window.close();
         } else {
-            window.location.href = isWebBuild ? '/' : '/index.html';
+            redirectToRoute();
         }
     };
 
@@ -111,7 +110,7 @@ class Integrate extends PureComponent {
                                     </div>
                                     <p className="text-muted">
                                         <strong>Note:</strong> Credentials are stored in browser's cache storage. Use Jira Rest Api Token instead of password
-                                        for better security. Learn more about <a href={ApiTokenHelpPage} target="_blank" rel="noreferrer">Rest Api Tokens</a>.
+                                        for better security. Learn more about <Link href={ApiTokenHelpPage}>Rest Api Tokens</Link>.
                                     </p>
                                     <Button type="success" className="btn-block" icon={isLoading ? "fa fa-spinner fa-spin" : "fa fa-unlock-alt"} disabled={!jiraUrl || isLoading}
                                         onClick={this.integrate} label="Integrate" />

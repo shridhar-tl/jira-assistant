@@ -157,7 +157,7 @@ export default class UserService {
                 { userId: id, category: SettingsCategory.General, name: 'startOfDay', value: '09:00', _ts: 2 },
                 { userId: id, category: SettingsCategory.General, name: 'endOfDay', value: '17:00', _ts: 2 },
                 { userId: id, category: SettingsCategory.General, name: 'startOfWeek', value: 1, _ts: 2 },
-                { userId: SystemUserId, category: SettingsCategory.System, name: 'CurrentJiraUrl', value: root, _ts: 2 },
+                //{ userId: SystemUserId, category: SettingsCategory.System, name: 'CurrentJiraUrl', value: root, _ts: 2 },
                 { userId: SystemUserId, category: SettingsCategory.System, name: 'CurrentUserId', value: id, _ts: 2 },
             ];
 

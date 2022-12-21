@@ -1,6 +1,7 @@
 import React from 'react';
 import GroupableGrid from '../../../components/GroupableGrid/GroupableGrid';
 import { Button } from '../../../controls';
+import Link from '../../../controls/Link';
 import BaseGadget from '../../../gadgets/BaseGadget';
 import { inject } from '../../../services/injector-service';
 import { loadReportData } from './actions';
@@ -81,8 +82,7 @@ class ReportViewer extends BaseGadget {
                 formatDateTime: this.$userutils.formatDateTime,
                 formatSecs: this.$utils.formatSecs,
                 formatMS: this.$utils.formatTs,
-                showAsLink: (ticket) => <a href={this.$userutils.getTicketUrl(ticket)} // ToDo: Need to fix this
-                    target="_blank" rel="noopener noreferrer">{ticket}</a>
+                showAsLink: (ticket) => <Link href={this.$userutils.getTicketUrl(ticket)}>{ticket}</Link> // ToDo: Need to fix this
             }));
         } catch (err) {
             this.setState({ isLoading: false, hasError: true });

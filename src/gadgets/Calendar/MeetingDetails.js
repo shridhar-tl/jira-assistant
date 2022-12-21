@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react';
 import { parseHTML } from '../../common/utils';
+import Link from '../../controls/Link';
 
 const desc_len = 350;
 
@@ -39,7 +40,7 @@ class MeetingDetails extends PureComponent {
                 {currentMeetingItem.videoCall && <div className="detail">
                     <div className="title"><i className="fa fa-video-camera" /></div>
                     <div className="info">
-                        <a href={currentMeetingItem.videoCall.url} target="_blank" rel="noopener noreferrer">Join meeting: {currentMeetingItem.videoCall.name}</a>
+                        <Link href={currentMeetingItem.videoCall.url}>Join meeting: {currentMeetingItem.videoCall.name}</Link>
                     </div>
                 </div>}
                 {currentMeetingItem.attendees && <div className="detail pointer">

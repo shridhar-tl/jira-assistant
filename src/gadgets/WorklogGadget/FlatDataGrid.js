@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react';
 import GroupableGrid from '../../components/GroupableGrid/GroupableGrid';
+import Link from '../../controls/Link';
 
 const estimateFieldsToBeHidden = ["-originalestimate", "-totalLogged", "-remainingestimate", "-estVariance"];
 
@@ -62,7 +63,7 @@ class FlatDataGrid extends PureComponent {
     }
 
     formatTicket(text, url) {
-        return text && <a href={url} className="link" target="_blank" rel="noopener noreferrer">{text}</a>;
+        return text && <Link href={url} className="link">{text}</Link>;
     }
 
     settingsChanged = (grpconfig, event) => {

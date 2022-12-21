@@ -1,6 +1,6 @@
 import moment from "moment";
 import { prepareUrlWithQueryString } from "../common/utils";
-import { isWebBuild } from "../constants/build-info";
+import { buildMode, isWebBuild } from "../constants/build-info";
 import { EventCategory } from "../constants/settings";
 
 // https://docs.microsoft.com/en-us/graph/api/resources/calendar?view=graph-rest-1.0
@@ -21,19 +21,20 @@ const redirect_uri = 'https://www.jiraassistant.com/oauth/outlook';
 //const groupEventsListUrl = `${apiBasePath}/calendarGroup/calendars/{0}/events`;
 
 export default class OutlookCalendar {
-    static dependencies = ["AjaxRequestService", "AnalyticsService", "MessageService", "OutlookOAuthService", "SessionService"];
+    static dependencies = ["AjaxRequestService", "AnalyticsService", "MessageService", "OutlookOAuthService", "SessionService", "AppBrowserService"];
 
-    constructor($request, $analytics, $message, $msoAuth, $session) {
+    constructor($request, $analytics, $message, $msoAuth, $session, $browser) {
         this.$request = $request;
         this.$analytics = $analytics;
         this.$message = $message;
         this.$msoAuth = $msoAuth;
         this.$session = $session;
+        this.$jaBrowserExtn = $browser;
     }
 
     getAddlProps(response_type) {
         const state = btoa(JSON.stringify({
-            forWeb: isWebBuild,
+            initSource: buildMode,
             authType: isWebBuild && localStorage.getItem('authType') !== '1' ? 'mso' : '1',
             userId: this.$session.userId
         }));
@@ -70,7 +71,7 @@ export default class OutlookCalendar {
             };
             window.addEventListener("message", handler, false);
 
-            window.open(url, "oAuthHandler", "height=610,width=500");
+            this.$jaBrowserExtn.openTab(url, "oAuthHandler", "height=610,width=500");
         });
     }
 

@@ -5,11 +5,41 @@ a.navbar-brand {
     }
 }
 
-.app-header.navbar {
-    height: 43px;
+.app-header {
+    color: #fff !important;
+
+    .fa-bars {
+        color: #fff !important;
+        font-size: 17.5px;
+    }
+
+    .nav-item {
+        min-width: 35px;
+    }
+
+    &.navbar {
+        height: 44px !important;
+
+        .navbar-brand {
+            height: 43px;
+        }
+
+        .navbar-nav .nav-link,
+        .navbar-toggler-icon {
+            color: #fff !important;
+        }
+    }
+
+    i.fa {
+        font-size: 16px;
+    }
 
     .navbar-brand {
-        height: 43px;
+        width: 215px;
+
+        .navbar-brand-full {
+            color: #fff !important;
+        }
     }
 }
 

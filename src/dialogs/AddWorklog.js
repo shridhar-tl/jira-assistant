@@ -11,7 +11,7 @@ class AddWorklog extends BaseDialog {
     constructor(props) {
         const { editTracker } = props;
         super(props, editTracker ? "Edit Tracker" : "Add worklog", { width: '550px' });
-        inject(this, "SessionService", "SuggestionService", "WorklogService", "WorklogTimerService", "MessageService", "UtilsService");
+        inject(this, "SessionService", "SuggestionService", "WorklogService", "WorklogTimerService", "MessageService", "UtilsService", "AnalyticsService");
         this.className = "add-worklog-popup";
 
         this.displayDateFormat = "yyyy-MM-dd HH:mm";

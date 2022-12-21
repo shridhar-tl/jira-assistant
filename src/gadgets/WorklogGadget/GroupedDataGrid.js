@@ -3,6 +3,7 @@ import React, { PureComponent } from 'react';
 import moment from 'moment';
 import { ScrollableTable, THead, TBody } from '../../components/ScrollableTable';
 import { getUserName, calcCostPerSecs } from '../../common/utils';
+import Link from '../../controls/Link';
 
 class GroupedDataGrid extends PureComponent {
     constructor(props) {
@@ -398,8 +399,8 @@ class UserRow extends PureComponent {
                         return (
                             <tr key={i} className="auto-wrap" data-row-id="ticket" data-current-user={u.isCurrentUser ? '1' : '0'} data-test-id={t.ticketNo}>
                                 <td className="data-left">
-                                    {!showParentSummary && t.parent && <a href={t.parentUrl} className="link" target="_blank" rel="noopener noreferrer">{t.parent} - </a>}
-                                    <a href={t.url} className="link" target="_blank" rel="noopener noreferrer">{t.ticketNo}</a> -
+                                    {!showParentSummary && t.parent && <Link href={t.parentUrl} className="link">{t.parent} - </Link>}
+                                    <Link href={t.url} className="link">{t.ticketNo}</Link> -
                                     <span>{t.summary}</span>
                                     <strong> ({t.statusName})</strong>
                                     {!hideEstimate && !!(oe || re) && <span className="estimate" title={estTitle}>
@@ -407,9 +408,9 @@ class UserRow extends PureComponent {
                                 </td>
 
                                 {!!showProject && <td>{t.projectKey} - {t.projectName}</td>}
-                                {!!showParentSummary && <td>{t.parent && <a href={t.parentUrl} className="link" target="_blank" rel="noopener noreferrer">{t.parent}</a>} - {t.parentSummary}</td>}
+                                {!!showParentSummary && <td>{t.parent && <Link href={t.parentUrl} className="link">{t.parent}</Link>} - {t.parentSummary}</td>}
                                 {!!showIssueType && <td>{t.issueType}</td>}
-                                {!!showEpic && <td>{t.epicDisplay && <a href={t.epicUrl} className="link" target="_blank" rel="noopener noreferrer">{t.epicDisplay}</a>}</td>}
+                                {!!showEpic && <td>{t.epicDisplay && <Link href={t.epicUrl} className="link">{t.epicDisplay}</Link>}</td>}
                                 {!!showAssignee && <td>{t.assignee}</td>}
                                 {!!showReporter && <td>{t.reporter}</td>}
 

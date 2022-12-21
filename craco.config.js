@@ -7,7 +7,8 @@ process.env.REACT_APP_BUILD_DATE = new Date().getTime();
 const buildMode = process.env.REACT_APP_BUILD_MODE;
 const isWebBuild = buildMode === 'WEB';
 const isAppBuild = buildMode === 'APP';
-const isExtnBuild = !isWebBuild && !isAppBuild;
+const isPluginBuild = buildMode === 'PLUGIN';
+const isExtnBuild = !isWebBuild && !isAppBuild && !isPluginBuild;
 
 const writeToDisk = process.env.WRITE_TO_DISK === "true";
 const analyzeBundles = process.env.ANALYZE_BUNDLES === "true";
@@ -32,6 +33,17 @@ module.exports = {
 
             if (!isProd && writeToDisk) {
                 wpConfig.devServer = { writeToDisk: true };
+            }
+
+            console.log('Homepage configured=', wpConfig.output.publicPath);
+
+            // Use js specific for build target to be pulled while importing a file
+            if (!isWebBuild) { // As .web.js is already part of module extns, no need to customize for web build
+                // Caution: This may cause issue when there is some .web.js files in any any npm packages
+                const extns = wpConfig.resolve.extensions.filter(ext => !ext.includes('.web.js')); // Remove .web.js
+                const jsIdx = extns.indexOf('.js');
+                extns.splice(jsIdx, 0, `.${buildMode.toLowerCase()}.js`);
+                wpConfig.resolve.extensions = extns;
             }
 
             // set entry point
@@ -92,6 +104,8 @@ function getEntryObject(paths) {
         result.background = resolvePath('src/common/background.js');
         result.menu = resolvePath('src/common/menu.js');
         result.jira_cs = resolvePath('src/content-scripts/jira.js');
+    } else if (isPluginBuild) {
+        result.index = resolvePath('src/index.plugin.js');
     }
 
     return result;

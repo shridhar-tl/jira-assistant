@@ -403,7 +403,7 @@ class Calendar extends BaseGadget {
 
     openTicket(obj) {
         const url = this.$userutils.getTicketUrl(obj.ticketNo);
-        window.open(url);
+        this.$jaBrowserExtn.openTab(url);
     }
 
     showWorklogPopup(obj) {
@@ -664,7 +664,7 @@ class Calendar extends BaseGadget {
     openVideoCall(meeting) {
         hideContextMenu();
         if (meeting && meeting.hangoutLink) {
-            window.open(meeting.hangoutLink);
+            this.$jaBrowserExtn.openTab(meeting.hangoutLink);
         }
     }
 

@@ -3,6 +3,7 @@ import { inject } from '../services/injector-service';
 import BaseControl from './BaseControl';
 import { showContextMenu } from '../externals/jsd-report';
 import { WorklogContext } from '../common/context';
+import Link from '../controls/Link';
 
 class TicketDisplay extends BaseControl {
     static contextType = WorklogContext;
@@ -24,7 +25,7 @@ class TicketDisplay extends BaseControl {
 
         return (<>
             {!hideContext && <i className="fa fa-ellipsis-v margin-r-8" onClick={this.showContext}></i>}
-            <a href={url} className="link strike" target="_blank" rel="noopener noreferrer">{value}</a>
+            <Link href={url} className="link strike">{value}</Link>
             {badge}
         </>);
     }

@@ -58,8 +58,8 @@ async function executeCommand(message, sendResponse, logDetails) {
                 case 'IS_INTEGRATED':
                     const { $storage } = services;
                     const { value: userId } = await $storage.getSetting(SystemUserId, SettingsCategory.System, 'CurrentUserId') || {};
-                    const { value: jiraUrl } = await $storage.getSetting(SystemUserId, SettingsCategory.System, 'CurrentJiraUrl') || {};
-                    response.success = userId > 0 && !!jiraUrl;
+                    //const { value: jiraUrl } = await $storage.getSetting(SystemUserId, SettingsCategory.System, 'CurrentJiraUrl') || {};
+                    response.success = userId > 0;// && !!jiraUrl;
                     break;
 
                 case 'RELOAD':

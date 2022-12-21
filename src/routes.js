@@ -33,6 +33,10 @@ const sessionBasedRoute = [
         path: '/dashboard/:index',
         component: DashboardComponent
     },
+    DashboardComponent && {
+        path: '/dashboard',
+        component: DashboardComponent
+    },
     CalendarViewComponent && {
         path: '/calendar',
         component: CalendarViewComponent

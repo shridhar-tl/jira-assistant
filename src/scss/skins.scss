@@ -1,15 +1,15 @@
 @mixin base-style($header-logo-bg, $header-bg) {
   .app-header.navbar .navbar-brand {
-    background-color: $header-logo-bg  !important;
+    background-color: $header-logo-bg !important;
   }
 
   .app-header.navbar,
   .sidebar .nav-link:hover {
-    background-color: $header-bg  !important;
+    background-color: $header-bg !important;
   }
 
   .sidebar .nav-link.active i {
-    color: $header-logo-bg  !important;
+    color: $header-logo-bg !important;
   }
 
   .ui-panel.ui-widget .ui-panel-titlebar {
@@ -19,16 +19,20 @@
 
   .sidebar .nav-link.active,
   .sidebar-minimized .sidebar .nav-link {
-    border-left: 3px solid $header-bg  !important;
+    border-left: 3px solid $header-bg !important;
   }
 
   .link,
   .table i.fa-ellipsis-v {
-    color: $header-bg  !important;
+    color: $header-bg !important;
   }
 
   ul.right-menus li:hover {
     background-color: $header-logo-bg;
+  }
+
+  div.gadget .p-panel-header {
+    border-top-color: $header-bg;
   }
 
   .dashboard-icons div.d-icon {
@@ -59,7 +63,7 @@
   }*/
   div.daysinweek {
     >div.day:hover {
-      background-color: $header-bg  !important;
+      background-color: $header-bg !important;
     }
 
     >div.day.day-on {
@@ -82,18 +86,17 @@
   color: $font-color;
 
   .app-header.navbar .navbar-brand {
-    background-color: $background-color  !important;
+    background-color: $background-color !important;
   }
 
   .app-header.navbar,
   .sidebar .nav-link:hover {
-    background-color: $background-secondary  !important;
+    background-color: $background-secondary !important;
     color: $font-color;
-
   }
 
   .sidebar .nav-link.active i {
-    color: $primary-color  !important;
+    color: $primary-color !important;
   }
 
   .ui-panel.ui-widget .ui-panel-titlebar {
@@ -103,12 +106,38 @@
 
   .sidebar .nav-link.active,
   .sidebar-minimized .sidebar .nav-link {
-    border-left: 3px solid $primary-color  !important;
+    border-left: 3px solid $primary-color !important;
+  }
+
+  .sidebar {
+    * {
+      color: $font-color;
+    }
+
+    div[data-navheader="true"],
+    nav>div:nth-child(3) {
+      background-color: #262a2e;
+    }
+
+    div[data-testid="nestable-navigation-content"],
+    div[data-testid="nestable-navigation-content"] div:before,
+    div[data-testid="nestable-navigation-content"] div:after,
+    .btn-menu {
+      background-color: $background-color;
+    }
+
+    .btn-menu.selected {
+      background-color: #3a4248;
+    }
+
+    .btn-menu:hover {
+      background-color: #262a2e;
+    }
   }
 
   .link,
   .table i.fa-ellipsis-v {
-    color: $primary-color  !important;
+    color: $primary-color !important;
   }
 
   ul.right-menus li:hover {
@@ -135,7 +164,7 @@
 
   .skin-bg-font {
     background-color: $primary-color;
-    color: $font-color  !important;
+    color: $font-color !important;
   }
 
   /*.ui-widget-header .ui-button, .ui-widget-content .ui-button, .ui-widget.ui-button, .ui-button {
@@ -143,12 +172,17 @@
     border: 1px solid $header-logo-bg;
   }*/
   div.daysinweek {
-    >div.day:hover {
-      background-color: $primary-color  !important;
+    color: $background-color !important;
+
+    &>div.day:hover,
+    &>div.day.day-on:hover {
+      background-color: $primary-color !important;
+      color: $font-color !important;
     }
 
-    >div.day.day-on {
+    &>div.day.day-on {
       background-color: $background-color;
+      color: $primary-color !important;
     }
   }
 
@@ -179,12 +213,14 @@
   .p-menubar .p-menuitem-link .p-menuitem-icon,
   .p-tieredmenu .p-menuitem-link .p-menuitem-icon,
   .p-contextmenu .p-menuitem-link .p-menuitem-icon,
+  .p-contextmenu .p-menuitem-active .p-menuitem-link .p-menuitem-icon,
   .p-megamenu .p-menuitem-link .p-menuitem-icon,
   .p-slidemenu .p-menuitem-link .p-menuitem-icon,
   .p-menu .p-menuitem-link .p-menuitem-text,
   .p-menubar .p-menuitem-link .p-menuitem-text,
   .p-tieredmenu .p-menuitem-link .p-menuitem-text,
   .p-contextmenu .p-menuitem-link .p-menuitem-text,
+  .p-contextmenu .p-menuitem-active .p-menuitem-link .p-menuitem-text,
   .p-megamenu .p-menuitem-link .p-menuitem-text,
   .p-slidemenu .p-menuitem-link .p-menuitem-text {
     color: $font-color
@@ -213,8 +249,8 @@
   .p-dropdown-panel .p-dropdown-items .p-dropdown-item-group,
   .p-panel .p-panel-content,
   .p-tabview .p-tabview-panels,
-  .p-tabview.p-tabview-top .p-tabview-nav li.p-highlight:hover a,
-  .p-tabview.p-tabview-top .p-tabview-nav li.p-highlight a,
+  .p-tabview .p-tabview-nav li.p-highlight:hover a,
+  .p-tabview .p-tabview-nav li.p-highlight a,
   div.gadget .p-panel-header,
   div.scroll-table-container caption,
   div.scroll-table-container .scroll-table tfoot,
@@ -243,7 +279,8 @@
   .daterangepicker td.off,
   .daterangepicker td.off.in-range,
   .daterangepicker td.off.start-date,
-  .daterangepicker td.off.end-date {
+  .daterangepicker td.off.end-date,
+  .p-contextmenu {
     background-color: $background-color;
   }
 
@@ -253,14 +290,11 @@
   div.src-editable-grid-container .src-editable-grid thead tr th,
   .fc th,
   tr.grouped-row,
-  .p-tabview.p-tabview-top .p-tabview-nav li a,
-  .p-tabview.p-tabview-bottom .p-tabview-nav li a,
-  .p-tabview.p-tabview-left .p-tabview-nav li a,
-  .p-tabview.p-tabview-right .p-tabview-nav li a,
+  .p-tabview .p-tabview-nav li a,
   .daterangepicker .ranges li:hover,
   .daterangepicker td.available:hover,
   .daterangepicker th.available:hover,
-  .p-dialog .p-dialog-titlebar,
+  .p-dialog .p-dialog-header,
   .p-dialog .p-dialog-footer,
   .p-autocomplete-panel .p-autocomplete-items .p-autocomplete-list-item:hover,
   .dropdown-header,
@@ -272,6 +306,7 @@
   .p-menubar .p-menuitem-link:hover,
   .p-tieredmenu .p-menuitem-link:hover,
   .p-contextmenu .p-menuitem-link:hover,
+  .p-contextmenu .p-menuitem-active .p-menuitem-link,
   .p-megamenu .p-menuitem-link:hover,
   .p-slidemenu .p-menuitem-link:hover,
   .p-inputgroup .p-inputgroup-addon,
@@ -296,10 +331,10 @@
   .src-editable-grid th,
   .src-editable-grid td,
   .p-panel .p-panel-content,
-  .p-panel .p-panel-header,
+  div.gadget .p-panel .p-panel-header,
   .p-tabview .p-tabview-panels,
-  .p-tabview.p-tabview-top .p-tabview-nav li.p-highlight:hover a,
-  .p-tabview.p-tabview-top .p-tabview-nav li.p-highlight a,
+  .p-tabview .p-tabview-nav li.p-highlight:hover a,
+  .p-tabview .p-tabview-nav li.p-highlight a,
   .page-header,
   .app-header,
   .table-bordered,
@@ -313,11 +348,8 @@
   .daterangepicker:after,
   .daterangepicker.show-ranges.ltr .drp-calendar.left,
   .daterangepicker .calendar-table,
-  .p-tabview.p-tabview-top .p-tabview-nav li a,
-  .p-tabview.p-tabview-bottom .p-tabview-nav li a,
-  .p-tabview.p-tabview-left .p-tabview-nav li a,
-  .p-tabview.p-tabview-right .p-tabview-nav li a,
-  .p-dialog .p-dialog-titlebar,
+  .p-tabview .p-tabview-nav li a,
+  .p-dialog .p-dialog-header,
   .p-dialog .p-dialog-content,
   .p-dialog .p-dialog-footer,
   .p-inputtext,
@@ -346,7 +378,7 @@
 
   td.log-good,
   tr.log-good {
-    background-color: $background-color + #0f300f !important;
+    background-color: #0f300f !important; // $background-color +#0f300f !important;
   }
 
   td.log-less,
@@ -356,11 +388,11 @@
 
   td.log-high,
   tr.log-high {
-    background-color: $background-color + #804740 !important;
+    background-color: #804740 !important; // $background-color + #804740 !important;
   }
 
   td.col-holiday {
-    background-color: $background-secondary  !important;
+    background-color: $background-secondary !important;
   }
 }
 
@@ -385,7 +417,8 @@
   @include base-style($header-logo-bg, $header-bg);
 }
 
-.skin-green {
+.skin-green,
+.skin-green2 {
   $header-logo-bg: #008d4c;
   $header-bg: #00a65a;
 
@@ -421,12 +454,6 @@
 .skin-sea {
   $header-logo-bg: #2d7776; //#296e6d
   $header-bg: #379392;
-  @include base-style($header-logo-bg, $header-bg);
-}
-
-.skin-green2 {
-  $header-logo-bg: #2b954b; //#288b46
-  $header-bg: #33b35a;
   @include base-style($header-logo-bg, $header-bg);
 }
 

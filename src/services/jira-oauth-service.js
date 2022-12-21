@@ -26,7 +26,7 @@ export default class JiraAuthService extends BaseService {
 
         const userId = await this.$user.createUser(profile, url, { authType: 'C', uid, pwd: pwd });
 
-        await this.$settings.set("CurrentJiraUrl", url);
+        //await this.$settings.set("CurrentJiraUrl", url);
         await this.$settings.set("CurrentUserId", userId);
 
         return userId;

@@ -1,5 +1,6 @@
 import * as moment from 'moment';
 import { getUserName } from '../common/utils';
+import { sett_page_calendar, sett_page_reports_UserDayWise } from '../constants/settings';
 
 export default class AuthService {
     static dependencies = ["UserService", "SettingsService", "SessionService", "JiraService"];
@@ -69,20 +70,10 @@ export default class AuthService {
                 viewMode: 0,
                 gridList: ["myOpenTickets", "myBookmarks", "dateWiseWorklog", "pendingWorklog"]
             }),*/
-            calendar: this.parseIfJson(settings.page_calendar, {
-                viewMode: 'timeGridWeek',
-                showWorklogs: true,
-                showMeetings: true,
-                showInfo: true,
-                eventColor: '#51b749',
-                worklogColor: '#9a9cff',
-                infoColor_valid: '#3a87ad',
-                infoColor_less: '#f0d44f',
-                infoColor_high: '#f06262'
-            }),
+            calendar: this.parseIfJson(settings.page_calendar, sett_page_calendar),
             reports_UserDayWise: this.parseIfJson(
                 settings.page_reports_UserDayWise,
-                { logFormat: '1', breakupMode: '1', groupMode: '1' }
+                sett_page_reports_UserDayWise
             ),
             reports_WorklogReport: this.parseIfJson(settings.page_reports_WorklogReport, {})
         };

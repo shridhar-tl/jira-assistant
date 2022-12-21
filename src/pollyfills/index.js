@@ -1,3 +1,3 @@
-import { withRouter, getWatcher } from './Router';
+import { withRouter, UrlWatcher } from './Router';
 
-export { withRouter, getWatcher };
+export { withRouter, UrlWatcher };

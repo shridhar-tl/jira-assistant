@@ -24,18 +24,15 @@ function withRouter(Component) {
 
     return React.memo(ComponentWithRouterProp);
 }
-function getWatcher(onChange) {
-    if (typeof onChange !== 'function') {
-        throw Error('onChange handler is required and should be a function');
-    }
 
-    return React.memo(function UrlWatcher() {
-        const location = useLocation();
+const UrlWatcher = React.memo(function UrlWatcher({ onChange }) {
+    const location = useLocation();
 
-        useEffect(() => onChange(location), [location]);
+    useEffect(() => {
+        onChange(location);
+    }, [location]); // eslint-disable-line react-hooks/exhaustive-deps
 
-        return null;
-    });
-}
+    return null;
+});
 
-export { withRouter, getWatcher };
+export { withRouter, UrlWatcher };

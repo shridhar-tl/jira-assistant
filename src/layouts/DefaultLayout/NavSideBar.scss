@@ -1,0 +1,46 @@
+.sidebar-container {
+    width: 215px;
+    height: calc(100vh - 44px);
+
+    &>nav {
+        min-width: 200px;
+
+        div[data-navheader] {
+            padding: 3px 5px 5px 5px;
+        }
+
+        .btn-menu {
+            cursor: pointer;
+
+            span[data-item-elem-before] {
+                margin-right: 2px;
+            }
+
+            span[data-item-elem-after] {
+                margin-left: 2px;
+            }
+        }
+    }
+}
+
+.app-body .sidebar {
+    flex: 0 0 215px;
+}
+
+html:not([dir="rtl"]) .sidebar {
+    margin-left: -215px;
+}
+
+.build-date {
+    font-size: 8px;
+
+    &:hover {
+        font-size: 12px;
+    }
+}
+
+.sidebar-minimized {
+    .build-date {
+        display: none;
+    }
+}

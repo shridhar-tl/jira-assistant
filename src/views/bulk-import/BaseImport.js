@@ -3,6 +3,7 @@ import BaseGadget from '../../gadgets/BaseGadget';
 import Papa from "papaparse";
 import { Button } from '../../controls';
 import { inject } from '../../services/injector-service';
+import Link from '../../controls/Link';
 
 class BaseImport extends BaseGadget {
     constructor(props, importType, icon) {
@@ -50,7 +51,7 @@ class BaseImport extends BaseGadget {
         }
     }
 
-    getTicketLink = (ticketNo) => <a className="link" href={this.$userutils.getTicketUrl(ticketNo)} target="_blank" rel="noopener noreferrer">{ticketNo}</a>;
+    getTicketLink = (ticketNo) => <Link className="link" href={this.$userutils.getTicketUrl(ticketNo)}>{ticketNo}</Link>;
 
     setFileSelector = (f) => this.fileSelector = f;
     chooseFileForImport = () => this.fileSelector.click();

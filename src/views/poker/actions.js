@@ -1,4 +1,4 @@
-import { isWebBuild } from "../../constants/build-info";
+import { redirectToRoute } from "../../constants/build-info";
 import { JAWebRootUrl } from "../../constants/urls";
 import { Dialog } from "../../dialogs/CommonDialog";
 import {
@@ -281,7 +281,7 @@ function clearSession(isModerator) {
 function closePoker() {
     clearAuthInfo();
     window.close();
-    document.location.href = isWebBuild ? '/poker' : '/index.html#/poker';
+    redirectToRoute('/poker');
 }
 
 // #endregion

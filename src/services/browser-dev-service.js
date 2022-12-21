@@ -24,8 +24,8 @@ export default class WebBrowserService extends BrowserBase {
         });
     }
 
-    openTab(url) {
-        window.open(url);
+    openTab(url, name, opts) {
+        window.open(url, name, opts);
     }
 
     getAuthToken(options) {

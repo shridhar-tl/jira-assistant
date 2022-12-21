@@ -89,8 +89,8 @@ export default class ChromeBrowserService extends BrowserBase {
             .catch(() => this.openTab(url));
     }
 
-    openTab(url) {
-        window.open(url); // need to change
+    openTab(url, name, opts) {
+        window.open(url, name, opts); // need to change
     }
 
     getAuthToken(options) { // need to change

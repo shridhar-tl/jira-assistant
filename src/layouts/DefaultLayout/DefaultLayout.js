@@ -1,28 +1,16 @@
 import React, { PureComponent } from 'react';
-import * as router from 'react-router-dom';
 import Dialog from "../../dialogs";
-import "./DefaultLayout.scss";
-
-import {
-  //AppAside,
-  AppHeader,
-  AppSidebar,
-  //AppSidebarFooter,
-  AppSidebarMinimizer,
-  AppSidebarNav2 as AppSidebarNav,
-} from '@coreui/react';
 // sidebar nav config
 import navigation, { getDashboardMenu } from '../../_nav';
-// routes config
 import { inject } from '../../services/injector-service';
 import { ContextMenu } from '../../externals/jsd-report';
-import AsideUserInfo from './AsideUserInfo';
 import { setStartOfWeek } from '../../common/utils';
-import BuildDate from './BuildDate';
 import { WorklogContextProvider } from '../../common/context';
-import { isWebBuild } from '../../constants/build-info';
+import { isWebBuild, redirectToRoute } from '../../constants/build-info';
 import AppContent from './AppContent';
 import { withRouter } from '../../pollyfills';
+import NavSideBar from './NavSideBar';
+import "./DefaultLayout.scss";
 
 const DefaultHeader = React.lazy(() => import('./DefaultHeader'));
 
@@ -73,19 +61,24 @@ class DefaultLayout extends PureComponent {
   }
 
   getMenus(userId) {
-    const items = navigation.items.map(p => {
-      const route = { ...p };
-      route.url = `/${userId}${route.url}`;
-      return route;
+    const items = navigation.map(p => {
+      const { items, ...section } = p;
+      section.items = items.map(p => {
+        const route = { ...p };
+        route.url = `/${userId}${route.url}`;
+        return route;
+      });
+
+      return section;
     });
 
     const dashboards = this.$dashboard.getDashboards();
 
     if (dashboards?.length) {
-      items.splice(1, 1, ...dashboards.map((p, i) => getDashboardMenu(p, i, userId)));
+      items[0].items.splice(0, 1, ...dashboards.map((p, i) => getDashboardMenu(p, i, userId)));
     }
 
-    return { items };
+    return items;
   }
 
   loading = () => <div className="animated fadeIn pt-1 text-center">Loading...</div>;
@@ -94,9 +87,9 @@ class DefaultLayout extends PureComponent {
     e.preventDefault();
     this.$cache.clear();
     this.$settings.set('CurrentUserId');
-    this.$settings.set('CurrentJiraUrl');
+    //this.$settings.set('CurrentJiraUrl');
     if (isWebBuild) {
-      document.location.href = '/';
+      redirectToRoute();
     } else {
       this.props.navigate('/integrate');
     }
@@ -153,17 +146,13 @@ class DefaultLayout extends PureComponent {
     const { menus } = this.state;
 
     return (
-      <WorklogContextProvider value={this.worklogContextProps} >
+      <WorklogContextProvider value={this.worklogContextProps}>
         <div className="app">
-          <AppHeader fixed>
+          <header className="app-header navbar">
             <DefaultHeader onLogout={this.signOut} />
-          </AppHeader>
+          </header>
           <div className="app-body">
-            <AppSidebar fixed display="lg">
-              <AsideUserInfo onLogout={this.signOut} />
-              <AppSidebarNav navConfig={menus} {...this.props} router={router} />
-              <AppSidebarMinimizer><BuildDate /></AppSidebarMinimizer>
-            </AppSidebar>
+            <NavSideBar onLogout={this.signOut} menus={menus} navigate={this.props.navigate} location={this.props.location} />
             <main className="main">
               <AppContent loader={this.loading} />
             </main>

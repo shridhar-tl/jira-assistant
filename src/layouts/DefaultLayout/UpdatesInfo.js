@@ -1,4 +1,5 @@
 import React, { PureComponent } from 'react';
+import Link from '../../controls/Link';
 import { inject } from '../../services/injector-service';
 
 class UpdatesInfo extends PureComponent {
@@ -15,7 +16,7 @@ class UpdatesInfo extends PureComponent {
             text = desc.text;
         }
 
-        return <li key={i}>{!!id && <a href={`https://github.com/shridhar-tl/jira-assistant/issues/${id}`} target="_blank" rel="noopener noreferrer">#{id} - </a>}{text}</li>;
+        return <li key={i}>{!!id && <Link href={`https://github.com/shridhar-tl/jira-assistant/issues/${id}`}>#{id} - </Link>}{text}</li>;
     }
 
     render() {

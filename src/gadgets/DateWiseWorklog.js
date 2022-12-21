@@ -8,6 +8,7 @@ import { showContextMenu } from '../externals/jsd-report';
 import { getQuickDateValue } from '../controls/DatePicker';
 import ChangeTracker from '../components/ChangeTracker';
 import { WorklogContext } from '../common/context';
+import Link from '../controls/Link';
 
 class DateWiseWorklog extends BaseGadget {
     static contextType = WorklogContext;
@@ -136,10 +137,10 @@ class DateWiseWorklog extends BaseGadget {
                         <td>
                             <ul className="tags">
                                 {b.ticketList.map((ld, x) => <li key={x}>
-                                    {ld.worklogId && <a className="link badge badge-pill skin-bg-font" href={this.getWorklogUrl(ld.ticketNo, ld.worklogId)}
-                                        target="_blank" rel="noopener noreferrer" title={ld.comment}>
+                                    {ld.worklogId && <Link className="link badge badge-pill skin-bg-font" href={this.getWorklogUrl(ld.ticketNo, ld.worklogId)}
+                                        title={ld.comment}>
                                         <span className="fa fa-clock-o" /> {ld.ticketNo}: {ld.uploaded}
-                                    </a>}
+                                    </Link>}
                                     {!ld.worklogId && <span className="link badge badge-pill skin-bg-font" onClick={() => this.editWorklog(ld.id)} title={ld.comment}>
                                         <span className="fa fa-clock-o" /> {ld.ticketNo}: {ld.uploaded}
                                     </span>}
