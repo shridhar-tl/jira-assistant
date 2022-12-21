@@ -68,9 +68,6 @@
         "chart.js": "4.1.1",
         "classnames": "2.3.2",
         "dexie": "3.2.2",
-        "electron-about-window": "^1.15.2",
-        "electron-is-dev": "^2.0.0",
-        "electron-updater": "^5.3.0",
         "espree": "9.4.1",
         "exceljs": "4.3.0",
         "firebase": "9.15.0",
@@ -118,8 +115,7 @@
         "eject": "react-scripts eject",
         "craco-start": "cross-env REACT_APP_BUILD_MODE=EXTN craco start",
         "app:web": "cross-env REACT_APP_BUILD_MODE=APP craco start",
-        "app:electron": "wait-on tcp:80 && electron .",
-        "postinstall": "electron-builder install-app-deps"
+        "app:electron": "wait-on tcp:80 && electron ."
     },
     "eslintConfig": {
         "extends": [
