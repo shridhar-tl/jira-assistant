@@ -9,15 +9,15 @@ import './common.scss';
 const withInitParams = function (Component) {
     registerDepnServices();
 
-    return React.memo(function () {
+    return React.memo(function ({ jiraContext, ...props }) {
         const [initValue, setInitValue] = useState(false);
 
         useEffect(() => {
-            initializeApp().then(setInitValue);
+            initializeApp(jiraContext).then(setInitValue);
         }, []);// eslint-disable-line react-hooks/exhaustive-deps
 
         if (initValue === true) {
-            return (<Component />);
+            return (<Component jiraContext={jiraContext} {...props} />);
         } else if (typeof initValue === 'string') {
             return (<div className="setup-error">
                 <div className="header-msg">Setup Failed</div>
@@ -32,14 +32,18 @@ const withInitParams = function (Component) {
 export default withInitParams;
 
 
-async function initializeApp() {
+async function initializeApp(jiraContext) {
     try {
         const { $user } = inject('UserService');
         const users = await $user.getUsersList();
 
         if (!users.length) { // If no user is created in db so far, then create new user
             const { $request } = inject('AjaxRequestService');
-            const jiraUrl = await getInstanceUrl();
+
+            let jiraUrl = jiraContext.siteUrl;
+            if (!jiraUrl) {
+                jiraUrl = await getInstanceUrl();
+            }
             const profile = await $request.execute('GET', ApiUrls.mySelf.replace('~', jiraUrl));
             await $user.createUser(profile, jiraUrl);
         }

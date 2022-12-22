@@ -23,7 +23,7 @@ export default class AuthService {
         return await this.$user.getUserDetails(userId);
     }
 
-    async authenticate(userId) {
+    async authenticate(userId, useProfile = true) {
         let userDetails;
 
         try {
@@ -43,11 +43,13 @@ export default class AuthService {
                 this.$session.apiRootUrl = (userDetails.apiUrl || "").toString();
             }
 
-            const jiraUser = await this.$jira.getCurrentUser();
-            userDetails.jiraUser = jiraUser;
-            userDetails.displayName = jiraUser.displayName || "(not available)";
-            userDetails.name = getUserName(jiraUser) || "(not available)";
-            userDetails.emailAddress = jiraUser.emailAddress || "(not available)";
+            if (useProfile) {
+                const jiraUser = await this.$jira.getCurrentUser();
+                userDetails.jiraUser = jiraUser;
+                userDetails.displayName = jiraUser.displayName || "(not available)";
+                userDetails.name = getUserName(jiraUser) || "(not available)";
+                userDetails.emailAddress = jiraUser.emailAddress || "(not available)";
+            }
 
             this.$session.authenticated = true;
         } catch (res) {

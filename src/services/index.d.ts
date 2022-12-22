@@ -35,39 +35,41 @@ import UtilsService from './utils-service';
 import WorklogService from './worklog-service';
 import WorklogTimerService from './worklog-timer-service';
 
+export interface IServicesList {
+    $request: AjaxRequestService
+    $ajax: AjaxService
+    $analytics: AnalyticsService
+    $auth: AuthService
+    $backup: BackupService
+    $bookmark: BookmarkService
+    $jaBrowserExtn: ChromeService | FirefoxService | EdgeService | DevService
+    $cache: CacheService
+    $calendar: CalendarService
+    $config: ConfigService
+    $dashboard: DashboardService
+    $jAuth: JiraAuthService
+    $jira: JiraService
+    $jupdates: JiraUpdatesService
+    $message: MessageService
+    $noti: NotificationService
+    $msoAuth: OutlookOAuthService
+    $outlook: OutlookCalendar
+    $q: QueueService
+    $report: ReportService
+    $reportConfig: ReportConfigService
+    $session: SessionService
+    $settings: SettingsService
+    $storage: StorageService
+    $suggestion: SuggestionService
+    $ticket: TicketService
+    $user: UserService
+    $usergroup: UserGroupService
+    $userutils: UserUtilsService
+    $utils: UtilsService
+    $worklog: WorklogService
+    $wltimer: WorklogTimerService
+}
+
 declare module 'react' {
-    interface PureComponent<P = {}, S = {}, SS = any> extends Component<P, S, SS> {
-        $request: AjaxRequestService
-        $ajax: AjaxService
-        $analytics: AnalyticsService
-        $auth: AuthService
-        $backup: BackupService
-        $bookmark: BookmarkService
-        $jaBrowserExtn: ChromeService | FirefoxService | EdgeService | DevService
-        $cache: CacheService
-        $calendar: CalendarService
-        $config: ConfigService
-        $dashboard: DashboardService
-        $jAuth: JiraAuthService
-        $jira: JiraService
-        $jupdates: JiraUpdatesService
-        $message: MessageService
-        $noti: NotificationService
-        $msoAuth: OutlookOAuthService
-        $outlook: OutlookCalendar
-        $q: QueueService
-        $report: ReportService
-        $reportConfig: ReportConfigService
-        $session: SessionService
-        $settings: SettingsService
-        $storage: StorageService
-        $suggestion: SuggestionService
-        $ticket: TicketService
-        $user: UserService
-        $usergroup: UserGroupService
-        $userutils: UserUtilsService
-        $utils: UtilsService
-        $worklog: WorklogService
-        $wltimer: WorklogTimerService
-    }
+    interface PureComponent<P = {}, S = {}, SS = any> extends Component<P, S, SS>, IServicesList { }
 }

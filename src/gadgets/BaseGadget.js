@@ -159,6 +159,8 @@ export class BaseGadget extends PureComponent {
         return <Button icon="fa fa-refresh" disabled={disableRefresh || isLoading} onClick={callback || this.refreshData} title="Refresh data" />;
     }
 
+    setLoader = (isLoading) => this.setState({ isLoading });
+
     exportData = (exportFormat) => {
         const exportHelper = new ExportHelper();
         exportHelper.fileName = this.title;

@@ -64,7 +64,8 @@ div.scroll-table-container {
 
         thead {
             tr {
-                background-color: #ebedf0;
+                background-color: #fff;
+                border-bottom: 2px solid #dfe1e6;
 
                 th {
                     padding: 4px 16px;
@@ -72,12 +73,13 @@ div.scroll-table-container {
                     font-weight: 400;
                     color: #555;
                     font-size: 1em;
-                    text-align: center;
+                    text-align: left;
                     white-space: nowrap;
                     position: sticky;
                     top: 0;
                     z-index: 490;
-                    background-color: #ebedf0;
+                    font-weight: 600;
+                    background-color: #fff;
 
                     &.sortable {
                         cursor: pointer;
@@ -105,6 +107,8 @@ div.scroll-table-container {
             }
 
             tr {
+                border-bottom: 2px solid #f3f4f7;
+
                 &:nth-child(even) {
                     background-color: #fafafb;
                 }

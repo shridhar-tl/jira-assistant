@@ -115,7 +115,7 @@
     }
 
     div[data-navheader="true"],
-    nav>div:nth-child(3) {
+    nav>div:last-child {
       background-color: #262a2e;
     }
 
@@ -313,7 +313,7 @@
   .p-dropdown .p-dropdown-trigger,
   .p-dropdown-panel .p-dropdown-items .p-dropdown-item:not(.p-highlight):not(.p-disabled):hover,
   .p-dropdown-panel .p-dropdown-items .p-dropdown-item-group:not(.p-highlight):not(.p-disabled):hover {
-    background-color: $background-secondary;
+    background-color: #1e2225;
     color: $font-color;
   }
 

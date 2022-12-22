@@ -75,7 +75,7 @@
         "exceljs": "^4.3.0",
         "firebase": "^9.15.0",
         "font-awesome": "^4.7.0",
-        "jquery": "^3.6.2",
+        "jquery": "^3.6.3",
         "jsd-report": "^0.1.11",
         "jspdf": "^2.5.1",
         "jspdf-autotable": "^3.5.28",

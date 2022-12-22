@@ -85,7 +85,7 @@ export class ScrollableTable extends PureComponent {
                 <TableContext.Provider value={this.sharedProps}>
                     <table ref={el => this.table = el}
                         export-sheet-name={exportSheetName}
-                        className={classNames("scroll-table table-bordered", className, exportable !== false ? "exportable" : null)}
+                        className={classNames("scroll-table", className, exportable !== false ? "exportable" : null)}
                         style={style}>
                         {children}
                     </table>
@@ -222,7 +222,7 @@ export class Column extends PureComponent {
             className = "";
         }
 
-        if (sortBy) {
+        if (curField) {
             className += " sortable";
         }
 
