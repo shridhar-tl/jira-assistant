@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import { inject } from '../../services/injector-service';
+import React, { useCallback, useEffect, useState } from 'react';
+import { inject, clearInstances } from '../../services/injector-service';
 import getLoader from '../../components/loader';
 import Page401 from '../../views/pages/p401/Page401';
-import { withRouter } from '../../pollyfills';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const nonAuthPages = ['integrate', 'options', 'poker'];
 
@@ -10,24 +10,33 @@ const withAuthInfo = function (Component) {
     const AuthComponent = function (props) {
         const [authInfo, setAuthInfo] = useState(false);
 
-        let { pathname } = props.location;
+        const location = useLocation();
+        const navigate = useNavigate();
+
+        let { pathname } = location;
 
         if (!pathname || pathname === '/') {
             pathname = '/dashboard/0';
         }
+
+        const switchUser = useCallback((url) => {
+            clearInstances();
+            setAuthInfo(false);
+            navigate(url);
+        }, [setAuthInfo, navigate]);
 
         const userId = getUserIdFromPathOrSession(pathname);
         const shouldAuth = !!userId || needsAuth(pathname);
 
         const tryAuthorize = () => {
             if (shouldAuth) {
-                authenticateUser(userId, authInfo, pathname, props.navigate).then((result) => {
+                authenticateUser(userId, authInfo, pathname, navigate).then((result) => {
                     if (result !== undefined) {
                         setAuthInfo(result);
 
                         // If user is not integrated yet, then navigate to integrate page
                         if (result.needIntegration && !pathname.startsWith('/integrate')) {
-                            props.navigate('/integrate');
+                            navigate('/integrate');
                         }
                     }
                 });
@@ -44,10 +53,10 @@ const withAuthInfo = function (Component) {
             }
         }
 
-        return (<Component {...props} authInfo={authInfo} />);
+        return (<Component {...props} switchUser={switchUser} authInfo={authInfo} />);
     };
 
-    return React.memo(withRouter(AuthComponent));
+    return React.memo(AuthComponent);
 };
 
 export default withAuthInfo;

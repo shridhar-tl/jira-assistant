@@ -5,13 +5,13 @@ import { CustomDialog } from "../../dialogs";
 import { withRouter } from "../../pollyfills";
 import Renderer from "./Renderer";
 
-function RootContext({ location, navigate, $session, ...otherProps }) {
+function RootContext({ location, navigate, $session, switchUser, ...otherProps }) {
     const [contextProps] = useState({
         switchUser: (userId) => {
             let url = location.pathname.substring(2);
             url = url.substring(url.indexOf("/"));
             url = `/${userId}${url}`;
-            this.authenticateUser(url, true, true);
+            switchUser(url);
         },
         navigate: (url, userbased) => {
             navigate(userbased ? `/${$session.userId}${url}` : url);
