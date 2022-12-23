@@ -17,13 +17,11 @@ class App extends PureComponent {
   onRouteChanged = (location) => this.$analytics.trackPageView(location.pathname);
 
   render() {
-    const { initValue, authInfo } = this.props;
-
     return (<>
       <MessageBox $message={this.$message} />
       {!isPluginBuild && <UrlWatcher onChange={this.onRouteChanged} />}
 
-      <Renderer initValue={initValue} authInfo={authInfo}
+      <Renderer {...this.props}
         authTypeChosen={this.props.authTypeChosen} $session={this.$session}
       />
     </>);

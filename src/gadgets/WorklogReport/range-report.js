@@ -16,13 +16,24 @@ export function generateRangeReport(setState, getState) {
                 return null;
             }
 
-            const { groupReport, flatWorklogs } = await generateWorklogReportForDateRange(moment(fromDate).startOf('day'),
+            const result = await generateWorklogReportForDateRange(moment(fromDate).startOf('day'),
                 moment(toDate).endOf('day'), getState());
 
+            if (!result) {
+                const { $message } = inject('MessageService');
+                $message.warning('No worklog information returned matching your filters', 'No data available');
+                return;
+            }
+
+            const { groupReport, flatWorklogs } = result;
             newState.groupReport = groupReport;
             newState.flatWorklogs = flatWorklogs;
 
             newState.reportLoaded = true;
+        } catch (err) {
+            console.error('Error pulling range report', err);
+            const { $message } = inject('MessageService');
+            $message.error(`Error Details:- ${err.message}`, 'Unknown error');
         } finally {
             setState(newState);
         }
@@ -33,7 +44,7 @@ async function generateWorklogReportForDateRange(fromDate, toDate, state) {
     const { $session: { CurrentUser: { name, epicNameField } } } = inject('JiraService', 'SessionService');
     const issues = await getIssuesWithWorklogFor(fromDate, toDate, state, epicNameField?.id);
     if (!issues.length) {
-        return null;
+        return;
     }
     const { userListMode, userGroups: savedGroups, reportUserGrp } = state;
     const useGroups = userListMode !== '1';

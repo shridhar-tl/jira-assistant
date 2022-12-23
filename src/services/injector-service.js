@@ -77,6 +77,10 @@ export const injector = (function () {
         });
     };
 
+    svc.clearInstances = function () {
+        Object.keys(services).forEach(k => delete services[k].instance);
+    };
+
     svc.addService = function (name, type, defaultName, dependency, opts) {
         if (!name) { throw Error("Service name is required to resolve it"); }
         else if (typeof name !== "string") { throw Error("Service name must be a string"); }
@@ -145,12 +149,7 @@ export function inject(instance, ...dependencies) {
     return instance;
 }
 
-export function resolveDependency(component) {
-    return function () {
-        //var arr = [...arguments];
-        return new component(...arguments);
-    };
-}
+export function clearInstances() { injector.clearInstances(); }
 
 export function useService(...svc) { return inject({}, ...svc); }
 
