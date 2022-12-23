@@ -2,7 +2,6 @@ import React, { PureComponent, useCallback } from 'react';
 import { NavLink } from 'react-router-dom';
 import { UncontrolledDropdown, DropdownMenu, DropdownToggle, Nav, NavItem } from 'reactstrap';
 
-import logo from '../../img/logo-symbol.png';
 import { AppVersionNo } from '../../constants/common';
 import { WebSiteUrl } from '../../constants/urls';
 
@@ -79,7 +78,7 @@ class DefaultHeader extends PureComponent {
       <>
         <AppSidebarToggler className="d-lg-none quick-view-hide" display="md" mobile><span className="fa fa-bars" /></AppSidebarToggler>
         <Link href={siteUrl} className="navbar-brand">
-          <img src={logo} width="24" height="24" alt="Jira Assistant" className="navbar-brand-minimized" />
+          {/*<img src={process.env.PUBLIC_URL + '/assets/icon_24.png'} width="24" height="24" alt="Jira Assistant" className="navbar-brand-minimized" />*/}
           <span className="navbar-brand-full">Jira Assistant <span className="v-info badge badge-success" onClick={this.showVersionInfo}>{this.versionNumber}</span></span>
         </Link>
         <AppSidebarToggler className="d-md-down-none quick-view-hide" display="lg"><span className="fa fa-bars" /></AppSidebarToggler>

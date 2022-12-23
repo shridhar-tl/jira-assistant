@@ -5,7 +5,7 @@ import './common/extensions';
 import './common/linq';
 import App from './App';
 import { isWebBuild } from './constants/build-info';
-import './index.scss';
+import './scss/style.scss';
 //import reportWebVitals from './reportWebVitals';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));

@@ -55,7 +55,7 @@ export default class BookmarkService {
 
         this.$analytics.trackEvent("Remove bookmark", EventCategory.UserActions);
 
-        let favTickets = await this.$settings.getGeneralSetting(this.$session.userId, 'favTicketList');
+        let favTickets = await this.getIssueKeys();
         if (!favTickets) {
             favTickets = [];
         }
@@ -65,9 +65,12 @@ export default class BookmarkService {
     }
 
     async getBookmarks() {
-        const keys = await this.$settings.getGeneralSetting(this.$session.userId, 'favTicketList');
-
+        const keys = await this.getIssueKeys();
         return this.getBookmarkDetails(keys);
+    }
+
+    getIssueKeys() {
+        return this.$settings.getGeneralSetting(this.$session.userId, 'favTicketList');
     }
 
     async getBookmarkDetails(keys) {

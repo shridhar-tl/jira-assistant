@@ -13,7 +13,7 @@ const config = {
         // Reports
         worklogReport: true,
         worklogReportOld: true,
-        sprintReport: true,
+        sprintReport: !isPluginBuild,
         customReport: true,
         estimateVsActual: true,
         reportBuilder: true,

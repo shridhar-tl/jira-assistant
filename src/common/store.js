@@ -1,6 +1,4 @@
-import { useEffect } from "react";
-import { createContext, useContext, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { createContext, useContext, useEffect, useState } from "react";
 import { inject } from "../services/injector-service";
 
 function createStore(initialData = {}) {
@@ -28,7 +26,7 @@ function createStore(initialData = {}) {
 
     function DataProvider({ children, initialData: value, ...otherProps }) {
         const [state, setState] = useState(() => ({ ...initialData, ...value, ...otherProps }));
-        subscribe((changes) => setState((cur) => ({ ...cur, ...changes })), () => state);
+        subscribe((changes) => setState(typeof changes === 'function' ? changes : (cur) => ({ ...cur, ...changes })), () => state);
         return (<ContextProvider value={state}>{children}</ContextProvider>);
     }
 
@@ -54,10 +52,9 @@ function createStore(initialData = {}) {
         }
 
         return function (props) {
-            const navigate = useNavigate();
             const state = useContext(Context);
             const propsToPass = mapProps ? mapProps(state, props) : undefined;
-            return (<Component {...propsToPass} {...props} {...actions} navigate={navigate} />);
+            return (<Component {...propsToPass} {...props} {...actions} />);
         };
     }
 

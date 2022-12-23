@@ -7,12 +7,6 @@ import { inject } from './services';
 import withInitParams from './layouts/initialization/index';
 import withAuthInfo from './layouts/authorization/index';
 import Renderer from './layouts/renderer';
-import 'font-awesome/css/font-awesome.min.css';
-import 'primereact/resources/themes/bootstrap4-light-purple/theme.css';
-import 'primereact/resources/primereact.min.css';
-import 'primeicons/primeicons.css';
-import './scss/style.scss';
-import './App.scss';
 
 class App extends PureComponent {
   constructor(props) {

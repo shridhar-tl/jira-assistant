@@ -15,7 +15,7 @@ function GroupedDataGrid({ boardId, fields, exportSheetName, costView }) {
         + (showReporter ? 1 : 0);
 
     return (
-        <ScrollableTable exportSheetName={exportSheetName}>
+        <ScrollableTable className="table-bordered" exportSheetName={exportSheetName}>
             <GroupHead addlColCount={addlColCount} boardId={boardId} />
             <GroupBody addlColCount={addlColCount} boardId={boardId} costView={costView} />
         </ScrollableTable>

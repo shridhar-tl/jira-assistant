@@ -1,6 +1,12 @@
 // If you want to override variables do it here
 @import "variables";
 
+// 3rd party styles
+@import "font-awesome/css/font-awesome.min.css";
+@import "primereact/resources/themes/bootstrap4-light-purple/theme.css";
+@import "primereact/resources/primereact.min.css";
+@import "primeicons/primeicons.css";
+
 // Import styles
 @import "~@coreui/coreui/scss/coreui.scss";
 

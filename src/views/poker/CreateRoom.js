@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react';
 import classNames from 'classnames';
+import { withRouter } from '../../pollyfills';
 import { RadioButton, TextBox, Button } from '../../controls';
 import { connect } from './store';
 import { createRoom } from './actions';
@@ -88,4 +89,4 @@ class CreateRoom extends PureComponent {
     }
 }
 
-export default connect(CreateRoom, null, { createRoom });
+export default withRouter(connect(CreateRoom, null, { createRoom }));

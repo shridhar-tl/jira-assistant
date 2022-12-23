@@ -88,7 +88,11 @@ export default class UserService {
         }
         //this.$session.authTokken = currentUser.dataStore;
         const sessionUser = {
+            jiraUser: {},
             userId: currentUser.id,
+            name: currentUser.userId,
+            accountId: currentUser.accountId,
+            emailAddress: currentUser.email,
             jiraUrl: currentUser.jiraUrl,
             profileUrl: `${currentUser.jiraUrl}/secure/ViewProfile.jspa`,
             feedbackUrl: `${feedbackUrl}&emb=true` //&embedded=true for directly using google forms
@@ -107,6 +111,7 @@ export default class UserService {
         else {
             delete sessionUser.noDonations;
         }
+
         return sessionUser;
     }
 
@@ -122,8 +127,8 @@ export default class UserService {
     }
 
     async createUser(profile, root, options) {
-        const name = getUserName(profile);
-        const email = profile.emailAddress;
+        const userId = getUserName(profile);
+        const { emailAddress, accountId } = profile;
         const optIsObj = options && typeof options === 'object';
         const apiUrl = !optIsObj ? options : undefined;
 
@@ -131,12 +136,13 @@ export default class UserService {
             options = undefined;
         }
 
-        let user = await this.getUserFromDB(root, name, email);
+        let user = await this.getUserFromDB(root, userId, emailAddress);
         if (!user) {
             user = {
                 jiraUrl: root,
-                userId: name,
-                email: email,
+                accountId,
+                userId,
+                email: emailAddress,
                 lastLogin: new Date(),
                 dateCreated: new Date(),
                 ...options
@@ -167,8 +173,8 @@ export default class UserService {
         }
         else {
             user.jiraUrl = root;
-            user.userId = name;
-            user.email = email;
+            user.userId = userId;
+            user.email = emailAddress;
             user.lastLogin = new Date();
 
             if (apiUrl) {

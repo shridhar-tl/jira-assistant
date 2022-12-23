@@ -192,7 +192,7 @@ class MeetingsTab extends TabControlBase {
                             </div>}
                         </div>
                     </div>}
-                    <div>
+                    {googleCalendar !== false && <div>
                         <h4>General settings</h4>
                         <div className="form-label ui-g-12 ui-md-3 ui-lg-3 ui-xl-2">
                             <strong>Check for updates</strong>
@@ -225,7 +225,7 @@ class MeetingsTab extends TabControlBase {
                                 <span className="help-block">Automatically launch hangout Url before the selected time of meeting</span>
                             </div>
                         </div>
-                    </div>
+                    </div>}
                 </div>
             </div>
         );

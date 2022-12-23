@@ -229,7 +229,7 @@ class GroupedDataGrid extends PureComponent {
 
 
         return (
-            <ScrollableTable exportSheetName={exportSheetName}>
+            <ScrollableTable className="table-bordered" exportSheetName={exportSheetName}>
                 <THead>
                     <tr className="data-center pad-min auto-wrap">
                         <th style={{ minWidth: 260 + (addlColCount * 120) }} rowSpan={addlColCount > 1 ? 1 : 2} colSpan={addlColCount}>User Details</th>
