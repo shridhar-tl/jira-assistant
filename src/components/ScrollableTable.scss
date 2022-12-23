@@ -65,7 +65,10 @@ div.scroll-table-container {
         thead {
             tr {
                 background-color: #fff;
-                border-bottom: 2px solid #dfe1e6;
+
+                &:last-child {
+                    border-bottom: 2px solid #dfe1e6;
+                }
 
                 th {
                     padding: 4px 16px;
@@ -138,6 +141,20 @@ div.scroll-table-container {
                 &:first-child {
                     td {
                         border-top: 2px solid #c8ced3;
+                    }
+                }
+            }
+        }
+
+        &.table-bordered {
+
+            thead,
+            tbody {
+                tr {
+
+                    th,
+                    td {
+                        border-color: #dfe1e6;
                     }
                 }
             }

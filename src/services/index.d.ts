@@ -73,3 +73,7 @@ export interface IServicesList {
 declare module 'react' {
     interface PureComponent<P = {}, S = {}, SS = any> extends Component<P, S, SS>, IServicesList { }
 }
+
+export function inject(obj?: any, ...svc: string): IServicesList {
+    //
+}

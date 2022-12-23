@@ -23,6 +23,11 @@ import '@atlaskit/css-reset';
         root.render(<DayWiseWorklogGadget jiraContext={context} />);
     }
 
+    else if (moduleKey === 'ja-worklog-timer') {
+        const WorklogTimerGadget = React.lazy(() => import('./jcloud/gadgets/worklog-timer'));
+        root.render(<WorklogTimerGadget jiraContext={context} />);
+    }
+
     else {
         root.render(<div>Unknown module: {moduleKey}</div>);
     }

@@ -17,7 +17,7 @@ const Gadget = function ({ jiraContext: { extension: { gadgetConfiguration: sett
 
         return (<div style={{ height: '350px' }}>
             <label>Worklog Date range</label>
-            <DatePicker range={true} value={settings.dateRange} onChange={dateSelected} style={{ marginRight: "35px" }} />;
+            <DatePicker range={true} value={settings.dateRange} onChange={dateSelected} style={{ marginRight: "35px" }} />
         </div>);
     } else {
         return <div style={{ height: '350px', maxHeight: '500px' }}><DateWiseWorklog settings={settings} /></div>;

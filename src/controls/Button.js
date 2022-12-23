@@ -39,7 +39,7 @@ class Button extends PureComponent {
             label += ` (${waitFor})`;
         }
 
-        let btnClass = `rb-button ${buttonTypes[type] || ""}`;
+        let btnClass = `c-btn rb-button ${buttonTypes[type] || ""}`;
         if (rounded) {
             btnClass += " p-button-rounded ";
         }

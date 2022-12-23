@@ -131,7 +131,7 @@ class UserProjectWiseSummary extends PureComponent {
         } = this;
 
         return (
-            <ScrollableTable dataset={groupedData} exportSheetName={exportSheetName}>
+            <ScrollableTable className="table-bordered" dataset={groupedData} exportSheetName={exportSheetName}>
                 <THead>
                     <TRow>
                         <Column rowSpan={2}>Group Name</Column>

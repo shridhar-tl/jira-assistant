@@ -31,6 +31,7 @@ export default class JiraService {
             this.$ajax.get(prepareUrlWithQueryString(ApiUrls.search, postData))
                 .then((result) => {
                     const issues = result.issues;
+                    issues.total = result.total;
                     if (opts?.ignoreWarnings !== true) {
                         if (result.warningMessages?.length) {
                             const msg = result.warningMessages.join('\r\n');
@@ -72,7 +73,7 @@ export default class JiraService {
                 });
         }).then((result) => {
             const issues = result.issues;
-            if ((issues.length + result.startAt) < result.total && issues.length > 0) {
+            if (!opts?.maxResults && ((issues.length + result.startAt) < result.total && issues.length > 0)) {
                 return this.searchTickets(jql, fields, result.startAt + issues.length, opts).then(res => issues.addRange(res));
             }
             else {
