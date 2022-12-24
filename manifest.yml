@@ -27,6 +27,12 @@ modules:
       resource: main
       edit:
         resource: main
+  jira:issueGlance:
+    - key: ja-issue-glance
+      title: Worklog timer
+      label: Start time tracker
+      resource: main
+      icon: https://app.jiraassistant.com/assets/icon_24.png
   function:
     - key: resolver
       handler: jcloud.handler
