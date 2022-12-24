@@ -28,6 +28,11 @@ import '@atlaskit/css-reset';
         root.render(<WorklogTimerGadget jiraContext={context} />);
     }
 
+    else if (moduleKey === 'ja-issue-glance') {
+        const IssueGlance = React.lazy(() => import('./jcloud/issue-glance'));
+        root.render(<IssueGlance jiraContext={context} />);
+    }
+
     else {
         root.render(<div>Unknown module: {moduleKey}</div>);
     }

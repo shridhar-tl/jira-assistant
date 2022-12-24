@@ -1,4 +1,5 @@
 import React from "react";
+import { confirmPopup } from 'primereact/confirmpopup';
 import createStore from "../common/store";
 import Dialog from "../dialogs";
 import { inject } from "../services/injector-service";
@@ -40,6 +41,27 @@ export function getElapseState(timerEntry) {
     const totalMS = (started > 0 ? (curTime - started) : 0) + (lapse || 0);
 
     return { key, lapse: Math.round(totalMS / 1000), description, isRunning: started > 0 };
+}
+
+export function confirmAndStartTimer(setState, getState) {
+    const beginTimer = startTimer(setState, getState);
+
+    return function (event, key, isRunning, newKey) {
+        if (key && key !== newKey) {
+            confirmPopup({
+                target: event.currentTarget,
+                icon: 'fa fa-question',
+                acceptLabel: 'Yes',
+                acceptIcon: 'fa fa-check',
+                rejectLabel: 'Cancel',
+                rejectIcon: 'fa fa-times',
+                message: (<>Already timer is {isRunning ? 'running' : 'paused'} for "{key}".<br />Would you like to stop it and start new timer?</>),
+                accept: () => beginTimer(newKey, null, true)
+            }).show();
+        } else {
+            beginTimer(newKey);
+        }
+    };
 }
 
 // #endregion
