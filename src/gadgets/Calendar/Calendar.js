@@ -180,7 +180,6 @@ class Calendar extends BaseGadget {
             editable: true,
             droppable: true,
 
-            snapMinutes,
             // Time-Axis Settings
             slotDuration: "00:15:00",
             slotMinTime: startOfDayDisp || startOfDay || DefaultStartOfDay, //"08:00:00",
@@ -347,7 +346,6 @@ class Calendar extends BaseGadget {
     setLoggedTime(arr, obj) {
         const time = this.getTimeSpent(arr);
         obj.logged = time;
-        let title = `Logged: ${this.$utils.formatSecs(time)}`;
         if (time > this.maxTime) {
             obj.diff = time - this.maxTime;
         } else if (time < this.minTime) {
@@ -355,12 +353,20 @@ class Calendar extends BaseGadget {
         } else {
             obj.diff = 0;
         }
-        if (obj.diff) {
-            title += ` (${obj.diff > 0 ? "+" : "-"}${this.$utils.formatSecs(Math.abs(obj.diff))})`;
-        }
         this.setInfoColor(obj, this.state.settings);
-        obj.title = title;
+        obj.title = this.getLoggedTimeTitle(time, obj.diff);
         return obj;
+    }
+
+    getLoggedTimeTitle(time, diff) {
+        const { formatSecs } = this.$utils;
+        let title = `Logged: ${formatSecs(time)}`;
+
+        if (diff) {
+            title += ` (${diff > 0 ? "+" : "-"}${formatSecs(Math.abs(diff))})`;
+        }
+
+        return title;
     }
 
     setInfoColor(obj, ps) {
@@ -773,9 +779,9 @@ class Calendar extends BaseGadget {
 
     renderEventContent = (e) => {
         const { timeText, event, view: { type } } = e;
-        const { entryType } = event.extendedProps;
+        const { entryType, logged, diff } = event.extendedProps;
 
-        if (entryType === 3) { return undefined; }
+        if (entryType === 3) { return <span className="pad-l-5">{this.getLoggedTimeTitle(logged, diff)}</span>; }
 
         const hourDiff = ` (${this.$utils.formatTs(this.getEventDuration(event))})`;
         const srcObj = event.extendedProps.sourceObject;
@@ -828,6 +834,7 @@ class Calendar extends BaseGadget {
         if (type === 'timeGridWeek' || type === 'timeGridDay') {
             return (<div ref={(e) => e?.parentElement?.parentElement?.addEventListener('contextmenu', contextEvent)}
                 className="fc-content pad-8" title={title} data-jira-key={srcObj?.ticketNo} data-jira-wl-id={srcObj?.worklogId}>
+                {entryType === 1 && <WorklogOptions worklog={srcObj} onUpload={this.uploadSelectedWorklog} onClone={this.cloneWorklog} />}
                 {leftIcon}
                 <div className="fc-time">
                     <span>{timeText}</span>
@@ -852,23 +859,29 @@ class Calendar extends BaseGadget {
                 .finally(this.refreshData);
         }
         else {
-            this.$worklog.uploadWorklogs([this.currentWLItem.id], true)
-                .then((wl) => {
-                    this.setState({ uploading: false });
-                    this.$message.success("Worklog uploaded successfully!");
-                    // ToDo: update latestData collection also for is uploaded flag
-                    const { events } = this.state;
-                    events.removeAll(w => w.entryType === 1 && w.id.toString() === this.currentWLItem.id.toString());
-                    this.addEvent({ added: this.$worklog.getWLCalendarEntry(wl[0]) });
-                    this.$analytics.trackEvent("Worklog uploaded: Individual", EventCategory.UserActions);
-                }, (err) => {
-                    this.setState({ uploading: false });
-                    if (err.response) {
-                        this.$message.error(err.response);
-                    }
-                });
+            this.uploadSelectedWorklog(this.currentWLItem.id);
         }
     }
+
+    uploadSelectedWorklog = async (id) => {
+        try {
+            this.setState({ uploading: true });
+            const wl = await this.$worklog.uploadWorklogs([id], true);
+            this.setState({ uploading: false });
+            this.$message.success("Worklog uploaded successfully!");
+            // ToDo: update latestData collection also for is uploaded flag
+            const { events } = this.state;
+            events.removeAll(w => w.entryType === 1 && w.id.toString() === id.toString());
+            this.addEvent({ added: this.$worklog.getWLCalendarEntry(wl[0]) });
+            this.$analytics.trackEvent("Worklog uploaded: Individual", EventCategory.UserActions);
+        } catch (err) {
+            if (err.response) {
+                this.$message.error(err.response);
+            }
+        } finally {
+            this.setState({ uploading: false });
+        }
+    };
 
     deleteWorklog() {
         hideContextMenu();
@@ -887,6 +900,18 @@ class Calendar extends BaseGadget {
         newObj.copy = true;
         this.showWorklogPopup({ copy: newObj });
     }
+
+    cloneWorklog = async (worklog) => {
+        try {
+            const added = await this.$worklog.copyWorklog(worklog);
+            this.addEvent({ added });
+            this.$message.success("Worklog cloned!");
+            this.$analytics.trackEvent("Worklog Cloned: Individual", EventCategory.UserActions);
+        }
+        catch (err) {
+            this.$message.error(err.message, 'Clone failed');
+        }
+    };
 
     getPendingWorklogs(events) {
         if (!events) { events = this.state.events; }
@@ -977,4 +1002,11 @@ function snapTimeToGrid(grid, newValue) {
     else { diff = 15 - diff; }
 
     return newValue.add(diff, 'minutes').toDate();
+}
+
+function WorklogOptions({ worklog, onUpload, onClone }) {
+    return (<div className="worklog-options">
+        {!worklog.worklogId && <span className="fa fa-upload" title="Upload this worklog" event-icon="true" onClick={(e) => onUpload(worklog.id)} />}
+        <span className="fa fa-clone" title="Clone worklog to same time" event-icon="true" onClick={(e) => onClone(worklog)} />
+    </div>);
 }

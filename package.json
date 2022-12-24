@@ -55,6 +55,7 @@
         "@atlaskit/css-reset": "^6.3.16",
         "@atlaskit/side-navigation": "^1.4.1",
         "@coreui/coreui": "^2.1.16",
+        "@forge/api": "^2.9.0",
         "@forge/bridge": "^2.5.0",
         "@fullcalendar/core": "5.11.2",
         "@fullcalendar/daygrid": "5.11.2",
@@ -63,7 +64,7 @@
         "@fullcalendar/moment": "5.11.2",
         "@fullcalendar/react": "5.11.2",
         "@fullcalendar/timegrid": "5.11.2",
-        "bootstrap": "^4.6.2",
+        "@forge/resolver": "^1.4.7",
         "bootstrap-daterangepicker": "^3.1.0",
         "chart.js": "^4.1.1",
         "classnames": "^2.3.2",
@@ -96,9 +97,7 @@
         "react-router-dom": "^6.6.1",
         "react-scripts": "^5.0.1",
         "reactstrap": "^9.1.5",
-        "static-eval": "^2.1.0",
-        "@forge/api": "^2.9.0",
-        "@forge/resolver": "^1.4.7"
+        "static-eval": "^2.1.0"
     },
     "scripts": {
         "start": "cross-env REACT_APP_BUILD_MODE=WEB craco start",
@@ -193,14 +192,14 @@
         ]
     },
     "devDependencies": {
-        "eslint": "^8.30.0",
-        "eslint-plugin-react-hooks": "^4.6.0",
         "@craco/craco": "^7.0.0",
         "concurrently": "^7.6.0",
         "cross-env": "^7.0.3",
         "electron": "^22.0.0",
         "electron-builder": "^23.6.0",
         "electronmon": "^2.0.2",
+        "eslint": "^8.30.0",
+        "eslint-plugin-react-hooks": "^4.6.0",
         "gh-pages": "^4.0.0",
         "node-sass": "^8.0.0",
         "wait-on": "^7.0.1",

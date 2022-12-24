@@ -248,7 +248,7 @@ export default class WorklogService extends BaseService {
     copyWorklog(wl, startDate) {
         const newWL = {
             createdBy: this.$session.CurrentUser.userId,
-            dateStarted: moment(startDate).toDate(),
+            dateStarted: moment(startDate || wl.dateStarted).clone().toDate(),
             description: wl.description,
             timeSpent: wl.overrideTimeSpent || wl.timeSpent,
             ticketNo: wl.ticketNo,
