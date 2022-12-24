@@ -6,6 +6,11 @@
 .fc-content {
   height: 100%;
   display: block;
+
+  .fc-title {
+    margin-top: 5px;
+    font-size: 15px;
+  }
 }
 
 .fc-content .fa-ellipsis-v {
@@ -160,5 +165,15 @@
 .calendar-view {
   .p-panel-content {
     overflow: hidden !important;
+  }
+}
+
+.worklog-options {
+  float: right;
+
+  .fa {
+    font-size: 16px;
+    margin-left: 5px;
+    cursor: pointer;
   }
 }
