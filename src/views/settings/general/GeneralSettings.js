@@ -8,7 +8,7 @@ import WorklogTab from './WorklogTab';
 import DefaultValuesTab from './DefaultValuesTab';
 import MeetingsTab from './MeetingsTab';
 import MenuOptionsTab from './MenuOptionsTab';
-import { isWebBuild } from '../../../constants/build-info';
+import { isPluginBuild, isWebBuild } from '../../../constants/build-info';
 import './Common.scss';
 
 const { googleCalendar, outlookCalendar } = config.features.integrations;
@@ -83,7 +83,7 @@ class GeneralSettings extends PureComponent {
                 {showMeetingsTab && <TabPanel header="Meetings" leftIcon="fa fa-calendar">
                     <MeetingsTab settings={settings} userId={this.userId} onSave={this.saveSetting} onChange={this.stateChanged} />
                 </TabPanel>}
-                {(!isWebBuild || this.isExtnConnected) && <TabPanel header="Menu options" leftIcon="fa fa-bars">
+                {(!isWebBuild || this.isExtnConnected) && !isPluginBuild && <TabPanel header="Menu options" leftIcon="fa fa-bars">
                     <MenuOptionsTab settings={settings} userId={this.userId} onSave={this.saveSetting} />
                 </TabPanel>}
             </TabView>

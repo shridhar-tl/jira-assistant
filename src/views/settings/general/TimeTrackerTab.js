@@ -5,9 +5,9 @@ import { inject } from '../../../services/injector-service';
 import { executeService } from '../../../common/proxy';
 import { InputMask } from 'primereact/inputmask';
 import { InputNumber } from 'primereact/inputnumber';
-import { isWebBuild } from '../../../constants/build-info';
+import { isPluginBuild, isWebBuild } from '../../../constants/build-info';
 
-const isExtnIntg = !isWebBuild || localStorage.getItem('authType') === '1';
+const isExtnIntg = !isPluginBuild && (!isWebBuild || localStorage.getItem('authType') === '1');
 
 const defaultMinTimeToTrack = '00:05';
 const defaultAttachDelay = 2;
