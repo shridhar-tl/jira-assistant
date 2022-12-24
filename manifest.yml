@@ -1,0 +1,57 @@
+modules:
+  jira:globalPage:
+    - key: jira-assistant-app
+      resource: main
+      resolver:
+        function: resolver
+      title: Jira Assistant
+      icon: https://app.jiraassistant.com/assets/icon_48.png
+      layout: blank
+  jira:dashboardGadget:
+    - key: ja-date-wise-worklog
+      title: Date wise worklog
+      description: Lists the worklog details on daily basis for selected time period
+      thumbnail: https://www.jiraassistant.com/images/gadgets/date-wise-worklog.png
+      resource: main
+      edit:
+        resource: main
+    - key: ja-worklog-timer
+      title: Worklog timer
+      description: A simple timer control to capture time spent on a ticket
+      thumbnail: https://www.jiraassistant.com/images/gadgets/worklog-timer.png
+      resource: main
+    - key: ja-worklog-calendar
+      title: Worklog calendar
+      description: Lets you edit, clone or view worklog through calendar
+      thumbnail: https://www.jiraassistant.com/images/gadgets/worklog-calendar.png
+      resource: main
+      edit:
+        resource: main
+  function:
+    - key: resolver
+      handler: jcloud.handler
+resources:
+  - key: main
+    path: build
+    tunnel:
+      port: 6060
+permissions:
+  content:
+    styles:
+      - 'unsafe-inline'
+  external:
+    images:
+      - '*.atlassian.net'
+    fetch:
+      client:
+        - 'graph.microsoft.com'
+  scopes:
+    - storage:app
+    - read:jira-user
+    - read:sprint:jira-software
+    - read:issue-details:jira
+    - read:jql:jira
+    - read:jira-work
+    - write:jira-work
+app:
+  id: ari:cloud:ecosystem::app/3864d3bc-aad3-4650-ac35-e15af61fd92d

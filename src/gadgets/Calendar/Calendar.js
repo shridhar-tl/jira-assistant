@@ -37,6 +37,8 @@ const meetingInfo = showMeetings && (<>
     <li>You can set "Default meeting ticket" in General Settings &#8680; Worklog tab</li>
 </>);
 
+const snapMinutes = 15;
+
 class Calendar extends BaseGadget {
     static contextType = WorklogContext;
     constructor(props) {
@@ -178,6 +180,7 @@ class Calendar extends BaseGadget {
             editable: true,
             droppable: true,
 
+            snapMinutes,
             // Time-Axis Settings
             slotDuration: "00:15:00",
             slotMinTime: startOfDayDisp || startOfDay || DefaultStartOfDay, //"08:00:00",
@@ -729,7 +732,8 @@ class Calendar extends BaseGadget {
         }
         else {
             const oldDate = eventSrcObj.dateStarted;
-            this.$worklog.changeWorklogDate(eventSrcObj, event.start).then((entry) => {
+            const newTime = snapTimeToGrid(snapMinutes, event.start);
+            this.$worklog.changeWorklogDate(eventSrcObj, newTime).then((entry) => {
                 this.$analytics.trackEvent("Worklog moved", EventCategory.UserActions, eventSrcObj.isUploaded ? "Uploaded worklog" : "Pending worklog");
                 //this.updateAllDayEvent({ start: oldDate }); // This is to update the info of previous date
                 //event.extendedProps.sourceObject.dateStarted = event.start.toDate();
@@ -959,3 +963,18 @@ class Calendar extends BaseGadget {
 }
 
 export default Calendar;
+
+function snapTimeToGrid(grid, newValue) {
+    newValue = moment(newValue);
+
+    const mins = newValue.minutes();
+    let diff = mins % grid;
+
+    if (!diff) { return newValue.toDate(); }
+
+    const movedUp = diff <= parseInt(grid / 2);
+    if (movedUp) { diff = -diff; }
+    else { diff = 15 - diff; }
+
+    return newValue.add(diff, 'minutes').toDate();
+}

@@ -45,6 +45,38 @@
         {
           "version": "0.98",
           "update_link": "https://github.com/shridhar-tl/jira-assistant/raw/master/release/firefox/JiraAssist_20200319_0_98.xpi"
+        },
+        {
+          "version": "1.0",
+          "update_link": "https://github.com/shridhar-tl/jira-assistant/raw/master/release/firefox/JiraAssist_20200418_1_0.xpi"
+        },
+        {
+          "version": "1.1",
+          "update_link": "https://github.com/shridhar-tl/jira-assistant/raw/master/release/firefox/JiraAssist_20200427_1_1.xpi"
+        },
+        {
+          "version": "1.3",
+          "update_link": "https://github.com/shridhar-tl/jira-assistant/raw/master/release/firefox/JiraAssist_20200428_1_3.xpi"
+        },
+        {
+          "version": "1.4",
+          "update_link": "https://github.com/shridhar-tl/jira-assistant/raw/master/release/firefox/JiraAssist_20200504_1_4.xpi"
+        },
+        {
+          "version": "1.5",
+          "update_link": "https://github.com/shridhar-tl/jira-assistant/raw/master/release/firefox/JiraAssist_20200505_1_5.xpi"
+        },
+        {
+          "version": "1.6",
+          "update_link": "https://github.com/shridhar-tl/jira-assistant/raw/master/release/firefox/JiraAssist_20200521_1_6.xpi"
+        },
+        {
+          "version": "1.9",
+          "update_link": "https://github.com/shridhar-tl/jira-assistant/raw/master/release/firefox/JiraAssist_20200922_1_9.xpi"
+        },
+        {
+          "version": "2.3",
+          "update_link": "https://github.com/shridhar-tl/jira-assistant/raw/master/release/firefox/JiraAssist_20201013_2_3.xpi"
         }
       ]
     }
