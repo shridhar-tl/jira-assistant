@@ -14,6 +14,7 @@ const Control = function ({ lastUpdated, showContext, editWorklog, settings, set
             try {
                 const selDate = settings.dateRange;
                 if (!selDate) {
+                    setData([]);
                     return;
                 }
 
@@ -24,6 +25,7 @@ const Control = function ({ lastUpdated, showContext, editWorklog, settings, set
                 }
 
                 if (!selDate.fromDate) {
+                    setData([]);
                     return;
                 }
 
