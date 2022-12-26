@@ -1,0 +1,20 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Get answer to your common questions (Self Service)
+    url: https://www.jiraassistant.com/faq
+    about: Do you have a common question? Visit our FAQ section and get instant answers.
+  - name: Have any other questions?
+    url: https://github.com/shridhar-tl/jira-assistant/discussions
+    about: Start a new discussion with your question
+  - name: Don't have GitHub account and still want to contact us?
+    url: https://docs.google.com/forms/d/e/1FAIpQLScJvQtHZI_yZr1xd4Z8TwWgvtFss33hW5nJp4gePCgI2ScNvg/viewform
+    about: Use the google forms to submit your question.
+  - name: Need help in setup? (Self Service)
+    url: https://www.youtube.com/watch?v=HsWq7cT3Qq0&list=PLxDBQLgpBhsDGppYrDqARYULukk7XFJPV
+    about: Need help on how to use a specific feature? Watch the YouTube playlist.
+  - name: What is new in Jira Assistant?
+    url: https://www.jiraassistant.com/version-history#latest-updates
+    about: Get the list of features and bug fixes in each version of Jira Assistant
+  - name: Conserned about your Privacy and Security?
+    url: https://www.jiraassistant.com/privacy-policy
+    about: Read our privacy policy and resolve your conserns
