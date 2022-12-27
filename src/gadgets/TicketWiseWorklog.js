@@ -12,7 +12,7 @@ import Link from '../controls/Link';
 class TicketWiseWorklog extends BaseGadget {
     constructor(props) {
         super(props, 'Ticketwise worklog', 'fa-list-alt');
-        inject(this, "WorklogService", "UserUtilsService", "UtilsService");
+        inject(this, "WorklogService", "UserUtilsService", "UtilsService", "MessageService");
 
         this.contextMenu = [
             { label: "Upload worklog", icon: "fa fa-clock-o", command: () => this.uploadWorklog() },
@@ -72,18 +72,24 @@ class TicketWiseWorklog extends BaseGadget {
 
     getTicketUrl(ticketNo) { return this.$userutils.getTicketUrl(ticketNo); }
 
-    uploadWorklog() {
+    async uploadWorklog() {
         const toUpload = this.selectedTicket.logData.filter(t => !t.worklogId).map(t => t.id);
         if (!toUpload.length) {
             return;
         }
 
         this.setState({ isLoading: true });
-
-        this.$worklog.uploadWorklogs(toUpload).then(() => {
+        try {
+            await this.$worklog.uploadWorklogs(toUpload);
             this.refreshData();
             super.performAction(GadgetActionType.WorklogModified);
-        }, (err) => { this.setState({ isLoading: false }); });
+        } catch (err) {
+            if (err.message) {
+                this.$message.error(err.message);
+            }
+        } finally {
+            this.setState({ isLoading: false });
+        }
     }
 
     addWorklog() {
