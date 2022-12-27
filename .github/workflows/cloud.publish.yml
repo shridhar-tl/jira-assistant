@@ -19,6 +19,9 @@ on:
         default: 'jira-ja.atlassian.net'
         required: true
         type: string
+      firstInstall:
+        description: 'First time install'
+        type: boolean
       forgeEmail:
         description: 'Atlassian Email id'
         required: true
@@ -42,6 +45,7 @@ jobs:
       FORGE_ENV: staging
       FORGE_EMAIL: ${{ secrets.FORGE_LOGIN_ID }}
       FORGE_API_TOKEN: ${{ secrets.FORGE_LOGIN_PWD }}
+      FIRST_INSTALL: "false"
 
     strategy:
       matrix:
@@ -65,6 +69,7 @@ jobs:
         echo "JIRA_SITE_URL=${{ github.event.inputs.jiraSiteUrl }}" >> $GITHUB_ENV
         echo "FORGE_EMAIL=${{ github.event.inputs.forgeEmail }}" >> $GITHUB_ENV
         echo "FORGE_API_TOKEN=${{ github.event.inputs.forgeApiToken }}" >> $GITHUB_ENV
+        echo "FIRST_INSTALL=${{ github.event.inputs.firstInstall }}" >> $GITHUB_ENV
       if: startsWith(github.event_name, 'workflow_dispatch')
       
     - run: echo Deploying ${{github.ref}} to ${{env.FORGE_ENV}} of ${{env.JIRA_SITE_URL}}
@@ -74,4 +79,7 @@ jobs:
     - run: forge settings set usage-analytics false
     - run: forge deploy -e $FORGE_ENV
     - run: forge install -e $FORGE_ENV -s $JIRA_SITE_URL -p Jira --upgrade --confirm-scopes --non-interactive
+      if: ${{ env.FIRST_INSTALL != 'true' }}
+    - run: forge install -e $FORGE_ENV -s $JIRA_SITE_URL -p Jira --confirm-scopes --non-interactive
+      if: ${{ env.FIRST_INSTALL == 'true' }}
     - run: forge logout
