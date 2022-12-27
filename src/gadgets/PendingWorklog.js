@@ -77,10 +77,11 @@ class PendingWorklog extends BaseGadget {
         showContextMenu(e, this.contextMenu);
     }
 
-    uploadWorklog(items) {
+    async uploadWorklog(items) {
         if (!items) {
             items = this.state.worklogs.filter((w) => w.selected);
         }
+
         const ids = items.map((w) => w.id);
         if (ids.length === 0) {
             this.$message.info("Select the worklogs to be uploaded!");
@@ -89,15 +90,17 @@ class PendingWorklog extends BaseGadget {
 
         this.setState({ isLoading: true });
 
-        this.$worklog.uploadWorklogs(ids).then((result) => {
+        try {
+            const result = await this.$worklog.uploadWorklogs(ids);
             this.setState({ isLoading: false, worklogs: result });
             super.performAction(GadgetActionType.WorklogModified);
-        }, (obj) => {
-            if (obj && obj.$message) {
-                this.$message.warning(obj.message);
+        } catch (err) {
+            if (err.message || err.response) {
+                this.$message.error(err.message || err.response);
             }
+        } finally {
             this.refreshData();
-        });
+        }
     }
 
     deleteWorklog(items) {
@@ -137,7 +140,6 @@ class PendingWorklog extends BaseGadget {
             <Button icon="fa fa-upload" onClick={() => this.uploadWorklog()} title="Upload selected worklogs" />
             <Button type="danger" icon="fa fa-trash-o" onClick={() => this.deleteWorklog()} title="Delete selected worklogs" />
         </>;
-
     }
 
     render() {

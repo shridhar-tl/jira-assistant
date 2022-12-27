@@ -157,10 +157,15 @@ export default class WorklogService extends BaseService {
 
         return uploadRequest.then(null, (err) => {
             if (err.status === 400) {
+                console.error(`Error uploading worklog to ${ticketNo}.`, err);
                 const errors = (err.error || {}).errorMessages || [];
-                if (errors.some((e) => e.indexOf("non-editable") > -1)) {
-                    return Promise.reject({ message: `${ticketNo} is already closed and cannot upload worklog` });
+                let message = null;
+                if (errors.some((e) => e.includes("non-editable") || e.includes("permission"))) {
+                    message = `Permission denied to log work on ${ticketNo}`;
+                } else {
+                    message = `Unable to upload worklog for ${ticketNo}. Look at console for more details`;
                 }
+                return Promise.reject({ message });
             }
             return Promise.reject(err);
         });

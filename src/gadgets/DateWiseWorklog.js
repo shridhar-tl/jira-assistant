@@ -12,7 +12,7 @@ class DateWiseWorklog extends BaseGadget {
     static contextType = WorklogContext;
     constructor(props) {
         super(props, 'Daywise worklog', 'fa-list-alt');
-        inject(this, "WorklogService", "UtilsService");
+        inject(this, "WorklogService", "UtilsService", "MessageService");
         this.contextMenu = [
             { label: "Upload worklog", icon: "fa fa-clock-o", command: () => this.uploadWorklog() },
             { label: "Add worklog", icon: "fa fa-bookmark", command: () => this.addWorklog() } //ToDo: Add option for move to progress, show in tree view
@@ -36,18 +36,24 @@ class DateWiseWorklog extends BaseGadget {
         }
     }
 
-    uploadWorklog() {
+    async uploadWorklog() {
         const toUpload = this.selectedDay.ticketList.filter(t => !t.worklogId).map(t => t.id);
         if (toUpload.length === 0) {
             return;
         }
 
         this.setState({ isLoading: true });
-
-        this.$worklog.uploadWorklogs(toUpload).then(() => {
-            this.refreshData();
+        try {
+            await this.$worklog.uploadWorklogs(toUpload);
             super.performAction(GadgetActionType.WorklogModified);
-        }, (err) => { this.setState({ isLoading: false }); });
+        } catch (err) {
+            if (err.message) {
+                this.$message.error(err.message);
+            }
+        } finally {
+            this.refreshData();
+            this.setState({ isLoading: false });
+        }
     }
 
     addWorklog() {

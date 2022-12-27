@@ -845,18 +845,24 @@ class Calendar extends BaseGadget {
         }
     };
 
-    uploadWorklog(all) {
+    async uploadWorklog(all) {
         this.setState({ uploading: true });
 
         hideContextMenu();
         if (all) {
-            const worklogs = this.getPendingWorklogs().map(e => e.sourceObject.id);
-            this.$worklog.uploadWorklogs(worklogs)
-                .then(() => {
-                    this.$message.success(`${worklogs.length} worklog(s) uploaded successfully!`);
-                    this.$analytics.trackEvent("Worklog uploaded: All", EventCategory.UserActions);
-                }, (err) => err.response && this.$message.error(err.response))
-                .finally(this.refreshData);
+            try {
+                const worklogs = this.getPendingWorklogs().map(e => e.sourceObject.id);
+                await this.$worklog.uploadWorklogs(worklogs);
+                this.$message.success(`${worklogs.length} worklog(s) uploaded successfully!`);
+                this.$analytics.trackEvent("Worklog uploaded: All", EventCategory.UserActions);
+            } catch (err) {
+                if (err.message || err.response) {
+                    this.$message.error(err.message || err.response);
+                }
+            }
+            finally {
+                this.refreshData();
+            }
         }
         else {
             this.uploadSelectedWorklog(this.currentWLItem.id);
@@ -875,8 +881,8 @@ class Calendar extends BaseGadget {
             this.addEvent({ added: this.$worklog.getWLCalendarEntry(wl[0]) });
             this.$analytics.trackEvent("Worklog uploaded: Individual", EventCategory.UserActions);
         } catch (err) {
-            if (err.response) {
-                this.$message.error(err.response);
+            if (err.message || err.response) {
+                this.$message.error(err.message || err.response);
             }
         } finally {
             this.setState({ uploading: false });

@@ -200,10 +200,9 @@ class AddWorklog extends BaseDialog {
                 if (typeof e === "string") {
                     this.$message.error(e);
                 } else {
-                    if (e.response) {
-                        this.$message.error(e.response);
+                    if (e.message) {
+                        this.$message.error(e.message);
                     }
-                    console.error(e);
                 }
             });
         }
