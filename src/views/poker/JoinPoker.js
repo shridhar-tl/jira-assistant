@@ -25,7 +25,7 @@ function JoinPoker() {
                 <p className="flex justify-content-center">The privacy policy of Jira Assistant is not completely applicable for Poker.
                     The details you provide here like your name, jira issue key, estimates, summary, etc., would be temporarily cached
                     in JA server to serve across all the members. However, once you end the session, all the details would automatically
-                    be cleared from cache. By proceeding with using the poker, you agree to all the terms and condiations.</p>
+                    be cleared from cache. By proceeding with using the poker, you agree to all the terms and conditions.</p>
             </div>
         </div>
     );
