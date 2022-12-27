@@ -13,6 +13,8 @@ let _isReady = false;
 export default registerServices;
 
 export function registerDepnServices(authType) {
+    if (!authType) { authType = true; }
+
     if (_isReady === authType) { return; }
 
     registerServices();

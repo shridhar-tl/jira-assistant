@@ -1,4 +1,4 @@
-import { isPluginBuild, isWebBuild } from "./constants/build-info";
+import { getRouteUrl, isPluginBuild, isWebBuild } from "./constants/build-info";
 import config from './customize';
 
 export function getDashboardMenu(d, idx, userId) {
@@ -79,7 +79,7 @@ const navigation = [
                 name: 'Poker',
                 id: 'PLP',
                 external: !isPluginBuild,
-                url: isWebBuild ? '/../poker' : '/poker',
+                url: getRouteUrl(isWebBuild ? '/../poker' : '/poker'),
                 icon: 'fa fa-gamepad',
                 badge: {
                     variant: 'success',

@@ -42,15 +42,17 @@ export default class BackupService extends BaseService {
             }
 
             if (id > SystemUserId && allowExport(id, 'reports')) {
-                const reports = await this.$storage.getReportsByUserId(id);
-                await this.$report.prepareDataForExport(reports);
+                const reportsFromDB = await this.$storage.getReportsByUserId(id);
+                if (reportsFromDB.length) {
+                    await this.$report.prepareDataForExport(reportsFromDB);
 
-                setLastUpdated(reports, currentTime);
-                reports[jiraUrl] = reports;
+                    setLastUpdated(reportsFromDB, currentTime);
+                    reports[jiraUrl] = reportsFromDB;
+                }
             }
 
             if (exportConfigs) {
-                const { email, instId, apiUrl, userId, dateCreated, lastLogin, settingsMigrated, _ts = currentTime } = u;
+                const { email, instId, apiUrl, userId, dateCreated, lastLogin, _ts = currentTime } = u;
                 const settings = settingsFromDB.filter(s => s.value && !settingsToSkip.includes(s.name));
                 setLastUpdated(settings, currentTime);
 
@@ -58,7 +60,7 @@ export default class BackupService extends BaseService {
                     users.push({ id, email, jiraUrl, apiUrl, userId, dateCreated, lastLogin, _ts });
                     config[jiraUrl] = settings;
                 } else {
-                    users.push({ id: SystemUserId, instId, settingsMigrated });
+                    users.push({ id: SystemUserId, instId });
                     config[SystemUserId] = settings;
                 }
             }
@@ -155,7 +157,7 @@ export default class BackupService extends BaseService {
                         uniqueId: report.uniqueId,
                         queryName: report.queryName
                     }))[0];
-                    if (reportFromDB?._ts <= report._ts) {
+                    if (!reportFromDB?._ts || reportFromDB._ts <= report._ts) {
                         report.id = reportFromDB?.id;
                         report.createdBy = usrIdFromDb;
                         await this.$storage.addOrUpdateReport(report);
@@ -170,15 +172,15 @@ export default class BackupService extends BaseService {
                 const groupsToImport = groups[jiraUrl];
                 if (!Array.isArray(groupsToImport)) { return; }
 
-                const usersFromDB = (await this.$storage.filterUsers({ jiraUrl }))[0];
+                const usersFromDB = await this.$storage.filterUsers({ jiraUrl });
                 if (!usersFromDB.length) {
                     logs.push({ type: 'error', message: `Groups import skipped: No integration found for "${jiraUrl}"` });
                     return;
                 }
 
-                usersFromDB.forEach(u => {
+                await usersFromDB.mapAsync(async u => {
                     const usrIdFromDb = u.id;
-                    this.importGroups(usrIdFromDb, groupsToImport, logs);
+                    await this.importGroups(usrIdFromDb, groupsToImport, logs);
                 });
             });
         }

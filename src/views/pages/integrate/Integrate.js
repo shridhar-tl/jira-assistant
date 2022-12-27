@@ -158,6 +158,9 @@ class Integrate extends PureComponent {
     onSettingsImport = () => {
         if (isWebBuild) {
             this.props.setAuthType('1');
+        } else if (isQuickView) {
+            this.$jaBrowserExtn.openTab("/index.html");
+            window.close();
         } else {
             redirectToRoute();
         }
