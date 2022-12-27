@@ -1,11 +1,20 @@
 import React from 'react';
+import moment from 'moment';
 import { InputMask } from 'primereact/inputmask';
 import BaseDialog from './BaseDialog';
 import { inject } from '../services/injector-service';
 import { Button, Checkbox, DatePicker, AutoComplete, TextBox } from '../controls';
-import moment from 'moment';
 import { GadgetActionType } from '../gadgets';
 import { EventCategory } from '../constants/settings';
+
+function convertHours(value) {
+    if (!value) { return '01:00'; }
+
+    value = value.toString().split('.');
+    const h = parseInt(value[0]);
+    const m = parseInt(Math.round(60 * `.${(value[1] || 0)}`)) || 0;
+    return `${h.pad(2)}:${m.pad(2)}`;
+}
 
 class AddWorklog extends BaseDialog {
     constructor(props) {
@@ -15,8 +24,9 @@ class AddWorklog extends BaseDialog {
         this.className = "add-worklog-popup";
 
         this.displayDateFormat = "yyyy-MM-dd HH:mm";
-        const { commentLength, autoUpload } = this.$session.CurrentUser;
+        const { commentLength, autoUpload, defaultTimeSpent } = this.$session.CurrentUser;
         this.minCommentLength = commentLength || 0;
+        this.defaultTimeSpent = convertHours(defaultTimeSpent);
 
         const { worklog, uploadImmediately } = props;
         this.state = this.getState(worklog);
@@ -81,7 +91,7 @@ class AddWorklog extends BaseDialog {
                 newState.log.overrideTimeSpent = timeSpent;
             }
             else {
-                newState.log.overrideTimeSpent = '01:00';
+                newState.log.overrideTimeSpent = this.defaultTimeSpent;
                 newState.log.allowOverride = true;
             }
 
