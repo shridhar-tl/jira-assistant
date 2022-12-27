@@ -65,7 +65,9 @@ class DefaultLayout extends PureComponent {
       const { items, ...section } = p;
       section.items = items.map(p => {
         const route = { ...p };
-        route.url = `/${userId}${route.url}`;
+        if (!route.external) {
+          route.url = `/${userId}${route.url}`;
+        }
         return route;
       });
 
