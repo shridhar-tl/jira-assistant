@@ -46,12 +46,21 @@ class WorklogTab extends TabControlBase {
                     </div>
                 </div>
                 <div className="form-label ui-g-12 ui-md-3 ui-lg-3 ui-xl-2">
+                    <strong>Notify users on worklog</strong>
+                </div>
+                <div className="ui-g-12 ui-md-9 ui-lg-9 ui-xl-10">
+                    <div className="form-group">
+                        <Checkbox checked={settings.notifyUsers !== false} field="notifyUsers" onChange={this.saveSetting} label="Enable worklog notification" />
+                        <span className="help-block">Enable whether users watching the issue are notified by email</span>
+                    </div>
+                </div>
+                <div className="form-label ui-g-12 ui-md-3 ui-lg-3 ui-xl-2">
                     <strong>Worklog for closed tickets</strong>
                 </div>
                 <div className="ui-g-12 ui-md-9 ui-lg-9 ui-xl-10">
                     <div className="form-group">
                         <Checkbox checked={settings.allowClosedTickets} field="allowClosedTickets" onChange={this.saveSetting} label="Allow logging work on closed tickets" />
-                        <span className="help-block">This feature will work only if your Jira server is configured to support it</span>
+                        <span className="help-block">This feature will work only if your Jira server is configured to allow it</span>
                     </div>
                 </div>
                 <div className="form-label ui-g-12 ui-md-3 ui-lg-3 ui-xl-2">

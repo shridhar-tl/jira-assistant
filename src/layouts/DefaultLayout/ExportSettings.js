@@ -10,7 +10,7 @@ import { inject } from '../../services/injector-service';
 
 class ExportSettings extends BaseDialog {
     constructor(props) {
-        super(props, 'Export Settings', { width: '520px' });
+        super(props, 'Export Settings');
         inject(this, 'UserService', 'BackupService');
         this.state.settings = {};
         this.state.exportAll = true;

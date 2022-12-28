@@ -19,7 +19,8 @@ function convertHours(value) {
 class AddWorklog extends BaseDialog {
     constructor(props) {
         const { editTracker } = props;
-        super(props, editTracker ? "Edit Tracker" : "Add worklog", { width: '550px' });
+        super(props, editTracker ? "Edit Tracker" : "Add worklog");
+        this.style = { width: '90vw', maxWidth: '850px' };
         inject(this, "SessionService", "SuggestionService", "WorklogService", "WorklogTimerService", "MessageService", "UtilsService", "AnalyticsService");
         this.className = "add-worklog-popup";
 
