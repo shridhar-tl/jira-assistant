@@ -3,9 +3,10 @@ import moment from 'moment';
 import { InputMask } from 'primereact/inputmask';
 import BaseDialog from './BaseDialog';
 import { inject } from '../services/injector-service';
-import { Button, Checkbox, DatePicker, AutoComplete, TextBox } from '../controls';
+import { Button, Checkbox, DatePicker, TextBox } from '../controls';
 import { GadgetActionType } from '../gadgets';
 import { EventCategory } from '../constants/settings';
+import { IssuePicker } from '../jira-controls/IssuePicker';
 
 function convertHours(value) {
     if (!value) { return '01:00'; }
@@ -306,12 +307,9 @@ class AddWorklog extends BaseDialog {
                     <strong>Ticket no</strong>
                 </div>
                 <div className="col-sm-9">
-                    <AutoComplete value={log.ticketNo} displayField="value" className="w-p-100"
+                    <IssuePicker value={log.ticketNo} useDisplay={true} className="w-p-100" tabIndex="3"
                         placeholder="Enter the ticket number or start typing the summary to get suggestion"
-                        dataset={this.searchTickets} disabled={log.isUploaded} maxLength={20}
-                        onChange={(val) => this.setValue("ticketNo", val)} autoFocus>
-                        {(ticket) => <span style={{ fontSize: 12, margin: '10px 10px 0 0' }}>{ticket.label}</span>}
-                    </AutoComplete>
+                        disabled={log.isUploaded} maxLength={20} onPick={(val) => this.setValue("ticketNo", val)} />
                     <span className={`help-block ${vald.ticketNo ? '' : 'msg-error'}`}>Provide the ticket no on which you had to log your work</span>
                 </div>
             </div>

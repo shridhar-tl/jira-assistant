@@ -91,7 +91,7 @@ function AddNewIssue({ addNewIssue }) {
     if (isEditMode) {
         return (<div className="add-key">
             <span onClick={toggleMode} className="fa fa-times" />
-            <IssuePicker value="" className="issue-picker" onSelect={addIssue} />
+            <IssuePicker value="" className="issue-picker" onPick={addIssue} returnObject />
         </div>);
     } else {
         return (<div className="add-issue" onClick={toggleMode}>

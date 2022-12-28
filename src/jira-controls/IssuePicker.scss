@@ -1,0 +1,49 @@
+.sel-issue {
+    max-width: 100%;
+    border: 1px solid #ced4da;
+    border-radius: 8px;
+    padding: 7px 8px 8px 8px;
+    display: flex;
+    align-items: flex-end;
+
+    &.disabled,
+    &.loading-data {
+        cursor: not-allowed;
+    }
+
+    &:not(.disabled):not(.loading-data) {
+        cursor: pointer;
+
+        &:hover {
+            background-color: azure;
+
+            .edit-key {
+                color: blue;
+            }
+        }
+    }
+
+    img {
+        margin-bottom: 1px;
+    }
+
+    .issue-key {
+        word-break: keep-all;
+        font-weight: 600;
+        white-space: nowrap;
+        margin-right: 5px;
+    }
+
+    .issue-summary {
+        flex: 1;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        margin-left: 5px;
+    }
+
+    .edit-key {
+        padding-left: 10px;
+        font-size: 18px;
+    }
+}
