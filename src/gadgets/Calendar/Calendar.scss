@@ -177,3 +177,7 @@
     cursor: pointer;
   }
 }
+
+.cal-row-banding .fc-timegrid-slots table tbody tr:nth-of-type(even) {
+  background-color: #8dcdff21 !important;
+}

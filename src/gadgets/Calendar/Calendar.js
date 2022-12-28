@@ -49,9 +49,6 @@ class Calendar extends BaseGadget {
         this.hideMenu = !props.isGadget;
         this.hideRefresh = true;
         this.hideExport = true;
-        if (props.isGadget) {
-            this.className = "calendar-view";
-        }
 
         if (this.$session.pageSettings.calendar) {
             this.state.settings = Object.assign({ showMeetings: true, showWorklogs: true, showInfo: true }, this.$session.pageSettings.calendar);
@@ -59,7 +56,7 @@ class Calendar extends BaseGadget {
         else {
             this.state.settings = { viewMode: 'timeGridWeek', showMeetings: true, showWorklogs: true, showInfo: true };
         }
-
+        this.setGadgetClass(this.state.settings);
         this.setMenuItems();
 
         this.CurrentUser = this.$session.CurrentUser;
@@ -76,6 +73,15 @@ class Calendar extends BaseGadget {
         this.fullCalendarOpts = this.getCalendarOptions(this.state);
 
         //moment = (date) => toMoment(date, this.calendar)
+    }
+
+    setGadgetClass({ rowBanding }) {
+        const addlClass = rowBanding ? ' cal-row-banding' : '';
+        if (this.props.isGadget) {
+            this.className = `calendar-view${addlClass}`;
+        } else {
+            this.className = addlClass;
+        }
     }
 
     getHint() {
@@ -944,6 +950,7 @@ class Calendar extends BaseGadget {
         }
 
         this.$session.pageSettings.calendar = settings;
+        this.setGadgetClass(settings);
         this.setState({ settings }, (noRefresh !== true ? this.refreshData : null));
 
         this.$config.saveSettings('calendar', settings);
