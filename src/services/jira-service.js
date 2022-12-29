@@ -445,7 +445,7 @@ export default class JiraService {
 
         const { sections } = await this.$ajax.get(url);
         const root = this.$session.CurrentUser.jiraUrl?.clearEnd('/');
-        const labels = { hs: 'Recent issues', cs: 'All issues' };
+        const labels = { hs: 'Recent issues', cs: 'Other issues' };
         const added = {};
         sections.forEach(s => {
             s.label = labels[s.id] || s.label;

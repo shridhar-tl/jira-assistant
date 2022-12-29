@@ -238,8 +238,7 @@ class AddWorklog extends BaseDialog {
 
     getFooter() {
         const {
-            isLoading,
-            state: { log, vald, uploadImmediately }
+            state: { isLoading, log, vald, uploadImmediately }
         } = this;
 
         return <>

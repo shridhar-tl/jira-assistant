@@ -16,15 +16,9 @@ class AC extends PureComponent {
     }
 
     onChange = ({ value }) => {
-        const { valueField, onSelect } = this.props;
-        if (typeof value === 'object') {
-            if (onSelect) {
-                onSelect({ value });
-            }
-
-            if (valueField && value[valueField]) {
-                value = value[valueField];
-            }
+        const { valueField } = this.props;
+        if (typeof value === 'object' && valueField && value[valueField]) {
+            value = value[valueField];
         }
 
         this.setState({ value });

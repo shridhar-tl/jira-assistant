@@ -82,8 +82,9 @@ function AddNewIssue({ addNewIssue }) {
     const [isEditMode, setIsEditMode] = useState(false);
 
     const toggleMode = useCallback(() => setIsEditMode(!isEditMode), [isEditMode]);
-    const addIssue = useCallback(({ value } = {}) => {
+    const addIssue = useCallback(value => {
         if (!value) { return; }
+
         addNewIssue(value);
         setIsEditMode(false);
     }, [addNewIssue, setIsEditMode]);

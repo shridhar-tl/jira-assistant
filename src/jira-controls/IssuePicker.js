@@ -2,6 +2,7 @@ import React from 'react';
 import { useState } from 'react';
 import { useEffect } from 'react';
 import { useRef } from 'react';
+import { viewIssueUrl } from '../common/utils';
 import { AutoComplete, Image } from '../controls';
 import { inject } from '../services/injector-service';
 import './IssuePicker.scss';
@@ -13,11 +14,15 @@ async function getIssueObject($jira, key) {
     if (!new RegExp(issueKeyTest).test(key)) {
         return;
     }
+    const { $session } = inject('SessionService');
+    const root = $session.CurrentUser.jiraUrl?.clearEnd('/');
     try {
         const [issue] = await $jira.searchTickets(`key=${key}`);
         const newObj = {
             id: issue.id,
             key: issue.key,
+            root,
+            url: viewIssueUrl(root, issue.key),
             summary: issue.fields.summary,
             summaryText: issue.fields.summary,
             img: issue.fields.issuetype.iconUrl
