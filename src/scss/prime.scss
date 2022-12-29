@@ -50,7 +50,7 @@ body .p-component {
 .p-autocomplete-panel,
 .p-datepicker,
 .p-dropdown-panel {
-    z-index: 3000 !important;
+    z-index: 9999 !important;
 }
 
 .p-autocomplete-panel {

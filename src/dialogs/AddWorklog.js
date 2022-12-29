@@ -22,7 +22,7 @@ class AddWorklog extends BaseDialog {
         const { editTracker } = props;
         super(props, editTracker ? "Edit Tracker" : "Add worklog");
         this.style = { width: '90vw', maxWidth: '850px' };
-        inject(this, "SessionService", "SuggestionService", "WorklogService", "WorklogTimerService", "MessageService", "UtilsService", "AnalyticsService");
+        inject(this, "SessionService", "WorklogService", "WorklogTimerService", "MessageService", "UtilsService", "AnalyticsService");
         this.className = "add-worklog-popup";
 
         this.displayDateFormat = "yyyy-MM-dd HH:mm";
@@ -33,15 +33,10 @@ class AddWorklog extends BaseDialog {
         const { worklog, uploadImmediately } = props;
         this.state = this.getState(worklog);
         this.state.uploadImmediately = typeof uploadImmediately === "boolean" ? uploadImmediately : (autoUpload || false);
-        this.allTicketList = [];
         this.init(editTracker);
     }
 
     init(editTracker) {
-        this.$suggestion.getTicketSuggestion().then(u => {
-            this.allTicketList = u;
-        });
-
         if (editTracker) {
             this.$wltimer.getCurrentTimer().then(entry => this.setState(this.getTrackerState(entry)));
         } else {
@@ -102,11 +97,6 @@ class AddWorklog extends BaseDialog {
 
         return newState;
     }
-
-    searchTickets = (query) => {
-        query = (query || "").toLowerCase();
-        return this.allTicketList.filter(t => t.label.toLowerCase().indexOf(query) > -1);
-    };
 
     fillWorklog(worklog, copy) {
         return this.$worklog.getWorklog(worklog).then((d) => {

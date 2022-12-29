@@ -6,7 +6,9 @@ import { AutoComplete, Image } from '../controls';
 import { inject } from '../services/injector-service';
 import './IssuePicker.scss';
 
+const ignoredKeysStrokes = [9, 16, 17, 18, 27, 123];
 const issueKeyTest = /^\b[A-Z][A-Z0-9_]+-[1-9][0-9]*$/gi;
+
 async function getIssueObject($jira, key) {
     if (!new RegExp(issueKeyTest).test(key)) {
         return;
@@ -62,8 +64,9 @@ export const IssuePicker = React.memo(function ({ value, disabled, useDisplay, r
         if (timerRef.current.blurTimer) {
             clearTimeout(timerRef.current.blurTimer);
             delete timerRef.current.blurTimer;
-            updateIssue(e.value);
         }
+
+        updateIssue(e.value);
     };
 
     const onBlur = (e) => {
@@ -84,7 +87,13 @@ export const IssuePicker = React.memo(function ({ value, disabled, useDisplay, r
         }, 600);
     };
 
-    const editTicket = () => toggleEdit(true);
+    const editTicket = (e) => {
+        if (ignoredKeysStrokes.includes(e.keyCode)) {
+            return;
+        }
+
+        toggleEdit(true);
+    };
 
     if (loading && useDisplay && issueObj) {
         return (<div className="sel-issue loading-data" title="Please wait. Loading details...">
@@ -98,14 +107,14 @@ export const IssuePicker = React.memo(function ({ value, disabled, useDisplay, r
         return (<AutoComplete value={value} displayField="value"
             dataset={$jira.lookupIssues} disabled={disabled} maxLength={20}
             onSelect={onIssueSelected} onBlur={onBlur} autoFocus optionGroupChildren="issues" optionGroupLabel="label"
-            {...otherProps}>
+            valueField="key" {...otherProps}>
             {(issue) => <span style={{ fontSize: 12, margin: '10px 10px 0 0' }}>
                 <Image src={issue.img} alt="" className="margin-r-8" />{issue.key} - {issue.summaryText}</span>}
         </AutoComplete>);
     } else {
         return (<div className={`sel-issue${disabled ? ' disabled' : ''}`} tabIndex={tabIndex}
             onClick={disabled ? undefined : editTicket} onKeyDown={disabled ? undefined : editTicket}
-            testId="ticket-key" data-issue-key={issueObj.key}>
+            data-test-id="issue-key" data-issue-key={issueObj.key}>
             <Image src={issueObj.img} className="margin-r-8" />
             <span className="issue-key">{issueObj.key}</span> -
             <div className="issue-summary">{issueObj.summaryText}</div>

@@ -435,6 +435,8 @@ export default class JiraService {
     }
 
     lookupIssues = async (query, options) => {
+        // ToDo: once issue picker in bulk import module is modified to use this picker, this line should be uncommented
+        // const currentJQL = this.$session.CurrentUser.suggestionJQL || '';
         const url = prepareUrlWithQueryString(ApiUrls.searchIssueForPicker, {
             currentJQL: '',
             ...options,

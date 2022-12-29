@@ -4,7 +4,8 @@ import getLoader from '../../components/loader';
 import Page401 from '../../views/pages/p401/Page401';
 import { useLocation, useNavigate } from 'react-router-dom';
 
-const nonAuthPages = ['integrate', 'options', 'poker'];
+const bgAuthRoutes = ['poker'];
+const nonAuthPages = ['integrate', 'options'];
 
 const withAuthInfo = function (Component) {
     const AuthComponent = function (props) {
@@ -26,16 +27,20 @@ const withAuthInfo = function (Component) {
         }, [setAuthInfo, navigate]);
 
         const userId = getUserIdFromPathOrSession(pathname);
-        const shouldAuth = !!userId || needsAuth(pathname);
+
+        // Check if route can load while auth happens in background
+        const bgAuth = needsBackgroundAuth(pathname);
+        // Check if the route should wait for auth to complete
+        const shouldAuth = !bgAuth && (!!userId || needsAuth(pathname));
 
         const tryAuthorize = () => {
-            if (shouldAuth) {
-                authenticateUser(userId, authInfo, pathname, navigate).then((result) => {
+            if (shouldAuth || bgAuth) {
+                authenticateUser(userId, authInfo, pathname, !bgAuth && navigate).then((result) => {
                     if (result !== undefined) {
                         setAuthInfo(result);
 
                         // If user is not integrated yet, then navigate to integrate page
-                        if (result.needIntegration && !pathname.startsWith('/integrate')) {
+                        if (!bgAuth && result.needIntegration && !pathname.startsWith('/integrate')) {
                             navigate('/integrate');
                         }
                     }
@@ -82,12 +87,14 @@ async function authenticateUser(userIdFromPath, authInfo, pathname, navigate) {
             const userId = $session.userId || null;
             const jiraUrl = $session.rootUrl;
 
-            if (!userIdFromPath && userId) {
-                navigate(userId + pathname);
-            } else if (userIdFromPath && userId) { // If userid comes from url, then update the user id in db
-                // ToDo: Ensuring if value from db is different would be more appropriate
-                //await $settings.set("CurrentJiraUrl", jiraUrl);
-                await $settings.set("CurrentUserId", userId);
+            if (navigate) {
+                if (!userIdFromPath && userId) {
+                    navigate(userId + pathname);
+                } else if (userIdFromPath && userId) { // If userid comes from url, then update the user id in db
+                    // ToDo: Ensuring if value from db is different would be more appropriate
+                    //await $settings.set("CurrentJiraUrl", jiraUrl);
+                    await $settings.set("CurrentUserId", userId);
+                }
             }
 
             return { authenticated, jiraUrl, userId };
@@ -119,6 +126,14 @@ function getUserIdFromPathOrSession(pathname) {
 }
 
 function needsAuth(pathname) {
+    return !isInList(pathname, nonAuthPages);
+}
+
+function needsBackgroundAuth(pathname) {
+    return isInList(pathname, bgAuthRoutes);
+}
+
+function isInList(pathname, list) {
     const parts = pathname.split("/").filter(Boolean);
-    return !nonAuthPages.includes(parts[0].toLowerCase());
+    return list.includes(parts[0].toLowerCase());
 }
