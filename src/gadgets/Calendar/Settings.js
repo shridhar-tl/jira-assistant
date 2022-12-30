@@ -97,6 +97,10 @@ class CalendarSettings extends BaseDialog {
             <div className="form-group">
                 <Checkbox checked={settings.showInfo || false} onChange={(val) => this.setValue(val, "showInfo")} label="Display information about total hours logged on daily basis" />
             </div>
+            <h3 className="control-sidebar-heading">Other options</h3>
+            <div className="form-group">
+                <Checkbox checked={settings.rowBanding || false} onChange={(val) => this.setValue(val, "rowBanding")} label="Enable alternate row color on calendar time grid" />
+            </div>
         </div>);
     }
 }

@@ -20,7 +20,10 @@ class UserGroup extends PureComponent {
         this.groupTimezones = [{ label: 'My local time zone', value: '' }].union([timezones]);
         this.userTimezones = [{ label: 'My local time zone', value: '' }, { label: "Use group's time zone", value: 'GRP_TZ' }].union([timezones]);
         this.state = { groups };
-        if (!groups) {
+    }
+
+    componentDidMount() {
+        if (!this.state.groups) {
             this.loadGroups();
         }
     }

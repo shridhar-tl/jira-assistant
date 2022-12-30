@@ -82,8 +82,9 @@ function AddNewIssue({ addNewIssue }) {
     const [isEditMode, setIsEditMode] = useState(false);
 
     const toggleMode = useCallback(() => setIsEditMode(!isEditMode), [isEditMode]);
-    const addIssue = useCallback(({ value } = {}) => {
+    const addIssue = useCallback(value => {
         if (!value) { return; }
+
         addNewIssue(value);
         setIsEditMode(false);
     }, [addNewIssue, setIsEditMode]);
@@ -91,7 +92,7 @@ function AddNewIssue({ addNewIssue }) {
     if (isEditMode) {
         return (<div className="add-key">
             <span onClick={toggleMode} className="fa fa-times" />
-            <IssuePicker value="" className="issue-picker" onSelect={addIssue} />
+            <IssuePicker value="" className="issue-picker" onPick={addIssue} returnObject />
         </div>);
     } else {
         return (<div className="add-issue" onClick={toggleMode}>

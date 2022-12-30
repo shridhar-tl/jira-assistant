@@ -16,8 +16,14 @@ class AC extends PureComponent {
     }
 
     onChange = ({ value }) => {
+        const { valueField } = this.props;
+        if (typeof value === 'object' && valueField && value[valueField]) {
+            value = value[valueField];
+        }
+
         this.setState({ value });
         const { onChange } = this.props;
+
         if (onChange) {
             onChange(value, this.props.field);
         }
@@ -44,6 +50,7 @@ class AC extends PureComponent {
     onKeyUp = (e) => {
         const { currentTarget, keyCode } = e;
         const { onCustomValue, onKeyUp } = this.props;
+
         if (keyCode === 13) {
             const value = currentTarget.value.trim();
             onCustomValue(value);

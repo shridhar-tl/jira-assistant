@@ -18,6 +18,7 @@ export default class JiraService {
 
     searchTickets(jql, fields, startAt, opts) {
         startAt = startAt || 0;
+        fields = fields || defaultJiraFields;
         const { worklogStartDate, worklogEndDate } = opts || {};
         return new Promise((resolve, reject) => {
             const postData = { jql, fields, maxResults: opts?.maxResults || 1000 };
@@ -434,22 +435,39 @@ export default class JiraService {
     }
 
     lookupIssues = async (query, options) => {
+        // ToDo: once issue picker in bulk import module is modified to use this picker, this line should be uncommented
+        // const currentJQL = this.$session.CurrentUser.suggestionJQL || '';
         const url = prepareUrlWithQueryString(ApiUrls.searchIssueForPicker, {
+            currentJQL: '',
             ...options,
             query
         });
 
         const { sections } = await this.$ajax.get(url);
         const root = this.$session.CurrentUser.jiraUrl?.clearEnd('/');
-        sections.forEach(s => s.issues.forEach(issue => {
-            issue.root = root;
-            if (issue.img) {
-                issue.img = mergeUrl(root, issue.img);
-                issue.url = viewIssueUrl(root, issue.key);
-            }
-        }));
+        const labels = { hs: 'Recent issues', cs: 'Other issues' };
+        const added = {};
+        sections.forEach(s => {
+            s.label = labels[s.id] || s.label;
 
-        return sections;
+            s.issues = s.issues.map(issue => {
+                if (added[issue.key]) {
+                    return null;
+                }
+
+                added[issue.key] = true;
+
+                issue.root = root;
+                if (issue.img) {
+                    issue.img = mergeUrl(root, issue.img);
+                    issue.url = viewIssueUrl(root, issue.key);
+                }
+
+                return issue;
+            }).filter(Boolean);
+        });
+
+        return sections.filter(s => s.issues?.length);
     };
 
     async searchIssueForPicker(query, options) {

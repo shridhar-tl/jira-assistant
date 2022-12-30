@@ -3,9 +3,10 @@ import moment from 'moment';
 import { InputMask } from 'primereact/inputmask';
 import BaseDialog from './BaseDialog';
 import { inject } from '../services/injector-service';
-import { Button, Checkbox, DatePicker, AutoComplete, TextBox } from '../controls';
+import { Button, Checkbox, DatePicker, TextBox } from '../controls';
 import { GadgetActionType } from '../gadgets';
 import { EventCategory } from '../constants/settings';
+import { IssuePicker } from '../jira-controls/IssuePicker';
 
 function convertHours(value) {
     if (!value) { return '01:00'; }
@@ -19,8 +20,9 @@ function convertHours(value) {
 class AddWorklog extends BaseDialog {
     constructor(props) {
         const { editTracker } = props;
-        super(props, editTracker ? "Edit Tracker" : "Add worklog", { width: '550px' });
-        inject(this, "SessionService", "SuggestionService", "WorklogService", "WorklogTimerService", "MessageService", "UtilsService", "AnalyticsService");
+        super(props, editTracker ? "Edit Tracker" : "Add worklog");
+        this.style = { width: '90vw', maxWidth: '850px' };
+        inject(this, "SessionService", "WorklogService", "WorklogTimerService", "MessageService", "UtilsService", "AnalyticsService");
         this.className = "add-worklog-popup";
 
         this.displayDateFormat = "yyyy-MM-dd HH:mm";
@@ -31,15 +33,10 @@ class AddWorklog extends BaseDialog {
         const { worklog, uploadImmediately } = props;
         this.state = this.getState(worklog);
         this.state.uploadImmediately = typeof uploadImmediately === "boolean" ? uploadImmediately : (autoUpload || false);
-        this.allTicketList = [];
         this.init(editTracker);
     }
 
     init(editTracker) {
-        this.$suggestion.getTicketSuggestion().then(u => {
-            this.allTicketList = u;
-        });
-
         if (editTracker) {
             this.$wltimer.getCurrentTimer().then(entry => this.setState(this.getTrackerState(entry)));
         } else {
@@ -100,11 +97,6 @@ class AddWorklog extends BaseDialog {
 
         return newState;
     }
-
-    searchTickets = (query) => {
-        query = (query || "").toLowerCase();
-        return this.allTicketList.filter(t => t.label.toLowerCase().indexOf(query) > -1);
-    };
 
     fillWorklog(worklog, copy) {
         return this.$worklog.getWorklog(worklog).then((d) => {
@@ -246,8 +238,7 @@ class AddWorklog extends BaseDialog {
 
     getFooter() {
         const {
-            isLoading,
-            state: { log, vald, uploadImmediately }
+            state: { isLoading, log, vald, uploadImmediately }
         } = this;
 
         return <>
@@ -305,12 +296,9 @@ class AddWorklog extends BaseDialog {
                     <strong>Ticket no</strong>
                 </div>
                 <div className="col-sm-9">
-                    <AutoComplete value={log.ticketNo} displayField="value" className="w-p-100"
+                    <IssuePicker value={log.ticketNo} useDisplay={true} className="w-p-100" tabIndex="3"
                         placeholder="Enter the ticket number or start typing the summary to get suggestion"
-                        dataset={this.searchTickets} disabled={log.isUploaded} maxLength={20}
-                        onChange={(val) => this.setValue("ticketNo", val)} autoFocus>
-                        {(ticket) => <span style={{ fontSize: 12, margin: '10px 10px 0 0' }}>{ticket.label}</span>}
-                    </AutoComplete>
+                        disabled={log.isUploaded} maxLength={20} onPick={(val) => this.setValue("ticketNo", val)} />
                     <span className={`help-block ${vald.ticketNo ? '' : 'msg-error'}`}>Provide the ticket no on which you had to log your work</span>
                 </div>
             </div>
