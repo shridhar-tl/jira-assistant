@@ -15,7 +15,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [16.x]
+        node-version: [18.x]
 
     steps:
     - uses: actions/checkout@v2
@@ -29,9 +29,8 @@ jobs:
     - run: git config --global user.email 'shridhar.tl@gmail.com'
     - run: git remote set-url origin https://shridhar-tl:${{ secrets.COMMIT_KEY }}@github.com/${{ github.repository }}
     - run: npm run deploy-web
-    #- run: npm run build-app
-    #- run: npm run deploy-app
     - run: npm run build
+    - run: git push origin --delete  ja-extn
     - run: npm run publish-extn
     - name: Extract version
       id: extract_version
