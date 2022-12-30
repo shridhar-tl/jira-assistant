@@ -284,11 +284,20 @@
     background-color: $background-color;
   }
 
+  .sel-issue:not(.disabled):not(.loading-data):hover {
+    background-color: $background-secondary;
+  }
+
   div.scroll-table-container .scroll-table thead tr,
   div.scroll-table-container .scroll-table thead tr th,
   div.src-editable-grid-container .src-editable-grid thead tr,
   div.src-editable-grid-container .src-editable-grid thead tr th,
-  .fc th,
+  .fc.fc-theme-standard .fc-view-harness th,
+  .fc.fc-theme-standard .fc-view-harness tr,
+  .fc.fc-theme-standard .fc-view-harness th,
+  .fc.fc-theme-standard .fc-view-harness td,
+  .fc.fc-theme-standard .fc-view-harness .fc-cell-shaded,
+  .fc.fc-theme-standard .fc-view-harness .fc-view,
   tr.grouped-row,
   .p-tabview .p-tabview-nav li a,
   .daterangepicker .ranges li:hover,
@@ -363,10 +372,11 @@
     border-color: $background-secondary;
   }
 
-  .fc-unthemed th,
-  .fc-unthemed td,
-  .fc-unthemed thead,
-  .fc-unthemed tbody,
+  .fc.fc-theme-standard .fc-view-harness tr,
+  .fc.fc-theme-standard .fc-view-harness th,
+  .fc.fc-theme-standard .fc-view-harness td,
+  .fc.fc-theme-standard .fc-view-harness thead,
+  .fc.fc-theme-standard .fc-view-harness tbody,
   .fc-unthemed .fc-divider,
   .fc-unthemed .fc-row,
   .fc-unthemed .fc-content,

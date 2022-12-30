@@ -77,7 +77,7 @@ export class ExportHelper {
             const defaultOpts = { encode: true, trim: true };
             let opts = td.attr("export-option");
             if (opts && opts.length > 10) {
-                opts = $.extend(defaultOpts, JSON.parse(opts));
+                opts = { ...defaultOpts, ...JSON.parse(opts) };
             }
             else {
                 opts = defaultOpts;

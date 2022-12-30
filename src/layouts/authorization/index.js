@@ -83,9 +83,10 @@ async function authenticateUser(userIdFromPath, authInfo, pathname, navigate) {
 
     try {
         const authenticated = await $auth.authenticate(userIdFromPath);
+        const jiraUrl = $session.rootUrl;
+
         if (authenticated) {
             const userId = $session.userId || null;
-            const jiraUrl = $session.rootUrl;
 
             if (navigate) {
                 if (!userIdFromPath && userId) {
@@ -99,8 +100,7 @@ async function authenticateUser(userIdFromPath, authInfo, pathname, navigate) {
 
             return { authenticated, jiraUrl, userId };
         }
-
-        return { authenticated, needIntegration: $session.needIntegration };
+        return { authenticated, jiraUrl, needIntegration: $session.needIntegration };
     } catch {
         const { needIntegration, rootUrl: jiraUrl } = $session;
         return { needIntegration, jiraUrl };
