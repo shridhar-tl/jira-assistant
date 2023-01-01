@@ -3,6 +3,7 @@ import { ScrollableTable } from '../../../components/ScrollableTable';
 import { connect } from "../datastore";
 import GroupBody from './GroupBody';
 import GroupHead from './GroupHead';
+import './Common.scss';
 
 function GroupedDataGrid({ boardId, fields, exportSheetName, costView }) {
     const { showProject, showParentSummary, showIssueType, showEpic, showAssignee, showReporter } = fields || {};

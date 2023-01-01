@@ -52,8 +52,12 @@ export default class FirefoxBrowserService extends BrowserBase {
             .catch(() => this.openTab(url));
     }
 
-    openTab(url) {
-        this.browser.tabs.create({ url: url });
+    openTab(url, name, opts) {
+        if (!name) {
+            this.browser.tabs.create({ url: url });
+        } else {
+            window.open(url, name, opts);
+        }
     }
 
     getAuthToken(options) {

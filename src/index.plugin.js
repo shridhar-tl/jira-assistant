@@ -18,15 +18,22 @@ import '@atlaskit/css-reset';
         root.render(<Router><App jiraContext={context} /></Router>);
     }
 
+    //#region Gadgets
     else if (moduleKey === 'ja-date-wise-worklog') {
         const DayWiseWorklogGadget = React.lazy(() => import('./jcloud/gadgets/date-wise-worklog'));
         root.render(<DayWiseWorklogGadget jiraContext={context} />);
+    }
+
+    else if (moduleKey === 'ja-worklog-barchart') {
+        const WorklogBarChartGadget = React.lazy(() => import('./jcloud/gadgets/worklog-bar-chart'));
+        root.render(<WorklogBarChartGadget jiraContext={context} />);
     }
 
     else if (moduleKey === 'ja-worklog-timer') {
         const WorklogTimerGadget = React.lazy(() => import('./jcloud/gadgets/worklog-timer'));
         root.render(<WorklogTimerGadget jiraContext={context} />);
     }
+    //#endregion
 
     else if (moduleKey === 'ja-issue-glance') {
         const IssueGlance = React.lazy(() => import('./jcloud/issue-glance'));

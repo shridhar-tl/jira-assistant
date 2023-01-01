@@ -20,9 +20,9 @@ modules:
       description: A simple timer control to capture time spent on a ticket
       thumbnail: https://www.jiraassistant.com/images/gadgets/worklog-timer.png
       resource: main
-    - key: ja-worklog-calendar
-      title: Worklog calendar
-      description: Lets you edit, clone or view worklog through calendar
+    - key: ja-worklog-barchart
+      title: Worklog Bar Chart
+      description: Lets you visualize worklog plotted for individual issues via bar chart
       thumbnail: https://www.jiraassistant.com/images/gadgets/worklog-calendar.png
       resource: main
       edit:

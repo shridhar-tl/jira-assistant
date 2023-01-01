@@ -84,6 +84,24 @@ export function getUserWiseWorklog(issues, fromDate, toDate, currentUser, state)
     };
 }
 
+function getWeekHeader({ values }) {
+    const days = values.length;
+    let display = '';
+    const { 0: { week, dispFormat, dateNum: first }, [days - 1]: { dateNum: last } } = values;
+
+    if (days > 4) {
+        display = `${dispFormat}, ${first} to ${last} (W-${week})`;
+    } else if (days > 3) {
+        display = `${dispFormat}, ${first}-${last}`;
+    } else if (days > 2) {
+        display = `${dispFormat.split(' ')[0]} (W-${week})`;
+    } else {
+        display = dispFormat.split(' ')[0];
+    }
+
+    return { display, days };
+}
+
 export function generateUserDayWiseData(data, groups, pageSettings) {
     const svc = inject('UtilsService', 'UserUtilsService', 'SessionService');
     const { maxHours, minHours = maxHours } = svc.$session.CurrentUser;
@@ -92,14 +110,22 @@ export function generateUserDayWiseData(data, groups, pageSettings) {
 
     const { timeZone, fromDate, toDate } = pageSettings;
     const datesArr = svc.$utils.getDateArray(fromDate, toDate);
+
     const dates = datesArr.map(d => ({
         prop: d.format('yyyyMMdd'),
-        display: d.format('DDD, dd'),
         date: d,
+        dispFormat: d.format('MMM yyyy').toUpperCase(),
+        month: d.getMonth(),
+        week: moment(d).week(),
+        dayOfWeek: moment(d).day(),
+        day: d.format('DD').toUpperCase(),
+        dateNum: d.getDate(),
         isHoliday: svc.$userutils.isHoliday(d)
     }));
-    const months = datesArr.groupBy((d) => d.format("MMM, yyyy")).map(grp => ({ monthName: grp.key, days: grp.values.length }));
 
+    const weeks = dates.groupBy(d => (`${d.month}_${d.week}`)).map(getWeekHeader);
+
+    //const months = datesArr.groupBy((d) => d.dispFormat).map(grp => ({ monthName: grp.key, days: grp.values.length }));
 
     const timezoneSetting = parseInt(timeZone);
 
@@ -283,7 +309,7 @@ export function generateUserDayWiseData(data, groups, pageSettings) {
     groupedData.total = grpTotal;
     groupedData.totalCost = grpTotalCost;
 
-    return { groupedData, months, dates };
+    return { groupedData, weeks, dates };
 }
 
 function getLogUserObj(issue, fields, worklog, append, { epicNameField, $userutils }) {

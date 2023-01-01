@@ -9,10 +9,10 @@ function GroupHead({ useSprint, sprintsList, addlColCount, costView, fields }) {
         <tr className="data-center pad-min auto-wrap">
             <th style={{ minWidth: 260 + (addlColCount * 120) }} rowSpan={addlColCount > 1 ? 1 : 2} colSpan={addlColCount}>User Details</th>
             {useSprint && sprintsList.map(s => <Fragment key={s.id}>
-                <MonthsList sprint={s} />
+                <WeeksList sprint={s} />
                 <th rowSpan={2}>Sprint Total</th>
             </Fragment>)}
-            {!useSprint && <MonthsList />}
+            {!useSprint && <WeeksList />}
             {!costView && <th style={{ minWidth: 50, maxWidth: 100 }} rowSpan={2}>Total Hours</th>}
             {costView && <th style={{ minWidth: 50, maxWidth: 100 }} rowSpan={2}>Total Cost</th>}
         </tr>
@@ -43,15 +43,15 @@ export default connect(GroupHead,
         };
     });
 
-const MonthsList = connect(function ({ months }) {
-    return months.map((day, i) => <th key={i} style={{ minWidth: 35 }} colSpan={day.days}>{day.monthName}</th>);
+const WeeksList = connect(function ({ weeks }) {
+    return weeks.map((day, i) => <th key={i} className="week-head" colSpan={day.days}>{day.display}</th>);
 }, (state, { sprint }) => {
-    const { [sprint ? `groupReport_${sprint.id}` : 'groupReport']: { months } } = state;
-    return { months };
+    const { [sprint ? `groupReport_${sprint.id}` : 'groupReport']: { weeks } } = state;
+    return { weeks };
 });
 
 const DatesList = connect(function ({ dates }) {
-    return dates.map((day, i) => <th key={i} data-test-id={day.prop} style={{ minWidth: 35 }}>{day.display}</th>);
+    return dates.map((day, i) => <th key={i} data-test-id={day.prop} className={`day-head${day.isHoliday ? ' holiday' : ''}`}>{day.dateNum}<br /><span className="day-name">{day.day}</span></th>);
 }, (state, { sprintId }) => {
     const { [sprintId ? `groupReport_${sprintId}` : 'groupReport']: { dates } } = state;
     return { dates };

@@ -68,6 +68,7 @@ export default class WorklogService extends BaseService {
                                     logUpdated: moment(worklog.updated || worklog.created).toDate(),
                                     comment: worklog.comment,
                                     totalHours: `${parseInt((mins / 60).toString()).pad(2)}:${parseInt((mins % 60).toString()).pad(2)}`,
+                                    totalMins: mins,
                                     worklogId: worklog.id
                                 });
                             }
@@ -219,6 +220,7 @@ export default class WorklogService extends BaseService {
                 id: DummyWLId,
                 isUploaded: true,
                 timeSpent: ld.totalHours,
+                totalMins: ld.totalMins,
                 ticketNo: ld.ticketNo,
                 worklogId: ld.worklogId
                 //parentId:0 - ToDo: Something to be thought of
@@ -228,6 +230,13 @@ export default class WorklogService extends BaseService {
         let modProm = Promise.all([prom, uploadedWL])
             .then((wls) => {
                 const pending = wls[0].filter(w => !w.isUploaded && !w.worklogId);
+
+                const getTotalSecs = this.$utils.getTotalSecs;
+                pending.forEach(wl => {
+                    const timeSpent = wl.overrideTimeSpent || wl.timeSpent;
+                    wl.totalMins = getTotalSecs(timeSpent) / 60;
+                });
+
                 wls[1].forEach(w => {
                     const relWL = wls[0].first(rw => rw.worklogId === w.worklogId);
                     if (relWL) {

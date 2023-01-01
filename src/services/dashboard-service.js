@@ -49,11 +49,21 @@ export default class DashboardService {
 
     async createDashboard() {
         const dashboards = this.$session.CurrentUser.dashboards;
+        const count = dashboards.length;
+
+        // If id does not exist, then default dashboard has never saved
+        // Hence save it first before creating new dashboard.
+        const defBoardToSave = count === 1 && dashboards[0];
+        if (defBoardToSave && !defBoardToSave.id) {
+            await this.saveUserDashboards(defBoardToSave, true);
+            console.log('Default dashboard automatically saved');
+        }
+
         const iconIdx = this.rand(0, DASHBOARD_ICONS.length - 1);
         const dashboard = {
             icon: DASHBOARD_ICONS[iconIdx],
             layout: 1,
-            name: `New Dashboard ${dashboards.length + 1}`,
+            name: `New Dashboard ${count + 1}`,
             widgets: [],
             isQuickView: false
         };
