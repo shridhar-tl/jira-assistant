@@ -58,9 +58,9 @@ async function generateWorklogReportForDateRange(fromDate, toDate, state) {
             .reduce((obj, { grpName, issues }) => {
                 const {
                     flatWorklogs: flatData,
-                    groupReport: { months, dates, groupedData: g }
+                    groupReport: { weeks, dates, groupedData: g }
                 } = formGroupedWorklogs(issues, fromDate, toDate, name?.toLowerCase(), state, useGroups && savedGroups);
-                obj.months = months;
+                obj.weeks = weeks;
                 obj.dates = dates;
                 flatWorklogs.addRange(flatData);
 

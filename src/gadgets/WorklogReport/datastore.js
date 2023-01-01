@@ -34,7 +34,7 @@ const initialData = {
 
     sprints: []
     //sprintsList_{boardId}:[{sprint}]
-    //groupReport_{boardId}:{months:[],dates:[], groupedData:[{group}]}
+    //groupReport_{boardId}:{weeks:[],dates:[], groupedData:[{group}]}
 };
 
 /*
