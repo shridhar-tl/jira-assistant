@@ -5,44 +5,6 @@ import { inject } from '../../../services';
 import { getRandomColor, prepareDateRange } from '../../../jcloud/utils';
 import './Styles.scss';
 
-const chartOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-        tooltips: {
-            mode: 'index',
-            intersect: false
-        },
-        legend: {
-            title: { text: 'Issues', fontColor: 'red' },
-            position: 'bottom',
-            labels: {
-                color: '#495057'
-            }
-        }
-    },
-    scales: {
-        x: {
-            stacked: true,
-            ticks: {
-                color: '#495057'
-            },
-            grid: {
-                color: '#ebedef'
-            }
-        },
-        y: {
-            stacked: true,
-            ticks: {
-                color: '#495057'
-            },
-            grid: {
-                color: '#ebedef'
-            }
-        }
-    }
-};
-
 function Gadget({ lastUpdated, setLoader, settings: { dateRange } }) {
     const [data, setData] = useState();
 
@@ -62,7 +24,7 @@ function Gadget({ lastUpdated, setLoader, settings: { dateRange } }) {
     }
 
     return (<div className="worklog-bar-chart-gadget">
-        <Chart type="bar" data={data} options={chartOptions} />
+        <Chart type="bar" data={data.data} options={data.options} />
     </div>);
 }
 
@@ -70,13 +32,63 @@ async function getWorklogChartData(dateRange) {
     const { fromDate, toDate } = dateRange;
     const { $utils } = inject('UtilsService');
 
-    const datesArr = $utils.getDateArray(fromDate, toDate);
-    const labels = datesArr.map((d, i) => (i === -1 ? d.format('MMM dd') : d.getDate()));
-
     const datasets = await getWorklogDataset(dateRange);
     if (!datasets) { return false; }
 
-    return { labels, datasets };
+    const datesArr = $utils.getDateArray(fromDate, toDate);
+
+    const isSameMonth = datesArr[0].getMonth() === datesArr[datesArr.length - 1].getMonth();
+    const labels = datesArr.map(isSameMonth
+        ? (d) => d.getDate()
+        : (d, i) => (i === 0 || d.getDate() === 1 ? d.format('MMM dd') : d.getDate())
+    );
+
+    return {
+        data: { labels, datasets },
+        options: getChartOptions(datesArr)
+    };
+}
+
+function getChartOptions(dates) {
+    const { $userutils } = inject('UserUtils');
+    return {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            tooltip: {
+                mode: 'index',
+                intersect: true,
+                filter: (a) => !!a.raw,
+                callbacks: {
+                    title: function (arr) {
+                        const index = arr[0].parsed.x;
+                        const date = dates[index];
+                        return $userutils.formatDate(date);
+                    },
+                    footer: (logs) => `Total: ${logs.map(({ raw }) => raw).sum()} hours`
+                }
+            },
+            legend: {
+                title: { text: 'Issues', fontColor: 'red' },
+                position: 'bottom',
+                labels: { color: '#495057' }
+            }
+        },
+        scales: {
+            x: {
+                stacked: true,
+                ticks: { color: '#495057' },
+                grid: { color: '#ebedef' },
+                label: { display: true, text: 'Hours spent' }
+            },
+            y: {
+                stacked: true,
+                ticks: { color: '#495057' },
+                grid: { color: '#ebedef' },
+                label: { display: true, text: 'Hours spent' }
+            }
+        }
+    };
 }
 
 async function getWorklogDataset(range) {
