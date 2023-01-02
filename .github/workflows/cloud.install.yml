@@ -1,0 +1,78 @@
+# This workflow can be used to install Jira Assistant plugin to specific environment of Jira Cloud
+
+name: Install Jira Cloud App
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Choose environment to install'
+        default: 'staging'
+        required: true
+        type: choice
+        options:
+        - development
+        - staging
+        - production
+      jiraSiteUrl:
+        description: 'Jira cloud host name'
+        default: 'jira-ja.atlassian.net'
+        required: true
+        type: string
+      firstInstall:
+        description: 'First time install'
+        type: boolean
+      forgeEmail:
+        description: 'Atlassian Email id'
+        required: true
+        type: string
+      forgeApiToken:
+        description: 'Atlassian API token'
+        required: true
+        type: string
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    env:
+      CI: ""
+      JIRA_SITE_URL: jira-ja.atlassian.net
+      FORGE_ENV: staging
+      FORGE_EMAIL: ${{ secrets.FORGE_EMAIL }}
+      FORGE_API_TOKEN: ${{ secrets.FORGE_API_TOKEN }}
+      FIRST_INSTALL: "false"
+
+    strategy:
+      matrix:
+        node-version: [18.x]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+        
+    - name: Set env based on branch
+      run: |
+        echo "FORGE_ENV=production" >> $GITHUB_ENV
+      if: startsWith(github.ref, 'refs/heads/master')
+      
+    - name: Override env with user inputs
+      run: |
+        echo "FORGE_ENV=${{ github.event.inputs.environment }}" >> $GITHUB_ENV
+        echo "JIRA_SITE_URL=${{ github.event.inputs.jiraSiteUrl }}" >> $GITHUB_ENV
+        echo "FORGE_EMAIL=${{ github.event.inputs.forgeEmail }}" >> $GITHUB_ENV
+        echo "FORGE_API_TOKEN=${{ github.event.inputs.forgeApiToken }}" >> $GITHUB_ENV
+        echo "FIRST_INSTALL=${{ github.event.inputs.firstInstall }}" >> $GITHUB_ENV
+      if: startsWith(github.event_name, 'workflow_dispatch')
+      
+    - run: echo Installing ${{github.ref}} to ${{env.FORGE_ENV}} of ${{env.JIRA_SITE_URL}}
+    - run: npm install -g @forge/cli@latest
+    - run: forge settings set usage-analytics false
+    - run: forge install -e $FORGE_ENV -s $JIRA_SITE_URL -p Jira --upgrade --confirm-scopes --non-interactive
+      if: ${{ env.FIRST_INSTALL != 'true' }}
+    - run: forge install -e $FORGE_ENV -s $JIRA_SITE_URL -p Jira --confirm-scopes --non-interactive
+      if: ${{ env.FIRST_INSTALL == 'true' }}
+    - run: forge logout
