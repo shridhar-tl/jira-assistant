@@ -191,8 +191,9 @@ function getSprintsSelected(boardId, boards, allSprints) {
 }
 
 async function pullIssuesFromSprint(sprintId, worklogStartDate, worklogEndDate, state) {
-    const { $jira } = inject('JiraService');
-    const { fieldsToFetch } = getFieldsToFetch();
+    const { $jira, $session: { CurrentUser: { epicNameField } } } = inject('JiraService', 'SessionService');
+
+    const { fieldsToFetch } = getFieldsToFetch(state, epicNameField?.id);
     const request = { maxResults: 1000, fields: fieldsToFetch, worklogStartDate, worklogEndDate };
     if (state.jql?.trim()) {
         request.jql = state.jql?.trim();
