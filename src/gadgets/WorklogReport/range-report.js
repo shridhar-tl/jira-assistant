@@ -41,7 +41,7 @@ export function generateRangeReport(setState, getState) {
 }
 
 async function generateWorklogReportForDateRange(fromDate, toDate, state) {
-    const { $session: { CurrentUser: { name, epicNameField } } } = inject('JiraService', 'SessionService');
+    const { $session: { CurrentUser: { name, epicNameField } } } = inject('SessionService');
     const issues = await getIssuesWithWorklogFor(fromDate, toDate, state, epicNameField?.id);
     if (!issues.length) {
         return;

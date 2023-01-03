@@ -80,11 +80,7 @@ const navigation = [
                 id: 'PLP',
                 external: !isPluginBuild,
                 url: getRouteUrl(isWebBuild ? '/../poker' : '/poker'),
-                icon: 'fa fa-gamepad',
-                badge: {
-                    variant: 'success',
-                    text: 'BETA'
-                }
+                icon: 'fa fa-gamepad'
             }
         ].filter(Boolean)
     },
@@ -96,11 +92,7 @@ const navigation = [
                 name: 'Worklog Report',
                 id: 'R-WL',
                 url: '/reports/worklog',
-                icon: 'fa fa-users',
-                badge: {
-                    variant: 'success',
-                    text: 'NEW'
-                }
+                icon: 'fa fa-users'
             },
             worklogReportOld && {
                 name: 'Worklog Report',

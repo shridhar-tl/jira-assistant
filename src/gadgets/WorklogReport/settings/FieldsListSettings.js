@@ -25,6 +25,7 @@ function FieldsListSettings({ setFieldValue, fields }) {
             </div>
             <div className="col-4">
                 <Checkbox checked={showEpic} onChange={setFieldValue} field="showEpic" label="Show Epic" />
+                <span className="pad-l-15"> ( <i className="fa fa-exclamation-triangle" title="Epic data would be visible only if field is selected from General settings -> Default value tab" /> )</span>
             </div>
             <div className="col-4">
                 <Checkbox checked={showAssignee} onChange={setFieldValue} field="showAssignee" label="Show Assignee" />

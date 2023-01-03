@@ -23,7 +23,7 @@ modules:
     - key: ja-worklog-barchart
       title: Worklog Bar Chart
       description: Lets you visualize worklog plotted for individual issues via bar chart
-      thumbnail: https://www.jiraassistant.com/images/gadgets/worklog-calendar.png
+      thumbnail: https://www.jiraassistant.com/images/gadgets/worklog-barchart.png
       resource: main
       edit:
         resource: main

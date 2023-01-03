@@ -112,6 +112,8 @@ async function processOutlookOAuth(code, state) {
 
     if (window.opener) {
         window.opener.postMessage({ type: 'mso_auth', result: !!token }, "*");
+    } else {
+        console.error('Unable to pass back success response. Close this window and refresh Jira Assistant to load settings.');
     }
 
     window.close();
