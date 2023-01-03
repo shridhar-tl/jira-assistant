@@ -3,7 +3,7 @@ import { JAApiBasePath, JAWebRootUrl } from "./urls";
 
 // #region Jira Cloud OAuth2
 export const jiraCloudAuthorizeUrl = 'https://auth.atlassian.com/authorize';
-export const jiraCloudScopes = 'offline_access read:jira-user read:jira-work write:jira-work read:sprint:jira-software';
+export const jiraCloudScopes = 'offline_access read:jira-user read:jira-work write:jira-work read:sprint:jira-software read:issue-details:jira read:jql:jira';
 export const jiraCloudClientId = 'WcuXzz2GICjwK6ZUMSlJwcDbTaIC31B6';
 export const jiraCloudRedirectUrl = `${JAWebRootUrl}?oauth=jc`;
 export const jaJiraTokenExchangeUrl = `${JAApiBasePath}/jira/oauth/token`;

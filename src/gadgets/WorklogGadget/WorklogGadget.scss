@@ -41,6 +41,14 @@ td.day-wl-block {
   }
 }
 
+td.col-holiday {
+  background-color: #d3d3d3 !important;
+
+  &:hover span.add-wl {
+    display: none;
+  }
+}
+
 td .user-info {
     min-height: 42px;
     padding: 5px 15px;
