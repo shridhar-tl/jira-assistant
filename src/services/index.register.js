@@ -19,7 +19,6 @@ import QueueService from './queue-service';
 import ReportService from './report-service';
 import ReportConfigService from './reportconfig-service';
 import SessionService from './session-service';
-import SuggestionService from './suggestion-service';
 import TicketService from './ticket-service';
 import UserService from './user-service';
 import UserGroupService from './usergroups-service';
@@ -69,7 +68,6 @@ export default function registerServices() {
     injectable(ReportConfigService, "ReportConfigService", "$reportConfig");
     injectable(SessionService, "SessionService", "$session");
     injectable(SettingsService, "SettingsService", "$settings", { isSingleton: true });
-    injectable(SuggestionService, "SuggestionService", "$suggestion");
     injectable(TicketService, "TicketService", "$ticket");
     injectable(UserService, "UserService", "$user", { isSingleton: true });
     injectable(UserGroupService, "UserGroupService", "$usergroup");

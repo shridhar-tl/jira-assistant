@@ -11,6 +11,7 @@ const initialData = {
     breakupMode: '1', // combine individual worklogs or not
     userDisplayFormat: '1', // User details display format
     fields: {}, // additional fields to be displayed in report
+    daysToHide: '1', // 1=show all days, 2=hide non working days,3=hide days without worklog
     timeZone: '1',
 
     sprintStartRounding: '1',
@@ -76,6 +77,7 @@ export function getSettingsObj(data) {
         sprintEndRounding,
         userDisplayFormat,
         fields,
+        daysToHide,
         jql,
         logFilterType,
         filterThrsType,
@@ -99,6 +101,7 @@ export function getSettingsObj(data) {
         sprintEndRounding,
         userDisplayFormat,
         fields,
+        daysToHide,
         jql,
         logFilterType,
         filterThrsType,

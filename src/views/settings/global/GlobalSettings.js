@@ -155,8 +155,9 @@ class GlobalSettings extends PureComponent {
                         </TRow>
                         <TRow>
                             <td>Ticket suggestions JQL</td>
-                            {users.map(u => <td key={u.id}><TextBox multiline placeholder={defaultSettings.openTicketsJQL} readOnly={u.id === SystemUserId}
-                                value={u.id === SystemUserId ? defaultSettings.openTicketsJQL : (u.suggestionJQL || "")}
+                            <td>N/A</td>
+                            {intgUsers.map(u => <td key={u.id}><TextBox multiline
+                                placeholder="Provide custom JQL used to filter issues for picker" value={u.suggestionJQL || ''}
                                 args={u} field="suggestionJQL" onChange={this.setValue} disabled={u.deleted} /></td>)}
                         </TRow>
                         {allowJiraUpdates && <TRow>
@@ -208,7 +209,7 @@ class GlobalSettings extends PureComponent {
                     <Button className="pull-right" icon="fa fa-save" label="Save settings" type="success" onClick={this.saveSettings} />
                     <strong>Note:</strong>
                     <br />Changing these settings may cause application stability issues or lose in data. Be cautious with the changes you make.
-                    <br />Some settings would take effect only once you reopen Jira Assistant.
+                    <br />Some settings would take effect only once you refresh/reopen Jira Assistant.
                 </div>
             </div>
         );

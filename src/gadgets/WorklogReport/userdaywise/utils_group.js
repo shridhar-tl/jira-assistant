@@ -84,22 +84,25 @@ export function getUserWiseWorklog(issues, fromDate, toDate, currentUser, state)
     };
 }
 
-function getWeekHeader({ values }) {
-    const days = values.length;
-    let display = '';
-    const { 0: { week, dispFormat, dateNum: first }, [days - 1]: { dateNum: last } } = values;
 
-    if (days > 4) {
-        display = `${dispFormat}, ${first} to ${last} (W-${week})`;
-    } else if (days > 3) {
-        display = `${dispFormat}, ${first}-${last}`;
-    } else if (days > 2) {
-        display = `${dispFormat.split(' ')[0]} (W-${week})`;
-    } else {
-        display = dispFormat.split(' ')[0];
-    }
+export function getWeekHeader(dates) {
+    return dates.groupBy(d => (`${d.month}_${d.week}`)).map(({ values }) => {
+        const days = values.length;
+        let display = '';
+        const { 0: { week, dispFormat, dateNum: first }, [days - 1]: { dateNum: last } } = values;
 
-    return { display, days };
+        if (days > 4) {
+            display = `${dispFormat}, ${first} to ${last} (W-${week})`;
+        } else if (days > 3) {
+            display = `${dispFormat}, ${first}-${last}`;
+        } else if (days > 2) {
+            display = `${dispFormat.split(' ')[0]} (W-${week})`;
+        } else {
+            display = dispFormat.split(' ')[0];
+        }
+
+        return { display, days };
+    });
 }
 
 export function generateUserDayWiseData(data, groups, pageSettings) {
@@ -109,23 +112,28 @@ export function generateUserDayWiseData(data, groups, pageSettings) {
     const minSecsPerDay = (minHours || 8) * 60 * 60;
 
     const { timeZone, fromDate, toDate } = pageSettings;
-    const datesArr = svc.$utils.getDateArray(fromDate, toDate);
 
-    const dates = datesArr.map(d => ({
-        prop: d.format('yyyyMMdd'),
-        date: d,
-        dispFormat: d.format('MMM yyyy').toUpperCase(),
-        month: d.getMonth(),
-        week: moment(d).week(),
-        dayOfWeek: moment(d).day(),
-        day: d.format('DD').toUpperCase(),
-        dateNum: d.getDate(),
-        isHoliday: svc.$userutils.isHoliday(d)
-    }));
-
-    const weeks = dates.groupBy(d => (`${d.month}_${d.week}`)).map(getWeekHeader);
-
-    //const months = datesArr.groupBy((d) => d.dispFormat).map(grp => ({ monthName: grp.key, days: grp.values.length }));
+    // "daysToHide" should not be taken from state
+    // Caller conditionally passes it to disable this option
+    let { dates, daysToHide } = pageSettings;
+    if (!dates) {
+        const datesArr = svc.$utils.getDateArray(fromDate, toDate);
+        dates = datesArr.map(d => ({
+            prop: d.format('yyyyMMdd'),
+            date: d,
+            dispFormat: d.format('MMM yyyy').toUpperCase(),
+            month: d.getMonth(),
+            week: moment(d).week(),
+            dayOfWeek: moment(d).day(),
+            day: d.format('DD').toUpperCase(),
+            dateNum: d.getDate(),
+            isHoliday: svc.$userutils.isHoliday(d)
+        }));
+    } else {
+        // daysToHide should be cleared with data is passed from caller
+        // range report custom group depends on this logic
+        daysToHide = false;
+    }
 
     const timezoneSetting = parseInt(timeZone);
 
@@ -297,6 +305,9 @@ export function generateUserDayWiseData(data, groups, pageSettings) {
             grandTotal += totalHrs;
         }
 
+        // hasWorklogs may be already true if dates passed from caller so maintain it
+        d.hasWorklogs = d.hasWorklogs || totalHrs > 0;
+
         const totalCost = groupedData.sum(u => u.totalCost[d.prop] || 0);
         if (totalCost > 0) {
             grpTotalCost[d.prop] = totalCost;
@@ -309,7 +320,25 @@ export function generateUserDayWiseData(data, groups, pageSettings) {
     groupedData.total = grpTotal;
     groupedData.totalCost = grpTotalCost;
 
-    return { groupedData, weeks, dates };
+    // Remove unnecessary days based on settings
+    dates = filterDaysWithoutWorklog(daysToHide, dates);
+
+    return { groupedData, weeks: getWeekHeader(dates), dates };
+}
+
+export function filterDaysWithoutWorklog(daysToHide, dates) {
+    if (!daysToHide || daysToHide === '1') {
+        return dates;
+    }
+
+    const hideNonWorkingDays = daysToHide === '2',
+        hideDaysWithoutWorklog = daysToHide === '3';
+
+    if (hideNonWorkingDays || hideDaysWithoutWorklog) {
+        return dates.filter(d => d.hasWorklogs || (!hideDaysWithoutWorklog && !d.isHoliday));
+    }
+
+    return dates;
 }
 
 function getLogUserObj(issue, fields, worklog, append, { epicNameField, $userutils }) {

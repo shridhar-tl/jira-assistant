@@ -7,7 +7,7 @@ import { generateFlatWorklogData, getFieldsToFetch } from './utils';
 export function generateSprintReport(setState, getState) {
     return async function () {
         const curState = getState();
-        const { selSprints: sel, sprintStartRounding, sprintEndRounding } = curState;
+        const { selSprints: sel, sprintStartRounding, sprintEndRounding, daysToHide } = curState;
 
         const selBoards = Object.keys(sel).filter(bid => sel[bid]?.selected);
         if (!selBoards.length) { return; }
@@ -37,7 +37,8 @@ export function generateSprintReport(setState, getState) {
 
                     const settings = {
                         fromDate: fromDate.toDate(),
-                        toDate: toDate.toDate()
+                        toDate: toDate.toDate(),
+                        daysToHide
                     };
 
                     if (sprintStartRounding === '2') {
@@ -203,10 +204,11 @@ async function pullIssuesFromSprint(sprintId, worklogStartDate, worklogEndDate, 
     return issues;
 }
 
-function generateSprintGroupReport(sprint, data, settings, { userListMode, userGroups }) {
+function generateSprintGroupReport(sprint, data, settings, state) {
+    const { userListMode, userGroups } = state;
     const groups = userListMode === '2' ? userGroups : generateGroupForSprint(sprint, data, settings);
 
-    const groupReport = generateUserDayWiseData(data, groups, settings);
+    const groupReport = generateUserDayWiseData(data, groups, settings, state);
     const flatWorklogs = generateFlatWorklogData(data, groups, sprint.name);
 
     return { groupReport, flatWorklogs };
