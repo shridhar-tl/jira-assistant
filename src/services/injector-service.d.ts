@@ -25,7 +25,6 @@ import ReportConfigService from './reportconfig-service';
 import SessionService from './session-service';
 import SettingsService from './settings-service';
 import StorageService from './storage-service';
-import SuggestionService from './suggestion-service';
 import TicketService from './ticket-service';
 import UserService from './user-service';
 import UserGroupService from './usergroups-service';
@@ -59,7 +58,6 @@ export interface IServicesList {
     $session: SessionService
     $settings: SettingsService
     $storage: StorageService
-    $suggestion: SuggestionService
     $ticket: TicketService
     $user: UserService
     $usergroup: UserGroupService

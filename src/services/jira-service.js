@@ -415,30 +415,10 @@ export default class JiraService {
             .then((result) => { this.$jaCache.session.set("myOpenTickets", result); return result; });
     }
 
-    getTicketSuggestion(refresh) {
-        const jql = this.$session.CurrentUser.suggestionJQL;
-
-        if (!jql) {
-            return this.getOpenTickets(refresh);
-        }
-        else {
-            if (!refresh) {
-                const value = this.$jaCache.session.get("mySuggestionTickets");
-                if (value) {
-                    return new Promise(resolve => resolve(value));
-                }
-            }
-
-            return this.searchTickets(jql, defaultJiraFields)
-                .then((result) => { this.$jaCache.session.set("mySuggestionTickets", result); return result; });
-        }
-    }
-
     lookupIssues = async (query, options) => {
-        // ToDo: once issue picker in bulk import module is modified to use this picker, this line should be uncommented
-        // const currentJQL = this.$session.CurrentUser.suggestionJQL || '';
+        const currentJQL = this.$session.CurrentUser.suggestionJQL || '';
         const url = prepareUrlWithQueryString(ApiUrls.searchIssueForPicker, {
-            currentJQL: '',
+            currentJQL,
             ...options,
             query
         });
@@ -472,7 +452,20 @@ export default class JiraService {
 
     async searchIssueForPicker(query, options) {
         const result = await this.lookupIssues(query, options);
-        return result[0].issues;
+
+        if (result.length === 1) {
+            return result[0].issues;
+        } else if (result.length > 1) {
+            return result.reduce((all, cur) => {
+                if (!all) {
+                    return cur.issues;
+                } else {
+                    return all.concat(...cur.issues);
+                }
+            }, null);
+        }
+
+        return [];
     }
 
     async searchUsers(text, maxResult = 10, startAt = 0) {

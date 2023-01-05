@@ -563,7 +563,7 @@ export default class TicketService {
     }
 
     async searchIssueForPicker(query) {
-        let issues = await this.$jira.searchIssueForPicker(query);
+        let issues = await this.$jira.searchIssueForPicker(query, { currentJQL: '' });
         if (issues.length > 1) {
             const key = prepareForCompare(query);
             issues = issues.filter(issue => prepareForCompare(issue.key) === key);
