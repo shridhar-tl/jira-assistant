@@ -147,6 +147,7 @@ function formGroupedWorklogs(issues, fromDate, toDate, name, state, userGroups, 
     const settings = {
         fromDate: fromDate.toDate(),
         toDate: toDate.toDate(),
+        timeZone: state.timeZone,
         dates,
         daysToHide: !dates ? state.daysToHide : null
     };

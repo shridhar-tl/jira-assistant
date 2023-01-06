@@ -12,6 +12,7 @@ export function getFieldsToFetch(state, epicNameField) {
         }
 
         if (!hideEstimate) {
+            fieldsToFetch.push("aggregatetimespent");
             fieldsToFetch.push("timeoriginalestimate");
             fieldsToFetch.push("timeestimate");
         }

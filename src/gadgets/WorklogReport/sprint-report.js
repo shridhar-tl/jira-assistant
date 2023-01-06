@@ -7,7 +7,7 @@ import { generateFlatWorklogData, getFieldsToFetch } from './utils';
 export function generateSprintReport(setState, getState) {
     return async function () {
         const curState = getState();
-        const { selSprints: sel, sprintStartRounding, sprintEndRounding, daysToHide } = curState;
+        const { selSprints: sel, sprintStartRounding, sprintEndRounding, daysToHide, timeZone } = curState;
 
         const selBoards = Object.keys(sel).filter(bid => sel[bid]?.selected);
         if (!selBoards.length) { return; }
@@ -38,6 +38,7 @@ export function generateSprintReport(setState, getState) {
                     const settings = {
                         fromDate: fromDate.toDate(),
                         toDate: toDate.toDate(),
+                        timeZone,
                         daysToHide
                     };
 

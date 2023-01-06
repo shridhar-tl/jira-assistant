@@ -71,7 +71,7 @@ export default class WorklogTimerService extends BaseService {
         const timer = await this.getCurrentTimer();
         const startOfDay = moment().startOf('day');
 
-        if (!created || !moment(created).isBetween(startOfDay, new Date())) {
+        if (!created || !moment(created).isBetween(startOfDay, new Date(), undefined, '[]')) {
             created = undefined;
         } else {
             created = created.getTime();
