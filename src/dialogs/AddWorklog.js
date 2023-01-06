@@ -144,7 +144,7 @@ class AddWorklog extends BaseDialog {
         if (this.props.editTracker) {
             const ds = moment(log.dateStarted);
             const startOfDay = moment().startOf('day').toDate();
-            validation = (vald.dateStarted = ds.isValid() && ds.isBetween(startOfDay, new Date())) && validation;
+            validation = (vald.dateStarted = ds.isValid() && ds.isBetween(startOfDay, new Date(), undefined, '[]')) && validation;
         } else {
             validation = (vald.dateStarted = !(!log.dateStarted || log.dateStarted.length < 16)) && validation;
             vald.overrideTimeSpent = (log.allowOverride && log.overrideTimeSpent && log.overrideTimeSpent.length >= 4);

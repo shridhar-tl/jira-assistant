@@ -16,7 +16,7 @@ function getWorklogFilter(fromDate, toDate, state) {
         filterDate = moment(filterDate).endOf('day');
     }
 
-    const isInRange = (worklog) => moment(worklog.started).isBetween(fromDate, toDate);
+    const isInRange = (worklog) => moment(worklog.started).isBetween(fromDate, toDate, undefined, '[]');
 
     if (logFilterType === '1') {
         return isInRange;
@@ -46,7 +46,9 @@ export function getUserWiseWorklog(issues, fromDate, toDate, currentUser, state)
         const fields = issue.fields || {};
         const worklogs = fields.worklog?.worklogs || [];
 
-        const totalLogged = worklogs.sum(wl => wl.timeSpentSeconds);
+        // This cannot be used anymore as for cloud users, worklogs would be filtered and retrived from Jira itself
+        //const totalLogged = worklogs.sum(wl => wl.timeSpentSeconds);
+        const totalLogged = fields.aggregatetimespent || 0;
         const originalestimate = fields.timeoriginalestimate || 0;
         const remainingestimate = fields.timeestimate || 0;
         const estVariance = originalestimate > 0 ? (remainingestimate + totalLogged) - originalestimate : 0;
