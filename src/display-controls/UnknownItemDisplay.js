@@ -25,7 +25,9 @@ class UnknownItemDisplay extends BaseControl {
     }
 
     getTagRenderer(obj, value) {
-        if (obj['value']) {
+        if (typeof obj === 'string') {
+            return (<TagsDisplay value={value} tagProp="" tag="span" />);
+        } else if (obj['value']) {
             return (<TagsDisplay value={value} tagProp="value" tag="span" />);
         }
         else if (obj['name']) {

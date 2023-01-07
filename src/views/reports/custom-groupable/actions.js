@@ -255,7 +255,7 @@ function dynFunction(moreProps, expr, args, addlProps) {
 function postProcessExprOutput(val) {
     if (val instanceof Date) {
         return this.utils.formatDateTime(val);
-    } else if (typeof val === 'object') {
+    } else if (typeof val === 'object' && !Array.isArray(val)) {
         const keys = Object.keys(val);
         // Check if the returned object is a react component
         if (keys.includes('type') && keys.includes('key') && keys.includes('props')) {
