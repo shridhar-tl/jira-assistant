@@ -19,15 +19,13 @@ class AsideUserInfo extends PureComponent {
     }
 
     render() {
-        const { name, emailAddress, imageUrl, login } = this.state;
+        const { name, emailAddress, imageUrl } = this.state;
 
         return (
             <UncontrolledDropdown direction="down">
                 <DropdownToggle tag="div" style={{ cursor: "pointer" }}>
                     <AvatarItem primaryText={name} secondaryText={emailAddress}
-                        avatar={<Avatar src={imageUrl} name={name}
-                            status={`${emailAddress}(${login})`}
-                        />}
+                        avatar={<Avatar src={imageUrl} name={name} presence="" />}
                     />
                 </DropdownToggle>
                 <DropdownMenu end>
