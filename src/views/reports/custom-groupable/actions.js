@@ -197,36 +197,70 @@ function processExpressions(fields) {
         }
 
         try {
-            const val = execAst(f.ast,
-                {
-                    'this': fields[f.exprField],
-                    Fields: fields,
-                    JSON,
-                    Utils: this.utils,
-                    parseInt,
-                    parseFloat,
-                    isNaN,
-                    Math,
-                    Number,
-                    Date
-                });
-
-            fields[f.id] = postProcessExprOutput(val);
+            fields[f.id] = executeAst(f.ast, fields[f.exprField], {
+                Fields: fields,
+                Utils: this.utils
+            });
         } catch (err) {
             fields[f.id] = `Error: ${err?.message || err}`;
         }
     }
 }
 
+function executeAst(ast, thisArg, moreProps) {
+    const val = execAst(ast,
+        {
+            'this': thisArg,
+            ...moreProps,
+            JSON,
+            parseInt,
+            parseFloat,
+            isNaN,
+            Math,
+            Number,
+            Date,
+            func: dynFunction.bind(this, moreProps)
+        });
+
+    return postProcessExprOutput(val);
+}
+
+function dynFunction(moreProps, expr, args, addlProps) {
+    if (!expr) {
+        throw Error('No expression is passed to func. First argument should be an expression');
+    }
+
+    if (args && !Array.isArray(args)) {
+        throw Error('Second argument should be an array of argument names used in expression');
+    }
+
+    if (addlProps && typeof addlProps !== 'object') {
+        throw Error('Third argument should be an object containing all the variables from current scope to be available for expression');
+    }
+
+    const ast = parseCustExpr(expr);
+    addlProps = { ...moreProps, ...addlProps };
+
+    return function () {
+        let props = arguments;
+        props = args.reduce((all, cur, idx) => {
+            all[cur] = props[idx];
+            return all;
+        }, addlProps);
+
+        return executeAst(ast, this, props);
+    };
+}
+
 function postProcessExprOutput(val) {
     if (val instanceof Date) {
         return this.utils.formatDateTime(val);
-    } else if (typeof val === 'object') {
+    } else if (typeof val === 'object' && !Array.isArray(val)) {
         const keys = Object.keys(val);
+        // Check if the returned object is a react component
         if (keys.includes('type') && keys.includes('key') && keys.includes('props')) {
             return val;
-        }
-        else {
+        } else {
             return JSON.stringify(val);
         }
     }
