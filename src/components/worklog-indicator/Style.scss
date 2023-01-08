@@ -1,0 +1,49 @@
+td.log-indi-cntr {
+    position: relative;
+    padding: 0 2px 0 2px !important;
+    text-align: center;
+}
+
+.log-indicator {
+    display: block;
+    height: 5px;
+    width: calc(100% - 4px);
+    border: 1px solid #dfe1e6;
+    border-radius: 2px;
+    position: absolute;
+    bottom: 0;
+    overflow: hidden;
+
+    .prog-bar {
+        height: 100%;
+        width: 100%;
+    }
+}
+
+.log-less {
+    .log-indicator {
+        &.no-value {
+            border-color: orange;
+        }
+
+        .prog-bar {
+            background-color: orange;
+        }
+    }
+}
+
+.log-good {
+    .log-indicator {
+        .prog-bar {
+            background-color: green;
+        }
+    }
+}
+
+.log-high {
+    .log-indicator {
+        .prog-bar {
+            background-color: red;
+        }
+    }
+}

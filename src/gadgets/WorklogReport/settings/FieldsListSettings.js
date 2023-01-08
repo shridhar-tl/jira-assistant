@@ -3,9 +3,9 @@ import Checkbox from '../../../controls/Checkbox';
 
 function FieldsListSettings({ setFieldValue, fields }) {
     const {
-        showCostReport, showProject, showAssignee,
-        showParentSummary, showIssueType, showEpic,
-        showReporter, hideEstimate
+        showCostReport, showProject, showParentSummary,
+        showIssueType, showEpic, showStatus,
+        showAssignee, showReporter, hideEstimate
     } = fields;
 
     return (<div className="settings-group">
@@ -26,6 +26,9 @@ function FieldsListSettings({ setFieldValue, fields }) {
             <div className="col-4">
                 <Checkbox checked={showEpic} onChange={setFieldValue} field="showEpic" label="Show Epic" />
                 <span className="pad-l-15"> ( <i className="fa fa-exclamation-triangle" title="Epic data would be visible only if field is selected from General settings -> Default value tab" /> )</span>
+            </div>
+            <div className="col-4">
+                <Checkbox checked={showStatus} onChange={setFieldValue} field="showStatus" label="Show Status" />
             </div>
             <div className="col-4">
                 <Checkbox checked={showAssignee} onChange={setFieldValue} field="showAssignee" label="Show Assignee" />

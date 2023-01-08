@@ -6,13 +6,13 @@ import GroupRow from './GroupRow';
 
 function GroupBody({ boardId, isSprint,
     groupedData, addlColCount, sprintsList,
-    logFormat, costView
+    logFormat, costView, rIndicator
 }) {
     const timeExportFormat = logFormat === "2" ? "float" : undefined;
     const groupRows = groupedData.map((grp, i) => <GroupRow key={i} index={i} boardId={boardId}
         colSpan={addlColCount} group={grp} timeExportFormat={timeExportFormat} costView={costView} />);
 
-    return (<TBody>
+    return (<TBody className={rIndicator !== '2' ? 'no-log-bg-hl' : ''}>
         {groupRows}
 
         {groupedData.length > 1 && <tr className="grouped-row right auto-wrap">
@@ -30,26 +30,28 @@ export default connect(GroupBody,
             const {
                 [`userGroup_${boardId}`]: groupedData,
                 [`sprintsList_${boardId}`]: sprintsList,
-                logFormat, costView
+                logFormat, costView, rIndicator
             } = state;
 
-            return ({ isSprint, sprintsList, groupedData, logFormat, costView });
+            return ({ isSprint, sprintsList, groupedData, logFormat, costView, rIndicator });
         } else {
-            const { groupReport: { groupedData }, logFormat, costView } = state;
+            const { groupReport: { groupedData }, logFormat, costView, rIndicator } = state;
 
-            return ({ groupedData, logFormat, costView });
+            return ({ groupedData, logFormat, costView, rIndicator });
         }
     });
 
 const GroupTotalCells = connect(function ({ groupedData, dates, timeExportFormat, costView, convertSecs }) {
     if (costView) {
         return (<>
-            {dates.map((day, i) => <td key={i} exportType="float">{groupedData.totalCost[day.prop]}</td>)}
+            {dates.map((day, i) => <td key={i} className={day.isHoliday ? (!groupedData.totalCost[day.prop] ? 'col-holiday' : 'log-high') : ''}
+                exportType="float">{groupedData.totalCost[day.prop]}</td>)}
             <td exportType="float">{groupedData.grandTotalCost}</td>
         </>);
     } else {
         return (<>
-            {dates.map((day, i) => <td key={i} exportType={timeExportFormat}>{convertSecs(groupedData.total[day.prop])}</td>)}
+            {dates.map((day, i) => <td key={i} className={day.isHoliday ? (!groupedData.total[day.prop] ? 'col-holiday' : 'log-high') : ''}
+                exportType={timeExportFormat}>{convertSecs(groupedData.total[day.prop])}</td>)}
             <td exportType={timeExportFormat}>{convertSecs(groupedData.grandTotal)}</td>
         </>);
     }

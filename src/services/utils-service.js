@@ -68,6 +68,8 @@ export default class UtilsService {
             const secsDiff = this.getTotalSecs(d.difference);
             if (secsDiff > 0) { classNames += "log-high "; }
             else if (secsDiff < 0) { classNames += "log-less "; }
+        } else if (d.difference === 0) {
+            classNames += "log-good ";
         }
         return classNames;
     }

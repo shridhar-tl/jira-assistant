@@ -3,6 +3,7 @@ import { getUserName } from '../../../common/utils';
 import { connect } from '../datastore';
 import { addWorklog, convertSecs } from '../actions';
 import TicketRow from './TicketRow';
+import Indicator from '../../../components/worklog-indicator';
 
 function getImageUrl(user) { return user.imageUrl || user.avatarUrls['48x48'] || user.avatarUrls['32x32']; }
 
@@ -11,7 +12,11 @@ function UserRow({
     timeExportFormat, convertSecs, addWorklog
 }) {
     const [expanded, setExpanded] = useState(false);
-    const toggleDisplay = useCallback(() => setExpanded(e => !e), [setExpanded]);
+    const toggleDisplay = useCallback((e) => {
+        if (!e.nativeEvent.srcElement.classList.contains('add-wl')) {
+            setExpanded(e => !e);
+        }
+    }, [setExpanded]);
 
     const addNewWorklog = useCallback((ticketNo, day) => {
         const { date, prop } = day;
@@ -68,7 +73,7 @@ export default connect(UserRow,
 
 const UserDatesDisplay = connect(function ({
     costView, dates, user: u,
-    timeExportFormat, addNewWorklog, convertSecs
+    timeExportFormat, addNewWorklog, convertSecs, maxHours, rIndicator
 }) {
     if (costView) {
         return (<>{dates.map((day, i) => <td key={i} className={`${u.logClass[day.prop]} day-wl-block`}
@@ -77,17 +82,19 @@ const UserDatesDisplay = connect(function ({
     } else {
         return (<>{dates.map((day, i) => <td key={i} className={`${u.logClass[day.prop]} day-wl-block`} exportType={timeExportFormat} data-test-id={day.prop}>
             {u.isCurrentUser && <span className="fa fa-clock-o add-wl" title="Click to add worklog" onClick={() => addNewWorklog(null, day)} />}
-            {convertSecs(u.total[day.prop])}</td>)}
+            {convertSecs(u.total[day.prop])}
+            {rIndicator === '1' && <Indicator value={u.total[day.prop]} maxHours={maxHours} />}
+        </td>)}
             <td exportType={timeExportFormat} data-test-id="total">{convertSecs(u.grandTotal)}</td></>);
     }
 }, (state, { sprintId, groupIndex, uid }) => {
     const { costView, timeframeType,
         [timeframeType === '1' ? `groupReport_${sprintId}` : 'groupReport']:
-        { dates, groupedData: group }
+        { dates, groupedData: group }, maxHours, rIndicator
     } = state;
 
     return {
-        costView, dates, group,
+        costView, dates, group, maxHours, rIndicator,
         user: group[groupIndex].usersMap[uid] || { logClass: {}, total: {}, totalCost: {} }
     };
 });

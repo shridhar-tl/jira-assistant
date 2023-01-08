@@ -1,5 +1,5 @@
 import React from 'react';
-import Link from '../../../controls/Link';
+import { Image, Link } from '../../../controls';
 import { connect } from '../datastore';
 
 function TicketRow({
@@ -7,7 +7,7 @@ function TicketRow({
     timeExportFormat, convertSecs, formatTime, addNewWorklog,
     fields: {
         hideEstimate, showProject, showParentSummary, showIssueType,
-        showEpic, showAssignee, showReporter
+        showStatus, showEpic, showAssignee, showReporter
     }
 }) {
     return (
@@ -16,7 +16,8 @@ function TicketRow({
 
             {!!showProject && <td>{t.projectKey} - {t.projectName}</td>}
             {!!showParentSummary && <td>{t.parent && <Link href={t.parentUrl} className="link">{t.parent}</Link>} - {t.parentSummary}</td>}
-            {!!showIssueType && <td>{t.issueType}</td>}
+            {!!showIssueType && <td><Image src={t.iconUrl} title={t.issueType} /> {t.issueType}</td>}
+            {!!showStatus && <td>{t.statusName}</td>}
             {!!showEpic && <td>{t.epicDisplay && <Link href={t.epicUrl} className="link">{t.epicDisplay}</Link>}</td>}
             {!!showAssignee && <td>{t.assignee}</td>}
             {!!showReporter && <td>{t.reporter}</td>}
@@ -96,10 +97,12 @@ function IssueInfo({ issue: t, showParentSummary, hideEstimate, convertSecs }) {
     const estTitle = `Original Estimate: ${oe || 0}\nRemaining: ${re || 0}\nTotal Logged: ${logged}\nEstimate Variance: ${variance}`;
 
     return (<td className="data-left">
-        {!showParentSummary && t.parent && <Link href={t.parentUrl} className="link">{t.parent} - </Link>}
-        <Link href={t.url} className="link">{t.ticketNo}</Link> -
-        <span>{t.summary}</span>
-        <strong> ({t.statusName})</strong>
+        <div className="wl-ticket-detail" title={t.summary}>
+            <Image src={t.iconUrl} title={t.issueType} />
+            {!showParentSummary && t.parent && <Link href={t.parentUrl} className="link">{t.parent} - </Link>}
+            <Link href={t.url} className="link">{t.ticketNo}</Link> -
+            <span>{t.summary}</span>
+        </div>
         {!hideEstimate && !!(oe || re) && <span className="estimate" title={estTitle}>
             (est: {oe || 0} / rem: {re || 0} / log: {logged} / var: {variance})</span>}
     </td>);
@@ -110,6 +113,7 @@ function IssueLog({
     getComments, addNewWorklog, formatTime, convertSecs
 }) {
     const { logs = {} } = t;
+    const logTime = logs[day.prop];
 
     function getLogEntries(entries) {
         if (Array.isArray(entries) && entries.length > 0) {
@@ -118,11 +122,11 @@ function IssueLog({
         }
     }
 
-    return (<td className="day-wl-block" exportType={timeExportFormat} data-test-id={day.prop}>
+    return (<td className={`day-wl-block${day.isHoliday ? (!logTime?.length ? ' col-holiday' : ' log-high') : ''}`} exportType={timeExportFormat} data-test-id={day.prop}>
         {u?.isCurrentUser && <span className="fa fa-clock-o add-wl" title="Click to add worklog"
             onClick={() => addNewWorklog(t.ticketNo, day)} />}
-        {breakupMode !== '2' && <span title={getComments(logs[day.prop])}>{convertSecs(getTotalTime(logs[day.prop]))}</span>}
-        {breakupMode === '2' && <div> {getLogEntries(logs[day.prop])}</div>}
+        {breakupMode !== '2' && <span title={getComments(logTime)}>{convertSecs(getTotalTime(logTime))}</span>}
+        {breakupMode === '2' && <div> {getLogEntries(logTime)}</div>}
     </td>);
 }
 

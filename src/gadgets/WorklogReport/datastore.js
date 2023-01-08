@@ -12,6 +12,7 @@ const initialData = {
     userDisplayFormat: '1', // User details display format
     fields: {}, // additional fields to be displayed in report
     daysToHide: '1', // 1=show all days, 2=hide non working days,3=hide days without worklog
+    rIndicator: '1', // 1=thermometer, 2=bg highlight,0=none
     timeZone: '1',
 
     sprintStartRounding: '1',
@@ -78,6 +79,7 @@ export function getSettingsObj(data) {
         userDisplayFormat,
         fields,
         daysToHide,
+        rIndicator,
         jql,
         logFilterType,
         filterThrsType,
@@ -102,6 +104,7 @@ export function getSettingsObj(data) {
         userDisplayFormat,
         fields,
         daysToHide,
+        rIndicator,
         jql,
         logFilterType,
         filterThrsType,
