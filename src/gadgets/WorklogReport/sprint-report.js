@@ -1,7 +1,7 @@
 import moment from 'moment';
 import { getUserName } from '../../common/utils';
 import { inject } from "../../services/injector-service";
-import { generateUserDayWiseData, getUserWiseWorklog } from './userdaywise/utils_group';
+import { generateUserDayWiseData, getEpicDetails, getUserWiseWorklog } from './userdaywise/utils_group';
 import { generateFlatWorklogData, getFieldsToFetch } from './utils';
 
 export function generateSprintReport(setState, getState) {
@@ -58,12 +58,13 @@ export function generateSprintReport(setState, getState) {
                         settings.toDate = moment(new Date(nextSprintStart)).add(-1, 'seconds').toDate();
                     }
 
-                    const issuesList = await pullIssuesFromSprint(id, settings.fromDate, settings.toDate, curState);
+                    const { issues: issuesList, epicDetails } = await pullIssuesFromSprint(id, settings.fromDate, settings.toDate, curState);
                     if (!issuesList.length) {
                         newState[`groupReport_${id}`] = null;
                         continue;
                     }
-                    const { userwiseLog, userwiseLogArr } = getUserWiseWorklog(issuesList, moment(settings.fromDate), moment(settings.toDate), name?.toLowerCase(), curState);
+
+                    const { userwiseLog, userwiseLogArr } = getUserWiseWorklog(issuesList, moment(settings.fromDate), moment(settings.toDate), name?.toLowerCase(), curState, epicDetails);
 
                     const { groupReport, flatWorklogs } = generateSprintGroupReport(sprint, userwiseLog, settings, curState);
                     flatWorklogs_board.addRange(flatWorklogs);
@@ -202,7 +203,9 @@ async function pullIssuesFromSprint(sprintId, worklogStartDate, worklogEndDate, 
     }
     const issues = await $jira.getSprintIssues(sprintId, request);
 
-    return issues;
+    const epicDetails = issues.length > 0 && await getEpicDetails(issues, epicNameField?.id);
+
+    return { issues, epicDetails };
 }
 
 function generateSprintGroupReport(sprint, data, settings, state) {

@@ -2,8 +2,9 @@ import React from 'react';
 import { TabPanel, TabView } from 'primereact/tabview';
 import GroupedDataGrid from './userdaywise/GroupedDataGrid';
 import { connect } from './datastore';
-import './WorklogGadget.scss';
 import FlatGroupableWorklog from './FlatGroupableWorklog';
+import Visualization from './visualization';
+import './WorklogGadget.scss';
 
 const loader = (<div className="pad-15">Loading... please wait while the report is being loaded.
     It may take few seconds / minute based on the range/filters you had selected.</div>);
@@ -51,6 +52,9 @@ const ReportData = connect(function ({ boardId, hasData, showCostReport }) {
         </TabPanel>}
         <TabPanel header="Flat (Groupable)" contentClassName="no-padding">
             <FlatGroupableWorklog exportSheetName="Flat (Groupable)" boardId={boardId} />
+        </TabPanel>
+        <TabPanel header="Visualization" contentClassName="no-padding">
+            <Visualization exportSheetName="Visualization" boardId={boardId} />
         </TabPanel>
     </TabView>);
 }, (state, { boardId }) => {

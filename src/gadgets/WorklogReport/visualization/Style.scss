@@ -1,0 +1,34 @@
+.worklog-visualization-tab {
+    overflow-y: auto;
+    overflow-x: hidden;
+    height: calc(100vh - 122px);
+
+    .group-wise-charts {
+        padding: 10px;
+
+        h3 {
+            font-size: 18px;
+            font-weight: bolder;
+            padding-top: 0px;
+            padding-bottom: 30px;
+            text-align: center;
+        }
+
+        &:not(:first-child) {
+            h3 {
+                padding-top: 20px;
+            }
+        }
+
+        .chart-container {
+            height: 350px;
+            width: 100%;
+
+            .p-chart {
+                position: relative;
+                width: calc(100% - 5px);
+                height: 100%;
+            }
+        }
+    }
+}
