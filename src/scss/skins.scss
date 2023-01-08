@@ -402,19 +402,22 @@
     border-color: #000;
   }
 
-  td.log-good,
-  tr.log-good {
-    background-color: #0f300f !important; // $background-color +#0f300f !important;
-  }
+  tbody:not(.no-log-bg-hl) {
 
-  td.log-less,
-  tr.log-less {
-    background-color: #969640 !important; // $background-color + #9b9b53 !important;
-  }
+    td.log-good,
+    tr.log-good {
+      background-color: #0f300f !important; // $background-color +#0f300f !important;
+    }
 
-  td.log-high,
-  tr.log-high {
-    background-color: #804740 !important; // $background-color + #804740 !important;
+    td.log-less,
+    tr.log-less {
+      background-color: #969640 !important; // $background-color + #9b9b53 !important;
+    }
+
+    td.log-high,
+    tr.log-high {
+      background-color: #804740 !important; // $background-color + #804740 !important;
+    }
   }
 
   td.col-holiday {

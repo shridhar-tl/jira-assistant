@@ -51,11 +51,13 @@ td.day-wl-block {
   }
 }
 
-td.col-holiday {
-  background-color: #ffc481 !important;
+tbody:not(.no-log-bg-hl) {
+  td.col-holiday {
+    background-color: #ffe7d2 !important;
 
-  &:hover span.add-wl {
-    display: none;
+    &:hover span.add-wl {
+      display: none;
+    }
   }
 }
 

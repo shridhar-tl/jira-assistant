@@ -4,10 +4,12 @@ import Link from "../../controls/Link";
 import { getQuickDateValue } from "../../controls/DatePicker";
 import { useService } from "../../services/injector-service";
 import Loader from "./Loader";
+import Indicator from "../worklog-indicator";
 
 const Control = function ({ lastUpdated, showContext, editWorklog, settings, setLoader }) {
     const [worklogs, setData] = useState(false);
-    const { $worklog, $utils, $userutils } = useService('WorklogService', 'UtilsService', 'UserUtilsService');
+    const { $worklog, $utils, $userutils, $session: { CurrentUser: { maxHours: max } } } = useService('WorklogService', 'UtilsService', 'UserUtilsService', 'SessionService');
+    const maxHours = (max || 8) * 60 * 60;
 
     useEffect(() => {
         (async () => {
@@ -56,10 +58,13 @@ const Control = function ({ lastUpdated, showContext, editWorklog, settings, set
                 <Column>Ticket List</Column>
             </tr>
         </THead>
-        <TBody>
+        <TBody className="no-log-bg-hl">
             {(b) => <tr key={b.dateLogged} onContextMenu={showContext ? (e) => showContext(e, b) : undefined} className={b.rowClass}>
                 <td>{$userutils.formatDate(b.dateLogged)}</td>
-                <td>{$utils.formatTs(b.totalHours)}</td>
+                <td className="log-indi-cntr">
+                    {$utils.formatTs(b.totalHours)}
+                    {b.totalSecs > 0 && <Indicator value={b.totalSecs} maxHours={maxHours} />}
+                </td>
                 <td>{$utils.formatTs(b.uploaded)}</td>
                 <td>{$utils.formatTs(b.pendingUpload)}</td>
                 <td>

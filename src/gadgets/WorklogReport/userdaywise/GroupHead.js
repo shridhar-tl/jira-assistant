@@ -3,7 +3,7 @@ import { THead } from '../../../components/ScrollableTable';
 import { connect } from '../datastore';
 
 function GroupHead({ useSprint, sprintsList, addlColCount, costView, fields }) {
-    const { showProject, showParentSummary, showIssueType, showEpic, showAssignee, showReporter } = fields || {};
+    const { showProject, showParentSummary, showIssueType, showStatus, showEpic, showAssignee, showReporter } = fields || {};
 
     return (<THead>
         <tr className="data-center pad-min auto-wrap">
@@ -21,6 +21,7 @@ function GroupHead({ useSprint, sprintsList, addlColCount, costView, fields }) {
             {!!showProject && <th>Project</th>}
             {!!showParentSummary && <th>Parent Summary</th>}
             {!!showIssueType && <th>Issuetype</th>}
+            {!!showStatus && <th>Status</th>}
             {!!showEpic && <th>Epic</th>}
             {!!showAssignee && <th>Assignee</th>}
             {!!showReporter && <th>Reporter</th>}

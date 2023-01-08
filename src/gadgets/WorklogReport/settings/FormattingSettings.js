@@ -1,7 +1,7 @@
 import React from 'react';
 import { renderRadioButton } from './actions';
 
-function FormattingSettings({ setValue, state: { logFormat, breakupMode, timeZone, userDisplayFormat, daysToHide } }) {
+function FormattingSettings({ setValue, state: { logFormat, breakupMode, timeZone, userDisplayFormat, daysToHide, rIndicator } }) {
     return (<div className="settings-group">
         <div className="form-group row">
             <label className="col-md-3 col-form-label">Log hour format</label>
@@ -96,6 +96,29 @@ function FormattingSettings({ setValue, state: { logFormat, breakupMode, timeZon
                     <label className="form-check-label">
                         {renderRadioButton('daysToHide', '3', daysToHide, setValue)}
                         Hide all days without worklog
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div className="form-group row">
+            <label className="col-md-3 col-form-label">Range indicator</label>
+            <div className="col-md-9 col-form-label">
+                <div className="form-check">
+                    <label className="form-check-label">
+                        {renderRadioButton('rIndicator', '1', rIndicator, setValue)}
+                        Show thermometer as indicator
+                    </label>
+                </div>
+                <div className="form-check">
+                    <label className="form-check-label">
+                        {renderRadioButton('rIndicator', '2', rIndicator, setValue)}
+                        Highlight background as indicator
+                    </label>
+                </div>
+                <div className="form-check">
+                    <label className="form-check-label">
+                        {renderRadioButton('rIndicator', '0', rIndicator, setValue)}
+                        Do not show any indicator
                     </label>
                 </div>
             </div>

@@ -69,6 +69,7 @@ export default class WorklogService extends BaseService {
                                     comment: worklog.comment,
                                     totalHours: `${parseInt((mins / 60).toString()).pad(2)}:${parseInt((mins % 60).toString()).pad(2)}`,
                                     totalMins: mins,
+                                    totalSecs: worklog.timeSpentSeconds,
                                     worklogId: worklog.id
                                 });
                             }
@@ -220,6 +221,7 @@ export default class WorklogService extends BaseService {
                 id: DummyWLId,
                 isUploaded: true,
                 timeSpent: ld.totalHours,
+                totalSecs: ld.totalSecs,
                 totalMins: ld.totalMins,
                 ticketNo: ld.ticketNo,
                 worklogId: ld.worklogId
@@ -234,7 +236,8 @@ export default class WorklogService extends BaseService {
                 const getTotalSecs = this.$utils.getTotalSecs;
                 pending.forEach(wl => {
                     const timeSpent = wl.overrideTimeSpent || wl.timeSpent;
-                    wl.totalMins = getTotalSecs(timeSpent) / 60;
+                    wl.totalSecs = getTotalSecs(timeSpent);
+                    wl.totalMins = wl.totalSecs / 60;
                 });
 
                 wls[1].forEach(w => {
@@ -427,6 +430,7 @@ export default class WorklogService extends BaseService {
                     uploaded: $values.filter((d) => d.isUploaded).sum(t => this.getTimeSpent(t)) * 60 * 1000,
                     pendingUpload: $values.filter((d) => !d.isUploaded).sum(tkt => this.getTimeSpent(tkt)) * 60 * 1000,
                     totalHours: $values.sum(t => this.getTimeSpent(t)) * 60 * 1000,
+                    totalSecs: $values.sum('totalSecs'),
                     ticketList: $values.map((d) => ({ id: d.id, ticketNo: d.ticketNo, uploaded: (d.overrideTimeSpent || d.timeSpent), comment: d.description, worklogId: d.worklogId }))
                 };
             }).filter(Boolean).orderByDescending((l) => l.key);
