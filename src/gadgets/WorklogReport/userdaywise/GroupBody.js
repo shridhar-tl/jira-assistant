@@ -44,12 +44,14 @@ export default connect(GroupBody,
 const GroupTotalCells = connect(function ({ groupedData, dates, timeExportFormat, costView, convertSecs }) {
     if (costView) {
         return (<>
-            {dates.map((day, i) => <td key={i} exportType="float">{groupedData.totalCost[day.prop]}</td>)}
+            {dates.map((day, i) => <td key={i} className={day.isHoliday ? (!groupedData.totalCost[day.prop] ? 'col-holiday' : 'log-high') : ''}
+                exportType="float">{groupedData.totalCost[day.prop]}</td>)}
             <td exportType="float">{groupedData.grandTotalCost}</td>
         </>);
     } else {
         return (<>
-            {dates.map((day, i) => <td key={i} exportType={timeExportFormat}>{convertSecs(groupedData.total[day.prop])}</td>)}
+            {dates.map((day, i) => <td key={i} className={day.isHoliday ? (!groupedData.total[day.prop] ? 'col-holiday' : 'log-high') : ''}
+                exportType={timeExportFormat}>{convertSecs(groupedData.total[day.prop])}</td>)}
             <td exportType={timeExportFormat}>{convertSecs(groupedData.grandTotal)}</td>
         </>);
     }

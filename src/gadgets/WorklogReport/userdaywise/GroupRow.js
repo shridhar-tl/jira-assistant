@@ -64,13 +64,15 @@ const DayWiseCells = connect(function ({
 }) {
     if (costView) {
         return (<>
-            {dates.map((day, i) => <td key={i} exportType="float">{grp.totalCost[day.prop]}</td>)}
+            {dates.map((day, i) => <td key={i} className={day.isHoliday ? (!grp.totalCost[day.prop] ? 'col-holiday' : 'log-high') : ''}
+                exportType="float">{grp.totalCost[day.prop]}</td>)}
             <td exportType="float">{grp.grandTotalCost}</td>
         </>);
 
     } else {
         return (<>
-            {dates.map((day, i) => <td key={i} exportType={timeExportFormat}>{convertSecs(grp.total[day.prop])}</td>)}
+            {dates.map((day, i) => <td key={i} className={day.isHoliday ? (!grp.total[day.prop] ? 'col-holiday' : 'log-high') : ''}
+                exportType={timeExportFormat}>{convertSecs(grp.total[day.prop])}</td>)}
             <td exportType={timeExportFormat}>{convertSecs(grp.grandTotal)}</td>
         </>);
     }
