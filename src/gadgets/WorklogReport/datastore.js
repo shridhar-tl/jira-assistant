@@ -5,7 +5,7 @@ const initialData = {
     userListMode: '2', // 1=all logged users, 2=users from group
     timeframeType: '2', // 1=Sprint wise, 2=daterange wise
     userGroups: [], // user groups for date range
-    reportUserGrp: '1', // 1=no grouping, 2=group users by project
+    reportUserGrp: '1', // 1=no grouping, 2=group users by project, 3=issuetype, 4=epic
     dateRange: {}, // user selected date range
     logFormat: '1', // worklog display format
     breakupMode: '1', // combine individual worklogs or not

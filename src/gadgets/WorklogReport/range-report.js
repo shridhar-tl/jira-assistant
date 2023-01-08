@@ -1,7 +1,7 @@
 import moment from "moment";
 import { getUserName } from "../../common/utils";
 import { inject } from "../../services/injector-service";
-import { filterDaysWithoutWorklog, generateUserDayWiseData, getUserWiseWorklog, getWeekHeader } from "./userdaywise/utils_group";
+import { filterDaysWithoutWorklog, generateUserDayWiseData, getEpicDetails, getUserWiseWorklog, getWeekHeader } from "./userdaywise/utils_group";
 import { generateFlatWorklogData, getFieldsToFetch } from "./utils";
 
 /* eslint-disable no-unused-vars */
@@ -46,6 +46,9 @@ async function generateWorklogReportForDateRange(fromDate, toDate, state) {
     if (!issues.length) {
         return;
     }
+
+    const epicDetails = await getEpicDetails(issues, epicNameField?.id);
+
     const { userListMode, userGroups: savedGroups, reportUserGrp } = state;
     const useGroups = userListMode !== '1';
     if (!useGroups && reportUserGrp !== '1') {
@@ -59,7 +62,7 @@ async function generateWorklogReportForDateRange(fromDate, toDate, state) {
                 const {
                     flatWorklogs: flatData,
                     groupReport: { dates, groupedData: g }
-                } = formGroupedWorklogs(issues, fromDate, toDate, name?.toLowerCase(), state, useGroups && savedGroups, obj.dates);
+                } = formGroupedWorklogs(issues, fromDate, toDate, name?.toLowerCase(), state, useGroups && savedGroups, epicDetails, obj.dates, grpName);
 
                 obj.dates = dates;
 
@@ -92,7 +95,7 @@ async function generateWorklogReportForDateRange(fromDate, toDate, state) {
 
         return { flatWorklogs, groupReport };
     } else {
-        return formGroupedWorklogs(issues, fromDate, toDate, name?.toLowerCase(), state, useGroups && savedGroups);
+        return formGroupedWorklogs(issues, fromDate, toDate, name?.toLowerCase(), state, useGroups && savedGroups, epicDetails);
     }
 }
 
@@ -138,10 +141,10 @@ function sumAndMergeObjectProps(obj1, obj2) {
     }
 }
 
-function formGroupedWorklogs(issues, fromDate, toDate, name, state, userGroups, dates) {
-    const { userwiseLog, userwiseLogArr } = getUserWiseWorklog(issues, fromDate, toDate, name, state);
+function formGroupedWorklogs(issues, fromDate, toDate, name, state, userGroups, epicDetails, dates, grpName) {
+    const { userwiseLog, userwiseLogArr } = getUserWiseWorklog(issues, fromDate, toDate, name, state, epicDetails);
     if (!userGroups) {
-        userGroups = [createGroupObjectWithUsers(userwiseLogArr)];
+        userGroups = [createGroupObjectWithUsers(userwiseLogArr, grpName)];
     }
 
     const settings = {
@@ -158,14 +161,16 @@ function formGroupedWorklogs(issues, fromDate, toDate, name, state, userGroups, 
     return { groupReport, flatWorklogs };
 }
 
-function createGroupObjectWithUsers(users) {
+// Set as empty as it would look odd in chart headers
+const noGroupName = '';
+function createGroupObjectWithUsers(users, name) {
     const result = users.reduce((obj, u) => {
         obj.totalHours += (u.totalHours || 0);
         obj.totalCost += (u.totalCost || 0);
         return obj;
     }, { totalHours: 0, totalCost: 0 });
 
-    return { isDummy: true, name: '<No group name>', users, ...result };
+    return { isDummy: true, name: name || noGroupName, users, ...result };
 }
 
 function getUniqueUsersFromGroup(state) {

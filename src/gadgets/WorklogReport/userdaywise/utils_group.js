@@ -35,10 +35,27 @@ function getWorklogFilter(fromDate, toDate, state) {
     }
 }
 
-export function getUserWiseWorklog(issues, fromDate, toDate, currentUser, state) {
+export async function getEpicDetails(issues, epicNameField) {
+    if (epicNameField) {
+        const { $ticket, $message } = inject('MessageService', 'TicketService');
+        try {
+            const epicKeys = issues.distinct(({ fields: { [epicNameField]: epic } }) => epic).filter(Boolean);
+            const epicList = await $ticket.getTicketDetails(epicKeys, false, ['summary', 'issuetype']);
+
+            return epicList;
+        } catch (err) {
+            $message.error('Epic fetch failed', `Error Message: ${err.message}`);
+
+            return {};
+        }
+    }
+}
+
+export function getUserWiseWorklog(issues, fromDate, toDate, currentUser, state, epicDetails) {
     const svc = inject('UserUtilsService', 'SessionService');
     const epicNameField = svc.$session.CurrentUser.epicNameField?.id;
-    const options = { epicNameField, ...svc };
+    const options = { epicNameField, epicDetails, ...svc };
+
     const isWorklogInRange = getWorklogFilter(fromDate, toDate, state);
     const report = {};
 
@@ -343,7 +360,7 @@ export function filterDaysWithoutWorklog(daysToHide, dates) {
     return dates;
 }
 
-function getLogUserObj(issue, fields, worklog, append, { epicNameField, $userutils }) {
+function getLogUserObj(issue, fields, worklog, append, { epicNameField, epicDetails, $userutils }) {
     const obj = {
         ticketNo: issue.key,
         epicDisplay: null,
@@ -367,10 +384,18 @@ function getLogUserObj(issue, fields, worklog, append, { epicNameField, $useruti
     };
 
     if (epicNameField) {
-        obj.epicDisplay = fields[epicNameField];
-        const key = obj.ticketNo.split('-')[0];
-        if (obj.epicDisplay && obj.epicDisplay.indexOf(`${key}-`) === 0) {
-            obj.epicUrl = $userutils.getTicketUrl(obj.epicDisplay);
+        const epicKey = fields[epicNameField];
+        if (typeof epicKey === 'string' && epicKey.includes(`-`)) {
+            obj.epicKey = epicKey;
+            const epicDetail = epicDetails[epicKey];
+            if (epicDetail?.fields) {
+                const { key, fields: { summary, issuetype: { iconUrl } } } = epicDetail;
+                obj.epicDisplay = `${key} - ${summary}`;
+                obj.epicIcon = iconUrl;
+            }
+            obj.epicUrl = $userutils.getTicketUrl(epicKey);
+        } else {
+            obj.epicDisplay = epicKey;
         }
     }
 
