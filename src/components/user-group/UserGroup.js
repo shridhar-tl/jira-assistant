@@ -47,7 +47,18 @@ class UserGroup extends PureComponent {
         else {
             const newGroup = { name: groupName, timeZone: '', users: [], isJiraGroup: !!groupId, id: groupId };
             if (newGroup.isJiraGroup) {
-                await this.$usergroup.fillJiraGroupMembers([newGroup]);
+                try {
+                    await this.$usergroup.fillJiraGroupMembers([newGroup]);
+                } catch (err) {
+                    console.error('Error fetching user list from group:', err);
+                    if (err.status === 403) {
+                        this.$message.error('You do not have required privilege to pull user list from group', 'Unauthorized Access');
+                    } else {
+                        const message = err.error?.errorMessages?.[0] || 'Unable to pull user list from group. Look at console log for more details';
+                        this.$message.error(message, 'Unknown error');
+                    }
+                    return;
+                }
             } else {
                 delete newGroup.isJiraGroup;
                 delete newGroup.id;

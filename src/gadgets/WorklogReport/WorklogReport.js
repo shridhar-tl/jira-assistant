@@ -83,12 +83,13 @@ export default withProvider(WorklogReport,
     null,
     async () => {
         const { $session, $usergroup } = inject('SessionService', 'ConfigService', 'UserGroupService');
-        let { maxHours } = $session.CurrentUser;
-        maxHours = (maxHours || 8) * 60 * 60;
+        const { maxHours: maxHrs, projects, epicNameField } = $session.CurrentUser;
+
+        const maxHours = (maxHrs || 8) * 60 * 60;
 
         const settings = getSettingsObj($session.pageSettings.reports_WorklogReport);
         const addl = getSprintsList(settings);
 
         const userGroups = await $usergroup.getUserGroups();
-        return { userGroups, ...settings, ...addl, maxHours };
+        return { userGroups, ...settings, ...addl, maxHours, projects, epicField: epicNameField?.id };
     });

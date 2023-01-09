@@ -4,7 +4,6 @@ import { inject } from "../../services/injector-service";
 import { filterDaysWithoutWorklog, generateUserDayWiseData, getEpicDetails, getUserWiseWorklog, getWeekHeader } from "./userdaywise/utils_group";
 import { generateFlatWorklogData, getFieldsToFetch } from "./utils";
 
-/* eslint-disable no-unused-vars */
 export function generateRangeReport(setState, getState) {
     return async function () {
         const newState = { loadingData: false };
@@ -33,7 +32,9 @@ export function generateRangeReport(setState, getState) {
         } catch (err) {
             console.error('Error pulling range report', err);
             const { $message } = inject('MessageService');
-            $message.error(`Error Details:- ${err.message}`, 'Unknown error');
+
+            const msg = err.message || err.error?.errorMessages?.[0] || 'Unknown error. Check the console for more details';
+            $message.error(msg, 'Unknown error');
         } finally {
             setState(newState);
         }
@@ -50,9 +51,9 @@ async function generateWorklogReportForDateRange(fromDate, toDate, state) {
     const epicDetails = await getEpicDetails(issues, epicNameField?.id);
 
     const { userListMode, userGroups: savedGroups, reportUserGrp } = state;
-    const useGroups = userListMode !== '1';
+    const useGroups = userListMode === '2' && reportUserGrp === '1';
     if (!useGroups && reportUserGrp !== '1') {
-        const { groupByFunc, getGroupName } = getGroupingFunction(reportUserGrp, epicNameField?.id);
+        const { groupByFunc, getGroupName } = getGroupingFunction(reportUserGrp, epicNameField?.id, epicDetails);
 
         const flatWorklogs = [];
         const groupReport = issues.groupBy(groupByFunc)
@@ -99,7 +100,7 @@ async function generateWorklogReportForDateRange(fromDate, toDate, state) {
     }
 }
 
-function getGroupingFunction(reportUserGrp, epicNameField) {
+function getGroupingFunction(reportUserGrp, epicNameField, epicDetails) {
     if (reportUserGrp === '3') { // group by issuetype
         return {
             getGroupName: (issues) => {
@@ -112,7 +113,10 @@ function getGroupingFunction(reportUserGrp, epicNameField) {
         return {
             getGroupName: (issues) => {
                 const epic = issues[0].fields[epicNameField];
-                return epic || '<No epic assigned>';
+                const summary = epic && epicDetails?.[epic]?.fields.summary;
+                const display = summary ? `${epic} - ${summary}` : epic;
+
+                return display || '<Issues without epic>';
             },
             groupByFunc: issue => issue.fields[epicNameField]
         };
@@ -175,7 +179,7 @@ function createGroupObjectWithUsers(users, name) {
 
 function getUniqueUsersFromGroup(state) {
     const { userGroups, userListMode } = state;
-    if (userListMode === '1') { return null; }
+    if (userListMode !== '2' && userListMode !== '4') { return; }
 
     const userList = userGroups.union(grps => {
         grps.users.forEach(gu => gu.groupName = grps.name);
@@ -191,8 +195,33 @@ async function getIssuesWithWorklogFor(fromDate, toDate, state, epicNameField) {
     const { fieldsToFetch, additionalJQL } = getFieldsToFetch(state, epicNameField);
 
     const userList = getUniqueUsersFromGroup(state);
-    const author = userList ? `worklogAuthor in ("${userList.join('","')}") and ` : '';
-    const jql = `${author}worklogDate >= '${fromDate.clone().add(-1, 'days').format("YYYY-MM-DD")}' and worklogDate < '${toDate.clone().add(1, 'days').format("YYYY-MM-DD")}'${additionalJQL}`;
+    const projectKeys = getProjectKeys(state);
+
+    // When we receive empty array, it means user has configured to use these values
+    // So when items are missing, do not pull any issues
+    if (userList?.length === 0 || projectKeys?.length === 0) {
+        console.error('Not pulling worklogs as either user or project is not selected');
+        return [];
+    }
+
+    const authorJQL = userList ? `worklogAuthor in ("${userList.join('","')}")` : '';
+    const projectJQL = projectKeys ? `project in ("${projectKeys.join('","')}")` : '';
+    const settJQL = (authorJQL || projectJQL) ? `(${authorJQL}${(authorJQL && projectJQL) ? ' OR ' : ''}${projectJQL}) AND ` : '';
+
+    const dateJQL = `(worklogDate >= '${fromDate.clone().add(-1, 'days').format("YYYY-MM-DD")}' and worklogDate < '${toDate.clone().add(1, 'days').format("YYYY-MM-DD")}') `;
+    const jql = `${settJQL}${dateJQL}${additionalJQL}`;
 
     return await svc.$jira.searchTickets(jql, fieldsToFetch, 0, { worklogStartDate: fromDate.toDate(), worklogEndDate: toDate.toDate() });
+}
+
+function getProjectKeys({ projects, userListMode }) {
+    if (userListMode !== '3' && userListMode !== '4') {
+        return;
+    }
+
+    if (!Array.isArray(projects)) {
+        return;
+    }
+
+    return projects.map(({ key }) => key).distinct().filter(Boolean);
 }

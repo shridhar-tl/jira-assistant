@@ -33,7 +33,7 @@ class MenuOptionsTab extends TabControlBase {
     fillMenus() {
         const menus = [];
         const launchAct = this.state.settings.launchAction;
-        const selMenus = launchAct.selectedMenu || ['D-0', 'R-UD', 'R-SP', 'R-CG', 'CAL', 'S-GE'];
+        const selMenus = launchAct.selectedMenu || ['D-0', 'R-WL', 'R-SP', 'R-CG', 'CAL', 'S-GE'];
 
         const dashboards = this.$dashboard.getDashboards();
         const dashboardMenus = [];
