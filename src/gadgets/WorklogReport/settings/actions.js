@@ -10,7 +10,8 @@ export function dateSelected(setState) {
     };
 }
 
-export function renderRadioButton(field, value, currentValue, setValue) {
+export function renderRadioButton(field, value, currentValue, setValue, moreProps) {
     return (<input type="radio" className="form-check-input" name={field}
-        checked={currentValue === value} onChange={() => setValue(field, value)} />);
+        checked={currentValue === value} onChange={() => setValue(field, value)}
+        {...moreProps} />);
 }

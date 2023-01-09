@@ -2,8 +2,14 @@ import React, { useCallback, useState } from 'react';
 import RapidViewList from '../../../components/RapidViewList';
 import { renderRadioButton } from './actions';
 
+const msgProjTimeFrame = 'Not applicable when timeframe below is selected as Sprint or when no default project is configured';
+
 function DataSourceSettings({ setValue, setBoards, state }) {
-    const { userListMode, timeframeType, sprintBoards } = state;
+    const { userListMode, timeframeType, sprintBoards, projects } = state;
+
+    const disableProjects = timeframeType === '1' || !projects?.length;
+    const alertProjTimeFrame = disableProjects && (<span
+        className="fa fa-exclamation-triangle msg-warning margin-l-5" title={msgProjTimeFrame} />);
 
     return (<div className="settings-group">
         <div className="form-group row">
@@ -21,6 +27,18 @@ function DataSourceSettings({ setValue, setBoards, state }) {
                         Show only selected users
                     </label>
                 </div>
+                <div className="form-check">
+                    <label className="form-check-label">
+                        {renderRadioButton('userListMode', '3', userListMode, setValue, { disabled: disableProjects })}
+                        Show all users logged work on configured projects {alertProjTimeFrame}
+                    </label>
+                </div>
+                <div className="form-check">
+                    <label className="form-check-label">
+                        {renderRadioButton('userListMode', '4', userListMode, setValue, { disabled: disableProjects })}
+                        Show selected users and all worklogs on configured projects {alertProjTimeFrame}
+                    </label>
+                </div>
             </div>
         </div>
         <div className="form-group row">
@@ -28,8 +46,10 @@ function DataSourceSettings({ setValue, setBoards, state }) {
             <div className="col-md-9 col-form-label">
                 <div className="form-check">
                     <label className="form-check-label">
-                        {renderRadioButton('timeframeType', '1', timeframeType, setValue)}
+                        {renderRadioButton('timeframeType', '1', timeframeType, setValue, { disabled: userListMode === '3' || userListMode === '4' })}
                         Based on specific sprint
+                        {(userListMode === '3' || userListMode === '4') && <span className="fa fa-exclamation-triangle msg-warning margin-l-5"
+                            title="Not applicable based on User List selection above" />}
                     </label>
                 </div>
                 <div className="form-check">
@@ -42,7 +62,7 @@ function DataSourceSettings({ setValue, setBoards, state }) {
         </div>
         {timeframeType === '1' && <SprintListComponent sprintBoards={sprintBoards} setBoards={setBoards} />}
         {timeframeType === '1' && <SprintAdditionalOptions state={state} setValue={setValue} />}
-        {userListMode === '1' && timeframeType === '2' && <ReportGrouping state={state} setValue={setValue} />}
+        {timeframeType === '2' && <ReportGrouping state={state} setValue={setValue} userListMode={userListMode} />}
     </div>);
 }
 
@@ -57,15 +77,15 @@ const SprintListComponent = React.memo(function ({ setBoards, sprintBoards }) {
     </div>);
 });
 
-function ReportGrouping({ setValue, state: { reportUserGrp, jql } }) {
+function ReportGrouping({ setValue, state: { epicField, reportUserGrp, jql }, userListMode }) {
     return (<>
         <div className="form-group row">
-            <label className="col-md-3 col-form-label">Worklogs grouping</label>
+            <label className="col-md-3 col-form-label">Users worklog grouping</label>
             <div className="col-md-9 col-form-label">
                 <div className="form-check">
                     <label className="form-check-label">
                         {renderRadioButton('reportUserGrp', '1', reportUserGrp, setValue)}
-                        Do not group worklogs
+                        {userListMode === '2' ? 'Use default user groups' : 'Do not group worklogs'}
                     </label>
                 </div>
                 <div className="form-check">
@@ -82,16 +102,18 @@ function ReportGrouping({ setValue, state: { reportUserGrp, jql } }) {
                 </div>
                 <div className="form-check">
                     <label className="form-check-label">
-                        {renderRadioButton('reportUserGrp', '4', reportUserGrp, setValue)}
-                        Group by Epic (JIRA Epic field name must be configured in general settings)
+                        {renderRadioButton('reportUserGrp', '4', reportUserGrp, setValue, { disabled: !epicField })}
+                        Group by Epic {!epicField && <span
+                            className="fa fa-exclamation-triangle msg-warning margin-l-5"
+                            title="JIRA Epic field name must be configured in general settings -> default values tab" />}
                     </label>
                 </div>
             </div>
         </div>
-        <div className="col-md-12">
+        {userListMode === '1' && <div className="col-md-12">
             <strong>Caution:</strong> Pulling worklogs of all the users on a specific timerange could result in pulling huge data and cause performance issues.
             {(jql ? "Ensure you have necessary filters in JQL." : "Use JQL to add additional filters as necessary.")}
-        </div>
+        </div>}
     </>);
 }
 
