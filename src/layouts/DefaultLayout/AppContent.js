@@ -9,21 +9,23 @@ class AppContent extends PureComponent {
     render() {
         return (
             <DndProvider backend={HTML5Backend}>
-                <Suspense fallback={this.props.loader()}>
-                    <Routes>
-                        {routes.map((route, idx) => {
-                            const Component = withRouter(route.component);
-                            return (
-                                <Route
-                                    key={idx}
-                                    path={route.path}
-                                    exact={route.exact || false}
-                                    name={route.name}
-                                    element={<Component />} />
-                            );
-                        })}
-                    </Routes>
-                </Suspense>
+                <div className="container-fluid">
+                    <Suspense fallback={this.props.loader()}>
+                        <Routes>
+                            {routes.map((route, idx) => {
+                                const Component = withRouter(route.component);
+                                return (
+                                    <Route
+                                        key={idx}
+                                        path={route.path}
+                                        exact={route.exact || false}
+                                        name={route.name}
+                                        element={<Component />} />
+                                );
+                            })}
+                        </Routes>
+                    </Suspense>
+                </div>
             </DndProvider>
         );
     }

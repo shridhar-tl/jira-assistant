@@ -6,7 +6,6 @@
     height: calc(100vh - 43px);
 }
 
-/* Commented on 02-Jan-2023 on v2.45 when reactstrap Container is removed
 .main {
     .container-fluid {
         padding: 0 0;
@@ -14,7 +13,7 @@
         overflow-y: auto;
         overflow-x: hidden;
     }
-}*/
+}
 
 body.quick-view {
     div#root {
