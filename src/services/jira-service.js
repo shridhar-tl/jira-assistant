@@ -420,7 +420,8 @@ export default class JiraService {
         const url = prepareUrlWithQueryString(ApiUrls.searchIssueForPicker, {
             currentJQL,
             ...options,
-            query
+            query,
+            showSubTasks: true
         });
 
         const { sections } = await this.$ajax.get(url);
