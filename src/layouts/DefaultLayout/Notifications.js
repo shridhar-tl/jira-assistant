@@ -17,7 +17,7 @@ class Notifications extends PureComponent {
         let message = msg.message;
         let styles = null;
         if (msg.type === "versionInfo") {
-            styles = { width: "600px" };
+            styles = { width: '90vw', maxWidth: '1000px' };
             message = <UpdatesInfo updates={this.state.updates_info} />;
         } else {
             message = <TextParser message={message} />;

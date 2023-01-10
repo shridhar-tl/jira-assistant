@@ -1,7 +1,7 @@
 import React from 'react';
 import Checkbox from '../../../controls/Checkbox';
 
-function FieldsListSettings({ setFieldValue, fields }) {
+function FieldsListSettings({ setFieldValue, fields, epicField }) {
     const {
         showCostReport, showProject, showParentSummary,
         showIssueType, showEpic, showStatus,
@@ -24,8 +24,8 @@ function FieldsListSettings({ setFieldValue, fields }) {
                 <Checkbox checked={showIssueType} onChange={setFieldValue} field="showIssueType" label="Show Issue Type" />
             </div>
             <div className="col-4">
-                <Checkbox checked={showEpic} onChange={setFieldValue} field="showEpic" label="Show Epic" />
-                <span className="pad-l-15"> ( <i className="fa fa-exclamation-triangle" title="Epic data would be visible only if field is selected from General settings -> Default value tab" /> )</span>
+                <Checkbox checked={showEpic} onChange={setFieldValue} field="showEpic" label="Show Epic" disabled={!epicField} />
+                {!epicField && <span className="pad-l-15"> ( <i className="fa fa-exclamation-triangle" title="Epic data would be visible only if field is selected from General settings -> Default value tab" /> )</span>}
             </div>
             <div className="col-4">
                 <Checkbox checked={showStatus} onChange={setFieldValue} field="showStatus" label="Show Status" />

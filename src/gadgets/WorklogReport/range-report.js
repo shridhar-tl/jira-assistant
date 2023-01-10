@@ -177,22 +177,13 @@ function createGroupObjectWithUsers(users, name) {
     return { isDummy: true, name: name || noGroupName, users, ...result };
 }
 
-function getUniqueUsersFromGroup(state) {
-    const { userGroups, userListMode } = state;
-    if (userListMode !== '2' && userListMode !== '4') { return; }
-
-    const userList = userGroups.union(grps => {
-        grps.users.forEach(gu => gu.groupName = grps.name);
-        return grps.users;
-    });
-
-    return userList.map(u => getUserName(u, true)).distinct();
-}
-
 async function getIssuesWithWorklogFor(fromDate, toDate, state, epicNameField) {
     const svc = inject('JiraService');
 
-    const { fieldsToFetch, additionalJQL } = getFieldsToFetch(state, epicNameField);
+    const { fieldsToFetch, additionalJQL } = getFieldsToFetch(state, epicNameField, {
+        projects: getProjectKeys(state, true),
+        users: getUniqueUsersFromGroup(state, true)
+    });
 
     const userList = getUniqueUsersFromGroup(state);
     const projectKeys = getProjectKeys(state);
@@ -214,8 +205,8 @@ async function getIssuesWithWorklogFor(fromDate, toDate, state, epicNameField) {
     return await svc.$jira.searchTickets(jql, fieldsToFetch, 0, { worklogStartDate: fromDate.toDate(), worklogEndDate: toDate.toDate() });
 }
 
-function getProjectKeys({ projects, userListMode }) {
-    if (userListMode !== '3' && userListMode !== '4') {
+function getProjectKeys({ projects, userListMode }, ignoreSettings) {
+    if (!ignoreSettings && userListMode !== '3' && userListMode !== '4') {
         return;
     }
 
@@ -224,4 +215,16 @@ function getProjectKeys({ projects, userListMode }) {
     }
 
     return projects.map(({ key }) => key).distinct().filter(Boolean);
+}
+
+function getUniqueUsersFromGroup(state, ignoreSettings) {
+    const { userGroups, userListMode } = state;
+    if (!ignoreSettings && userListMode !== '2' && userListMode !== '4') { return; }
+
+    const userList = userGroups.union(grps => {
+        grps.users.forEach(gu => gu.groupName = grps.name);
+        return grps.users;
+    });
+
+    return userList.map(u => getUserName(u, true)).distinct();
 }
