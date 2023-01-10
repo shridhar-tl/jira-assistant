@@ -1,6 +1,7 @@
-import React, { useCallback, useState } from 'react';
+import React, { useState } from 'react';
 import RapidViewList from '../../../components/RapidViewList';
 import { renderRadioButton } from './actions';
+import { ShowMoreLink } from './Common';
 
 const msgProjTimeFrame = 'Not applicable when timeframe below is selected as Sprint or when no default project is configured';
 
@@ -119,13 +120,9 @@ function ReportGrouping({ setValue, state: { epicField, reportUserGrp, jql }, us
 
 const SprintAdditionalOptions = React.memo(function ({ setValue, state: { sprintStartRounding, sprintEndRounding } }) {
     const [showMore, setShowMore] = useState(false);
-    const toggleMore = useCallback(() => setShowMore(!showMore), [showMore, setShowMore]);
 
     return (<>
-        <div onClick={toggleMore} className="show-more-link">
-            <span className={showMore ? 'fa fa-caret-down' : 'fa fa-caret-right'} />
-            <span className="link">{showMore ? 'Hide options' : 'Show more options'}</span>
-        </div>
+        <ShowMoreLink showMore={showMore} setShowMore={setShowMore} />
         {showMore && <div className="form-group row">
             <label className="col-md-3 col-form-label">Sprint start date rounding</label>
             <div className="col-md-9 col-form-label">

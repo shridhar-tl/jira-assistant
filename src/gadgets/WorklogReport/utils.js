@@ -1,13 +1,17 @@
 import { getUserName } from "../../common/utils";
 import { inject } from "../../services/injector-service";
 
-export function getFieldsToFetch(state, epicNameField) {
+export function getFieldsToFetch(state, epicNameField, options) {
     const fieldsToFetch = ["summary", "worklog", "issuetype", "parent", "project", "status", "assignee", "reporter"];
 
     if (state) {
         const hideEstimate = state.fields.hideEstimate;
         let additionalJQL = state.jql?.trim() || '';
         if (additionalJQL) {
+            const { projects, users } = options || {};
+            additionalJQL = additionalJQL
+                .replace(/\$selectedProjects\$|\$selProjects\$/gi, `"${projects?.join('", "') || ''}"`)
+                .replace(/\$selectedUsers\$|\$selUsers\$/gi, `"${users?.join('", "') || ''}"`);
             additionalJQL = ` AND (${additionalJQL})`;
         }
 

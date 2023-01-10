@@ -63,7 +63,7 @@ class DefaultHeader extends PureComponent {
     const updates = this.state.notifications?.updates_info;
     if (!updates) { return; }
 
-    Dialog.alert(<UpdatesInfo updates={updates} />, "Updates info", { width: "600px" }).then();
+    Dialog.alert(<UpdatesInfo updates={updates} />, "Updates info", { width: '90vw', maxWidth: '1000px' }).then();
   };
 
   render() {

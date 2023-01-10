@@ -14,6 +14,7 @@ import './Settings.scss';
 class Settings extends BaseDialog {
     constructor(props) {
         super(props, "Report configurations");
+        this.style = { width: "85vw", maxWidth: '900px' };
         inject(this, "ConfigService");
         this.className = "no-padding";
         this.state = { showDialog: true, modifiedSettings: {}, allSettings: props.settings };
@@ -109,7 +110,7 @@ class Settings extends BaseDialog {
                     <FormattingSettings state={allSettings} setValue={setValue} />
                 </TabPanel>
                 <TabPanel header="Fields list" leftIcon="fa fa-cog" contentClassName="pad-22">
-                    <FieldsListSettings fields={allSettings.fields} setFieldValue={setFieldValue} />
+                    <FieldsListSettings fields={allSettings.fields} setFieldValue={setFieldValue} epicField={allSettings.epicField} />
                 </TabPanel>
                 <TabPanel header="Log filter" leftIcon="fa fa-filter" contentClassName="pad-22">
                     <LogFilterSettings state={allSettings} setValue={setValue} />
