@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import moment from 'moment';
 import { calcCostPerSecs, getUserName, viewIssueUrl } from "../../../common/utils";
 import { inject } from '../../../services/injector-service';

@@ -60,9 +60,11 @@ class DialogConfig {
     }
 
     custom(message, title, footer, styles, dialogId = 'dlg-custom') {
+        /*
+        Commented this line as html is handled in CommonDialog class
         if (message && typeof message === "string") {
             message = message.replace(/\n/g, "<br />");
-        }
+        }*/
         const then = ((confirm, cancel) => {
             const whenHide = () => {
                 this.hide();
