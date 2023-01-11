@@ -47,9 +47,11 @@ body .p-component {
     width: 100%;
 }
 
+.daterangepicker,
 .p-autocomplete-panel,
 .p-datepicker,
-.p-dropdown-panel {
+.p-dropdown-panel,
+.p-colorpicker-panel {
     z-index: 9999 !important;
 }
 

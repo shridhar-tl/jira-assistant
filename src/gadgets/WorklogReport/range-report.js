@@ -1,8 +1,7 @@
 import moment from "moment";
-import { getUserName } from "../../common/utils";
 import { inject } from "../../services/injector-service";
 import { filterDaysWithoutWorklog, generateUserDayWiseData, getEpicDetails, getUserWiseWorklog, getWeekHeader } from "./userdaywise/utils_group";
-import { generateFlatWorklogData, getFieldsToFetch } from "./utils";
+import { generateFlatWorklogData, getFieldsToFetch, getProjectKeys, getUniqueUsersFromGroup } from "./utils";
 
 export function generateRangeReport(setState, getState) {
     return async function () {
@@ -203,28 +202,4 @@ async function getIssuesWithWorklogFor(fromDate, toDate, state, epicNameField) {
     const jql = `${settJQL}${dateJQL}${additionalJQL}`;
 
     return await svc.$jira.searchTickets(jql, fieldsToFetch, 0, { worklogStartDate: fromDate.toDate(), worklogEndDate: toDate.toDate() });
-}
-
-function getProjectKeys({ projects, userListMode }, ignoreSettings) {
-    if (!ignoreSettings && userListMode !== '3' && userListMode !== '4') {
-        return;
-    }
-
-    if (!Array.isArray(projects)) {
-        return;
-    }
-
-    return projects.map(({ key }) => key).distinct().filter(Boolean);
-}
-
-function getUniqueUsersFromGroup(state, ignoreSettings) {
-    const { userGroups, userListMode } = state;
-    if (!ignoreSettings && userListMode !== '2' && userListMode !== '4') { return; }
-
-    const userList = userGroups.union(grps => {
-        grps.users.forEach(gu => gu.groupName = grps.name);
-        return grps.users;
-    });
-
-    return userList.map(u => getUserName(u, true)).distinct();
 }

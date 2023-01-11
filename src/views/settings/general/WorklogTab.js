@@ -15,7 +15,7 @@ class WorklogTab extends TabControlBase {
         return (
             <div className="ui-g ui-fluid">
                 <div className="form-label ui-g-12 ui-md-3 ui-lg-3 ui-xl-2">
-                    <strong>Min & Max hours to log</strong>
+                    <strong>Min & Max hours to log (HH:mm)</strong>
                 </div>
                 <div className="ui-g-12 ui-md-9 ui-lg-9 ui-xl-10">
                     <div className="form-group">
@@ -28,7 +28,7 @@ class WorklogTab extends TabControlBase {
                     </div>
                 </div>
                 <div className="form-label ui-g-12 ui-md-3 ui-lg-3 ui-xl-2">
-                    <strong>Default time spent</strong>
+                    <strong>Default time spent (hh:mm)</strong>
                 </div>
                 <div className="ui-g-12 ui-md-9 ui-lg-9 ui-xl-10">
                     <div className="form-group">

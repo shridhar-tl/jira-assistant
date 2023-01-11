@@ -1,5 +1,6 @@
 /* Input text */
-.p-inputtext {
+input.p-inputtext,
+textarea.p-inputtext {
     padding: 0.25rem 0.5rem;
 }
 
@@ -39,13 +40,6 @@
         margin-top: 0px;
         margin-left: 0px;
     }
-}
-
-.daterangepicker,
-.p-autocomplete-panel,
-.p-datepicker,
-.p-dropdown-panel {
-    z-index: 10001 !important;
 }
 
 .react-bootstrap-daterangepicker-container {

@@ -72,3 +72,27 @@ function getFlatMapper(usr, groupName, sprintName) {
         comment: log.comment
     });
 }
+
+export function getProjectKeys({ projects, userListMode }, ignoreSettings) {
+    if (!ignoreSettings && userListMode !== '3' && userListMode !== '4') {
+        return;
+    }
+
+    if (!Array.isArray(projects)) {
+        return;
+    }
+
+    return projects.map(({ key }) => key?.toUpperCase()).distinct().filter(Boolean);
+}
+
+export function getUniqueUsersFromGroup(state, ignoreSettings) {
+    const { userGroups, userListMode } = state;
+    if (!ignoreSettings && userListMode !== '2' && userListMode !== '4') { return; }
+
+    const userList = userGroups.union(grps => {
+        grps.users.forEach(gu => gu.groupName = grps.name);
+        return grps.users;
+    });
+
+    return userList.map(u => getUserName(u, true)).distinct();
+}
