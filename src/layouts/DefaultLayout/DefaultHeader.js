@@ -20,8 +20,11 @@ import TimerControl from './header/TimerControl';
 import { isAppBuild, isPluginBuild, isWebBuild } from '../../constants/build-info';
 import config from '../../customize';
 import ShareWithOthers from './header/ShareWithOthers';
-import './DefaultHeader.scss';
 import Link from '../../controls/Link';
+import moment from 'moment';
+import { Button } from '../../controls';
+import { SettingsCategory } from '../../constants/settings';
+import './DefaultHeader.scss';
 
 const allowWebVersion = config.features.common.allowWebVersion !== false;
 
@@ -34,7 +37,7 @@ const siteUrl = showShareOption ? WebSiteUrl : undefined;
 class DefaultHeader extends PureComponent {
   constructor(props) {
     super(props);
-    inject(this, "AppBrowserService", "SessionService", "NotificationService", "AnalyticsService");
+    inject(this, "AppBrowserService", "SessionService", "NotificationService", "AnalyticsService", "SettingsService");
     const cUser = this.$session.CurrentUser;
     this.disableNotification = !config.features?.header?.devUpdates || cUser.disableDevNotification;
     this.disableJiraUpdates = config.features?.header?.jiraUpdates === false || cUser.disableJiraUpdates;
@@ -52,6 +55,51 @@ class DefaultHeader extends PureComponent {
 
     if (this.$session.CurrentUser.hideDonateMenu) { // When this settings is changed, below class will be removed from body in settings page
       document.body.classList.add('no-donation');
+    }
+
+    this.validateTimezone();
+  }
+
+  async validateTimezone() {
+    const ignoreTimezone = await this.$settings.getSetting(this.userId, SettingsCategory.General, 'ignoreTimezone');
+    if (ignoreTimezone) {
+      return;
+    }
+
+    const systemTimezone = moment.tz.guess(true);
+    const jiraTimeZone = this.$session.CurrentUser.jiraUser.timeZone;
+
+    const now = moment.utc();
+    const systemOffset = moment.tz.zone(systemTimezone).offset(now);
+    const jiraOffset = moment.tz.zone(jiraTimeZone).offset(now);
+
+    const getOffsetForDisplay = (value) => {
+      const isNegative = value > 0; // Should show negative if value is possitive
+      value = Math.abs(value);
+      if (!value) { return 'GMT'; }
+      value = parseFloat((value / 60).toFixed(2));
+      return `GMT ${isNegative ? '-' : '+'} ${value} hours`;
+    };
+
+    if (systemOffset !== jiraOffset) {
+      const footer = (confirm, cancel) => <>
+        <Button type="danger" icon="fa fa-times" label="Ok, Do not check again" onClick={confirm} waitFor={5} />
+        <Button type="success" icon="fa fa-check" label="Ok, I will update Jira profile" onClick={cancel} />
+      </>;
+
+      Dialog.custom(
+        <span>Your system timezone mismatches with Jira profile timezone.
+          This would cause differences in date or time while worklog is being pulled.
+          Ensure you update your Jira profile to match with your local timezone. <br /><br />
+          <strong>
+            Jira Profile Timezone: {jiraTimeZone} ({getOffsetForDisplay(jiraOffset)})<br />
+            Your System Timezone: {systemTimezone} ({getOffsetForDisplay(systemOffset)})
+          </strong><br /><br />
+          Any worklogs you already added directly from within Jira would continue to remain
+          same and new worklogs would start using new timezone.<br /><br />
+        </span>
+        , 'Timezone mismatch', footer, { maxWidth: '80vw', width: '700px' }, 'dlgTimezoneDiff')
+        .then(() => this.$settings.saveSetting(this.userId, SettingsCategory.General, 'ignoreTimezone', true));
     }
   }
 
