@@ -2,7 +2,7 @@ import moment from "moment";
 import createStore from "../../common/store";
 
 const initialData = {
-    userListMode: '2', // 1=all logged users, 2=users from group
+    userListMode: '2', // 1=all logged users, 2=users from group, 3= from project, 4=from user and project
     timeframeType: '2', // 1=Sprint wise, 2=daterange wise
     userGroups: [], // user groups for date range
     reportUserGrp: '1', // 1=no grouping, 2=group users by project, 3=issuetype, 4=epic

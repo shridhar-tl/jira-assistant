@@ -1,6 +1,8 @@
+/* eslint-disable no-unused-vars */
 import moment from 'moment';
 import { calcCostPerSecs, getUserName, viewIssueUrl } from "../../../common/utils";
 import { inject } from '../../../services/injector-service';
+import { getProjectKeys, getUniqueUsersFromGroup } from '../utils';
 
 function getWorklogFilter(fromDate, toDate, state) {
     const { logFilterType, filterThrsType, filterDays, wlDateSelection } = state;
@@ -92,6 +94,37 @@ export function getUserWiseWorklog(issues, fromDate, toDate, currentUser, state,
             reportUser.logData.push(log);
         });
     });
+
+    // When worklog has to be pulled based on user only, remove user who is not part of the usergroup
+    // but pulled as some other users have logged work in same issue
+    if (state.userListMode === '2') {
+        const users = getUniqueUsersFromGroup(state);
+        Object.keys(report).forEach(uid => {
+            if (!users.includes(uid)) {
+                delete report[uid];
+            }
+        });
+    }
+    // When user and project has to be pulled, remove user who is not part of the usergroup
+    // but pulled as some other users have logged work in same issue
+    else if (state.userListMode === '4') {
+        const projectKeys = getProjectKeys(state);
+        const users = getUniqueUsersFromGroup(state);
+
+        const usersInReportNotSelected = Object.keys(report).filter(u => !users.includes(u));
+        usersInReportNotSelected.forEach(uid => {
+            const reportUser = report[uid];
+
+            let { logData } = reportUser;
+            logData = logData.filter(t => projectKeys.includes(t.projectKey?.toUpperCase()));
+
+            if (logData.length) {
+                reportUser.logData = logData;
+            } else {
+                delete report[uid];
+            }
+        });
+    }
 
     return {
         userwiseLog: report,
