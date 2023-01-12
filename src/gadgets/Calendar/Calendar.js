@@ -762,16 +762,17 @@ class Calendar extends BaseGadget {
 
     eventResize(e) {
         const { event } = e;
-        this.$worklog.changeWorklogTS(event.extendedProps.sourceObject, this.getEventDuration(event)).then((entry) => {
+        this.$worklog.changeWorklogTS(event.extendedProps.sourceObject, this.getEventDuration(event, true)).then((entry) => {
             this.addEvent({ edited: entry });
             this.$analytics.trackEvent("Worklog resized", EventCategory.UserActions, event.extendedProps.sourceObject.isUploaded ? "Uploaded worklog" : "Pending worklog");
             //this.updateAllDayEvent(event);
         });
     }
 
-    getEventDuration(event) {
+    getEventDuration(event, snap) {
         if (event.end && event.start) {
-            const diff = moment.duration(moment(event.end).diff(event.start));
+            const newTime = snap ? snapTimeToGrid(snapMinutes, event.end) : event.end;
+            const diff = moment.duration(moment(newTime).diff(event.start));
             return `${diff.hours().pad(2)}:${diff.minutes().pad(2)}`;
         }
         else if (event.extendedProps.sourceObject) {

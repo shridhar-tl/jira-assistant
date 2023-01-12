@@ -83,13 +83,23 @@ export default withProvider(WorklogReport,
     null,
     async () => {
         const { $session, $usergroup } = inject('SessionService', 'ConfigService', 'UserGroupService');
-        const { maxHours: maxHrs, projects, epicNameField } = $session.CurrentUser;
+        const { maxHours: maxHrs, projects, epicNameField, rapidViews: sprintBoardsFromSettings } = $session.CurrentUser;
 
         const maxHours = (maxHrs || 8) * 60 * 60;
 
         const settings = getSettingsObj($session.pageSettings.reports_WorklogReport);
+
+        if (sprintBoardsFromSettings?.length && !settings.sprintBoards?.length) {
+            settings.sprintBoards = sprintBoardsFromSettings;
+        }
+
         const addl = getSprintsList(settings);
 
         const userGroups = await $usergroup.getUserGroups();
-        return { userGroups, ...settings, ...addl, maxHours, projects, epicField: epicNameField?.id };
+
+        return {
+            userGroups, ...settings, ...addl, maxHours,
+            projects, epicField: epicNameField?.id,
+            sprintBoardsFromSettings // This field is used for comparison when saving local settings
+        };
     });

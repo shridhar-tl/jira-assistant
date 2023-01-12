@@ -32,7 +32,7 @@ class GroupFooter extends PureComponent {
     render() {
         const {
             endAdd, addNewGroup, setGroupName, toggleJiraGroup,
-            props: { isPlugged, saveGroups, onDone },
+            props: { isPlugged, saveGroups, onDone, onReset },
             state: { editMode, groupName, isJiraGroup }
         } = this;
 
@@ -44,6 +44,8 @@ class GroupFooter extends PureComponent {
                             <div className="pull-left">
                                 <div className="ui-inputgroup" hidden={editMode}>
                                     <Button type="success" icon="fa fa-plus" label="Add group" onClick={this.beginAdd} />
+                                    {isPlugged && <span className="link margin-l-5 pad-b-5 inline-block" onClick={onReset}
+                                        title="Click to clear local changes and pull data from user groups">Reset local changes</span>}
                                 </div>
                                 <div className="ui-inputgroup" hidden={!editMode}>
 

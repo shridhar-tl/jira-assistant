@@ -10,7 +10,16 @@ class GroupRow extends PureComponent {
         super(props);
         inject(this, "JiraService");
         const { group: { users = [], timeZone } } = props;
+        this.usersFromProps = users;
         this.state = { selectedUsers: [], users, timeZone: timeZone || "" };
+    }
+
+    UNSAFE_componentWillReceiveProps(props) {
+        const users = props.group?.users;
+        if (users && this.usersFromProps !== users) {
+            this.setState({ users });
+            this.usersFromProps = users;
+        }
     }
 
     usersSelected = (users) => this.setState({ selectedUsers: users, users: this.props.group.users });

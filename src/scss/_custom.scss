@@ -64,6 +64,10 @@ body {
     padding: 0 !important;
 }
 
+.pad-b-5 {
+    padding-bottom: 5px;
+}
+
 .pad-b {
     padding-bottom: 8px;
 }
@@ -194,4 +198,8 @@ body {
 a,
 a:hover {
     text-decoration: none;
+}
+
+.inline-block {
+    display: inline-block;
 }
