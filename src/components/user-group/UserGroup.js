@@ -122,7 +122,8 @@ class UserGroup extends PureComponent {
             {!isPlugged && <caption>User groups
                 <div className="pull-right">
                     <Button icon="fa fa-download" title="Click to export groups list" onClick={this.exportGroups} />
-                    <BackupImporter>{(chooseFile) => <Button icon="fa fa-upload" title="Click to import groups list" onClick={chooseFile} onImport={this.loadGroups} />}</BackupImporter>
+                    <BackupImporter onImport={this.loadGroups}>{(chooseFile) => <Button icon="fa fa-upload"
+                        title="Click to import groups list" onClick={chooseFile} />}</BackupImporter>
                 </div>
             </caption>}
             <THead>
@@ -141,7 +142,7 @@ class UserGroup extends PureComponent {
                     onRemove={this.deleteGroup} />}
             </TBody>
             <NoDataRow span={5}>No groups available</NoDataRow>
-            <GroupFooter isPlugged={isPlugged} saveGroups={this.saveGroups} onDone={this.done} addNewGroup={this.addNewGroup} />
+            <GroupFooter isPlugged={isPlugged} saveGroups={this.saveGroups} onDone={this.done} addNewGroup={this.addNewGroup} onReset={this.loadGroups} />
         </ScrollableTable>
         );
     }
