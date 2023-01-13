@@ -55,7 +55,7 @@ const ReportData = connect(function ({ boardId, hasData, showCostReport, showSum
             <FlatGroupableWorklog exportSheetName="Flat (Groupable)" boardId={boardId} />
         </TabPanel>
         {showSummaryReport && <TabPanel header="Summary - (User project wise)" contentClassName="no-padding">
-            <UserProjectWiseSummary exportSheetName="Flat (Groupable)" boardId={boardId} />
+            <UserProjectWiseSummary exportSheetName="Summary (User project wise)" boardId={boardId} />
         </TabPanel>}
         <TabPanel header="Visualization" contentClassName="no-padding">
             <Visualization exportSheetName="Visualization" boardId={boardId} />
