@@ -3,6 +3,7 @@ import { TabPanel, TabView } from 'primereact/tabview';
 import GroupedDataGrid from './userdaywise/GroupedDataGrid';
 import { connect } from './datastore';
 import FlatGroupableWorklog from './FlatGroupableWorklog';
+import UserProjectWiseSummary from './userprojectwise';
 import Visualization from './visualization';
 import './WorklogGadget.scss';
 
@@ -40,7 +41,7 @@ export default connect(Report, ({ reportLoaded: hasData, timeframeType, selSprin
 }));
 
 
-const ReportData = connect(function ({ boardId, hasData, showCostReport }) {
+const ReportData = connect(function ({ boardId, hasData, showCostReport, showSummaryReport }) {
     if (!hasData) { return noData; }
 
     return (<TabView className="no-padding" renderActiveOnly={false}>
@@ -53,13 +54,21 @@ const ReportData = connect(function ({ boardId, hasData, showCostReport }) {
         <TabPanel header="Flat (Groupable)" contentClassName="no-padding">
             <FlatGroupableWorklog exportSheetName="Flat (Groupable)" boardId={boardId} />
         </TabPanel>
+        {showSummaryReport && <TabPanel header="Summary - (User project wise)" contentClassName="no-padding">
+            <UserProjectWiseSummary exportSheetName="Flat (Groupable)" boardId={boardId} />
+        </TabPanel>}
         <TabPanel header="Visualization" contentClassName="no-padding">
             <Visualization exportSheetName="Visualization" boardId={boardId} />
         </TabPanel>
     </TabView>);
 }, (state, { boardId }) => {
-    const { userListMode, timeframeType, fields: { showCostReport },
-        [timeframeType === '1' ? `sprintsList_${boardId}` : 'groupReport']: hasData
+    const isSprint = state.timeframeType === '1';
+    const { userListMode, reportUserGrp, fields: { showCostReport },
+        [isSprint ? `sprintsList_${boardId}` : 'groupReport']: hasData
     } = state;
-    return { hasData: !!hasData, showCostReport: showCostReport && userListMode !== '1' };
+    return {
+        hasData: !!hasData,
+        showCostReport: showCostReport && userListMode !== '1',
+        showSummaryReport: !isSprint && reportUserGrp === '1'
+    };
 });
