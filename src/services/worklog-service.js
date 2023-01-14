@@ -148,8 +148,8 @@ export default class WorklogService extends BaseService {
             //visibility = new Visibility { type="group", value= "Deployment Team" }
         };
 
-        const { notifyUsers } = this.$session.CurrentUser;
-        if (typeof notifyUsers === 'boolean') {
+        const { notifyUsers, isAtlasCloud } = this.$session.CurrentUser;
+        if (isAtlasCloud && typeof notifyUsers === 'boolean') {
             request.notifyUsers = notifyUsers;
         }
         let uploadRequest = null;

@@ -1,5 +1,5 @@
 import * as moment from 'moment';
-import { getUserName } from '../common/utils';
+import { getHostFromUrl, getUserName } from '../common/utils';
 import { sett_page_calendar, sett_page_reports_UserDayWise } from '../constants/settings';
 
 export default class AuthService {
@@ -42,6 +42,8 @@ export default class AuthService {
             if (userDetails.apiUrl) {
                 this.$session.apiRootUrl = (userDetails.apiUrl || "").toString();
             }
+
+            this.$session.isAtlasCloud = getHostFromUrl(this.$session.rootUrl).endsWith('.atlassian.net');
 
             if (useProfile) {
                 const jiraUser = await this.$jira.getCurrentUser();
