@@ -51,7 +51,16 @@ async function initializeApp(location, navigate) {
         registerDepnServices(authType || '1');
     }
 
-    return validateIfExtnReadyForUse(location.pathname, navigate);
+    const result = await validateIfExtnReadyForUse(location.pathname, navigate);
+
+    // If extension is not available while loading poker, do not use proxy services
+    if (result.extnUnavailable || !result.isExtnValid) {
+        if (location.pathname.includes('/poker')) {
+            registerDepnServices('2');
+        }
+    }
+
+    return result;
 }
 
 // Internal functions

@@ -21,8 +21,12 @@ class JoinRoom extends PureComponent {
     joinRoom = async () => {
         try {
             this.setState({ isLoading: true });
-            const { roomId } = await this.props.joinRoom(this.state);
-            this.props.navigate(`/poker/${roomId}`);
+            const { roomId, field, error } = await this.props.joinRoom(this.state);
+            if (roomId) {
+                this.props.navigate(`/poker/${roomId}`);
+            } else if (field && error) {
+                this.setState({ isLoading: false, [field]: error });
+            }
         } catch (err) {
             this.setState({ isLoading: false });
             console.error(err);
@@ -33,8 +37,11 @@ class JoinRoom extends PureComponent {
         const newState = { ...this.state, [field]: val };
 
         newState.roomError = (newState.roomId || '').length < 6 ? 'Room id is too short' : null;
-        newState.nameError = (newState.name || '').length < 3 ? 'Name is too short' : null;
-        newState.emailError = (newState.email || '').length < 3 ? 'Email is too short' : null;
+        if (!newState.roomError) {
+            newState.roomError = !(/^[a-z0-9]*$/g).test(newState.roomId) ? 'Enter room id, not room name.' : null;
+        }
+        newState.nameError = (newState.name || '').length < 2 ? 'Name is too short' : null;
+        newState.emailError = (newState.email || '').length < 5 ? 'Email is too short' : null;
 
         newState.hasError = !!(newState.roomError || newState.nameError || newState.emailError);
 
@@ -56,6 +63,7 @@ class JoinRoom extends PureComponent {
                                         className={classNames({ 'p-invalid': roomError })} onChange={this.setValue} />
                                     <label htmlFor="roomId" className={classNames({ 'p-error': !!roomError })}>Room Id*</label>
                                 </span>
+                                {!!roomError && <span className="p-error">{roomError}</span>}
                             </div>
                             <div className="field">
                                 <span className="p-float-label">
@@ -63,13 +71,15 @@ class JoinRoom extends PureComponent {
                                         onChange={this.setValue} />
                                     <label htmlFor="name" className={classNames({ 'p-error': !!nameError })}>Your Name*</label>
                                 </span>
+                                {!!nameError && <span className="p-error">{nameError}</span>}
                             </div>
                             <div className="field">
                                 <span className="p-float-label">
                                     <TextBox id="email" value={email} field="email" maxLength={80} className={classNames({ 'p-invalid': emailError })}
                                         onChange={this.setValue} />
-                                    <label htmlFor="name" className={classNames({ 'p-error': !!nameError })}>Your Email*</label>
+                                    <label htmlFor="name" className={classNames({ 'p-error': !!emailError })}>Your Email*</label>
                                 </span>
+                                {!!emailError && <span className="p-error">{emailError}</span>}
                             </div>
 
                             <Button label="JOIN ROOM" className="mt-2" disabled={hasError || isLoading} onClick={this.joinRoom} isLoading={isLoading} />
