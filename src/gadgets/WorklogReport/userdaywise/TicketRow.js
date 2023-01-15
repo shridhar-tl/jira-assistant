@@ -50,7 +50,7 @@ const IssueDays = connect(function ({ costView, dates, timeExportFormat,
             return "";
         }
 
-        return arr.map((a) => `${formatTime(a.logTime)}(${convertSecs(a.totalHours)})${(showCost ? (`, Cost: ${a.totalCost}`) : '')} - ${a.comment}`).join(';\n');
+        return arr.map((a) => `${formatTime(a.logTime)} (${convertSecs(a.totalHours)})${(showCost ? (`, Cost: ${a.totalCost}`) : '')} - ${a.comment || '(no comment provided)'}`).join(';\n');
     };
 
     if (costView) {
