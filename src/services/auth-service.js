@@ -43,7 +43,7 @@ export default class AuthService {
                 this.$session.apiRootUrl = (userDetails.apiUrl || "").toString();
             }
 
-            this.$session.isAtlasCloud = getHostFromUrl(this.$session.rootUrl).endsWith('.atlassian.net');
+            userDetails.isAtlasCloud = getHostFromUrl(this.$session.rootUrl).endsWith('.atlassian.net');
 
             if (useProfile) {
                 const jiraUser = await this.$jira.getCurrentUser();

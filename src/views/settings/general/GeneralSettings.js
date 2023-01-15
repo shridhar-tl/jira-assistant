@@ -21,6 +21,7 @@ class GeneralSettings extends PureComponent {
         this.state = { settings: {} };
         this.noDonations = this.$session.CurrentUser.noDonations;
         this.userId = this.$session.CurrentUser.userId;
+        this.isAtlasCloud = this.$session.CurrentUser.isAtlasCloud;
         this.settings = {};
         this.spaceInfo = {};
         this.state = {};
@@ -75,7 +76,7 @@ class GeneralSettings extends PureComponent {
                     <GlobalTab />
                 </TabPanel>
                 <TabPanel header="Worklog" leftIcon="fa fa-clock-o">
-                    <WorklogTab settings={settings} userId={this.userId} onSave={this.saveSetting} />
+                    <WorklogTab settings={settings} userId={this.userId} onSave={this.saveSetting} isAtlasCloud={this.isAtlasCloud} />
                 </TabPanel>
                 <TabPanel header="Default values" leftIcon="fa fa-list">
                     <DefaultValuesTab settings={settings} userId={this.userId} onSave={this.saveSetting} />

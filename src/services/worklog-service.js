@@ -149,7 +149,7 @@ export default class WorklogService extends BaseService {
         };
 
         const { notifyUsers, isAtlasCloud } = this.$session.CurrentUser;
-        if (isAtlasCloud && typeof notifyUsers === 'boolean') {
+        if (isAtlasCloud && notifyUsers === false) {
             request.notifyUsers = notifyUsers;
         }
         let uploadRequest = null;

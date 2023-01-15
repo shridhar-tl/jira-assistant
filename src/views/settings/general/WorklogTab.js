@@ -10,7 +10,7 @@ const showMeetings = outlookCalendar !== false || googleCalendar !== false;
 
 class WorklogTab extends TabControlBase {
     render() {
-        const { settings } = this.props;
+        const { settings, isAtlasCloud } = this.props;
 
         return (
             <div className="ui-g ui-fluid">
@@ -45,15 +45,17 @@ class WorklogTab extends TabControlBase {
                         <span className="help-block">All the worklogs will be automatically uploaded when created</span>
                     </div>
                 </div>
-                <div className="form-label ui-g-12 ui-md-3 ui-lg-3 ui-xl-2">
-                    <strong>Notify users on worklog</strong>
-                </div>
-                <div className="ui-g-12 ui-md-9 ui-lg-9 ui-xl-10">
-                    <div className="form-group">
-                        <Checkbox checked={settings.notifyUsers !== false} field="notifyUsers" onChange={this.saveSetting} label="Enable worklog notification" />
-                        <span className="help-block">Enable whether users watching the issue are notified by email</span>
+                {isAtlasCloud && <>
+                    <div className="form-label ui-g-12 ui-md-3 ui-lg-3 ui-xl-2">
+                        <strong>Notify users on worklog</strong>
                     </div>
-                </div>
+                    <div className="ui-g-12 ui-md-9 ui-lg-9 ui-xl-10">
+                        <div className="form-group">
+                            <Checkbox checked={settings.notifyUsers !== false} field="notifyUsers" onChange={this.saveSetting} label="Enable worklog notification" />
+                            <span className="help-block">Enable whether users watching the issue are notified by email</span>
+                        </div>
+                    </div>
+                </>}
                 <div className="form-label ui-g-12 ui-md-3 ui-lg-3 ui-xl-2">
                     <strong>Worklog for closed tickets</strong>
                 </div>
