@@ -3,10 +3,11 @@ import { initializeApp } from "firebase/app";
 import {
     getFirestore, collection, doc, setDoc,
     writeBatch, query, updateDoc, where, onSnapshot,
-    serverTimestamp, arrayUnion, deleteDoc
+    serverTimestamp, arrayUnion, deleteDoc, getDoc
 } from "firebase/firestore";
 import { getAuth, signInWithCustomToken, signOut } from "firebase/auth";
 import config from './firebase.json';
+import moment from "moment";
 
 const dbName = 'poker';
 const membersCollectionName = 'members';
@@ -30,6 +31,7 @@ export async function insertRoomRecord(state) {
         created: now,
         currentIssueId: null,
         lastActivity: serverTimestamp(),
+        exp: moment().add(12, "hours").toDate(),
         timer: 0,
         waitingRoom: false,
         issues: []
@@ -47,6 +49,12 @@ async function insertRecord(data, ...path) {
 
 export async function joinAsMember({ token, roomId }, user) {
     await signinWithToken(token);
+    const roomRecord = await getDoc(doc(db, dbName, roomId));
+    const data = roomRecord.data();
+    if (!data) {
+        await signOutUser();
+        return { field: 'roomError', error: 'Invalid room id or the room is already closed' };
+    }
     return await insertUserRecord(roomId, user);
 }
 

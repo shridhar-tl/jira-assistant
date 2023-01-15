@@ -31,7 +31,10 @@ export function joinRoom(setState) {
         storeAuthInfo(authInfo);
 
         const user = { sid, roomId, name, email, avatarUrl, avatarId };
-        await joinAsMember(authInfo, user);
+        const result = await joinAsMember(authInfo, user);
+        if (result?.field) {
+            return result;
+        }
 
         setState(authInfo);
 
