@@ -34,11 +34,11 @@ function GroupHead({ useSprint, sprintsList, addlColCount, costView, fields }) {
 export default connect(GroupHead,
     (state, { boardId }) => {
         const {
-            fields, costView, selSprints, timeframeType,
+            fields, selSprints, timeframeType,
         } = state;
         const useSprint = timeframeType === '1';
         return {
-            useSprint, fields, costView,
+            useSprint, fields,
             board: useSprint ? selSprints[boardId] : undefined,
             sprintsList: useSprint ? state[`sprintsList_${boardId}`] : undefined
         };

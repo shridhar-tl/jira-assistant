@@ -30,14 +30,14 @@ export default connect(GroupBody,
             const {
                 [`userGroup_${boardId}`]: groupedData,
                 [`sprintsList_${boardId}`]: sprintsList,
-                logFormat, costView, rIndicator
+                logFormat, rIndicator
             } = state;
 
-            return ({ isSprint, sprintsList, groupedData, logFormat, costView, rIndicator });
+            return ({ isSprint, sprintsList, groupedData, logFormat, rIndicator });
         } else {
-            const { groupReport: { groupedData }, logFormat, costView, rIndicator } = state;
+            const { groupReport: { groupedData }, logFormat, rIndicator } = state;
 
-            return ({ groupedData, logFormat, costView, rIndicator });
+            return ({ groupedData, logFormat, rIndicator });
         }
     });
 

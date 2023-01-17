@@ -22,11 +22,11 @@ function TicketRow({
             {!!showAssignee && <td>{t.assignee}</td>}
             {!!showReporter && <td>{t.reporter}</td>}
 
-            {isSprint && sprintsList.map(({ id }) => <IssueDays key={id} convertSecs={convertSecs} groupIndex={groupIndex}
+            {isSprint && sprintsList.map(({ id }) => <IssueDays key={id} convertSecs={convertSecs} groupIndex={groupIndex} costView={costView}
                 sprintId={id} uid={uid} formatTime={formatTime} ticketNo={t.ticketNo} isSprint={isSprint} timeExportFormat={timeExportFormat}
                 addNewWorklog={addNewWorklog} />)}
             {!isSprint && <IssueDays convertSecs={convertSecs} groupIndex={groupIndex} timeExportFormat={timeExportFormat}
-                uid={uid} formatTime={formatTime} ticketNo={t.ticketNo} isSprint={isSprint}
+                uid={uid} formatTime={formatTime} ticketNo={t.ticketNo} isSprint={isSprint} costView={costView}
                 addNewWorklog={addNewWorklog} />}
 
             {isSprint && costView && <td>{t.allSprintTotalCost}</td>}
@@ -35,7 +35,7 @@ function TicketRow({
     );
 }
 
-export default connect(TicketRow, ({ fields, costView }) => ({ fields, costView }), null,
+export default connect(TicketRow, ({ fields }) => ({ fields }), null,
     [
         'UserUtilsService',
         ({ $userutils: { formatTime } }) => ({ formatTime })
@@ -71,7 +71,7 @@ const IssueDays = connect(function ({ costView, dates, timeExportFormat,
         </>);
     }
 }, (state, { isSprint, groupIndex, sprintId, uid, ticketNo }) => {
-    const { costView, breakupMode,
+    const { breakupMode,
         [isSprint ? `groupReport_${sprintId}` : 'groupReport']: {
             dates,
             groupedData: {
@@ -84,7 +84,7 @@ const IssueDays = connect(function ({ costView, dates, timeExportFormat,
     } = state;
 
     return {
-        costView, breakupMode, dates, user,
+        breakupMode, dates, user,
         ticket: user?.ticketsMap?.[ticketNo] || {}
     };
 });

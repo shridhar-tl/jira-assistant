@@ -49,13 +49,13 @@ export default connect(GroupRow,
     (state, { boardId }) => {
         const isSprint = state.timeframeType === '1';
         if (isSprint) {
-            const { [`sprintsList_${boardId}`]: sprintsList, costView } = state;
+            const { [`sprintsList_${boardId}`]: sprintsList } = state;
 
-            return ({ isSprint, sprintsList, costView });
+            return ({ isSprint, sprintsList });
         } else {
-            const { groupReport: { dates }, costView } = state;
+            const { groupReport: { dates } } = state;
 
-            return ({ isSprint, dates, costView });
+            return ({ isSprint, dates });
         }
     }, { convertSecs });
 
@@ -77,10 +77,10 @@ const DayWiseCells = connect(function ({
         </>);
     }
 }, (state, { sprintId, groupIndex }) => {
-    const { costView, timeframeType,
+    const { timeframeType,
         [timeframeType === '1' ? `groupReport_${sprintId}` : 'groupReport']:
         { dates, groupedData: group }
     } = state;
 
-    return { costView, dates, group: group[groupIndex] };
+    return { dates, group: group[groupIndex] };
 });
