@@ -43,13 +43,17 @@ export default class UserUtilsService {
             if (user.jiraUser) {
                 user = user.jiraUser;
             }
-            user = getUserName(user);
         }
         else if (typeof user !== "string") {
             user = "";
         }
 
-        return `${rootUrl || this.$session.rootUrl}/secure/ViewUser.jspa?name=${user.toLowerCase()}`;
+        if (this.$session.CurrentUser.isAtlasCloud) {
+            return `${rootUrl || this.$session.rootUrl}/jira/people/${user?.accountId}`;
+        } else {
+            user = getUserName(user, true) || '';
+            return `${rootUrl || this.$session.rootUrl}/secure/ViewUser.jspa?name=${user}`;
+        }
     };
 
     formatDateTime = (value, format, utc) => {
