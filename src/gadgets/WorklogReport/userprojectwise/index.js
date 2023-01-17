@@ -43,10 +43,10 @@ const UserProjectWiseSummary = function ({ groups, flatWorklogs, exportSheetName
 
 export default connect(UserProjectWiseSummary, (state, { boardId }) => {
     const { [boardId ? `flatWorklogs_${boardId}` : 'flatWorklogs']: flatWorklogs,
-        costView, groupReport:
+        groupReport:
         { groupedData: groups } } = state;
 
-    return ({ flatWorklogs, costView, groups });
+    return ({ flatWorklogs, groups });
 }, { convertSecs });
 
 const UserGroup = memo(function ({ hideGroup, projects, costView, group, convertSecs }) {
