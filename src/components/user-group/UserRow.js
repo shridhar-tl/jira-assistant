@@ -2,10 +2,12 @@ import React, { PureComponent } from 'react';
 import { TextBox, Button, SelectBox } from '../../controls';
 import { getUserName } from '../../common/utils';
 import Link from '../../controls/Link';
+import { inject } from '../../services';
 
 class UserRow extends PureComponent {
     constructor(props) {
         super(props);
+        inject(this, 'UserUtilsService');
         const { user: { timeZone, costPerHour = 0 } } = props;
         this.state = { timeZone: timeZone || "", costPerHour };
     }
@@ -37,7 +39,7 @@ class UserRow extends PureComponent {
             <td>
                 <div className="group-user">
                     <img src={user.avatarUrls['32x32'] || user.avatarUrls['48x48']} alt="" height={32} width={32} className="pull-left" />
-                    <Link href={user.self}
+                    <Link href={this.$userutils.getProfileUrl(user)}
                         className={isActive ? "link" : "link strike-out"}>{user.displayName}</Link>
                 </div>
             </td>

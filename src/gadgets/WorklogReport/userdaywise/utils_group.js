@@ -218,7 +218,7 @@ export function generateUserDayWiseData(data, groups, pageSettings) {
                 emailAddress: usr.emailAddress,
                 timeZone: curTimeZone,
                 imageUrl: usr.avatarUrls['48x48'] || usr.avatarUrls['32x32'],
-                profileUrl: usr.self,
+                profileUrl: svc.$userutils.getProfileUrl(usr),
                 costPerHour: usr.costPerHour,
                 tickets: null,
                 total: {},
