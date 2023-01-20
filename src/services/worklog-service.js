@@ -207,12 +207,21 @@ export default class WorklogService extends BaseService {
         return this.$storage.getSingleWorklogWithId(parseInt(`${worklogId}`));
     }*/
 
-    getWorklogs(range) {
+    getWorklogs(range, fields) {
         const curUserId = this.$session.userId;
         const fromDate = moment(range.fromDate).toDate();
         const toDate = moment(range.toDate).endOf('day').toDate();
-        const prom = this.$storage.getWorklogsBetween(fromDate, toDate, curUserId);
-        const uploadedWL = this.getUploadedWorklogs(fromDate, toDate).then(wl => {
+        const prom = this.$storage.getWorklogsBetween(fromDate, toDate, curUserId).then(async data => {
+            const pending = data.filter(w => !w.isUploaded && !w.worklogId);
+            const ticketNos = pending.distinct(w => w.ticketNo);
+            const ticketDetails = await this.$ticket.getTicketDetails(ticketNos, false, ['summary'], { allowCache: false });
+            pending.forEach(wl => {
+                wl.summary = ticketDetails[wl.ticketNo]?.fields?.summary || '';
+            });
+
+            return pending;
+        });
+        const uploadedWL = this.getUploadedWorklogs(fromDate, toDate, undefined, fields).then(wl => {
             const logData = wl.first().logData;
             const wlArr = logData.map(ld => ({
                 createdBy: curUserId,
@@ -224,14 +233,15 @@ export default class WorklogService extends BaseService {
                 totalSecs: ld.totalSecs,
                 totalMins: ld.totalMins,
                 ticketNo: ld.ticketNo,
-                worklogId: ld.worklogId
+                worklogId: ld.worklogId,
+                summary: ld.summary
                 //parentId:0 - ToDo: Something to be thought of
             }));
             return wlArr;
         });
         let modProm = Promise.all([prom, uploadedWL])
             .then((wls) => {
-                const pending = wls[0].filter(w => !w.isUploaded && !w.worklogId);
+                const pending = wls[0];
 
                 const getTotalSecs = this.$utils.getTotalSecs;
                 pending.forEach(wl => {
@@ -258,8 +268,8 @@ export default class WorklogService extends BaseService {
         return modProm;
     }
 
-    getWorklogsEntry(start, end) {
-        return this.getWorklogs({ fromDate: start.toDate(), toDate: end.toDate() })
+    getWorklogsEntry(start, end, fields) {
+        return this.getWorklogs({ fromDate: start.toDate(), toDate: end.toDate() }, fields)
             .then((worklogs) => {
                 const result = worklogs.map(w => this.getWLCalendarEntry(w));
                 return result;

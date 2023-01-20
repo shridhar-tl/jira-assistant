@@ -10,6 +10,34 @@
   .fc-title {
     margin-top: 5px;
     font-size: 15px;
+    margin-bottom: 16px;
+    max-height: 80px;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+
+    &.short-desc {
+      max-height: 40px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+    }
+  }
+
+  .fc-sub-title {
+    margin-top: 5px;
+    font-style: italic;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    max-height: 100px;
+    -webkit-line-clamp: 6;
+    -webkit-box-orient: vertical;
+
+    &.short-desc {
+      max-height: 50px;
+      -webkit-line-clamp: 3;
+    }
   }
 }
 
@@ -57,7 +85,7 @@
 
 .fc-time-grid-event .fc-time,
 .fc-time-grid-event .fc-title {
-  padding: 4px 4px;
+  padding: 4px;
   font-size: 14px !important;
 }
 

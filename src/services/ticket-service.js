@@ -25,7 +25,7 @@ export default class TicketService {
         this.ticketsCache = {};
     }
 
-    getTicketDetails(tickets, asArr, ticketFields, opts) {
+    getTicketDetails(tickets, asArr, ticketFields, options) {
         if (!tickets) {
             return null;
         }
@@ -34,11 +34,15 @@ export default class TicketService {
             tickets = [tickets];
             onlyOne = true;
         }
+        const { allowCache, ...opts } = options || {};
+
         return this.fetchTicketDetails(tickets, ticketFields || commonTicketFields, opts)
             .then((arr) => {
                 const result = {};
                 arr.forEach((t) => {
-                    this.ticketsCache[t.key.toUpperCase()] = t;
+                    if (allowCache !== false) {
+                        this.ticketsCache[t.key.toUpperCase()] = t;
+                    }
                     if (!asArr) {
                         result[t.key] = t;
                     }
