@@ -979,6 +979,8 @@ class Calendar extends BaseGadget {
         return newState;
     });
 
+    today = () => this.calendar.getApi().today();
+
     renderCustomActions() {
         const {
             isGadget,
@@ -988,10 +990,11 @@ class Calendar extends BaseGadget {
         return <>
             {isGridMode && <Button type="secondary" icon={fullView ? 'fa fa-compress' : 'fa fa-expand'} onClick={this.toggleDisplayHours}
                 title={fullView ? "Click to show only working hours in calendar" : "Click to show full day calendar"} />}
+            <Button label="Today" onClick={this.today} title="Navigate to current week" />
             {!this.isGadget && <>
                 <Button icon="fa fa-arrow-left" onClick={() => this.calendar.getApi().prev()} />
                 <Button icon="fa fa-arrow-right" onClick={() => this.calendar.getApi().next()} />
-                <SelectBox dataset={viewModes} value={viewMode} valueField="value" displayField="label" placeholder="Select a view mode" onChange={this.viewModeChanged} />
+                <SelectBox dataset={viewModes} value={viewMode} valueField="value" displayField="label" style={{ width: '120px' }} onChange={this.viewModeChanged} />
             </>}
             <span className="info-badge" title={pendingWorklogCount ? `Upload ${pendingWorklogCount} pending worklog(s)` : 'No worklog pending to be uploaded'}>
                 {pendingWorklogCount > 0 && <span className="info btn-warning">{pendingWorklogCount}</span>}

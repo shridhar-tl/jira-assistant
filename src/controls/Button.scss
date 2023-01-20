@@ -17,6 +17,10 @@ button.p-button.c-btn {
         margin-left: 7px;
     }
 
+    span:nth-child(1).p-button-label {
+        margin-left: 12px;
+    }
+
     span:nth-child(2) {
         margin-left: 5px;
     }
