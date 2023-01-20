@@ -309,7 +309,7 @@ class Calendar extends BaseGadget {
             this.setEventsData(data);
         };
 
-        const req = [this.$worklog.getWorklogsEntry(start, end)];
+        const req = [this.$worklog.getWorklogsEntry(start, end, ['worklog', 'summary'])];
 
         if (this.CurrentUser.googleIntegration && this.CurrentUser.hasGoogleCredentials && this.state.settings.showMeetings) {
             req.push(this.$calendar.getEvents(start, end).then(null, (err) => {
@@ -793,9 +793,21 @@ class Calendar extends BaseGadget {
 
         const hourDiff = ` (${this.$utils.formatTs(this.getEventDuration(event))})`;
         const srcObj = event.extendedProps.sourceObject;
-        let title;
+        let evTitle = event.title;
+        let subTitle = '', title;
+
+        if (entryType === 1) {
+            const { detailsMode } = this.state.settings;
+
+            if (detailsMode === '2') {
+                evTitle = `${srcObj?.ticketNo} - ${srcObj?.summary}`;
+            } else if (detailsMode === '3') {
+                subTitle = srcObj?.summary;
+            }
+        }
+
         if (srcObj) {
-            title = `${timeText} ${hourDiff}\n${event.title}`;
+            title = `${timeText} ${hourDiff}\n${evTitle}`;
         }
 
         let leftIcon;
@@ -840,6 +852,9 @@ class Calendar extends BaseGadget {
         }
 
         if (type === 'timeGridWeek' || type === 'timeGridDay') {
+            const lines = (evTitle ? 3 : 0) + (subTitle ? 3 : 0);
+            const clsName = (lines * 30 > srcObj.totalMins ? ' short-desc' : '');
+
             return (<div ref={(e) => e?.parentElement?.parentElement?.addEventListener('contextmenu', contextEvent)}
                 className="fc-content pad-8" title={title} data-jira-key={srcObj?.ticketNo} data-jira-wl-id={srcObj?.worklogId}>
                 {entryType === 1 && <WorklogOptions worklog={srcObj} onUpload={this.uploadSelectedWorklog} onClone={this.cloneWorklog} />}
@@ -848,7 +863,8 @@ class Calendar extends BaseGadget {
                     <span>{timeText}</span>
                     <span className="fc-hour"> {hourDiff}</span>
                 </div>
-                <div className="fc-title">{event.title}</div>
+                <div className={`fc-title${clsName}`}>{evTitle}</div>
+                {!!subTitle && <div className={`fc-sub-title${clsName}`} title={subTitle}>{subTitle}</div>}
             </div>);
         }
     };
@@ -963,6 +979,8 @@ class Calendar extends BaseGadget {
         return newState;
     });
 
+    today = () => this.calendar.getApi().today();
+
     renderCustomActions() {
         const {
             isGadget,
@@ -972,10 +990,11 @@ class Calendar extends BaseGadget {
         return <>
             {isGridMode && <Button type="secondary" icon={fullView ? 'fa fa-compress' : 'fa fa-expand'} onClick={this.toggleDisplayHours}
                 title={fullView ? "Click to show only working hours in calendar" : "Click to show full day calendar"} />}
+            <Button label="Today" onClick={this.today} title="Navigate to current week" />
             {!this.isGadget && <>
                 <Button icon="fa fa-arrow-left" onClick={() => this.calendar.getApi().prev()} />
                 <Button icon="fa fa-arrow-right" onClick={() => this.calendar.getApi().next()} />
-                <SelectBox dataset={viewModes} value={viewMode} valueField="value" displayField="label" placeholder="Select a view mode" onChange={this.viewModeChanged} />
+                <SelectBox dataset={viewModes} value={viewMode} valueField="value" displayField="label" style={{ width: '120px' }} onChange={this.viewModeChanged} />
             </>}
             <span className="info-badge" title={pendingWorklogCount ? `Upload ${pendingWorklogCount} pending worklog(s)` : 'No worklog pending to be uploaded'}>
                 {pendingWorklogCount > 0 && <span className="info btn-warning">{pendingWorklogCount}</span>}

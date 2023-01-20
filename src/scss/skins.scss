@@ -301,12 +301,6 @@
   div.src-editable-grid-container .src-editable-grid thead tr,
   div.src-editable-grid-container .src-editable-grid thead tr th,
   .no-widget-div,
-  .fc.fc-theme-standard .fc-view-harness th,
-  .fc.fc-theme-standard .fc-view-harness tr,
-  .fc.fc-theme-standard .fc-view-harness th,
-  .fc.fc-theme-standard .fc-view-harness td,
-  .fc.fc-theme-standard .fc-view-harness .fc-cell-shaded,
-  .fc.fc-theme-standard .fc-view-harness .fc-view,
   tr.grouped-row,
   .p-tabview .p-tabview-nav li a,
   .daterangepicker .ranges li:hover,
@@ -337,6 +331,16 @@
   .p-dropdown-panel .p-dropdown-items .p-dropdown-item:not(.p-highlight):not(.p-disabled):hover,
   .p-dropdown-panel .p-dropdown-items .p-dropdown-item-group:not(.p-highlight):not(.p-disabled):hover {
     background-color: #1e2225;
+    color: $font-color;
+  }
+
+  .fc.fc-theme-standard .fc-view-harness th,
+  .fc.fc-theme-standard .fc-view-harness tr,
+  .fc.fc-theme-standard .fc-view-harness th,
+  .fc.fc-theme-standard .fc-view-harness td,
+  .fc.fc-theme-standard .fc-view-harness .fc-cell-shaded,
+  .fc.fc-theme-standard .fc-view-harness .fc-view {
+    background-color: #1e222500;
     color: $font-color;
   }
 

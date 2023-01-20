@@ -1,7 +1,7 @@
 import React from 'react';
 import config from '../../customize';
 import BaseDialog from '../../dialogs/BaseDialog';
-import { Checkbox, ColorPicker, Button } from '../../controls';
+import { Checkbox, ColorPicker, Button, RadioButton } from '../../controls';
 
 const { googleCalendar, outlookCalendar } = config.features.integrations;
 const showMeetings = outlookCalendar !== false || googleCalendar !== false;
@@ -96,6 +96,12 @@ class CalendarSettings extends BaseDialog {
             </div>
             <div className="form-group">
                 <Checkbox checked={settings.showInfo || false} onChange={(val) => this.setValue(val, "showInfo")} label="Display information about total hours logged on daily basis" />
+            </div>
+            <h5 className="control-sidebar-heading">Entry details</h5>
+            <div className="form-group">
+                <RadioButton value={settings.detailsMode || '1'} defaultValue="1" onChange={(val) => this.setValue(val, "detailsMode")} label="Display worklog comments on worklog entry" /><br />
+                <RadioButton value={settings.detailsMode || '1'} defaultValue="2" onChange={(val) => this.setValue(val, "detailsMode")} label="Display ticket summary on worklog entry" /><br />
+                <RadioButton value={settings.detailsMode || '1'} defaultValue="3" onChange={(val) => this.setValue(val, "detailsMode")} label="Try accomidate both worklog comments and ticket summary on worklog entry" />
             </div>
             <h3 className="control-sidebar-heading">Other options</h3>
             <div className="form-group">
