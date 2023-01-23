@@ -73,6 +73,20 @@ export const dateFormats = [
     "yyyy-MM-dd", "yyyy/MM/dd",
     "MMM dd, yyyy", "ddd, MMM dd, yyyy"
 ];
+
+export const momentizedDateFormats = {
+    "dd-MMM-yyyy": "DD-MMM-YYYY",
+    "dd/MMM/yyyy": "DD/MMM/YYYY",
+    "dd-MM-yyyy": "DD-MM-YYYY",
+    "dd/MM/yyyy": "DD/MM/YYYY",
+    "MM-dd-yyyy": "MM-DD-YYYY",
+    "MM/dd/yyyy": "MM/DD/YYYY",
+    "yyyy-MM-dd": "YYYY-MM-DD",
+    "yyyy/MM/dd": "YYYY/MM/DD",
+    "MMM dd, yyyy": "MMM DD, YYYY",
+    "ddd, MMM dd, yyyy": "ddd, MMM DD, YYYY"
+};
+
 export const timeFormats = [" HH:mm:ss", " hh:mm:ss tt", " HH.mm.ss", " hh.mm.ss tt"];
 
 export const DefaultWorkingDays = [1, 2, 3, 4, 5];

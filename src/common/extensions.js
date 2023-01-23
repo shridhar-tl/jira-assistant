@@ -104,8 +104,24 @@ if (!String.prototype.endsWith) {
 if (!String.prototype.clearEnd) {
     String.prototype.clearEnd = function (str) {
         let s = this;
-        while (s.endsWith(str)) {
-            s = s.substring(0, s.length - str.length);
+        if (Array.isArray(str)) {
+            let stop = false;
+            while (s && !stop) {
+                let mod = false;
+                // eslint-disable-next-line no-loop-func
+                str.forEach(st => {
+                    const newStr = s.clearEnd(st);
+                    if (s !== newStr) {
+                        s = newStr;
+                        mod = true;
+                    }
+                });
+                stop = !mod;
+            }
+        } else {
+            while (s.endsWith(str)) {
+                s = s.substring(0, s.length - str.length);
+            }
         }
         return s.toString();
     };
@@ -114,8 +130,24 @@ if (!String.prototype.clearEnd) {
 if (!String.prototype.clearStart) {
     String.prototype.clearStart = function (str) {
         let s = this;
-        while (s.startsWith(str)) {
-            s = s.substring(str.length);
+        if (Array.isArray(str)) {
+            let stop = false;
+            while (s && !stop) {
+                let mod = false;
+                // eslint-disable-next-line no-loop-func
+                str.forEach(st => {
+                    const newStr = s.clearStart(st);
+                    if (s !== newStr) {
+                        s = newStr;
+                        mod = true;
+                    }
+                });
+                stop = !mod;
+            }
+        } else {
+            while (s.startsWith(str)) {
+                s = s.substring(str.length);
+            }
         }
         return s.toString();
     };

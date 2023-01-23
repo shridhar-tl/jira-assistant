@@ -68,7 +68,7 @@ const ReportData = connect(function ({ boardId, hasData, showCostReport, showSum
     } = state;
     return {
         hasData: !!hasData,
-        showCostReport: showCostReport && userListMode !== '1',
+        showCostReport: showCostReport && userListMode === '2',
         showSummaryReport: !isSprint && reportUserGrp === '1'
     };
 });
