@@ -13,6 +13,7 @@ export const CHROME_WS_URL = "https://chrome.google.com/webstore/detail/jira-ass
 export const FF_STORE_URL = "https://addons.mozilla.org/en-US/firefox/addon/jira-assistant/";
 export const EDGE_STORE_URL = "https://microsoftedge.microsoft.com/addons/detail/aoenpdbabcjnjbjpegeenodfknllmaoi";
 export const OPERA_STORE_URL = "https://addons.opera.com/en/extensions/details/jira-assistant/";
+export const CLOUD_INSTALL_URL = "https://developer.atlassian.com/console/install/3864d3bc-aad3-4650-ac35-e15af61fd92d/?signature=50284775421a3ea30543ccd56a6b1bf125c3784aab7398c35b85d9e9719e4cd1&product=jira";
 
 export const StoreUrls = {
     chrome: CHROME_WS_URL,

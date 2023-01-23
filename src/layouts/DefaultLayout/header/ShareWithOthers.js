@@ -1,7 +1,7 @@
 import React from 'react';
 import { UncontrolledDropdown, DropdownItem, DropdownMenu, DropdownToggle } from 'reactstrap';
 import { EventCategory } from '../../../constants/settings';
-import { CHROME_WS_URL, FF_STORE_URL, EDGE_STORE_URL, WebSiteUrl, OPERA_STORE_URL } from '../../../constants/urls';
+import { CHROME_WS_URL, FF_STORE_URL, EDGE_STORE_URL, WebSiteUrl, OPERA_STORE_URL, JAWebRootUrl, CLOUD_INSTALL_URL } from '../../../constants/urls';
 import Link from '../../../controls/Link';
 import { inject } from '../../../services/injector-service';
 
@@ -16,6 +16,8 @@ function ShareWithOthers() {
         + `\n\nFirefox users: ${FF_STORE_URL}`
         + `\n\nEdge users: ${EDGE_STORE_URL}`
         + `\n\nOpera users: ${OPERA_STORE_URL}`
+        + `\n\nUse Web version: ${JAWebRootUrl}`
+        + `\n\nJira Cloud App: ${CLOUD_INSTALL_URL}`
         + `\n\nFor source code or to know more about the extension visit: ${WebSiteUrl}`
         + `\n\n\nThis would help you to track your worklog and generate reports from Jira easily with lots of customizations. `
         + `Also has lot more features like Calendar integration, Jira comment & meeting + worklog notifications, Worklog, Sprint and custom report generations, etc..`);

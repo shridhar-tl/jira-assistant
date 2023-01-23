@@ -1,14 +1,15 @@
 import React from 'react';
-import config from '../../customize';
-import BaseGadget from '../BaseGadget';
-import { inject } from '../../services/injector-service';
-import { GadgetActionType } from '../_constants';
+import * as moment from 'moment';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import listWeekPlugin from '@fullcalendar/list';
+import momentPlugin from '@fullcalendar/moment';
 import interactionPlugin from '@fullcalendar/interaction';
-import * as moment from 'moment';
+import config from '../../customize';
+import BaseGadget from '../BaseGadget';
+import { inject } from '../../services/injector-service';
+import { GadgetActionType } from '../_constants';
 import Button from '../../controls/Button';
 import SelectBox from '../../controls/SelectBox';
 import { hideContextMenu, showContextMenu } from '../../externals/jsd-report';
@@ -16,10 +17,10 @@ import AddWorklog from '../../dialogs/AddWorklog';
 import { OverlayPanel } from 'primereact/overlaypanel';
 import MeetingDetails from './MeetingDetails';
 import CalendarSettings from './Settings';
-import { DefaultEndOfDay, DefaultStartOfDay, DefaultWorkingDays, EventCategory } from '../../constants/settings';
-import './Calendar.scss';
+import { DefaultEndOfDay, DefaultStartOfDay, DefaultWorkingDays, EventCategory, momentizedDateFormats } from '../../constants/settings';
 import { WorklogContext } from '../../common/context';
 import ChangeTracker from '../../components/ChangeTracker';
+import './Calendar.scss';
 
 const viewModes = [
     { value: 'dayGridMonth', label: 'Month' }, { value: 'timeGridWeek', label: 'Week' }, { value: 'timeGridDay', label: 'Day' },
@@ -27,7 +28,7 @@ const viewModes = [
     { value: 'dayGridWeek', label: 'Grid Week' }, { value: 'dayGridDay', label: 'Grid Day' }
 ];
 
-const availablePlugins = [dayGridPlugin, timeGridPlugin, interactionPlugin, listWeekPlugin];
+const availablePlugins = [dayGridPlugin, timeGridPlugin, interactionPlugin, listWeekPlugin, momentPlugin];
 
 const { googleCalendar, outlookCalendar } = config.features.integrations;
 const showMeetings = outlookCalendar !== false || googleCalendar !== false;
@@ -63,6 +64,7 @@ class Calendar extends BaseGadget {
         //this.defaultView = this.state.settings.viewMode || "month";
         this.maxTime = this.CurrentUser.maxHours;
         this.minTime = this.CurrentUser.minHours || this.maxTime;
+        this.dateFormat = this.CurrentUser.dateFormat;
         if (this.maxTime) {
             this.maxTime = this.maxTime * 60 * 60;
         }
@@ -158,12 +160,24 @@ class Calendar extends BaseGadget {
         const hour12 = (timeFormat || "").indexOf("tt") > -1;
         const meridiem = hour12 ? "short" : false;
 
+        let dayHeaderFormat = this.dateFormat ? momentizedDateFormats[this.dateFormat] : undefined;
+        if (dayHeaderFormat) {
+            dayHeaderFormat = dayHeaderFormat.replace('YYYY', '').replace(/-/g, '/').clearStart(['/', ',', ' ']).clearEnd(['/', ',', ' ']);
+            if (!dayHeaderFormat.includes('ddd')) {
+                dayHeaderFormat = `ddd, ${dayHeaderFormat}`;
+            }
+        }
+
         return {
             plugins: availablePlugins,
             timeZone: 'local',
             // selectHelper: true, //ToDo: need to check what is this // ToDo: Prop changed
 
             weekends: true,
+
+            titleFormat: this.dateFormat ? momentizedDateFormats[this.dateFormat] : undefined,
+            dayHeaderFormat,
+            //eventMinHeight: 25,
 
             // Event Display
             displayEventTime: true,
@@ -709,7 +723,7 @@ class Calendar extends BaseGadget {
         const { view } = event;
         this.startDate = view.activeStart;
         this.endDate = view.activeEnd;
-        this.title = `Calendar - [${view.title.replace(/[^a-zA-Z0-9, ]+/g, '-')}]`;
+        this.title = `Calendar - [${view.title.replace(/[^a-zA-Z0-9, /]+/g, '-')}]`;
         this.saveSettings({ ...this.state.settings, viewMode: view.type });
     }
 
