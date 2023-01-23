@@ -115,8 +115,8 @@ class Dashboard extends PureComponent {
             listDay: { title: "Calendar", control: Calendar, getProps: () => ({ viewMode: "listDay" }) },
             listWeek: { title: "Calendar", control: Calendar, getProps: () => ({ viewMode: "listWeek" }) },
             listMonth: { title: "Calendar", control: Calendar, getProps: () => ({ viewMode: "listMonth" }) },
-            CR: { title: "Custom report", control: CustomReport, getProps: (sett, opts) => ({ reportId: parseInt(opts[0]) }) },
-            AR: { title: "Advanced report", control: AdvancedReport, getProps: (sett, opts) => ({ reportId: parseInt(opts[0]) }) },
+            CR: { title: "Custom report", control: CustomReport, getProps: (sett, opts) => ({ reportId: parseInt(opts[0]), title: opts[1] }) },
+            AR: { title: "Advanced report", control: AdvancedReport, getProps: (sett, opts) => ({ reportId: parseInt(opts[0]), title: opts[1] }) },
         };
 
         controls.myBookmarks = controls.bookmarksList;
@@ -162,7 +162,7 @@ class Dashboard extends PureComponent {
         const Gadget = gadgetRef.control;
 
         if (tabLayout) {
-            let title = gadgetRef.title;
+            let title = addProps?.title || gadgetRef.title;
             if (!title) {
                 if (typeof Gadget.getTitle === "function") {
                     title = Gadget.getTitle(props);
