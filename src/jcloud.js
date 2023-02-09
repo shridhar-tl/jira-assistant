@@ -1,5 +1,5 @@
 import Resolver from '@forge/resolver';
-import { storage } from '@forge/api';
+import { storage, asUser } from '@forge/api';
 
 const resolver = new Resolver();
 
@@ -20,6 +20,34 @@ resolver.define('StorageService', (req) => {
     }
 
     return Promise.reject(`Unknown action:-${action}`);
+});
+
+resolver.define('AuthenticateMSO', async () => {
+    const mso = asUser().withProvider('mso', 'ms-apis');
+    if (!await mso.hasCredentials()) {
+        await mso.requestCredentials();
+    }
+    return true;
+});
+
+resolver.define('GetMSOEvents', async (req) => {
+    const mso = asUser().withProvider('mso', 'ms-apis');
+    if (!await mso.hasCredentials()) {
+        await mso.requestCredentials();
+    }
+
+    const { payload: { eventsUrl } } = req;
+
+    const response = await mso.fetch(eventsUrl);
+    if (response.ok) {
+        return response.json();
+    }
+
+    return Promise.reject({
+        status: response.status,
+        statusText: response.statusText,
+        text: await response.text(),
+    });
 });
 
 export const handler = resolver.getDefinitions();

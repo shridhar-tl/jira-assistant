@@ -36,6 +36,9 @@ modules:
   function:
     - key: resolver
       handler: jcloud.handler
+      providers:
+        auth:
+          - mso
 resources:
   - key: main
     path: build
@@ -49,6 +52,9 @@ permissions:
     images:
       - '*.atlassian.net'
     fetch:
+      backend:
+        - 'https://login.microsoftonline.com'
+        - 'https://graph.microsoft.com'
       client:
         - 'graph.microsoft.com'
   scopes:
@@ -61,3 +67,35 @@ permissions:
     - write:jira-work
 app:
   id: ari:cloud:ecosystem::app/3864d3bc-aad3-4650-ac35-e15af61fd92d
+remotes:
+  - key: mso-account
+    baseUrl: https://login.microsoftonline.com
+  - key: ms-apis
+    baseUrl: https://graph.microsoft.com
+providers:
+  auth:
+    - key: mso
+      name: MicrosoftOutlook
+      scopes:
+        - 'Calendars.Read'
+        - 'profile'
+        - 'offline_access'
+        - 'openid'
+      type: oauth2
+      clientId: a8efd8fc-0657-490e-a622-7b2aaa4f4f46
+      remotes:
+        - ms-apis
+      bearerMethod: authorization-header
+      actions:
+        authorization:
+          remote: mso-account
+          path: /common/oauth2/v2.0/authorize
+        exchange:
+          remote: mso-account
+          path: /common/oauth2/v2.0/token
+        retrieveProfile:
+          remote: ms-apis
+          path: /beta/me/profile
+          resolvers:
+            id: id
+            displayName: names.0.displayName

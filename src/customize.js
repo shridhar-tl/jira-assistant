@@ -41,7 +41,7 @@ const config = {
         },
         integrations: {
             googleCalendar: !isPluginBuild,
-            outlookCalendar: !isPluginBuild
+            outlookCalendar: true
         },
         common: {
             analytics: !isPluginBuild,

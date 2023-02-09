@@ -6,7 +6,6 @@ import './common/extensions';
 import './common/linq';
 import './scss/style.scss';
 import './scss/plugin.scss';
-import '@atlaskit/css-reset';
 
 (async function () {
     const context = await view.getContext();
