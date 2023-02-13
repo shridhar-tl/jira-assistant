@@ -20,23 +20,25 @@
         }
     }
 
-    .ranges {
-        padding-top: 4px;
-        width: 130px;
-        overflow-y: auto;
-        height: 218px;
+    &.show-ranges {
+        .ranges {
+            padding-top: 4px;
+            width: 130px;
+            overflow-y: auto;
+            height: 218px;
 
-        &:not(:hover) {
-            &::-webkit-scrollbar {
-                display: none;
+            &:not(:hover) {
+                &::-webkit-scrollbar {
+                    display: none;
+                }
             }
-        }
 
-        ul {
-            width: 100%;
+            ul {
+                width: 100%;
 
-            li {
-                padding: 4px 12px;
+                li {
+                    padding: 4px 12px;
+                }
             }
         }
     }

@@ -7,7 +7,7 @@ export function generateRangeReport(setState, getState) {
     return async function () {
         const newState = { loadingData: false };
         try {
-            setState({ loadingData: true });
+            setState({ loadingData: true, errorTitle: '', errorMessage: '' });
 
             const { dateRange: { fromDate, toDate } } = getState();
             if (!fromDate || !toDate) {
@@ -29,11 +29,13 @@ export function generateRangeReport(setState, getState) {
 
             newState.reportLoaded = true;
         } catch (err) {
-            console.error('Error pulling range report', err);
+            console.error('Error pulling range report:', err);
             const { $message } = inject('MessageService');
 
-            const msg = err.message || err.error?.errorMessages?.[0] || 'Unknown error. Check the console for more details';
-            $message.error(msg, 'Unknown error');
+            const errorMessage = err.message || err.error?.errorMessages?.[0] || 'Unknown error. Check the console for more details';
+            const errorTitle = err.message ? 'Worklog report' : 'Unknown error';
+            setState({ errorTitle, errorMessage });
+            $message.error(errorMessage, errorTitle);
         } finally {
             setState(newState);
         }
@@ -190,8 +192,7 @@ async function getIssuesWithWorklogFor(fromDate, toDate, state, epicNameField) {
     // When we receive empty array, it means user has configured to use these values
     // So when items are missing, do not pull any issues
     if (userList?.length === 0 || projectKeys?.length === 0) {
-        console.error('Not pulling worklogs as either user or project is not selected');
-        return [];
+        throw Error('Either userlist or project is required for generating worklog report');
     }
 
     const authorJQL = userList ? `worklogAuthor in ("${userList.join('","')}")` : '';

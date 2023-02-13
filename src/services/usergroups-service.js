@@ -24,7 +24,7 @@ export default class UserGroupService {
             {
                 name: 'Default group: No name set',
                 timeZone: '',
-                users: [currentUser.jiraUser]
+                users: getUserName(currentUser.jiraUser) ? [currentUser.jiraUser] : []
             }
         ];
     };

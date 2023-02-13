@@ -27,6 +27,13 @@ modules:
       resource: main
       edit:
         resource: main
+    - key: ja-team-worklog
+      title: Team Daywise Worklog
+      description: Lets you visualize worklog for individual user based on sprint or date range
+      thumbnail: https://www.jiraassistant.com/images/gadgets/teamwise-worklog.png
+      resource: main
+      edit:
+        resource: main
   jira:issueGlance:
     - key: ja-issue-glance
       title: Worklog timer

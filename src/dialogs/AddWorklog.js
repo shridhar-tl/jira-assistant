@@ -221,11 +221,15 @@ class AddWorklog extends BaseDialog {
         }, () => { log.ticketNo = prevTicketNo; });
     }
 
-    setValue = (field, value) => {
-        let { log } = this.state;
+    setValue = (field, value, clear) => {
+        let { log, vald, ctlClass } = this.state;
 
         if (value) {
             log[field] = value;
+            if (clear) {
+                ctlClass = { ...ctlClass, [field]: '' };
+                vald = { ...vald, [field]: true };
+            }
         }
         else {
             delete log[field];
@@ -233,7 +237,7 @@ class AddWorklog extends BaseDialog {
 
         log = { ...log };
 
-        this.setState({ log });
+        this.setState({ log, vald, ctlClass });
     };
 
     getFooter() {
@@ -271,7 +275,7 @@ class AddWorklog extends BaseDialog {
     render() {
         const {
             minCommentLength,
-            state: { log, vald }
+            state: { log, vald, ctlClass }
         } = this;
 
         if (!this.state.log) { return 'Loading...'; }
@@ -283,7 +287,7 @@ class AddWorklog extends BaseDialog {
                 </div>
                 <div className="p-col-9 col-sm-9">
                     <div className="form-group">
-                        <div className="ctlClass.dateStarted">
+                        <div className={ctlClass.dateStarted}>
                             <DatePicker value={log.dateStarted} showTime={true} onChange={(val) => this.setValue("dateStarted", val)} />
                         </div>
                         <span className={`help-block ${vald.dateStarted ? '' : 'msg-error'}`}>Provide the time you had started the work</span>
@@ -298,7 +302,7 @@ class AddWorklog extends BaseDialog {
                 <div className="col-sm-9">
                     <IssuePicker value={log.ticketNo} useDisplay={true} className="w-p-100" tabIndex="3"
                         placeholder="Enter the ticket number or start typing the summary to get suggestion"
-                        disabled={log.isUploaded} maxLength={20} onPick={(val) => this.setValue("ticketNo", val)} />
+                        disabled={log.isUploaded} maxLength={20} onPick={(val) => this.setValue("ticketNo", val, true)} />
                     <span className={`help-block ${vald.ticketNo ? '' : 'msg-error'}`}>Provide the ticket no on which you had to log your work</span>
                 </div>
             </div>
@@ -315,7 +319,7 @@ class AddWorklog extends BaseDialog {
                 </div>
                 <div className="col-sm-3">
                     <div className="form-group no-margin">
-                        <div className="p-inputgroup ctlClass.overrideTimeSpent">
+                        <div className={`p-inputgroup ${ctlClass.overrideTimeSpent}`}>
                             <span className="p-inputgroup-addon">
                                 <Checkbox checked={log.allowOverride || false} onChange={(val) => this.setValue("allowOverride", val)} />
                             </span>

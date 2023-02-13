@@ -9,10 +9,23 @@ import './scss/plugin.scss';
 
 (async function () {
     const context = await view.getContext();
-    const { moduleKey } = context;
+    const { moduleKey, extension: { modal: { modalId } = {} } = {} } = context;
 
     const root = ReactDOM.createRoot(document.getElementById('root'));
-    if (moduleKey === 'jira-assistant-app') {
+
+    //#region Modal Dialogs
+    if (modalId === 'ja-dlg-user-groups') {
+        const UserGroups = React.lazy(() => import('./jcloud/modals/UserGroup.js'));
+        root.render(<UserGroups jiraContext={context} />);
+    }
+
+    else if (modalId === 'ja-dlg-wl-report-config') {
+        const WLReportConfig = React.lazy(() => import('./jcloud/gadgets/team-worklog/ConfigModal.js'));
+        root.render(<WLReportConfig jiraContext={context} />);
+    }
+    //#endregion
+
+    else if (moduleKey === 'jira-assistant-app') {
         const App = React.lazy(() => import('./App'));
         root.render(<Router><App jiraContext={context} /></Router>);
     }
@@ -31,6 +44,11 @@ import './scss/plugin.scss';
     else if (moduleKey === 'ja-worklog-timer') {
         const WorklogTimerGadget = React.lazy(() => import('./jcloud/gadgets/worklog-timer'));
         root.render(<WorklogTimerGadget jiraContext={context} />);
+    }
+
+    else if (moduleKey === 'ja-team-worklog') {
+        const TeamWorklogGadget = React.lazy(() => import('./jcloud/gadgets/team-worklog'));
+        root.render(<TeamWorklogGadget jiraContext={context} />);
     }
     //#endregion
 

@@ -1,5 +1,6 @@
 import moment from "moment";
 import createStore from "../../common/store";
+import { inject } from "../../services";
 
 const initialData = {
     userListMode: '2', // 1=all logged users, 2=users from group, 3= from project, 4=from user and project
@@ -28,6 +29,8 @@ const initialData = {
 
     loadingData: false, // Whether currently report data is being pulled
     reportLoaded: false, // Is report data pulled for selected input
+
+    disableAddingWL: false, // To disable adding worklog from report
 
     selSprints: {}, // user input {[boardId]: {selected:true, range:0, custom:{ [sprintId]:true }}}
     sprintBoards: [], // user selected sprint boards
@@ -121,6 +124,47 @@ export function getSettingsObj(data) {
     }
 
     return toStore;
+}
+
+export async function getInitialSettings(storedSettings, addlSettings = {}) {
+    const { $session, $usergroup } = inject('SessionService', 'UserGroupService');
+    const { maxHours: maxHrs, projects, epicNameField, rapidViews: sprintBoardsFromSettings } = $session.CurrentUser;
+
+    const maxHours = (maxHrs || 8) * 60 * 60;
+
+    const settings = getSettingsObj(storedSettings);
+
+    if (sprintBoardsFromSettings?.length && !settings.sprintBoards?.length) {
+        settings.sprintBoards = sprintBoardsFromSettings;
+    }
+
+    const addl = getSprintsList(settings);
+
+    const userGroups = storedSettings.userGroups || await $usergroup.getUserGroups();
+
+    return {
+        userGroups, ...settings, ...addl, maxHours,
+        projects, epicField: epicNameField?.id,
+        sprintBoardsFromSettings, ...addlSettings // This field is used for comparison when saving local settings
+    };
+}
+
+export function getSprintsList({ sprintBoards, sprintList }) {
+    if (!sprintBoards || !sprintList) {
+        return { sprints: [], allSprints: {} };
+    }
+
+    const sprints = sprintBoards.map(b => ({
+        label: b.name,
+        isGroup: true,
+        items: sprintList[b.id]?.map(({ name, id }) => ({ value: id, label: name }))
+    }));
+    const allSprints = Object.keys(sprintList).reduce((obj, grp) => {
+        sprintList[grp]?.forEach(spr => obj[spr.id] = spr);
+        return obj;
+    }, {});
+
+    return { sprints, allSprints };
 }
 
 function removeUndefined(obj) {

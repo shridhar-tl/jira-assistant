@@ -4,13 +4,13 @@ import AddWorklog from '../../dialogs/AddWorklog';
 import GroupEditor from '../../dialogs/GroupEditor';
 import { Button } from '../../controls';
 import BaseGadget from '../BaseGadget';
-import { getSettingsObj, withProvider } from './datastore';
+import { getInitialSettings, withProvider } from './datastore';
 import {
-    fetchData, getSprintsList, setStateValue, worklogAdded,
+    fetchData, setStateValue, worklogAdded,
     hideWorklog, groupsChanged, getSettingsToStore
 } from './actions';
 import CustomActions from './settings/CustomActions';
-import Settings from './settings/Settings';
+import SettingsDialog from './settings/SettingsDialog';
 import Report from './Report';
 import WorklogReportInfo from './WorklogReportInfo';
 
@@ -64,7 +64,7 @@ class WorklogReport extends BaseGadget {
 
         return super.renderBase(
             <div className="worklog-report-container">
-                {showSettings && <Settings onHide={this.settingsChanged} />}
+                {showSettings && <SettingsDialog onHide={this.settingsChanged} />}
                 {showGroupsPopup && <GroupEditor groups={userGroups} onHide={this.hideGroups} />}
                 {!reportLoaded && !isLoading && <WorklogReportInfo />}
                 {reportLoaded && <Report isLoading={isLoading} />}
@@ -81,25 +81,7 @@ export default withProvider(WorklogReport,
     }) => ({ selSprints, dateRange, isLoading, reportLoaded, showWorklogPopup, worklogItem, userGroups }),
     { fetchData, setStateValue, worklogAdded, hideWorklog, getSettingsToStore, groupsChanged },
     null,
-    async () => {
-        const { $session, $usergroup } = inject('SessionService', 'ConfigService', 'UserGroupService');
-        const { maxHours: maxHrs, projects, epicNameField, rapidViews: sprintBoardsFromSettings } = $session.CurrentUser;
-
-        const maxHours = (maxHrs || 8) * 60 * 60;
-
-        const settings = getSettingsObj($session.pageSettings.reports_WorklogReport);
-
-        if (sprintBoardsFromSettings?.length && !settings.sprintBoards?.length) {
-            settings.sprintBoards = sprintBoardsFromSettings;
-        }
-
-        const addl = getSprintsList(settings);
-
-        const userGroups = await $usergroup.getUserGroups();
-
-        return {
-            userGroups, ...settings, ...addl, maxHours,
-            projects, epicField: epicNameField?.id,
-            sprintBoardsFromSettings // This field is used for comparison when saving local settings
-        };
+    () => {
+        const { $session } = inject('SessionService');
+        return getInitialSettings($session.pageSettings.reports_WorklogReport);
     });
