@@ -73,14 +73,14 @@ function createStore(initialData = {}) {
                 const [data, setData] = useState(false);
                 useEffect(() => {
                     (async function () {
-                        let result = init();
+                        let result = init(props);
                         if (result?.then) {
                             result = await result;
                         }
                         setData(result);
                         nowReady(true);
                     })();
-                }, []);
+                }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
                 if (ready) {
                     return (<DataProvider initialData={data}><Component {...props} /></DataProvider>);

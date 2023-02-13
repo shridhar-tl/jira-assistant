@@ -14,7 +14,7 @@ function ChooseBoard({ sprintBoards, selSprints: savedSprints, setValue, onChang
 
     useEffect(() => {
         renderRef.current = false;
-        !isFirstRender && onChange();
+        !isFirstRender && onChange?.();
     }, [savedSprints]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const hasBoards = !!sprintBoards?.length;

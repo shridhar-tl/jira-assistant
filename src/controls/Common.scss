@@ -26,7 +26,8 @@ textarea.p-inputtext {
 }
 
 /* Datepicker */
-
+/* If Prime calendar is used, then uncomment this css.
+Commented on 25-Jan-2023
 .p-calendar {
     min-width: 180px;
 
@@ -40,22 +41,7 @@ textarea.p-inputtext {
         margin-top: 0px;
         margin-left: 0px;
     }
-}
-
-.react-bootstrap-daterangepicker-container {
-    display: inline-block;
-
-    input.date-range-ctl {
-        width: 250px;
-        height: 27px;
-        border-right: 0px;
-    }
-
-    .icon {
-        margin-left: -2px;
-        height: 27px;
-    }
-}
+}*/
 
 /* Time picker */
 .rc-time-picker {

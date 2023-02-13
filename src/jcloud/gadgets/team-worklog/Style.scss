@@ -1,0 +1,12 @@
+.report-div {
+    height: 640px;
+    max-height: 700px;
+
+    .worklog-report,
+    .p-tabview,
+    .p-tabview-panels,
+    .p-tabview-panel,
+    .scroll-table-container {
+        max-height: 600px;
+    }
+}

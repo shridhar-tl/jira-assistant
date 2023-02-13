@@ -1,0 +1,74 @@
+.react-bootstrap-daterangepicker-container {
+    display: inline-block;
+
+    input.date-range-ctl {
+        width: 250px;
+        height: 27px;
+        border-right: 0px;
+    }
+
+    .icon {
+        margin-left: -2px;
+        height: 27px;
+    }
+}
+
+.daterangepicker {
+    &.show-calendar {
+        .ranges {
+            margin-top: 0px;
+        }
+    }
+
+    &.show-ranges {
+        .ranges {
+            padding-top: 4px;
+            width: 130px;
+            overflow-y: auto;
+            height: 218px;
+
+            &:not(:hover) {
+                &::-webkit-scrollbar {
+                    display: none;
+                }
+            }
+
+            ul {
+                width: 100%;
+
+                li {
+                    padding: 4px 12px;
+                }
+            }
+        }
+    }
+
+    select.monthselect,
+    select.yearselect {
+        width: 50%;
+    }
+
+    .calendar-table {
+
+        thead,
+        tbody,
+        tfoot {
+            border-bottom: 0px;
+        }
+
+        td,
+        th {
+            height: 18px;
+            min-height: 18px;
+            width: 26px;
+            min-width: 26px;
+            padding: 0px 4px;
+        }
+    }
+}
+
+@media(max-width:1200px) {
+    .daterangepicker.show-calendar .drp-calendar.right {
+        display: none;
+    }
+}

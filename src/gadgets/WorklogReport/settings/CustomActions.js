@@ -24,7 +24,7 @@ const DateRangeSelector = connect(function ({ dateRange, onChange, setValue }) {
 
     useEffect(() => {
         renderRef.current = false;
-        !isFirstRender && onChange();
+        !isFirstRender && onChange?.();
     }, [dateRange]); // eslint-disable-line react-hooks/exhaustive-deps
 
 

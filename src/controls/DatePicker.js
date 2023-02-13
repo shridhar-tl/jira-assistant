@@ -1,22 +1,25 @@
 import React, { PureComponent } from 'react';
 import DateRangePicker from 'react-bootstrap-daterangepicker';
-import 'bootstrap-daterangepicker/daterangepicker.css';
 import TextBox from './TextBox';
 import moment from 'moment';
 import Button from './Button';
 import { inject } from '../services';
 import classnames from 'classnames';
+import 'bootstrap-daterangepicker/daterangepicker.css';
+import './DatePicker.scss';
 
-const labelText = ['This month', 'Last one month', 'Last month', 'This week', 'Last one week', 'Last week'];
+const labelText = ['This month', 'One month', 'Prev month', 'This week', 'Last 7 days', 'Prev week', 'Prev 2 weeks', 'Last 14 days'];
 
 export function getRange() {
     return {
         'This month': [moment().startOf('month').toDate(), moment().endOf('month').toDate()],
-        'Last one month': [moment().subtract(1, 'months').toDate(), moment().toDate()],
-        'Last month': [moment().subtract(1, 'months').startOf('month').toDate(), moment().subtract(1, 'months').endOf('month').toDate()],
+        'One month': [moment().subtract(1, 'months').toDate(), moment().toDate()],
+        'Prev month': [moment().subtract(1, 'months').startOf('month').toDate(), moment().subtract(1, 'months').endOf('month').toDate()],
         'This week': [moment().startOf('week').toDate(), moment().endOf('week').toDate()],
-        'Last one week': [moment().subtract(6, 'days').toDate(), moment().toDate()],
-        'Last week': [moment().subtract(1, 'weeks').startOf('week').toDate(), moment().subtract(1, 'weeks').endOf('week').toDate()]
+        'Last 7 days': [moment().subtract(6, 'days').toDate(), moment().toDate()],
+        'Prev week': [moment().subtract(1, 'weeks').startOf('week').toDate(), moment().subtract(1, 'weeks').endOf('week').toDate()],
+        'Prev 2 weeks': [moment().subtract(2, 'weeks').startOf('week').toDate(), moment().subtract(1, 'weeks').endOf('week').toDate()],
+        'Last 14 days': [moment().subtract(13, 'days').toDate(), moment().toDate()],
     };
 }
 

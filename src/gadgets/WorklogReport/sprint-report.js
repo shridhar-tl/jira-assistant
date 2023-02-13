@@ -14,7 +14,7 @@ export function generateSprintReport(setState, getState) {
 
         const { $jira, $session: { CurrentUser: { name } } } = inject('JiraService', 'SessionService');
 
-        const newState = { loadingData: false };
+        const newState = { loadingData: false, errorTitle: '', errorMessage: '' };
 
         try {
             setState({ loadingData: true, reportLoaded: false });
@@ -91,7 +91,13 @@ export function generateSprintReport(setState, getState) {
 
             newState.reportLoaded = true;
         } catch (err) {
-            return Promise.reject(err);
+            console.error('Error pulling sprint report:', err);
+            const { $message } = inject('MessageService');
+
+            const errorMessage = err.message || err.error?.errorMessages?.[0] || 'Unknown error. Check the console for more details';
+            const errorTitle = err.message ? 'Worklog report' : 'Unknown error';
+            setState({ errorTitle, errorMessage });
+            $message.error(errorMessage, errorTitle);
         } finally {
             setState(newState);
         }

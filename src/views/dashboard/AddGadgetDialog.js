@@ -18,7 +18,7 @@ class AddGadgetDialog extends BaseDialog {
         this.$report.getReportsList().then(reports => {
             if (reports && reports.length) {
                 const list = reports.map(r => ({
-                    id: (r.advanced ? "AR:" : (r.isNew ? "CR:" : "SQ:")) + r.id,
+                    id: `${(r.advanced ? "AR" : (r.isNew ? "CR" : "SQ"))}:${r.id}:${r.queryName}`,
                     icon: "fa fa-filter",
                     name: r.queryName,
                     isOld: !(r.isNew || r.advanced),
