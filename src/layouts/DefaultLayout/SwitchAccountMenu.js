@@ -70,7 +70,7 @@ class SwitchAccountOption extends PureComponent {
     }
 
     showSettings = () => this.setState({ showSettingPopup: true });
-    hideSettings = () => this.setState({ showSettingPopup: true });
+    hideSettings = () => this.setState({ showSettingPopup: false });
 
     render() {
         const { showSettingPopup } = this.state;
