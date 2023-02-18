@@ -1,4 +1,5 @@
 import moment from 'moment';
+import { btoa_encode } from './base64';
 
 export function saveAs(blob, fileName) {
     const reader = new FileReader();
@@ -9,7 +10,7 @@ export function saveAs(blob, fileName) {
 }
 
 export function saveStringAs(str, typeName, fileName) {
-    const bdata = btoa(str);
+    const bdata = btoa_encode(str);
     const datauri = `data:${typeName};base64,${bdata}`;
     const a = document.createElement('a');
     if ('download' in a) { //html5 A[download]
@@ -135,7 +136,7 @@ function parseQueryParams(qryParams) {
         return obj;
     }, {});
 }
-
+/* This is commented on 18 Feb 2023 as no reference is found
 export function parseJwt(token) {
     try {
         // Get Token Header
@@ -153,7 +154,7 @@ export function parseJwt(token) {
     } catch (err) {
         return false;
     }
-}
+}*/
 
 export function getHostFromUrl(url) {
     if (url && typeof url !== "string") { url = url.toString(); }

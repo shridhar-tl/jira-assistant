@@ -11,6 +11,7 @@ import { GadgetActionType } from './_constants';
 import { inject } from '../services';
 import { EventCategory } from '../constants/settings';
 import "./BaseGadget.scss";
+import { isExtnBuild } from '../constants/build-info';
 
 export const onDashboardEvent = new EventEmitter();
 let instanceId = 0;
@@ -249,7 +250,9 @@ export class BaseGadget extends PureComponent {
             <Panel header="Gadget Unavailable">
                 <div className="pad-22">
                     This section contains an un-known gadget.
-                    Please report about this issue to have it fixed!
+                    {isExtnBuild && 'You could have added a new Gadget from Web version which is not yet available in extension. '}
+                    {isExtnBuild && 'If not, please report about this issue to have it fixed!'}
+                    {!isExtnBuild && 'Please report about this issue to have it fixed!'}
                 </div>
             </Panel>
         </div>);

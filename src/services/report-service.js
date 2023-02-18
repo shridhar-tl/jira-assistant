@@ -18,7 +18,7 @@ export default class ReportService {
     */
 
     async exportQueries(ids) {
-        const qrys = this.$storage.getReportsWithIds(ids);
+        const qrys = await this.$storage.getReportsWithIds(ids);
         await this.prepareDataForExport(qrys);
 
         const json = JSON.stringify({ exported: new Date(), reports: qrys });

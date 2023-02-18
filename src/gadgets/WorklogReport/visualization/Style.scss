@@ -1,7 +1,6 @@
 .worklog-visualization-tab {
     overflow-y: auto;
     overflow-x: hidden;
-    height: calc(100vh - 122px);
 
     .group-wise-charts {
         padding: 10px;
@@ -21,7 +20,6 @@
         }
 
         .chart-container {
-            height: 350px;
             width: 100%;
 
             .p-chart {
@@ -33,8 +31,56 @@
     }
 }
 
-.multi-view {
+.gadget.full-height {
     .worklog-visualization-tab {
-        height: calc(100vh - 156px);
+        height: calc(100vh - 163px);
+
+        .group-wise-charts {
+            .chart-container {
+                height: 350px;
+            }
+        }
+    }
+
+    .multi-view {
+        .worklog-visualization-tab {
+            height: calc(100vh - 197px);
+        }
+    }
+
+    &.docked {
+        .worklog-visualization-tab {
+            height: calc(100vh - 122px);
+
+            .group-wise-charts {
+                .chart-container {
+                    height: 350px;
+                }
+            }
+        }
+
+        .multi-view {
+            .worklog-visualization-tab {
+                height: calc(100vh - 156px);
+            }
+        }
+    }
+}
+
+.gadget.half-height {
+    .worklog-visualization-tab {
+        height: calc(50vh - 122px);
+
+        .group-wise-charts {
+            .chart-container {
+                height: 250px;
+            }
+        }
+    }
+
+    .multi-view {
+        .worklog-visualization-tab {
+            height: calc(50vh - 156px);
+        }
     }
 }
