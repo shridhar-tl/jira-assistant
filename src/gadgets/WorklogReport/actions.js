@@ -9,7 +9,7 @@ export function setStateValue(setState) {
 }
 
 export function getSettingsToStore(_, getState) {
-    return function () { return getSettingsObj(getState()); };
+    return function (opts) { return getSettingsObj(getState(), opts); };
 }
 
 export function fillSprintList(setState, getState) {

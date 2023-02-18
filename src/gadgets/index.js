@@ -19,6 +19,7 @@ export const GadgetList = [
     { id: 'myBookmarks', icon: 'fa-bookmark', name: 'Bookmarks', details: 'List of bookmarked tickets' },
     { id: 'dateWiseWorklog', icon: 'fa-list-alt', name: 'Logged Work - [Daywise]', details: 'List of worklog\'s grouped by date' },
     { id: 'worklogBarChart', icon: 'fa-bar-chart', name: 'Worklog Bar Chart', details: 'Worklogs represented as a stacked bar chart' },
+    { id: 'teamWorklogReport', icon: 'fa-bar-chart', name: 'Team Daywise Worklog', details: 'Worklogs represented for individual users on daily basis as table' },
     { id: 'pendingWorklog', icon: 'fa-clock-o', name: 'Worklog - [Pending Upload]', details: 'Worklog\'s still pending for upload' },
     { id: 'ticketWiseWorklog', icon: 'fa-list-alt', name: 'Logged Work - [Ticketwise]', details: 'List of worklog\'s grouped by ticket' },
     { id: 'myFilters', icon: 'fa-filter', name: 'My Reports', details: 'List of custom & advanced report built / imported by you' },

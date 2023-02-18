@@ -64,7 +64,7 @@ const { withProvider, connect } = createStore(initialData);
 
 export { withProvider, connect };
 
-export function getSettingsObj(data) {
+export function getSettingsObj(data, opts) {
     if (!data) {
         return {};
     }
@@ -91,7 +91,9 @@ export function getSettingsObj(data) {
         wlDateSelection,
         sprintBoards,
         sprintList,
-        selSprints = {}
+        selSprints = {},
+
+        userGroups
     } = data;
 
     const toStore = removeUndefined({
@@ -121,6 +123,10 @@ export function getSettingsObj(data) {
 
     if (filterDate && moment(filterDate).isSame(new Date(), 'day')) {
         delete toStore.filterDate;
+    }
+
+    if (opts?.incUserGroups) {
+        toStore.userGroups = userGroups;
     }
 
     return toStore;

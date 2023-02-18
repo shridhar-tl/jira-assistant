@@ -54,9 +54,9 @@
         "@atlaskit/avatar": "^21.1.8",
         "@atlaskit/side-navigation": "^1.5.3",
         "@coreui/coreui": "^2.1.16",
-        "@forge/api": "^2.10.0",
-        "@forge/bridge": "^2.5.0",
-        "@forge/resolver": "^1.4.9",
+        "@forge/api": "^2.11.0",
+        "@forge/bridge": "^2.5.1",
+        "@forge/resolver": "^1.4.10",
         "@fullcalendar/core": "5.11.2",
         "@fullcalendar/daygrid": "5.11.2",
         "@fullcalendar/interaction": "5.11.2",
@@ -95,7 +95,7 @@
         "react-dom": "^18.2.0",
         "react-router-dom": "^6.8.1",
         "react-scripts": "^5.0.1",
-        "reactstrap": "^9.1.5",
+        "reactstrap": "^9.1.6",
         "static-eval": "^2.1.0"
     },
     "scripts": {
@@ -202,6 +202,6 @@
         "gh-pages": "^5.0.0",
         "node-sass": "^8.0.0",
         "wait-on": "^7.0.1",
-        "webpack-bundle-analyzer": "^4.7.0"
+        "webpack-bundle-analyzer": "^4.8.0"
     }
 }
