@@ -228,7 +228,7 @@ export function generateUserDayWiseData(data, groups, pageSettings) {
                 grandTotalCost: 0
             };
 
-            const usrDta = data[usr.userName || getUserName(usr)] || {};
+            const usrDta = data[usr.userName || getUserName(usr, true)] || {};
 
             if (usrDta.isCurrentUser) {
                 usrInfo.isCurrentUser = true;
