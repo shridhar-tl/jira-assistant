@@ -51,7 +51,7 @@
         }
     },
     "dependencies": {
-        "@atlaskit/avatar": "^21.1.8",
+        "@atlaskit/avatar": "^21.1.9",
         "@atlaskit/side-navigation": "^1.5.3",
         "@coreui/coreui": "^2.1.16",
         "@forge/api": "^2.11.0",
@@ -194,7 +194,7 @@
         "@craco/craco": "^7.0.0",
         "concurrently": "^7.6.0",
         "cross-env": "^7.0.3",
-        "electron": "^23.0.0",
+        "electron": "^23.1.1",
         "electron-builder": "^23.6.0",
         "electronmon": "^2.0.2",
         "eslint": "^8.34.0",
