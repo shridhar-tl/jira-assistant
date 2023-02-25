@@ -33,6 +33,9 @@ class WorklogReport extends BaseGadget {
     hideGroups = (groups) => {
         this.props.groupsChanged(groups);
         this.setState({ showGroupsPopup: false });
+        if (this.props.isGadget) {
+            this.saveSettings();
+        }
     };
     refreshData = () => {
         this.selSprints = this.props.selSprints;
@@ -47,8 +50,16 @@ class WorklogReport extends BaseGadget {
     };
 
     async saveSettings() {
-        const settings = this.props.getSettingsToStore();
-        await this.$config.saveSettings('reports_WorklogReport', settings);
+        const { isGadget } = this.props;
+
+        const settings = this.props.getSettingsToStore({ incUserGroups: isGadget });
+
+        if (isGadget) {
+            this.settings = { ...this.settings, reportSettings: settings };
+            super.saveSettings();
+        } else {
+            await this.$config.saveSettings('reports_WorklogReport', settings);
+        }
     }
 
     renderCustomActions() {
@@ -81,7 +92,15 @@ export default withProvider(WorklogReport,
     }) => ({ selSprints, dateRange, isLoading, reportLoaded, showWorklogPopup, worklogItem, userGroups }),
     { fetchData, setStateValue, worklogAdded, hideWorklog, getSettingsToStore, groupsChanged },
     null,
-    () => {
-        const { $session } = inject('SessionService');
-        return getInitialSettings($session.pageSettings.reports_WorklogReport);
+    ({ isGadget, settings }) => {
+        let storedSettings = null;
+
+        if (isGadget) {
+            storedSettings = settings?.reportSettings;
+        } else {
+            const { $session } = inject('SessionService');
+            storedSettings = $session.pageSettings.reports_WorklogReport;
+        }
+
+        return getInitialSettings(storedSettings || {});
     });

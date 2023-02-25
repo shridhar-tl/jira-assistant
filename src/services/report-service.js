@@ -11,14 +11,14 @@ export default class ReportService {
         this.$analytics = $analytics;
     }
 
-    deleteSavedQuery(ids) { return this.deleteReportsWithIds(ids); }
+    deleteSavedQuery(ids) { return this.$storage.deleteReportsWithIds(ids); }
 
     /* Commented as no reference exists for this method
     getSavedQueries(ids) { return this.$storage._getReportsWithIds(ids); }
     */
 
     async exportQueries(ids) {
-        const qrys = this.$storage.getReportsWithIds(ids);
+        const qrys = await this.$storage.getReportsWithIds(ids);
         await this.prepareDataForExport(qrys);
 
         const json = JSON.stringify({ exported: new Date(), reports: qrys });

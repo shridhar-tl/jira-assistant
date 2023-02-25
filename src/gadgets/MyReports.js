@@ -293,7 +293,7 @@ class ImportReports extends BaseDialog {
                 <caption>Select all the reports which you would like to import and provide a name for the report to import.</caption>
                 <THead>
                     <tr>
-                        <th className="no-min-width no-pad"><Checkbox checked={selectAll} onChange={this.selectAllReports} /></th>
+                        <th className="no-min-width"><Checkbox checked={selectAll} onChange={this.selectAllReports} /></th>
                         <th>Report name</th>
                         <th>Report name (new)</th>
                         <th>Created date</th>

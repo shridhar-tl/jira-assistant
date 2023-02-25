@@ -1,12 +1,102 @@
-.worklog-report-container {
-  .scroll-table-container {
-    height: calc(100vh - 121px);
-    overflow: auto;
+.gadget.full-height {
+  .worklog-report-container {
+    .scroll-table-container {
+      height: calc(100vh - 166px);
 
-    &.flat-data-grid {
-      height: calc(100vh - 168px);
+      &.flat-data-grid {
+        height: calc(100vh - 210px);
+      }
     }
 
+    .p-tabview.multi-view {
+      .scroll-table-container {
+        height: calc(100vh - 197px);
+
+        &.flat-data-grid {
+          height: calc(100vh - 244px);
+        }
+      }
+    }
+  }
+
+  &.docked {
+    .worklog-report-container {
+      .scroll-table-container {
+        height: calc(100vh - 121px);
+
+        &.flat-data-grid {
+          height: calc(100vh - 168px);
+        }
+      }
+
+      .p-tabview.multi-view {
+        .scroll-table-container {
+          height: calc(100vh - 156px);
+
+          &.flat-data-grid {
+            height: calc(100vh - 203px);
+          }
+        }
+      }
+    }
+  }
+
+  .worklog-report-container {
+    .scroll-table-container {
+      overflow: auto;
+
+      td[data-test-id="total"] {
+        text-align: center;
+      }
+
+      thead {
+        tr {
+          th {
+            vertical-align: middle;
+          }
+        }
+      }
+    }
+  }
+}
+
+.gadget.half-height {
+  .worklog-report-container {
+    .scroll-table-container {
+      height: calc(50vh - 121px);
+      overflow: auto;
+
+      &.flat-data-grid {
+        height: calc(50vh - 168px);
+      }
+
+      td[data-test-id="total"] {
+        text-align: center;
+      }
+
+      thead {
+        tr {
+          th {
+            vertical-align: middle;
+          }
+        }
+      }
+    }
+
+    .p-tabview.multi-view {
+      .scroll-table-container {
+        height: calc(50vh - 156px);
+
+        &.flat-data-grid {
+          height: calc(50vh - 203px);
+        }
+      }
+    }
+  }
+}
+
+.worklog-report-container {
+  .scroll-table-container {
     td[data-test-id="total"] {
       text-align: center;
     }
@@ -16,16 +106,6 @@
         th {
           vertical-align: middle;
         }
-      }
-    }
-  }
-
-  .p-tabview.multi-view {
-    .scroll-table-container {
-      height: calc(100vh - 156px);
-
-      &.flat-data-grid {
-        height: calc(100vh - 203px);
       }
     }
   }

@@ -4,7 +4,7 @@ import * as $ from 'jquery';
 //import Excel from "exceljs/dist/es5/exceljs.browser";
 //Working:import * as Excel from "exceljs/dist/exceljs.min.js";
 import Excel from "exceljs";
-import { saveStringAs } from './utils';
+import { saveAs } from './utils';
 //https://github.com/guyonroche/exceljs/issues/511#issuecomment-391140701
 //import { saveAs } from 'file-saver';
 
@@ -261,14 +261,6 @@ export const ExportFormat = {
     CSV: "CSV",
     PDF: "PDF",
 };
-
-export function saveAs(blob, fileName) {
-    const reader = new FileReader();
-    reader.onload = function (e) {
-        saveStringAs(reader.result, blob.type, fileName);
-    };
-    reader.readAsBinaryString(blob);
-}
 
 function toInt(value) {
     if (!value) { return value; }
