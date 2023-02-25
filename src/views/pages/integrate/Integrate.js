@@ -1,4 +1,5 @@
 import React, { PureComponent } from 'react';
+import browser from '../../../common/browsers';
 import { showContextMenu, ContextMenu } from '../../../externals/jsd-report';
 import { inject } from '../../../services';
 import { Button, TextBox } from '../../../controls';
@@ -166,6 +167,8 @@ class Integrate extends PureComponent {
         }
     };
 
+    openInNewTab = () => this.$jaBrowserExtn.openTab("/index.html");
+
     render() {
         const { integrate, state: { jiraUrl, isLoading } } = this;
 
@@ -178,7 +181,13 @@ class Integrate extends PureComponent {
                                 <div className="card-body p-4">
                                     <BackupImporter onImport={this.onSettingsImport} cleanImport={true}>{this.setUploader}</BackupImporter>
                                     <ContextMenu />
-                                    <span className="fa fa-cogs pull-right pointer" style={settingsIconStyles} onClick={this.showMenu} onContextMenu={this.showMenu} />
+                                    {(!browser.isFirefox || !isQuickView) && <span className="fa fa-cogs pull-right pointer"
+                                        style={settingsIconStyles} onClick={this.showMenu} onContextMenu={this.showMenu}
+                                        title="Click to show more options"
+                                    />}
+                                    {(browser.isFirefox && isQuickView) && <span className="fa fa-external-link pull-right pointer"
+                                        style={settingsIconStyles} onClick={this.openInNewTab}
+                                        title="Click to open in new tab and see more integration options" />}
                                     <h1>Jira Assistant</h1>
                                     <p className="text-muted"><strong>Integrate</strong> with your Jira account</p>
                                     <div className="input-group mb-3">

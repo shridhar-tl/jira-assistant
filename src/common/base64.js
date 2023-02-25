@@ -1,5 +1,11 @@
 const _keyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
 export function btoa_encode(input) {
+    try {
+        return btoa(input);
+    } catch (err) {
+        console.warn('Unable to use inbuilt base64 encoding. Falling back to custom encoding. Error Details:- ', err);
+    }
+
     let output = "";
     let chr1, chr2, chr3, enc1, enc2, enc3, enc4;
     let i = 0;
