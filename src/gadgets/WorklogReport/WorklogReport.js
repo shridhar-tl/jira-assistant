@@ -49,7 +49,7 @@ class WorklogReport extends BaseGadget {
         }
     };
 
-    async saveSettings() {
+    saveSettings = async () => {
         const { isGadget } = this.props;
 
         const settings = this.props.getSettingsToStore({ incUserGroups: isGadget });
@@ -60,7 +60,7 @@ class WorklogReport extends BaseGadget {
         } else {
             await this.$config.saveSettings('reports_WorklogReport', settings);
         }
-    }
+    };
 
     renderCustomActions() {
         return <>
@@ -78,7 +78,7 @@ class WorklogReport extends BaseGadget {
                 {showSettings && <SettingsDialog onHide={this.settingsChanged} />}
                 {showGroupsPopup && <GroupEditor groups={userGroups} onHide={this.hideGroups} />}
                 {!reportLoaded && !isLoading && <WorklogReportInfo />}
-                {reportLoaded && <Report isLoading={isLoading} />}
+                {reportLoaded && <Report isLoading={isLoading} onSettingsChanged={this.saveSettings} />}
                 {showWorklogPopup && <AddWorklog worklog={worklogItem} onDone={worklogAdded}
                     onHide={hideWorklog} uploadImmediately={true} />}
             </div>

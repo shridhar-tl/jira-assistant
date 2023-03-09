@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import GroupableGrid from '../../components/GroupableGrid/GroupableGrid';
 import { connect } from "./datastore";
 import { getColumnSettings, flatGridSettingsChanged } from './actions';
 import Link from '../../controls/Link';
+import { useEffect } from 'react';
 
 const estimateFieldsToBeHidden = ["-originalestimate", "-totalLogged", "-remainingestimate", "-estVariance"];
 const formatTicket = (text, url) => text && <Link href={url} className="link">{text}</Link>;
@@ -13,11 +14,22 @@ function FlatGroupableWorklog({
     flatGridSettingsChanged,
     flatWorklogs,
     hideEstimate,
+    flatTableSettings,
     flatTableSettings: {
         groupBy, groupFoldable, displayColumns, sortField, isDesc
-    } = { displayColumns: hideEstimate ? estimateFieldsToBeHidden : null }
+    } = { displayColumns: hideEstimate ? estimateFieldsToBeHidden : null },
+    onSettingsChanged
 }) {
     const [columns] = useState(() => getColumnSettings(formatTicket));
+    const ref = useRef();
+
+    useEffect(() => {
+        if (flatTableSettings && ref.current) {
+            onSettingsChanged();
+        }
+        ref.current = true;
+
+    }, [flatTableSettings]); // eslint-disable-line react-hooks/exhaustive-deps
 
     if (!columns || !flatWorklogs) { return null; }
 

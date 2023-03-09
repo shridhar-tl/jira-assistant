@@ -93,7 +93,9 @@ export function getSettingsObj(data, opts) {
         sprintList,
         selSprints = {},
 
-        userGroups
+        userGroups,
+
+        flatTableSettings
     } = data;
 
     const toStore = removeUndefined({
@@ -118,7 +120,8 @@ export function getSettingsObj(data, opts) {
         wlDateSelection,
         sprintBoards,
         sprintList,
-        selSprints
+        selSprints,
+        flatTableSettings: removeUndefined(flatTableSettings)
     });
 
     if (filterDate && moment(filterDate).isSame(new Date(), 'day')) {
@@ -174,6 +177,10 @@ export function getSprintsList({ sprintBoards, sprintList }) {
 }
 
 function removeUndefined(obj) {
+    if (typeof obj !== 'object') {
+        return obj;
+    }
+
     Object.keys(obj).forEach(k => {
         if (typeof obj[k] === 'undefined') {
             delete obj[k];
