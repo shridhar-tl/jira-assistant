@@ -107,6 +107,10 @@ class CalendarSettings extends BaseDialog {
             <div className="form-group">
                 <Checkbox checked={settings.rowBanding || false} onChange={(val) => this.setValue(val, "rowBanding")} label="Enable alternate row color on calendar time grid" />
             </div>
+            <div className="form-group">
+                <Checkbox checked={settings.hideWeekends || false} onChange={(val) => this.setValue(val, "hideWeekends")} label="Hide weekends from calendar view (even when worklog already exists)" />
+                &nbsp;( <span className="fa fa-exclamation-triangle" title="Will be applied only once the page is refreshed. Existing pending worklog would still be uploaded even if hidden" /> )
+            </div>
         </div>);
     }
 }
