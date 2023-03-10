@@ -152,6 +152,7 @@ class PendingWorklog extends BaseGadget {
                         <Column className="w40" noExport={true}><Checkbox checked={selAllChk} onChange={this.selectAll} /></Column>
                         <Column sortBy="ticketNo">Ticket No</Column>
                         <Column sortBy="summary">Summary</Column>
+                        <Column sortBy="summary">Assignee</Column>
                         <Column sortBy="dateStarted">Log Time</Column>
                         <Column sortBy="timeSpent">Time Spent</Column>
                         <Column sortBy="overrideTimeSpent">Override Time</Column>
@@ -166,6 +167,7 @@ class PendingWorklog extends BaseGadget {
                         </td>
                         <td><Link href={b.ticketUrl} className="link strike" >{b.ticketNo}</Link></td>
                         <td>{b.summary}</td>
+                        <td>{b.assignee}</td>
                         <td>{b.displayDate}</td>
                         <td>{b.timeSpent}</td>
                         <td>{b.overrideTimeSpent}</td>
