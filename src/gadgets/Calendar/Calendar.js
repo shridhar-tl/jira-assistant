@@ -140,7 +140,23 @@ class Calendar extends BaseGadget {
         ];
     }
 
-    getCalendarOptions({ fullView }) {
+    getDayHeaderFormat(viewMode) {
+        if (viewMode === 'dayGridMonth') {
+            return undefined;
+        }
+
+        let dayHeaderFormat = this.dateFormat ? momentizedDateFormats[this.dateFormat] : undefined;
+        if (dayHeaderFormat) {
+            dayHeaderFormat = dayHeaderFormat.replace('YYYY', '').replace(/-/g, '/').clearStart(['/', ',', ' ']).clearEnd(['/', ',', ' ']);
+            if (!dayHeaderFormat.includes('ddd')) {
+                dayHeaderFormat = `ddd, ${dayHeaderFormat}`;
+            }
+        }
+
+        return dayHeaderFormat;
+    }
+
+    getCalendarOptions({ fullView, zoomIn }) {
         const {
             startOfDay, endOfDay,
             startOfWeek, workingDays,
@@ -161,13 +177,6 @@ class Calendar extends BaseGadget {
         const hour12 = (timeFormat || "").indexOf("tt") > -1;
         const meridiem = hour12 ? "short" : false;
 
-        let dayHeaderFormat = this.dateFormat ? momentizedDateFormats[this.dateFormat] : undefined;
-        if (dayHeaderFormat) {
-            dayHeaderFormat = dayHeaderFormat.replace('YYYY', '').replace(/-/g, '/').clearStart(['/', ',', ' ']).clearEnd(['/', ',', ' ']);
-            if (!dayHeaderFormat.includes('ddd')) {
-                dayHeaderFormat = `ddd, ${dayHeaderFormat}`;
-            }
-        }
 
         const allWeekDays = [0, 1, 2, 3, 4, 5, 6];
         let hiddenDays = hideWeekends ? allWeekDays.filter(v => !workingDays.includes(v)) : [];
@@ -184,8 +193,8 @@ class Calendar extends BaseGadget {
             hiddenDays,
 
             titleFormat: this.dateFormat ? momentizedDateFormats[this.dateFormat] : undefined,
-            dayHeaderFormat,
-            //eventMinHeight: 25,
+            dayHeaderFormat: this.getDayHeaderFormat(viewMode),
+            eventMinHeight: 40,
 
             // Event Display
             displayEventTime: true,
@@ -210,7 +219,7 @@ class Calendar extends BaseGadget {
             droppable: true,
 
             // Time-Axis Settings
-            slotDuration: "00:15:00",
+            slotDuration: zoomIn ? '00:05:00' : '00:15:00',
             slotMinTime: startOfDayDisp || startOfDay || DefaultStartOfDay, //"08:00:00",
             slotMaxTime: endOfDayDisp || endOfDay || DefaultEndOfDay, //"22:00:00",
 
@@ -264,6 +273,7 @@ class Calendar extends BaseGadget {
 
     viewModeChanged = (viewMode) => {
         this.setState({ viewMode });
+        this.fullCalendarOpts.dayHeaderFormat = this.getDayHeaderFormat(viewMode);
         this.calendar.getApi().changeView(viewMode);
         this.saveSettings({ ...this.state.settings, viewMode }, true);
     };
@@ -889,6 +899,8 @@ class Calendar extends BaseGadget {
                 {!!subTitle && <div className={`fc-sub-title${clsName}`} title={subTitle}>{subTitle}</div>}
             </div>);
         }
+
+        return true;
     };
 
     async uploadWorklog(all) {
@@ -995,24 +1007,28 @@ class Calendar extends BaseGadget {
         this.$config.saveSettings('calendar', settings);
     };
 
-    toggleDisplayHours = () => this.setState(({ fullView }) => {
-        const newState = { fullView: !fullView };
-        this.fullCalendarOpts = this.getCalendarOptions(newState);
+    toggleDisplayHours = () => this.setState(state => this.updateOpts(state, { fullView: !state.fullView }));
+    toggleZoom = () => this.setState(state => this.updateOpts(state, { zoomIn: !state.zoomIn }));
+
+    updateOpts(state, newState) {
+        this.fullCalendarOpts = this.getCalendarOptions({ ...state, ...newState });
         return newState;
-    });
+    }
 
     today = () => this.calendar.getApi().today();
 
     renderCustomActions() {
         const {
             isGadget,
-            state: { pendingWorklogCount, isLoading, uploading, fullView, settings: { viewMode } }
+            state: { pendingWorklogCount, isLoading, uploading, fullView, zoomIn, settings: { viewMode } }
         } = this;
         const isGridMode = viewMode === 'timeGridWeek' || viewMode === 'timeGridDay';
         return <>
             {isGridMode && <Button type="secondary" icon={fullView ? 'fa fa-compress' : 'fa fa-expand'} onClick={this.toggleDisplayHours}
                 title={fullView ? "Click to show only working hours in calendar" : "Click to show full day calendar"} />}
             <Button label="Today" onClick={this.today} title="Navigate to current week" />
+            <Button onClick={this.toggleZoom} icon={zoomIn ? "fa fa-search-minus" : "fa fa-search-plus"}
+                title={zoomIn ? "Zoom out to see 15 mins grid" : "Zoom in to see 5 mins grid"} />
             {!this.isGadget && <>
                 <Button icon="fa fa-arrow-left" onClick={() => this.calendar.getApi().prev()} />
                 <Button icon="fa fa-arrow-right" onClick={() => this.calendar.getApi().next()} />
