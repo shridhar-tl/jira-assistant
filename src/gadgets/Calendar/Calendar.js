@@ -140,6 +140,22 @@ class Calendar extends BaseGadget {
         ];
     }
 
+    getDayHeaderFormat(viewMode) {
+        if (viewMode === 'dayGridMonth') {
+            return undefined;
+        }
+
+        let dayHeaderFormat = this.dateFormat ? momentizedDateFormats[this.dateFormat] : undefined;
+        if (dayHeaderFormat) {
+            dayHeaderFormat = dayHeaderFormat.replace('YYYY', '').replace(/-/g, '/').clearStart(['/', ',', ' ']).clearEnd(['/', ',', ' ']);
+            if (!dayHeaderFormat.includes('ddd')) {
+                dayHeaderFormat = `ddd, ${dayHeaderFormat}`;
+            }
+        }
+
+        return dayHeaderFormat;
+    }
+
     getCalendarOptions({ fullView }) {
         const {
             startOfDay, endOfDay,
@@ -161,13 +177,6 @@ class Calendar extends BaseGadget {
         const hour12 = (timeFormat || "").indexOf("tt") > -1;
         const meridiem = hour12 ? "short" : false;
 
-        let dayHeaderFormat = this.dateFormat ? momentizedDateFormats[this.dateFormat] : undefined;
-        if (dayHeaderFormat) {
-            dayHeaderFormat = dayHeaderFormat.replace('YYYY', '').replace(/-/g, '/').clearStart(['/', ',', ' ']).clearEnd(['/', ',', ' ']);
-            if (!dayHeaderFormat.includes('ddd')) {
-                dayHeaderFormat = `ddd, ${dayHeaderFormat}`;
-            }
-        }
 
         const allWeekDays = [0, 1, 2, 3, 4, 5, 6];
         let hiddenDays = hideWeekends ? allWeekDays.filter(v => !workingDays.includes(v)) : [];
@@ -184,7 +193,7 @@ class Calendar extends BaseGadget {
             hiddenDays,
 
             titleFormat: this.dateFormat ? momentizedDateFormats[this.dateFormat] : undefined,
-            dayHeaderFormat,
+            dayHeaderFormat: this.getDayHeaderFormat(viewMode),
             //eventMinHeight: 25,
 
             // Event Display
@@ -264,6 +273,7 @@ class Calendar extends BaseGadget {
 
     viewModeChanged = (viewMode) => {
         this.setState({ viewMode });
+        this.fullCalendarOpts.dayHeaderFormat = this.getDayHeaderFormat(viewMode);
         this.calendar.getApi().changeView(viewMode);
         this.saveSettings({ ...this.state.settings, viewMode }, true);
     };
@@ -889,6 +899,8 @@ class Calendar extends BaseGadget {
                 {!!subTitle && <div className={`fc-sub-title${clsName}`} title={subTitle}>{subTitle}</div>}
             </div>);
         }
+
+        return true;
     };
 
     async uploadWorklog(all) {
