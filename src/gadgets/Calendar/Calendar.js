@@ -777,7 +777,7 @@ class Calendar extends BaseGadget {
         }
         else {
             const oldDate = eventSrcObj.dateStarted;
-            const newTime = snapTimeToGrid(snapMinutes, event.start);
+            const newTime = snapTimeToGrid(this.state.zoomIn ? 5 : snapMinutes, event.start);
             this.$worklog.changeWorklogDate(eventSrcObj, newTime).then((entry) => {
                 this.$analytics.trackEvent("Worklog moved", EventCategory.UserActions, eventSrcObj.isUploaded ? "Uploaded worklog" : "Pending worklog");
                 //this.updateAllDayEvent({ start: oldDate }); // This is to update the info of previous date
@@ -803,7 +803,7 @@ class Calendar extends BaseGadget {
 
     getEventDuration(event, snap) {
         if (event.end && event.start) {
-            const newTime = snap ? snapTimeToGrid(snapMinutes, event.end) : event.end;
+            const newTime = snap ? snapTimeToGrid(this.state.zoomIn ? 5 : snapMinutes, event.end) : event.end;
             const diff = moment.duration(moment(newTime).diff(event.start));
             return `${diff.hours().pad(2)}:${diff.minutes().pad(2)}`;
         }
