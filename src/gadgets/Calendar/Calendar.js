@@ -163,7 +163,7 @@ class Calendar extends BaseGadget {
             timeFormat
         } = this.CurrentUser;
         const { viewMode } = (this.isGadget ? this.props : this.state.settings);
-        const { hideWeekends } = this.state.settings;
+        const { hideWeekends, readableEvents } = this.state.settings;
         const { startOfDayDisp, endOfDayDisp } = fullView ? { startOfDayDisp: '00:00', endOfDayDisp: '23:59' } : this.CurrentUser;
 
         let firstDay = startOfWeek;
@@ -194,7 +194,7 @@ class Calendar extends BaseGadget {
 
             titleFormat: this.dateFormat ? momentizedDateFormats[this.dateFormat] : undefined,
             dayHeaderFormat: this.getDayHeaderFormat(viewMode),
-            eventMinHeight: 40,
+            eventMinHeight: readableEvents ? 40 : undefined,
 
             // Event Display
             displayEventTime: true,

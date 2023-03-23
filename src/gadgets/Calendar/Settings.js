@@ -111,6 +111,10 @@ class CalendarSettings extends BaseDialog {
                 <Checkbox checked={settings.hideWeekends || false} onChange={(val) => this.setValue(val, "hideWeekends")} label="Hide weekends from calendar view (even when worklog already exists)" />
                 &nbsp;( <span className="fa fa-exclamation-triangle" title="Will be applied only once the page is refreshed. Existing pending worklog would still be uploaded even if hidden" /> )
             </div>
+            <div className="form-group">
+                <Checkbox checked={settings.readableEvents || false} onChange={(val) => this.setValue(val, "readableEvents")} label="Allow small events to expand in height to make it readable" />
+                &nbsp;( <span className="fa fa-exclamation-triangle" title="This settings may result in small events overlapping with other events. This settings would be applied only after page refresh." /> )
+            </div>
         </div>);
     }
 }
