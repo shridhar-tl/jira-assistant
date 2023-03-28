@@ -376,7 +376,8 @@ class Calendar extends BaseGadget {
                 .groupBy((key) => moment(key.start).format("YYYY-MM-DD"))
                 .map((d) => this.getAllDayObj(d));
 
-            this.latestData = data;
+            // Commented on 28-Mar-2023
+            //this.latestData = data;
 
             filter(data.addRange(allDayEvents).addRange(arr[1]));
         }, (err) => { this.setState({ isLoading: false }); return Promise.reject(err); });
@@ -428,9 +429,11 @@ class Calendar extends BaseGadget {
         });
     }
 
-    updateAllDayEvent(result) {
+    updateAllDayEvent(result, events) {
         const key = moment(result.start).format("YYYY-MM-DD");
-        const { events } = this.state;
+        if (!events) {
+            events = [...this.state.events];
+        }
         events.removeAll((e) => e.id === key && e.entryType === 3);
         const logs = events.filter((a) => a.entryType === 1 && moment(a.start).format("YYYY-MM-DD") === key);
         if (logs && logs.length > 0) {
@@ -489,29 +492,33 @@ class Calendar extends BaseGadget {
             return;
         } // This will be triggered when closing the popup
         let resp = false;
-        const { events } = this.state;
+        let { events } = this.state;
+        events = [...events];
 
         if (result.removed) {
             const removedId = result.removed + (result.deletedObj.worklogId ? `#${result.deletedObj.worklogId}` : "");
             result = events.first((e) => e.id === removedId && e.entryType === 1);
             events.remove(result);
-            this.latestData.remove((e) => e.id === result.id && e.entryType === 1);
+            // Commented on 28-Mar-2023
+            //this.latestData.remove((e) => e.id === result.id && e.entryType === 1);
         }
         else if (result.added || result.edited) {
             const previousTime = result.previousTime;
             result = result.added || result.edited;
+            result = { ...result };
             result.backgroundColor = this.state.settings.worklogColor; // Set color for newely added worklog
             result.borderColor = result.backgroundColor;
             events.removeAll((e) => e.id === result.id && e.entryType === 1);
             events.push(result);
-            this.latestData.removeAll((e) => e.id === result.id && e.entryType === 1);
-            this.latestData.push(result);
+            // Commented on 28-Mar-2023
+            //this.latestData.removeAll((e) => e.id === result.id && e.entryType === 1);
+            //this.latestData.push(result);
             resp = true;
             if (previousTime) {
-                this.updateAllDayEvent({ start: previousTime });
+                this.updateAllDayEvent({ start: previousTime }, events);
             }
         }
-        this.updateAllDayEvent(result);
+        this.updateAllDayEvent(result, events);
 
         //events.removeAll((e) => e.entryType === 3);
         this.setEventsData(events);
@@ -859,7 +866,7 @@ class Calendar extends BaseGadget {
         }
         else if (entryType === 2) {
             const m = srcObj;
-            const hasWorklog = this.latestData.some((e) => e.parentId === event.id && e.entryType === 1);
+            const hasWorklog = this.state.events?.some((e) => e.parentId === event.id && e.entryType === 1);
 
             contextEvent = (e, a, d) => {
                 //hideContextMenu();
