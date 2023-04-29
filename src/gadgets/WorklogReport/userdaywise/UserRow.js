@@ -1,30 +1,29 @@
-import React, { useState, useCallback } from 'react';
+import React, { useCallback } from 'react';
 import { getUserName } from '../../../common/utils';
 import { connect } from '../datastore';
 import { addWorklog, convertSecs } from '../actions';
+import { toggleUserExpanded } from './actions';
 import TicketRow from './TicketRow';
 import Indicator from '../../../components/worklog-indicator';
 
 function getImageUrl(user) { return user.imageUrl || user.avatarUrls['48x48'] || user.avatarUrls['32x32']; }
 
 function UserRow({
-    isSprint, groupIndex, boardId, user, user: u, colSpan, userDisplayFormat, sprintsList, costView,
-    timeExportFormat, convertSecs, addWorklog
+    isSprint, groupIndex, boardId, user, user: u, colSpan, userDisplayFormat, sprintsList, costView, expanded, uid,
+    timeExportFormat, convertSecs, addWorklog, toggleUserExpanded
 }) {
-    const [expanded, setExpanded] = useState(false);
-    const toggleDisplay = useCallback((e) => {
+    const detailedDisp = userDisplayFormat !== '1';
+
+    const toggleDisplay = useCallback(e => {
         if (!e.nativeEvent.srcElement.classList.contains('add-wl')) {
-            setExpanded(e => !e);
+            toggleUserExpanded(boardId, groupIndex, uid);
         }
-    }, [setExpanded]);
+    }, [boardId, groupIndex, uid, toggleUserExpanded]);
 
     const addNewWorklog = useCallback((ticketNo, day) => {
         const { date, prop } = day;
         addWorklog(user, ticketNo, date, user.total?.[prop]);
     }, [user, addWorklog]);
-
-    const detailedDisp = userDisplayFormat !== '1';
-    const uid = getUserName(u);
 
     return (<>
         <tr className="pointer auto-wrap" onClick={toggleDisplay} data-current-user={u.isCurrentUser ? '1' : '0'} data-row-id="user">
@@ -53,13 +52,13 @@ function UserRow({
     </>);
 }
 
-
-
 export default connect(UserRow,
-    (state, { boardId }) => {
-        const { userDisplayFormat, timeframeType } = state;
+    (state, { boardId, groupIndex, user }) => {
+        const { userDisplayFormat, timeframeType, userExpnState } = state;
         const isSprint = timeframeType === '1';
-        const result = { isSprint, userDisplayFormat };
+        const uid = getUserName(user);
+        const expandKey = `${boardId}_${groupIndex}_${uid}`;
+        const result = { isSprint, userDisplayFormat, uid, expanded: !!userExpnState[expandKey] };
 
         if (isSprint) {
             result.sprintsList = state[`sprintsList_${boardId}`];
@@ -67,7 +66,7 @@ export default connect(UserRow,
 
         return result;
     },
-    { addWorklog, convertSecs }
+    { addWorklog, convertSecs, toggleUserExpanded }
 );
 
 
