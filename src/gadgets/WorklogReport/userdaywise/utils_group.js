@@ -244,6 +244,7 @@ export function generateUserDayWiseData(data, groups, pageSettings) {
                     const logs = {};
 
                     const ticket = {
+                        fields: firstTkt.fields,
                         ticketNo: tGrp.key,
                         parent: firstTkt.parent,
                         parentUrl: firstTkt.parent ? viewIssueUrl(firstTkt.parent) : null,
@@ -395,6 +396,7 @@ export function filterDaysWithoutWorklog(daysToHide, dates) {
 
 function getLogUserObj(issue, fields, worklog, append, { epicNameField, epicDetails, $userutils }) {
     const obj = {
+        fields,
         ticketNo: issue.key,
         epicDisplay: null,
         epicUrl: null,

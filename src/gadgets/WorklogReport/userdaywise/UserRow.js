@@ -9,7 +9,7 @@ import Indicator from '../../../components/worklog-indicator';
 function getImageUrl(user) { return user.imageUrl || user.avatarUrls['48x48'] || user.avatarUrls['32x32']; }
 
 function UserRow({
-    isSprint, groupIndex, boardId, user, user: u, colSpan, userDisplayFormat, sprintsList, costView, expanded, uid,
+    isSprint, groupIndex, boardId, user, user: u, colSpan, additionalCols, userDisplayFormat, sprintsList, costView, expanded, uid,
     timeExportFormat, convertSecs, addWorklog, toggleUserExpanded
 }) {
     const detailedDisp = userDisplayFormat !== '1';
@@ -48,7 +48,8 @@ function UserRow({
         </tr>
 
         {expanded && <UserTickets isSprint={isSprint} groupIndex={groupIndex} boardId={boardId} uid={uid} user={u} costView={costView}
-            sprintsList={sprintsList} addNewWorklog={addNewWorklog} convertSecs={convertSecs} timeExportFormat={timeExportFormat} />}
+            sprintsList={sprintsList} addNewWorklog={addNewWorklog} convertSecs={convertSecs}
+            timeExportFormat={timeExportFormat} additionalCols={additionalCols} />}
     </>);
 }
 
@@ -98,7 +99,8 @@ const UserDatesDisplay = connect(function ({
     };
 });
 
-function UserTickets({ user, isSprint, groupIndex, sprintsList, uid, timeExportFormat, addNewWorklog, convertSecs, costView }) {
+function UserTickets({ user, isSprint, groupIndex, sprintsList, uid, timeExportFormat, addNewWorklog, convertSecs, costView, additionalCols }) {
     return user.tickets.map((t, i) => <TicketRow key={i} isSprint={isSprint} groupIndex={groupIndex} issue={t} user={user} uid={uid}
-        addNewWorklog={addNewWorklog} sprintsList={sprintsList} timeExportFormat={timeExportFormat} convertSecs={convertSecs} costView={costView} />);
+        addNewWorklog={addNewWorklog} sprintsList={sprintsList} timeExportFormat={timeExportFormat} convertSecs={convertSecs}
+        costView={costView} additionalCols={additionalCols} />);
 }

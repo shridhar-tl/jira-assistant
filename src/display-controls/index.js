@@ -17,3 +17,23 @@ export {
     ItemDisplay, ProgressDisplay, ProjectDisplay, TagsDisplay, TicketDisplay,
     TimeSpentDisplay, TimeTrackDisplay, UnknownItemDisplay, UserDisplay
 };
+
+export function getComponentFor(type) {
+    switch (type) {
+        case 'date': return { Component: DateDisplay, props: { dateOnly: true } };
+        case 'datetime': return { Component: DateDisplay };
+        case 'parent': return { Component: IssueDisplay, props: { settings: { valueType: 'both' } } };
+        case 'progress': return { Component: ProgressDisplay };
+        case 'project': return { Component: ProjectDisplay, props: { settings: { valueType: 'both' } } };
+        case 'timespent': return { Component: TimeSpentDisplay };
+        case 'timetracking': return { Component: TimeTrackDisplay };
+        case 'comments-page': return { Component: CommentsDisplay };
+        case 'user': return { Component: UserDisplay };
+        case 'votes': return { Component: TagsDisplay, props: { tagProp: 'votes' } };
+        case 'status':
+        case 'resolution':
+        case 'priority':
+            return { Component: ItemDisplay };
+        default: return { Component: UnknownItemDisplay };
+    }
+}
