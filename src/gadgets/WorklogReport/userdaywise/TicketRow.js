@@ -5,22 +5,13 @@ import { connect } from '../datastore';
 function TicketRow({
     isSprint, groupIndex, issue: t, user: u, uid, sprintsList, costView,
     timeExportFormat, convertSecs, formatTime, addNewWorklog,
-    fields: {
-        hideEstimate, showProject, showParentSummary, showIssueType,
-        showStatus, showEpic, showAssignee, showReporter
-    }
+    fields: { hideEstimate }, additionalCols
 }) {
     return (
         <tr className="auto-wrap" data-row-id="ticket" data-current-user={u.isCurrentUser ? '1' : '0'} data-test-id={t.ticketNo}>
-            <IssueInfo issue={t} showParentSummary={showParentSummary} hideEstimate={hideEstimate} convertSecs={convertSecs} />
+            <IssueInfo issue={t} showParentSummary={false} hideEstimate={hideEstimate} convertSecs={convertSecs} />
 
-            {!!showProject && <td>{t.projectKey} - {t.projectName}</td>}
-            {!!showParentSummary && <td>{t.parent && <Link href={t.parentUrl} className="link">{t.parent}</Link>} - {t.parentSummary}</td>}
-            {!!showIssueType && <td><Image src={t.iconUrl} title={t.issueType} /> {t.issueType}</td>}
-            {!!showStatus && <td>{t.statusName}</td>}
-            {!!showEpic && <td>{t.epicDisplay && <Link href={t.epicUrl} className="link">{t.epicDisplay}</Link>}</td>}
-            {!!showAssignee && <td>{t.assignee}</td>}
-            {!!showReporter && <td>{t.reporter}</td>}
+            {additionalCols?.map(({ key, Component, props }) => <Component key={key} value={t.fields?.[key]} {...props} />)}
 
             {isSprint && sprintsList.map(({ id }) => <IssueDays key={id} convertSecs={convertSecs} groupIndex={groupIndex} costView={costView}
                 sprintId={id} uid={uid} formatTime={formatTime} ticketNo={t.ticketNo} isSprint={isSprint} timeExportFormat={timeExportFormat}

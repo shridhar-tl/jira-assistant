@@ -20,10 +20,10 @@ const Settings = function ({ settings, onChange }) {
 
     const setValue = (key, value) => updateState({ ...modifiedSettings, [key]: value });
 
-    const setFieldValue = (checked, field) => {
+    const setFieldValue = (value, field) => {
         setValue('fields', {
             ...allSettings.fields,
-            [field]: checked
+            [field]: value
         });
     };
 

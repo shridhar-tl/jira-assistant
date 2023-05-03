@@ -9,7 +9,7 @@ class DateDisplay extends BaseControl {
     }
 
     renderControl(badge) {
-        const { value, date = value, quick } = this.props;
+        const { value, date = value, quick, dateOnly } = this.props;
 
         if (!date) { return badge; }
 
@@ -17,9 +17,11 @@ class DateDisplay extends BaseControl {
             return <>{value.text} {badge}</>;
         }
 
+        const format = dateOnly ? this.$userutils.formatDate : this.$userutils.formatDateTime;
+
         return (
-            <span title={quick ? this.$userutils.formatDateTime(date) : null}>
-                {quick && "about "} {this.$userutils.formatDateTime(date, quick ? "quick" : null)}
+            <span title={quick ? format(date) : null}>
+                {quick && "about "} {format(date, quick ? "quick" : null)}
             </span>
         );
     }

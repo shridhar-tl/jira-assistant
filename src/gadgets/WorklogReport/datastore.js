@@ -37,7 +37,8 @@ const initialData = {
     sprintList: {},
     allSprints: {},
 
-    sprints: []
+    sprints: [],
+    userExpnState: {} // This would contain [uid]: true when user is expanded in group
     //sprintsList_{boardId}:[{sprint}]
     //groupReport_{boardId}:{weeks:[],dates:[], groupedData:[{group}]}
 };
