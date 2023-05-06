@@ -93,6 +93,15 @@ body .p-component {
     }
 }
 
+.p-multiselect {
+    width: 100%;
+    height: 30px;
+
+    .p-multiselect-label-container .p-multiselect-label {
+        padding: 3px 10px;
+    }
+}
+
 /* Menu related styles */
 a.p-menuitem-link {
     text-decoration: none;

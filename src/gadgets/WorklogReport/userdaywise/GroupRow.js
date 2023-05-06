@@ -5,10 +5,11 @@ import UserRow from './UserRow';
 
 function GroupRow({
     group: grp, index, dates, sprintsList, convertSecs, isSprint, boardId, costView,
-    timeExportFormat, colSpan
+    timeExportFormat, additionalCols
 }) {
     const [hidden, setVisibility] = useState(false);
     const toggleDisplay = useCallback(() => setVisibility((h) => !h), [setVisibility]);
+    const colSpan = (additionalCols?.length || 0) + 1;
 
     return (
         <>
@@ -23,7 +24,7 @@ function GroupRow({
             </tr>}
 
             {!hidden && grp.users.map((u, i) => <UserRow key={i} groupIndex={index} index={i} colSpan={colSpan} user={u}
-                timeExportFormat={timeExportFormat} boardId={boardId} costView={costView}
+                timeExportFormat={timeExportFormat} boardId={boardId} costView={costView} additionalCols={additionalCols}
             />)}
 
             {!grp.isDummy && <tr className="grouped-row right auto-wrap" onClick={hidden ? toggleDisplay : null}>

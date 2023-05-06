@@ -104,7 +104,7 @@ class SelectBox extends PureComponent {
         if (multiselect) {
             return (
                 <MultiSelect appendTo={document.body} value={value} optionLabel={displayField} options={dataset} filter={filter}
-                    onChange={this.setValue} placeholder={placeholder} />
+                    onChange={this.onChange} placeholder={placeholder} />
             );
         }
         else {

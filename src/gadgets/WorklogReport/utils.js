@@ -25,7 +25,12 @@ export function getFieldsToFetch(state, epicNameField, options) {
             fieldsToFetch.push(epicNameField);
         }
 
-        return { fieldsToFetch, additionalJQL };
+        const optionalFields = state.fields.optional;
+        if (Array.isArray(optionalFields) && optionalFields.length) {
+            optionalFields.forEach(({ key }) => fieldsToFetch.push(key));
+        }
+
+        return { fieldsToFetch: fieldsToFetch.distinct(), additionalJQL };
     }
 
     return { fieldsToFetch };
@@ -47,6 +52,7 @@ function getFlatMapper(usr, groupName, sprintName) {
         sprintName,
         username: getUserName(usr),
         userDisplay: userName,
+        fields: log.fields,
         assignee: log.assignee,
         reporter: log.reporter,
         parent: log.parent,

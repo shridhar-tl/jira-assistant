@@ -87,8 +87,9 @@ export default class WorklogService extends BaseService {
                 const wlList = worklogs.map((w) => {
                     const fields = (tickets[w.ticketNo.toUpperCase()] || {}).fields || {};
                     const data = w;
+                    data.assignee = fields.assignee?.displayName || "(unassigned)";
                     data.summary = fields.summary || "(unavailable)";
-                    data.status = (fields.status || "").name || "(unavailable)";
+                    data.status = fields.status?.name || "(unavailable)";
                     return data;
                 });
                 return wlList;

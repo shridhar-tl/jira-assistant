@@ -12,7 +12,7 @@ const loader = (<div className="pad-15">Loading... please wait while the report 
 
 const noData = (<div className="pad-15">No data available to display.</div>);
 
-function Report({ selSprints, isLoading, useSprint, hasData }) {
+function Report({ selSprints, isLoading, useSprint, hasData, onSettingsChanged }) {
     if (isLoading) { return loader; }
     if (!hasData) { return null; }
 
@@ -23,14 +23,14 @@ function Report({ selSprints, isLoading, useSprint, hasData }) {
         if (boards.length > 1) {
             reportData = (<TabView className="no-padding multi-view" renderActiveOnly={false}>
                 {boards.map(boardId => <TabPanel header={selSprints[boardId].name} contentClassName="no-padding">
-                    <ReportData boardId={boardId} />
+                    <ReportData boardId={boardId} onSettingsChanged={onSettingsChanged} />
                 </TabPanel>)}
             </TabView>);
         } else if (boards.length) {
-            reportData = (<ReportData boardId={boards[0]} />);
+            reportData = (<ReportData boardId={boards[0]} onSettingsChanged={onSettingsChanged} />);
         }
     } else {
-        reportData = (<ReportData />);
+        reportData = (<ReportData onSettingsChanged={onSettingsChanged} />);
     }
 
     return (<div className="worklog-report">{reportData}</div>);
@@ -41,7 +41,7 @@ export default connect(Report, ({ reportLoaded: hasData, timeframeType, selSprin
 }));
 
 
-const ReportData = connect(function ({ boardId, hasData, showCostReport, showSummaryReport }) {
+const ReportData = connect(function ({ boardId, hasData, showCostReport, showSummaryReport, onSettingsChanged }) {
     if (!hasData) { return noData; }
 
     return (<TabView className="no-padding" renderActiveOnly={false}>
@@ -52,7 +52,7 @@ const ReportData = connect(function ({ boardId, hasData, showCostReport, showSum
             <GroupedDataGrid exportSheetName="Cost Report" boardId={boardId} costView={true} />
         </TabPanel>}
         <TabPanel header="Flat (Groupable)" contentClassName="no-padding">
-            <FlatGroupableWorklog exportSheetName="Flat (Groupable)" boardId={boardId} />
+            <FlatGroupableWorklog exportSheetName="Flat (Groupable)" boardId={boardId} onSettingsChanged={onSettingsChanged} />
         </TabPanel>
         {showSummaryReport && <TabPanel header="Summary - (User project wise)" contentClassName="no-padding">
             <UserProjectWiseSummary exportSheetName="Summary (User project wise)" boardId={boardId} />

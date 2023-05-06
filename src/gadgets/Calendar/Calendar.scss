@@ -19,6 +19,7 @@
     &.short-desc {
       max-height: 40px;
       display: -webkit-box;
+      overflow: hidden;
       -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
     }
@@ -37,6 +38,7 @@
     &.short-desc {
       max-height: 50px;
       -webkit-line-clamp: 3;
+      overflow: hidden;
     }
   }
 }
