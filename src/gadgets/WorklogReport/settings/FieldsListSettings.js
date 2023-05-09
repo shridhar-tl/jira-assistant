@@ -7,15 +7,16 @@ const hideKeys = ['key', 'summary', 'issuetype'];
 
 function FieldsListSettings({ setFieldValue, fields }) {
     const {
-        optional, daywiseFields = {},
+        optional, daywiseFields,
         showCostReport, hideEstimate
     } = fields;
 
     const setSelectedFields = useCallback((sel, field) => {
+        const dwFields = daywiseFields || {};
         if (sel) {
-            setFieldValue({ ...daywiseFields, [field]: true }, 'daywiseFields');
+            setFieldValue({ ...dwFields, [field]: true }, 'daywiseFields');
         } else {
-            const val = { ...daywiseFields };
+            const val = { ...dwFields };
             delete val[field];
             setFieldValue(val, 'daywiseFields');
         }
@@ -41,7 +42,7 @@ function FieldsListSettings({ setFieldValue, fields }) {
             <div className="col-12">
                 <strong>Additional fields to be displayed in Grouped - [User daywise] report</strong>
                 <div className="row">
-                    {optional.map(f => (
+                    {optional?.map(f => (
                         <div className="col-4">
                             <Checkbox key={f.key} checked={daywiseFields?.[f.key]} onChange={setSelectedFields} field={f.key} label={f.name} />
                         </div>

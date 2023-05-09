@@ -215,7 +215,7 @@ class SprintReport extends BaseGadget {
                                 <div className="ui-g-12 ui-md-5 ui-lg-4 ui-xl-3">
                                     <div className="form-group">
                                         <RapidViewList value={selectedRapidViews} onChange={this.rapidViewSelected}
-                                            placeholder="add one or more rapid view to fetch sprints from" />
+                                            placeholder="add one or more rapid view to fetch sprints from" multiple={true} />
                                     </div>
                                 </div>
                             </div>

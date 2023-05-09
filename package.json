@@ -1,6 +1,6 @@
 {
     "name": "jira-assistant",
-    "version": "2.48.0",
+    "version": "2.49.0",
     "description": "Help to track & upload work done on a Jira Ticket on timely basis and generate Worklog, Sprint and other custom reports",
     "homepage": "/",
     "author": {
@@ -57,18 +57,18 @@
         "@forge/api": "^2.15.2",
         "@forge/bridge": "^2.5.6",
         "@forge/resolver": "^1.5.6",
-        "@fullcalendar/core": "6.1.6",
-        "@fullcalendar/daygrid": "6.1.6",
-        "@fullcalendar/interaction": "6.1.6",
-        "@fullcalendar/list": "6.1.6",
-        "@fullcalendar/moment": "6.1.6",
-        "@fullcalendar/react": "6.1.6",
-        "@fullcalendar/timegrid": "6.1.6",
+        "@fullcalendar/core": "6.1.7",
+        "@fullcalendar/daygrid": "6.1.7",
+        "@fullcalendar/interaction": "6.1.7",
+        "@fullcalendar/list": "6.1.7",
+        "@fullcalendar/moment": "6.1.7",
+        "@fullcalendar/react": "6.1.7",
+        "@fullcalendar/timegrid": "6.1.7",
         "bootstrap-daterangepicker": "3.1.0",
         "chart.js": "4.3.0",
         "classnames": "2.3.2",
         "dexie": "3.2.3",
-        "espree": "9.5.1",
+        "espree": "9.5.2",
         "exceljs": "4.3.0",
         "firebase": "9.21.0",
         "font-awesome": "4.7.0",
@@ -90,10 +90,19 @@
         "react-dnd": "14.0.4",
         "react-dnd-html5-backend": "14.0.2",
         "react-dom": "18.2.0",
-        "react-router-dom": "6.11.0",
+        "react-router-dom": "6.11.1",
         "react-scripts": "5.0.1",
         "reactstrap": "9.1.9",
         "static-eval": "2.1.0"
+    },
+    "devDependencies": {
+        "@craco/craco": "^7.1.0",
+        "cross-env": "^7.0.3",
+        "eslint": "^8.39.0",
+        "eslint-plugin-react-hooks": "^4.6.0",
+        "gh-pages": "^5.0.0",
+        "sass": "^1.62.1",
+        "webpack-bundle-analyzer": "^4.8.0"
     },
     "scripts": {
         "start": "cross-env REACT_APP_BUILD_MODE=WEB craco start",
@@ -185,14 +194,5 @@
             "last 1 firefox version",
             "last 1 safari version"
         ]
-    },
-    "devDependencies": {
-        "@craco/craco": "^7.1.0",
-        "cross-env": "^7.0.3",
-        "eslint": "^8.39.0",
-        "eslint-plugin-react-hooks": "^4.6.0",
-        "gh-pages": "^5.0.0",
-        "sass": "^1.62.1",
-        "webpack-bundle-analyzer": "^4.8.0"
     }
 }

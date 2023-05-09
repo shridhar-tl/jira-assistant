@@ -168,6 +168,20 @@ export default class JiraService {
         return result;
     }
 
+    async getBoardConfig(boardId) {
+        let result = await this.$jaCache.session.getPromise(`boardConfig_${boardId}`);
+
+        if (result) {
+            return result;
+        }
+
+        result = await this.$ajax.get(ApiUrls.scrumBoardConfig, boardId);
+
+        this.$jaCache.session.set(`boardConfig_${boardId}`, result, 10);
+
+        return result;
+    }
+
     getProjects() {
         const value = this.$jaCache.session.get("projects");
         if (value) {
