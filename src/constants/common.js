@@ -9,7 +9,7 @@ export const GoogleOAuth = {
     }
 };
 
-export const AppVersionNo = 2.48;
+export const AppVersionNo = 2.49;
 
 let AnalyticsTrackingId = "G-CJQYE6Q1JQ"; //"UA-108841109-1"; // This is for public tracking id
 

@@ -73,7 +73,7 @@ const SprintListComponent = React.memo(function ({ setBoards, sprintBoards }) {
     return (<div className="form-group row">
         <label className="col-md-3 col-form-label">Choose Agile board *</label>
         <div className="col-md-9 col-form-label">
-            <RapidViewList value={sprintBoards} onChange={setBoards} />
+            <RapidViewList value={sprintBoards} onChange={setBoards} multiple={true} />
         </div>
     </div>);
 });
