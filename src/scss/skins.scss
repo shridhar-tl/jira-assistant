@@ -345,6 +345,11 @@
   }
 
   div.scroll-table-container .scroll-table tbody tr:nth-child(even),
+  div.scroll-table-container .scroll-table tr.grouped-row,
+  div.scroll-table-container .scroll-table td.group-toggler-td,
+  div.scroll-table-container .scroll-table td.group-name-td,
+  div.scroll-table-container .scroll-table td.group-indent-td,
+  div.groupable-grid .group-list-container div.group-list-item,
   div.src-editable-grid-container .src-editable-grid tbody tr:nth-child(even),
   .fc-widget-header,
   .fc .fc-divider {
