@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { AutoComplete } from '../controls';
+import { AutoComplete, SelectBox } from '../controls';
 import { inject } from '../services';
 
 class RapidViewList extends PureComponent {
@@ -19,9 +19,9 @@ class RapidViewList extends PureComponent {
             if (value && Array.isArray(value) && value.length) {
                 const valIds = value.map(v => v.id);
                 value = rapidViews.filter(r => !!~valIds.indexOf(r.id));
+                this.setValue(value);
             }
 
-            this.setValue(value);
             this.setState({ rapidViews });
         });
     }
@@ -40,15 +40,19 @@ class RapidViewList extends PureComponent {
     };
 
     render() {
-        const { state: { rapidViews }, props: { value, placeholder } } = this;
+        const { state: { rapidViews }, props: { value, placeholder, multiple } } = this;
 
-        return (
-            <AutoComplete value={value} onChange={this.setValue}
-                dataset={this.searchRapidView} dropdown={true} multiple={true} displayField="name"
-                placeholder={placeholder || "start typing the board name here"}
-                size={35} maxLength={25} styleclass="autocomplete-350" scrollHeight="300px"
-                disabled={!rapidViews || rapidViews.length === 0} />
-        );
+        if (multiple) {
+            return (
+                <AutoComplete value={value} onChange={this.setValue}
+                    dataset={this.searchRapidView} dropdown={true} multiple={multiple} displayField="name"
+                    placeholder={placeholder || "start typing the board name here"}
+                    size={35} maxLength={25} styleclass="autocomplete-350" scrollHeight="300px"
+                    disabled={!rapidViews || rapidViews.length === 0} />
+            );
+        } else {
+            return (<SelectBox value={value} dataset={rapidViews} displayField="name" onChange={this.setValue} />);
+        }
     }
 }
 
