@@ -177,7 +177,7 @@ export function setStartOfWeek(startOfWeek) {
 
 export function getUserName(userObj, convertToLower) {
     let name = null;
-    if (typeof userObj === "object") {
+    if (userObj && typeof userObj === "object") {
         name = (userObj.name || userObj.emailAddress || userObj.accountId);
     }
 
