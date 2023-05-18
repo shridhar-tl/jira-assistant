@@ -64,3 +64,18 @@ const Settings = function ({ settings, onChange }) {
 };
 
 export default Settings;
+/*
+function setObjectValue(obj, field, value) {
+    if (field.includes('.')) {
+        const parts = field.split('.');
+        const curField = parts.splice(0, 1)[0];
+        const partObj = obj[curField];
+
+        const newValue = setObjectValue(partObj, parts.join('.'));
+        setObjectValue(obj, curField, newValue);
+    } else {
+        obj = { ...obj, [field]: value };
+    }
+
+    return obj;
+}*/

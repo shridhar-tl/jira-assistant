@@ -30,6 +30,7 @@ import SettingsService from './settings-service';
 import { injectable, AnalyticsServiceFake } from './index.common';
 import { isPluginBuild } from '../constants/build-info';
 import config from '../customize';
+import ConfluenceService from './confluence-service';
 
 let _commonInjected = false;
 
@@ -75,6 +76,7 @@ export default function registerServices() {
     injectable(UtilsService, "UtilsService", "$utils", { isSingleton: true });
     injectable(WorklogService, "WorklogService", "$worklog");
     injectable(WorklogTimerService, "WorklogTimerService", "$wltimer", { isSingleton: true });
+    injectable(ConfluenceService, "ConfluenceService", "$wiki", { isSingleton: true });
 
     _commonInjected = true;
 }

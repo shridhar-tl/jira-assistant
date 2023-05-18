@@ -311,7 +311,9 @@ export default class JiraService {
         return this.$ajax.put(ApiUrls.individualIssue, issue, key);
     }
 
-    getRapidSprintList = (rapidIds, asObj) => {
+    getRapidSprintList = (rapidIds, opts) => {
+        const asObj = typeof opts === 'boolean' ? opts : false;
+        const { state } = opts;
         const reqArr = rapidIds.map((rapidId) => this.$jaCache.session.getPromise(`rapidSprintList${rapidId}`)
             .then(async (value) => {
                 if (value) {
@@ -323,7 +325,7 @@ export default class JiraService {
                     let data = null;
 
                     do {
-                        data = await this.$ajax.get(ApiUrls.sprintListByBoard, rapidId, startAt);
+                        data = await this.$ajax.get(ApiUrls.sprintListByBoard, rapidId, startAt, state || 'active,closed');
                         startAt = data.maxResults + data.startAt;
 
                         // Avoid showing sprints of other boards.
@@ -405,14 +407,28 @@ export default class JiraService {
         return this.$ajax.get(ApiUrls.rapidSprintDetails, rapidViewId, sprintId);
     }
 
-    async getSprintIssues(sprintId, options) {
-        const { worklogStartDate, worklogEndDate, ...opts } = options;
-        const { issues } = await this.$ajax.get(ApiUrls.getSprintIssues.format(sprintId), opts);
-        if (options?.fields?.indexOf("worklog") > -1) {
-            await this.fillMissingWorklogs(issues, worklogStartDate, worklogEndDate);
-        }
+    async getSprintIssues(sprintIds, options) {
+        const { worklogStartDate, worklogEndDate, ...opts } = options || {};
 
-        return issues;
+        const worker = async (sprintId) => {
+            const { issues } = await this.$ajax.get(ApiUrls.getSprintIssues.format(sprintId), opts);
+            if (options?.fields?.indexOf("worklog") > -1) {
+                await this.fillMissingWorklogs(issues, worklogStartDate, worklogEndDate);
+            }
+
+            return issues;
+        };
+
+        if (!Array.isArray(sprintIds)) {
+            return worker(sprintIds);
+        } else {
+            const sprints = {};
+            await runOnQueue(sprintIds, 3, async (id) => {
+                sprints[id] = await worker(id);
+            });
+
+            return sprints;
+        }
     }
 
     getOpenTickets(refresh) {

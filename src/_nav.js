@@ -29,8 +29,9 @@ const { dashboards,
     userGroups, generalSettings, advancedSettings,
 
     // Menu groups
-    activitiesGroup = calendar || importWorklog || importIssues || planningPoker,
+    activitiesGroup = calendar || importWorklog || importIssues,
     reportsGroup = worklogReport || worklogReportOld || sprintReport || customReport || estimateVsActual || reportBuilder,
+    planningGroup = planningPoker,
     settingsGroup = userGroups || generalSettings || advancedSettings
 } = config.modules;
 
@@ -74,13 +75,6 @@ const navigation = [
                     variant: 'success',
                     text: 'BETA'
                 }
-            },
-            planningPoker && {
-                name: 'Poker',
-                id: 'PLP',
-                external: !isPluginBuild,
-                url: getRouteUrl(isWebBuild ? '/../poker' : '/poker'),
-                icon: 'fa fa-gamepad'
             }
         ].filter(Boolean)
     },
@@ -131,6 +125,26 @@ const navigation = [
                     variant: 'success',
                     text: 'BETA'
                 }
+            }
+        ].filter(Boolean)
+    },
+    planningGroup && {
+        title: true,
+        name: 'Planning',
+        items: [
+            planningPoker && {
+                name: 'Poker',
+                id: 'PLP',
+                external: !isPluginBuild,
+                url: getRouteUrl(isWebBuild ? '/../poker' : '/poker'),
+                icon: 'fa fa-gamepad'
+            },
+            planningPoker && {
+                name: 'Sprint Planner',
+                id: 'SPR',
+                external: true,
+                url: getRouteUrl(isWebBuild ? '/../planning/sprint-planner' : '/planning/sprint-planner'),
+                icon: 'fa fa-gamepad'
             }
         ].filter(Boolean)
     },

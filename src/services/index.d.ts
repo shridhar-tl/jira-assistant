@@ -33,6 +33,7 @@ import UserUtilsService from './userutils-service';
 import UtilsService from './utils-service';
 import WorklogService from './worklog-service';
 import WorklogTimerService from './worklog-timer-service';
+import ConfluenceService from './confluence-service';
 
 export interface IServicesList {
     $request: AjaxRequestService
@@ -66,6 +67,7 @@ export interface IServicesList {
     $utils: UtilsService
     $worklog: WorklogService
     $wltimer: WorklogTimerService
+    $wiki: ConfluenceService
 }
 
 declare module 'react' {

@@ -37,5 +37,7 @@ export const ApiUrls = {
     sprintListByBoard: "~/rest/agile/1.0/board/{0}/sprint?maxResults=50&startAt={1}&state={2}",
     burndownChart: "~/rest/greenhopper/1.0/rapid/charts/scopechangeburndownchart.json?rapidViewId={0}&sprintId={1}",
     googleLogoutUrl: "https://accounts.google.com/o/oauth2/revoke?token={0}",
-    outlookLogoutUrl: "https://login.microsoftonline.com/common/oauth2/v2.0/logout"
+    outlookLogoutUrl: "https://login.microsoftonline.com/common/oauth2/v2.0/logout",
+    wiki_spaces: "~/wiki/rest/api/space?start={0}&status=current",
+    wiki_calendars: "~/wiki/"
 };

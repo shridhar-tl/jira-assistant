@@ -10,6 +10,7 @@ const BasicAuth = React.lazy(() => import('../../views/pages/authenticate/BasicA
 const OptionsPage = React.lazy(() => import('../../views/settings/global/GlobalSettings'));
 
 const Poker = React.lazy(() => import('../../views/poker/Poker'));
+const SprintPlanner = React.lazy(() => import('../../views/planning/sprint-planner'));
 
 export default function Renderer({ authInfo: { userId } }) {
     return (<Routes>
@@ -22,6 +23,7 @@ export default function Renderer({ authInfo: { userId } }) {
         <Route exact path="/options" name="Options Page" element={<OptionsPage />} />
 
         <Route path="/poker/*" name="Planning Poker" element={<Poker hasExtensionSupport={true} />} />
+        <Route path="/planning/sprint-planner" name="Sprint Planner" element={<SprintPlanner />} />
 
         {userId && <Route path="/:userId/*" name="Home" element={<DefaultLayout key={userId} />} />}
     </Routes>);

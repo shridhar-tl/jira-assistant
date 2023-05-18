@@ -64,6 +64,8 @@
         "@fullcalendar/moment": "^6.1.7",
         "@fullcalendar/react": "^6.1.7",
         "@fullcalendar/timegrid": "^6.1.7",
+        "@syncfusion/ej2-react-gantt": "^21.2.5",
+        "@syncfusion/ej2-react-layouts": "^21.2.3",
         "bootstrap-daterangepicker": "^3.1.0",
         "chart.js": "^4.3.0",
         "classnames": "^2.3.2",

@@ -1,0 +1,120 @@
+@import '@syncfusion/ej2-base/styles/material.css';
+@import '@syncfusion/ej2-buttons/styles/material.css';
+@import '@syncfusion/ej2-calendars/styles/material.css';
+@import '@syncfusion/ej2-dropdowns/styles/material.css';
+@import '@syncfusion/ej2-gantt/styles/material.css';
+@import '@syncfusion/ej2-grids/styles/material.css';
+@import '@syncfusion/ej2-inputs/styles/material.css';
+@import '@syncfusion/ej2-layouts/styles/material.css';
+@import '@syncfusion/ej2-lists/styles/material.css';
+@import '@syncfusion/ej2-navigations/styles/material.css';
+@import '@syncfusion/ej2-popups/styles/material.css';
+//@import '@syncfusion/ej2-richtexteditor/styles/material.css';
+@import '@syncfusion/ej2-treegrid/styles/material.css';
+
+.ja-sprint-planner {
+    background-color: #fafafa;
+    padding: 15px;
+    min-height: 100vh;
+}
+
+
+// Header styles
+
+.pl-header {
+    height: 60px;
+    width: calc(100% - 30px);
+    border-bottom: 1px solid grey;
+
+    img.logo {
+        margin: auto 20px auto 0;
+        display: inline-block;
+    }
+
+    .title {
+        display: inline-block;
+
+        span.info {
+            font-size: 10px;
+            color: gray;
+        }
+
+        h1.board-name {
+            font-size: 23px;
+        }
+    }
+
+    .picker {
+        margin: 12px;
+        color: grey;
+        cursor: pointer;
+
+        &:hover {
+            color: blue;
+        }
+
+        margin-right: 150px;
+    }
+}
+
+@media (min-width: 960px) {
+    .p-menubar {
+        padding: 0;
+        background: inherit;
+
+        ul.p-menubar-root-list>li.p-menuitem>a.p-menuitem-link {
+            padding: 8px;
+        }
+    }
+}
+
+// Header Styles
+
+// Resource table styles
+.ja-resource-container {
+    div.scroll-table-container .scroll-table {
+        tbody {
+            td {
+                border: 1px solid #e0e0e0;
+            }
+        }
+
+        thead tr {
+            th {
+                border: 1px solid #e0e0e0;
+                padding: 1px 0 5px 0;
+            }
+
+            th.pad-5 {
+                padding: 5px;
+            }
+
+            th.sprint-head,
+            th.day-head {
+                min-width: 35px;
+                text-align: center;
+            }
+
+            th.sprint-head {
+                color: #2e6c99;
+            }
+
+            th.day-head {
+                color: #498b4b;
+
+                .day-name {
+                    font-size: 13px;
+                    color: rgb(118, 118, 207);
+                }
+
+                &.holiday {
+                    color: red;
+
+                    .day-name {
+                        color: red;
+                    }
+                }
+            }
+        }
+    }
+}
