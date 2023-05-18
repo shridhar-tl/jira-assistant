@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { AutoComplete, SelectBox } from "../controls";
 import { inject } from "../services";
 
-function WikiCalendar({ value, multiple = true, workspace,
+function WikiCalendar({ value, multiple = true, workspace, field,
     placeholder = 'start typing the calendar name here',
     onChange }) {
     const [calendars, setCalendars] = useState([]);
@@ -25,20 +25,25 @@ function WikiCalendar({ value, multiple = true, workspace,
     if (multiple) {
         return (
             <AutoComplete value={value} onChange={onChange} optionGroupLabel="name" optionGroupChildren="items"
-                dataset={search} dropdown={true} multiple={multiple} displayField="name"
+                dataset={search} dropdown={true} multiple={multiple} displayField="name" field={field}
                 placeholder={placeholder}
                 size={35} maxLength={25} styleclass="autocomplete-350" scrollHeight="300px"
                 disabled={!calendars.length} />
         );
     } else {
         return (<SelectBox value={value} dataset={calendars} displayField="name"
-            onChange={onChange} />);
+            onChange={onChange} field={field} />);
     }
 }
 
 export default WikiCalendar;
 
-function getCalendars(workspaces) {
+async function getCalendars(workspaces) {
     const { $wiki } = inject('ConfluenceService');
-    return $wiki.getCalendars(workspaces);
+    const calendars = await $wiki.getCalendars(workspaces);
+
+    return calendars.reduce((arr, { result }) => {
+        arr.push(...result);
+        return arr;
+    }, []);
 }

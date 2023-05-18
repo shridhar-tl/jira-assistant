@@ -38,7 +38,7 @@ export const ApiUrls = {
     burndownChart: "~/rest/greenhopper/1.0/rapid/charts/scopechangeburndownchart.json?rapidViewId={0}&sprintId={1}",
     googleLogoutUrl: "https://accounts.google.com/o/oauth2/revoke?token={0}",
     outlookLogoutUrl: "https://login.microsoftonline.com/common/oauth2/v2.0/logout",
-    wiki_spaces: "~/wiki/rest/api/space?start={0}&status=current",
+    wiki_spaces: "~/wiki/rest/api/space?start={0}&status=current&limit=1000",
     wiki_calendars: "~/wiki/rest/calendar-services/1.0/calendar/subcalendars.json?calendarContext=spaceCalendars&viewingSpaceKey={0}",
     wiki_calendar_events: "~/wiki/rest/calendar-services/1.0/calendar/events.json?subCalendarId={0}&start={1}&end={2}"
 };

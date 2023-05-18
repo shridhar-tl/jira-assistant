@@ -16,7 +16,7 @@ export default connect(Settings);
 
 const CalendarSettings = connect(function ({ workspace,
     leaveCalendar, holidayCalendar,
-    setWorkSpace }) {
+    setWorkSpace, setCalendar }) {
     return (<div className="calendar-config">
         <h3>Calendar configurations</h3>
         <div>
@@ -36,7 +36,7 @@ const CalendarSettings = connect(function ({ workspace,
                 </div>
                 <div className="col-12">
                     <div className="form-group">
-                        <WikiCalendar value={leaveCalendar} field="leaveCalendar" workspace={workspace} onChange={setWorkSpace} />
+                        <WikiCalendar value={leaveCalendar} field="leaveCalendar" workspace={workspace} onChange={setCalendar} />
                         <span className="help-block">Workspace to pull calendar from</span>
                     </div>
                 </div>
@@ -46,7 +46,7 @@ const CalendarSettings = connect(function ({ workspace,
                 </div>
                 <div className="col-12">
                     <div className="form-group">
-                        <WikiCalendar value={holidayCalendar} field="holidayCalendar" workspace={workspace} onChange={setWorkSpace} />
+                        <WikiCalendar value={holidayCalendar} field="holidayCalendar" workspace={workspace} onChange={setCalendar} />
                         <span className="help-block">Workspace to pull calendar from</span>
                     </div>
                 </div>

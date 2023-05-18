@@ -1,4 +1,5 @@
 import { ApiUrls } from '../constants/api-urls';
+import moment from 'moment';
 
 export default class ConfluenceService {
     static dependencies = ["AjaxService", "CacheService", "MessageService", "SessionService"];
@@ -40,19 +41,19 @@ export default class ConfluenceService {
         return result;
     }
 
-    async getCalendars(workspaces, start, end) {
+    async getCalendars(workspaces) {
         const getCalendar = async (workspaceKey) => {
-            let result = await this.$jaCache.session.getPromise(`calendars_${workspaceKey}`);
+            let result = await this.$jaCache.session.getPromise(`wiki_calendars_${workspaceKey}`);
 
             if (result) {
                 return result;
             }
 
-            const { payload } = await this.$ajax.get(ApiUrls.wiki_calendars, workspaceKey, start, end);
+            const { payload } = await this.$ajax.get(ApiUrls.wiki_calendars, workspaceKey);
 
             result = payload?.map(getCalendarData);
 
-            this.$jaCache.session.set(`calendars_${workspaceKey}`, result, 10);
+            this.$jaCache.session.set(`wiki_calendars_${workspaceKey}`, result, 10);
 
             return { key: workspaceKey, result };
         };
@@ -61,6 +62,45 @@ export default class ConfluenceService {
             return Promise.all(workspaces.map(getCalendar));
         } else if (workspaces && typeof workspaces === 'string') {
             return getCalendar(workspaces);
+        }
+    }
+
+    async getCalendarEvents(calendarIds, start, end) {
+        const getEvents = async (calendarId) => {
+            let result = await this.$jaCache.session.getPromise(`wiki_events_${calendarId}`);
+
+            if (result) {
+                return result;
+            }
+
+            const { events } = await this.$ajax.get(ApiUrls.wiki_calendar_events, calendarId, start, end);
+
+            result = events?.map(event => {
+                const {
+                    allDay, title, eventType,
+                    start, end, originalStartDateTime, originalEndDateTime,
+                    backgroundColor, invitees } = event;
+
+                return {
+                    allDay, title, eventType,
+                    start: moment(start).toDate(),
+                    end: moment(end).toDate(),
+                    originalStartDateTime: moment(originalStartDateTime).toDate(),
+                    originalEndDateTime: moment(originalEndDateTime).toDate(),
+                    backgroundColor,
+                    invitees
+                };
+            });
+
+            this.$jaCache.session.set(`wiki_events_${calendarId}`, result, 10);
+
+            return { key: calendarId, result };
+        };
+
+        if (Array.isArray(calendarIds)) {
+            return Promise.all(calendarIds.map(getEvents));
+        } else if (calendarIds && typeof calendarIds === 'string') {
+            return getEvents(calendarIds);
         }
     }
 }
