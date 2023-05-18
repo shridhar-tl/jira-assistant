@@ -40,7 +40,7 @@ export default class ConfluenceService {
         return result;
     }
 
-    async getCalendars(workspaces) {
+    async getCalendars(workspaces, start, end) {
         const getCalendar = async (workspaceKey) => {
             let result = await this.$jaCache.session.getPromise(`calendars_${workspaceKey}`);
 
@@ -48,7 +48,9 @@ export default class ConfluenceService {
                 return result;
             }
 
-            result = await this.$ajax.get(ApiUrls.wiki_calendars);
+            const { payload } = await this.$ajax.get(ApiUrls.wiki_calendars, workspaceKey, start, end);
+
+            result = payload?.map(getCalendarData);
 
             this.$jaCache.session.set(`calendars_${workspaceKey}`, result, 10);
 
@@ -61,4 +63,35 @@ export default class ConfluenceService {
             return getCalendar(workspaces);
         }
     }
+}
+
+function getCalendarData(calendar) {
+    const { subCalendar, childSubCalendars } = calendar;
+    const { id, spaceKey, spaceName, timeZoneId, description } = subCalendar;
+
+    const name = getCalendarName(subCalendar);
+
+    const result = { id, name, spaceKey, spaceName, timeZoneId, description };
+
+    const items = childSubCalendars?.map(getCalendarData);
+
+    if (items?.length) {
+        result.items = items;
+    }
+
+    return result;
+}
+
+function getCalendarName(calendar) {
+    const { name, type, customEventTypes } = calendar;
+
+    if (type === 'leaves') {
+        return 'Leave';
+    } else if (type === 'other') {
+        return 'Events';
+    } else if (type === 'custom') {
+        return customEventTypes?.[0]?.title || 'Unknown';
+    }
+
+    return name;
 }

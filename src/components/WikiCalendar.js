@@ -24,7 +24,7 @@ function WikiCalendar({ value, multiple = true, workspace,
 
     if (multiple) {
         return (
-            <AutoComplete value={value} onChange={onChange}
+            <AutoComplete value={value} onChange={onChange} optionGroupLabel="name" optionGroupChildren="items"
                 dataset={search} dropdown={true} multiple={multiple} displayField="name"
                 placeholder={placeholder}
                 size={35} maxLength={25} styleclass="autocomplete-350" scrollHeight="300px"

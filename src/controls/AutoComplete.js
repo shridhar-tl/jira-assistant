@@ -67,7 +67,7 @@ class AC extends PureComponent {
             props: { multiple, dropdown, displayField, children, placeholder, title,
                 className, style, size, maxLength, scrollHeight, disabled, onCustomValue,
                 autoFocus, onKeyUp, onFocus, onBlur, onSelect, onShow, onHide, forceSelection,
-                optionGroupChildren, optionGroupTemplate, optionGroupLabel },
+                optionGroupChildren, optionGroupTemplate, optionGroupLabel, completeMethod },
             state: { value, list }
         } = this;
 
@@ -77,7 +77,7 @@ class AC extends PureComponent {
                 itemTemplate={children} dropdown={dropdown} field={displayField} placeholder={placeholder}
                 tooltip={title} className={className} style={style} size={size} maxLength={maxLength}
                 scrollHeight={scrollHeight} disabled={disabled} value={value} onChange={onChange}
-                suggestions={list} completeMethod={filterResult} autoFocus={autoFocus}
+                suggestions={list} completeMethod={completeMethod || filterResult} autoFocus={autoFocus}
                 onKeyUp={onCustomValue ? this.onKeyUp : onKeyUp} onFocus={onFocus} onBlur={onBlur}
                 onSelect={onSelect} onShow={onShow} onHide={onHide} forceSelection={forceSelection} />
         );
