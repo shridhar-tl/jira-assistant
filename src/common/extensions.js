@@ -70,6 +70,10 @@ Date.prototype.toUTCDate = function () {
     return newObj;
 };
 
+Date.prototype.toJiraDateTimeFormat = function () {
+    return `${this.toISOString().replace('Z', '').replace('z', '')}+0000`;
+};
+
 Date.prototype.addDays = function (days) {
     const dat = new Date(this);
     dat.setDate(dat.getDate() + days);

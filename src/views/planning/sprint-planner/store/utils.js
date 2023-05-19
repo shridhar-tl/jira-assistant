@@ -35,14 +35,14 @@ export function getDaysListBasedOnSprints(sprints) {
     return daysMap;
 }
 
-export async function getLeaveDetails({ leaveCalendar, holidayCalendar, startOfDay, endOfDay }) { //,workHours
+export async function getLeaveDetails({ leaveCalendar, holidayCalendar, startOfDay, endOfDay }, planStartDate, planEndDate) { //,workHours
     const leaveCalIds = leaveCalendar?.map(({ id }) => id) || [];
     const holidayCalIds = holidayCalendar?.map(({ id }) => id) || [];
 
     const allCalendarIds = [...leaveCalIds, ...holidayCalIds];
 
     const { $wiki } = inject('ConfluenceService');
-    const calendars = await $wiki.getCalendarEvents(allCalendarIds);
+    const calendars = await $wiki.getCalendarEvents(allCalendarIds, planStartDate, planEndDate);
 
     const resourceLeaveDays = leaveCalIds.reduce(getLeavesObject(calendars, false, startOfDay, endOfDay), []);
     const resourceHolidays = holidayCalIds.reduce(getLeavesObject(calendars, true), []);

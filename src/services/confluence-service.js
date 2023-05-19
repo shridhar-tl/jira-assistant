@@ -73,7 +73,7 @@ export default class ConfluenceService {
                 return result;
             }
 
-            const { events } = await this.$ajax.get(ApiUrls.wiki_calendar_events, calendarId, start, end);
+            const { events } = await this.$ajax.get(ApiUrls.wiki_calendar_events, calendarId, start?.toISOString() || '', end?.toISOString() || '');
 
             result = events?.map(event => {
                 const {

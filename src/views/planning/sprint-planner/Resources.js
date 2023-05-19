@@ -32,7 +32,7 @@ function Resources({
                 </TRow>
             </THead>
             <TBody>
-                {resources.map(r => <ResourceRow resource={r} days={days} workHours={workHours}
+                {resources.map(r => <ResourceRow key={r.accountId} resource={r} days={days} workHours={workHours}
                     resourceLeaveDays={resourceLeaveDays} resourceHolidays={resourceHolidays} />)}
                 <tr>
                     <td>

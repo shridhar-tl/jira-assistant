@@ -19,9 +19,9 @@ export function setSelectedBoard(setState, getState) {
 export function loadLeaveDetails(setState, getState) {
     return async function () {
         setState({ isLoadingEvents: true });
-        const settings = getState('settings');
+        const { settings, planStartDate, planEndDate } = getState();
 
-        const leaveDetails = await getLeaveDetails(settings);
+        const leaveDetails = await getLeaveDetails(settings, planStartDate, planEndDate);
 
         setState({ isLoadingEvents: false, ...leaveDetails });
     };
