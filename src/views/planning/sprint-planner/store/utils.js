@@ -91,9 +91,9 @@ function getLeavesObject(calendars, isHoliday) {
 
             const userIdProperty = 'id';
 
-            return invitees.reduce((leaves, usr) => {
+            return invitees.reduce((invt, usr) => {
                 const userId = usr[userIdProperty];
-                let userLeaves = leaves[userId];
+                let userLeaves = invt[userId];
 
                 if (!userLeaves) {
                     userLeaves = { ...leaves };
@@ -101,9 +101,9 @@ function getLeavesObject(calendars, isHoliday) {
                     userLeaves = { ...userLeaves, ...leaves };
                 }
 
-                leaves[userId] = userLeaves;
+                invt[userId] = userLeaves;
 
-                return leaves;
+                return invt;
             }, evn);
         }, obj);
     };
