@@ -34,3 +34,72 @@ export function getDaysListBasedOnSprints(sprints) {
 
     return daysMap;
 }
+
+export async function getLeaveDetails({ leaveCalendar, holidayCalendar, startOfDay, endOfDay }) { //,workHours
+    const leaveCalIds = leaveCalendar?.map(({ id }) => id) || [];
+    const holidayCalIds = holidayCalendar?.map(({ id }) => id) || [];
+
+    const allCalendarIds = [...leaveCalIds, ...holidayCalIds];
+
+    const { $wiki } = inject('ConfluenceService');
+    const calendars = await $wiki.getCalendarEvents(allCalendarIds);
+
+    const resourceLeaveDays = leaveCalIds.reduce(getLeavesObject(calendars, false, startOfDay, endOfDay));
+    const resourceHolidays = holidayCalIds.reduce(getLeavesObject(calendars, true));
+
+    return { resourceLeaveDays, resourceHolidays };
+}
+
+function getLeavesObject(calendars, isHoliday) {
+    return (obj, calId) => {
+        const events = calendars[calId];
+
+        return events.reduce((evn, cur) => {
+            const { allDay, start, end, invitees } = cur;
+            const hours = 4;
+            // ToDo: handle hours with start of day and end of day
+
+            if (!isHoliday && !invitees?.length) {
+                return evn; // ToDo: May be handle it as public leave if needed
+            }
+
+            let _start = moment(start).startOf('day');
+            const _end = moment(end).endOf('day');
+
+            const leaves = isHoliday ? evn : {};
+
+            while (_start.isBefore(_end)) {
+                const dayKey = _start.format('YYYYMMDD');
+
+                if (allDay) {
+                    leaves[dayKey] = { allDay };
+                } else {
+                    leaves[dayKey] = { hours };
+                }
+
+                _start = _start.add(1, 'day');
+            }
+
+            if (isHoliday) {
+                return leaves; // In case of holiday, this would be list of all the holidays
+            }
+
+            const userIdProperty = 'id';
+
+            return invitees.reduce((leaves, usr) => {
+                const userId = usr[userIdProperty];
+                let userLeaves = leaves[userId];
+
+                if (!userLeaves) {
+                    userLeaves = { ...leaves };
+                } else {
+                    userLeaves = { ...userLeaves, ...leaves };
+                }
+
+                leaves[userId] = userLeaves;
+
+                return leaves;
+            }, evn);
+        }, obj);
+    };
+}

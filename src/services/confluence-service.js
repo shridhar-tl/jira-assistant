@@ -66,7 +66,7 @@ export default class ConfluenceService {
     }
 
     async getCalendarEvents(calendarIds, start, end) {
-        const getEvents = async (calendarId) => {
+        const getEvents = async (calendarId, index) => {
             let result = await this.$jaCache.session.getPromise(`wiki_events_${calendarId}`);
 
             if (result) {
@@ -94,11 +94,18 @@ export default class ConfluenceService {
 
             this.$jaCache.session.set(`wiki_events_${calendarId}`, result, 10);
 
-            return { key: calendarId, result };
+            if (index === undefined) {
+                return result;
+            } else {
+                return { key: calendarId, result };
+            }
         };
 
         if (Array.isArray(calendarIds)) {
-            return Promise.all(calendarIds.map(getEvents));
+            return Promise.all(calendarIds.map(getEvents)).then(arr => arr.reduce((obj, cur) => {
+                obj[cur.key] = cur.result;
+                return obj;
+            }, {}));
         } else if (calendarIds && typeof calendarIds === 'string') {
             return getEvents(calendarIds);
         }

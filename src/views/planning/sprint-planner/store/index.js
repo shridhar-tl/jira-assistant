@@ -14,7 +14,8 @@ const initialData = {
     estimation: {},
 
     resources: [],
-
+    resourceLeaveDays: {},
+    resourceHolidays: {},
 
     settings: {
         startOfDay: '11:00',

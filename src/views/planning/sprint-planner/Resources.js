@@ -1,9 +1,20 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Column, ScrollableTable, TBody, THead, TRow } from '../../../components/ScrollableTable';
 import { connect } from './store';
 import { UserDisplay } from '../../../display-controls';
+import { loadLeaveDetails } from './store/actions';
+import classNames from 'classnames';
 
-function Resources({ resources, daysList: { groups, days } }) {
+function Resources({
+    resources, daysList: { groups, days },
+    workHours,
+    resourceLeaveDays, resourceHolidays,
+    loadLeaveDetails
+}) {
+    useEffect(() => {
+        loadLeaveDetails();
+    }, [resourceLeaveDays, resourceHolidays, loadLeaveDetails]);
+
     if (!groups?.length) {
         return null;
     }
@@ -20,10 +31,8 @@ function Resources({ resources, daysList: { groups, days } }) {
                 </TRow>
             </THead>
             <TBody>
-                {resources.map(r => (<tr>
-                    <UserDisplay value={r} />
-                    {days.map(d => <td key={d.key}>6</td>)}
-                </tr>))}
+                {resources.map(r => <ResourceRow resource={r} days={days} workHours={workHours}
+                    resourceLeaveDays={resourceLeaveDays} resourceHolidays={resourceHolidays} />)}
                 <tr>
                     <td>
                         <span className="fa fa-plus" />
@@ -34,5 +43,46 @@ function Resources({ resources, daysList: { groups, days } }) {
     </div>);
 }
 
+export default connect(Resources,
+    ({ resources, daysList, resourceLeaveDays, resourceHolidays,
+        settings: { workHours } }) =>
+        ({ resources, daysList, resourceLeaveDays, resourceHolidays, workHours }),
+    { loadLeaveDetails });
 
-export default connect(Resources, ({ resources, daysList }) => ({ resources, daysList }));
+function ResourceRow({ resource: r, days, workHours, resourceLeaveDays, resourceHolidays }) {
+    const { accountId } = r;
+    const leaveDays = resourceLeaveDays[accountId];
+
+    return (<tr>
+        <UserDisplay value={r} />
+        {days.map(d => {
+            const { key } = d;
+            const leave = leaveDays?.[key];
+            const holiday = resourceHolidays[key];
+            let hour = workHours;
+            if (leave?.allDay) {
+                hour = 0;
+            }
+            else if (leave?.hour > 0) {
+                hour -= leave?.hour;
+            }
+
+            if (hour > 0 && holiday) {
+                if (holiday.allDay) {
+                    hour = 0;
+                }
+                else if (holiday.hour > 0) {
+                    hour -= holiday.hour;
+                }
+            }
+
+            if (hour < 0) {
+                hour = 0;
+            }
+
+            const isUnavailable = !hour;
+
+            return (<td key={key} className={classNames({ 'col-holiday': isUnavailable })}>{hour}</td>);
+        })}
+    </tr>);
+}
