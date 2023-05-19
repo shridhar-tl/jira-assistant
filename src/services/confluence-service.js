@@ -70,7 +70,11 @@ export default class ConfluenceService {
             let result = await this.$jaCache.session.getPromise(`wiki_events_${calendarId}`);
 
             if (result) {
-                return result;
+                if (index === undefined) {
+                    return result;
+                } else {
+                    return { key: calendarId, result };
+                }
             }
 
             const { events } = await this.$ajax.get(ApiUrls.wiki_calendar_events, calendarId, start?.toJiraDateTimeFormat() || '', end?.toJiraDateTimeFormat() || '');
