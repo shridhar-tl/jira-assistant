@@ -23,7 +23,9 @@ const initialData = {
         workHours: 6,
         hoursPerStoryPoint: 4,
         allowStorySpan: true, // Whether to allow spaning story or not
-        workspace: []
+        workspace: [],
+        leaveCalendar: [],
+        holidayCalendar: []
     }
 };
 

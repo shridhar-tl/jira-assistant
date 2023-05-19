@@ -8,12 +8,13 @@ import classNames from 'classnames';
 function Resources({
     resources, daysList: { groups, days },
     workHours,
+    leaveCalendar, holidayCalendar,
     resourceLeaveDays, resourceHolidays,
     loadLeaveDetails
 }) {
     useEffect(() => {
         loadLeaveDetails();
-    }, [resourceLeaveDays, resourceHolidays, loadLeaveDetails]);
+    }, [leaveCalendar, holidayCalendar, loadLeaveDetails]);
 
     if (!groups?.length) {
         return null;
@@ -45,8 +46,8 @@ function Resources({
 
 export default connect(Resources,
     ({ resources, daysList, resourceLeaveDays, resourceHolidays,
-        settings: { workHours } }) =>
-        ({ resources, daysList, resourceLeaveDays, resourceHolidays, workHours }),
+        settings: { workHours, leaveCalendar, holidayCalendar } }) =>
+        ({ resources, daysList, resourceLeaveDays, resourceHolidays, workHours, leaveCalendar, holidayCalendar }),
     { loadLeaveDetails });
 
 function ResourceRow({ resource: r, days, workHours, resourceLeaveDays, resourceHolidays }) {

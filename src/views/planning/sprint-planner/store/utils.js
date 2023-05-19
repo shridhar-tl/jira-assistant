@@ -44,8 +44,8 @@ export async function getLeaveDetails({ leaveCalendar, holidayCalendar, startOfD
     const { $wiki } = inject('ConfluenceService');
     const calendars = await $wiki.getCalendarEvents(allCalendarIds);
 
-    const resourceLeaveDays = leaveCalIds.reduce(getLeavesObject(calendars, false, startOfDay, endOfDay));
-    const resourceHolidays = holidayCalIds.reduce(getLeavesObject(calendars, true));
+    const resourceLeaveDays = leaveCalIds.reduce(getLeavesObject(calendars, false, startOfDay, endOfDay), []);
+    const resourceHolidays = holidayCalIds.reduce(getLeavesObject(calendars, true), []);
 
     return { resourceLeaveDays, resourceHolidays };
 }
