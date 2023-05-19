@@ -83,7 +83,7 @@ function ResourceRow({ resource: r, days, workHours, resourceLeaveDays, resource
 
             const isUnavailable = !hour;
 
-            return (<td key={key} className={classNames({ 'col-holiday': isUnavailable })}>{hour}</td>);
+            return (<td key={key} className={classNames({ 'col-holiday': isUnavailable })}>{hour ? hour : ''}</td>);
         })}
     </tr>);
 }
