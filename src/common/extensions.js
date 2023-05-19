@@ -71,7 +71,7 @@ Date.prototype.toUTCDate = function () {
 };
 
 Date.prototype.toJiraDateTimeFormat = function () {
-    return `${this.toISOString().replace('Z', '').replace('z', '')}+0000`;
+    return `${this.toISOString().substring(0, 16)}:00Z`;
 };
 
 Date.prototype.addDays = function (days) {
