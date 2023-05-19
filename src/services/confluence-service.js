@@ -88,7 +88,11 @@ export default class ConfluenceService {
                     originalStartDateTime: moment(originalStartDateTime).toDate(),
                     originalEndDateTime: moment(originalEndDateTime).toDate(),
                     backgroundColor,
-                    invitees
+                    invitees: invitees?.map(({ id, ...prop }) => {
+                        id = id.split('/');
+                        id = id[id.length - 1];
+                        return { ...prop, id };
+                    })
                 };
             });
 
