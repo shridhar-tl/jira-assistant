@@ -70,12 +70,24 @@
 
 // Header Styles
 
+.ja-plan-container {
+    overflow: hidden;
+}
+
 // Resource table styles
 .ja-resource-container {
+    overflow: hidden;
+
     div.scroll-table-container .scroll-table {
         tbody {
             td {
                 border: 1px solid #e0e0e0;
+            }
+
+            td.resource-day {
+                position: relative;
+                padding: 0 2px 0 2px !important;
+                text-align: center;
             }
         }
 
@@ -115,6 +127,15 @@
                     }
                 }
             }
+        }
+    }
+}
+
+// Sync fussion overrides
+.e-splitter {
+    .e-pane-vertical {
+        &>div {
+            overflow: hidden;
         }
     }
 }

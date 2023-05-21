@@ -43,13 +43,13 @@ export default Header;
 
 const BoardPicker = connect(function ({ board, onChange }) {
     const op = useRef(null);
-
     const showBoards = (e) => op.current.toggle(e);
+    const changeHandler = useCallback((val) => { onChange(val); op.current.hide(); }, [onChange, op]);
 
     return (<>
         <span className="picker fa fa-chevron-down" onClick={showBoards} />
         <OverlayPanel ref={op} style={{ width: '350px' }}>
-            <RapidViewList value={board || ''} multiple={false} onChange={onChange} />
+            <RapidViewList value={board || ''} multiple={false} onChange={changeHandler} />
         </OverlayPanel>
     </>);
 }, ({ selectedBoard: board }) => ({ board }),

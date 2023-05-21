@@ -115,7 +115,7 @@ function preparePlanningData(newState, allState) {
                 const duration = i === 0 ? _55Perc : _remaining / (progCols.length - 1);
                 const res = {
                     rowType: 'status',
-                    id: c.name,
+                    id: `${key}_${c.name}`,
                     source: c, startDate: prevEndDate,
                     duration, progress: 100,
                     isManual: true

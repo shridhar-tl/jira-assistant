@@ -13,9 +13,12 @@ const initialData = {
     columnConfig: {},
     estimation: {},
 
-    resources: [],
-    resourceLeaveDays: {},
-    resourceHolidays: {},
+    planData: {}, // Ticket, status wise data
+    allocationData: {}, // Contains user wise daily time allocation
+
+    resources: [], // List of resources
+    resourceLeaveDays: {}, // List of user wise leave plans
+    resourceHolidays: {}, // List of holidays
 
     settings: {
         startOfDay: '11:00',

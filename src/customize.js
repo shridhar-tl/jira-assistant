@@ -9,6 +9,7 @@ const config = {
         importWorklog: true,
         importIssues: true,
         planningPoker: !isPluginBuild,
+        sprintPlanner: true,
 
         // Reports
         worklogReport: true,

@@ -16,7 +16,12 @@ export function getDaysListBasedOnSprints(sprints) {
     for (let i = sprints.length - 1; i >= 0; i--) {
         const sprint = sprints[i];
         const { id, name, startDate, endDate } = sprint;
-        const end = moment(endDate).endOf('day');
+
+        let $end = moment(endDate);
+        if ($end.hours() < 13) { // This is to avoid days repeating in two sprints
+            $end = $end.add(-1, 'day');
+        }
+        const end = $end.endOf('day');
         let current = moment(startDate).startOf('day');
         let daysCount = 0;
 
@@ -24,7 +29,7 @@ export function getDaysListBasedOnSprints(sprints) {
             const key = current.format('YYYYMMDD');
             const date = current.date();
             const week = current.toDate().format('DD').toUpperCase();
-            days.push({ key, date, week });
+            days.push({ key, date, week, dateObj: current.toDate() });
             daysCount++;
             current = current.add(1, 'day');
         }

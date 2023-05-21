@@ -53,9 +53,13 @@ resources:
       port: 6060
 permissions:
   content:
+    scripts:
+      - 'unsafe-eval'
     styles:
       - 'unsafe-inline'
   external:
+    fonts:
+      - '*'
     images:
       - '*.atlassian.net'
     fetch:
@@ -72,6 +76,8 @@ permissions:
     - read:jql:jira
     - read:jira-work
     - write:jira-work
+    - read:board-scope.admin:jira-software
+    - read:project:jira
 app:
   id: ari:cloud:ecosystem::app/3864d3bc-aad3-4650-ac35-e15af61fd92d
 remotes:

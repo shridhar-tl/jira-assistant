@@ -20,7 +20,7 @@ export function getDashboardMenu(d, idx, userId) {
 }
 
 const { dashboards,
-    calendar, importWorklog, importIssues, planningPoker,
+    calendar, importWorklog, importIssues, planningPoker, sprintPlanner,
 
     // Reports
     worklogReport, worklogReportOld, sprintReport, customReport, estimateVsActual, reportBuilder,
@@ -31,7 +31,7 @@ const { dashboards,
     // Menu groups
     activitiesGroup = calendar || importWorklog || importIssues,
     reportsGroup = worklogReport || worklogReportOld || sprintReport || customReport || estimateVsActual || reportBuilder,
-    planningGroup = planningPoker,
+    planningGroup = planningPoker || sprintPlanner,
     settingsGroup = userGroups || generalSettings || advancedSettings
 } = config.modules;
 
@@ -139,11 +139,11 @@ const navigation = [
                 url: getRouteUrl(isWebBuild ? '/../poker' : '/poker'),
                 icon: 'fa fa-gamepad'
             },
-            planningPoker && {
+            sprintPlanner && {
                 name: 'Sprint Planner',
                 id: 'SPR',
-                external: true,
-                url: getRouteUrl(isWebBuild ? '/../planning/sprint-planner' : '/planning/sprint-planner'),
+                external: !isPluginBuild,
+                url: isPluginBuild ? '/planning/sprint-planner' : getRouteUrl(isWebBuild ? '/../planning/sprint-planner' : '/planning/sprint-planner'),
                 icon: 'fa fa-gamepad'
             }
         ].filter(Boolean)

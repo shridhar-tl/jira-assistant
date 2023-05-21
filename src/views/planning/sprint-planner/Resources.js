@@ -4,13 +4,15 @@ import { connect } from './store';
 import { UserDisplay } from '../../../display-controls';
 import { loadLeaveDetails } from './store/actions';
 import classNames from 'classnames';
+import { getResourceAvailability } from './utils';
+import Indicator from '../../../components/worklog-indicator';
 
 function Resources({
     resources, daysList: { groups, days },
-    workHours,
+    workHours, workingDays, allocationData,
     leaveCalendar, holidayCalendar,
     resourceLeaveDays, resourceHolidays,
-    loadLeaveDetails
+    loadLeaveDetails, height
 }) {
     useEffect(() => {
         loadLeaveDetails();
@@ -21,7 +23,7 @@ function Resources({
     }
 
     return (<div className="ja-resource-container">
-        <ScrollableTable>
+        <ScrollableTable height={height}>
             <THead>
                 <TRow>
                     <Column rowSpan={2} className="pad-5">Resource Name</Column>
@@ -33,7 +35,8 @@ function Resources({
             </THead>
             <TBody>
                 {resources.map(r => <ResourceRow key={r.accountId} resource={r} days={days} workHours={workHours}
-                    resourceLeaveDays={resourceLeaveDays} resourceHolidays={resourceHolidays} />)}
+                    allocationData={allocationData[r.id]} workingDays={workingDays}
+                    resourceLeaveDays={resourceLeaveDays[r.accountId]} resourceHolidays={resourceHolidays} />)}
                 <tr>
                     <td>
                         <span className="fa fa-plus" />
@@ -45,45 +48,34 @@ function Resources({
 }
 
 export default connect(Resources,
-    ({ resources, daysList, resourceLeaveDays, resourceHolidays,
-        settings: { workHours, leaveCalendar, holidayCalendar } }) =>
-        ({ resources, daysList, resourceLeaveDays, resourceHolidays, workHours, leaveCalendar, holidayCalendar }),
+    ({ resources, daysList, resourceLeaveDays, resourceHolidays, allocationData,
+        settings: { workHours, workingDays, leaveCalendar, holidayCalendar } }) =>
+        ({ resources, daysList, resourceLeaveDays, resourceHolidays, workHours, workingDays, leaveCalendar, holidayCalendar, allocationData }),
     { loadLeaveDetails });
 
-function ResourceRow({ resource: r, days, workHours, resourceLeaveDays, resourceHolidays }) {
-    const { accountId } = r;
-    const leaveDays = resourceLeaveDays[accountId];
-
+function ResourceRow({ resource: r, days,
+    workHours, workingDays,
+    allocationData, resourceLeaveDays, resourceHolidays }) {
     return (<tr>
         <UserDisplay value={r} />
         {days.map(d => {
             const { key } = d;
-            const leave = leaveDays?.[key];
-            const holiday = resourceHolidays[key];
-            let hour = workHours;
-            if (leave?.allDay) {
-                hour = 0;
-            }
-            else if (leave?.hour > 0) {
-                hour -= leave?.hour;
-            }
+            const availableHours = getResourceAvailability(key, d.dateObj, workHours, workingDays, resourceLeaveDays, resourceHolidays);
+            const allocatedHour = allocationData?.[key] || 0;
+            const isUnavailable = !availableHours;
+            const clsNames = {
+                'resource-day': true,
+                'col-holiday': isUnavailable,
+                'log-less': allocatedHour && allocatedHour < availableHours,
+                'log-good': availableHours && allocatedHour === availableHours,
+                'log-high': allocatedHour > availableHours,
+            };
 
-            if (hour > 0 && holiday) {
-                if (holiday.allDay) {
-                    hour = 0;
-                }
-                else if (holiday.hour > 0) {
-                    hour -= holiday.hour;
-                }
-            }
-
-            if (hour < 0) {
-                hour = 0;
-            }
-
-            const isUnavailable = !hour;
-
-            return (<td key={key} className={classNames({ 'col-holiday': isUnavailable })}>{hour ? hour : ''}</td>);
+            return (<td key={key}
+                className={classNames(clsNames)}>
+                {allocatedHour ? allocatedHour : ''}
+                {allocatedHour > 0 && <Indicator value={allocatedHour} maxHours={availableHours} />}
+            </td>);
         })}
     </tr>);
 }

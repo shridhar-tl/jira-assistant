@@ -8,6 +8,7 @@ const DefaultLayout = React.lazy(() => import('../../layouts/DefaultLayout/Defau
 const OptionsPage = React.lazy(() => import('../../views/settings/global/GlobalSettings'));
 
 const Poker = React.lazy(() => import('../../views/poker/Poker'));
+const SprintPlanner = React.lazy(() => import('../../views/planning/sprint-planner'));
 
 export default function Renderer({ authInfo: { userId } }) {
     const layout = (<DefaultLayout key={userId} />);
@@ -15,6 +16,7 @@ export default function Renderer({ authInfo: { userId } }) {
         <Route exact path="/options" name="Options Page" element={<OptionsPage />} />
 
         <Route path="/poker/*" name="Planning Poker" element={<Poker hasExtensionSupport={false} />} />
+        <Route path="/:userId/planning/sprint-planner" name="Sprint Planner" element={<SprintPlanner />} />
 
         <Route path="/:userId/*" name="Home" element={layout} />
     </Routes>);

@@ -1,5 +1,5 @@
 import Resolver from '@forge/resolver';
-import { storage, asUser } from '@forge/api';
+import { storage, asUser, asApp } from '@forge/api';
 
 const resolver = new Resolver();
 
@@ -39,6 +39,21 @@ resolver.define('GetMSOEvents', async (req) => {
     const { payload: { eventsUrl } } = req;
 
     const response = await mso.fetch(eventsUrl);
+    if (response.ok) {
+        return response.json();
+    }
+
+    return Promise.reject({
+        status: response.status,
+        statusText: response.statusText,
+        text: await response.text(),
+    });
+});
+
+resolver.define('VelocityChart', async (req) => {
+    const { payload: { boardId } } = req;
+    const response = await asApp.fetch(`/rest/greenhopper/1.0/rapid/charts/velocity?rapidViewId=${boardId}`);
+
     if (response.ok) {
         return response.json();
     }
