@@ -131,10 +131,23 @@ export default class JiraService {
 
         result = await this.$ajax.get(ApiUrls.getCustomFields);
 
+        const createdFieldIndex = result.findIndex(f => f.id === 'created');
+        if (createdFieldIndex > 0) {
+            const createdField = result[createdFieldIndex];
+            const ageField = {
+                ...createdField,
+                custom: true,
+                id: 'issueAge',
+                name: 'Issue Age',
+                schema: { type: 'ageindays' }
+            };
+
+            result.splice(createdFieldIndex + 1, 0, ageField);
+        }
+
         this.$jaCache.session.set("customFields", result, 10);
 
         return result;
-
     }
 
     async getRapidViews() {
