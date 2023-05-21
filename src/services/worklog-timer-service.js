@@ -144,11 +144,11 @@ export default class WorklogTimerService extends BaseService {
         const minTime = parseTimeInMins(await this.$settings.get('TR_MinTime'));
         if (timeInMins >= minTime) {
 
-            const TR_RoundTime = await this.$settings.get('TR_RoundTime');
-            const TR_RoundOpr = (await this.$settings.get('TR_RoundOpr')) || 5;
+            const TR_RoundTime = (await this.$settings.get('TR_RoundTime')) || 5;
+            const TR_RoundOpr = await this.$settings.get('TR_RoundOpr');
 
             if (TR_RoundOpr && Math[TR_RoundOpr]) {
-                timeInMins = parseInt(Math[TR_RoundOpr](timeInMins / TR_RoundTime) * TR_RoundTime);
+                timeInMins = parseInt(Math.max(1, Math[TR_RoundOpr](timeInMins / TR_RoundTime)) * TR_RoundTime);
             }
 
             if (timeInMins >= 1) {
