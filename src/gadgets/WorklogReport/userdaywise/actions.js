@@ -1,11 +1,12 @@
 export function toggleUserExpanded(setState, getState) {
     return function (boardId, groupIndex, uid) {
-        const userExpnState = { ...getState('userExpnState') };
+        const state = getState();
+        const userExpnState = { ...state.userExpnState };
         const key = `${boardId}_${groupIndex}_${uid}`;
         const { [key]: isExpanded } = userExpnState;
 
-        if (isExpanded) {
-            delete userExpnState[key];
+        if (isExpanded ?? state.expandUsers) {
+            userExpnState[key] = false;
         } else {
             userExpnState[key] = true;
         }

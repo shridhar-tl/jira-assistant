@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { renderRadioButton } from './actions';
 import { ShowMoreLink } from './Common';
+import { Checkbox } from '../../../controls';
 
 function FormattingSettings({ setValue, state, state: { logFormat, timeZone, daysToHide } }) {
     const [showMore, setShowMore] = useState(false);
@@ -77,7 +78,7 @@ function FormattingSettings({ setValue, state, state: { logFormat, timeZone, day
 
 export default FormattingSettings;
 
-function MoreFormattingSettings({ setValue, state: { breakupMode, userDisplayFormat, rIndicator } }) {
+function MoreFormattingSettings({ setValue, state: { breakupMode, userDisplayFormat, rIndicator, expandUsers } }) {
     return (<>
         <div className="form-group row">
             <label className="col-md-3 col-form-label">User display format</label>
@@ -134,6 +135,13 @@ function MoreFormattingSettings({ setValue, state: { breakupMode, userDisplayFor
                         Do not show any indicator
                     </label>
                 </div>
+            </div>
+        </div>
+        <div className="form-group row">
+            <div className="col-12">
+                <Checkbox checked={expandUsers}
+                    onChange={val => setValue('expandUsers', val)}
+                    label="Expand user row by default in grouped report" />
             </div>
         </div>
     </>);
