@@ -20,6 +20,7 @@ export {
 
 export function getComponentFor(type) {
     switch (type) {
+        case 'ageindays': return { Component: DateDisplay, props: { quick: true } };
         case 'date': return { Component: DateDisplay, props: { dateOnly: true } };
         case 'datetime': return { Component: DateDisplay };
         case 'parent': return { Component: IssueDisplay, props: { settings: { valueType: 'both' } } };

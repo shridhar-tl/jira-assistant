@@ -3,7 +3,7 @@ import moment from 'moment';
 import { InputMask } from 'primereact/inputmask';
 import BaseDialog from './BaseDialog';
 import { inject } from '../services/injector-service';
-import { Button, Checkbox, DatePicker, TextBox } from '../controls';
+import { Button, Checkbox, DatePicker, SelectBox, TextBox } from '../controls';
 import { GadgetActionType } from '../gadgets';
 import { EventCategory } from '../constants/settings';
 import { IssuePicker } from '../jira-controls/IssuePicker';
@@ -16,6 +16,13 @@ function convertHours(value) {
     const m = parseInt(Math.round(60 * `.${(value[1] || 0)}`)) || 0;
     return `${h.pad(2)}:${m.pad(2)}`;
 }
+
+const adjustEstimateTypes = [
+    { value: '', label: 'Auto adjust' },
+    { value: 'leave', label: 'No changes' },
+    { value: 'manual', label: 'Reduce by' },
+    { value: 'new', label: 'Set new estimate' }
+];
 
 class AddWorklog extends BaseDialog {
     constructor(props) {
@@ -66,8 +73,7 @@ class AddWorklog extends BaseDialog {
             newState.log = {
                 ticketNo: obj.ticketNo,
                 dateStarted: moment(obj.startTime || obj.dateStarted || new Date()).toDate(),
-                description: obj.description?.trim() || '',
-                allowOverride: obj.allowOverride
+                description: obj.description?.trim() || ''
             };
 
             if (obj.parentId) {
@@ -80,17 +86,8 @@ class AddWorklog extends BaseDialog {
                 timeSpent = this.$utils.formatSecs(timeSpent, false, true);
             }
 
-            if (!obj.allowOverride && timeSpent) {
-                newState.log.timeSpent = timeSpent;
-            }
 
-            if (timeSpent) {
-                newState.log.overrideTimeSpent = timeSpent;
-            }
-            else {
-                newState.log.overrideTimeSpent = this.defaultTimeSpent;
-                newState.log.allowOverride = true;
-            }
+            newState.log.timeSpent = timeSpent || this.defaultTimeSpent;
 
             this.validateData(newState.log, newState.vald, newState.ctlClass);
         }
@@ -105,10 +102,6 @@ class AddWorklog extends BaseDialog {
                 if (d.timeSpent === "00:00") {
                     d.timeSpent = null;
                 }
-            }
-            if (d.overrideTimeSpent) {
-                d.overrideTimeSpent = d.overrideTimeSpent.substring(0, 5);
-                d.allowOverride = true;
             }
 
             if (copy) {
@@ -133,9 +126,8 @@ class AddWorklog extends BaseDialog {
 
     // eslint-disable-next-line complexity
     validateData(log, vald, ctlClass) {
-        if (log.allowOverride) {
-            log.overrideTimeSpent = log.overrideTimeSpent || log.timeSpent || "00:00";
-        }
+        log.timeSpent = log.overrideTimeSpent || log.timeSpent || "00:00";
+        delete log.overrideTimeSpent;
 
         let validation = true;
 
@@ -147,19 +139,25 @@ class AddWorklog extends BaseDialog {
             validation = (vald.dateStarted = ds.isValid() && ds.isBetween(startOfDay, new Date(), undefined, '[]')) && validation;
         } else {
             validation = (vald.dateStarted = !(!log.dateStarted || log.dateStarted.length < 16)) && validation;
-            vald.overrideTimeSpent = (log.allowOverride && log.overrideTimeSpent && log.overrideTimeSpent.length >= 4);
-            vald.overrideTimeSpent = vald.overrideTimeSpent && this.$worklog.getTimeSpent(log.overrideTimeSpent) > 0;
-            validation = (vald.overrideTimeSpent = vald.overrideTimeSpent || (!log.allowOverride && log.timeSpent && log.timeSpent.length >= 4)) && validation;
+            vald.timeSpent = (log.timeSpent && log.timeSpent.length >= 4);
+            vald.timeSpent = vald.timeSpent && this.$worklog.getTimeSpent(log.timeSpent) > 0;
+            validation = vald.timeSpent && validation;
+            const { adjustEstimate, estimate } = this.state;
+            vald.estimate = (!!estimate && this.$worklog.getTimeSpent(estimate) > 0) || !adjustEstimate || adjustEstimate === 'leave';
+            validation = vald.estimate && validation;
         }
 
         validation = (vald.description = this.minCommentLength < 1 || !(!log.description || log.description.length < this.minCommentLength)) && validation;
         ctlClass.ticketNo = !vald.ticketNo ? 'is-invalid' : 'is-valid';
         ctlClass.dateStarted = !vald.dateStarted ? 'is-invalid' : 'is-valid';
-        ctlClass.overrideTimeSpent = !vald.overrideTimeSpent ? 'is-invalid' : 'is-valid';
+        ctlClass.timeSpent = !vald.timeSpent ? 'is-invalid' : 'is-valid';
         ctlClass.description = !vald.description ? 'is-invalid' : 'is-valid';
+        ctlClass.estimate = !vald.estimate ? 'is-invalid' : 'is-valid';
 
         return validation;
     }
+
+
 
     saveWorklog = (worklog, vald, upload) => {
         if (!this.validateData(worklog, vald, this.state.ctlClass)) {
@@ -173,18 +171,26 @@ class AddWorklog extends BaseDialog {
             const { dateStarted, description } = this.state.log;
             this.$wltimer.editTrackerInfo(this.getTicketNo(this.state.log), dateStarted, description).then(this.props.onDone);
         } else {
+            const { adjustEstimate, estimate } = this.state;
+            const timeSpent = worklog.overrideTimeSpent || worklog.timeSpent;
+
+            if (adjustEstimate) {
+                upload = { adjustEstimate, estimate };
+            }
+
             this.$worklog.saveWorklog({
                 ticketNo: this.getTicketNo(worklog),
                 dateStarted: worklog.dateStarted,
-                overrideTimeSpent: worklog.overrideTimeSpent,
                 description: worklog.description,
                 worklogId: worklog.worklogId,
                 isUploaded: worklog.isUploaded,
-                timeSpent: worklog.timeSpent,
+                timeSpent,
                 parentId: worklog.parentId,
                 id: worklog.id
-            }, upload).then((result) => {
-                this.props.onDone(worklog.id > 0 ? { type: GadgetActionType.WorklogModified, edited: result, previousTime: this.previousTime } : { type: GadgetActionType.WorklogModified, added: result });
+            }, upload).then(result => {
+                this.props.onDone(worklog.id > 0 ?
+                    { type: GadgetActionType.WorklogModified, edited: result, previousTime: this.previousTime }
+                    : { type: GadgetActionType.WorklogModified, added: result });
                 this.onHide();
             }, (e) => {
                 this.setState({ isLoading: false });
@@ -242,11 +248,12 @@ class AddWorklog extends BaseDialog {
 
     getFooter() {
         const {
-            state: { isLoading, log, vald, uploadImmediately }
+            state: { isLoading, log, vald, uploadImmediately, adjustEstimate }
         } = this;
 
         return <>
-            {!log.id && <Checkbox checked={uploadImmediately} className="pull-left" label="Upload immediately to Jira" onChange={(chk) => this.setState({ uploadImmediately: chk })} />}
+            {!log.id && <Checkbox checked={uploadImmediately || !!adjustEstimate} disabled={!!adjustEstimate}
+                className="pull-left" label="Upload immediately to Jira" onChange={(chk) => this.setState({ uploadImmediately: chk })} />}
             {log.id > 0 && <Button type="danger" icon="fa fa-trash-o" label="Delete" className="pull-left" disabled={isLoading} onClick={() => this.deleteWorklog(log)} />}
             {log.id > 0 && !log.worklogId && <Button type="success" isLoading={isLoading} icon="fa fa-upload" label="Save & Upload" className="pull-left" disabled={isLoading}
                 onClick={() => this.saveWorklog(log, vald, true)} />}
@@ -275,7 +282,8 @@ class AddWorklog extends BaseDialog {
     render() {
         const {
             minCommentLength,
-            state: { log, vald, ctlClass }
+            state: { log, vald, ctlClass, adjustEstimate, estimate },
+            props: { editTracker }
         } = this;
 
         if (!this.state.log) { return 'Loading...'; }
@@ -283,9 +291,9 @@ class AddWorklog extends BaseDialog {
         return super.renderBase(<div className="pad-22" onKeyPress={this.handleKeyPress}>
             <div className="row pad-b">
                 <div className="col-sm-3">
-                    <strong>Log time</strong>
+                    <strong>Date started {editTracker ? '& Time spent' : ''}</strong>
                 </div>
-                <div className="p-col-9 col-sm-9">
+                <div className="col-lg-5 col-sm-6 col-xs-12">
                     <div className="form-group">
                         <div className={ctlClass.dateStarted}>
                             <DatePicker value={log.dateStarted} showTime={true} onChange={(val) => this.setValue("dateStarted", val)} />
@@ -293,6 +301,16 @@ class AddWorklog extends BaseDialog {
                         <span className={`help-block ${vald.dateStarted ? '' : 'msg-error'}`}>Provide the time you had started the work</span>
                     </div>
                 </div>
+                {!editTracker && <div className="col-lg-3 col-sm-3 col-xs-12">
+                    <div className="form-group no-margin">
+                        <div className={`p-inputgroup ${ctlClass.timeSpent}`}>
+                            <InputMask mask="99:99" className="w-80" value={log.timeSpent || ""} placeholder="00:00" maxlength={5}
+                                onChange={(e) => this.setValue("timeSpent", e.value)} />
+                        </div>
+                        <span className={`help-block ${vald.timeSpent ? '' : 'msg-error'}`}>
+                            Provide hours spent</span>
+                    </div>
+                </div>}
             </div>
 
             <div className="row pad-b">
@@ -307,45 +325,36 @@ class AddWorklog extends BaseDialog {
                 </div>
             </div>
 
-            {!this.props.editTracker && <div className="row pad-b">
-                <div className="col-sm-3">
-                    <strong>Actual time spent</strong>
-                </div>
-                <div className="col-sm-2">
-                    <strong>{this.formatTs(log.timeSpent) || '-'}</strong>
-                </div>
-                <div className="col-sm-4">
-                    <strong>Override time spent</strong>
-                </div>
-                <div className="col-sm-3">
-                    <div className="form-group no-margin">
-                        <div className={`p-inputgroup ${ctlClass.overrideTimeSpent}`}>
-                            <span className="p-inputgroup-addon">
-                                <Checkbox checked={log.allowOverride || false} onChange={(val) => this.setValue("allowOverride", val)} />
-                            </span>
-                            <InputMask mask="99:99" className="w-80" value={log.overrideTimeSpent || ""} placeholder="00:00" maxlength={5} disabled={!log.allowOverride}
-                                onChange={(e) => this.setValue("overrideTimeSpent", e.value)} />
-                        </div>
-                    </div>
-                </div>
-                <div className="col-sm-3"></div>
-                <div className="col-sm-9 no-t-padding">
-                    <span className={`help-block ${vald.overrideTimeSpent ? '' : 'msg-error'}`}>
-                        Provide the time spent on this task (override to change existing)</span>
-                </div>
-            </div>}
-
             <div className="row">
                 <div className="col-sm-3">
-                    <strong>Comments</strong>
+                    <strong>Work description</strong>
                 </div>
                 <div className="col-sm-9">
-                    <TextBox multiline={true} rows={5} value={log.description || ""} className={`form-control ${vald.description ? '' : 'ctl-error'}`}
+                    <TextBox multiline={true} rows={3} value={log.description || ""} className={`form-control ${vald.description ? '' : 'ctl-error'}`}
                         onChange={(val) => this.setValue("description", val)}
                         placeholder={`Provide a brief info about the task you had done.${minCommentLength
                             ? ` Should be atleast ${minCommentLength} chars is length. You can change this settings from General settings -> Worklog tab` : ''}`} />
                 </div>
             </div>
+            <br />
+            {!editTracker && <div className="row pad-top-5">
+                <div className="col-sm-3">
+                    <strong>Remaining estimate</strong>
+                </div>
+                <div className="col-sm-4">
+                    <SelectBox value={adjustEstimate || ''} dataset={adjustEstimateTypes} onChange={adjustEstimate => this.setState({ adjustEstimate })} />
+                </div>
+                <div className="col-sm-4">
+                    {(adjustEstimate === 'manual' || adjustEstimate === 'new') && <InputMask mask="99:99" className="w-80" value={estimate || ""} placeholder="00:00" maxlength={5}
+                        onChange={(e) => this.setState({ estimate: e.value })} />}
+                </div>
+                {!!adjustEstimate && <>
+                    <div className="col-sm-3"></div>
+                    <div className="col-sm-9">
+                        <span className="help-block"><strong>Note:</strong> Your worklog will be immediately uploaded upon save</span>
+                    </div>
+                </>}
+            </div>}
         </div>
         );
     }

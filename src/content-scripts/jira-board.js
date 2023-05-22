@@ -5,11 +5,11 @@ import { waitAndGet } from "./utils";
 
 export async function applyBoardLogic(currentPage, settings, firstTime, applyModifications) {
     if (currentPage === Pages.Board) {
-        $('.ghx-columns .ui-sortable div.js-issue .ja-issue-el').remove();
+        $('.ghx-columns div.js-issue .ja-issue-el').remove();
 
         const triggerFunc = triggerWLTracking.bind({ settings, applyModifications });
 
-        const selector = '.ghx-columns .ui-sortable div.js-issue';
+        const selector = '.ghx-columns div.js-issue';
         const issues = firstTime ? (await waitAndGet(selector)) : $(selector);
         issues.each((i, el) => {
             el = $(el);
