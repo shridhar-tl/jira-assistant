@@ -7,13 +7,13 @@ function JiraFieldMultiSelect({ value, field, valueOnly, onChange, hideTypes, hi
         if (!value || valueOnly) {
             return value;
         } else {
-            return value.map(v => v.key);
+            return value.map(v => v.id || v.key);
         }
     }, [value, valueOnly]);
 
     const [fields, setFields] = useState();
     const fieldsMap = useMemo(() => fields?.reduce((obj, f) => {
-        obj[f.key] = f;
+        obj[f.id] = f;
         return obj;
     }, {}), [fields]);
 
@@ -24,10 +24,10 @@ function JiraFieldMultiSelect({ value, field, valueOnly, onChange, hideTypes, hi
     const changeHandler = useCallback((value, field) => {
         const selValue = value.map(v => {
             const f = fieldsMap[v];
-            const { key, name } = f;
+            const { id, key, name } = f;
             const type = getFieldType(f);
 
-            return { key, name, type };
+            return { id, key, name, type };
         });
 
         onChange(selValue, field);
@@ -38,7 +38,7 @@ function JiraFieldMultiSelect({ value, field, valueOnly, onChange, hideTypes, hi
     }
 
     return (<SelectBox
-        multiselect valueField="key" displayField="name"
+        multiselect valueField="id" displayField="name"
         value={valueToPass || []} dataset={fields || []}
         field={field} onChange={valueOnly ? onChange : changeHandler}
         filter placeholder="Choose the list of columns" />);
@@ -55,7 +55,7 @@ async function getCustomFields(hideTypes, hideKeys) {
     }
 
     if (Array.isArray(hideKeys) && hideKeys.length) {
-        fields = fields.filter(f => !hideKeys.includes(f.key));
+        fields = fields.filter(f => !hideKeys.includes(f.id));
     }
 
     return fields;

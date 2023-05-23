@@ -1,7 +1,7 @@
 import * as moment from 'moment';
 import { ApiUrls } from '../constants/api-urls';
 import { DummyWLId } from '../constants/common';
-import { getUserName } from '../common/utils';
+import { getUserName, prepareUrlWithQueryString } from '../common/utils';
 import BaseService from './base-service';
 
 export default class WorklogService extends BaseService {
@@ -116,10 +116,10 @@ export default class WorklogService extends BaseService {
         }).then(res => (sameObjects ? res : this.getPendingWorklogs()));
     }
 
-    uploadWorklog(entry) {
+    uploadWorklog(entry, opts) {
         const timeSpent = entry.overrideTimeSpent || entry.timeSpent;
 
-        const uploadRequest = this.upload(entry.ticketNo, entry.dateStarted, timeSpent, entry.description, entry.worklogId);
+        const uploadRequest = this.upload(entry.ticketNo, entry.dateStarted, timeSpent, entry.description, entry.worklogId, opts);
 
         return uploadRequest.then((result) => {
             entry.worklogId = result.id;
@@ -141,7 +141,27 @@ export default class WorklogService extends BaseService {
         });
     }
 
-    upload(ticketNo, dateStarted, timeSpent, comment, worklogId) {
+    upload(ticketNo, dateStarted, timeSpent, comment, worklogId, opts) {
+        if (opts && typeof opts !== 'object') {
+            opts = undefined;
+        }
+        let { adjustEstimate, estimate } = opts || {};
+        if (!estimate && adjustEstimate !== 'leave') {
+            adjustEstimate = 'AUTO';
+        }
+
+        adjustEstimate = adjustEstimate || 'AUTO';
+
+        if (estimate) {
+            estimate = this.$utils.formatTs(estimate);
+        }
+
+        const query = {
+            adjustEstimate,
+            newEstimate: adjustEstimate === 'new' ? estimate : undefined,
+            reduceBy: adjustEstimate === 'manual' ? estimate : undefined
+        };
+
         const request = {
             comment,
             started: this.$utils.formatDateTimeForJira(dateStarted), // `${dateStarted.toISOString().replace('Z', '').replace('z', '')}+0000`,
@@ -156,10 +176,10 @@ export default class WorklogService extends BaseService {
         let uploadRequest = null;
 
         if (worklogId > 0) {
-            uploadRequest = this.$ajax.put(ApiUrls.updateIndividualWorklog, request, ticketNo, worklogId);
+            uploadRequest = this.$ajax.put(prepareUrlWithQueryString(ApiUrls.updateIndividualWorklog, query), request, ticketNo, worklogId);
         }
         else {
-            uploadRequest = this.$ajax.post(ApiUrls.addIssueWorklog, request, ticketNo, worklogId || 0);
+            uploadRequest = this.$ajax.post(prepareUrlWithQueryString(ApiUrls.addIssueWorklog, query), request, ticketNo, worklogId || 0);
         }
 
         return uploadRequest.then(null, (err) => {
@@ -330,12 +350,19 @@ export default class WorklogService extends BaseService {
         });
     }
 
-    getWorklog(worklog) {
+    async getWorklog(worklog) {
         if (worklog.isUploaded) {
             return this.$jira.getJAWorklog(worklog.worklogId, worklog.ticketNo);
         }
         else {
-            return this.$storage.getSingleWorklogWithId(worklog.id);
+            const wl = await this.$storage.getSingleWorklogWithId(worklog.id);
+
+            if (wl.overrideTimeSpent) {
+                wl.timeSpent = wl.overrideTimeSpent;
+                delete wl.overrideTimeSpent;
+            }
+
+            return wl;
         }
     }
 
@@ -367,8 +394,8 @@ export default class WorklogService extends BaseService {
             if (worklog.timeSpent) {
                 wl.timeSpent = worklog.timeSpent;
             }
-            if (worklog.overrideTimeSpent) {
-                wl.overrideTimeSpent = worklog.overrideTimeSpent;
+            if (worklog.overrideTimeSpent) { // ToDo: This block can be removed later
+                wl.timeSpent = worklog.overrideTimeSpent;
             }
             if (worklog.parentId) {
                 wl.parentId = worklog.parentId;
@@ -382,7 +409,7 @@ export default class WorklogService extends BaseService {
                 pro = this.$storage.addWorklog(worklog).then((id) => { worklog.id = id; });
             }
             if (upload || worklog.worklogId) {
-                pro = pro.then(() => this.uploadWorklog(worklog));
+                pro = pro.then(() => this.uploadWorklog(worklog, upload));
             }
             return pro.then(() => this.getWLCalendarEntry(worklog));
         }, (err) => { console.log("error for ticket number", err); return Promise.reject(err); });

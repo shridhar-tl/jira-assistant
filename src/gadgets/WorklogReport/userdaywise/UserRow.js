@@ -55,11 +55,12 @@ function UserRow({
 
 export default connect(UserRow,
     (state, { boardId, groupIndex, user }) => {
-        const { userDisplayFormat, timeframeType, userExpnState } = state;
+        const { userDisplayFormat, timeframeType, userExpnState, expandUsers } = state;
         const isSprint = timeframeType === '1';
         const uid = getUserName(user);
         const expandKey = `${boardId}_${groupIndex}_${uid}`;
-        const result = { isSprint, userDisplayFormat, uid, expanded: !!userExpnState[expandKey] };
+        const isUserExpanded = userExpnState[expandKey] ?? expandUsers;
+        const result = { isSprint, userDisplayFormat, uid, expanded: !!isUserExpanded };
 
         if (isSprint) {
             result.sprintsList = state[`sprintsList_${boardId}`];
