@@ -43,7 +43,9 @@ async function getCalendars(workspaces) {
     const calendars = await $wiki.getCalendars(workspaces);
 
     return calendars.reduce((arr, { result }) => {
-        arr.push(...result);
+        if (Array.isArray(result)) {
+            arr.push(...result);
+        }
         return arr;
     }, []);
 }

@@ -1,26 +1,29 @@
-import { useRef } from 'react';
+import React, { useRef, useState, useCallback } from 'react';
 import { connect } from './store';
 import RapidViewList from '../../../components/RapidViewList';
 import { setSelectedBoard } from './store/actions';
 import { Menubar } from 'primereact/menubar';
 import { OverlayPanel } from 'primereact/overlaypanel';
-import { useState } from 'react';
-import { useCallback } from 'react';
 import Settings from './Settings';
 
-const Header = connect(function ({ selectedBoard }) {
+function getMenuItem(icon, label, onClick) {
+    const template = (<span role="menuitem" className="p-menuitem-link" onClick={onClick}>
+        <span className={`p-menuitem-icon ${icon}`} />
+        <span className="p-menuitem-text">{label}</span>
+    </span>);
+
+    return { icon, label, template };
+}
+
+const Header = connect(function ({ selectedBoard, onTabChange }) {
     const [isSettingsVisible, showSettings] = useState(false);
     const toggleSettings = useCallback(() => showSettings(visible => !visible), [showSettings]);
 
-    const configMenuTemplate = (<span role="menuitem" className="p-menuitem-link" onClick={toggleSettings}>
-        <span className="p-menuitem-icon fa fa-calendar" />
-        <span className="p-menuitem-text">Config</span>
-    </span>);
-
     const menuItems = [
-        { icon: 'fa fa-users', label: 'Resources' },
-        { icon: 'fa fa-calendar', label: 'Calendar' },
-        { icon: 'fa fa-cogs', label: 'Config', template: configMenuTemplate }
+        getMenuItem('fa fa-users', 'Planner', () => onTabChange(0)),
+        getMenuItem('fa fa-calendar', 'Calendar', () => onTabChange(1)),
+        getMenuItem('fa fa-calendar', 'Capacity', () => onTabChange(2)),
+        getMenuItem('fa fa-cogs', 'Config', toggleSettings)
     ];
 
     const start = (<div>
@@ -39,7 +42,7 @@ const Header = connect(function ({ selectedBoard }) {
     </div>);
 }, ({ selectedBoard }) => ({ selectedBoard }));
 
-export default Header;
+export default React.memo(Header);
 
 const BoardPicker = connect(function ({ board, onChange }) {
     const op = useRef(null);
