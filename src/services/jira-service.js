@@ -326,8 +326,10 @@ export default class JiraService {
 
     getRapidSprintList = (rapidIds, opts) => {
         const asObj = typeof opts === 'boolean' ? opts : false;
-        const { state } = opts;
-        const reqArr = rapidIds.map((rapidId) => this.$jaCache.session.getPromise(`rapidSprintList${rapidId}`)
+        const defaultState = 'active,closed';
+        const { state = defaultState, maxResults } = opts;
+
+        const reqArr = rapidIds.map((rapidId) => this.$jaCache.session.getPromise(`rapidSprintList${rapidId}_${state || defaultState}_${maxResults}`)
             .then(async (value) => {
                 if (value) {
                     return value;
@@ -338,7 +340,7 @@ export default class JiraService {
                     let data = null;
 
                     do {
-                        data = await this.$ajax.get(ApiUrls.sprintListByBoard, rapidId, startAt, state || 'active,closed');
+                        data = await this.$ajax.get(ApiUrls.sprintListByBoard, rapidId, startAt, state || defaultState, maxResults || 50);
                         startAt = data.maxResults + data.startAt;
 
                         // Avoid showing sprints of other boards.
@@ -349,7 +351,8 @@ export default class JiraService {
                         else {
                             result.values.push(...data.values);
                         }
-                    } while (!data.isLast && --maxLoop > 0);
+                        // eslint-disable-next-line no-unmodified-loop-condition
+                    } while (!data.isLast && (!maxResults || result.values.length < maxResults) && --maxLoop > 0);
                 }
                 catch (err) {
                     console.warn('Getting rapid sprint list failed. Using alternate api.', err);

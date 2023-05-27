@@ -15,7 +15,8 @@ export async function loadSprintsList(boardId, setState, getState) {
     const sprintLists = await $jira.getRapidSprintList([boardId], { state: 'future,active' });
     const daysList = getDaysListBasedOnSprints(sprintLists);
 
-    const { columnConfig,
+    const {
+        columnConfig,
         estimation: { field: estimation = {} } = {}
     } = await $jira.getBoardConfig(boardId);
 
@@ -71,6 +72,8 @@ export async function loadSprintsList(boardId, setState, getState) {
     const planEndDate = moment(sprintLists[0]?.endDate || moment().add(2, 'weeks'))
         .endOf('day').add(5, 'days').toDate();
 
+    const velosityInfo = await computeAverageSprintVelosity(boardId, state, estimation.fieldId, $jira);
+
     const newState = {
         loading: false,
         columnConfig, estimation,
@@ -78,6 +81,7 @@ export async function loadSprintsList(boardId, setState, getState) {
         sprintWiseIssues, issuesMap,
         resources, userStoryMap,
         planStartDate, planEndDate,
+        velosityInfo
     };
 
     preparePlanningData(newState, state);
@@ -87,6 +91,48 @@ export async function loadSprintsList(boardId, setState, getState) {
 }
 
 //#region Private functions
+async function computeAverageSprintVelosity(boardId, { settings: { noOfSprintsForVelosity } }, storypointFieldName, $jira) {
+    const closedSprintLists = await $jira.getRapidSprintList([boardId], { state: 'closed', maxResults: noOfSprintsForVelosity });
+    const availableSprintCount = closedSprintLists.length;
+
+    if (!availableSprintCount) {
+        return { closedSprintLists, averageComitted: 0, averageCompleted: 0 };
+    }
+
+    const sprintIds = closedSprintLists.map(({ id }) => id);
+    const storyPointFieldForQuery = storypointFieldName.startsWith('customfield_')
+        ? `cf[${storypointFieldName.split('_')[1]}]`
+        : storypointFieldName;
+
+    const sprintWiseIssues = await $jira.getSprintIssues(sprintIds, {
+        jql: `${storyPointFieldForQuery} > 0`,
+        fields: ['resolutiondate', storypointFieldName]
+    });
+
+    closedSprintLists.forEach(sprint => {
+        const completeDate = moment(sprint.completeDate);
+        const issues = sprintWiseIssues[sprint.id];
+
+        sprint.comittedStoryPoints = 0;
+        sprint.completedStoryPoints = 0;
+
+        issues.forEach(issue => {
+            const { resolutiondate, [storypointFieldName]: storypoint } = issue.fields;
+
+            if (resolutiondate && moment(resolutiondate).isBefore(completeDate)) {
+                sprint.completedStoryPoints += storypoint;
+            }
+
+            sprint.comittedStoryPoints += storypoint;
+        });
+    });
+
+    const averageComitted = Math.round(closedSprintLists.sum(s => s.comittedStoryPoints) / closedSprintLists.length);
+    const averageCompleted = Math.round(closedSprintLists.sum(s => s.completedStoryPoints) / closedSprintLists.length);
+
+    return { closedSprintLists, averageComitted, averageCompleted };
+}
+
 function preparePlanningData(newState, allState) {
     const { sprintLists, sprintWiseIssues,
         columnConfig: { columns },

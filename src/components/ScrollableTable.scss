@@ -132,9 +132,17 @@ div.scroll-table-container {
         }
 
         tfoot {
-            background-color: #ebedf0;
-
             tr {
+                th {
+                    padding: 4px 16px;
+                    font-weight: 400;
+                    color: #555;
+                    font-size: 1em;
+                    text-align: left;
+                    font-weight: 600;
+                    background-color: #fff;
+                }
+
                 td {
                     padding: 5px 8px;
                 }

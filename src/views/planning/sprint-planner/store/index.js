@@ -23,6 +23,7 @@ const initialData = {
     settings: {
         startOfDay: '11:00',
         endOfDay: '20:00',
+        noOfSprintsForVelosity: 5,
         workHours: 6,
         hoursPerStoryPoint: 4,
         allowStorySpan: true, // Whether to allow spaning story or not

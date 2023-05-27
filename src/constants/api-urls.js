@@ -34,7 +34,7 @@ export const ApiUrls = {
     rapidViews: "~/rest/greenhopper/1.0/rapidview",
     scrumBoards: "~/rest/agile/1.0/board?maxResults=100&orderBy=name&type=scrum,simple",
     scrumBoardConfig: "~/rest/agile/1.0/board/{0}/configuration",
-    sprintListByBoard: "~/rest/agile/1.0/board/{0}/sprint?maxResults=50&startAt={1}&state={2}",
+    sprintListByBoard: "~/rest/agile/1.0/board/{0}/sprint?startAt={1}&state={2}&maxResults={3}",
     burndownChart: "~/rest/greenhopper/1.0/rapid/charts/scopechangeburndownchart.json?rapidViewId={0}&sprintId={1}",
     googleLogoutUrl: "https://accounts.google.com/o/oauth2/revoke?token={0}",
     outlookLogoutUrl: "https://login.microsoftonline.com/common/oauth2/v2.0/logout",
