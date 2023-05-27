@@ -649,7 +649,7 @@ export default class JiraService {
 
 function runOnQueue(items, concurrent, execute) {
     return new Promise((done, reject) => {
-        const queue = Queue({ results: [] });
+        const queue = new Queue({ results: [] });
         queue.concurrency = concurrent;
         items.forEach(t => queue.push(() => execute(t)));
         queue.start((err) => {
