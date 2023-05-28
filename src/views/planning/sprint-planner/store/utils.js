@@ -1,5 +1,6 @@
 import { inject } from "../../../../services/injector-service";
 import moment from 'moment';
+import { isWeekEndDay } from "../utils";
 
 export async function getInitialPlaningData() {
     const { $jira } = inject('JiraService');
@@ -7,7 +8,7 @@ export async function getInitialPlaningData() {
     return { sprintBoards };
 }
 
-export function getDaysListBasedOnSprints(sprints) {
+export function getDaysListBasedOnSprints(sprints, workingDays) {
     const groups = [];
     const days = [];
 
@@ -24,17 +25,23 @@ export function getDaysListBasedOnSprints(sprints) {
         const end = $end.endOf('day');
         let current = moment(startDate).startOf('day');
         let daysCount = 0;
+        let workingDaysCount = 0;
 
         while (!current.isAfter(end)) {
             const key = current.format('YYYYMMDD');
             const date = current.date();
             const week = current.toDate().format('DD').toUpperCase();
-            days.push({ key, date, week, dateObj: current.toDate() });
+            const dateObj = current.toDate();
+            const isWeekEnd = isWeekEndDay(dateObj, workingDays);
+            days.push({ key, date, week, dateObj, isWeekEnd });
             daysCount++;
+            if (!isWeekEnd) {
+                workingDaysCount++;
+            }
             current = current.add(1, 'day');
         }
 
-        groups.push({ sprintId: id, name, daysCount });
+        groups.push({ sprintId: id, name, daysCount, workingDaysCount });
     }
 
     return daysMap;

@@ -1,7 +1,7 @@
 import { DefaultWorkingDays } from "../../../constants/settings";
 
 export function getResourceAvailability(dayKey, date, workHours, workingDays, leaveDays, resourceHolidays) {
-    if (isHoliday(date, workingDays)) {
+    if (isWeekEndDay(date, workingDays)) {
         return 0;
     }
 
@@ -31,7 +31,7 @@ export function getResourceAvailability(dayKey, date, workHours, workingDays, le
     return hour;
 }
 
-export function isHoliday(date, workingDays) {
+export function isWeekEndDay(date, workingDays) {
     const weekDay = date.getDay();
     workingDays = workingDays || DefaultWorkingDays;
 

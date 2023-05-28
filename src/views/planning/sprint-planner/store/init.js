@@ -11,9 +11,11 @@ export async function loadSprintsList(boardId, setState, getState) {
 
     setState({ loading: true });
 
+    const state = getState();
+
     // Get list of sprints from Jira based on board
     const sprintLists = await $jira.getRapidSprintList([boardId], { state: 'future,active' });
-    const daysList = getDaysListBasedOnSprints(sprintLists);
+    const daysList = getDaysListBasedOnSprints(sprintLists, state.workingDays);
 
     const {
         columnConfig,
@@ -22,7 +24,6 @@ export async function loadSprintsList(boardId, setState, getState) {
 
     // Create user and story map
     // Create new users if story is assigned
-    const state = getState();
     let { resources } = state;
     resources = resources ? [...resources] : [];
 

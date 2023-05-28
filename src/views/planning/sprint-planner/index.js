@@ -6,7 +6,7 @@ import { getInitialPlaningData } from './store/utils';
 import Header from './Header';
 import Planner from './Planner';
 import Resources from './Resources';
-import CapacityPlanner from './CapacityPlanner';
+import CapacityPlanner from './capacity-planner';
 import './Styles.scss';
 
 // Registering Syncfusion license key
