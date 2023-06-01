@@ -293,6 +293,9 @@ export function generateUserDayWiseData(data, groups, pageSettings) {
                     ticket.totalCost = calcCostPerSecs(totalHours, usr.costPerHour);
                     return ticket;
                 });
+
+            arrangeTicketsByFirstWorklogDate(usrInfo, dates);
+
             // Set date wise total per user
             const logClass = usrInfo.logClass;
             const usrTotal = usrInfo.total;
@@ -317,7 +320,7 @@ export function generateUserDayWiseData(data, groups, pageSettings) {
             usrInfo.grandTotal = usrGTotal;
             usrInfo.grandTotalCost = calcCostPerSecs(usrGTotal, usr.costPerHour);
             return usrInfo;
-        });
+        }).orderBy(u => u.firstWorklogStartIndex);
 
         grpInfo.usersMap = grpInfo.users.reduce((obj, u) => {
             obj[u.name] = u;
@@ -377,6 +380,18 @@ export function generateUserDayWiseData(data, groups, pageSettings) {
     dates = filterDaysWithoutWorklog(daysToHide, dates);
 
     return { groupedData, weeks: getWeekHeader(dates), dates };
+}
+
+function arrangeTicketsByFirstWorklogDate(user, dates) {
+    const tickets = user.tickets;
+
+    tickets.forEach(t => {
+        const { logs } = t;
+        t.worklogStartIndex = dates.findIndex(d => !!logs[d.prop]);
+    });
+
+    user.tickets = tickets.orderBy(t => t.worklogStartIndex);
+    user.firstWorklogStartIndex = user.tickets[0]?.worklogStartIndex;
 }
 
 export function filterDaysWithoutWorklog(daysToHide, dates) {

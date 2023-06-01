@@ -61,7 +61,14 @@ class ImportWorklog extends BaseImport {
         });
     }
 
-    transformHeader = (c) => fieldMapping[c.replace(/ /g, '').toLowerCase()] || null;
+    transformHeader = (c) => {
+        // As prototype functions of array are passed to this function, need to check if this is string
+        if (!c || typeof c !== 'string') {
+            return null;
+        }
+
+        return fieldMapping[c.replace(/ /g, '').toLowerCase()] || null;
+    };
 
     processData(data) {
         const worklogData = data.map(w => {

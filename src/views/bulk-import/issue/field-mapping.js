@@ -57,6 +57,11 @@ const fieldMapping = {
 
 export function transformHeader(customFields) {
     return (c) => {
+        // As prototype functions of array are passed to this function, need to check if this is string
+        if (!c || typeof c !== 'string') {
+            return null;
+        }
+
         c = c.replace(/ /g, '').toLowerCase();
         let fieldName = fieldMapping[c] || null;
 
