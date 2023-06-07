@@ -73,7 +73,7 @@ export async function loadSprintsList(boardId, setState, getState) {
     const planEndDate = moment(sprintLists[0]?.endDate || moment().add(2, 'weeks'))
         .endOf('day').add(5, 'days').toDate();
 
-    const velosityInfo = await computeAverageSprintVelosity(boardId, state, estimation.fieldId, $jira);
+    const velocityInfo = await computeAverageSprintVelocity(boardId, state, estimation.fieldId, $jira);
 
     const newState = {
         loading: false,
@@ -82,7 +82,7 @@ export async function loadSprintsList(boardId, setState, getState) {
         sprintWiseIssues, issuesMap,
         resources, userStoryMap,
         planStartDate, planEndDate,
-        velosityInfo
+        velocityInfo
     };
 
     preparePlanningData(newState, state);
@@ -92,8 +92,8 @@ export async function loadSprintsList(boardId, setState, getState) {
 }
 
 //#region Private functions
-async function computeAverageSprintVelosity(boardId, { settings: { noOfSprintsForVelosity } }, storypointFieldName, $jira) {
-    const closedSprintLists = await $jira.getRapidSprintList([boardId], { state: 'closed', maxResults: noOfSprintsForVelosity });
+async function computeAverageSprintVelocity(boardId, { settings: { noOfSprintsForVelocity } }, storypointFieldName, $jira) {
+    const closedSprintLists = await $jira.getRapidSprintList([boardId], { state: 'closed', maxResults: noOfSprintsForVelocity });
     const availableSprintCount = closedSprintLists.length;
 
     if (!availableSprintCount) {

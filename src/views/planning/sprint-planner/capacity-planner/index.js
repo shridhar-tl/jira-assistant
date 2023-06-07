@@ -5,21 +5,24 @@ import SprintVelocity from './SprintVelocity';
 import LeavePlans from './LeavePlans';
 import TeamCapacity from './TeamCapacity';
 import { calculateSprintWiseLeaves } from './utils';
+import VelocityPicker from './VelocityPicker';
 
-const defaultHeights = ['calc(50vh - 135px)', '150px'];
-function CapacityPlanner({ velosityInfo, ...otherProps }) {
-    return (<SplitterComponent height="calc(100vh - 78px)" width="100%"
+function CapacityPlanner({ velocityInfo, ...otherProps }) {
+    return (<SplitterComponent
+        height="calc(100vh - 78px)" width="100%"
         orientation="Horizontal" separatorSize={3}>
         <PanesDirective>
             <PaneDirective min="800px" content={() => <HorizontalComponent {...otherProps} />} />
-            <PaneDirective size="250px" min="150px" content={() => <SprintVelocity velosityInfo={velosityInfo} />} />
+            <PaneDirective size="250px" min="150px" content={() => <VerticalSplit velocityInfo={velocityInfo} />} />
         </PanesDirective>
     </SplitterComponent>);
 }
 
-export default connect(CapacityPlanner, ({ velosityInfo, resources, resourceLeaveDays, resourceHolidays, daysList }) =>
-    ({ velosityInfo, resources, resourceLeaveDays, resourceHolidays, daysList }));
+export default connect(CapacityPlanner, ({ velocityInfo, resources, resourceLeaveDays, resourceHolidays, daysList }) =>
+    ({ velocityInfo, resources, resourceLeaveDays, resourceHolidays, daysList }));
 
+
+const defaultHeights = ['calc(50vh - 135px)', '150px'];
 function HorizontalSplit({ resources, resourceLeaveDays, resourceHolidays, daysList: { groups, days } }) {
     const leavePlans = useMemo(() => calculateSprintWiseLeaves(resources, resourceLeaveDays, resourceHolidays, groups, days),
         [resources, resourceLeaveDays, resourceHolidays, groups, days]);
@@ -42,3 +45,11 @@ function HorizontalSplit({ resources, resourceLeaveDays, resourceHolidays, daysL
 }
 
 const HorizontalComponent = React.memo(HorizontalSplit);
+
+function VerticalSplit({ velocityInfo }) {
+    return (<>
+        <SprintVelocity velocityInfo={velocityInfo} />
+        <br /><br />
+        <VelocityPicker />
+    </>);
+}

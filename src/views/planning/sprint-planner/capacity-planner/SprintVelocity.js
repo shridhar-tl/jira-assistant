@@ -1,15 +1,15 @@
 import React from 'react';
 import { Column, ScrollableTable, TBody, THead } from "../../../../components/ScrollableTable";
 
-function SprintVelocity({ velosityInfo }) {
-    if (!velosityInfo) {
+function SprintVelocity({ velocityInfo }) {
+    if (!velocityInfo) {
         return null;
     }
 
-    const { closedSprintLists, averageComitted, averageCompleted } = velosityInfo;
+    const { closedSprintLists, averageComitted, averageCompleted } = velocityInfo;
 
     return (<ScrollableTable>
-        <caption>Sprint Velosity</caption>
+        <caption>Sprint Velocity</caption>
         <THead>
             <tr>
                 <Column>Sprint</Column>
