@@ -29,7 +29,7 @@ export async function loadReportData(query, utils) {
                 field: u, displayText: usr.displayName, type: 'seconds',
                 groupText: 'Log Work', allowGrouping: false,
                 viewComponent: TimeSpentDisplay,
-                props: {}
+                props: { format: false }
             };
         });
 
@@ -37,7 +37,7 @@ export async function loadReportData(query, utils) {
             field: 'totalWorklog', displayText: 'Total Log Work', type: 'seconds',
             groupText: 'Log Work', allowGrouping: false,
             viewComponent: TimeSpentDisplay,
-            props: {}
+            props: { format: false }
         });
 
         const wlIndex = columnList.findIndex(({ field }) => field === 'worklog');
