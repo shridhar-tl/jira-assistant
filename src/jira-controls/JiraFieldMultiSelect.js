@@ -24,7 +24,7 @@ function JiraFieldMultiSelect({ value, field, valueOnly, onChange, hideTypes, hi
     const changeHandler = useCallback((value, field) => {
         const selValue = value.map(v => {
             const f = fieldsMap[v];
-            const { id, key, name } = f;
+            const { id, key = id, name } = f;
             const type = getFieldType(f);
 
             return { id, key, name, type };

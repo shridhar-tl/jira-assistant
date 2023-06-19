@@ -3,7 +3,7 @@ import Checkbox from '../../../controls/Checkbox';
 import JiraFieldMultiSelect from '../../../jira-controls/JiraFieldMultiSelect';
 
 const hideTypes = ['array', 'option'];
-const hideKeys = ['key', 'summary', 'issuetype'];
+const hideKeys = ['key', 'summary'];
 
 function FieldsListSettings({ setFieldValue, fields }) {
     const {
