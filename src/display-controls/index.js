@@ -31,6 +31,7 @@ export function getComponentFor(type) {
         case 'comments-page': return { Component: CommentsDisplay };
         case 'user': return { Component: UserDisplay };
         case 'votes': return { Component: TagsDisplay, props: { tagProp: 'votes' } };
+        case 'issuetype':
         case 'status':
         case 'resolution':
         case 'priority':

@@ -9,7 +9,7 @@ class TimeSpentDisplay extends BaseControl {
     }
 
     renderControl(badge) {
-        const { value, inputType = "secs", days, converter } = this.props;
+        const { value, inputType = "secs", format = true, days, converter } = this.props;
         let { timespent = value } = this.props;
 
         if (converter) { timespent = converter(timespent); }
@@ -23,8 +23,9 @@ class TimeSpentDisplay extends BaseControl {
 
         if (timespent?.text) {
             timespent = timespent.text;
-        }
-        else {
+        } else if (format === false) {
+            timespent = this.$utils.convertSecs(timespent, { showZeroSecs: true });
+        } else {
             timespent = this.$utils.formatSecs(timespent, undefined, undefined, days);
         }
 
