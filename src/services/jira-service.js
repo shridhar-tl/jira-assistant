@@ -324,8 +324,12 @@ export default class JiraService {
         return this.$ajax.put(ApiUrls.individualIssue, issue, key);
     }
 
-    getRapidSprintList = (rapidIds, asObj) => {
-        const reqArr = rapidIds.map((rapidId) => this.$jaCache.session.getPromise(`rapidSprintList${rapidId}`)
+    getRapidSprintList = (rapidIds, opts) => {
+        const asObj = typeof opts === 'boolean' ? opts : false;
+        const defaultState = 'active,closed';
+        const { state = defaultState, maxResults } = opts;
+
+        const reqArr = rapidIds.map((rapidId) => this.$jaCache.session.getPromise(`rapidSprintList${rapidId}_${state || defaultState}_${maxResults}`)
             .then(async (value) => {
                 if (value) {
                     return value;
@@ -336,7 +340,7 @@ export default class JiraService {
                     let data = null;
 
                     do {
-                        data = await this.$ajax.get(ApiUrls.sprintListByBoard, rapidId, startAt);
+                        data = await this.$ajax.get(ApiUrls.sprintListByBoard, rapidId, startAt, state || defaultState, maxResults || 50);
                         startAt = data.maxResults + data.startAt;
 
                         // Avoid showing sprints of other boards.
@@ -347,7 +351,8 @@ export default class JiraService {
                         else {
                             result.values.push(...data.values);
                         }
-                    } while (!data.isLast && --maxLoop > 0);
+                        // eslint-disable-next-line no-unmodified-loop-condition
+                    } while (!data.isLast && (!maxResults || result.values.length < maxResults) && --maxLoop > 0);
                 }
                 catch (err) {
                     console.warn('Getting rapid sprint list failed. Using alternate api.', err);
@@ -420,12 +425,12 @@ export default class JiraService {
 
     async getSprintIssues(sprintId, options) {
         const { worklogStartDate, worklogEndDate, ...opts } = options;
-        const { issues } = await this.$ajax.get(ApiUrls.getSprintIssues.format(sprintId), opts);
-        if (options?.fields?.indexOf("worklog") > -1) {
-            await this.fillMissingWorklogs(issues, worklogStartDate, worklogEndDate);
-        }
+            const { issues } = await this.$ajax.get(ApiUrls.getSprintIssues.format(sprintId), opts);
+            if (options?.fields?.indexOf("worklog") > -1) {
+                await this.fillMissingWorklogs(issues, worklogStartDate, worklogEndDate);
+            }
 
-        return issues;
+            return issues;
     }
 
     getOpenTickets(refresh) {
