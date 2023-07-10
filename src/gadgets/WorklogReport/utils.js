@@ -79,6 +79,14 @@ function getFlatMapper(usr, groupName, sprintName) {
     });
 }
 
+export function generateIssueDayWiseData(groupReport) {
+    const { dates, groupedData, weeks } = groupReport;
+    const issuesList = groupedData.flatMap(group => group.users.flatMap(u => u.tickets))
+        .orderBy(i => i.worklogStartIndex.pad(5) + i.ticketNo);
+
+    return { dates, weeks, issuesList };
+}
+
 export function getProjectKeys({ projects, userListMode }, ignoreSettings) {
     if (!ignoreSettings && userListMode !== '3' && userListMode !== '4') {
         return;
