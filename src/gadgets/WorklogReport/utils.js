@@ -79,10 +79,24 @@ function getFlatMapper(usr, groupName, sprintName) {
     });
 }
 
-export function generateIssueDayWiseData(groupReport) {
+export function generateIssueDayWiseData(groupReport, state) {
     const { dates, groupedData, weeks } = groupReport;
-    const issuesList = groupedData.flatMap(group => group.users.flatMap(u => u.tickets))
-        .orderBy(i => i.worklogStartIndex.pad(5) + i.ticketNo);
+    let issuesList = groupedData.flatMap(group => group.users.flatMap(u => u.tickets));
+
+    if (state.splitWorklogDays) {
+        issuesList = issuesList.flatMap(issue => {
+            const { logs, fields } = issue;
+            return Object.keys(logs).map(k => {
+                const logItem = logs[k];
+                const { logTime } = logItem[0];
+                const sortIndex = `${logTime.format('yyyyMMddHHmm')}_${issue.ticketNo}`;
+
+                return ({ ...issue, fields: { ...fields, logDateTime: logTime }, logs: { [k]: logItem }, worklogStartIndex: sortIndex });
+            });
+        }).orderBy(i => i.worklogStartIndex);
+    } else {
+        issuesList = issuesList.orderBy(i => i.worklogStartIndex.pad(5) + i.ticketNo);
+    }
 
     return { dates, weeks, issuesList };
 }

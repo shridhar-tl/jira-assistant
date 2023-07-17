@@ -6,12 +6,19 @@ import GroupHead from './GroupHead';
 import GroupBody from './GroupBody';
 
 const worklogAuthorField = { key: 'worklogUser', type: 'user', name: 'Worklog author' };
+const logDateTime = { key: 'logDateTime', type: 'datetime', name: 'Worklog date' };
 
-function GroupedDataGrid({ boardId, fields, exportSheetName, costView }) {
+function GroupedDataGrid({ boardId, splitWorklogDays, fields, exportSheetName, costView }) {
     const { optional, daywiseFields } = fields || {};
-    const additionalCols = useMemo(() => [worklogAuthorField, ...optional?.filter(f => daywiseFields?.[f.key])]
-        .map(f => ({ ...f, ...getComponentFor(f.type) })),
-        [optional, daywiseFields]);
+    const additionalCols = useMemo(() => {
+        const cols = [worklogAuthorField, ...optional?.filter(f => daywiseFields?.[f.key])];
+
+        if (splitWorklogDays) {
+            cols.splice(0, 0, logDateTime);
+        }
+
+        return cols.map(f => ({ ...f, ...getComponentFor(f.type) }));
+    }, [optional, daywiseFields, splitWorklogDays]);
 
     return (
         <ScrollableTable className="table-bordered" exportSheetName={exportSheetName}>
@@ -21,4 +28,4 @@ function GroupedDataGrid({ boardId, fields, exportSheetName, costView }) {
     );
 }
 
-export default connect(GroupedDataGrid, ({ fields }) => ({ fields }));
+export default connect(GroupedDataGrid, ({ splitWorklogDays, fields }) => ({ splitWorklogDays, fields }));
