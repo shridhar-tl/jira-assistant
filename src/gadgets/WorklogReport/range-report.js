@@ -186,7 +186,7 @@ function getIssueDayWiseData(input, state) {
 
     const userGroups = [createGroupObjectWithUsers(userwiseLogArr)];
     const groupReport = generateUserDayWiseData(userwiseLog, userGroups, settings, state);
-    const issueDayWise = generateIssueDayWiseData(groupReport);
+    const issueDayWise = generateIssueDayWiseData(groupReport, state);
 
     return issueDayWise;
 }
