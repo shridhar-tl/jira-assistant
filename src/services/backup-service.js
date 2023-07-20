@@ -218,7 +218,7 @@ export default class BackupService extends BaseService {
             selUsers.forEach(u => {
                 const { costPerHour, locale, timeZone, accountId, emailAddress, displayName, avatarUrls, name: usrName } = u;
 
-                const curUsr = curGrpUsrs.filter(dbu => dbu.accountId === accountId || dbu.emailAddress === emailAddress)[0];
+                const curUsr = curGrpUsrs.filter(dbu => (accountId && dbu.accountId === accountId) || (emailAddress && dbu.emailAddress === emailAddress))[0];
                 if (curUsr) {
                     logs.push({ type: 'info', message: `User "${emailAddress}" already exists in group "${name}"` });
                 } else {
