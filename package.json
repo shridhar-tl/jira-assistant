@@ -73,7 +73,7 @@
         "electron-updater": "^6.1.1",
         "espree": "^9.6.1",
         "exceljs": "^4.3.0",
-        "firebase": "^10.0.0",
+        "firebase": "^10.1.0",
         "font-awesome": "^4.7.0",
         "jquery": "^3.7.0",
         "jsd-report": "^0.1.11",
@@ -108,7 +108,7 @@
         "eslint": "^8.45.0",
         "eslint-plugin-react-hooks": "^4.6.0",
         "gh-pages": "^5.0.0",
-        "sass": "^1.64.0",
+        "sass": "^1.64.1",
         "wait-on": "^7.0.1",
         "webpack-bundle-analyzer": "^4.9.0"
     },
