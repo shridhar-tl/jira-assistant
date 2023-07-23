@@ -327,7 +327,7 @@ export default class JiraService {
     getRapidSprintList = (rapidIds, opts) => {
         const asObj = typeof opts === 'boolean' ? opts : false;
         const defaultState = 'active,closed';
-        const { state = defaultState, maxResults } = opts;
+        const { state = defaultState, maxResults } = opts ?? {};
 
         const reqArr = rapidIds.map((rapidId) => this.$jaCache.session.getPromise(`rapidSprintList${rapidId}_${state || defaultState}_${maxResults}`)
             .then(async (value) => {
@@ -425,12 +425,12 @@ export default class JiraService {
 
     async getSprintIssues(sprintId, options) {
         const { worklogStartDate, worklogEndDate, ...opts } = options;
-            const { issues } = await this.$ajax.get(ApiUrls.getSprintIssues.format(sprintId), opts);
-            if (options?.fields?.indexOf("worklog") > -1) {
-                await this.fillMissingWorklogs(issues, worklogStartDate, worklogEndDate);
-            }
+        const { issues } = await this.$ajax.get(ApiUrls.getSprintIssues.format(sprintId), opts);
+        if (options?.fields?.indexOf("worklog") > -1) {
+            await this.fillMissingWorklogs(issues, worklogStartDate, worklogEndDate);
+        }
 
-            return issues;
+        return issues;
     }
 
     getOpenTickets(refresh) {
