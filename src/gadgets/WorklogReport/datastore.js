@@ -16,6 +16,7 @@ const initialData = {
     rIndicator: '1', // 1=thermometer, 2=bg highlight,0=none
     timeZone: '1',
     expandUsers: false,
+    splitWorklogDays: false,
 
     sprintStartRounding: '1',
     sprintEndRounding: '1',
@@ -86,6 +87,7 @@ export function getSettingsObj(data, opts) {
         daysToHide,
         rIndicator,
         expandUsers,
+        splitWorklogDays,
         jql,
         logFilterType,
         filterThrsType,
@@ -116,6 +118,7 @@ export function getSettingsObj(data, opts) {
         daysToHide,
         rIndicator,
         expandUsers,
+        splitWorklogDays,
         jql,
         logFilterType,
         filterThrsType,

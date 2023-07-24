@@ -28,7 +28,7 @@ const notes = <div className="padding-15">
         <li>You can either click on the drop icon and select the sprint or start typing the sprint name to filter the list</li>
         <li>You can add one or more sprints in the sprint field and once done click Generate report button to generate the report</li>
         <li>Select worklog option to see the worklog added by the individual users on each ticket grouped based on sprint, issue type and tickets</li>
-        <li>Add atleast 2 sprint to see the velocity chart. Having minimum of 5 sprint would give better insights on the chart.</li>
+        <li>Add at least 2 sprint to see the velocity chart. Having minimum of 5 sprint would give better insights on the chart.</li>
     </ul>
 </div>;
 
@@ -40,7 +40,7 @@ class SprintReport extends BaseGadget {
         this.hideCSVExport = true;
         inject(this, "JiraService", "UserUtilsService", "SessionService", "UserGroupService", "AnalyticsService");
 
-        this.state = { disableRefresh: true, selectedRapidViews: this.$session.CurrentUser.rapidViews, selectedSprints: null };
+        this.state = { disableRefresh: true, selectedRapidViews: this.$session.CurrentUser.rapidViews, selectedSprints: null, selectedTab: 0 };
     }
 
     componentDidMount() {
