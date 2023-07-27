@@ -65,7 +65,7 @@
         "@fullcalendar/react": "6.1.8",
         "@fullcalendar/timegrid": "6.1.8",
         "bootstrap-daterangepicker": "3.1.0",
-        "chart.js": "4.3.0",
+        "chart.js": "4.3.2",
         "classnames": "2.3.2",
         "dexie": "3.2.4",
         "espree": "9.6.1",
