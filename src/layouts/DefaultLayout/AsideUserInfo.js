@@ -5,7 +5,7 @@ import { inject } from '../../services';
 import { SwitchAccountMenu } from './SwitchAccountMenu';
 
 function AsideUserInfo() {
-    const state = React.useMemo(() => {
+    const { name, emailAddress, imageUrl } = React.useMemo(() => {
         const { $session } = inject("SessionService");
         const { jiraUser: { displayName, emailAddress, key, avatarUrls } = {} } = $session.CurrentUser;
 
@@ -16,8 +16,6 @@ function AsideUserInfo() {
             imageUrl: (avatarUrls || {})["24x24"]
         };
     }, []);
-
-    const { name, emailAddress, imageUrl } = state;
 
     return (
         <UncontrolledDropdown direction="down">

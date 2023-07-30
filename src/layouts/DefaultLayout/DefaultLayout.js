@@ -153,9 +153,7 @@ class DefaultLayout extends PureComponent {
           <DefaultHeader onLogout={this.signOut} />
           <div className="app-body">
             <NavSideBar onLogout={this.signOut} menus={menus} navigate={this.props.navigate} location={this.props.location} />
-            <main className="main">
-              <AppContent loader={this.loading} />
-            </main>
+            <AppContent loader={this.loading} />
           </div>
           <ContextMenu />
         </div>
