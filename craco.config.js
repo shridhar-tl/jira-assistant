@@ -1,7 +1,8 @@
 //const { whenDev, whenProd, ESLINT_MODES, POSTCSS_MODES } = require("@craco/craco");
-const fs = require('fs');
+const fs = require('fs-extra');
 const path = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const { CracoAliasPlugin } = require('react-app-alias');
 
 process.env.REACT_APP_BUILD_DATE = new Date().getTime();
 const buildMode = process.env.REACT_APP_BUILD_MODE;
@@ -20,12 +21,21 @@ const resolvePath = relativePath => path.resolve(appDirectory, relativePath);
 
 const modulesWithoutHashName = ['background', 'content', 'jira_cs', 'electron', 'preload'];
 
+const packageJSON = fs.readJsonSync('./package.json');
+const alias = getAliasPackages(packageJSON.aliases);
+
 module.exports = {
     style: shouldUseSourceMap && !shouldUseSourceMap_CSS && {
         css: { loaderOptions: styleLoaderOptions },
         sass: { loaderOptions: styleLoaderOptions },
         postcss: { loaderOptions: styleLoaderOptions }
     },
+    plugins: [
+        {
+            plugin: CracoAliasPlugin,
+            options: { alias }
+        }
+    ],
     webpack: {
         plugins: getPlugins(),
         configure: (wpConfig, { env, paths }) => {
@@ -206,4 +216,27 @@ function styleLoaderOptions(opt) {
     }
 
     return opt;
+}
+
+function getAliasPackages(packages) {
+    Object.keys(packages).reduce((obj, key) => {
+        let pack = packages[key];
+
+        if (!Array.isArray(pack)) {
+            pack = [pack];
+        }
+
+        for (let i = 0; i < pack.length; i++) {
+            const srcPath = pack[i];
+
+            if (fs.existsSync(srcPath)) {
+                obj[key] = srcPath;
+                return obj;
+            }
+
+            console.warn(`Package Key:- ${key}; "${srcPath}" not found. Please validate "aliases.json"`);
+        }
+
+        throw Error(`Dependency package not found. Package Key:- ${key}`);
+    }, {});
 }

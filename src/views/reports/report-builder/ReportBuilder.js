@@ -157,13 +157,13 @@ class ReportBuilder extends BaseGadget {
         const isEditing = reportDefinition.id > 0;
 
         return <div className="pnl-footer">
-            {isEditing && <div className="pull-left">
+            {isEditing && <div className="float-start">
                 <Button icon="fa fa-trash" label="Delete Query" type="danger" onClick={this.deleteQuery} />
-                <Button icon="fa fa-floppy-o" label="Save Query As" type="success" onClick={this.showSaveDialog} />
+                <Button icon="fa fa-save" label="Save Query As" type="success" onClick={this.showSaveDialog} />
             </div>}
 
-            <div className="pull-right">
-                <Button type="success" icon="fa fa-floppy-o" label="Save Query" onClick={isEditing ? this.saveAs : this.showSaveDialog} />
+            <div className="float-end">
+                <Button type="success" icon="fa fa-save" label="Save Query" onClick={isEditing ? this.saveAs : this.showSaveDialog} />
                 <Button type="info" icon="fa fa-list" label="View Report" onClick={this.viewReport} disabled={!((reportDefinition || {}).reportItems || []).length} />
             </div>
         </div>;

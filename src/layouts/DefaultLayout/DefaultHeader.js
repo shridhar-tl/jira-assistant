@@ -147,7 +147,7 @@ class DefaultHeader extends PureComponent {
           {!this.disableJiraUpdates && <JiraUpdates />}
           {!this.disableNotification && notifications && <Notifications notifications={notifications} />}
           {showYoutubeOption && <NavItem className="d-md-down-none">
-            <span className="nav-link" onClick={this.showYoutubeHelp}><i className="fa fa-youtube-play"></i></span>
+            <span className="nav-link" onClick={this.showYoutubeHelp}><i className="fa-brands fa-youtube"></i></span>
           </NavItem>}
           <UncontrolledDropdown nav direction="down">
             <DropdownToggle nav>

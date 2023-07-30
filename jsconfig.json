@@ -1,0 +1,13 @@
+{
+    "compilerOptions": {
+        "baseUrl": "./",
+        "paths": {
+            "js-report-builder/*": [
+                "./externals/js-report-builder/src/lib/*"
+            ],
+            "react-controls/*": [
+                "./externals/react-controls/src/controls/*"
+            ]
+        }
+    }
+}

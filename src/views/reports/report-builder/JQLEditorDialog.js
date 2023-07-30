@@ -31,7 +31,7 @@ class JQLEditorDialog extends BaseDialog {
         }
 
         return <>
-            <Button type="default" icon="fa fa-times" onClick={this.onHide} label="Cancel" />
+            <Button text type="default" icon="fa fa-times" onClick={this.onHide} label="Cancel" />
             <Button type="primary" icon="fa fa-check" onClick={this.onDone} label="Add" disabled={!isSaveEnabled} />
         </>;
     }

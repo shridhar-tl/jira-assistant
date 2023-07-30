@@ -126,7 +126,7 @@ class EstimateActualReport extends BaseGadget {
 
         this.storyPointField = (this.$session.CurrentUser.storyPointField || {}).id;
 
-        this.state = { groups: [], disableRefresh: true, dateRange: {}, chartData: {}, estimationField: 'timeoriginalestimate', projects: this.$session.CurrentUser.projects };
+        this.state = { selectedTab: 0, groups: [], disableRefresh: true, dateRange: {}, chartData: {}, estimationField: 'timeoriginalestimate', projects: this.$session.CurrentUser.projects };
     }
 
     componentDidMount() {

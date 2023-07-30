@@ -15,7 +15,7 @@ class TicketWiseWorklog extends BaseGadget {
         inject(this, "WorklogService", "UserUtilsService", "UtilsService", "MessageService");
 
         this.contextMenu = [
-            { label: "Upload worklog", icon: "fa fa-clock-o", command: () => this.uploadWorklog() },
+            { label: "Upload worklog", icon: "fa fa-clock", command: () => this.uploadWorklog() },
             { label: "Add worklog", icon: "fa fa-bookmark", command: () => this.addWorklog() } //ToDo: Add option for move to progress, show in tree view
         ];
     }
@@ -128,10 +128,10 @@ class TicketWiseWorklog extends BaseGadget {
                                 {b.logData.map((ld, x) => <li key={x}>
                                     {ld.worklogId && <Link className="link badge badge-pill skin-bg-font" href={this.getWorklogUrl(b.ticketNo, ld.worklogId)}
                                         title={ld.comments}>
-                                        <span className="fa fa-clock-o" />  <DateDisplay tag="span" value={ld.dateLogged} />: {ld.uploaded}
+                                        <span className="fa fa-clock" />  <DateDisplay tag="span" value={ld.dateLogged} />: {ld.uploaded}
                                     </Link>}
                                     {!ld.worklogId && <span className="link badge badge-pill skin-bg-font" onClick={() => this.editWorklog(ld.id)} title={ld.comments}>
-                                        <span className="fa fa-clock-o" /> <DateDisplay tag="span" value={ld.dateLogged} />: {ld.uploaded}
+                                        <span className="fa fa-clock" /> <DateDisplay tag="span" value={ld.dateLogged} />: {ld.uploaded}
                                     </span>}
                                 </li>)}
                             </ul>

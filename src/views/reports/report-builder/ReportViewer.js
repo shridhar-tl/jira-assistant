@@ -10,7 +10,7 @@ import { EventCategory } from '../../../constants/settings';
 
 class ReportViewer extends BaseGadget {
     constructor(props) {
-        super(props, 'Advanced report viewer', 'fa-clock-o');
+        super(props, 'Advanced report viewer', 'fa-clock');
         inject(this, "ReportConfigService", "AnalyticsService", "ReportService");
 
         this.viewer = {};

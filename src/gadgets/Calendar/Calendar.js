@@ -10,7 +10,7 @@ import config from '../../customize';
 import BaseGadget from '../BaseGadget';
 import { inject } from '../../services/injector-service';
 import { GadgetActionType } from '../_constants';
-import Button from '../../controls/Button';
+import { Button } from '../../controls';
 import SelectBox from '../../controls/SelectBox';
 import { hideContextMenu, showContextMenu } from '../../externals/jsd-report';
 import AddWorklog from '../../dialogs/AddWorklog';
@@ -34,7 +34,7 @@ const { googleCalendar, outlookCalendar } = config.features.integrations;
 const showMeetings = outlookCalendar !== false || googleCalendar !== false;
 
 const meetingInfo = showMeetings && (<>
-    <li>One click <span className="fa fa-clock-o" /> icon to create worklog entry for meetings</li>
+    <li>One click <span className="fa fa-clock" /> icon to create worklog entry for meetings</li>
     <li>You can set "Default meeting ticket" in General Settings &#8680; Worklog tab</li>
 </>);
 
@@ -128,10 +128,10 @@ class Calendar extends BaseGadget {
             wlTickets.push({ separator: true });
         }
         wlTickets.push({
-            label: 'Choose ticket', icon: "fa fa-pencil-square-o",
+            label: 'Choose ticket', icon: "fa fa-pencil",
             command: (e) => this.createWorklog(e.originalEvent, this.currentMeetingItem, "")
         });
-        this.mnuCal_AddWL = { label: "Add worklog to", icon: "fa fa-clock-o", items: wlTickets, command: (e) => this.createWorklog(e.originalEvent, this.currentMeetingItem, "") };
+        this.mnuCal_AddWL = { label: "Add worklog to", icon: "fa fa-clock", items: wlTickets, command: (e) => this.createWorklog(e.originalEvent, this.currentMeetingItem, "") };
         this.mnuCal_OpenUrl = { label: "Open video call", icon: "fa fa-video-camera", command: () => this.openVideoCall(this.currentMeetingItem) };
         this.calMenuItems = [
             this.mnuCal_AddWL,
@@ -862,7 +862,7 @@ class Calendar extends BaseGadget {
                 //this.contextMenu.toggle(e);
             };
 
-            leftIcon = (<i className="fa fa-ellipsis-v pull-left" title="Show options" onClick={contextEvent} event-icon="true"></i>);
+            leftIcon = (<i className="fa fa-ellipsis-v float-start" title="Show options" onClick={contextEvent} event-icon="true"></i>);
         }
         else if (entryType === 2) {
             const m = srcObj;
@@ -882,11 +882,11 @@ class Calendar extends BaseGadget {
             };
 
             if (!hasWorklog) {
-                leftIcon = (<i className="fa fa-clock-o pull-left" title="Create worklog for this meeting" event-icon="true"
+                leftIcon = (<i className="fa fa-clock float-start" title="Create worklog for this meeting" event-icon="true"
                     onClick={(e) => { e.stopPropagation(); this.createWorklog(e, m, this.defaultMeetingTicket); }}></i>);
             }
             else {
-                leftIcon = <i className="fa fa-ellipsis-v pull-left" title="Show options" onClick={contextEvent} event-icon="true"></i>;
+                leftIcon = <i className="fa fa-ellipsis-v float-start" title="Show options" onClick={contextEvent} event-icon="true"></i>;
             }
         }
 
@@ -1031,22 +1031,22 @@ class Calendar extends BaseGadget {
         } = this;
         const isGridMode = viewMode === 'timeGridWeek' || viewMode === 'timeGridDay';
         return <>
-            {isGridMode && <Button type="secondary" icon={fullView ? 'fa fa-compress' : 'fa fa-expand'} onClick={this.toggleDisplayHours}
+            <Button text label="Today" onClick={this.today} title="Navigate to current week" />
+            {isGridMode && <Button text type="secondary" icon={fullView ? 'fa fa-compress' : 'fa fa-expand'} onClick={this.toggleDisplayHours}
                 title={fullView ? "Click to show only working hours in calendar" : "Click to show full day calendar"} />}
-            <Button label="Today" onClick={this.today} title="Navigate to current week" />
-            <Button onClick={this.toggleZoom} icon={zoomIn ? "fa fa-search-minus" : "fa fa-search-plus"}
+            <Button text onClick={this.toggleZoom} icon={zoomIn ? "fa fa-search-minus" : "fa fa-search-plus"}
                 title={zoomIn ? "Zoom out to see 15 mins grid" : "Zoom in to see 5 mins grid"} />
             {!this.isGadget && <>
-                <Button icon="fa fa-arrow-left" onClick={() => this.calendar.getApi().prev()} />
-                <Button icon="fa fa-arrow-right" onClick={() => this.calendar.getApi().next()} />
+                <Button text icon="fa fa-arrow-left" onClick={() => this.calendar.getApi().prev()} />
+                <Button text icon="fa fa-arrow-right" onClick={() => this.calendar.getApi().next()} />
                 <SelectBox dataset={viewModes} value={viewMode} valueField="value" displayField="label" style={{ width: '120px' }} onChange={this.viewModeChanged} />
             </>}
             <span className="info-badge" title={pendingWorklogCount ? `Upload ${pendingWorklogCount} pending worklog(s)` : 'No worklog pending to be uploaded'}>
                 {pendingWorklogCount > 0 && <span className="info btn-warning">{pendingWorklogCount}</span>}
-                <Button type="success" icon={uploading ? 'fa fa-spin fa-spinner' : 'fa fa-upload'} disabled={uploading || pendingWorklogCount < 1 || isLoading} onClick={() => this.uploadWorklog(true)} />
+                <Button text type="success" icon={uploading ? 'fa fa-spin fa-spinner' : 'fa fa-upload'} disabled={uploading || pendingWorklogCount < 1 || isLoading} onClick={() => this.uploadWorklog(true)} />
             </span>
-            <Button icon="fa fa-refresh" disabled={isLoading || uploading} onClick={this.refreshData} title="Refresh meetings and worklogs" />
-            {!isGadget && <Button icon="fa fa-cogs" onClick={this.toggleSettingsDialog} title="Show settings" />}
+            <Button text icon="fa fa-refresh" disabled={isLoading || uploading} onClick={this.refreshData} title="Refresh meetings and worklogs" />
+            {!isGadget && <Button text icon="fa fa-cogs" onClick={this.toggleSettingsDialog} title="Show settings" />}
         </>;
     }
 

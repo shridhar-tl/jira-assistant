@@ -79,7 +79,7 @@ function IssueLog({
     }
 
     return (<td className={`day-wl-block${day.isHoliday ? (!logTime?.length ? ' col-holiday' : ' log-high') : ''}`} exportType={timeExportFormat} data-test-id={day.prop}>
-        {u?.isCurrentUser && disableAddingWL !== true && <span className="fa fa-clock-o add-wl" title="Click to add worklog"
+        {u?.isCurrentUser && disableAddingWL !== true && <span className="fa fa-clock add-wl" title="Click to add worklog"
             onClick={() => addNewWorklog(t.ticketNo, day)} />}
         {breakupMode !== '2' && <span title={getComments(logTime)}>{convertSecs(getTotalTime(logTime))}</span>}
         {breakupMode === '2' && <div> {getLogEntries(logTime)}</div>}

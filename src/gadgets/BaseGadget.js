@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { Panel } from 'primereact/panel';
 import { Tooltip } from 'primereact/tooltip';
 import { EventEmitter } from 'events';
-import Button from '../controls/Button';
+import { Button } from '../controls';
 import classNames from "classnames";
 import { showContextMenu } from '../externals/jsd-report';
 import { ExportHelper } from '../common/ExportHelper';
@@ -48,15 +48,15 @@ export class BaseGadget extends PureComponent {
             exportOpts.push({ separator: true });
 
             if (!this.hideCSVExport) {
-                exportOpts.push({ label: "Export to CSV", icon: "fa fa-file-text-o", disabled: !this.exportData, command: () => this.exportData(ExportFormat.CSV) });
+                exportOpts.push({ label: "Export to CSV", icon: "fa fa-file-text", disabled: !this.exportData, command: () => this.exportData(ExportFormat.CSV) });
             }
 
             if (!this.hideXLSXExport) {
-                exportOpts.push({ label: "Export to Excel", icon: "fa fa-file-excel-o", disabled: !this.exportData, command: () => this.exportData(ExportFormat.XLSX) });
+                exportOpts.push({ label: "Export to Excel", icon: "fa fa-file-excel", disabled: !this.exportData, command: () => this.exportData(ExportFormat.XLSX) });
             }
 
             if (!this.hidePDFExport) {
-                exportOpts.push({ label: "Export to PDF", icon: "fa fa-file-pdf-o", disabled: !this.exportData, command: () => this.exportData(ExportFormat.PDF) });
+                exportOpts.push({ label: "Export to PDF", icon: "fa fa-file-pdf", disabled: !this.exportData, command: () => this.exportData(ExportFormat.PDF) });
             }
         }
 
@@ -151,13 +151,13 @@ export class BaseGadget extends PureComponent {
     getFullScreenButton() {
         if (this.isGadget) { return null; }
         const { state: { isFullScreen } } = this;
-        return <Button icon={isFullScreen ? 'fa fa-compress' : 'fa fa-expand'} onClick={this.toggleFullScreen} title="Toggle full screen" />;
+        return <Button text icon={isFullScreen ? 'fa fa-compress' : 'fa fa-expand'} onClick={this.toggleFullScreen} title="Toggle full screen" />;
     }
 
     getRefreshButton(callback) {
         const { disableRefresh, isLoading } = this.state;
 
-        return <Button icon="fa fa-refresh" disabled={disableRefresh || isLoading} onClick={callback || this.refreshData} title="Refresh data" />;
+        return <Button text icon="fa fa-refresh" disabled={disableRefresh || isLoading} onClick={callback || this.refreshData} title="Refresh data" />;
     }
 
     setLoader = (isLoading) => this.setState({ isLoading });
@@ -191,11 +191,11 @@ export class BaseGadget extends PureComponent {
         return <>
             <div ref={draggableHandle} className={className} onContextMenu={!isGadget ? null : this.showGadgetGontextMenu} onDoubleClick={this.toggleFullScreen}>
                 <i className={`fa ${this.iconClass}`}></i> {title} {subTitle && <span> - {subTitle}</span>}
-                <div className="pull-right">
+                <div className="float-end">
                     {this.getTooltipElement()}
                     {this.renderCustomActions && this.renderCustomActions(isGadget)}
                     {!this.hideRefresh && this.getRefreshButton()}
-                    {!this.hideMenu && <Button icon="fa fa-wrench" onClick={e => showContextMenu(e, this.getContextMenu())} />}
+                    {!this.hideMenu && <Button text icon="fa fa-wrench" onClick={e => showContextMenu(e, this.getContextMenu())} />}
                 </div>
             </div>
             <div className="clearfix"></div>

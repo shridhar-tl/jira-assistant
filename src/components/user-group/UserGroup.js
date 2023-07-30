@@ -120,9 +120,9 @@ class UserGroup extends PureComponent {
 
         return (<ScrollableTable dataset={groups}>
             {!isPlugged && <caption>User groups
-                <div className="pull-right">
-                    <Button icon="fa fa-download" title="Click to export groups list" onClick={this.exportGroups} />
-                    <BackupImporter onImport={this.loadGroups}>{(chooseFile) => <Button icon="fa fa-upload"
+                <div className="float-end">
+                    <Button text icon="fa fa-download" title="Click to export groups list" onClick={this.exportGroups} />
+                    <BackupImporter onImport={this.loadGroups}>{(chooseFile) => <Button text icon="fa fa-upload"
                         title="Click to import groups list" onClick={chooseFile} />}</BackupImporter>
                 </div>
             </caption>}

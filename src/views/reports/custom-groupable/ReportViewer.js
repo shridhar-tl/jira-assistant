@@ -9,7 +9,7 @@ import { loadReportData } from './actions';
 class ReportViewer extends BaseGadget {
     constructor(props) {
         const { query } = props;
-        super(props, query?.queryName || 'Custom report viewer', 'fa-clock-o');
+        super(props, query?.queryName || 'Custom report viewer', 'fa-clock');
         inject(this, 'AnalyticsService', 'ReportService', 'JiraService', 'UtilsService', 'UserUtilsService');
         this.state.isLoading = true;
         this.state.hideGroups = this.isGadget;

@@ -57,7 +57,7 @@ class Page401 extends PureComponent {
                         onClick={validate} style={{ height: 35 }} />
                     {!isWebBuild && !hasPermission && <button className="btn btn-warning" onClick={this.grantPermission}>
                         <i className="fa fa-unlock"></i> Grant permission</button>}
-                    <Link className="btn btn-success pull-right" href={jiraUrl}>
+                    <Link className="btn btn-success float-end" href={jiraUrl}>
                         <i className="fa fa-external-link"></i> Open Jira</Link>
                 </div>
             </div>

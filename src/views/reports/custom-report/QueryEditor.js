@@ -459,13 +459,13 @@ class QueryEditor extends BaseGadget {
         const isEditing = reportQuery.id > 0;
 
         return <div className="pnl-footer">
-            {reportQuery.id && <div className="pull-left">
+            {reportQuery.id && <div className="float-start">
                 <Button icon="fa fa-trash" label="Delete Query" type="danger" onClick={this.deleteQuery} />
-                <Button icon="fa fa-floppy-o" label="Save Query As" type="success" onClick={this.showSaveDialog} disabled={!isSaveEnabled} />
+                <Button icon="fa fa-save" label="Save Query As" type="success" onClick={this.showSaveDialog} disabled={!isSaveEnabled} />
             </div>}
 
-            <div className="pull-right">
-                <Button icon="fa fa-floppy-o" label="Save Query" type="success" onClick={isEditing ? this.saveAs : this.showSaveDialog}
+            <div className="float-end">
+                <Button icon="fa fa-save" label="Save Query" type="success" onClick={isEditing ? this.saveAs : this.showSaveDialog}
                     disabled={!isSaveEnabled || reportQuery.isSystemQuery} />
                 <Button icon="fa fa-list" label="View Report" type="info" onClick={this.viewReport}
                     disabled={!isSaveEnabled} />

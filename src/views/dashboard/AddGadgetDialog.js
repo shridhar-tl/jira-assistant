@@ -1,9 +1,9 @@
 import React from 'react';
 import { GadgetList } from '../../gadgets';
-import Button from '../../controls/Button';
+import { Button } from '../../controls';
 import BaseDialog from '../../dialogs/BaseDialog';
-import './AddGadgetDialog.scss';
 import { inject } from '../../services';
+import './AddGadgetDialog.scss';
 
 class AddGadgetDialog extends BaseDialog {
     constructor(props) {

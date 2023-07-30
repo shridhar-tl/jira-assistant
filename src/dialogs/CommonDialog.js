@@ -115,7 +115,7 @@ class DialogConfig {
         }
 
         const footer = (confirm, cancel) => <>
-            <Button icon="fa fa-times" label="Cancel" onClick={cancel} />
+            <Button text icon="fa fa-times" label="Cancel" onClick={cancel} />
             <Button type="danger" icon="fa fa-trash" label="Delete" onClick={confirm} waitFor={config?.waitFor} />
         </>;
 
@@ -128,7 +128,7 @@ class DialogConfig {
         }
 
         const footer = (yes, no) => <>
-            <Button icon="fa fa-times" label="No" onClick={no} />
+            <Button text icon="fa fa-times" label="No" onClick={no} />
             <Button type="danger" icon="fa fa-check" label="Yes" onClick={yes} />
         </>;
 
@@ -141,7 +141,7 @@ class DialogConfig {
         }
 
         const footer = (ok, cancel) => <>
-            <Button icon="fa fa-times" label="Cancel" onClick={cancel} />
+            <Button text icon="fa fa-times" label="Cancel" onClick={cancel} />
             <Button type="danger" icon="fa fa-check" label="Ok" onClick={ok} />
         </>;
 

@@ -40,19 +40,19 @@ function ShareWithOthers() {
             </DropdownItem>
             <div className="share-items">
                 <Link href={ratingUrl} title="Click to rate this tool or add a comment in chrome web store">
-                    <i className="fa fa-star pull-left"></i>
+                    <i className="fa fa-star float-start"></i>
                 </Link>
                 <Link href={gMailShare} title="Share with Gmail">
-                    <i className="fa fa-envelope pull-left"></i>
+                    <i className="fa fa-envelope float-start"></i>
                 </Link>
                 <Link href={linkedInShare} title="Share with Linked in">
-                    <i className="fa fa-linkedin-square pull-left"></i>
+                    <i className="fa-brands fa-linkedin float-start"></i>
                 </Link>
                 <Link href={fackbookShare} title="Share with Facebook">
-                    <i className="fa fa-facebook-square pull-left"></i>
+                    <i className="fa-brands fa-facebook-square float-start"></i>
                 </Link>
                 <Link href={twitterShare} title="Share with Twitter" >
-                    <i className="fa fa-twitter-square pull-left"></i>
+                    <i className="fa-brands fa-twitter-square float-start"></i>
                 </Link>
             </div>
         </DropdownMenu>

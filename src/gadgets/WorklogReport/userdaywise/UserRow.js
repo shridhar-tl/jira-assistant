@@ -29,9 +29,9 @@ function UserRow({
         <tr className="pointer auto-wrap" onClick={toggleDisplay} data-current-user={u.isCurrentUser ? '1' : '0'} data-row-id="user">
             <td className="data-left" colSpan={colSpan}>
                 <div className={detailedDisp ? "user-info" : "user-info-min"} style={{ paddingLeft: 0 }}>
-                    <i className={`pull-left drill-down fa ${expanded ? 'fa-chevron-circle-down' : 'fa-chevron-circle-right'}`}
+                    <i className={`float-start drill-down fa ${expanded ? 'fa-chevron-circle-down' : 'fa-chevron-circle-right'}`}
                         title="Click to toggle ticket details" />
-                    {detailedDisp && <img src={getImageUrl(u)} height={40} width={40} className="pull-left" alt={u.displayName} />}
+                    {detailedDisp && <img src={getImageUrl(u)} height={40} width={40} className="float-start" alt={u.displayName} />}
                     <span className="name">{u.displayName}</span>
                     {detailedDisp && <span className="email">({u.emailAddress || u.name}{u.timeZone && <span>, time zone: {u.timeZone}</span>})</span>}
                 </div>
@@ -82,7 +82,7 @@ const UserDatesDisplay = connect(function ({
             <td data-test-id="total" exportType="float">{u.grandTotalCost}</td></>);
     } else {
         return (<>{dates.map((day, i) => <td key={i} className={`${u.logClass[day.prop]} day-wl-block`} exportType={timeExportFormat} data-test-id={day.prop}>
-            {u.isCurrentUser && disableAddingWL !== true && <span className="fa fa-clock-o add-wl" title="Click to add worklog" onClick={() => addNewWorklog(null, day)} />}
+            {u.isCurrentUser && disableAddingWL !== true && <span className="fa fa-clock add-wl" title="Click to add worklog" onClick={() => addNewWorklog(null, day)} />}
             {convertSecs(u.total[day.prop])}
             {rIndicator === '1' && <Indicator value={u.total[day.prop]} maxHours={maxHours} />}
         </td>)}

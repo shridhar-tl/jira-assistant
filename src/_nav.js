@@ -63,7 +63,7 @@ const navigation = [
                 name: 'Import worklog',
                 id: 'IMW',
                 url: '/import/worklog',
-                icon: 'fa fa-clock-o'
+                icon: 'fa fa-clock'
             },
             importIssues && {
                 name: 'Import issue',

@@ -54,9 +54,11 @@
         "@atlaskit/avatar": "^21.3.7",
         "@atlaskit/side-navigation": "^1.10.3",
         "@coreui/coreui": "^2.1.16",
+        "@fontsource/poppins": "^5.0.5",
         "@forge/api": "^2.18.2",
         "@forge/bridge": "^2.6.0",
         "@forge/resolver": "^1.5.12",
+        "@fortawesome/fontawesome-free": "^6.4.0",
         "@fullcalendar/core": "^6.1.8",
         "@fullcalendar/daygrid": "^6.1.8",
         "@fullcalendar/interaction": "^6.1.8",
@@ -74,7 +76,6 @@
         "espree": "^9.6.1",
         "exceljs": "^4.3.0",
         "firebase": "^10.1.0",
-        "font-awesome": "^4.7.0",
         "jquery": "^3.7.0",
         "jsd-report": "^0.1.11",
         "jspdf": "^2.5.1",
@@ -90,6 +91,7 @@
         "rc-time-picker": "^3.7.3",
         "react": "^18.2.0",
         "react-bootstrap-daterangepicker": "^8.0.0",
+        "react-controls": "github:shridhar-tl/react-controls",
         "react-dnd": "^14.0.4",
         "react-dnd-html5-backend": "^14.0.2",
         "react-dom": "^18.2.0",
@@ -108,6 +110,7 @@
         "eslint": "^8.45.0",
         "eslint-plugin-react-hooks": "^4.6.0",
         "gh-pages": "^5.0.0",
+        "react-app-alias": "^2.2.2",
         "sass": "^1.64.1",
         "wait-on": "^7.0.1",
         "webpack-bundle-analyzer": "^4.9.0"
@@ -202,6 +205,16 @@
             "last 1 chrome version",
             "last 1 firefox version",
             "last 1 safari version"
+        ]
+    },
+    "aliases": {
+        "js-report-builder": [
+            "externals/js-report-builder/src/lib",
+            "node_modules/js-report-builder/src/lib"
+        ],
+        "react-controls": [
+            "externals/react-controls/src/controls",
+            "node_modules/react-controls/src/controls"
         ]
     }
 }
