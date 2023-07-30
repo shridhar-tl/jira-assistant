@@ -234,9 +234,9 @@ function getAliasPackages(packages) {
                 return obj;
             }
 
-            console.warn(`Package Key:- ${key}; "${srcPath}" not found. Please validate "aliases.json"`);
+            console.warn(`Package Key:- ${key}; "${srcPath}" not found. Please validate "aliases" in "package.json"`);
         }
 
-        throw Error(`Dependency package not found. Package Key:- ${key}`);
+        throw Error(`Dependency package not loaded. Package Key:- ${key}`);
     }, {});
 }

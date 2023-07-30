@@ -204,10 +204,10 @@ export class BaseGadget extends PureComponent {
 
     setRef = (el) => {
         this.el = el;
-        const { dropProps: { dropConnector } = {} } = this.props;
+        const { dropProps: { dropRef } = {} } = this.props;
 
-        if (dropConnector) {
-            dropConnector(el);
+        if (dropRef) {
+            dropRef(el);
         }
     };
 

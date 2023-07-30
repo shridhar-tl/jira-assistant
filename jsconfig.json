@@ -3,10 +3,10 @@
         "baseUrl": "./",
         "paths": {
             "js-report-builder/*": [
-                "./externals/js-report-builder/src/lib/*"
+                "./node_modules/js-report-builder/src/lib/*"
             ],
             "react-controls/*": [
-                "./externals/react-controls/src/controls/*"
+                "./node_modules/react-controls/src/controls/*"
             ]
         }
     }
