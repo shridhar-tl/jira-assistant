@@ -1,9 +1,13 @@
 /* #region  Prime overrides*/
 
-body .p-component {
-    font-family: "Open Sans", "Helvetica Neue", sans-serif;
-    font-size: 14px;
-    text-decoration: none;
+body {
+    font-family: poppins, "Open Sans", "Helvetica Neue", sans-serif;
+
+    .p-component {
+        font-family: poppins, "Open Sans", "Helvetica Neue", sans-serif;
+        font-size: 14px;
+        text-decoration: none;
+    }
 }
 
 .p-panel {

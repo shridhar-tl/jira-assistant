@@ -38,7 +38,7 @@ class UserRow extends PureComponent {
         return (<tr title={!isActive && "User is inactive"}>
             <td>
                 <div className="group-user">
-                    <img src={user.avatarUrls['32x32'] || user.avatarUrls['48x48']} alt="" height={32} width={32} className="pull-left" />
+                    <img src={user.avatarUrls['32x32'] || user.avatarUrls['48x48']} alt="" height={32} width={32} className="float-start" />
                     <Link href={this.$userutils.getProfileUrl(user)}
                         className={isActive ? "link" : "link strike-out"}>{user.displayName}</Link>
                 </div>

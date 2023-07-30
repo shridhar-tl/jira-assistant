@@ -181,11 +181,11 @@ class Integrate extends PureComponent {
                                 <div className="card-body p-4">
                                     <BackupImporter onImport={this.onSettingsImport} cleanImport={true}>{this.setUploader}</BackupImporter>
                                     <ContextMenu />
-                                    {(!browser.isFirefox || !isQuickView) && <span className="fa fa-cogs pull-right pointer"
+                                    {(!browser.isFirefox || !isQuickView) && <span className="fa fa-cogs float-end pointer"
                                         style={settingsIconStyles} onClick={this.showMenu} onContextMenu={this.showMenu}
                                         title="Click to show more options"
                                     />}
-                                    {(browser.isFirefox && isQuickView) && <span className="fa fa-external-link pull-right pointer"
+                                    {(browser.isFirefox && isQuickView) && <span className="fa fa-external-link float-end pointer"
                                         style={settingsIconStyles} onClick={this.openInNewTab}
                                         title="Click to open in new tab and see more integration options" />}
                                     <h1>Jira Assistant</h1>

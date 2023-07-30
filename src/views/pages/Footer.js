@@ -15,12 +15,12 @@ class Footer extends PureComponent {
     render() {
         return (
             <div className="card-footer p-4">
-                <div className="pull-left">
+                <div className="float-start">
                     <span>© 2016-{this.year} <Link href={this.siteUrl}>Jira Assistant</Link> v{AppVersionNo}</span>
                 </div>
-                {showSupport && <div className="pull-right" style={{ textAlign: 'right' }}>
+                {showSupport && <div className="float-end" style={{ textAlign: 'right' }}>
                     {<span>
-                        <i className="fa fa-youtube" />
+                        <i className="fa-brands fa-youtube" />
                         <Link href="https://www.youtube.com/embed/HsWq7cT3Qq0?rel=0&autoplay=1&showinfo=0&cc_load_policy=1"
                             title="Click to open YouTube video guiding you to setup Jira Assistant"> Help setup</Link>
                     </span>} |

@@ -16,7 +16,7 @@ class WorklogSettings extends BaseDialog {
     }
 
     getFooter() {
-        return <Button icon="fa fa-floppy-o" label="Done" onClick={this.onDone} />;
+        return <Button icon="fa fa-save" label="Done" onClick={this.onDone} />;
     }
 
     onDone = () => {

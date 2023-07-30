@@ -72,10 +72,10 @@ class GeneralSettings extends PureComponent {
                 <TabPanel header="General" leftIcon="fa fa-cogs" selected="true">
                     <GeneralTab settings={settings} userId={this.userId} noDonations={noDonations} onSave={this.saveSetting} />
                 </TabPanel>
-                <TabPanel header="Time tracker" leftIcon="fa fa-clock-o">
+                <TabPanel header="Time tracker" leftIcon="fa fa-clock">
                     <GlobalTab />
                 </TabPanel>
-                <TabPanel header="Worklog" leftIcon="fa fa-clock-o">
+                <TabPanel header="Worklog" leftIcon="fa fa-clock">
                     <WorklogTab settings={settings} userId={this.userId} onSave={this.saveSetting} isAtlasCloud={this.isAtlasCloud} />
                 </TabPanel>
                 <TabPanel header="Default values" leftIcon="fa fa-list">

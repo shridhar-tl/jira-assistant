@@ -46,7 +46,7 @@ class SwitchAccountMenu extends PureComponent {
 
                 <DropdownItem tag="a" href={isWebBuild ? '/integrate' : '/index.html#/integrate'} title="Integrate with new instance of Jira">
                     <i className="fa fa-plug"></i> Integrate</DropdownItem>
-                {/*<DropdownItem><i className="fa fa-envelope-o"></i> Messages<Badge color="success">42</Badge></DropdownItem>
+                {/*<DropdownItem><i className="fa fa-envelope"></i> Messages<Badge color="success">42</Badge></DropdownItem>
                         <DropdownItem><i className="fa fa-tasks"></i> Tasks<Badge color="danger">42</Badge></DropdownItem>
                         <DropdownItem><i className="fa fa-comments"></i> Comments<Badge color="warning">42</Badge></DropdownItem>*/}
 

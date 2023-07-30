@@ -1,16 +1,16 @@
-import React, { PureComponent, Suspense } from 'react';
+import React, { Suspense } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import routes from '../../routes';
 import { withRouter } from '../../pollyfills';
 
-class AppContent extends PureComponent {
-    render() {
-        return (
-            <DndProvider backend={HTML5Backend}>
+function AppContent(props) {
+    return (
+        <DndProvider backend={HTML5Backend}>
+            <main className="main">
                 <div className="container-fluid">
-                    <Suspense fallback={this.props.loader()}>
+                    <Suspense fallback={props.loader()}>
                         <Routes>
                             {routes.map((route, idx) => {
                                 const Component = withRouter(route.component);
@@ -26,9 +26,9 @@ class AppContent extends PureComponent {
                         </Routes>
                     </Suspense>
                 </div>
-            </DndProvider>
-        );
-    }
+            </main>
+        </DndProvider>
+    );
 }
 
-export default AppContent;
+export default React.memo(AppContent);

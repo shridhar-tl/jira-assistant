@@ -14,7 +14,7 @@ class DateWiseWorklog extends BaseGadget {
         super(props, 'Daywise worklog', 'fa-list-alt');
         inject(this, "WorklogService", "UtilsService", "MessageService");
         this.contextMenu = [
-            { label: "Upload worklog", icon: "fa fa-clock-o", command: () => this.uploadWorklog() },
+            { label: "Upload worklog", icon: "fa fa-clock", command: () => this.uploadWorklog() },
             { label: "Add worklog", icon: "fa fa-bookmark", command: () => this.addWorklog() } //ToDo: Add option for move to progress, show in tree view
         ];
     }

@@ -44,8 +44,8 @@ class AddBookmark extends BaseDialog {
 
     getFooter() {
         return <>
+            <Button text type="default" onClick={this.onHide} label="Cancel" icon="fa fa-times" />
             <Button type="primary" onClick={this.addBookmark} label="Save" icon="fa fa-save" />
-            <Button type="default" onClick={this.onHide} label="Cancel" icon="fa fa-times" />
         </>;
     }
 

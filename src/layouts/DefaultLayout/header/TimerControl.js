@@ -3,7 +3,7 @@ import { WorklogContext } from '../../../common/context';
 import Link from '../../../controls/Link';
 import AddWorklog from '../../../dialogs/AddWorklog';
 import { inject } from '../../../services/injector-service';
-import './Common.scss';
+import './TimerControl.scss';
 
 class TimerControl extends PureComponent {
     static contextType = WorklogContext;

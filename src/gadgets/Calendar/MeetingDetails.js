@@ -27,7 +27,7 @@ class MeetingDetails extends PureComponent {
             </div>
             <div className="body">
                 <div className="detail">
-                    <div className="title"><i className="fa fa-clock-o" /></div>
+                    <div className="title"><i className="fa fa-clock" /></div>
                     <div className="info">
                         <span>{currentMeetingItem.date}</span>
                         <span className="info">{currentMeetingItem.startTime} - {currentMeetingItem.endTime} {currentMeetingItem.remaining}</span>
@@ -46,7 +46,7 @@ class MeetingDetails extends PureComponent {
                 {currentMeetingItem.attendees && <div className="detail pointer">
                     <div className="title"><i className="fa fa-users" /></div>
                     <div className="info" onClick={this.toggleShowAttendees}>
-                        <div className="icon pull-right"><i className={`fa ${showAttendees ? 'fa-angle-up' : 'fa-angle-down'}`} /></div>
+                        <div className="icon float-end"><i className={`fa ${showAttendees ? 'fa-angle-up' : 'fa-angle-down'}`} /></div>
                         <div>
                             <span>{currentMeetingItem.attendees.total} guests</span>
                             {currentMeetingItem.attendees && <span className="info">

@@ -59,7 +59,7 @@ class BaseImport extends BaseGadget {
     renderCustomActions() {
         return <>
             <input ref={this.setFileSelector} type="file" className="hide" accept=".csv,.json, .xlsx" onChange={this.fileSelected} />
-            <Button icon="fa fa-upload" onClick={this.chooseFileForImport} title="Choose file to import" />
+            <Button text icon="fa fa-upload" onClick={this.chooseFileForImport} title="Choose file to import" />
         </>;
     }
 }
