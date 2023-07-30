@@ -2,16 +2,16 @@ import React, { PureComponent } from 'react';
 import { Panel } from 'primereact/panel';
 import { Tooltip } from 'primereact/tooltip';
 import { EventEmitter } from 'events';
-import { Button } from '../controls';
-import classNames from "classnames";
+import { Button, Loader } from '../controls';
+import classNames from 'classnames';
 import { showContextMenu } from '../externals/jsd-report';
 import { ExportHelper } from '../common/ExportHelper';
 import { ExportFormat } from '../common/Exporter';
 import { GadgetActionType } from './_constants';
 import { inject } from '../services';
 import { EventCategory } from '../constants/settings';
-import "./BaseGadget.scss";
 import { isExtnBuild } from '../constants/build-info';
+import './BaseGadget.scss';
 
 export const onDashboardEvent = new EventEmitter();
 let instanceId = 0;
@@ -171,7 +171,7 @@ export class BaseGadget extends PureComponent {
         exportHelper.export();
     };
 
-    showGadgetGontextMenu = (e) => showContextMenu(e, this.getContextMenu());
+    showGadgetContextMenu = (e) => showContextMenu(e, this.getContextMenu());
 
     getTooltipElement() {
         if (!this.getHint) { return null; }
@@ -189,7 +189,7 @@ export class BaseGadget extends PureComponent {
         const className = `gadget-header${draggableHandle ? " movable" : ""}`;
 
         return <>
-            <div ref={draggableHandle} className={className} onContextMenu={!isGadget ? null : this.showGadgetGontextMenu} onDoubleClick={this.toggleFullScreen}>
+            <div ref={draggableHandle} className={className} onContextMenu={!isGadget ? null : this.showGadgetContextMenu} onDoubleClick={this.toggleFullScreen}>
                 <i className={`fa ${this.iconClass}`}></i> {title} {subTitle && <span> - {subTitle}</span>}
                 <div className="float-end">
                     {this.getTooltipElement()}
@@ -211,7 +211,7 @@ export class BaseGadget extends PureComponent {
         }
     };
 
-    renderBase(childern) {
+    renderBase(children) {
         const { fullWidth, fullHeight, isLoading, isFullScreen } = this.state;
         const {
             isGadget, props: { tabLayout, gadgetType }
@@ -219,7 +219,7 @@ export class BaseGadget extends PureComponent {
 
         if (tabLayout) {
             return <>
-                {childern}
+                {children}
                 {this.renderFooter && this.renderFooter()}
             </>;
         }
@@ -237,9 +237,9 @@ export class BaseGadget extends PureComponent {
         });
 
         return (<div ref={this.setRef} className={className} data-test-id={gadgetType}>
-            {isLoading && <div className="data-loader"><i className="fa fa-refresh fa-spin"></i></div>}
+            {isLoading && <Loader />}
             <Panel header={this.getHeader()}>
-                {childern}
+                {children}
                 {this.renderFooter && this.renderFooter()}
             </Panel>
         </div>);

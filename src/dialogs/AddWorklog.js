@@ -257,8 +257,8 @@ class AddWorklog extends BaseDialog {
             {log.id > 0 && <Button type="danger" icon="fa fa-trash" label="Delete" className="float-start" disabled={isLoading} onClick={() => this.deleteWorklog(log)} />}
             {log.id > 0 && !log.worklogId && <Button type="success" isLoading={isLoading} icon="fa fa-upload" label="Save & Upload" className="float-start" disabled={isLoading}
                 onClick={() => this.saveWorklog(log, vald, true)} />}
-            <Button type="primary" icon="fa fa-save" label="Save" isLoading={isLoading} disabled={isLoading} onClick={() => this.saveWorklog(log, vald, uploadImmediately && !(log.id > 0))} />
             <Button text type="secondary" icon="fa fa-times" label="Cancel" onClick={this.onHide} />
+            <Button type="primary" icon="fa fa-save" label="Save" isLoading={isLoading} disabled={isLoading} onClick={() => this.saveWorklog(log, vald, uploadImmediately && !(log.id > 0))} />
         </>;
     }
 

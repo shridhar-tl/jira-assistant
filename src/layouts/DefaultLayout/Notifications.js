@@ -71,23 +71,18 @@ class Notifications extends PureComponent {
 
 export default Notifications;
 
-class Message extends PureComponent {
-    readMessage = () => this.props.onOpen(this.props.message);
-    markRead = () => this.props.onRead(this.props.message);
+function Message({ message, onOpen, onRead, cut }) {
+    const readMessage = React.useCallback(() => onOpen(message), [message, onOpen]);
+    const markRead = React.useCallback(() => onRead(message), [message, onRead]);
 
-    render() {
-        const { message: msg, cut } = this.props;
-
-        return (
-            <DropdownItem tag="div" title="Click to view this message">
-                {!msg.read && <small className="float-right mt-0" onClick={this.markRead} title="Click to mark this message as read">
-                    <span className="fa fa-eye mark-read" /></small>}
-                <div className={`text-truncate${msg.read ? "" : " font-weight-bold"}`} onClick={this.readMessage}>
-                    {msg.important && <span className="fa fa-exclamation text-danger"></span>} {msg.title}
-                </div>
-                <div className="small text-muted message" onClick={this.readMessage}><TextParser message={cut(msg.message, 175, true)} /></div>
-            </DropdownItem>
-        );
-    }
+    return (
+        <DropdownItem tag="div" title="Click to view this message">
+            {!message.read && <small className="float-end mt-0" onClick={markRead} title="Click to mark this message as read">
+                <span className="fa fa-eye mark-read" /></small>}
+            <div className={`text-truncate${message.read ? "" : " font-weight-bold"}`} onClick={readMessage}>
+                {message.important && <span className="fa fa-exclamation text-danger"></span>} {message.title}
+            </div>
+            <div className="small text-muted message" onClick={readMessage}><TextParser message={cut(message.message, 175, true)} /></div>
+        </DropdownItem>
+    );
 }
-

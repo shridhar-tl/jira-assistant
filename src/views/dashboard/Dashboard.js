@@ -215,7 +215,7 @@ class Dashboard extends PureComponent {
         } = this.state;
 
         return (
-            <div>
+            <>
                 <Header {...this.props} config={currentBoard} index={dashboardIndex} userId={this.$session.userId}
                     onShowGadgets={this.onShowGadgets} tabViewChanged={this.tabViewChanged} isQuickView={this.isQuickView} />
                 {this.getGadgets(widgets)}
@@ -227,7 +227,7 @@ class Dashboard extends PureComponent {
                 {showGadgetDialog && <AddGadgetDialog onHide={this.hideGadgetDialog} widgetsList={widgets}
                     addGadget={this.addGadget} removeGadget={this.removeGadget} />}
                 {showWorklogPopup && <AddWorklog worklog={this.worklogItem} onDone={this.worklogAdded} onHide={this.hideWorklog} />}
-            </div>
+            </>
         );
     }
 }
