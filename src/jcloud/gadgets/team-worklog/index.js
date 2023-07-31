@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
-import { DndProvider } from 'react-dnd';
-import { HTML5Backend } from 'react-dnd-html5-backend';
+import { DndProvider } from 'src/controls';
 import withInitParams from '../../../layouts/initialization';
 import withAuthInfo from '../../../layouts/authorization/simple-auth';
 import { withProvider, getInitialSettings } from '../../../gadgets/WorklogReport/datastore';
@@ -46,5 +45,5 @@ const ReportDisplay = function ({ settings: { reportLoaded, loadingData, errorTi
         return <div className="pad-32">No data returned matching your filter</div>;
     }
 
-    return (<DndProvider backend={HTML5Backend}><Report isLoading={loadingData} /></DndProvider>);
+    return (<DndProvider><Report isLoading={loadingData} /></DndProvider>);
 };

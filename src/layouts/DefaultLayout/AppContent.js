@@ -1,13 +1,12 @@
 import React, { Suspense } from 'react';
 import { Route, Routes } from 'react-router-dom';
-import { DndProvider } from 'react-dnd';
-import { HTML5Backend } from 'react-dnd-html5-backend';
+import { DndProvider } from 'src/controls';
 import routes from '../../routes';
 import { withRouter } from '../../pollyfills';
 
 function AppContent(props) {
     return (
-        <DndProvider backend={HTML5Backend}>
+        <DndProvider>
             <main className="main">
                 <div className="container-fluid">
                     <Suspense fallback={props.loader()}>
