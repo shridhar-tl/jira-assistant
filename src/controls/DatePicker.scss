@@ -4,11 +4,11 @@
     input.date-range-ctl {
         width: 250px;
         height: 27px;
-        border-right: 0px;
     }
 
-    .icon {
-        margin-left: -2px;
+    .icon.p-button-xs.p-button.p-button-icon-only {
+        margin-left: -25px;
+        padding-top: 1px;
         height: 27px;
     }
 }

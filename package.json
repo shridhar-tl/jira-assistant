@@ -109,7 +109,7 @@
         "electron": "^25.3.2",
         "electron-builder": "^24.6.3",
         "electronmon": "^2.0.2",
-        "eslint": "^8.45.0",
+        "eslint": "^8.46.0",
         "eslint-plugin-react-hooks": "^4.6.0",
         "gh-pages": "^5.0.0",
         "react-app-alias": "^2.2.2",

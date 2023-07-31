@@ -2,15 +2,13 @@ import React, { PureComponent, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import * as moment from 'moment';
-import { Draggable } from '../../externals/jsd-report';
+import { Draggable } from '../../controls';
 import { ScrollableTable, THead, TRow, Column, TBody, NoDataRow } from '../ScrollableTable';
 import GroupedColumnList from './GroupedColumnList';
 import ColumnList from './ColumnList';
 import { getPathValue } from '../../common/utils';
 import { inject } from '../../services/injector-service';
 import './GroupableGrid.scss';
-
-const itemTarget = ["column"];
 
 export class GroupableGrid extends PureComponent {
     constructor(props) {
@@ -276,10 +274,10 @@ export class GroupableGrid extends PureComponent {
                 );
             }
 
-            return <Draggable key={i} itemType="column" item={c} itemTarget={itemTarget}>
-                {(connectDragSource, isDragging) => <Column
+            return <Draggable key={i} itemType="column" item={c}>
+                {({ dragRef }) => <Column
                     rowSpan={rowSpan} colSpan={colSpan}
-                    dragConnector={connectDragSource}
+                    dragConnector={dragRef}
                     sortBy={sortBy}>{displayText}</Column>}
             </Draggable>;
         };
