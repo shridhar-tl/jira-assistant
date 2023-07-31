@@ -10,9 +10,8 @@ import { isWebBuild, redirectToRoute } from '../../constants/build-info';
 import AppContent from './AppContent';
 import { withRouter } from '../../pollyfills';
 import NavSideBar from './NavSideBar';
+import DefaultHeader from './DefaultHeader';
 import "./DefaultLayout.scss";
-
-const DefaultHeader = React.lazy(() => import('./DefaultHeader'));
 
 class DefaultLayout extends PureComponent {
   constructor() {

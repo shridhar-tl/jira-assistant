@@ -12,7 +12,7 @@ import BaseGadget, { onDashboardEvent } from '../../gadgets/BaseGadget';
 import { TabView, TabPanel } from 'primereact/tabview';
 import CustomReport from '../reports/custom-groupable/ReportViewer';
 import AdvancedReport from '../reports/report-builder/ReportViewer';
-import { Sortable } from '../../externals/jsd-report';
+import { Sortable } from '../../controls';
 
 class Dashboard extends PureComponent {
     constructor(props) {
@@ -25,7 +25,7 @@ class Dashboard extends PureComponent {
         const { match: { params } } = props;
         this.isQuickView = this.$session.isQuickView;
         this.state = this.loadDashboard(parseInt(params['index'] || 0));
-        this.setGadgetsList();
+        this.gadgetsList = getGadgetsList();
     }
 
     tabViewChanged = (isTabView) => this.setState({ isTabView });
@@ -103,33 +103,7 @@ class Dashboard extends PureComponent {
         this.setState({ currentBoard }, this.saveDashboardInfo);
     };
 
-    setGadgetsList() {
-        const controls = {
-            myOpenTickets: { title: "My open tickets", control: MyOpenTickets },
-            bookmarksList: { title: "My Bookmarks", control: MyBookmarks },
-            dateWiseWorklog: { title: "Daywise worklog", control: DateWiseWorklog },
-            worklogBarChart: { title: "Worklog Bar Chart", control: WorklogBarChartGadget },
-            teamWorklogReport: { title: "Team Daywise Worklog", control: WorklogReport },
-            pendingWorklog: { title: "Worklog - [Pending upload]", control: PendingWorklog },
-            ticketWiseWorklog: { title: "Ticketwise worklog", control: TicketWiseWorklog },
-            sWiseTSpent: { title: "Status Wise Time Spent", control: StatusWiseTimeSpentGadget },
-            myFilters: { title: "My reports", control: MyReports },
-            agendaDay: { title: "Calendar", control: Calendar, getProps: () => ({ viewMode: "timeGridDay" }) },
-            agendaWeek: { title: "Calendar", control: Calendar, getProps: () => ({ viewMode: "timeGridWeek" }) },
-            listDay: { title: "Calendar", control: Calendar, getProps: () => ({ viewMode: "listDay" }) },
-            listWeek: { title: "Calendar", control: Calendar, getProps: () => ({ viewMode: "listWeek" }) },
-            listMonth: { title: "Calendar", control: Calendar, getProps: () => ({ viewMode: "listMonth" }) },
-            CR: { title: "Custom report", control: CustomReport, getProps: (sett, opts) => ({ reportId: parseInt(opts[0]), title: opts[1] }) },
-            AR: { title: "Advanced report", control: AdvancedReport, getProps: (sett, opts) => ({ reportId: parseInt(opts[0]), title: opts[1] }) },
-        };
-
-        controls.myBookmarks = controls.bookmarksList;
-        controls.dtWiseWL = controls.dateWiseWorklog;
-        controls.pendingWL = controls.pendingWorklog;
-        this.gadgetsList = controls;
-    }
-
-    getControls = (w, i, dropProps) => {
+    getControls = (w, i, { draggable: { dragRef }, droppable }) => {
         let { name } = w;
         const { settings } = w;
         const tabLayout = this.state.isTabView;
@@ -178,7 +152,7 @@ class Dashboard extends PureComponent {
             return <TabPanel key={name} header={title}><Gadget {...props} /></TabPanel>;
         }
         else {
-            return (h) => <Gadget {...props} draggableHandle={h} dropProps={dropProps} />;
+            return <Gadget {...props} draggableHandle={dragRef} dropProps={droppable} />;
         }
     };
 
@@ -190,7 +164,7 @@ class Dashboard extends PureComponent {
             return <TabView className="no-padding tab-gadgets">{widgets.map(this.getControls)}</TabView>;
         }
         else {
-            return <Sortable items={widgets} itemType="gadget" onChange={this.gadgetReordered}>{this.getControls}</Sortable>;
+            return <Sortable useDragRef useDropRef items={widgets} defaultItemType="gadget" onChange={this.gadgetReordered}>{this.getControls}</Sortable>;
         }
     }
 
@@ -233,3 +207,30 @@ class Dashboard extends PureComponent {
 }
 
 export default Dashboard;
+
+
+function getGadgetsList() {
+    const controls = {
+        myOpenTickets: { title: "My open tickets", control: MyOpenTickets },
+        bookmarksList: { title: "My Bookmarks", control: MyBookmarks },
+        dateWiseWorklog: { title: "Daywise worklog", control: DateWiseWorklog },
+        worklogBarChart: { title: "Worklog Bar Chart", control: WorklogBarChartGadget },
+        teamWorklogReport: { title: "Team Daywise Worklog", control: WorklogReport },
+        pendingWorklog: { title: "Worklog - [Pending upload]", control: PendingWorklog },
+        ticketWiseWorklog: { title: "Ticketwise worklog", control: TicketWiseWorklog },
+        sWiseTSpent: { title: "Status Wise Time Spent", control: StatusWiseTimeSpentGadget },
+        myFilters: { title: "My reports", control: MyReports },
+        agendaDay: { title: "Calendar", control: Calendar, getProps: () => ({ viewMode: "timeGridDay" }) },
+        agendaWeek: { title: "Calendar", control: Calendar, getProps: () => ({ viewMode: "timeGridWeek" }) },
+        listDay: { title: "Calendar", control: Calendar, getProps: () => ({ viewMode: "listDay" }) },
+        listWeek: { title: "Calendar", control: Calendar, getProps: () => ({ viewMode: "listWeek" }) },
+        listMonth: { title: "Calendar", control: Calendar, getProps: () => ({ viewMode: "listMonth" }) },
+        CR: { title: "Custom report", control: CustomReport, getProps: (sett, opts) => ({ reportId: parseInt(opts[0]), title: opts[1] }) },
+        AR: { title: "Advanced report", control: AdvancedReport, getProps: (sett, opts) => ({ reportId: parseInt(opts[0]), title: opts[1] }) },
+    };
+
+    controls.myBookmarks = controls.bookmarksList;
+    controls.dtWiseWL = controls.dateWiseWorklog;
+    controls.pendingWL = controls.pendingWorklog;
+    return controls;
+}

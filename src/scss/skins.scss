@@ -61,7 +61,7 @@
     background-color: $header-bg;
     border: 1px solid $header-logo-bg;
   }*/
-  div.daysinweek {
+  div.days-in-week {
     >div.day:hover {
       background-color: $header-bg !important;
     }
@@ -171,7 +171,7 @@
     background-color: $header-bg;
     border: 1px solid $header-logo-bg;
   }*/
-  div.daysinweek {
+  div.days-in-week {
     color: $background-color !important;
 
     &>div.day:hover,

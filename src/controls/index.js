@@ -1,4 +1,5 @@
 import { Button, Loader } from 'react-controls';
+import { Sortable, Draggable } from 'react-controls/drag-drop';
 import AutoComplete from './AutoComplete';
 import Checkbox from './Checkbox';
 import ColorPicker from './ColorPicker';
@@ -15,5 +16,6 @@ export {
     AutoComplete, Button, Checkbox,
     ColorPicker, SelectBox, TextBox,
     DatePicker, Image, RadioButton,
-    MultiValueText, Link, Loader
+    MultiValueText, Link,
+    Loader, Sortable, Draggable
 };
