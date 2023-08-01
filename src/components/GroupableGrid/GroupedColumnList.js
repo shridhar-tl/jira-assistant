@@ -3,7 +3,7 @@ import { Sortable } from '../../controls';
 import PropTypes from 'prop-types';
 import { showContextMenu } from '../../externals/jsd-report';
 
-const emptyGroupPlaceholder = <div className="empty-group-msg">Drag and drop column here to group data</div>;
+const emptyGroupPlaceholder = <span className="empty-group-msg">Drag and drop column here to group data</span>;
 const addGroupItemPlaceholder = <span>Drag and drop more columns here</span>;
 
 class GroupedColumnList extends PureComponent {
