@@ -17,13 +17,12 @@ export const onDashboardEvent = new EventEmitter();
 let instanceId = 0;
 
 export class BaseGadget extends PureComponent {
-    constructor(props, title, iconClass) {
+    constructor(props, title) {
         super(props);
         inject(this, "AnalyticsService");
         this.instanceId = ++instanceId;
 
         this.title = title;
-        this.iconClass = iconClass;
         this.isGadget = props.isGadget !== false;
         this.settings = props.settings || { fullWidth: false, fullHeight: false };
 
@@ -190,7 +189,7 @@ export class BaseGadget extends PureComponent {
 
         return <>
             <div ref={draggableHandle} className={className} onContextMenu={!isGadget ? null : this.showGadgetContextMenu} onDoubleClick={this.toggleFullScreen}>
-                <i className={`fa ${this.iconClass}`}></i> {title} {subTitle && <span> - {subTitle}</span>}
+                {title} {subTitle && <span> - {subTitle}</span>}
                 <div className="float-end">
                     {this.getTooltipElement()}
                     {this.renderCustomActions && this.renderCustomActions(isGadget)}

@@ -50,7 +50,7 @@ export default class ReportConfigService {
 
         const defaultConfig = {
             selfHandleScriptExecution, compiler,
-            useExternalDnDProvider: true,
+            useExternalDnDProvider: false,
             customFunctions: !selfHandleScriptExecution,
             subReports: (defn) => this.$report.getReportsList().then((result) => {
                 result = result.filter(q => q.advanced).map(q => ({ id: q.id, name: q.queryName }));

@@ -1,4 +1,6 @@
 @mixin base-style($header-logo-bg, $header-bg) {
+
+  /*
   .app-header.navbar .navbar-brand {
     background-color: $header-logo-bg !important;
   }
@@ -11,10 +13,10 @@
   .sidebar .nav-link.active i {
     color: $header-logo-bg !important;
   }
-
+*/
   .ui-panel.ui-widget .ui-panel-titlebar {
     border-top: 3px solid $header-bg;
-    background: white;
+    background: #fff;
   }
 
   .sidebar .nav-link.active,
@@ -31,9 +33,10 @@
     background-color: $header-logo-bg;
   }
 
+  /*
   div.gadget .p-panel-header {
     border-top-color: $header-bg;
-  }
+  }*/
 
   .dashboard-icons div.d-icon {
     color: $header-logo-bg;
@@ -93,6 +96,12 @@
   .sidebar .nav-link:hover {
     background-color: $background-secondary !important;
     color: $font-color;
+  }
+
+  .app-header a.navbar-brand span.navbar-brand-full,
+  .app-header.navbar .navbar-nav .nav-link,
+  .btn-icon-only {
+    color: $font-color !important;
   }
 
   .sidebar .nav-link.active i {
@@ -434,6 +443,15 @@
   }
 }
 
+body:not(.skin-dark) {
+  $header-logo-bg: #0062cc;
+  $header-bg: #3B82F6;
+  transition-duration: 500ms;
+
+  @include base-style($header-logo-bg, $header-bg);
+}
+
+/*
 .skin-blue {
   $header-logo-bg: #367fa9;
   $header-bg: #3c8dbc;
@@ -529,52 +547,18 @@
   $header-logo-bg: #64485c;
   $header-bg: #83677b;
   @include base-style($header-logo-bg, $header-bg);
-}
+}*/
 
 .skin-dark {
   $dark-color: #2f353a;
   $second-dark-color: rgba(0, 0, 0, 0.2);
-  $primary-color: #64afd8;
+  $primary-color: #3B82F6;
   $font-color: #ffffff;
+  //$header-logo-bg: #0062cc;
+  transition-duration: 500ms;
+
   @include deep-style($dark-color, $second-dark-color, $primary-color, $font-color);
 }
-
-/*
-.skin-blue3 {
-  $header-logo-bg: #240090;
-  $header-bg: #3500d3;
-  @include base-style($header-logo-bg, $header-bg);
-}
-
-.skin-navy {
-  $header-logo-bg: #0c0032;
-  $header-bg: #190061;
-  @include base-style($header-logo-bg, $header-bg);
-}
-
-.skin-cust1 {
-  $header-logo-bg: #44318d;
-  $header-bg: #e98074;
-  @include base-style($header-logo-bg, $header-bg);
-}
-
-.skin-cust4 {
-  $header-logo-bg: #c2b9b0;
-  $header-bg: #c2cad0;
-  @include base-style($header-logo-bg,$header-bg);
-}
-
-.skin-cust6 {
-  $header-logo-bg: #2e1114;
-  $header-bg: #501b1d;
-  @include base-style($header-logo-bg, $header-bg);
-}
-
-.skin-cust7 {
-  $header-logo-bg: #2e151b;
-  $header-bg: #da7b93;
-  @include base-style($header-logo-bg, $header-bg);
-}*/
 
 .skins {
   z-index: 1500 !important;

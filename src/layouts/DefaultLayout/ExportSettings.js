@@ -60,7 +60,7 @@ class ExportSettings extends BaseDialog {
         return (<>
             <Checkbox checked={exportAll} onChange={this.toggleAll} label="Export all settings" className="float-start" />
             <Button text icon="fa fa-times" label="Cancel" onClick={this.onHide} />
-            <Button type="success" icon="fa fa-download" label="Export" onClick={this.export} disabled={!exportAll && !hasSelection} />
+            <Button type="primary" icon="fa fa-download" label="Export" onClick={this.export} disabled={!exportAll && !hasSelection} />
         </>);
     }
 

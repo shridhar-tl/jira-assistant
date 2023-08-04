@@ -1,0 +1,92 @@
+.user-box {
+    display: inline-block;
+    margin: 3px 17px 0 0;
+    position: relative;
+    vertical-align: middle;
+    text-align: left;
+
+    >a.box {
+        display: inline-block;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    a.box {
+        &:hover {
+            text-decoration: none;
+        }
+    }
+
+    .profile-info {
+        display: inline-block;
+        vertical-align: middle;
+        margin: 0;
+        margin: -3px 12px 0 10px;
+    }
+
+    .profile-picture {
+        display: inline-block;
+        vertical-align: middle;
+        margin: 0;
+
+        img {
+            width: 35px;
+            color: transparent;
+        }
+    }
+
+    .name {
+        display: block;
+        color: #001;
+        font-size: 12.8px;
+        font-size: .8rem;
+        line-height: 17.6px;
+        line-height: 1.1rem;
+    }
+
+    .role {
+        display: block;
+        color: #acacac;
+        font-size: 11.2px;
+        font-size: .7rem;
+        line-height: 11.2px;
+        line-height: .7rem;
+    }
+
+    .custom-caret {
+        color: #001;
+        font-size: 16px;
+        font-weight: 700;
+
+        &:before {
+            content: "\f107";
+        }
+    }
+
+    >a.box.show {
+        position: relative;
+        z-index: 993;
+
+        .custom-caret {
+            &:before {
+                content: "\f106";
+            }
+        }
+    }
+}
+
+body.skin-dark {
+    .user-box {
+        &:after {
+            background: #121518;
+        }
+
+        .name {
+            color: #c3c3c3;
+        }
+
+        .custom-caret {
+            color: #c3c3c3;
+        }
+    }
+}

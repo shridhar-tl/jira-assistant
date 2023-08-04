@@ -6,6 +6,7 @@ import { AppContext } from '../../common/context';
 import { EventCategory } from '../../constants/settings';
 import ExportSettings from './ExportSettings';
 import { isWebBuild } from '../../constants/build-info';
+import UserBox from './header/UserBox';
 
 class SwitchAccountMenu extends PureComponent {
     static contextType = AppContext;
@@ -79,7 +80,7 @@ class SwitchAccountOption extends PureComponent {
             <Nav className="d-md-down-none margin-r-5" navbar>
                 <UncontrolledDropdown nav direction="down">
                     <DropdownToggle nav>
-                        <span className="nav-link pointer" title={`Currently connected to ${this.props.instance}. Click to see more options.`}> <span className="fa fa-exchange" /> <strong>{this.props.instance}</strong></span>
+                        <UserBox />
                     </DropdownToggle>
                     <DropdownMenu left>
                         <SwitchAccountMenu onLogout={this.props.onLogout} onImport={this.props.onImport} showSettings={this.showSettings} />

@@ -201,7 +201,7 @@ class Integrate extends PureComponent {
                                         Login to your Jira in current tab or provide the Url of your Jira server to integrate.
                                         Ensure you have already been authenticated in Jira before you click on Integrate button.
                                     </p>
-                                    <Button type="success" className="btn-block" icon={isLoading ? "fa fa-spinner fa-spin" : "fa fa-unlock-alt"} disabled={!jiraUrl || isLoading}
+                                    <Button type="primary" className="btn-block" icon={isLoading ? "fa fa-spinner fa-spin" : "fa fa-unlock-alt"} disabled={!jiraUrl || isLoading}
                                         onClick={integrate} label="Integrate" />
                                 </div>
                                 <Footer />

@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { UncontrolledDropdown, DropdownMenu, DropdownToggle, Nav, NavItem } from 'reactstrap';
+import { Nav, NavItem } from 'reactstrap';
 import config from '../../../customize';
 import { isAppBuild, isPluginBuild } from '../../../constants/build-info';
 import ShareWithOthers from '../header/ShareWithOthers';
@@ -27,9 +27,6 @@ function HeaderRight(props) {
     const { version, isBeta } = notifications?.updatesAvailable || {};
     return (<>
         <Nav className="ml-auto" navbar>
-            {!isPluginBuild && <BackupImporter>
-                {(importSettings) => <SwitchAccountOption instance={currentJiraInstance} onLogout={onLogout} onImport={importSettings} />}
-            </BackupImporter>}
             {allowWebVersion && !isAppBuild && <LaunchWeb />}
             {!!version && <span className={`update-available badge badge-${isBeta ? "warning" : "success"}`}
                 title={`Jira Assist ${isBeta ? 'BETA ' : ''}v${version} is now available. Click to know more.`}
@@ -39,18 +36,14 @@ function HeaderRight(props) {
             {showYoutubeOption && <NavItem className="d-md-down-none">
                 <span className="nav-link" onClick={showYoutubeHelp}><i className="fa-brands fa-youtube"></i></span>
             </NavItem>}
-            <UncontrolledDropdown nav direction="down">
-                <DropdownToggle nav>
-                    <i className="fa fa-adjust"></i>
-                </DropdownToggle>
-                <DropdownMenu end>
-                    <SkinPicker />
-                </DropdownMenu>
-            </UncontrolledDropdown>
+            <SkinPicker />
             {showShareOption && <ShareWithOthers />}
             {showContactUs && <NavItem className="d-md-down-none">
                 <NavLink to={`/${userId}/contactus`} className="nav-link"><i className="fa fa-phone" title="Contact us"></i></NavLink>
             </NavItem>}
+            {!isPluginBuild && <BackupImporter>
+                {(importSettings) => <SwitchAccountOption instance={currentJiraInstance} onLogout={onLogout} onImport={importSettings} />}
+            </BackupImporter>}
         </Nav>
         {showYoutubeOption && showYoutubeVideo && <YoutubeVideo onHide={hideYoutube} />}
     </>

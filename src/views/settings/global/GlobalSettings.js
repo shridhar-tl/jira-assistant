@@ -206,7 +206,7 @@ class GlobalSettings extends PureComponent {
                     </TBody>
                 </ScrollableTable>
                 <div className="footer">
-                    <Button className="float-end" icon="fa fa-save" label="Save settings" type="success" onClick={this.saveSettings} />
+                    <Button className="float-end" icon="fa fa-save" label="Save settings" type="primary" onClick={this.saveSettings} />
                     <strong>Note:</strong>
                     <br />Changing these settings may cause application stability issues or lose in data. Be cautious with the changes you make.
                     <br />Some settings would take effect only once you refresh/reopen Jira Assistant.

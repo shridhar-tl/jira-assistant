@@ -64,8 +64,8 @@ class GroupFooter extends PureComponent {
                             </div>
                             <div className="float-end">
                                 {isPlugged && <span><strong>Note:</strong> To permanently save the changes, go to Settings -&gt; User groups from menu.</span>}
-                                {!isPlugged && <Button type="success" icon="fa fa-save" label="Save Changes" onClick={saveGroups} />}
-                                {isPlugged && <Button icon="fa fa-save" label="Done" onClick={onDone} />}
+                                {!isPlugged && <Button type="primary" icon="fa fa-save" label="Save Changes" onClick={saveGroups} />}
+                                {isPlugged && <Button type="primary" icon="fa fa-save" label="Done" onClick={onDone} />}
                             </div>
                         </div>
                     </td>

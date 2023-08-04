@@ -163,8 +163,8 @@ class ReportBuilder extends BaseGadget {
             </div>}
 
             <div className="float-end">
-                <Button type="success" icon="fa fa-save" label="Save Query" onClick={isEditing ? this.saveAs : this.showSaveDialog} />
-                <Button type="info" icon="fa fa-list" label="View Report" onClick={this.viewReport} disabled={!((reportDefinition || {}).reportItems || []).length} />
+                <Button type="primary" icon="fa fa-save" label="Save Query" onClick={isEditing ? this.saveAs : this.showSaveDialog} />
+                <Button type="secondary" icon="fa fa-list" label="View Report" onClick={this.viewReport} disabled={!((reportDefinition || {}).reportItems || []).length} />
             </div>
         </div>;
     }
