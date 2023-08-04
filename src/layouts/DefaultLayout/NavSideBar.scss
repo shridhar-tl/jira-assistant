@@ -218,6 +218,10 @@ $transition-delay :400ms;
             padding: 8px 10px 5px 17px;
             display: block;
 
+            &:focus {
+                box-shadow: #0052CC 0 0 0 2px inset;
+            }
+
             .wrapper {
                 font-size: 14px;
                 font-weight: 400;

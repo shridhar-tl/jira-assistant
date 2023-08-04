@@ -1,27 +1,29 @@
+$font-color: #344563;
+
 a.navbar-brand {
     span.navbar-brand-full {
-        color: #000;
+        color: $font-color;
         font-size: 20px;
     }
 }
 
 .app-header {
-    color: #fff !important;
+    color: $font-color !important;
 
     .nav-item {
         min-width: 35px;
     }
 
     &.navbar {
-        height: 44px !important;
+        height: 52px !important;
 
         .navbar-brand {
-            height: 43px;
+            height: 51px;
         }
 
         .navbar-nav .nav-link,
         .navbar-toggler-icon {
-            color: #fff !important;
+            color: $font-color !important;
         }
     }
 
@@ -33,7 +35,7 @@ a.navbar-brand {
         width: 215px;
 
         .navbar-brand-full {
-            color: #fff !important;
+            color: $font-color !important;
         }
     }
 }
@@ -162,10 +164,6 @@ body.no-donation .btn-donate {
             text-indent: 8px;
         }
     }
-}
-
-.navbar-toggler a {
-    color: white;
 }
 
 span.btn.web-try {

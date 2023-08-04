@@ -10,7 +10,7 @@ class Footer extends PureComponent {
         return <div className="pnl-footer">
             <div className="float-end">
                 <Button text type="info" icon="fa fa-list" label="Clear" disabled={isLoading} onClick={clearImportData} />
-                <Button type="success" icon="fa fa-upload" disabled={isLoading || !(selectedCount > 0)}
+                <Button type="primary" icon="fa fa-upload" disabled={isLoading || !(selectedCount > 0)}
                     label={importLabel} onClick={importIssues} />
             </div>
         </div>;

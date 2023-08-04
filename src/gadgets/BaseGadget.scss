@@ -25,6 +25,10 @@ div.gadget {
             padding: 0;
             overflow: auto;
         }
+
+        .p-panel-header {
+            border-top: none;
+        }
     }
 
     &.half-width:nth-child(2n) {
@@ -36,7 +40,7 @@ div.gadget {
     }
 
     .p-panel-header {
-        border-top: 3px solid #3c8dbc;
+        border-top: 3px solid #2684ff;
         padding: 0.571em 0.5em 0.571em 1em;
         background-color: #fff;
 
@@ -87,10 +91,14 @@ div.full-height {
     }
 
     &.docked {
-        height: calc(100vh - 46px);
+        height: calc(100vh - 52px);
+
+        .p-panel-header {
+            border-top: none;
+        }
 
         div.p-panel-content {
-            height: calc(100vh - 86px);
+            height: calc(100vh - 100px);
             padding: 0;
             overflow: auto;
         }
@@ -110,10 +118,11 @@ div.full-height {
 }
 
 div.half-height {
-    height: calc(50vh - 42px);
+    height: calc(50vh - 53px);
+    margin: 3px 0;
 
     .p-panel-content {
-        height: calc(50vh - 87px);
+        height: calc(50vh - 97px);
         padding: 0;
     }
 }

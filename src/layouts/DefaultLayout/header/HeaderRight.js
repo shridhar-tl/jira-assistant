@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { UncontrolledDropdown, DropdownMenu, DropdownToggle, Nav, NavItem } from 'reactstrap';
+import { Nav, NavItem } from 'reactstrap';
 import config from '../../../customize';
 import { isAppBuild, isPluginBuild } from '../../../constants/build-info';
 import ShareWithOthers from '../header/ShareWithOthers';
@@ -39,14 +39,7 @@ function HeaderRight(props) {
             {showYoutubeOption && <NavItem className="d-md-down-none">
                 <span className="nav-link" onClick={showYoutubeHelp}><i className="fa-brands fa-youtube"></i></span>
             </NavItem>}
-            <UncontrolledDropdown nav direction="down">
-                <DropdownToggle nav>
-                    <i className="fa fa-adjust"></i>
-                </DropdownToggle>
-                <DropdownMenu end>
-                    <SkinPicker />
-                </DropdownMenu>
-            </UncontrolledDropdown>
+            <SkinPicker />
             {showShareOption && <ShareWithOthers />}
             {showContactUs && <NavItem className="d-md-down-none">
                 <NavLink to={`/${userId}/contactus`} className="nav-link"><i className="fa fa-phone" title="Contact us"></i></NavLink>

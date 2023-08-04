@@ -50,7 +50,7 @@
 
     &.docked {
         .worklog-visualization-tab {
-            height: calc(100vh - 122px);
+            height: calc(100vh - 135px);
 
             .group-wise-charts {
                 .chart-container {
@@ -61,7 +61,7 @@
 
         .multi-view {
             .worklog-visualization-tab {
-                height: calc(100vh - 156px);
+                height: calc(100vh - 170px);
             }
         }
     }

@@ -67,7 +67,7 @@ class DefaultHeader extends PureComponent {
     if (systemOffset !== jiraOffset) {
       const footer = (confirm, cancel) => <>
         <Button type="danger" icon="fa fa-times" label="Ok, Do not check again" onClick={confirm} waitFor={5} />
-        <Button type="success" icon="fa fa-check" label="Ok, I will update Jira profile" onClick={cancel} />
+        <Button type="primary" icon="fa fa-check" label="Ok, I will update Jira profile" onClick={cancel} />
       </>;
 
       Dialog.custom(

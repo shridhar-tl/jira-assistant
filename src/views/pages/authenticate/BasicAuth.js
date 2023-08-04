@@ -112,7 +112,7 @@ class Integrate extends PureComponent {
                                         <strong>Note:</strong> Credentials are stored in browser's cache storage. Use Jira Rest Api Token instead of password
                                         for better security. Learn more about <Link href={ApiTokenHelpPage}>Rest Api Tokens</Link>.
                                     </p>
-                                    <Button type="success" className="btn-block" icon={isLoading ? "fa fa-spinner fa-spin" : "fa fa-unlock-alt"} disabled={!jiraUrl || isLoading}
+                                    <Button type="primary" className="btn-block" icon={isLoading ? "fa fa-spinner fa-spin" : "fa fa-unlock-alt"} disabled={!jiraUrl || isLoading}
                                         onClick={this.integrate} label="Integrate" />
                                 </div>
                                 <Footer />

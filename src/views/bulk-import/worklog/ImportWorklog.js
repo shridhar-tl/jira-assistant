@@ -345,7 +345,7 @@ class ImportWorklog extends BaseImport {
 
             <div className="float-end">
                 <Button text type="info" icon="fa fa-list" label="Clear" disabled={isLoading} onClick={this.clearWorklogs} />
-                <Button type="success" icon={autoUpload ? "fa fa-upload" : "fa fa-save"} disabled={isLoading || !(selectedCount > 0)}
+                <Button type="primary" icon={autoUpload ? "fa fa-upload" : "fa fa-save"} disabled={isLoading || !(selectedCount > 0)}
                     label={autoUpload ? `Upload ${selectedCount} worklogs` : `Import ${selectedCount} worklogs`} onClick={this.importWorklogs} />
             </div>
         </div>;
