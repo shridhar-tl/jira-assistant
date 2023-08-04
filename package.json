@@ -51,7 +51,6 @@
         }
     },
     "dependencies": {
-        "@atlaskit/avatar": "^21.3.7",
         "@coreui/coreui": "^2.1.16",
         "@forge/api": "^2.18.3",
         "@forge/bridge": "^2.6.0",

@@ -27,9 +27,6 @@ function HeaderRight(props) {
     const { version, isBeta } = notifications?.updatesAvailable || {};
     return (<>
         <Nav className="ml-auto" navbar>
-            {!isPluginBuild && <BackupImporter>
-                {(importSettings) => <SwitchAccountOption instance={currentJiraInstance} onLogout={onLogout} onImport={importSettings} />}
-            </BackupImporter>}
             {allowWebVersion && !isAppBuild && <LaunchWeb />}
             {!!version && <span className={`update-available badge badge-${isBeta ? "warning" : "success"}`}
                 title={`Jira Assist ${isBeta ? 'BETA ' : ''}v${version} is now available. Click to know more.`}
@@ -44,6 +41,9 @@ function HeaderRight(props) {
             {showContactUs && <NavItem className="d-md-down-none">
                 <NavLink to={`/${userId}/contactus`} className="nav-link"><i className="fa fa-phone" title="Contact us"></i></NavLink>
             </NavItem>}
+            {!isPluginBuild && <BackupImporter>
+                {(importSettings) => <SwitchAccountOption instance={currentJiraInstance} onLogout={onLogout} onImport={importSettings} />}
+            </BackupImporter>}
         </Nav>
         {showYoutubeOption && showYoutubeVideo && <YoutubeVideo onHide={hideYoutube} />}
     </>

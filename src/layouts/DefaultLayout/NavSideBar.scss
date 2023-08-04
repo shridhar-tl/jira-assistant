@@ -159,7 +159,7 @@ $transition-delay :400ms;
     overflow: auto;
     box-sizing: border-box;
     width: $sidebar-width;
-    height: calc(100vh - 156px);
+    height: calc(100vh - 100px);
     opacity: 0;
     padding: 0 5px;
 }

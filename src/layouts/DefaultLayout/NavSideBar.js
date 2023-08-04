@@ -1,8 +1,6 @@
 import React from 'react';
 import classNames from 'classnames';
 import { Link } from 'src/controls';
-import { isPluginBuild } from '../../constants/build-info';
-import AsideUserInfo from './AsideUserInfo';
 import BuildDate from './BuildDate';
 import { Icons } from 'src/constants/icons';
 import './NavSideBar.scss';
@@ -30,9 +28,6 @@ function NavSideBar({ onLogout, menus, location: { pathname } }) {
                 </button>
             </div>
             <nav onMouseEnter={enterSideBar}>
-                {!isPluginBuild && <div className="nav-header">
-                    <AsideUserInfo onLogout={onLogout} />
-                </div>}
                 <div className="sidebar-content">
                     {menus.map((section, i) => (<NavSection key={i} section={section} title={section.name} pathname={pathname} />))}
                 </div>
