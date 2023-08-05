@@ -51,7 +51,6 @@
         }
     },
     "dependencies": {
-        "@coreui/coreui": "2.1.16",
         "@forge/api": "^2.18.3",
         "@forge/bridge": "^2.6.0",
         "@forge/resolver": "^1.5.13",
@@ -91,7 +90,6 @@
         "react-dom": "18.2.0",
         "react-router-dom": "6.14.2",
         "react-scripts": "5.0.1",
-        "reactstrap": "9.2.0",
         "static-eval": "2.1.0"
     },
     "devDependencies": {

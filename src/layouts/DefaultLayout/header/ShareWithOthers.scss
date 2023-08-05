@@ -1,0 +1,82 @@
+.share-items {
+    width: 200px;
+    padding: 5px;
+
+    .fa,
+    .fa-brands {
+        font-size: 26px !important;
+        margin: 8px 6px;
+    }
+
+    .fa-star {
+        color: #ffdd23;
+    }
+
+    .fa-google-plus-square {
+        color: #dc4e41;
+    }
+
+    .fa-linkedin-square {
+        color: #0077b5;
+    }
+
+    .fa-facebook-square {
+        color: #3b5998;
+    }
+
+    .fa-twitter-square {
+        color: #55acee;
+    }
+}
+
+/* Common style for dropdown overlay panel */
+.drop-op {
+
+    &.p-overlaypanel:after,
+    &.p-overlaypanel:before {
+        display: none;
+    }
+
+    .p-overlaypanel-content {
+        padding: 0;
+
+        .drop-op-container {
+            .title {
+                padding: 8px;
+                color: #fff;
+                background-color: #007bff;
+                font-size: 16px;
+            }
+        }
+    }
+}
+
+.drop-icon {
+    cursor: pointer;
+    font-size: 18px;
+}
+
+.skin-dark {
+    .drop-icon {
+        color: #fff;
+    }
+
+    .drop-op {
+        &.p-overlaypanel {
+            background-color: #2f353a;
+        }
+
+        .p-overlaypanel-content {
+            .drop-op-container {
+                .title {
+                    background-color: #262a2e;
+                }
+
+                .drop-op-body {
+                    color: #fff;
+
+                }
+            }
+        }
+    }
+}
