@@ -1,23 +1,28 @@
-
 .jira-notifications {
     max-width: 450px;
 
     .noti-messages {
         overflow-y: auto;
-        max-height: 390px;
+        padding-bottom: 10px;
+        max-height: 435px;
 
-        .dropdown-item {
+        .drop-item {
             cursor: pointer;
             min-width: 350px;
             width: 100%;
             max-width: 100%;
+            padding: 8px 16px;
+            display: block;
 
-            .message {
+            .message-text {
                 white-space: pre-wrap !important;
                 max-height: 50px;
                 overflow: hidden;
 
-                .user-display, .date-display { font-weight: bold; }
+                .user-display,
+                .date-display {
+                    font-weight: bold;
+                }
             }
         }
     }

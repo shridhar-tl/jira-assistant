@@ -1,6 +1,8 @@
 import React from 'react';
 import { inject } from '../../services/injector-service';
 import { EventCategory } from '../../constants/settings';
+import { Icons } from 'src/constants/icons';
+import './SkinPicker.scss';
 
 const darkSkinName = 'skin-dark';
 
@@ -22,9 +24,9 @@ function SkinPicker() {
     }, [setIsDarkSkin]);
 
     if (isDarkSkin) {
-        return (<span className="fa fa-adjust nav-link pointer" onClick={toggleSkin} />);
+        return (<li className="nav-item pointer dark-mode" onClick={toggleSkin}>{Icons.nightLight}</li>);
     } else {
-        return (<span className="fa fa-adjust nav-link pointer" onClick={toggleSkin} />);
+        return (<li className="nav-item pointer light-mode" onClick={toggleSkin}>{Icons.brightSun}</li>);
     }
 }
 

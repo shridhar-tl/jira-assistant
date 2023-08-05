@@ -1,12 +1,58 @@
 import React from 'react';
-import { UncontrolledDropdown, DropdownItem, DropdownMenu, DropdownToggle } from 'reactstrap';
+import { OverlayPanel } from 'primereact/overlaypanel';
 import { EventCategory } from '../../../constants/settings';
 import { CHROME_WS_URL, FF_STORE_URL, EDGE_STORE_URL, WebSiteUrl, OPERA_STORE_URL, JAWebRootUrl, CLOUD_INSTALL_URL } from '../../../constants/urls';
 import Link from '../../../controls/Link';
 import { inject } from '../../../services/injector-service';
+import './ShareWithOthers.scss';
 
 function ShareWithOthers() {
-    const { $jaBrowserExtn, $analytics } = inject('AppBrowserService', 'AnalyticsService');
+    const op = React.useRef();
+    const showPanel = React.useCallback((e) => {
+        op.current.show(e);
+        trackShare();
+    }, [op]);
+
+    const { ratingUrl, gMailShare, linkedInShare, facebookShare, twitterShare } = React.useMemo(getUrls, []);
+
+    return (<>
+        <li className="nav-item"><span className="fa fa-share-alt drop-icon" onClick={showPanel} /></li>
+        <OverlayPanel ref={op} className="share-items-op drop-op">
+            <div className="share-items-container drop-op-container">
+                <div className="title text-center">
+                    <strong>Share or rate this tool</strong>
+                </div>
+                <div className="drop-op-body share-items">
+                    <Link href={ratingUrl} title="Click to rate this tool or add a comment in chrome web store">
+                        <i className="fa fa-star float-start"></i>
+                    </Link>
+                    <Link href={gMailShare} title="Share with Gmail">
+                        <i className="fa fa-envelope float-start"></i>
+                    </Link>
+                    <Link href={linkedInShare} title="Share with Linked in">
+                        <i className="fa-brands fa-linkedin float-start"></i>
+                    </Link>
+                    <Link href={facebookShare} title="Share with Facebook">
+                        <i className="fa-brands fa-facebook-square float-start"></i>
+                    </Link>
+                    <Link href={twitterShare} title="Share with Twitter" >
+                        <i className="fa-brands fa-twitter-square float-start"></i>
+                    </Link>
+                </div>
+            </div>
+        </OverlayPanel>
+    </>);
+}
+
+export default React.memo(ShareWithOthers);
+
+function trackShare() {
+    const { $analytics } = inject('AnalyticsService');
+    $analytics.trackEvent("Share option viewed", EventCategory.HeaderActions);
+}
+
+function getUrls() {
+    const { $jaBrowserExtn } = inject('AppBrowserService');
 
     const ratingUrl = $jaBrowserExtn.getStoreUrl(true);
     const storeUrlRaw = $jaBrowserExtn.getStoreUrl();
@@ -25,38 +71,8 @@ function ShareWithOthers() {
     const storeUrl = encodeURIComponent(storeUrlRaw);
     const gMailShare = `https://mail.google.com/mail/u/0/?view=cm&tf=1&fs=1&su=${subj}&body=${body}`;
     const linkedInShare = `https://www.linkedin.com/shareArticle?mini=true&url=${storeUrl}&title=${subj}&summary=${body}&source=`;
-    const fackbookShare = `https://www.facebook.com/sharer/sharer.php?u=${storeUrl}&title=${subj}&description=${body}`;
+    const facebookShare = `https://www.facebook.com/sharer/sharer.php?u=${storeUrl}&title=${subj}&description=${body}`;
     const twitterShare = `https://twitter.com/intent/tweet?text=${body}`;
 
-    const trackShare = () => $analytics.trackEvent("Share option viewed", EventCategory.HeaderActions);
-
-    return (<UncontrolledDropdown nav direction="down" onClick={trackShare}>
-        <DropdownToggle nav>
-            <i className="fa fa-share-alt"></i>
-        </DropdownToggle>
-        <DropdownMenu end>
-            <DropdownItem header tag="div" className="text-center">
-                <strong className="share-header-text">Share or rate this tool</strong>
-            </DropdownItem>
-            <div className="share-items">
-                <Link href={ratingUrl} title="Click to rate this tool or add a comment in chrome web store">
-                    <i className="fa fa-star float-start"></i>
-                </Link>
-                <Link href={gMailShare} title="Share with Gmail">
-                    <i className="fa fa-envelope float-start"></i>
-                </Link>
-                <Link href={linkedInShare} title="Share with Linked in">
-                    <i className="fa-brands fa-linkedin float-start"></i>
-                </Link>
-                <Link href={fackbookShare} title="Share with Facebook">
-                    <i className="fa-brands fa-facebook-square float-start"></i>
-                </Link>
-                <Link href={twitterShare} title="Share with Twitter" >
-                    <i className="fa-brands fa-twitter-square float-start"></i>
-                </Link>
-            </div>
-        </DropdownMenu>
-    </UncontrolledDropdown>);
+    return { ratingUrl, gMailShare, linkedInShare, facebookShare, twitterShare };
 }
-
-export default React.memo(ShareWithOthers);
