@@ -121,6 +121,7 @@ class DefaultHeader extends PureComponent {
           showYoutubeHelp={this.showYoutubeHelp}
           userId={this.userId}
           hideYoutube={this.hideYoutube}
+          isQuickView={this.props.isQuickView}
         />
       </header>
     );
