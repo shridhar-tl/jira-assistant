@@ -1,7 +1,7 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import config from '../../../customize';
-import { isAppBuild } from '../../../constants/build-info';
+import { isAppBuild, isPluginBuild } from '../../../constants/build-info';
 import ShareWithOthers from '../header/ShareWithOthers';
 
 import YoutubeVideo from '../../../dialogs/YoutubeVideo';
@@ -40,7 +40,7 @@ function HeaderRight(props) {
             {showContactUs && <li className="nav-item d-md-down-none">
                 <NavLink to={`/${userId}/contactus`} className="nav-link"><i className="fa fa-phone" title="Contact us"></i></NavLink>
             </li>}
-            {!isQuickView && <UserBox onLogout={onLogout} />}
+            {!isQuickView && !isPluginBuild && <UserBox onLogout={onLogout} />}
         </ul>
         {showYoutubeOption && showYoutubeVideo && <YoutubeVideo onHide={hideYoutube} />}
     </>
