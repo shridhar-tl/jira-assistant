@@ -105,15 +105,15 @@ div.full-height {
     }
 }
 
-@media screen and (min-width: 992px) {
+@media screen and (min-width: 1200px) {
     div.half-width {
         width: calc(50% - 4px);
     }
 }
 
-@media screen and (max-width: 992px) {
+@media screen and (max-width: 1200px) {
     div.half-width {
-        width: 100%;
+        width: calc(100% - 6px);
     }
 }
 
