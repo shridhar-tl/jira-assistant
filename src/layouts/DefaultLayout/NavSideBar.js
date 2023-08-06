@@ -59,7 +59,7 @@ function NavItem({ menu, pathname }) {
 
     return (
         <span className={`menu${isSelected ? ' selected' : ''}`}>
-            <Link href={menu.url} newTab={menu.external || false}>
+            <Link href={menu.url} newTab={menu.external || false} data-testid={menu.id}>
                 <span className="wrapper">
                     <span className={`icon ${menu.icon}`} />
                     <span className="menu-text">{menu.name}</span>

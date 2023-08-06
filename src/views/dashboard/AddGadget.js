@@ -64,19 +64,22 @@ async function getGadgetList() {
     const { $report } = inject('ReportService');
 
     const reports = await $report.getReportsList();
-    if (reports && reports.length) {
-        const list = reports.map(r => ({
-            id: `${(r.advanced ? "AR" : (r.isNew ? "CR" : "SQ"))}:${r.id}:${r.queryName}`,
-            icon: "fa fa-filter",
-            name: r.queryName,
-            isOld: !(r.isNew || r.advanced),
-            details: (!r.advanced ?
-                `${r.outputCount} columns displayed in table format${r.isNew
-                    ? ' with interactive option to sort and group based on columns.'
-                    : ' (deprecated, not allowed to add to dashboard)'}`
-                : "<no details available>")
-        }));
 
-        return [...GadgetList, ...list];
+    if (!reports?.length) {
+        return GadgetList;
     }
+
+    const list = reports.map(r => ({
+        id: `${(r.advanced ? "AR" : (r.isNew ? "CR" : "SQ"))}:${r.id}:${r.queryName}`,
+        icon: "fa fa-filter",
+        name: r.queryName,
+        isOld: !(r.isNew || r.advanced),
+        details: (!r.advanced ?
+            `${r.outputCount} columns displayed in table format${r.isNew
+                ? ' with interactive option to sort and group based on columns.'
+                : ' (deprecated, not allowed to add to dashboard)'}`
+            : "<no details available>")
+    }));
+
+    return [...GadgetList, ...list];
 }
