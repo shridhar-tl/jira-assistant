@@ -11,7 +11,7 @@ function WorklogReportInfo() {
                 click on ( <i className="fa fa-cogs"></i>) icon to change the settings of the report.
             </li>
             <li>Click on ( <i className="fa fa-cogs"></i>) icon to change multiple other settings of the report
-                like formating of display, add additional columns, setting threshold date to filter worklogs, JQL to filter data, etc..
+                like formatting of display, add additional columns, setting threshold date to filter worklogs, JQL to filter data, etc..
             </li>
             <li>
                 Choose a date or sprint for which you would like to view the report or click the refresh
@@ -40,9 +40,9 @@ function WorklogReportInfo() {
             <ul>
                 <li>Viewing report based on sprint as an alternate option instead of date range selection</li>
                 <li>Option to eliminate or identify the worklogs created after the threshold date</li>
-                <li>Options to pull the report without specifiying the user group</li>
-                <li>Options to all worklog on a project</li>
-                <li>Automatically group the users & worklog based on project, epic or issuetype when worklog is pulled based on date range</li>
+                <li>Options to pull the report without specifying the user group</li>
+                <li>Options to pull all worklog based on selected project</li>
+                <li>Automatically group the users & worklog based on project, epic or issue type when worklog is pulled based on date range</li>
             </ul>
         </div>
     </div>

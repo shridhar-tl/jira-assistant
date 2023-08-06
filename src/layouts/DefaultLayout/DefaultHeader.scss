@@ -1,32 +1,29 @@
+$font-color: #344563;
+
 a.navbar-brand {
     span.navbar-brand-full {
-        color: #000;
+        color: $font-color;
         font-size: 20px;
     }
 }
 
 .app-header {
-    color: #fff !important;
-
-    .fa-bars {
-        color: #fff !important;
-        font-size: 17.5px;
-    }
+    color: $font-color !important;
 
     .nav-item {
         min-width: 35px;
     }
 
     &.navbar {
-        height: 44px !important;
+        height: 52px !important;
 
         .navbar-brand {
-            height: 43px;
+            height: 51px;
         }
 
         .navbar-nav .nav-link,
         .navbar-toggler-icon {
-            color: #fff !important;
+            color: $font-color !important;
         }
     }
 
@@ -38,42 +35,8 @@ a.navbar-brand {
         width: 215px;
 
         .navbar-brand-full {
-            color: #fff !important;
+            color: $font-color !important;
         }
-    }
-}
-
-strong.share-header-text {
-    font-size: 16px;
-}
-
-.share-items {
-    width: 200px;
-    padding: 5px;
-
-    .fa {
-        font-size: 26px !important;
-        margin: 8px 4px;
-    }
-
-    .fa-star {
-        color: #ffdd23;
-    }
-
-    .fa-google-plus-square {
-        color: #dc4e41;
-    }
-
-    .fa-linkedin-square {
-        color: #0077b5;
-    }
-
-    .fa-facebook-square {
-        color: #3b5998;
-    }
-
-    .fa-twitter-square {
-        color: #55acee;
     }
 }
 
@@ -93,54 +56,8 @@ body.no-donation .btn-donate {
     }
 }
 
-.skin-items {
-    width: 200px;
-    padding: 6px;
-
-    div {
-        display: inline-block;
-        border-radius: 50%;
-        border: 6px solid;
-        height: 35px;
-        width: 35px;
-        font-weight: 700;
-        text-align: center;
-        margin: 6px;
-        color: #fff;
-        cursor: pointer;
-        opacity: .2;
-    }
-
-    div.selected {
-        opacity: 1;
-    }
-}
-
 .badge.v-info {
     font-size: 10px;
-}
-
-.messages {
-    max-width: 450px;
-
-    .dropdown-item {
-        cursor: pointer;
-        max-height: 92px;
-        min-width: 350px;
-        width: 100%;
-        max-width: 100%;
-
-        .mark-read {
-            font-size: 14px;
-            color: #ffc107;
-        }
-
-        .message {
-            white-space: pre-wrap !important;
-            max-height: 50px;
-            overflow: hidden;
-        }
-    }
 }
 
 .release-history {
@@ -166,12 +83,4 @@ body.no-donation .btn-donate {
             text-indent: 8px;
         }
     }
-}
-
-.navbar-toggler a {
-    color: white;
-}
-
-span.btn.web-try {
-    padding: 0px 4px
 }

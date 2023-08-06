@@ -1,20 +1,22 @@
 // If you want to override variables do it here
 @import "variables";
 
+// Font icons
+@import "@fortawesome/fontawesome-free/scss/fontawesome";
+@import "@fortawesome/fontawesome-free/scss/regular";
+@import "@fortawesome/fontawesome-free/scss/solid";
+@import "@fortawesome/fontawesome-free/scss/brands";
+
 // 3rd party styles
-@import "font-awesome/css/font-awesome.min.css";
-@import "primereact/resources/themes/bootstrap4-light-purple/theme.css";
+@import "primereact/resources/themes/bootstrap4-light-blue/theme.css";
 @import "primereact/resources/primereact.min.css";
 @import "primeicons/primeicons.css";
 
 // Import styles
-@import "~@coreui/coreui/scss/coreui.scss";
+@import "base/index.scss";
 
 // bootstrap overrides
-// @import "bootstrap.scss";
-
-// Temp fix for reactstrap
-//@import "~@coreui/coreui/scss/_dropdown-menu-right.scss";
+@import "bootstrap.scss";
 
 // Prime related style overrides
 @import "prime.scss";
@@ -23,6 +25,3 @@
 @import "_custom.scss";
 
 @import "skins.scss";
-
-// ie fixes
-// @import "ie-fix";

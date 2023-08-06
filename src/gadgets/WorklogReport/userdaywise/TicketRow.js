@@ -48,6 +48,6 @@ const IssueDays = connect(IssueDaysComponent, (state, { isSprint, sprintId, grou
 
     return {
         breakupMode, dates, user, disableAddingWL,
-        ticket: user?.ticketsMap?.[ticketNo] || {}
+        ticket: user?.ticketsMap?.[ticketNo] || { logs: {} }
     };
 });

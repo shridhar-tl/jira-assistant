@@ -15,7 +15,7 @@ function GroupRow({
         <>
             {!hidden && !grp.isDummy && <tr className="grouped-row left" title="Click to hide user details">
                 <td colSpan={isSprint ? colSpan : dates?.length + 1 + colSpan} onClick={toggleDisplay}>
-                    <i className="pull-left drill-down fa fa-chevron-circle-down" />
+                    <i className="float-start drill-down fa fa-chevron-circle-down" />
                     {grp.name}
                 </td>
                 {isSprint && grp.sprints.map((s, i) => ((s.days <= 999) ?
@@ -30,8 +30,8 @@ function GroupRow({
             {!grp.isDummy && <tr className="grouped-row right auto-wrap" onClick={hidden ? toggleDisplay : null}>
                 <td colSpan={colSpan}>
                     {hidden && <div>
-                        <i className="pull-left drill-down fa fa-chevron-circle-right" title="Click to show user details" />
-                        <span className="pull-left">{grp.name}</span><span className="pull-right">Total <i className="fa fa-arrow-right" /></span>
+                        <i className="float-start drill-down fa fa-chevron-circle-right" title="Click to show user details" />
+                        <span className="float-start">{grp.name}</span><span className="float-end">Total <i className="fa fa-arrow-right" /></span>
                     </div>}
                     {!hidden && <div>{grp.name} <i className="fa fa-arrow-right" /> Total <i className="fa fa-arrow-right" /></div>}
                 </td>

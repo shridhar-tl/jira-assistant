@@ -313,7 +313,7 @@ class ImportIssue extends BaseImport {
                 columns={columns} rows={importData}
                 noRowMessage={noRowMessage}
                 getRowHeaderClassName={this.getRowHeaderClassName}
-                height="calc(100vh - 140px)"
+                height="calc(100vh - 152px)"
             />
         );
     }

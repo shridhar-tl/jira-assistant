@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import DateRangePicker from 'react-bootstrap-daterangepicker';
 import TextBox from './TextBox';
 import moment from 'moment';
-import Button from './Button';
+import { Button } from 'react-controls';
 import { inject } from '../services';
 import classnames from 'classnames';
 import 'bootstrap-daterangepicker/daterangepicker.css';
@@ -189,7 +189,7 @@ class DatePicker extends PureComponent {
                         onBlur={range ? undefined : this.setDate}
                         onKeyDown={this.onKeyDown}
                     />
-                    <Button icon="fa fa-calendar" className="icon" />
+                    <Button text icon="fa fa-calendar" className="icon" />
                 </span>
             </DateRangePicker>
         </div>;

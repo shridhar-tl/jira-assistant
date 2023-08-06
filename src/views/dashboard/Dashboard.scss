@@ -6,12 +6,13 @@
     margin: 0 0 1px;
     border-bottom: 1px solid #a4b7c1;
 
-    .pull-right {
+    .float-end {
         padding-right: 4px;
     }
 }
 
-div.no-widget-div, div.placeholder-msg {
+div.no-widget-div,
+div.placeholder-msg {
     font-size: 30px;
     text-align: center;
     border: 2px dashed grey;
@@ -30,6 +31,16 @@ div.no-widget-div {
     height: calc(100vh - 102px);
 
     .p-tabview-panel {
-        height: calc(100vh - 120px);
+        height: calc(100vh - 130px);
+    }
+}
+
+body.quick-view {
+    .p-tabview.tab-gadgets {
+        height: calc(100vh - 102px);
+
+        .p-tabview-panel {
+            height: calc(100vh - 90px);
+        }
     }
 }

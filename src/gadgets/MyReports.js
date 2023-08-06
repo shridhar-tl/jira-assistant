@@ -135,9 +135,9 @@ class MyReports extends BaseGadget {
     renderCustomActions() {
         return <>
             <input ref={this.setFileSelector} type="file" className="hide" accept=".jrd" onChange={this.fileSelected} />
-            <Button icon="fa fa-upload" onClick={this.chooseFileForImport} title="Import reports shared by others" />
-            <Button icon="fa fa-download" disabled={!this.state.selReportsCount} onClick={this.downloadReports} title="Export reports to share with others" />
-            <Button type="danger" icon="fa fa-trash-o" onClick={this.deleteSelectedReports} title="Delete selected report(s)" />
+            <Button text icon="fa fa-upload" onClick={this.chooseFileForImport} title="Import reports shared by others" />
+            <Button text icon="fa fa-download" disabled={!this.state.selReportsCount} onClick={this.downloadReports} title="Export reports to share with others" />
+            <Button text type="danger" icon="fa fa-trash" onClick={this.deleteSelectedReports} title="Delete selected report(s)" />
         </>;
     }
 
@@ -280,7 +280,7 @@ class ImportReports extends BaseDialog {
         const { selReportsCount } = this.state;
 
         return <>
-            <Button icon="fa fa-times" onClick={this.onHide} label="Cancel" type="default" />
+            <Button text icon="fa fa-times" onClick={this.onHide} label="Cancel" type="default" />
             <Button icon="fa fa-check" disabled={!selReportsCount} onClick={this.importReports} label="Import" type="primary" />
         </>;
     }

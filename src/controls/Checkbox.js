@@ -1,33 +1,20 @@
-import React, { PureComponent } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { Checkbox } from 'primereact/checkbox';
 
-let _globalUniqueId = 0;
+function InputCheckbox({ inputId, checked = false, field, args, label, disabled, title, className = "", onChange, onClick }) {
+    const uId = React.useId();
+    const chkId = inputId || (label ? `chk_${uId}` : undefined);
 
-class InputCheckbox extends PureComponent {
-    constructor(props) {
-        super(props);
-        this.inputId = props.inputId || (props.label ? `chk_${++_globalUniqueId}` : null);
-    }
+    const changeHandler = React.useCallback((e) => onChange?.(e.checked, field, args), [field, args, onChange]);
 
-    onChange = (e) => {
-        const { onChange, field, args } = this.props;
-        if (onChange) {
-            onChange(e.checked, field, args);
-        }
-    };
-
-    render() {
-        const { inputId, onChange, onClick, props: { className = "", checked = false, label, disabled, title } } = this;
-
-        return (
-            <span className={`span-cb ${className}`}>
-                <Checkbox inputId={inputId} onChange={onChange} checked={checked} disabled={disabled}
-                    onClick={onClick} tooltip={title} tooltipOptions={{ appendTo: document.body, position: 'top' }} />
-                {label && <label htmlFor={inputId} className="chk-label">{label}</label>}
-            </span>
-        );
-    }
+    return (
+        <span className={`span-cb ${className}`}>
+            <Checkbox inputId={chkId} onChange={changeHandler} checked={checked} disabled={disabled}
+                onClick={onClick} tooltip={title} tooltipOptions={{ appendTo: document.body, position: 'top' }} />
+            {label && <label htmlFor={chkId} className="chk-label">{label}</label>}
+        </span>
+    );
 }
 
 InputCheckbox.propTypes = {

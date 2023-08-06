@@ -25,7 +25,7 @@ const VoteInfo = connect(function ({ vote: { reveal, average, finalScore } }) {
         </div>
         <div className="block">
             <span className="label">Status:</span>
-            <span className="value fa fa-clock-o" />
+            <span className="value fa fa-clock" />
         </div>
     </div>);
 }, ({ viewingIssueId: vID, votesMap

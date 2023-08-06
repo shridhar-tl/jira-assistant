@@ -114,13 +114,24 @@ td.group-name-td {
     .group-list-container {
         display: inline-block;
 
-        &>div.empty-group-msg {
+        &>.empty-group-msg {
             margin: 10px 8px;
         }
 
         div[draggable],
         div.drop-message {
             display: inline-block;
+        }
+
+        .drop-placeholder {
+            display: inline-block;
+            border: 1px dashed transparent;
+            padding: 3px 8px;
+
+            &.drop-allowed {
+                background-color: #ffffbc;
+                border: 1px dashed #dee2e6;
+            }
         }
     }
 

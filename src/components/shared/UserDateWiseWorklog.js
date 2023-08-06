@@ -72,11 +72,11 @@ const Control = function ({ lastUpdated, showContext, editWorklog, settings, set
                         {b.ticketList.map((ld, x) => <li key={x}>
                             {ld.worklogId && <Link className="link badge badge-pill skin-bg-font" href={getWorklogUrl(ld.ticketNo, ld.worklogId)}
                                 title={ld.comment}>
-                                <span className="fa fa-clock-o" /> {ld.ticketNo}: {ld.uploaded}
+                                <span className="fa fa-clock" /> {ld.ticketNo}: {ld.uploaded}
                             </Link>}
                             {!ld.worklogId && <span className="link badge badge-pill skin-bg-font"
                                 onClick={editWorklog ? () => editWorklog(ld.id) : undefined} title={ld.comment}>
-                                <span className="fa fa-clock-o" /> {ld.ticketNo}: {ld.uploaded}
+                                <span className="fa fa-clock" /> {ld.ticketNo}: {ld.uploaded}
                             </span>}
                         </li>)}
                     </ul>

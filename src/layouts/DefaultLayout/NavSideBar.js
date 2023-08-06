@@ -1,44 +1,73 @@
 import React from 'react';
-import {
-    ButtonItem,
-    LinkItem,
-    NavigationFooter,
-    NavigationHeader,
-    NestableNavigationContent,
-    Section,
-    SideNavigation
-} from '@atlaskit/side-navigation';
-import { isPluginBuild } from '../../constants/build-info';
-import AsideUserInfo from './AsideUserInfo';
+import classNames from 'classnames';
+import { Link } from 'src/controls';
 import BuildDate from './BuildDate';
+import { Icons } from 'src/constants/icons';
 import './NavSideBar.scss';
 
-const NavSideBar = function ({ onLogout, menus, navigate, location }) {
-    const renderMenu = menu => {
-        const Item = menu.external ? LinkItem : ButtonItem;
-        const isSelected = menu.url === location.pathname;
-        return (<Item key={menu.id} testId={menu.id} href={menu.url} target="_blank" rel="noreferrer noopener"
-            className={`${isSelected ? "selected " : ""}btn-menu`} onClick={menu.external ? undefined : () => navigate(menu.url)}
-            iconBefore={<span className={menu.icon} />} isSelected={isSelected}
-            iconAfter={menu.badge ? (<span className={`badge bg-${menu.badge.variant}`}>{menu.badge.text}</span>) : undefined}
-        >{menu.name}</Item>);
-    };
+function NavSideBar({ onLogout, menus, location: { pathname } }) {
+    const [isOpen, setSideBarVisibility] = React.useState(true);
+    const [isHovering, setCursorInSidebar] = React.useState(false);
 
-    return (<div className="sidebar-container sidebar">
-        <SideNavigation label="Navigation Menus" testId="side-navigation">
-            {!isPluginBuild && <NavigationHeader className="nav-header">
-                <AsideUserInfo onLogout={onLogout} />
-            </NavigationHeader>}
-            <NestableNavigationContent initialStack={[]} testId="nestable-navigation-content">
-                {menus.map((section, i) => (<Section key={i} title={section.name}>
-                    {section.items.map(renderMenu)}
-                </Section>))}
-            </NestableNavigationContent>
-            <NavigationFooter className="nav-footer" testId="nav-footer">
-                <BuildDate />
-            </NavigationFooter>
-        </SideNavigation>
+    const toggleSidebar = React.useCallback(() => {
+        setSideBarVisibility(isOpen => !isOpen);
+        setCursorInSidebar(false);
+    }, [setSideBarVisibility, setCursorInSidebar]);
+
+    const enterSideBar = React.useCallback(() => setCursorInSidebar(true), [setCursorInSidebar]);
+    const leaveSideBar = React.useCallback(() => setCursorInSidebar(false), [setCursorInSidebar]);
+
+    const className = classNames('sidebar-container', { open: isOpen, hover: isHovering, closed: !isOpen && !isHovering });
+
+    return (
+        <div className={className} onMouseLeave={leaveSideBar}>
+            <div className="sidebar-placeholder" />
+            <div className="sidebar-toggler" onMouseEnter={isHovering ? enterSideBar : undefined}            >
+                <button tabIndex={0} title={isOpen ? "Collapse" : "Expand"} onClick={toggleSidebar}>
+                    {isOpen ? Icons.angleLeft : Icons.angleRight}
+                </button>
+            </div>
+            <nav onMouseEnter={enterSideBar}>
+                <div className="sidebar-content">
+                    {menus.map((section, i) => (<NavSection key={i} section={section} title={section.name} pathname={pathname} />))}
+                </div>
+                <div className="build-info">
+                    <BuildDate />
+                </div>
+            </nav>
+        </div>
+    );
+}
+
+function NavSection({ section, pathname }) {
+    const [expanded, setExpanded] = React.useState(true);
+    const toggleExpand = React.useCallback(() => setExpanded(x => !x), [setExpanded]);
+
+    return (<div className={`nav-section${expanded ? ' expanded' : ' collapsed'}`}>
+        <span className="section">
+            <span className="toggle-icon" onClick={toggleExpand}>
+                {expanded ? Icons.angleDown : Icons.angleRight}
+            </span>
+            <div className="section-name">{section.name}</div>
+        </span>
+        {expanded && section.items.map((menu, i) => <NavItem key={i} menu={menu} pathname={pathname} />)}
     </div>);
-};
+}
+
+function NavItem({ menu, pathname }) {
+    const isSelected = menu.url === pathname;
+
+    return (
+        <span className={`menu${isSelected ? ' selected' : ''}`}>
+            <Link href={menu.url} newTab={menu.external || false} data-testid={menu.id}>
+                <span className="wrapper">
+                    <span className={`icon ${menu.icon}`} />
+                    <span className="menu-text">{menu.name}</span>
+                    {menu.badge && (<span className={`badge bg-${menu.badge.variant}`}>{menu.badge.text}</span>)}
+                </span>
+            </Link>
+        </span>
+    );
+}
 
 export default React.memo(NavSideBar);

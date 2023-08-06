@@ -115,7 +115,7 @@ class GlobalSettings extends PureComponent {
                             <Column>Default</Column>
                             {intgUsers.map(u => <Column key={u.id}>
                                 {getHostFromUrl(u.jiraUrl)}
-                                {!isPluginBuild && <span className={classNames('fa pull-right delete-account', u.deleted ? 'fa-undo' : 'fa-trash')}
+                                {!isPluginBuild && <span className={classNames('fa float-end delete-account', u.deleted ? 'fa-undo' : 'fa-trash')}
                                     title={u.deleted ? 'Undo delete' : 'Delete this integration'}
                                     onClick={() => this.toggleDelete(u)} />}
                             </Column>)}
@@ -206,7 +206,7 @@ class GlobalSettings extends PureComponent {
                     </TBody>
                 </ScrollableTable>
                 <div className="footer">
-                    <Button className="pull-right" icon="fa fa-save" label="Save settings" type="success" onClick={this.saveSettings} />
+                    <Button className="float-end" icon="fa fa-save" label="Save settings" type="primary" onClick={this.saveSettings} />
                     <strong>Note:</strong>
                     <br />Changing these settings may cause application stability issues or lose in data. Be cautious with the changes you make.
                     <br />Some settings would take effect only once you refresh/reopen Jira Assistant.

@@ -1,52 +1,32 @@
-import React, { PureComponent } from 'react';
+import React from 'react';
 import { DefaultWorkingDays } from '../../../constants/settings';
 
 const shortDays = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
 
-class WeekDaysSelector extends PureComponent {
-    constructor(props) {
-        super(props);
-        this.state = { value: props.value || DefaultWorkingDays };
-    }
+function WeekDaysSelector({ field, value: inputValue, onChange }) {
+    const value = inputValue || WeekDaysSelector.defaultSelection || [];
 
-    UNSAFE_componentWillReceiveProps(props) {
-        let { value } = props;
-        if (!value) {
-            value = value || DefaultWorkingDays;
+    const getClass = ($index) => (value.includes($index) ? 'day day-on' : 'day');
+
+    const daySelected = (val) => {
+        let newValue = value;
+
+        if (newValue.includes(val)) {
+            newValue = newValue.filter(v => v !== val);
+        } else {
+            newValue = newValue.concat(val).sort();
         }
 
-        if (this.state.value !== value) {
-            this.setState({ value });
-        }
-    }
+        onChange(newValue, field);
+    };
 
-    getClass($index) {
-        return this.state.value.indexOf($index) > -1 ? 'day day-on' : 'day';
-    }
-
-    daySelected(index) {
-        let { value } = this.state;
-        const pos = value.indexOf(index);
-
-        if (pos === -1) {
-            value = value.concat(index);
-        }
-        else {
-            value.splice(pos, 1);
-        }
-
-        value = value.orderBy();
-        this.setState({ value });
-        this.props.onChange(value, this.props.field);
-    }
-
-    render() {
-        return (
-            <div className="daysinweek">
-                {shortDays.map((day, i) => <div key={day} className={this.getClass(i)} onClick={() => this.daySelected(i)}>{day}</div>)}
-            </div>
-        );
-    }
+    return (
+        <div className="days-in-week">
+            {shortDays.map((day, i) => <div key={day} className={getClass(i)} onClick={() => daySelected(i)}>{day}</div>)}
+        </div>
+    );
 }
 
 export default WeekDaysSelector;
+
+WeekDaysSelector.defaultSelection = DefaultWorkingDays;

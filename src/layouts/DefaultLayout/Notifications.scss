@@ -1,0 +1,82 @@
+.skin-dark {
+    .notification-icon {
+        color: #fff;
+    }
+
+    .notification-op {
+        &.p-overlaypanel {
+            background-color: #2f353a;
+        }
+
+        .p-overlaypanel-content {
+            .message-container {
+                .title {
+                    background-color: #262a2e;
+                }
+
+                .messages {
+
+                    .message {
+
+                        .text-muted,
+                        .message-title {
+                            color: #fff;
+                        }
+
+                        &:hover {
+                            background-color: #262a2e;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+.nav-item {
+    .badge {
+        margin-left: -10px;
+        margin-top: -4px;
+        position: absolute;
+    }
+}
+
+.notification-op {
+
+    .p-overlaypanel-content {
+        width: 350px;
+
+        .message-container {
+            .messages {
+                max-width: 350px;
+                padding-bottom: 10px;
+                max-height: 435px;
+                overflow-y: auto;
+
+                .message {
+                    cursor: pointer;
+                    max-height: 92px;
+                    max-width: 350px;
+                    width: 100%;
+                    padding: 8px 16px;
+
+                    .mark-read {
+                        font-size: 14px;
+                        color: #ffc107;
+                    }
+
+                    .message-text {
+                        max-width: 100%;
+                        white-space: pre-wrap !important;
+                        max-height: 50px;
+                        overflow: hidden;
+                    }
+
+                    &:hover {
+                        background-color: #f4f5f7;
+                    }
+                }
+            }
+        }
+    }
+}

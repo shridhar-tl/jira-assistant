@@ -1,3 +1,4 @@
+/*
 @media (min-width: 1400px) {
     .col-xxl-3 {
         flex: 0 0 25%;
@@ -25,4 +26,22 @@
         flex: 0 0 33.33%;
         max-width: 33.33%;
     }
+}*/
+
+/* Bootstrap 5 Shim */
+.float-start {
+    float: left;
+}
+
+.float-end {
+    float: right;
+}
+
+/* Bootstrap 4 Shim */
+.pull-left {
+    float: left;
+}
+
+.pull-right {
+    float: right;
 }

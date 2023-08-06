@@ -11,7 +11,7 @@ const CustomActions = connect(function ({
     return <>
         {timeframeType === '1' && <ChooseSprint onChange={onInputChanged} />}
         {timeframeType === '2' && <DateRangeSelector onChange={onInputChanged} />}
-        {(userListMode === '2' || userListMode === '4') && <Button icon="fa fa-users" onClick={showGroupsPopup}
+        {(userListMode === '2' || userListMode === '4') && <Button text icon="fa fa-users" onClick={showGroupsPopup}
             title="Add users / groups to report" />}
     </>;
 }, ({ userListMode, timeframeType }) => ({ userListMode, timeframeType }));

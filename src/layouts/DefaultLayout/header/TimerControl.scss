@@ -1,0 +1,38 @@
+div.timer-ctl {
+    border: 2px solid #a4b7c1;
+    background-color: #f1fbff;
+    color: #001;
+    border-radius: 20px;
+    padding: 5px 8px 5px 12px;
+
+    a.ticket-no {
+        font-weight: bold;
+        margin-right: 12px;
+    }
+
+    span.time-lapsed {
+        margin-right: 12px;
+    }
+
+    .fa {
+        margin: auto 5px;
+        cursor: pointer;
+
+        &.fa-play {
+            color: green;
+        }
+
+        &.fa-pause {
+            color: orange;
+        }
+
+        &.fa-stop {
+            color: red;
+        }
+
+        &.fa-edit {
+            margin-left: 12px;
+            color: blue;
+        }
+    }
+}

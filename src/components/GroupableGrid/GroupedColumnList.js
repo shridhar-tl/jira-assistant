@@ -1,9 +1,9 @@
 import React, { PureComponent } from 'react';
-import { Sortable } from '../../externals/jsd-report';
+import { Sortable } from '../../controls';
 import PropTypes from 'prop-types';
 import { showContextMenu } from '../../externals/jsd-report';
 
-const emptyGroupPlaceholder = <div className="empty-group-msg">Drag and drop column here to group data</div>;
+const emptyGroupPlaceholder = <span className="empty-group-msg">Drag and drop column here to group data</span>;
 const addGroupItemPlaceholder = <span>Drag and drop more columns here</span>;
 
 class GroupedColumnList extends PureComponent {
@@ -65,10 +65,10 @@ class GroupedColumnList extends PureComponent {
 
                 <span className="group-label">Group by:</span>
                 <div className="group-list-container">
-                    <Sortable className="group-list" items={groupBy} itemType="column" onChange={this.columnReordered} accepts={["column"]}
+                    <Sortable useDropRef className="group-list" items={groupBy} defaultItemType="column" onChange={this.columnReordered}
                         placeholder={groupBy.length ? addGroupItemPlaceholder : emptyGroupPlaceholder}>
-                        {(g, i, dropProps) => <GroupedColumn key={i} group={g} index={i} toggleSort={this.toggleSort}
-                            removeGroup={this.removeGroup} settingsChanged={this.changeSettings} dropProps={dropProps} />}
+                        {(g, i, { droppable }) => <GroupedColumn key={i} group={g} index={i} toggleSort={this.toggleSort}
+                            removeGroup={this.removeGroup} settingsChanged={this.changeSettings} dropProps={droppable} />}
                     </Sortable>
                 </div>
             </div>
@@ -89,10 +89,10 @@ class GroupedColumn extends PureComponent {
 
     setRef = (el) => {
         this.el = el;
-        const { dropProps: { dropConnector } = {} } = this.props;
+        const { dropProps: { dropRef } = {} } = this.props;
 
-        if (dropConnector) {
-            dropConnector(el);
+        if (dropRef) {
+            dropRef(el);
         }
     };
 

@@ -16,7 +16,7 @@ import WorklogReportInfo from './WorklogReportInfo';
 
 class WorklogReport extends BaseGadget {
     constructor(props) {
-        super(props, 'Worklog Report', 'fa-clock-o');
+        super(props, 'Worklog Report', 'fa-clock');
         inject(this, 'ConfigService');
         this.selSprints = props.selSprints;
     }
@@ -65,7 +65,7 @@ class WorklogReport extends BaseGadget {
     renderCustomActions() {
         return <>
             {!this.state.showSettings && <CustomActions onInputChanged={this.inputChanged} showGroupsPopup={this.showGroups} />}
-            <Button icon="fa fa-cogs" onClick={this.showSettings} title="Show settings" />
+            <Button text icon="fa fa-cogs" onClick={this.showSettings} title="Show settings" />
         </>;
     }
 

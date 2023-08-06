@@ -28,21 +28,22 @@ class QueryEditor extends BaseGadget {
         const isEditing = id > 0;
 
         return <div className="pnl-footer">
-            {id && <div className="pull-left">
-                <Button icon="fa fa-trash"
+            {id && <div className="float-start">
+                <Button icon="fa fa-trash" className="margin-r-8"
                     label="Delete Query"
                     type="danger"
                     onClick={deleteQuery} />
-                <Button icon="fa fa-floppy-o"
+                <Button icon="fa fa-save"
                     label="Save Query As"
                     type="success"
                     disabled={!isSaveEnabled}
                     onClick={showSaveDialog} />
             </div>}
 
-            <div className="pull-right">
+            <div className="float-end">
                 <Button
-                    icon="fa fa-floppy-o"
+                    icon="fa fa-save"
+                    className="margin-r-8"
                     label="Save Query"
                     type="success"
                     disabled={!isSaveEnabled || isSystemQuery || !allowSave}

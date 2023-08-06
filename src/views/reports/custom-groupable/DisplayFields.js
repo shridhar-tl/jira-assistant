@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import Sortable from '../../../drag-drop/Sortable';
+import { Sortable } from '../../../controls';
 import { ScrollableTable, THead } from '../../../components/ScrollableTable';
 import CustomFieldSelector from '../../../jira-controls/CustomFieldSelector';
 import { getField } from './Utils';
@@ -75,15 +75,15 @@ class DisplayFields extends PureComponent {
         this.props.onChange(fields);
     };
 
-    getControls = (f, i, drag, hndl) => (<DisplayField key={i}
-            dragHandle={drag.dragHandle}
-            dropConnector={hndl.dropConnector}
-            field={f} index={i}
-            onRemove={this.removeField}
-            editExpression={this.editExpression}
-            updateHeader={this.headerChanged}
-            toggleDisplay={this.toggleDisplay}
-        />);
+    getControls = (f, i, { draggable: { dragRef }, droppable: { dropRef } }) => (<DisplayField key={i}
+        dragHandle={dragRef}
+        dropConnector={dropRef}
+        field={f} index={i}
+        onRemove={this.removeField}
+        editExpression={this.editExpression}
+        updateHeader={this.headerChanged}
+        toggleDisplay={this.toggleDisplay}
+    />);
 
     render() {
         const { fields, onChange } = this.props;
@@ -101,14 +101,14 @@ class DisplayFields extends PureComponent {
                         <th>Remove</th>
                     </tr>
                 </THead>
-                <tbody>
-                    <Sortable
-                        items={fields}
-                        itemType="field"
-                        accepts={["field"]}
-                        onChange={onChange}
-                        itemTemplate={this.getControls} />
-                </tbody>
+                <Sortable
+                    useDragRef
+                    useDropRef
+                    tagName="tbody"
+                    items={fields}
+                    defaultItemType="field"
+                    onChange={onChange}
+                    itemTemplate={this.getControls} />
                 <tfoot>
                     <tr>
                         <td className="data-center">{fields.length + 1}</td>
@@ -150,8 +150,8 @@ class DisplayField extends PureComponent {
         } = this.props;
         const { header } = this.state;
 
-        return dropConnector(
-            <tr>
+        return (
+            <tr ref={dropConnector}>
                 <td className="data-center" ref={dragHandle}>{index + 1}</td>
                 <td>{name} ({fieldProp})</td>
                 {(knownObj || type) && <td>{type} {!!isArray && "(multiple)"}</td>}

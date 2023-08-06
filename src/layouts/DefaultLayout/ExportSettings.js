@@ -58,9 +58,9 @@ class ExportSettings extends BaseDialog {
         const { hasSelection, exportAll } = this.state;
 
         return (<>
-            <Checkbox checked={exportAll} onChange={this.toggleAll} label="Export all settings" className="pull-left" />
-            <Button icon="fa fa-times" label="Cancel" onClick={this.onHide} />
-            <Button type="success" icon="fa fa-download" label="Export" onClick={this.export} disabled={!exportAll && !hasSelection} />
+            <Checkbox checked={exportAll} onChange={this.toggleAll} label="Export all settings" className="float-start" />
+            <Button text icon="fa fa-times" label="Cancel" onClick={this.onHide} />
+            <Button type="primary" icon="fa fa-download" label="Export" onClick={this.export} disabled={!exportAll && !hasSelection} />
         </>);
     }
 

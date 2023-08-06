@@ -1,9 +1,10 @@
 import React, { PureComponent } from 'react';
-import { UncontrolledDropdown, DropdownItem, DropdownMenu, DropdownToggle, Nav } from 'reactstrap';
 import { isExtnBuild, isWebBuild } from '../../constants/build-info';
 import { JAWebLaunchUrl } from '../../constants/urls';
 import { withRouter } from '../../pollyfills';
 import { inject } from '../../services/injector-service';
+import { showContextMenu } from 'src/externals/jsd-report';
+import { Button } from '../../controls';
 
 const options = isWebBuild ? {
     btnText: 'Extn',
@@ -45,8 +46,10 @@ class LaunchWeb extends PureComponent {
         return `${this.state.launchUrl}#${curPath}`;
     }
 
-    switchToWeb = async () => {
-        await this.$settings.set('useWebVersion', !isWebBuild || null);
+    switchToWeb = async (always) => {
+        if (always !== false) {
+            await this.$settings.set('useWebVersion', !isWebBuild || null);
+        }
         window.location.href = this.getLaunchPath();
     };
 
@@ -55,27 +58,27 @@ class LaunchWeb extends PureComponent {
         return !!launchUrl && (isExtnBuild || (this.usingExtn && switched));
     }
 
+    showMenus = (e) => {
+        const menus = [
+            {
+                label: 'Use Jira Assistant Web', items: [
+                    {
+                        label: options.launchText, icon: "fa fa-external-link", command: () => this.switchToWeb(false)
+                    },
+                    { label: options.switchText, icon: "fa fa-plug", command: this.switchToWeb }
+                ]
+            }
+        ];
+        showContextMenu(e, menus);
+    };
+
     render() {
         if (!this.showOptions()) { return null; }
 
-        const launchPath = this.getLaunchPath();
-
-        return (
-            <Nav className="d-md-down-none margin-r-5" navbar>
-                <UncontrolledDropdown nav direction="down">
-                    <DropdownToggle nav>
-                        <span className="btn btn-success web-try" title={options.btnTooltip}> <i className="fa fa-external-link" /> <strong>{options.btnText}</strong></span>
-                    </DropdownToggle>
-                    <DropdownMenu left>
-                        <DropdownItem header tag="div" className="text-center"><strong>Jira Assistant Web</strong></DropdownItem>
-                        <DropdownItem tag="a" href={launchPath} target="_blank" title={options.launchTooltip}>
-                            <i className="fa fa-external-link"></i> {options.launchText}</DropdownItem>
-                        <DropdownItem tag="button" title={options.switchTooltip} onClick={this.switchToWeb}>
-                            <i className="fa fa-plug"></i> {options.switchText}</DropdownItem>
-                    </DropdownMenu>
-                </UncontrolledDropdown>
-            </Nav>
-        );
+        return (<li className="nav-item">
+            <Button type="success" className="web-try" icon="fa fa-external-link" title={options.btnTooltip}
+                onClick={this.showMenus} label={options.btnText} />
+        </li>);
     }
 }
 
