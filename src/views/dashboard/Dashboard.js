@@ -190,8 +190,8 @@ class Dashboard extends PureComponent {
 
         return (
             <>
-                <Header {...this.props} config={currentBoard} index={dashboardIndex} userId={this.$session.userId}
-                    onShowGadgets={this.onShowGadgets} tabViewChanged={this.tabViewChanged} isQuickView={this.isQuickView} />
+                {!this.isQuickView && <Header {...this.props} config={currentBoard} index={dashboardIndex} userId={this.$session.userId}
+                    onShowGadgets={this.onShowGadgets} tabViewChanged={this.tabViewChanged} isQuickView={this.isQuickView} />}
                 {this.getGadgets(widgets)}
                 {(!widgets || widgets.length === 0) && <div className="no-widget-div">
                     You haven't added any gadgets to this dashboard. Click on "Add gadgets" button above to start adding a cool one and personalize your experience.

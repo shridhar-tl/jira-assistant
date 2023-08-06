@@ -17,7 +17,7 @@ function NavSideBar({ onLogout, menus, location: { pathname } }) {
     const enterSideBar = React.useCallback(() => setCursorInSidebar(true), [setCursorInSidebar]);
     const leaveSideBar = React.useCallback(() => setCursorInSidebar(false), [setCursorInSidebar]);
 
-    const className = classNames('sidebar-container', { open: isOpen, hover: isHovering });
+    const className = classNames('sidebar-container', { open: isOpen, hover: isHovering, closed: !isOpen && !isHovering });
 
     return (
         <div className={className} onMouseLeave={leaveSideBar}>
@@ -46,7 +46,7 @@ function NavSection({ section, pathname }) {
     return (<div className={`nav-section${expanded ? ' expanded' : ' collapsed'}`}>
         <span className="section">
             <span className="toggle-icon" onClick={toggleExpand}>
-                {expanded ? Icons.angleLeft : Icons.angleRight}
+                {expanded ? Icons.angleDown : Icons.angleRight}
             </span>
             <div className="section-name">{section.name}</div>
         </span>

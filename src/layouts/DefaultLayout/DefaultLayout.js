@@ -22,6 +22,7 @@ class DefaultLayout extends PureComponent {
 
     if (document.location.href.indexOf('?quick=true') > -1) {
       this.$session.isQuickView = true;
+      this.isQuickView = true;
     }
   }
 
@@ -149,9 +150,9 @@ class DefaultLayout extends PureComponent {
     return (
       <WorklogContextProvider value={this.worklogContextProps}>
         <div className="app">
-          <DefaultHeader onLogout={this.signOut} />
+          <DefaultHeader onLogout={this.signOut} isQuickView={this.isQuickView} />
           <div className="app-body">
-            <NavSideBar onLogout={this.signOut} menus={menus} navigate={this.props.navigate} location={this.props.location} />
+            {!this.isQuickView && <NavSideBar onLogout={this.signOut} menus={menus} navigate={this.props.navigate} location={this.props.location} />}
             <AppContent loader={this.loading} />
           </div>
           <ContextMenu />

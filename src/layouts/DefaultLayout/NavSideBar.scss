@@ -14,6 +14,31 @@ $transition-delay :400ms;
         transition-duration: $transition-duration;
     }
 
+    &.closed {
+        transition-duration: $transition-duration;
+        transition-delay: $transition-delay;
+
+        .sidebar-placeholder {
+            transition-duration: $transition-duration;
+            transition-delay: $transition-delay;
+        }
+
+        .sidebar-toggler {
+            transition-duration: $transition-duration;
+            transition-delay: $transition-delay;
+        }
+
+        nav {
+            transition-duration: $transition-duration;
+            transition-delay: $transition-delay;
+
+            .sidebar-content {
+                transition-duration: $transition-duration;
+                transition-delay: $transition-delay;
+            }
+        }
+    }
+
     &.open,
     &.hover {
         .sidebar-placeholder {

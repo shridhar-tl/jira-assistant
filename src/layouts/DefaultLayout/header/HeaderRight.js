@@ -21,12 +21,12 @@ function HeaderRight(props) {
     const {
         showYoutubeVideo, notifications,
         showVersionInfo, disableJiraUpdates, disableNotification, showYoutubeHelp, userId, hideYoutube,
-        onLogout,
+        onLogout, isQuickView
     } = props;
     const { version, isBeta } = notifications?.updatesAvailable || {};
     return (<>
         <ul className="ml-auto navbar-nav" navbar>
-            {allowWebVersion && !isAppBuild && <LaunchWeb />}
+            {allowWebVersion && !isAppBuild && !isQuickView && <LaunchWeb />}
             {!!version && <span className={`update-available badge badge-${isBeta ? "warning" : "success"}`}
                 title={`Jira Assist ${isBeta ? 'BETA ' : ''}v${version} is now available. Click to know more.`}
                 onClick={showVersionInfo}><i className="fa fa-download" /> Updates available</span>}
@@ -40,7 +40,7 @@ function HeaderRight(props) {
             {showContactUs && <li className="nav-item d-md-down-none">
                 <NavLink to={`/${userId}/contactus`} className="nav-link"><i className="fa fa-phone" title="Contact us"></i></NavLink>
             </li>}
-            <UserBox onLogout={onLogout} />
+            {!isQuickView && <UserBox onLogout={onLogout} />}
         </ul>
         {showYoutubeOption && showYoutubeVideo && <YoutubeVideo onHide={hideYoutube} />}
     </>

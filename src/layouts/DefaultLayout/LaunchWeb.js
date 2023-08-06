@@ -4,6 +4,7 @@ import { JAWebLaunchUrl } from '../../constants/urls';
 import { withRouter } from '../../pollyfills';
 import { inject } from '../../services/injector-service';
 import { showContextMenu } from 'src/externals/jsd-report';
+import { Button } from '../../controls';
 
 const options = isWebBuild ? {
     btnText: 'Extn',
@@ -75,7 +76,8 @@ class LaunchWeb extends PureComponent {
         if (!this.showOptions()) { return null; }
 
         return (<li className="nav-item">
-            <span className="p-button p-button-success p-button-xs web-try" title={options.btnTooltip} onClick={this.showMenus}> <i className="fa fa-external-link" /> <strong>{options.btnText}</strong></span>
+            <Button type="success" className="web-try" icon="fa fa-external-link" title={options.btnTooltip}
+                onClick={this.showMenus} label={options.btnText} />
         </li>);
     }
 }
