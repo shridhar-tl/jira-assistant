@@ -162,11 +162,20 @@ export function getHostFromUrl(url) {
 }
 
 export function getOriginFromUrl(url) {
-    if (url && typeof url !== "string") { url = url.toString(); }
+    if (url && typeof url !== "string") {
+        url = url.toString();
+    }
+
     let origin = new URL(url).origin;
+
+    if (!origin || origin === 'null') {
+        return;
+    }
+
     if (!origin.endsWith("/")) {
         origin += "/";
     }
+
     return origin;
 }
 

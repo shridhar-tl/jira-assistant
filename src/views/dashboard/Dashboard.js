@@ -103,7 +103,7 @@ class Dashboard extends PureComponent {
         this.setState({ currentBoard }, this.saveDashboardInfo);
     };
 
-    getControls = (w, i, { draggable: { dragRef }, droppable }) => {
+    getControls = (w, i, { draggable: { dragRef } = {}, droppable } = {}) => {
         let { name } = w;
         const { settings } = w;
         const tabLayout = this.state.isTabView;

@@ -159,7 +159,7 @@ class Calendar extends BaseGadget {
     getCalendarOptions({ fullView, zoomIn }) {
         const {
             startOfDay, endOfDay,
-            startOfWeek, workingDays,
+            startOfWeek, workingDays = DefaultWorkingDays,
             timeFormat
         } = this.CurrentUser;
         const { viewMode } = (this.isGadget ? this.props : this.state.settings);

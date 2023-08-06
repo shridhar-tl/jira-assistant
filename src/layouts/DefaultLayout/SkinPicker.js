@@ -24,9 +24,9 @@ function SkinPicker() {
     }, [setIsDarkSkin]);
 
     if (isDarkSkin) {
-        return (<li className="nav-item pointer dark-mode" onClick={toggleSkin}>{Icons.nightLight}</li>);
+        return (<li className="nav-item pointer dark-mode" onClick={toggleSkin} title="Switch to light theme">{Icons.nightLight}</li>);
     } else {
-        return (<li className="nav-item pointer light-mode" onClick={toggleSkin}>{Icons.brightSun}</li>);
+        return (<li className="nav-item pointer light-mode" onClick={toggleSkin} title="Switch to dark mode">{Icons.brightSun}</li>);
     }
 }
 

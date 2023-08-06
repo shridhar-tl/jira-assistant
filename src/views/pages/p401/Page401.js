@@ -54,11 +54,10 @@ class Page401 extends PureComponent {
                         Please {isWebBuild ? 'open Jira Assist extension and ' : ''} grant permission before trying to access it.
                         More details available in issue {issueLink}</p>}
                     <Button className="margin-r-5" icon="fa fa-refresh" label="Try Again"
-                        onClick={validate} style={{ height: 35 }} />
-                    {!isWebBuild && !hasPermission && <button className="btn btn-warning" onClick={this.grantPermission}>
-                        <i className="fa fa-unlock"></i> Grant permission</button>}
-                    <Link className="p-button p-button-success p-button-xs float-end" href={jiraUrl}>
-                        <i className="fa fa-external-link"></i> Open Jira</Link>
+                        onClick={validate} size="small" />
+                    {!isWebBuild && !hasPermission && <Button type="warning" icon="fa fa-unlock" label="Grant permission" size="small" onClick={this.grantPermission} />}
+                    <Link className="p-button p-button-success p-button-sm float-end" href={jiraUrl}>
+                        <i className="fa fa-external-link margin-r-8"></i> Open Jira</Link>
                 </div>
             </div>
         );

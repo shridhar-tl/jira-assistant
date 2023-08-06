@@ -29,7 +29,7 @@ class QueryEditor extends BaseGadget {
 
         return <div className="pnl-footer">
             {id && <div className="float-start">
-                <Button icon="fa fa-trash"
+                <Button icon="fa fa-trash" className="margin-r-8"
                     label="Delete Query"
                     type="danger"
                     onClick={deleteQuery} />
@@ -43,6 +43,7 @@ class QueryEditor extends BaseGadget {
             <div className="float-end">
                 <Button
                     icon="fa fa-save"
+                    className="margin-r-8"
                     label="Save Query"
                     type="success"
                     disabled={!isSaveEnabled || isSystemQuery || !allowSave}

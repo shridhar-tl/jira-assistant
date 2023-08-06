@@ -46,7 +46,7 @@ function NavSection({ section, pathname }) {
     return (<div className={`nav-section${expanded ? ' expanded' : ' collapsed'}`}>
         <span className="section">
             <span className="toggle-icon" onClick={toggleExpand}>
-                {expanded ? Icons.angleDown : Icons.angleRight}
+                {expanded ? Icons.angleLeft : Icons.angleRight}
             </span>
             <div className="section-name">{section.name}</div>
         </span>

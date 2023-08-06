@@ -33,6 +33,14 @@
     }
 }
 
+.nav-item {
+    .badge {
+        margin-left: -10px;
+        margin-top: -4px;
+        position: absolute;
+    }
+}
+
 .notification-op {
 
     .p-overlaypanel-content {

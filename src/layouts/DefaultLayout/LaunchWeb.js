@@ -60,7 +60,7 @@ class LaunchWeb extends PureComponent {
     showMenus = (e) => {
         const menus = [
             {
-                label: 'Jira Assistant Web', items: [
+                label: 'Use Jira Assistant Web', items: [
                     {
                         label: options.launchText, icon: "fa fa-external-link", command: () => this.switchToWeb(false)
                     },
@@ -75,7 +75,7 @@ class LaunchWeb extends PureComponent {
         if (!this.showOptions()) { return null; }
 
         return (<li className="nav-item">
-            <span className="badge badge-success web-try" title={options.btnTooltip} onClick={this.showMenus}> <i className="fa fa-external-link" /> <strong>{options.btnText}</strong></span>
+            <span className="p-button p-button-success p-button-xs web-try" title={options.btnTooltip} onClick={this.showMenus}> <i className="fa fa-external-link" /> <strong>{options.btnText}</strong></span>
         </li>);
     }
 }

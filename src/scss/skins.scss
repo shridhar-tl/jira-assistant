@@ -24,7 +24,7 @@
     border-left: 3px solid $header-bg !important;
   }
 
-  .link,
+  .link:not(.badge),
   .table i.fa-ellipsis-v {
     color: $header-bg !important;
   }

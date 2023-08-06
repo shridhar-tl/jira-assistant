@@ -291,7 +291,7 @@ class AddWorklog extends BaseDialog {
         return super.renderBase(<div className="pad-22" onKeyPress={this.handleKeyPress}>
             <div className="row pad-b">
                 <div className="col-sm-3">
-                    <strong>Date started {editTracker ? '& Time spent' : ''}</strong>
+                    <strong>Date started {editTracker ? '' : '& Time spent'}</strong>
                 </div>
                 <div className="col-lg-5 col-sm-6 col-xs-12">
                     <div className="form-group">

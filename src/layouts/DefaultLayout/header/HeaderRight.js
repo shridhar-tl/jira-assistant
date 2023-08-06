@@ -33,7 +33,7 @@ function HeaderRight(props) {
             {!disableJiraUpdates && <JiraUpdates />}
             {!disableNotification && notifications && <Notifications notifications={notifications} />}
             {showYoutubeOption && <li className="nav-item d-md-down-none">
-                <span className="nav-link pointer" onClick={showYoutubeHelp}>{Icons.youtube}</span>
+                <span className="nav-link pointer" onClick={showYoutubeHelp} title="Click to watch YouTube help video for current page">{Icons.youtube}</span>
             </li>}
             <SkinPicker />
             {showShareOption && <ShareWithOthers />}

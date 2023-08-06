@@ -16,7 +16,7 @@ function ShareWithOthers() {
     const { ratingUrl, gMailShare, linkedInShare, facebookShare, twitterShare } = React.useMemo(getUrls, []);
 
     return (<>
-        <li className="nav-item"><span className="fa fa-share-alt drop-icon" onClick={showPanel} /></li>
+        <li className="nav-item"><span className="fa fa-share-alt drop-icon" onClick={showPanel} title="Click to rate or share Jira Assistant" /></li>
         <OverlayPanel ref={op} className="share-items-op drop-op">
             <div className="share-items-container drop-op-container">
                 <div className="title text-center">
