@@ -105,7 +105,7 @@ class DialogConfig {
             title = "Info";
         }
 
-        const footer = (ok) => <Button waitFor={config?.waitFor} type="success" icon="fa fa-check" label="Ok" onClick={ok} />;
+        const footer = (ok) => <Button waitFor={config?.waitFor} type="success" icon="fa fa-check" label={config?.acceptLabel || 'Ok'} onClick={ok} />;
         return this.custom(message, title, footer, styles, 'dlg-alert');
     }
 

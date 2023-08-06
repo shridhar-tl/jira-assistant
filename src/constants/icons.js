@@ -5,10 +5,9 @@ const angleDown = (<svg width="24" height="24" viewBox="0 0 24 24" role="present
         fill="currentColor" fill-rule="evenodd" />
 </svg>);
 
-const angleLeft = (<svg width="24" height="24" viewBox="5 1 24 24" role="presentation">
-    <path
-        d="M10.294 9.698a.988.988 0 010-1.407 1.01 1.01 0 011.419 0l2.965 2.94a1.09 1.09 0 010 1.548l-2.955 2.93a1.01 1.01 0 01-1.42 0 .988.988 0 010-1.407l2.318-2.297-2.327-2.307z"
-        fill="currentColor" fill-rule="evenodd" />
+const angleLeft = (<svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 320 512">
+    <path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"
+        fill="currentColor" />
 </svg>);
 
 const angleRight = (<svg width="24" height="24" viewBox="5 1 24 24" role="presentation">

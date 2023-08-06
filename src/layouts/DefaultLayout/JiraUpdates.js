@@ -3,6 +3,7 @@ import { OverlayPanel } from 'primereact/overlaypanel';
 import { inject } from '../../services';
 import { Link } from 'src/controls';
 import { DateDisplay, UserDisplay } from '../../display-controls';
+import { Icons } from 'src/constants/icons';
 import './JiraUpdates.scss';
 
 function JiraUpdates() {
@@ -29,7 +30,7 @@ function JiraUpdates() {
 
     return (<>
         <li className="nav-item">
-            <span className="fa fa-comments drop-icon" onClick={showPanel} />
+            <span className="drop-icon" onClick={showPanel} title="Notification updates from Jira">{Icons.bellNotification}</span>
             {total > 0 && <span className="badge badge-warning">{total}</span>}
         </li>
         <OverlayPanel ref={op} className="drop-op">

@@ -52,8 +52,10 @@ class Notifications extends PureComponent {
 
         return (<>
             <li className="nav-item">
-                <span className="notification-icon pointer" onClick={this.viewList}>{Icons.bellNotification}</span>
-                {unread > 0 && <span className="badge badge-danger">{unread}</span>}
+                <span className="notification-icon pointer" title="Announcement / updates from developer" onClick={this.viewList}>
+                    {Icons.announcement}
+                    {unread > 0 && <span className="badge badge-danger">{unread}</span>}
+                </span>
             </li>
             <OverlayPanel ref={this.setRef} className="notification-op drop-op">
                 <div className="message-container drop-op-container">

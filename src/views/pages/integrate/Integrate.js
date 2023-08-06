@@ -86,18 +86,20 @@ class Integrate extends PureComponent {
 
     integrate = () => {
         const root = this.state.jiraUrl.trim().clearEnd('/').clearEnd('\\');
-        this.tryIntegrate(root);
+        this.tryIntegrate(root).catch(err => this.$message.error(err.message, "Unknown error"))
+            .finally(() => this.setState({ isLoading: false }));
     };
 
     async tryIntegrate(root) {
         this.setState({ jiraUrl: root });
         this.$session.rootUrl = root;
         this.setState({ isLoading: true });
+
         const hasPermission = await this.$jaBrowserExtn.requestPermission(null, root);
         // Session userId has to be cleared to avoid JiraAuthService from interfering
         delete this.$session.userId;
 
-        this.$ajax.get(ApiUrls.mySelf)
+        return this.$ajax.get(ApiUrls.mySelf)
             .then(data => this.$user.createUser(data, root).then(this.openDashboard, this.handleDBError)
                 , (response) => {
                     response = response || {};
@@ -201,7 +203,12 @@ class Integrate extends PureComponent {
                                         Login to your Jira in current tab or provide the Url of your Jira server to integrate.
                                         Ensure you have already been authenticated in Jira before you click on Integrate button.
                                     </p>
-                                    <Button type="primary" className="btn-block" icon={isLoading ? "fa fa-spinner fa-spin" : "fa fa-unlock-alt"} disabled={!jiraUrl || isLoading}
+                                    <Button type="primary"
+                                        className="btn-block w-100pr"
+                                        icon="fa fa-unlock-alt"
+                                        size="small"
+                                        isLoading={isLoading}
+                                        disabled={!jiraUrl || isLoading}
                                         onClick={integrate} label="Integrate" />
                                 </div>
                                 <Footer />
