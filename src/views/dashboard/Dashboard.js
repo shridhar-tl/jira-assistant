@@ -1,18 +1,18 @@
 import React, { PureComponent } from 'react';
-import './Dashboard.scss';
 import { inject } from '../../services/injector-service';
 import {
     GadgetActionType, Calendar, DateWiseWorklog, MyBookmarks, MyOpenTickets, MyReports,
     PendingWorklog, TicketWiseWorklog, StatusWiseTimeSpentGadget, WorklogBarChartGadget, WorklogReport
 } from '../../gadgets';
 import Header from './Header';
-import AddGadgetDialog from './AddGadgetDialog';
+import AddGadget from './AddGadget';
 import AddWorklog from '../../dialogs/AddWorklog';
 import BaseGadget, { onDashboardEvent } from '../../gadgets/BaseGadget';
 import { TabView, TabPanel } from 'primereact/tabview';
 import CustomReport from '../reports/custom-groupable/ReportViewer';
 import AdvancedReport from '../reports/report-builder/ReportViewer';
 import { Sortable } from '../../controls';
+import './Dashboard.scss';
 
 class Dashboard extends PureComponent {
     constructor(props) {
@@ -164,14 +164,14 @@ class Dashboard extends PureComponent {
             return <TabView className="no-padding tab-gadgets">{widgets.map(this.getControls)}</TabView>;
         }
         else {
-            return <Sortable useDragRef useDropRef items={widgets} defaultItemType="gadget" onChange={this.gadgetReordered}>{this.getControls}</Sortable>;
+            return <Sortable className="dashboard-gadgets" useDragRef useDropRef items={widgets} defaultItemType="gadget" onChange={this.gadgetReordered}>{this.getControls}</Sortable>;
         }
     }
 
-    onShowGadgets = () => this.setState({ showGadgetDialog: true });
+    onShowGadgets = () => this.setState({ showGadgetPanel: true });
 
     hideGadgetDialog = () => {
-        this.setState({ showGadgetDialog: false });
+        this.setState({ showGadgetPanel: false });
         this.saveDashboardInfo();
     };
 
@@ -185,21 +185,22 @@ class Dashboard extends PureComponent {
     render() {
         const {
             currentBoard: { widgets },
-            dashboardIndex, currentBoard, showGadgetDialog, showWorklogPopup
+            dashboardIndex, currentBoard, showGadgetPanel, showWorklogPopup
         } = this.state;
 
         return (
             <>
-                {!this.isQuickView && <Header {...this.props} config={currentBoard} index={dashboardIndex} userId={this.$session.userId}
-                    onShowGadgets={this.onShowGadgets} tabViewChanged={this.tabViewChanged} isQuickView={this.isQuickView} />}
-                {this.getGadgets(widgets)}
-                {(!widgets || widgets.length === 0) && <div className="no-widget-div">
-                    You haven't added any gadgets to this dashboard. Click on "Add gadgets" button above to start adding a cool one and personalize your experience.
+                <AddGadget show={showGadgetPanel} onHide={this.hideGadgetDialog} addedGadgets={widgets}
+                    addGadget={this.addGadget} removeGadget={this.removeGadget} />
+                <div className="dashboard-container">
+                    {!this.isQuickView && <Header {...this.props} config={currentBoard} index={dashboardIndex} userId={this.$session.userId}
+                        onShowGadgets={this.onShowGadgets} tabViewChanged={this.tabViewChanged} isQuickView={this.isQuickView} />}
+                    {this.getGadgets(widgets)}
+                    {(!widgets || widgets.length === 0) && <div className="no-widget-div">
+                        You haven't added any gadgets to this dashboard. Click on "Add gadgets" button above to start adding a cool one and personalize your experience.
+                    </div>
+                    }
                 </div>
-                }
-
-                {showGadgetDialog && <AddGadgetDialog onHide={this.hideGadgetDialog} widgetsList={widgets}
-                    addGadget={this.addGadget} removeGadget={this.removeGadget} />}
                 {showWorklogPopup && <AddWorklog worklog={this.worklogItem} onDone={this.worklogAdded} onHide={this.hideWorklog} />}
             </>
         );
