@@ -1,23 +1,39 @@
-import React, { PureComponent } from 'react';
-import TextBox from '../controls/TextBox';
+import React from 'react';
+import { TextBox, Button } from 'src/controls';
 import './Common.scss';
 
-class JQLEditor extends PureComponent {
-    onChange = (val) => {
-        this.props.onChange(val?.trim(), null);
+function JQLEditor({ jql, plugged, onChange }) {
+    const [value, setValue] = React.useState(jql || '');
+    React.useEffect(() => {
+        setValue(jql || '');
+    }, [jql]);
+
+    const handleChange = React.useCallback((val) => setValue(val), [setValue]);
+
+    const [isEdit, setEditMode] = React.useState(!plugged);
+    const beginEdit = React.useCallback(() => setEditMode(true), [setEditMode]);
+    const doneEdit = () => {
+        onChange(value?.trim(), null);
+        setValue(value?.trim());
+        setEditMode(false);
+    };
+    const cancelEdit = () => {
+        setValue(jql || '');
+        setEditMode(false);
     };
 
-    render() {
-        const { jql } = this.props;
-
-        return (
-            <div className="jql-editor">
-                <TextBox className="jql-query" multiline={true}
-                    placeholder="JQL query to fetch data"
-                    value={jql} onChange={this.onChange} />
-            </div>
-        );
-    }
+    return (
+        <div className={`jql-editor${plugged ? ' plugged' : ''}`}>
+            {isEdit && <TextBox className="jql-query" multiline autoFocus
+                placeholder="JQL query to fetch data"
+                value={value} onChange={handleChange} />}
+            {!isEdit && !!jql && <span className="jql-query-text" onClick={beginEdit}>{jql}</span>}
+            {!isEdit && !jql && <span className="jql-query-text unavailable"
+                onClick={beginEdit}>Provide JQL query text here</span>}
+            {plugged && isEdit && <Button icon="fa fa-check" onClick={doneEdit} />}
+            {plugged && isEdit && <Button icon="fa fa-times" onClick={cancelEdit} />}
+        </div>
+    );
 }
 
 export default JQLEditor;

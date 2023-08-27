@@ -141,9 +141,9 @@ class GroupedColumn extends PureComponent {
         return (
             <div ref={this.setRef} className="group-list-item"
                 onContextMenu={g.groupOptions?.length ? this.showMenu : undefined}>
-                {!g.sortDesc && <span className="fa fa-sort-amount-asc sort-icon"
+                {!g.sortDesc && <span className="fa fa-sort-amount-desc sort-icon"
                     onClick={this.sortDesc} title="Click to sort desc" />}
-                {!!g.sortDesc && <span className="fa fa-sort-amount-desc sort-icon"
+                {!!g.sortDesc && <span className="fa fa-sort-amount-asc sort-icon"
                     onClick={this.sortAsc} title="Click to sort asc" />}
                 {g.displayText}
 
