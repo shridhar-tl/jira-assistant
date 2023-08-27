@@ -146,7 +146,7 @@ class FaqView extends PureComponent {
                             {res.links && res.links.length > 0 && <div className="interests">
                                 <span>You may also need to look at:</span>
                                 <ul className="tags">
-                                    {res.links.map(id => <li key={id} onClick={() => this.addInterest(id)} className="badge badge-pill skin-bg-font">
+                                    {res.links.map(id => <li key={id} onClick={() => this.addInterest(id)} className="badge rounded-pill skin-bg-font">
                                         {this.getInterestText(id)}
                                     </li>)}
                                 </ul>

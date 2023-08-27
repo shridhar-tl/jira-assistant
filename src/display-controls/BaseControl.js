@@ -5,7 +5,7 @@ class BaseControl extends PureComponent {
         const { tag: Tag = "td", className, settings, count } = this.props;
 
         const badge = !!count && !!settings?.showGroupCount && (
-            <span className="badge badge-info margin-l-5"
+            <span className="badge bg-info margin-l-5"
                 title={`Total issues in group: ${count}`}>({count})</span>);
 
         return (

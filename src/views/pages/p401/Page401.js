@@ -34,7 +34,7 @@ class Page401 extends PureComponent {
         const { jiraUrl, validate } = this.props;
         const { hasPermission } = this.state;
 
-        const issueLink = (<Link className="link badge badge-warning"
+        const issueLink = (<Link className="link badge bg-warning text-dark"
             style={{ fontWeight: 'bold' }}
             href={getGitHubIssueUrl(214)}>#214</Link>);
 
