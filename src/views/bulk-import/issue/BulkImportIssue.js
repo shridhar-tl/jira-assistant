@@ -185,7 +185,7 @@ class ImportIssue extends BaseImport {
     };
 
     renderCellContent(field, val, clearValue) {
-        const getVal = (val, i) => (<span className={i >= 0 && "link badge badge-pill skin-bg-font margin-r-5"}>
+        const getVal = (val, i) => (<span className={i >= 0 && "link badge rounded-pill skin-bg-font margin-r-5"}>
             {!!val.avatarUrl && <Image className="margin-r-5" src={val.avatarUrl} alt={val.displayText} style={{ width: '16px', height: '16px' }} />}
             {val.displayText || val.value || ''}
             {!!clearValue && <span className="data-null">null</span>}

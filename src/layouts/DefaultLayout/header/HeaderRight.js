@@ -27,7 +27,7 @@ function HeaderRight(props) {
     return (<>
         <ul className="ml-auto navbar-nav" navbar>
             {allowWebVersion && !isAppBuild && !isQuickView && <LaunchWeb />}
-            {!!version && <span className={`update-available badge badge-${isBeta ? "warning" : "success"}`}
+            {!!version && <span className={`update-available badge bg-${isBeta ? "warning" : "success"}`}
                 title={`Jira Assist ${isBeta ? 'BETA ' : ''}v${version} is now available. Click to know more.`}
                 onClick={showVersionInfo}><i className="fa fa-download" /> Updates available</span>}
             {!disableJiraUpdates && <JiraUpdates />}

@@ -126,11 +126,11 @@ class TicketWiseWorklog extends BaseGadget {
                         <td>
                             <ul className="tags">
                                 {b.logData.map((ld, x) => <li key={x}>
-                                    {ld.worklogId && <Link className="link badge badge-pill skin-bg-font" href={this.getWorklogUrl(b.ticketNo, ld.worklogId)}
+                                    {ld.worklogId && <Link className="link badge rounded-pill skin-bg-font" href={this.getWorklogUrl(b.ticketNo, ld.worklogId)}
                                         title={ld.comments}>
                                         <span className="fa fa-clock" />  <DateDisplay tag="span" value={ld.dateLogged} />: {ld.uploaded}
                                     </Link>}
-                                    {!ld.worklogId && <span className="link badge badge-pill skin-bg-font" onClick={() => this.editWorklog(ld.id)} title={ld.comments}>
+                                    {!ld.worklogId && <span className="link badge rounded-pill skin-bg-font" onClick={() => this.editWorklog(ld.id)} title={ld.comments}>
                                         <span className="fa fa-clock" /> <DateDisplay tag="span" value={ld.dateLogged} />: {ld.uploaded}
                                     </span>}
                                 </li>)}

@@ -395,7 +395,7 @@ class EstimateActualReport extends BaseGadget {
                             <li>User list: Select the list of users for whom report need to be generated.</li>
                             <li>Date range: Select the date range for which worklog details need to be fetched from jira</li>
                             <li>Projects: Select one or more projects to be displayed for each users. To auto populate this field, go to Settings -&gt; General -&gt; Default values tab and provide the value for projects field.</li>
-                            <li>Tickets list: Add one or more tickets seperated by comma. These tickets will be listed seperately for comparison.</li>
+                            <li>Tickets list: Add one or more tickets separated by comma. These tickets will be listed separately for comparison.</li>
                             <li>Estimate type: Estimation comparison can be done based on Time estimate or Story Point estimate. If story point is selected, then optionally hours per story point can be configured to convert story point to estimated hours.</li>
                             <li><b>Note:</b> If Story Point option under Estimate type is disabled, then go to SETTINGS -&gt; General -&gt; Default values (tab) and select appropriate field for Story Points</li>
                         </ul>
@@ -436,7 +436,7 @@ class EstimateActualReport extends BaseGadget {
                             <div className="col-sm-12 col-md-5 col-lg-4 col-xl-3">
                                 <div className="form-group">
                                     <TextBox multiline={true} value={ticketsList} onChange={(val) => this.setState({ ticketsList: val })}
-                                        placeholder="List of tickets to be viewed seperated by comma" />
+                                        placeholder="List of tickets to be viewed separated by comma" />
                                 </div>
                             </div>
                         </div>

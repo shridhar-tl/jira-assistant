@@ -1,20 +1,25 @@
 # Jira Assistant Development Guidelines and Best Practices
 
-## How to contribute?
+## Contributing to Jira Assistant
 
-Please refer [contribution guidelines](CONTRIBUTE.md) prior to starting the development.
+Before diving into development, please review the [Contribution Guidelines](CONTRIBUTE.md) to ensure a seamless collaboration experience.
 
-## How to start the development?
+## Starting the Development Process
 
-- First and formost, please follow all the points provided under [contribution guidelines](CONTRIBUTE.md).
-- If you plan to develop a new module, please create an issue with all the details and start only after you get a go ahead from Shridhar TL.
-- Assign the appropriate issue in GitHub to your name before starting the development activity and have the status updated always in GitHub.
-- Create a branch out of develop and start the development and provide appropriate comment for each commits.
-- Always have your branch updated with the develop branch so that it would be easy at the time of merging back your changes and you will have all the fixes and services available from develop branch.
+To kickstart your development journey, follow these steps:
 
-## Local development environment
+1. Familiarize yourself with the [Contribution Guidelines](CONTRIBUTE.md).
+2. If you're planning to develop a new module, create a detailed issue and await approval from Shridhar TL.
+3. Assign the relevant GitHub issue to yourself and maintain its status.
+4. Create a new branch from the 'develop' branch and include informative commit comments.
+5. Regularly sync your branch with 'develop' to facilitate merging later.
 
-### setup and prepare Jira Assistant sources for local development
+## Setting Up Your Local Development Environment
+
+### Cloning and Preparing Jira Assistant Sources
+
+Follow these commands to set up your local development environment:
+
 ```shell script
 git clone https://github.com/shridhar-tl/jira-assistant.git
 git checkout develop
@@ -22,30 +27,23 @@ npm install
 npm start
 ```
 
-At this point, a local development service will be started and your browser is loading the login page of the plugin. Here you can integrate with any instance of Jira which is already available for your testing purpose. If you do not have one, your can consider using one of the option suggested below to quickly setup a working instance for you.
+After executing these commands, a local development service will launch, and your browser will load the plugin's login page. Here, you can integrate with an existing Jira instance for testing. If you don't have one, you can refer to the options below to set up an instance quickly.
 
-After development is completed, refer to [publishing guidelines](PUBLISH.md) document for the steps to build the package which can be used for final round of testing and publishing to webstore.
+Once development is complete, refer to the [Publishing Guidelines](PUBLISH.md) document for steps to package your work for final testing and webstore publication.
 
-### Setup a free for development cloud instance of Jira
+### Creating a Free Cloud Instance for Development
 
-The easiest option is to use the Cloud version of Jira which is free for development purpose which can have max of 5 users.
+For easy development, use Jira's Cloud version, free for up to 5 users. You can also join Shridhar TL's shared development instance by reaching out to shridhar.tl@gmail.com. Sharing this instance enhances development by leveraging a large dataset. To learn more or set up your instance:
 
-If you are an individual developer, then you can consider joining me with the instance of Jira which I already have for development purpose. We can share the instance and so that we would gain access to large data created by all of us which would help all of us in development. To get access to the instance of Jira I use, please mail me: shridhar.tl@gmail.com
-
-Follow the below url to know more about it or if you would like to create and maintain your own instance:
-
-To create a new account:
-http://go.atlassian.com/about-cloud-dev-instance
-
-To know more about this free instance:
-https://blog.developer.atlassian.com/cloud-ecosystem-dev-env/
+- To create a new account: http://go.atlassian.com/about-cloud-dev-instance
+- To know more about this free instance: https://blog.developer.atlassian.com/cloud-ecosystem-dev-env/
 
 
-### Setup and prepare a local Jira instance (30 days trial)
+### Setting Up a Local Jira Instance (30 Days Trial)
 
-The best way is to have a local Jira for playing around. If you have Docker installed in your workstation, then run the following command to setup a docker container with Jira running on port 9090.
+If you prefer local testing, Docker makes it straightforward. Run the following command to set up a Docker container with Jira:
 
-**Note:** The following command will download around 1GB of data to setup the container.
+**Note:** This command will download around 1GB of data for container setup.
 
 ```shell script
 docker pull atlassian/jira-software
@@ -53,19 +51,10 @@ docker volume create --name jiraVolume
 docker run -v jiraVolume:/var/atlassian/application-data/jira --name="jira" -d -p 9090:8080 atlassian/jira-software
 ```
 
-Above command need to be executed only once per workstation and from next time when you start your development activity, you can start your existing container by running just the following command:
+For subsequent development sessions, simply start the existing container with:
 
 ```shell script
 docker start jira
 ```
 
-Your personal Jira instance is up and running ... simply open "http://localhost:9090"
-in your browser and follow the setup instructions.
-Once you have created a user login and setup your first project, you need to get the **CORS headers** right,
-to avoid your Browser complaining and can't login.
-You need to add ```http://localhost:8080``` (where the Jira Assistant is running) to whitelist in Jira,
-see also https://confluence.atlassian.com/adminjiraserver073/configuring-the-whitelist-861254007.html
-
-If you are planning to use the version of Jira which is already available in cloud and if you do not have control to whitelist the url then you can make use of any other browser extensions to remove the Origin & Referrer from the request. Also some of the "User-Agent" header string is not supported by Jira. If you get such issue then you will also have to change the "User-Agent" header. You can use the command in "start_chrome.bat" to launch chrome with all these settings.
-
-**Note:** If you use the command in "start_chrome.bat" file, then ensure you are not using this instance of chrome for other sites as this command will launch chrome in unsecured mode and is not recommended while browsing the web. Also while you execute the command, you should not have any other instance of chrome already running (including, in tray) as it would cause this command to not have any effect.
+Access your personal Jira instance by opening "http://localhost:9090" in your browser and following the setup instructions.

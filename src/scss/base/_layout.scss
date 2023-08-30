@@ -20,9 +20,10 @@ app-root {
   flex: 0 0 $navbar-height;
 }
 
+/*
 .app-footer {
   flex: 0 0 $footer-height;
-}
+}*/
 
 .app-body {
   display: flex;
@@ -42,21 +43,25 @@ app-root {
     order: -1;
   }
 
+  /*
   .aside-menu {
     // $aside-menu-width is the width of the columns
     flex: 0 0 $aside-menu-width;
-  }
+  }*/
 }
 
 html:not([dir="rtl"]) {
   .sidebar {
     margin-left: - $sidebar-width;
   }
-  .aside-menu {
+
+  /*.aside-menu {
     right: 0;
     margin-right: - $aside-menu-width;
-  }
+  }*/
 }
+
+/*
 html[dir="rtl"] {
   .sidebar {
     margin-right: - $sidebar-width;
@@ -65,9 +70,10 @@ html[dir="rtl"] {
     left: 0;
     margin-left: - $aside-menu-width;
   }
-}
+}*/
 
 @include media-breakpoint-up($breakpoint-mobile-up) {
+
   //
   // Header
   //
@@ -77,10 +83,12 @@ html[dir="rtl"] {
       z-index: $zindex-sticky;
       width: 100%;
     }
+
     .app-body {
       margin-top: $navbar-height;
     }
   }
+
   //
   // Sidebar
   //
@@ -92,13 +100,14 @@ html[dir="rtl"] {
       height: 100vh;
     }
   }
+
   .sidebar-fixed {
-    .app-header + .app-body .sidebar {
+    .app-header+.app-body .sidebar {
       height: calc(100vh - #{$navbar-height});
     }
   }
 
-  .sidebar-compact {
+  /*.sidebar-compact {
     .sidebar {
       flex: 0 0 $sidebar-compact-width;
     }
@@ -137,7 +146,7 @@ html[dir="rtl"] {
     .app-header + .app-body .sidebar {
       height: calc(100vh - #{$navbar-height});
     }
-  }
+  }*/
 
   html:not([dir="rtl"]) {
     .sidebar-compact {
@@ -145,13 +154,15 @@ html[dir="rtl"] {
         margin-left: - $sidebar-compact-width;
       }
     }
+
     .sidebar-minimized {
       .sidebar {
         margin-left: - $sidebar-minimized-width;
       }
     }
   }
-  html[dir="rtl"] {
+
+  /*html[dir="rtl"] {
     .sidebar-compact {
       .sidebar {
         margin-right: - $sidebar-compact-width;
@@ -162,12 +173,12 @@ html[dir="rtl"] {
         margin-right: - $sidebar-minimized-width;
       }
     }
-  }
+  }*/
 
   //
   // Aside Menu
   //
-  .aside-menu-fixed {
+  /*.aside-menu-fixed {
     .aside-menu {
       position: fixed;
       height: 100%;
@@ -193,12 +204,13 @@ html[dir="rtl"] {
   }
 
   .aside-menu-off-canvas {
-    .app-header + .app-body .aside-menu {
+    .app-header+.app-body .aside-menu {
       height: calc(100vh - #{$navbar-height});
     }
-  }
+  }*/
 
   html:not([dir="rtl"]) {
+
     .aside-menu-fixed,
     .aside-menu-off-canvas {
       .aside-menu {
@@ -206,22 +218,24 @@ html[dir="rtl"] {
       }
     }
   }
-  html[dir="rtl"] {
+
+  /*html[dir="rtl"] {
+
     .aside-menu-fixed,
     .aside-menu-off-canvas {
       .aside-menu {
         left: 0;
       }
     }
-  }
+  }*/
 }
 
 //
 // Breadcrumb
 //
-.breadcrumb-fixed {
+/*.breadcrumb-fixed {
   .main {
-    $breadcrumb-height: 2 * $breadcrumb-padding-y + $font-size-base + 1.5 * $spacer;
+    $breadcrumb-height: 2 * $breadcrumb-padding-y +$font-size-base +1.5 * $spacer;
     padding-top: $breadcrumb-height;
   }
 
@@ -232,37 +246,47 @@ html[dir="rtl"] {
     left: 0;
     z-index: $zindex-sticky - 3;
   }
-}
+}*/
 
-@each $breakpoint in map-keys($grid-breakpoints) {
+/*@each $breakpoint in map-keys($grid-breakpoints) {
   @include media-breakpoint-up($breakpoint) {
     $infix: breakpoint-infix($breakpoint, $grid-breakpoints);
+
     html:not([dir="rtl"]) {
-      .sidebar#{$infix}-show,
+
+      .sidebar{$infix}-show, --- ToDo: # removed before sidebar# {}
       .sidebar-show {
         .sidebar {
           margin-left: 0;
         }
-        @if $breakpoint != "xs" {
+
+        @if $breakpoint !="xs" {
           &.sidebar-fixed {
+
             .main,
             .app-footer {
               margin-left: $sidebar-width;
             }
+
             &.sidebar-compact {
+
               .main,
               .app-footer {
                 margin-left: $sidebar-compact-width;
               }
             }
+
             &.sidebar-minimized {
               @include media-breakpoint-down($breakpoint-mobile-down) {
+
                 .main,
                 .app-footer {
                   margin-left: $sidebar-width;
                 }
               }
+
               @include media-breakpoint-up($breakpoint-mobile-up) {
+
                 .main,
                 .app-footer {
                   margin-left: $sidebar-minimized-width;
@@ -270,15 +294,18 @@ html[dir="rtl"] {
               }
             }
           }
+
           &.breadcrumb-fixed {
             .breadcrumb {
               left: $sidebar-width;
             }
+
             &.sidebar-compact {
               .breadcrumb {
                 left: $sidebar-compact-width;
               }
             }
+
             &.sidebar-minimized {
               .breadcrumb {
                 left: $sidebar-minimized-width;
@@ -289,17 +316,20 @@ html[dir="rtl"] {
       }
 
       .aside-menu-show,
-      .aside-menu#{$infix}-show {
+      .aside-menu{$infix}-show { --- # removed before # {
         .aside-menu {
           margin-right: 0;
         }
-        @if $breakpoint != "xs" {
+
+        @if $breakpoint !="xs" {
           &.aside-menu-fixed {
+
             .main,
             .app-footer {
               margin-right: $aside-menu-width;
             }
           }
+
           &.breadcrumb-fixed {
             .breadcrumb {
               right: $aside-menu-width;
@@ -310,31 +340,40 @@ html[dir="rtl"] {
     }
 
     html[dir="rtl"] {
-      .sidebar#{$infix}-show,
+
+      .sidebar{$infix}-show, --- # removed before # {
       .sidebar-show {
         .sidebar {
           margin-right: 0;
         }
-        @if $breakpoint != "xs" {
+
+        @if $breakpoint !="xs" {
           &.sidebar-fixed {
+
             .main,
             .app-footer {
               margin-right: $sidebar-width;
             }
+
             &.sidebar-compact {
+
               .main,
               .app-footer {
                 margin-right: $sidebar-compact-width;
               }
             }
+
             &.sidebar-minimized {
               @include media-breakpoint-down($breakpoint-mobile-down) {
+
                 .main,
                 .app-footer {
                   margin-right: $sidebar-width;
                 }
               }
+
               @include media-breakpoint-up($breakpoint-mobile-up) {
+
                 .main,
                 .app-footer {
                   margin-right: $sidebar-minimized-width;
@@ -342,15 +381,18 @@ html[dir="rtl"] {
               }
             }
           }
+
           &.breadcrumb-fixed {
             .breadcrumb {
               right: $sidebar-width;
             }
+
             &.sidebar-compact {
               .breadcrumb {
                 right: $sidebar-compact-width;
               }
             }
+
             &.sidebar-minimized {
               .breadcrumb {
                 right: $sidebar-minimized-width;
@@ -361,17 +403,20 @@ html[dir="rtl"] {
       }
 
       .aside-menu-show,
-      .aside-menu#{$infix}-show {
+      .aside-menu{$infix}-show {--- # removed before # {
         .aside-menu {
           margin-left: 0;
         }
-        @if $breakpoint != "xs" {
+
+        @if $breakpoint !="xs" {
           &.aside-menu-fixed {
+
             .main,
             .app-footer {
               margin-left: $aside-menu-width;
             }
           }
+
           &.breadcrumb-fixed {
             .breadcrumb {
               left: $aside-menu-width;
@@ -381,17 +426,23 @@ html[dir="rtl"] {
       }
     }
 
-    .sidebar#{$infix}-show,
-    .aside-menu#{$infix}-show {
+    .sidebar{$infix}-show, --- # removed before # {
+    .aside-menu{$infix}-show {--- # removed before # {
       @keyframes opacity {
-        0%   { opacity: 0; }
-        100% { opacity: 1; }
+        0% {
+          opacity: 0;
+        }
+
+        100% {
+          opacity: 1;
+        }
       }
 
-      @if $breakpoint == "xs" {
+      @if $breakpoint =="xs" {
         @include media-breakpoint-down(xs) {
           .main {
             position: relative;
+
             &::before {
               position: absolute;
               top: 0;
@@ -408,12 +459,12 @@ html[dir="rtl"] {
       }
     }
   }
-}
+}*/
 
 //
 // Footer
 //
-.footer-fixed {
+/*.footer-fixed {
   .app-footer {
     position: fixed;
     right: 0;
@@ -426,7 +477,7 @@ html[dir="rtl"] {
   .app-body {
     margin-bottom: $footer-height;
   }
-}
+}*/
 
 //
 // Animations
@@ -438,12 +489,15 @@ html[dir="rtl"] {
 .aside-menu {
   transition: margin-left $layout-transition-speed, margin-right $layout-transition-speed, width $layout-transition-speed, flex $layout-transition-speed;
 }
+
 .sidebar-nav {
   transition: width $layout-transition-speed;
 }
+
+/*
 .breadcrumb {
   transition: left $layout-transition-speed, right $layout-transition-speed, width $layout-transition-speed;
-}
+}*/
 
 //
 // Mobile layout
@@ -454,17 +508,23 @@ html[dir="rtl"] {
     z-index: $zindex-sticky;
     width: 100%;
     text-align: center;
-    @if $navbar-brand-bg == transparent {
+
+    @if $navbar-brand-bg ==transparent {
       background-color: $navbar-bg;
-    } @else {
+    }
+
+    @else {
       background-color: $navbar-brand-bg;
     }
+
     @include borders($navbar-brand-border);
 
     .navbar-toggler {
-      @if (lightness( $navbar-brand-bg ) > 40) {
+      @if (lightness($navbar-brand-bg ) > 40) {
         color: $navbar-color;
-      } @else {
+      }
+
+      @else {
         color: #fff;
       }
     }
@@ -488,6 +548,7 @@ html[dir="rtl"] {
     height: calc(100vh - #{$navbar-height});
   }
 
+  /*
   .sidebar-minimizer {
     display: none;
   }
@@ -495,5 +556,5 @@ html[dir="rtl"] {
   .aside-menu {
     position: fixed;
     height: 100%;
-  }
+  }*/
 }
