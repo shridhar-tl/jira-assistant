@@ -42,36 +42,39 @@ function Contribute() {
                     <div>
                         <h2>Why Jira Assistant is free?</h2>
                         <p>
-                            The motive of building Jira Assist is to help people who are spending lots of time in Jira to get some simple
-                            things done or spend lots of money in buying a similar software and paying a lump sum for its subscription every year.
+                            The goal behind creating Jira Assistant is to assist individuals who spend significant time in Jira, making routine tasks simpler,
+                            without the need to invest in expensive software or yearly subscriptions.
                         </p>
                     </div>
                     <div>
-                        <h4>Do you think Jira Assistant saved you some time and helped you to get things easier?</h4>
-                        <p>Then it is right time to donate us and get an even better working tool which can save even more of your precious time.</p>
-                    </div>
-                    <div>
-                        <h4>How would my donation be helpful?</h4>
+                        <h4>Has Jira Assistant saved you time and streamlined tasks?</h4>
                         <p>
-                            We need to spend lots of time and effort in building this tool, testing it and keep it updated with changes
-                            in Jira and browser's API. A one time donation of a small amount like $20 or $30
-                            would encourage us in putting more effort in building an even better working tool for you.
-                        </p>
-                        <p>
-                            Though we would like to get compensated for the effort we put into development, we are not interested in making
-                            it a paid tool and force our users to pay for it, or integrate a 3rd party Ad's in the tool and get compensated
-                            by annoying our users.
-                        </p>
-                        <p>
-                            So to have your Jira Assistant always free, Ad free and keep it updated, make a one time contribution of your
-                            wish and help yourself and others in building a better working tool for ever.
+                            If Jira Assistant has made your tasks easier and saved you time, consider making a donation to
+                            access an even more advanced tool that can further optimize your workflow.
                         </p>
                     </div>
                     <div>
-                        <h4>I am not interested to donate. I want to hide this button.</h4>
+                        <h4>How Will Your Donation Help Us?</h4>
                         <p>
-                            If you don't want this button to be visible any more then we provide you with an option to hide it forever.
-                            Please navigate to Settings -&gt; General and you will see an option to hide it from header.
+                            Building and testing Jira Assistant has required significant time and effort. We are committed to keeping it up-to-date
+                            with changes in Jira, browser APIs, browser updates, and more. Your one-time donation, whether it's $20 or $30,
+                            will motivate us to continue enhancing this tool for your benefit.
+                        </p>
+                        <p>
+                            While we value the effort put into development, we believe in keeping Jira Assistant free and without
+                            third-party ads that could inconvenience users. Your contribution ensures that Jira Assistant remains
+                            ad-free, updated, and accessible to all users.
+                        </p>
+                        <p>
+                            By making a one-time contribution, you're not only investing in your own productivity but also
+                            supporting others in accessing an ever-improving tool. Help us maintain Jira Assistant as a valuable resource for everyone.
+                        </p>
+                    </div>
+                    <div>
+                        <h4>I'm not interested in donating</h4>
+                        <p>
+                            If you prefer not to see this button anymore, we offer an option to hide it permanently.
+                            Please go to Settings → General, where you'll find an option to remove it from the header.
                         </p>
                     </div>
                 </div>

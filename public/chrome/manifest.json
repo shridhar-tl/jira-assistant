@@ -35,7 +35,7 @@
       "https://*.atlassian.net/*"
     ]
   },
-  "options_page": "/index.html#/options",
+  "options_page": "index.html#/options",
   "background": {
     "service_worker": "/static/js/background.js"
   },

@@ -2,49 +2,58 @@ import React from 'react';
 
 function WorklogReportInfo() {
     return (<div className="pad-15">
-        <strong>How to use:</strong>
-        <ul>
-            <li>
-                By default this page lets you to generate worklog report based on the selected date range.
-            </li>
-            <li>If you want to generate the report based on one or more sprints,
-                click on ( <i className="fa fa-cogs"></i>) icon to change the settings of the report.
-            </li>
-            <li>Click on ( <i className="fa fa-cogs"></i>) icon to change multiple other settings of the report
-                like formatting of display, add additional columns, setting threshold date to filter worklogs, JQL to filter data, etc..
-            </li>
-            <li>
-                Choose a date or sprint for which you would like to view the report or click the refresh
-                ( <i className="fa fa-refresh"></i> ) icon to load the report if date or sprint is already selected.
-            </li>
-            <li>You can choose the list of users by clicking the ( <i className="fa fa-users"></i> ) icon.</li>
-            <li>
-                Click on Settings <i className="fa fa-arrow-right"></i> User groups from left hand menu to add users
-                permanently to a group and use it in future.
-            </li>
-            <li>
-                Time zone settings - Configure the time zone of each user & group properly
-                while adding in group and select appropriate option in settings as well.
-            </li>
-            <li>
-                You have additional settings affecting this report in Settings <i className="fa fa-arrow-right"></i>
-                General menu in left hand side.
-            </li>
-        </ul>
-        <p>
-            <strong>Note:</strong> Any changes you make to the group or the users under the group in this page will
-            not get saved and is only for this session.
-        </p>
-        <div>
-            <strong>What is new?</strong>
+        <section>
+            <h2>How to Use</h2>
             <ul>
-                <li>Viewing report based on sprint as an alternate option instead of date range selection</li>
-                <li>Option to eliminate or identify the worklogs created after the threshold date</li>
-                <li>Options to pull the report without specifying the user group</li>
-                <li>Options to pull all worklog based on selected project</li>
-                <li>Automatically group the users & worklog based on project, epic or issue type when worklog is pulled based on date range</li>
+                <li>
+                    By default, this page allows you to generate a worklog report based on the selected date range.
+                </li>
+                <li>
+                    To generate a report based on one or more sprints, click the
+                    <i className="fa fa-cogs"></i> icon to customize report settings.
+                </li>
+                <li>
+                    Click the <i className="fa fa-cogs"></i> icon to access advanced report settings,
+                    including display formatting, additional columns, worklog filtering by threshold date,
+                    JQL data filtering, and more.
+                </li>
+                <li>
+                    Choose a date or sprint to view the report, or click the refresh
+                    <i className="fa fa-refresh"></i> icon to reload the report if a date or sprint is already selected.
+                </li>
+                <li>
+                    Manage user lists by clicking the <i className="fa fa-users"></i> icon.
+                </li>
+                <li>
+                    Access Settings <i className="fa fa-arrow-right"></i> User Groups in the left-hand menu
+                    to create and manage user groups for future use.
+                </li>
+                <li>
+                    Configure time zone settings for each user and group when adding them to a group.
+                    Select the appropriate options in settings as well.
+                </li>
+                <li>
+                    Additional settings for this report can be found in Settings <i className="fa fa-arrow-right"></i>
+                    General in the left-hand menu.
+                </li>
             </ul>
-        </div>
+            <p>
+                <strong>Note:</strong> Any changes made to the group or users under the group on this page
+                will not be saved and are only applicable for this session.
+            </p>
+        </section>
+        <section>
+            <h2>What's New</h2>
+            <ul>
+                <li>Alternate option to view the report based on sprints instead of date range selection.</li>
+                <li>Option to filter or identify worklogs created after the threshold date.</li>
+                <li>Ability to generate a report without specifying a user group.</li>
+                <li>Option to pull all worklogs based on a selected project.</li>
+                <li>Automatic grouping of users and worklogs by project, epic, or issue type when pulling worklogs
+                    based on a date range.
+                </li>
+            </ul>
+        </section>
     </div>
     );
 }
