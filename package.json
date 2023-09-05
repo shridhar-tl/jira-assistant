@@ -51,9 +51,9 @@
         }
     },
     "dependencies": {
-        "@forge/api": "^2.18.3",
+        "@forge/api": "^2.18.5",
         "@forge/bridge": "^2.6.0",
-        "@forge/resolver": "^1.5.13",
+        "@forge/resolver": "^1.5.15",
         "@fortawesome/fontawesome-free": "^6.4.2",
         "@fullcalendar/core": "^6.1.8",
         "@fullcalendar/daygrid": "^6.1.8",
@@ -69,11 +69,11 @@
         "dexie": "^3.2.4",
         "electron-about-window": "^1.15.2",
         "electron-is-dev": "^2.0.0",
-        "electron-updater": "^6.1.1",
+        "electron-updater": "^6.1.4",
         "espree": "^9.6.1",
         "exceljs": "^4.3.0",
-        "firebase": "^10.3.0",
-        "jquery": "^3.7.0",
+        "firebase": "^10.3.1",
+        "jquery": "^3.7.1",
         "jsd-report": "^0.1.11",
         "jspdf": "^2.5.1",
         "jspdf-autotable": "^3.6.0",
@@ -92,10 +92,8 @@
         "react-dnd": "^14.0.4",
         "react-dnd-html5-backend": "^14.0.2",
         "react-dom": "^18.2.0",
-        "react-router-dom": "^6.14.2",
+        "react-router-dom": "^6.15.0",
         "react-scripts": "^5.0.1",
-        "recoil": "^0.7.7",
-        "recoil-nexus": "^0.5.0",
         "static-eval": "^2.1.0"
     },
     "devDependencies": {
@@ -103,7 +101,7 @@
         "concurrently": "^8.2.1",
         "cross-env": "^7.0.3",
         "electron": "^26.1.0",
-        "electron-builder": "^24.6.3",
+        "electron-builder": "^24.6.4",
         "electronmon": "^2.0.2",
         "eslint": "^8.48.0",
         "eslint-plugin-react-hooks": "^4.6.0",
@@ -111,7 +109,7 @@
         "react-app-alias": "^2.2.2",
         "sass": "^1.66.1",
         "wait-on": "^7.0.1",
-        "webpack-bundle-analyzer": "^4.9.0"
+        "webpack-bundle-analyzer": "^4.9.1"
     },
     "scripts": {
         "start": "cross-env REACT_APP_BUILD_MODE=WEB craco start",
