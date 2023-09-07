@@ -31,7 +31,7 @@ function JiraUpdates() {
     return (<>
         <li className="nav-item">
             <span className="drop-icon" onClick={showPanel} title="Notification updates from Jira">{Icons.bellNotification}</span>
-            {total > 0 && <span className="badge bg-warning text-dark">{total}</span>}
+            {total > 0 && <span className="badge bg-warning text-dark">{total > 99 ? '99+' : total}</span>}
         </li>
         <OverlayPanel ref={op} className="drop-op">
             <div className="jira-notifications drop-op-container">
