@@ -38,7 +38,7 @@ function HeaderRight(props) {
             <SkinPicker />
             {showShareOption && <ShareWithOthers />}
             {showContactUs && <li className="nav-item d-md-down-none">
-                <NavLink to={`/${userId}/contactus`} className="nav-link"><i className="fa fa-phone" title="Contact us"></i></NavLink>
+                <NavLink to={`/${userId}/contact-us`} className="nav-link"><i className="fa fa-phone" title="Contact us"></i></NavLink>
             </li>}
             {!isQuickView && !isPluginBuild && <UserBox onLogout={onLogout} />}
         </ul>

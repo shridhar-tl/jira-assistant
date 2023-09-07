@@ -389,6 +389,7 @@ function prepareAgreData(data) {
 }
 Array.prototype.max = function (clause) {
   let value = 0, index, newVal;
+  clause = parseClause(clause);
   if (clause) {
     for (index = 0; index < this.length; index++) {
       newVal = clause(this[index]) || 0;
@@ -404,6 +405,7 @@ Array.prototype.max = function (clause) {
 };
 Array.prototype.min = function (clause) {
   let value = 0, index, newVal;
+  clause = parseClause(clause);
   if (clause) {
     for (index = 0; index < this.length; index++) {
       newVal = clause(this[index]) || 0;
@@ -418,6 +420,7 @@ Array.prototype.min = function (clause) {
   return value;
 };
 Array.prototype.first = function (clause) {
+  clause = parseClause(clause);
   if (clause) {
     return this.filter(clause).first();
   }
@@ -428,6 +431,7 @@ Array.prototype.first = function (clause) {
   }
 };
 Array.prototype.last = function (clause) {
+  clause = parseClause(clause);
   if (clause) {
     return this.filter(clause).last();
   }
@@ -491,7 +495,7 @@ Array.prototype.groupBy = function (clause, filter, keyObj) {
   }
   return result;
 };
-function parseClause(clause) {
+export function parseClause(clause) {
   const isClauseString = typeof clause === 'string';
   if (isClauseString) {
     const tmp = clause;
@@ -577,7 +581,7 @@ Array.prototype.findAllIndex = function (clause, maxItems) {
 };
 
 // Array flattening related methods
-Array.prototype.flattern = function (clause, filter, templ, propPrefix) {
+Array.prototype.flatten = function (clause, filter, templ, propPrefix) {
   const $this = this;
   const thisLen = $this.length;
   const resultArray = [];
@@ -623,7 +627,7 @@ function getObject(row, clause, curItem, propPrefix) {
           }
         }
         else if (Array.isArray(value)) {
-          newVal = props ? value.flattern(props, null, spread ? curItem : null, spread ? propName : '') : value;
+          newVal = props ? value.flatten(props, null, spread ? curItem : null, spread ? propName : '') : value;
           if (!spread) {
             curItem = newVal.map(nv => {
               const ret = { ...curItem, [propPrefix + propName]: nv };

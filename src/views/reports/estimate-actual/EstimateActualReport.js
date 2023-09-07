@@ -189,7 +189,7 @@ class EstimateActualReport extends BaseGadget {
             .then((issues) => {
                 this.$analytics.trackEvent("Estimate report viewed", EventCategory.UserActions);
 
-                const flatData = issues.flattern({
+                const flatData = issues.flatten({
                     'key': true,
                     'projectName': 'fields.project.name',
                     'projectKey': 'fields.project.key',
@@ -224,7 +224,7 @@ class EstimateActualReport extends BaseGadget {
                     if (parentIds.length) {
                         return this.$jira.searchTickets(`key in (${parentIds.join(',')})`, ["project", this.state.estimationField])
                             .then((parents) => {
-                                const flatParents = parents.flattern({
+                                const flatParents = parents.flatten({
                                     'key': true,
                                     'projectName': 'fields.project.name',
                                     'projectKey': 'fields.project.key',

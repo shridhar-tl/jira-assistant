@@ -162,7 +162,7 @@ class FaqView extends PureComponent {
                             <li>edit layout</li>
                             <li>dashboard</li>
                         </ul>
-                        <p>If you did not find anything appropriate for your question, you can <a href="#/contactus">Contact us</a></p>
+                        <p>If you did not find anything appropriate for your question, you can <a href="#/contact-us">Contact us</a></p>
                     </div>}
                 </Panel>
             </div>
