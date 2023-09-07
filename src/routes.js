@@ -98,7 +98,7 @@ const sessionBasedRoute = [
         component: ContributeComponent
     },
     FeedbackViewComponent && {
-        path: '/contactus',
+        path: '/contact-us',
         component: FeedbackViewComponent
     }
 ].filter(Boolean);

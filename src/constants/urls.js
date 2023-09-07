@@ -2,7 +2,7 @@
 //export const messagesUrl = "https://onedrive.live.com/download?cid=1E579D4F3D2F2078&resid=1E579D4F3D2F2078%217441&authkey=ACLAWbvhYgNCAM8";
 export const WebSiteUrl = 'https://www.jiraassistant.com';
 export const messagesUrl = `${WebSiteUrl}/messages.json`;
-export const ContactUsUrl = `${WebSiteUrl}/contactus`;
+export const ContactUsUrl = `${WebSiteUrl}/contact-us`;
 
 export const feedbackUrl = 'https://docs.google.com/forms/d/e/1FAIpQLScJvQtHZI_yZr1xd4Z8TwWgvtFss33hW5nJp4gePCgI2ScNvg/viewform';
 
