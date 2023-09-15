@@ -183,14 +183,14 @@ class GlobalSettings extends PureComponent {
                             </td>
                         </TRow>}
                         {allowAnalytics && !!users[0] && <TRow>
-                            <td>Enable tracking user actions (Anynmous, Google Analytics)</td>
+                            <td>Enable tracking user actions (Anonymous, Google Analytics)</td>
                             <td colSpan={intgUsers.length + 1}><Checkbox checked={users[0].enableAnalyticsLogging !== false}
                                 args={users[0]} field="enableAnalyticsLogging" onChange={this.setValue}
                                 label="Help developers to identify what features are being used much" />
                             </td>
                         </TRow>}
                         {allowAnalytics && !!users[0] && <TRow>
-                            <td>Enable tracking exceptions (Anynmous)</td>
+                            <td>Enable tracking exceptions (Anonymous)</td>
                             <td colSpan={intgUsers.length + 1}><Checkbox checked={users[0].enableExceptionLogging !== false}
                                 args={users[0]} field="enableExceptionLogging" onChange={this.setValue}
                                 label="Help developers to identify what errors occur for users and would help in fixing it soon" />
@@ -200,7 +200,7 @@ class GlobalSettings extends PureComponent {
                             <td>Disable notifications from developer</td>
                             <td colSpan={intgUsers.length + 1}><Checkbox checked={users[0].disableDevNotification}
                                 args={users[0]} field="disableDevNotification" onChange={this.setValue}
-                                label="Do not show important informations and bug notifications from developer" />
+                                label="Do not show important information's and bug notifications from developer" />
                             </td>
                         </TRow>}
                     </TBody>
@@ -209,6 +209,10 @@ class GlobalSettings extends PureComponent {
                     <Button className="float-end" icon="fa fa-save" label="Save settings" type="primary" onClick={this.saveSettings} />
                     <strong>Important Note:</strong>
                     <ul>
+                        <li>
+                            In the table, the JQL under the 1st (Default) column is non-editable and serves as default information.
+                            You can modify the JQL for each integration, starting from the second column onward.
+                        </li>
                         <li>Changing these settings may have consequences for application stability or data integrity. Please exercise caution when making adjustments.</li>
                         <li>Some settings may require a refresh or reopening of Jira Assistant to take effect.</li>
                     </ul>
