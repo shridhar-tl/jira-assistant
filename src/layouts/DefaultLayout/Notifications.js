@@ -86,7 +86,7 @@ function Message({ message, onOpen, onRead, cut }) {
         <div className="message" title="Click to view this message">
             {!message.read && <small className="float-end mt-0" onClick={markRead} title="Click to mark this message as read">
                 <span className="fa fa-eye mark-read" /></small>}
-            <div className={`message-title text-truncate${message.read ? "" : " font-weight-bold"}`} onClick={readMessage}>
+            <div className={`message-title text-truncate${message.read ? "" : " fw-bold"}`} onClick={readMessage}>
                 {message.important && <span className="fa fa-exclamation text-danger"></span>} {message.title}
             </div>
             <div className="small text-muted message-text" onClick={readMessage}><TextParser message={cut(message.message, 175, true)} /></div>
