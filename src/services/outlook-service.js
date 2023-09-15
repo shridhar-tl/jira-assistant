@@ -9,7 +9,7 @@ const authApiBasePath = "https://login.microsoftonline.com/common/oauth2/v2.0/";
 const authEndPoint = `${authApiBasePath}authorize`;
 //const tokenEndPoint = `${authApiBasePath}token`;
 
-const redirect_uri = 'https://www.jiraassistant.com/oauth/outlook';
+const redirect_uri = 'https://api.jiraassistant.com/oauth/outlook';
 
 export default class OutlookCalendar extends OutlookCalendarBase {
     static dependencies = ["AjaxRequestService", "AnalyticsService", "MessageService", "OutlookOAuthService", "SessionService", "AppBrowserService"];
