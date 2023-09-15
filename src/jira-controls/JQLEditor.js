@@ -2,7 +2,7 @@ import React from 'react';
 import { TextBox, Button } from 'src/controls';
 import './Common.scss';
 
-function JQLEditor({ jql, plugged, onChange }) {
+function JQLEditor({ jql, field, plugged, onChange }) {
     const [value, setValue] = React.useState(jql || '');
     React.useEffect(() => {
         setValue(jql || '');
@@ -13,7 +13,7 @@ function JQLEditor({ jql, plugged, onChange }) {
     const [isEdit, setEditMode] = React.useState(!plugged);
     const beginEdit = React.useCallback(() => setEditMode(true), [setEditMode]);
     const doneEdit = () => {
-        onChange(value?.trim(), null);
+        onChange(value?.trim(), field);
         setValue(value?.trim());
         setEditMode(false);
     };
@@ -26,7 +26,7 @@ function JQLEditor({ jql, plugged, onChange }) {
         <div className={`jql-editor${plugged ? ' plugged' : ''}`}>
             {isEdit && <TextBox className="jql-query" multiline autoFocus
                 placeholder="JQL query to fetch data"
-                value={value} onChange={handleChange} />}
+                value={value} onChange={plugged ? handleChange : onChange} />}
             {!isEdit && !!jql && <span className="jql-query-text" onClick={beginEdit}>{jql}</span>}
             {!isEdit && !jql && <span className="jql-query-text unavailable"
                 onClick={beginEdit}>Provide JQL query text here</span>}
