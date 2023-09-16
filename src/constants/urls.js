@@ -32,6 +32,6 @@ export const JAWebRootUrl = 'https://app.jiraassistant.com';
 
 export const JAWebLaunchUrl = `${JAWebRootUrl}?authType=1`;
 
-export const JAApiBasePath = 'https://api.jiraassistant.com';
+export const JAApiBasePath = `${WebSiteUrl}/api`;
 
 export const ApiTokenHelpPage = 'https://support.atlassian.com/atlassian-account/docs/manage-api-tokens-for-your-atlassian-account';
