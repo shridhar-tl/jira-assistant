@@ -1,5 +1,8 @@
 import moment from 'moment';
+import { getPathValue } from 'react-controls/common/utils';
 import { btoa_encode } from './base64';
+
+export { getPathValue };
 
 export function saveAs(blob, fileName) {
     const reader = new FileReader();
@@ -203,20 +206,6 @@ export function parseHTML(html) {
     return div.innerText;
 }
 
-export function getPathValue(obj, path) {
-    if (!path || !obj) { return obj; }
-
-    let value = obj[path];
-    if (!value) {
-        const paths = path.split(".");
-        if (paths.length > 1) {
-            value = paths.reduce((val, path) => (val || undefined) && val[path], obj);
-        }
-    }
-
-    return value;
-}
-
 export function parseJiraCustomCSV(obj) {
     obj = obj.replace(/(^.*\[|\].*$)/g, '');
     const vals = obj.split(',');
@@ -266,4 +255,9 @@ export function viewIssueUrl(root, key) {
     }
 
     return mergeUrl(root, `/browse/${key}`);
+}
+
+export function stop(e) {
+    e.stopPropagation();
+    e.preventDefault();
 }

@@ -1,0 +1,19 @@
+.row-item {
+    background-color: #f1f3f4;
+    border-radius: 8px;
+    margin: 8px 0;
+    padding: 8px;
+    cursor: move;
+
+    .icon {
+        width: 16px;
+    }
+}
+
+.icon-remove.fa {
+    cursor: pointer;
+
+    &.fa-times {
+        color: red;
+    }
+}

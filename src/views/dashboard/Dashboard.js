@@ -192,7 +192,7 @@ class Dashboard extends PureComponent {
             <>
                 {!this.isQuickView && <AddGadget show={showGadgetPanel} onHide={this.hideGadgetDialog} addedGadgets={widgets}
                     addGadget={this.addGadget} removeGadget={this.removeGadget} />}
-                <div className="dashboard-container">
+                <div className="page-container dashboard-container">
                     {!this.isQuickView && <Header {...this.props} config={currentBoard} index={dashboardIndex} userId={this.$session.userId}
                         onShowGadgets={this.onShowGadgets} tabViewChanged={this.tabViewChanged} isQuickView={this.isQuickView} />}
                     {this.getGadgets(widgets)}

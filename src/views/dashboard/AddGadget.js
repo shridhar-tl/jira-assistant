@@ -63,7 +63,7 @@ export default AddGadget;
 async function getGadgetList() {
     const { $report } = inject('ReportService');
 
-    const reports = await $report.getReportsList();
+    const reports = (await $report.getReportsList()).filter(r => r.reportType !== 'pivot');
 
     if (!reports?.length) {
         return GadgetList;
