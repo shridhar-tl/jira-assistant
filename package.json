@@ -1,6 +1,6 @@
 {
     "name": "jira-assistant",
-    "version": "2.56.0",
+    "version": "2.57.0",
     "description": "Help to track & upload work done on a Jira Ticket on timely basis and generate Worklog, Sprint and other custom reports",
     "homepage": "/",
     "author": {
@@ -212,8 +212,8 @@
             "node_modules/jsd-report/build"
         ],
         "react-controls": [
-            "externals/react-controls/src/controls",
-            "node_modules/react-controls/src/controls"
+            "externals/react-controls/src/",
+            "node_modules/react-controls/src/"
         ]
     }
 }
