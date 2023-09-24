@@ -9,7 +9,7 @@ import ItemProperties from './config/ItemProperties';
 import JQLEditor from 'src/jira-controls/JQLEditor';
 import { updateJQL, updateDataSourceType, usePivotConfig, useSelectedItem } from '../../store/pivot-config';
 import ControlButtons from './ControlButtons';
-import useToggler from '../../../../../../externals/react-controls/src/hooks/useToggler';
+import useToggler from 'react-controls/hooks/useToggler';
 import './Controls.scss';
 
 function EditorControls({ show, onHide, reportId }) {

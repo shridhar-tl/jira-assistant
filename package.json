@@ -198,8 +198,8 @@
     },
     "aliases": {
         "react-controls": [
-            "externals/react-controls/src/controls",
-            "node_modules/react-controls/src/controls"
+            "externals/react-controls/src/",
+            "node_modules/react-controls/src/"
         ]
     }
 }
