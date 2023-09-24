@@ -45,6 +45,7 @@ export default class ReportService {
             .then((qrys) => qrys.map((q) => ({
                 id: q.id,
                 queryName: q.queryName,
+                reportType: q.reportType || (q.advanced ? 'advanced' : 'custom'),
                 dateCreated: q.dateCreated,
                 advanced: q.advanced,
                 outputCount: q.advanced ? null : (q.outputFields?.length || q.fields?.length),
@@ -87,6 +88,7 @@ export default class ReportService {
         if (noTrack !== true) {
             this.$analytics.trackEvent(eventName, EventCategory.UserActions, query.advanced ? "Report builder" : "Custom report");
         }
+
         return reportId;
     }
 }

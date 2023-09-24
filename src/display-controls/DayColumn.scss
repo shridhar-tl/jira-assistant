@@ -1,0 +1,31 @@
+div.scroll-table-container .scroll-table {
+    thead tr {
+
+        th.week-head,
+        th.day-head {
+            min-width: 35px;
+            text-align: center;
+        }
+
+        th.week-head {
+            color: #2e6c99;
+        }
+
+        th.day-head {
+            color: #498b4b;
+
+            .day-name {
+                font-size: 13px;
+                color: rgb(118, 118, 207);
+            }
+
+            &.holiday {
+                color: red;
+
+                .day-name {
+                    color: red;
+                }
+            }
+        }
+    }
+}

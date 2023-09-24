@@ -23,7 +23,7 @@ const { dashboards,
     calendar, importWorklog, importIssues, planningPoker,
 
     // Reports
-    worklogReport, worklogReportOld, sprintReport, customReport, estimateVsActual, reportBuilder,
+    worklogReport, worklogReportOld, sprintReport, customReport, estimateVsActual, reportBuilder, pivotReport,
 
     // Settings
     userGroups, generalSettings, advancedSettings,
@@ -93,6 +93,16 @@ const navigation = [
                 id: 'R-WL',
                 url: '/reports/worklog',
                 icon: 'fa fa-users'
+            },
+            pivotReport && {
+                name: 'Pivot Report',
+                id: 'R-PR',
+                url: '/reports/pivot',
+                icon: 'fa fa-table',
+                badge: {
+                    variant: 'success',
+                    text: 'BETA'
+                }
             },
             worklogReportOld && {
                 name: 'Worklog Report',

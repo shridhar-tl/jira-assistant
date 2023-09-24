@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import DateRangePicker from 'react-bootstrap-daterangepicker';
 import TextBox from './TextBox';
 import moment from 'moment';
-import { Button } from 'react-controls';
+import { Button } from 'react-controls/controls';
 import { inject } from '../services';
 import classnames from 'classnames';
 import 'bootstrap-daterangepicker/daterangepicker.css';
