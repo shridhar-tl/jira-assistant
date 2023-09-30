@@ -1,5 +1,4 @@
 import React from 'react';
-import { TabPanel, TabView } from 'primereact/tabview';
 import { fillFieldsList, useFieldsList } from '../../../utils/fields.js';
 import { Draggable, TextBox } from 'src/controls';
 import { useFieldFilterText } from '../../../store/pivot-config.js';
@@ -13,11 +12,9 @@ function FieldsCollection() {
 
     return (<div className="fields-collection">
         <SearchBox />
-        <TabView>
-            {fields.map(f => <TabPanel key={f.label} header={f.label}>
-                <FieldsList fields={f.items} />
-            </TabPanel>)}
-        </TabView>
+        <div className="fields-group-view">
+            {fields.map(f => <FieldsList key={f.label} fields={f.items} title={f.label} />)}
+        </div>
     </div>);
 }
 
@@ -32,7 +29,7 @@ function SearchBox() {
     </div>);
 }
 
-function FieldsList({ fields }) {
+function FieldsList({ fields, title }) {
     const searchText = useFieldFilterText(({ searchText }) => searchText)?.trim()?.toLowerCase();
     const [items, setItems] = React.useState(() => getFilteredFields(fields, searchText));
 
@@ -40,8 +37,11 @@ function FieldsList({ fields }) {
         setItems(getFilteredFields(fields, searchText));
     }, [searchText, fields, setItems]);
 
+    if (!items?.length) { return null; }
+
     return (<div className="fields-list">
-        {items?.map((field, i) => (<Draggable key={i}
+        <div className="block font-bold">{title}</div>
+        {items.map((field, i) => (<Draggable key={i}
             className="jira-field"
             itemType="jira-field"
             item={field}
@@ -64,7 +64,11 @@ function getFilteredFields(fields, searchText) {
 
 function copyForFilter(e, field) {
     stop(e);
-    const value = field.custom ? field.name : field.key;
+    let value = field.custom ? field.name : field.key;
+
+    if (value.includes(' ')) {
+        value = `\`${value}\``;
+    }
 
     if (navigator.clipboard?.writeText) {
         navigator.clipboard.writeText(value);

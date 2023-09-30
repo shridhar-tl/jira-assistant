@@ -16,7 +16,7 @@ function ItemProperties({ selection }) {
     }
 
     const isGrouped = item.enableGrouping || (!isRow && level === 0);
-    const DisplayOption = displayOptionComponent[item.schema.type] || displayOptionComponent['any'];
+    const DisplayOption = displayOptionComponent[item.schema?.type] || displayOptionComponent['any'];
 
     return (<div className="item-properties">
         <Button icon="fa fa-times" className="float-end" onClick={clearSelection} />
@@ -33,8 +33,8 @@ function ItemProperties({ selection }) {
                 </div>}
 
                 {isGrouped && <FormCheckbox className="inline-block" label="Show totals" field="showTotal" />}
-                {isGrouped && <FormToggleButton className="inline-block btn-sm float-end" onLabel="At beginning"
-                    offLabel="At end" field="showTotalAtBeginning" disabled={!item.showTotal} />}
+                {isGrouped && <FormToggleButton className="inline-block btn-sm float-end" onLabel="At start"
+                    offLabel="At end" field="showTotalFirst" disabled={!item.showTotal} />}
 
                 {DisplayOption && <DisplayOption item={item} isGrouped={isGrouped} isRow={isRow} />}
 

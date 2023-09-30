@@ -27,7 +27,7 @@ function JQLEditor({ jql, field, plugged, onChange }) {
             {isEdit && <TextBox className="jql-query" multiline autoFocus
                 placeholder="JQL query to fetch data"
                 value={value} onChange={plugged ? handleChange : onChange} />}
-            {!isEdit && !!jql && <span className="jql-query-text" onClick={beginEdit}>{jql}</span>}
+            {!isEdit && !!jql && <div className="jql-query-text" onClick={beginEdit}>{jql}</div>}
             {!isEdit && !jql && <span className="jql-query-text unavailable"
                 onClick={beginEdit}>Provide JQL query text here</span>}
             {plugged && isEdit && <Button icon="fa fa-check" onClick={doneEdit} />}

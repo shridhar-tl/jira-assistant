@@ -190,7 +190,10 @@ function validate_ExpressionList(expr, result, leftPart) {
 
 function validate_Identifier(obj, result) {
     const { value } = obj;
-    const fieldName = value.toLowerCase();
+    let fieldName = value.toLowerCase();
+    if (fieldName.startsWith('`')) {
+        fieldName = fieldName.substring(1, fieldName.length - 1);
+    }
     const field = result.fieldsMap[fieldName];
 
     if (!field) {

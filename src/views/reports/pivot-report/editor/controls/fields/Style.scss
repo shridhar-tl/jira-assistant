@@ -1,16 +1,16 @@
 .editor-controls .controls {
     .p-splitter-panel .fields-collection {
 
-        .p-tabview,
-        .p-tabview-panels,
-        .p-tabview-panel {
-            height: calc(100% - 20px);
+        .fields-group-view {
+            height: calc(100% - 30px);
             padding: 0;
+            overflow: auto;
         }
     }
 
     .fields-collection {
         height: 100%;
+        width: calc(100% - 300px);
 
         .search-container {
             position: relative;
@@ -41,16 +41,13 @@
             }
         }
 
-        .p-tabview,
-        .p-tabview-panels,
-        .p-tabview-panel {
-            height: 100%;
+        .fields-group-view {
+            height: calc(100% - 30px);
             padding: 0;
+            overflow: auto;
         }
 
         .fields-list {
-            height: 100%;
-            overflow: auto;
             padding: 5px 5px;
 
             .jira-field {

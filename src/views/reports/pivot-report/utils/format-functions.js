@@ -11,8 +11,8 @@ const aggregationFunction = [
     { value: 'max', label: 'Max', allowedFor: ['number', 'timespent', 'date', 'datetime'] },
     { value: 'count', label: 'Count', returnType: 'number', allowDistinct: true },
     { value: 'merge', label: 'Merge (CSV)', allowedFor: ['string'] },
-    { value: 'first', label: 'First item' },
-    { value: 'last', label: 'Last item' },
+    { value: 'first', label: 'First value' },
+    { value: 'last', label: 'Last value' },
 ];
 
 const distinctAllowedFunctions = aggregationFunction.filter(f => f.allowDistinct).map(f => f.value);

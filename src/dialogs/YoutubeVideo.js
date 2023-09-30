@@ -8,6 +8,7 @@ const videoList = [
     { videoId: "Ihz4Dm5oiRk", module: "Worklog Timer", route: "~" },
     { videoId: "hJBM5X24sPQ", module: "Worklog Calendar", route: "calendar" },
     { videoId: "WQOHrPBZZiI", module: "Worklog report - Sprint wise", route: "reports/worklog" },
+    { videoId: "4hFigSvXatM", module: "Pivot report - Worklog sample", route: "reports/pivot" },
     { videoId: "TxNH1HQtiX0", module: "Worklog report", route: "userdaywise" },
     { videoId: "6hAOtUm1lUk", module: "Worklog import", route: "import/worklog" },
     { videoId: "EFgXFqrGuTI", module: "Issue import", route: "import/issue" },

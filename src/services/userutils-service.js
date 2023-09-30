@@ -66,6 +66,8 @@ export default class UserUtilsService {
             }
             if (format?.toLowerCase() === "quick") {
                 return moment(date).fromNow();
+            } else if (format?.toLowerCase() === "num") {
+                return moment(moment()).diff(date, 'days');
             } else {
                 return date.format(format);
             }

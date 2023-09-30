@@ -35,9 +35,6 @@ function HelpText() {
                     The ability to sort the data under each group.
                 </li>
                 <li>
-                    More formatting option for fields like timestamp, date time, etc..
-                </li>
-                <li>
                     The ability to display totals for each group, offering a more comprehensive view of your data.
                 </li>
                 <li>
