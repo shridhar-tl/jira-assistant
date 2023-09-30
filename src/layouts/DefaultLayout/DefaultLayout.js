@@ -10,9 +10,8 @@ import { isWebBuild, redirectToRoute } from '../../constants/build-info';
 import AppContent from './AppContent';
 import { withRouter } from '../../pollyfills';
 import NavSideBar from './NavSideBar';
+import DefaultHeader from './DefaultHeader';
 import "./DefaultLayout.scss";
-
-const DefaultHeader = React.lazy(() => import('./DefaultHeader'));
 
 class DefaultLayout extends PureComponent {
   constructor() {
@@ -23,6 +22,7 @@ class DefaultLayout extends PureComponent {
 
     if (document.location.href.indexOf('?quick=true') > -1) {
       this.$session.isQuickView = true;
+      this.isQuickView = true;
     }
   }
 
@@ -150,14 +150,10 @@ class DefaultLayout extends PureComponent {
     return (
       <WorklogContextProvider value={this.worklogContextProps}>
         <div className="app">
-          <header className="app-header navbar">
-            <DefaultHeader onLogout={this.signOut} />
-          </header>
+          <DefaultHeader onLogout={this.signOut} isQuickView={this.isQuickView} />
           <div className="app-body">
-            <NavSideBar onLogout={this.signOut} menus={menus} navigate={this.props.navigate} location={this.props.location} />
-            <main className="main">
-              <AppContent loader={this.loading} />
-            </main>
+            {!this.isQuickView && <NavSideBar onLogout={this.signOut} menus={menus} navigate={this.props.navigate} location={this.props.location} />}
+            <AppContent loader={this.loading} />
           </div>
           <ContextMenu />
         </div>

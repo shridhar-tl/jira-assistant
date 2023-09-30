@@ -66,7 +66,7 @@ class CustomReport extends PureComponent {
         const result = await this.$report.getReportsList();
 
         const reportsList = result
-            .filter(q => !q.advanced)
+            .filter(q => q.reportType === 'custom')
             .map(q => ({ value: q.id, label: q.queryName }));
 
         this.setState({ reportId, reportsList });

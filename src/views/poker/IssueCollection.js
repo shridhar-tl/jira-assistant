@@ -63,7 +63,7 @@ function Issue({
         <div className={`issue${selected ? ' selected' : ''}`} onClick={() => selectIssue(id)}
             data-pr-tooltip={summary}>
             {!estimating && selected && <span className="fa fa-arrow-right icon-sel-ind" />}
-            {estimating && <span className="fa fa-clock-o icon-sel-ind" />}
+            {estimating && <span className="fa fa-clock icon-sel-ind" />}
             <span className="fa fa-times" onClick={remove} />
             <span className="issue-info">
                 <Image src={icon} />

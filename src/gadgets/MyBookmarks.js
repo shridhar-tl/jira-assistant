@@ -17,9 +17,9 @@ class MyBookmarks extends BaseGadget {
         inject(this, "JiraService", "BookmarkService", "UtilsService", "UserUtilsService", "MessageService");
 
         this.contextMenu = [
-            { label: "Select Bookmark", icon: "fa fa-check-square-o", command: () => this.selectTicket(this.selectedTicket) },
-            { label: "Add worklog", icon: "fa fa-clock-o", command: () => this.addWorklogOn(this.selectedTicket.ticketNo) },
-            { label: "Delete Bookmark", icon: "fa fa-trash-o", command: () => this.deleteBookmark(this.selectedTicket.ticketNo) } //ToDo: Add option for move to progress, show in tree view
+            { label: "Select Bookmark", icon: "fa fa-check-square", command: () => this.selectTicket(this.selectedTicket) },
+            { label: "Add worklog", icon: "fa fa-clock", command: () => this.addWorklogOn(this.selectedTicket.ticketNo) },
+            { label: "Delete Bookmark", icon: "fa fa-trash", command: () => this.deleteBookmark(this.selectedTicket.ticketNo) } //ToDo: Add option for move to progress, show in tree view
         ];
 
         this.state.selAllBks = false;
@@ -129,8 +129,8 @@ class MyBookmarks extends BaseGadget {
 
     renderCustomActions() {
         return <>
-            <Button icon="fa fa-plus" onClick={this.showAddPopup} title="Add ticket to bookmarks" />
-            <Button type="danger" icon="fa fa-trash-o" onClick={this.deleteSelection} title="Remove selected ticket(s) from bookmarks" />
+            <Button text icon="fa fa-plus" onClick={this.showAddPopup} title="Add ticket to bookmarks" />
+            <Button text type="danger" icon="fa fa-trash" onClick={this.deleteSelection} title="Remove selected ticket(s) from bookmarks" />
         </>;
     }
 

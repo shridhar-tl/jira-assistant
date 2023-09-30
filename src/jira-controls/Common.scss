@@ -2,4 +2,36 @@
     .jql-query {
         height: 250px;
     }
+
+    .p-button-xs {
+        vertical-align: top;
+    }
+
+    &.plugged {
+        .jql-query {
+            min-height: 30px;
+            width: calc(100% - 70px);
+        }
+    }
+
+    .jql-query-text {
+        display: inline-block;
+        width: 100%;
+        min-height: 30px;
+        overflow: auto;
+        cursor: pointer;
+        padding: 4px 8px;
+        border: 1px solid transparent;
+        border-radius: 5px;
+        margin-bottom: 5px;
+
+        &.unavailable {
+            font-style: italic;
+        }
+
+        &:hover {
+            border: 1px solid grey;
+            cursor: text;
+        }
+    }
 }

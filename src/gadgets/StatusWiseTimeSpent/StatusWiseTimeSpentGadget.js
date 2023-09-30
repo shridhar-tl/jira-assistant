@@ -29,7 +29,7 @@ class StatusWiseTimeSpentGadget extends BaseGadget {
     };
 
     renderCustomActions() {
-        return <Button icon="fa fa-cogs" onClick={this.showSettings} title="Show settings" />;
+        return <Button text icon="fa fa-cogs" onClick={this.showSettings} title="Show settings" />;
     }
 
     setLoader = (isLoading) => {

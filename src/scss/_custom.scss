@@ -1,6 +1,7 @@
 // #region Core UI Overrides
 body {
     overflow: hidden;
+    background-color: #fff;
 }
 
 .form-control {
@@ -201,5 +202,5 @@ a:hover {
 }
 
 .inline-block {
-    display: inline-block;
+    display: inline-block !important;
 }

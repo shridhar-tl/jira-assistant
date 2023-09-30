@@ -20,7 +20,7 @@ const ConfigModal = function ({ jiraContext: { extension: { modal: { settings } 
         <h3>Report Configurations</h3>
         <br />
         <Settings settings={settings} onChange={handleOnChange} />
-        <Button className="pull-right" icon="fa fa-save" label="Done" onClick={onDone} />
+        <Button className="float-end" icon="fa fa-save" label="Done" onClick={onDone} />
     </div>);
 };
 

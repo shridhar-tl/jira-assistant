@@ -327,7 +327,7 @@ export default class JiraService {
     getRapidSprintList = (rapidIds, opts) => {
         const asObj = typeof opts === 'boolean' ? opts : false;
         const defaultState = 'active,closed';
-        const { state = defaultState, maxResults } = opts;
+        const { state = defaultState, maxResults } = opts ?? {};
 
         const reqArr = rapidIds.map((rapidId) => this.$jaCache.session.getPromise(`rapidSprintList${rapidId}_${state || defaultState}_${maxResults}`)
             .then(async (value) => {
@@ -423,28 +423,14 @@ export default class JiraService {
         return this.$ajax.get(ApiUrls.rapidSprintDetails, rapidViewId, sprintId);
     }
 
-    async getSprintIssues(sprintIds, options) {
-        const { worklogStartDate, worklogEndDate, ...opts } = options || {};
-
-        const worker = async (sprintId) => {
-            const { issues } = await this.$ajax.get(ApiUrls.getSprintIssues.format(sprintId), opts);
-            if (options?.fields?.indexOf("worklog") > -1) {
-                await this.fillMissingWorklogs(issues, worklogStartDate, worklogEndDate);
-            }
-
-            return issues;
-        };
-
-        if (!Array.isArray(sprintIds)) {
-            return worker(sprintIds);
-        } else {
-            const sprints = {};
-            await runOnQueue(sprintIds, 3, async (id) => {
-                sprints[id] = await worker(id);
-            });
-
-            return sprints;
+    async getSprintIssues(sprintId, options) {
+        const { worklogStartDate, worklogEndDate, ...opts } = options;
+        const { issues } = await this.$ajax.get(ApiUrls.getSprintIssues.format(sprintId), opts);
+        if (options?.fields?.indexOf("worklog") > -1) {
+            await this.fillMissingWorklogs(issues, worklogStartDate, worklogEndDate);
         }
+
+        return issues;
     }
 
     getOpenTickets(refresh) {

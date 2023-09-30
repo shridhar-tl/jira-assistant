@@ -8,9 +8,9 @@ class Footer extends PureComponent {
         const importLabel = `Import ${selectedCount || ''} Issues`;
 
         return <div className="pnl-footer">
-            <div className="pull-right">
-                <Button type="info" icon="fa fa-list" label="Clear" disabled={isLoading} onClick={clearImportData} />
-                <Button type="success" icon="fa fa-upload" disabled={isLoading || !(selectedCount > 0)}
+            <div className="float-end">
+                <Button text type="info" icon="fa fa-list" label="Clear" disabled={isLoading} onClick={clearImportData} />
+                <Button type="primary" icon="fa fa-upload" disabled={isLoading || !(selectedCount > 0)}
                     label={importLabel} onClick={importIssues} />
             </div>
         </div>;

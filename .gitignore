@@ -33,3 +33,4 @@ yarn.lock
 
 # ignore referenced external files used while development
 src/externals/refs
+externals

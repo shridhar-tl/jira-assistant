@@ -1,6 +1,7 @@
 import React from 'react';
 import { TabPanel, TabView } from 'primereact/tabview';
 import GroupedDataGrid from './userdaywise/GroupedDataGrid';
+import IssueDayWiseGrid from './issue-daywise';
 import { connect } from './datastore';
 import FlatGroupableWorklog from './FlatGroupableWorklog';
 import UserProjectWiseSummary from './userprojectwise';
@@ -41,7 +42,7 @@ export default connect(Report, ({ reportLoaded: hasData, timeframeType, selSprin
 }));
 
 
-const ReportData = connect(function ({ boardId, hasData, showCostReport, showSummaryReport, onSettingsChanged }) {
+const ReportData = connect(function ({ boardId, hasData, showCostReport, showSummaryReport, isSprint, onSettingsChanged }) {
     if (!hasData) { return noData; }
 
     return (<TabView className="no-padding" renderActiveOnly={false}>
@@ -50,6 +51,9 @@ const ReportData = connect(function ({ boardId, hasData, showCostReport, showSum
         </TabPanel>
         {showCostReport && <TabPanel header="Cost Report" contentClassName="no-padding">
             <GroupedDataGrid exportSheetName="Cost Report" boardId={boardId} costView={true} />
+        </TabPanel>}
+        {!isSprint && <TabPanel header="Flat - [Issue daywise]" contentClassName="no-padding">
+            <IssueDayWiseGrid exportSheetName="Flat - [Issue daywise]" boardId={boardId} />
         </TabPanel>}
         <TabPanel header="Flat (Groupable)" contentClassName="no-padding">
             <FlatGroupableWorklog exportSheetName="Flat (Groupable)" boardId={boardId} onSettingsChanged={onSettingsChanged} />
@@ -67,7 +71,7 @@ const ReportData = connect(function ({ boardId, hasData, showCostReport, showSum
         [isSprint ? `sprintsList_${boardId}` : 'groupReport']: hasData
     } = state;
     return {
-        hasData: !!hasData,
+        hasData: !!hasData, isSprint,
         showCostReport: showCostReport && userListMode === '2',
         showSummaryReport: !isSprint && reportUserGrp === '1'
     };

@@ -10,7 +10,7 @@ import { EventCategory } from '../../../constants/settings';
 
 class ReportViewer extends BaseGadget {
     constructor(props) {
-        super(props, 'Advanced report viewer', 'fa-clock-o');
+        super(props, 'Advanced report viewer', 'fa-clock');
         inject(this, "ReportConfigService", "AnalyticsService", "ReportService");
 
         this.viewer = {};
@@ -95,9 +95,9 @@ class ReportViewer extends BaseGadget {
 
     renderCustomActions() {
         return <>
-            {!this.isGadget && <Button icon={this.isFullScreen ? 'fa fa-compress' : 'fa fa-expand'} onClick={this.toggleFullScreen} title="Toggle full screen" />}
-            {this.viewer.canShowParams && <Button icon="fa fa-plus-circle" onClick={this.viewer.showParameters} title="Change report params" />}
-            {!this.isGadget && <Button icon="fa fa-edit" onClick={this.props.onCancelView} title="Edit report" />}
+            {!this.isGadget && <Button text icon={this.isFullScreen ? 'fa fa-compress' : 'fa fa-expand'} onClick={this.toggleFullScreen} title="Toggle full screen" />}
+            {this.viewer.canShowParams && <Button text icon="fa fa-plus-circle" onClick={this.viewer.showParameters} title="Change report params" />}
+            {!this.isGadget && <Button text icon="fa fa-edit" onClick={this.props.onCancelView} title="Edit report" />}
         </>;
     }
 

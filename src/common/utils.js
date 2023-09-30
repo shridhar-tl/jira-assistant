@@ -1,5 +1,8 @@
 import moment from 'moment';
+import { getPathValue } from 'react-controls/common/utils';
 import { btoa_encode } from './base64';
+
+export { getPathValue };
 
 export function saveAs(blob, fileName) {
     const reader = new FileReader();
@@ -162,11 +165,20 @@ export function getHostFromUrl(url) {
 }
 
 export function getOriginFromUrl(url) {
-    if (url && typeof url !== "string") { url = url.toString(); }
+    if (url && typeof url !== "string") {
+        url = url.toString();
+    }
+
     let origin = new URL(url).origin;
+
+    if (!origin || origin === 'null') {
+        return;
+    }
+
     if (!origin.endsWith("/")) {
         origin += "/";
     }
+
     return origin;
 }
 
@@ -192,20 +204,6 @@ export function parseHTML(html) {
     const div = document.createElement('div');
     div.innerHTML = html;
     return div.innerText;
-}
-
-export function getPathValue(obj, path) {
-    if (!path || !obj) { return obj; }
-
-    let value = obj[path];
-    if (!value) {
-        const paths = path.split(".");
-        if (paths.length > 1) {
-            value = paths.reduce((val, path) => (val || undefined) && val[path], obj);
-        }
-    }
-
-    return value;
 }
 
 export function parseJiraCustomCSV(obj) {
@@ -257,4 +255,9 @@ export function viewIssueUrl(root, key) {
     }
 
     return mergeUrl(root, `/browse/${key}`);
+}
+
+export function stop(e) {
+    e.stopPropagation();
+    e.preventDefault();
 }

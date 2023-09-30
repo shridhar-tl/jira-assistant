@@ -23,8 +23,8 @@ class SaveReportDialog extends BaseDialog {
         } = this;
 
         return <>
-            <Button type="secondary" label="Cancel" onClick={this.onHide} />
-            <Button type="primary" icon="fa fa-floppy-o" label="Save"
+            <Button text type="secondary" label="Cancel" onClick={this.onHide} />
+            <Button type="primary" icon="fa fa-save" label="Save"
                 disabled={!newQueryName || newQueryName.length < 3}
                 onClick={this.done} />
         </>;

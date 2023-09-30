@@ -18,7 +18,7 @@ class TagsDisplay extends BaseControl {
                 const data = (
                     <Link href={a[hrefProp] || undefined}
                         title={titleProp ? a[titleProp] : undefined}
-                        className="link badge badge-pill skin-bg-font">
+                        className="link badge rounded-pill skin-bg-font">
                         {icon} {val}
                     </Link>
                 );
@@ -44,7 +44,7 @@ class TagsDisplay extends BaseControl {
 
             const data = (
                 <span title={titleProp ? a[titleProp] : undefined}
-                    className="badge badge-pill skin-bg-font">
+                    className="badge rounded-pill skin-bg-font">
                     {icon} {val}
                 </span>
             );

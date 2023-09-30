@@ -1,0 +1,26 @@
+.item-properties {
+    height: 100%;
+    overflow: auto;
+    width: 100%;
+    padding: 15px;
+
+    .config-props {
+        .span-cb {
+            display: block;
+        }
+    }
+
+    .btn-sm {
+        padding: 2px 6px;
+    }
+
+    .label-value-pair {
+        padding: 3px 0;
+
+        label {
+            padding: 2px 0;
+            margin-right: 5px;
+            font-weight: bold;
+        }
+    }
+}

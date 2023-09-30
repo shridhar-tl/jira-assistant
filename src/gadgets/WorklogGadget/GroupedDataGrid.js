@@ -290,7 +290,7 @@ class GroupRow extends PureComponent {
             <>
                 {!hidden && <tr className="grouped-row left" title="Click to hide user details">
                     <td colSpan={dates.length + 2} onClick={this.toggleDisplay}>
-                        <i className="pull-left drill-down fa fa-chevron-circle-down" />
+                        <i className="float-start drill-down fa fa-chevron-circle-down" />
                         {grp.name}
                     </td>
                 </tr>}
@@ -301,8 +301,8 @@ class GroupRow extends PureComponent {
                 <tr className="grouped-row right auto-wrap" onClick={hidden ? this.toggleDisplay : null}>
                     <td colSpan={colSpan}>
                         {hidden && <div>
-                            <i className="pull-left drill-down fa fa-chevron-circle-right" title="Click to show user details" />
-                            <span className="pull-left">{grp.name}</span><span className="pull-right">Total <i className="fa fa-arrow-right" /></span>
+                            <i className="float-start drill-down fa fa-chevron-circle-right" title="Click to show user details" />
+                            <span className="float-start">{grp.name}</span><span className="float-end">Total <i className="fa fa-arrow-right" /></span>
                         </div>}
                         {!hidden && <div>{grp.name} <i className="fa fa-arrow-right" /> Total <i className="fa fa-arrow-right" /></div>}
                     </td>
@@ -371,16 +371,16 @@ class UserRow extends PureComponent {
                 <tr className="pointer auto-wrap" onClick={this.toggleDisplay} data-current-user={u.isCurrentUser ? '1' : '0'} data-row-id="user">
                     <td className="data-left" colSpan={colSpan}>
                         <div className="user-info" style={{ paddingLeft: 0 }}>
-                            <i className={`pull-left drill-down fa ${expanded ? 'fa-chevron-circle-down' : 'fa-chevron-circle-right'}`}
+                            <i className={`float-start drill-down fa ${expanded ? 'fa-chevron-circle-down' : 'fa-chevron-circle-right'}`}
                                 title="Click to toggle ticket details" />
-                            <img src={u.imageUrl} height={40} width={40} className="pull-left" alt={u.displayName} />
+                            <img src={u.imageUrl} height={40} width={40} className="float-start" alt={u.displayName} />
                             <span className="name">{u.displayName}</span>
                             <span className="email">({u.emailAddress || u.name}{u.timeZone && <span>, time zone: {u.timeZone}</span>})</span>
                         </div>
                     </td>
 
                     {!costView && dates.map((day, i) => <td key={i} className={`${u.logClass[day.prop]} day-wl-block`} exportType={timeExportFormat} data-test-id={day.prop}>
-                        {u.isCurrentUser && <span className="fa fa-clock-o add-wl" title="Click to add worklog" onClick={() => this.addWorklog(null, day)} />}
+                        {u.isCurrentUser && <span className="fa fa-clock add-wl" title="Click to add worklog" onClick={() => this.addWorklog(null, day)} />}
                         {convertSecs(u.total[day.prop])}</td>)}
                     {!costView && <td exportType={timeExportFormat} data-test-id="total">{convertSecs(u.grandTotal)}</td>}
 
@@ -415,7 +415,7 @@ class UserRow extends PureComponent {
                                 {!!showReporter && <td>{t.reporter}</td>}
 
                                 {!costView && dates.map((day, j) => <td key={j} className="day-wl-block" exportType={timeExportFormat} data-test-id={day.prop}>
-                                    {u.isCurrentUser && <span className="fa fa-clock-o add-wl" title="Click to add worklog" onClick={() => this.addWorklog(t.ticketNo, day)} />}
+                                    {u.isCurrentUser && <span className="fa fa-clock add-wl" title="Click to add worklog" onClick={() => this.addWorklog(t.ticketNo, day)} />}
                                     {breakupMode !== '2' && <span title={this.getComments(t.logs[day.prop])}>{convertSecs(this.getTotalTime(t.logs[day.prop]))}</span>}
                                     {breakupMode === '2' && <div> {this.getLogEntries(t.logs[day.prop])}</div>}
                                 </td>)}

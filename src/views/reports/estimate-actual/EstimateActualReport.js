@@ -126,7 +126,7 @@ class EstimateActualReport extends BaseGadget {
 
         this.storyPointField = (this.$session.CurrentUser.storyPointField || {}).id;
 
-        this.state = { groups: [], disableRefresh: true, dateRange: {}, chartData: {}, estimationField: 'timeoriginalestimate', projects: this.$session.CurrentUser.projects };
+        this.state = { selectedTab: 0, groups: [], disableRefresh: true, dateRange: {}, chartData: {}, estimationField: 'timeoriginalestimate', projects: this.$session.CurrentUser.projects };
     }
 
     componentDidMount() {
@@ -189,7 +189,7 @@ class EstimateActualReport extends BaseGadget {
             .then((issues) => {
                 this.$analytics.trackEvent("Estimate report viewed", EventCategory.UserActions);
 
-                const flatData = issues.flattern({
+                const flatData = issues.flatten({
                     'key': true,
                     'projectName': 'fields.project.name',
                     'projectKey': 'fields.project.key',
@@ -224,7 +224,7 @@ class EstimateActualReport extends BaseGadget {
                     if (parentIds.length) {
                         return this.$jira.searchTickets(`key in (${parentIds.join(',')})`, ["project", this.state.estimationField])
                             .then((parents) => {
-                                const flatParents = parents.flattern({
+                                const flatParents = parents.flatten({
                                     'key': true,
                                     'projectName': 'fields.project.name',
                                     'projectKey': 'fields.project.key',
@@ -390,14 +390,14 @@ class EstimateActualReport extends BaseGadget {
             <TabView activeIndex={selectedTab} onTabChange={this.tabChanged}>
                 <TabPanel header="Settings">
                     <div className="pad-15">
-                        <strong>How to use:</strong> To generate the estimate vs actual report follow the below steps
+                        <strong>How to Use:</strong> To generate the Estimate vs. Actual report, follow these steps:
                         <ul>
-                            <li>User list: Select the list of users for whom report need to be generated.</li>
-                            <li>Date range: Select the date range for which worklog details need to be fetched from jira</li>
-                            <li>Projects: Select one or more projects to be displayed for each users. To auto populate this field, go to Settings -&gt; General -&gt; Default values tab and provide the value for projects field.</li>
-                            <li>Tickets list: Add one or more tickets seperated by comma. These tickets will be listed seperately for comparison.</li>
-                            <li>Estimate type: Estimation comparison can be done based on Time estimate or Story Point estimate. If story point is selected, then optionally hours per story point can be configured to convert story point to estimated hours.</li>
-                            <li><b>Note:</b> If Story Point option under Estimate type is disabled, then go to SETTINGS -&gt; General -&gt; Default values (tab) and select appropriate field for Story Points</li>
+                            <li><strong>User List:</strong> Select the list of users for whom the report needs to be generated.</li>
+                            <li><strong>Date Range:</strong> Choose the date range for fetching worklog details from Jira.</li>
+                            <li><strong>Projects:</strong> Select one or more projects to display for each user. To auto-populate this field, navigate to Settings → General → Default Values tab and provide the value for the Projects field.</li>
+                            <li><strong>Tickets List:</strong> Add one or more tickets separated by commas. These tickets will be listed separately for comparison.</li>
+                            <li><strong>Estimate Type:</strong> Comparison can be based on Time Estimate or Story Point Estimate. If Story Points are selected, optionally configure hours per story point to convert story points to estimated hours.</li>
+                            <li><strong>Note:</strong> If the Story Point option under Estimate Type is disabled, go to SETTINGS → General → Default Values (tab) and select the appropriate field for Story Points.</li>
                         </ul>
                     </div>
                     <div>
@@ -436,7 +436,7 @@ class EstimateActualReport extends BaseGadget {
                             <div className="col-sm-12 col-md-5 col-lg-4 col-xl-3">
                                 <div className="form-group">
                                     <TextBox multiline={true} value={ticketsList} onChange={(val) => this.setState({ ticketsList: val })}
-                                        placeholder="List of tickets to be viewed seperated by comma" />
+                                        placeholder="List of tickets to be viewed separated by comma" />
                                 </div>
                             </div>
                         </div>

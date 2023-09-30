@@ -62,7 +62,7 @@ export function transformHeader(customFields) {
             return null;
         }
 
-        c = c.replace(/ /g, '').toLowerCase();
+        c = c.replace(/[ "]/g, '').toLowerCase();
         let fieldName = fieldMapping[c] || null;
 
         if (!fieldName) {

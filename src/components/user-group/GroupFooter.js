@@ -41,9 +41,9 @@ class GroupFooter extends PureComponent {
                 <tr>
                     <td colSpan={6}>
                         <div style={{ height: 30, paddingTop: 4 }}>
-                            <div className="pull-left">
+                            <div className="float-start">
                                 <div className="ui-inputgroup" hidden={editMode}>
-                                    <Button type="success" icon="fa fa-plus" label="Add group" onClick={this.beginAdd} />
+                                    <Button text type="success" icon="fa fa-plus" label="Add group" onClick={this.beginAdd} />
                                     {isPlugged && <span className="link margin-l-5 pad-b-5 inline-block" onClick={onReset}
                                         title="Click to clear local changes and pull data from user groups">Reset local changes</span>}
                                 </div>
@@ -58,14 +58,14 @@ class GroupFooter extends PureComponent {
                                         : <TextBox value={groupName} onChange={setGroupName} maxLength={40} placeholder="Name of new group"
                                             onKey_Enter={addNewGroup} />}
 
-                                    <Button type="success" icon="fa fa-check" disabled={!groupName} onClick={addNewGroup} />
-                                    <Button type="danger" icon="fa fa-close" onClick={endAdd} />
+                                    <Button text type="success" icon="fa fa-check" disabled={!groupName} onClick={addNewGroup} />
+                                    <Button text type="danger" icon="fa fa-close" onClick={endAdd} />
                                 </div>
                             </div>
-                            <div className="pull-right">
-                                {isPlugged && <span><strong>Note:</strong> To permanently save the changes, go to Settings -&gt; User groups from menu.</span>}
-                                {!isPlugged && <Button type="success" icon="fa fa-save" label="Save Changes" onClick={saveGroups} />}
-                                {isPlugged && <Button icon="fa fa-save" label="Done" onClick={onDone} />}
+                            <div className="float-end">
+                                {isPlugged && <span className="margin-r-8"><strong>Note:</strong> To permanently save the changes, go to Settings -&gt; User groups from menu.</span>}
+                                {!isPlugged && <Button type="primary" icon="fa fa-save" label="Save Changes" onClick={saveGroups} />}
+                                {isPlugged && <Button type="primary" icon="fa fa-save" label="Apply for now (not saved)" onClick={onDone} />}
                             </div>
                         </div>
                     </td>

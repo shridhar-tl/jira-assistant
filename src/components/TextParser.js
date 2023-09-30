@@ -1,12 +1,12 @@
-import { PureComponent } from "react";
-import { getGitHubIssueUrl } from "../constants/utils";
-import Link from "../controls/Link";
+import React from 'react';
+import { getGitHubIssueUrl } from '../constants/utils';
+import Link from '../controls/Link';
 
-class TextParser extends PureComponent {
-    render() { return parseText(this.props.message); }
+function TextParser({ message }) {
+    return parseText(message);
 }
 
-export default TextParser;
+export default React.memo(TextParser);
 
 const text_parser = /#\d+|(https?):\/\/(www\.)?[a-z0-9.:].*?(?<!\.\.?)(?=\s|[.]$|$)/g;
 function parseText(msg) {

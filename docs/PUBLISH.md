@@ -1,23 +1,57 @@
 # Jira Assistant Publish Process
 
-## How to prepare package for publish
+## Preparing the Package for Publishing
 
-Once development is completed and latest code is available in "develop" branch, same has to be merged to "package" branch. The package to be published would be built from "package" branch only. Before merging to package, ensure to have the version number in all the manifest.json files under "public" folder to be updated.
+Once your development work is complete and the latest code is available in the "develop" branch, it needs to be merged into the "package" branch. The package to be published will be built from the "package" branch. Before merging, make sure to update the version number in all `manifest.json` files under the "public" folder.
 
-To build the package, follow the steps below:
-1. Checkout package branch to your local if not done so far.
-2. Delete the node_modules folder if it already exists as this sometimes cause issues in review process of webstore.
-3. To pull the latest node modules, execute the command "npm install" and wait till it is completed.
-4. Finally to build the package execute the following command: "npm run build". This will create a package for different browsers under "build" folder.
+To build the package, follow these steps:
 
-The package created from Step 4 above will be used to load the addon in browser or to publish in web store.
+### Local Build Option:
 
-## How to publish the package to webstore?
+1. Checkout the "package" branch in your local repository if you haven't already.
+2. If it exists, delete the `node_modules` folder, as it can sometimes cause issues during the webstore review process.
+3. Retrieve the latest node modules by running `npm install --force` and wait for the process to complete.
+4. Finally, build the package by executing the command `npm run build`. This will generate packages for various browsers under the "build" folder.
 
-As of now only Shridhar (developer) can publish the package to web store. This step may be automated in future based on feasibility or additional contributors would be given privilege to perform this action.
+### Automated GitHub Build Option:
 
-## How to load the package in browser for testing?
+1. After merging your changes into the "package" branch, push the branch to GitHub.
+2. Automated builds will be triggered by GitHub Actions. Wait for the build to complete.
 
-The build package generated from above step can be used to load the extension temporarily for testing. Use the appropriate version for individual browser like Chrome, Firefox, Edge. For Opera, as of today, same package as that of chrome can be used. Later, when necessary, a seperate folder for Opera would be created.
+**Steps to Download GitHub Automated Build Package:**
 
-Note: Some browser like Firefox, would automatically remove the temporarily loaded addon when the browser is closed. Hence this option can only be used for testing and cannot be used as permanent option.
+1. In your web browser, visit the following URL: [GitHub Actions - Build and Deploy JA](https://github.com/shridhar-tl/jira-assistant/actions/workflows/build-ja.yml).
+2. Navigate to the "Artifacts" section of the latest completed build.
+3. Download the ZIP file containing the build package.
+4. Extract the downloaded ZIP file to access the build package.
+
+## Publishing the Package to the Web Store
+
+Currently, only Shridhar (the developer) has the privilege to publish the package to the web store. Automation of this step may be considered in the future, or additional contributors may be granted this privilege.
+
+## Loading the Package for Testing
+
+The build package generated from the above steps can be temporarily loaded for testing purposes. Use the appropriate version for each browser, such as Chrome, Firefox, Edge, and Opera.
+
+**Steps for Loading the Temporary Extension:**
+
+- **Google Chrome:**
+  - Open Chrome and go to `chrome://extensions/`.
+  - Enable "Developer mode" in the top-right corner.
+  - Click "Load unpacked" and select the `chrome` folder from the build output directory.
+
+- **Mozilla Firefox:**
+  - Open Firefox and navigate to `about:debugging#/runtime/this-firefox`.
+  - Click "Load Temporary Add-on..." and select `manifest.json` file within the `firefox` folder from the build output directory.
+
+- **Microsoft Edge:**
+  - Open Edge and visit `edge://extensions/`.
+  - Enable "Developer mode" in the bottom-left corner.
+  - Click "Load unpacked" and select the `edge` folder from the build output directory.
+
+- **Opera:**
+  - Open Opera and navigate to `opera://extensions/`.
+  - Enable "Developer mode" in the top-right corner.
+  - Click "Load unpacked" and select the `opera` folder from the build output directory.
+
+Please note that some browsers, like Firefox, will automatically remove temporarily loaded add-ons when the browser is closed. Therefore, this option is only suitable for testing and not a permanent solution.

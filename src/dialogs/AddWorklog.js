@@ -253,12 +253,12 @@ class AddWorklog extends BaseDialog {
 
         return <>
             {!log.id && <Checkbox checked={uploadImmediately || !!adjustEstimate} disabled={!!adjustEstimate}
-                className="pull-left" label="Upload immediately to Jira" onChange={(chk) => this.setState({ uploadImmediately: chk })} />}
-            {log.id > 0 && <Button type="danger" icon="fa fa-trash-o" label="Delete" className="pull-left" disabled={isLoading} onClick={() => this.deleteWorklog(log)} />}
-            {log.id > 0 && !log.worklogId && <Button type="success" isLoading={isLoading} icon="fa fa-upload" label="Save & Upload" className="pull-left" disabled={isLoading}
+                className="float-start" label="Upload immediately to Jira" onChange={(chk) => this.setState({ uploadImmediately: chk })} />}
+            {log.id > 0 && <Button type="danger" icon="fa fa-trash" label="Delete" className="float-start" disabled={isLoading} onClick={() => this.deleteWorklog(log)} />}
+            {log.id > 0 && !log.worklogId && <Button type="primary" isLoading={isLoading} icon="fa fa-upload" label="Save & Upload" className="float-start" disabled={isLoading}
                 onClick={() => this.saveWorklog(log, vald, true)} />}
+            <Button text type="secondary" icon="fa fa-times" label="Cancel" onClick={this.onHide} />
             <Button type="primary" icon="fa fa-save" label="Save" isLoading={isLoading} disabled={isLoading} onClick={() => this.saveWorklog(log, vald, uploadImmediately && !(log.id > 0))} />
-            <Button type="secondary" icon="fa fa-times" label="Cancel" onClick={this.onHide} />
         </>;
     }
 
@@ -291,7 +291,7 @@ class AddWorklog extends BaseDialog {
         return super.renderBase(<div className="pad-22" onKeyPress={this.handleKeyPress}>
             <div className="row pad-b">
                 <div className="col-sm-3">
-                    <strong>Date started {editTracker ? '& Time spent' : ''}</strong>
+                    <strong>Date started {editTracker ? '' : '& Time spent'}</strong>
                 </div>
                 <div className="col-lg-5 col-sm-6 col-xs-12">
                     <div className="form-group">

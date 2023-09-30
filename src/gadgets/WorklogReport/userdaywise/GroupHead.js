@@ -1,6 +1,7 @@
 import React, { Fragment } from 'react';
 import { THead } from '../../../components/ScrollableTable';
 import { connect } from '../datastore';
+import { DatesList, WeeksList } from './shared';
 
 function GroupHead({ useSprint, sprintsList, additionalCols, costView }) {
     const addlColCount = (additionalCols?.length || 0) + 1;
@@ -37,17 +38,3 @@ export default connect(GroupHead,
             sprintsList: useSprint ? state[`sprintsList_${boardId}`] : undefined
         };
     });
-
-const WeeksList = connect(function ({ weeks }) {
-    return weeks.map((day, i) => <th key={i} className="week-head" colSpan={day.days}>{day.display}</th>);
-}, (state, { sprint }) => {
-    const { [sprint ? `groupReport_${sprint.id}` : 'groupReport']: { weeks } } = state;
-    return { weeks };
-});
-
-const DatesList = connect(function ({ dates }) {
-    return dates.map((day, i) => <th key={i} data-test-id={day.prop} className={`day-head${day.isHoliday ? ' holiday' : ''}`}>{day.dateNum}<br /><span className="day-name">{day.day}</span></th>);
-}, (state, { sprintId }) => {
-    const { [sprintId ? `groupReport_${sprintId}` : 'groupReport']: { dates } } = state;
-    return { dates };
-});

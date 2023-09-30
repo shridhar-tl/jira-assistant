@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import Button from '../../controls/Button';
+import { Button } from '../../controls';
 import TextBox from '../../controls/TextBox';
 import { OverlayPanel } from 'primereact/overlaypanel';
 import { DASHBOARD_ICONS } from '../../constants/font-icons';

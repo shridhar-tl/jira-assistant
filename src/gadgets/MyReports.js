@@ -113,8 +113,30 @@ class MyReports extends BaseGadget {
     };
 
     editReport = (rpt) => {
-        this.context.navigate(`/reports/${rpt.advanced ? "advanced" : (rpt.isNew ? 'custom' : 'customgrouped')}/${rpt.id}`, true);
+        let reportPath = 'customgrouped';
+
+        if (rpt.reportType === 'pivot') {
+            reportPath = 'pivot';
+        } else if (rpt.advanced) {
+            reportPath = 'advanced';
+        } else if (rpt.isNew) {
+            reportPath = 'custom';
+        }
+
+        this.context.navigate(`/reports/${reportPath}/${rpt.id}`, true);
     };
+
+    getReportType(rpt) {
+        if (rpt.reportType === 'pivot') {
+            return 'Pivot report';
+        } else if (rpt.isNew) {
+            return 'Custom report';
+        } else if (rpt.advanced) {
+            return 'Advanced report';
+        }
+
+        return 'Custom Report (Old)';
+    }
 
     selectRowItem(item) {
         item.selected = !item.selected;
@@ -135,9 +157,9 @@ class MyReports extends BaseGadget {
     renderCustomActions() {
         return <>
             <input ref={this.setFileSelector} type="file" className="hide" accept=".jrd" onChange={this.fileSelected} />
-            <Button icon="fa fa-upload" onClick={this.chooseFileForImport} title="Import reports shared by others" />
-            <Button icon="fa fa-download" disabled={!this.state.selReportsCount} onClick={this.downloadReports} title="Export reports to share with others" />
-            <Button type="danger" icon="fa fa-trash-o" onClick={this.deleteSelectedReports} title="Delete selected report(s)" />
+            <Button text icon="fa fa-upload" onClick={this.chooseFileForImport} title="Import reports shared by others" />
+            <Button text icon="fa fa-download" disabled={!this.state.selReportsCount} onClick={this.downloadReports} title="Export reports to share with others" />
+            <Button text type="danger" icon="fa fa-trash" onClick={this.deleteSelectedReports} title="Delete selected report(s)" />
         </>;
     }
 
@@ -163,7 +185,7 @@ class MyReports extends BaseGadget {
                         </td>
                         <td>{b.queryName}</td>
                         <td>{b.displayDate}</td>
-                        <td>{b.advanced ? 'Advanced report' : (`Custom Report${b.isNew ? '' : ' (old)'}`)}</td>
+                        <td>{this.getReportType(b)}</td>
                         <td>{b.outputCount}</td>
                         <td className="text-center"><Button icon="fa fa-edit" onClick={() => this.editReport(b)} title="Click to edit this report" /></td>
                     </tr>}
@@ -280,7 +302,7 @@ class ImportReports extends BaseDialog {
         const { selReportsCount } = this.state;
 
         return <>
-            <Button icon="fa fa-times" onClick={this.onHide} label="Cancel" type="default" />
+            <Button text icon="fa fa-times" onClick={this.onHide} label="Cancel" type="default" />
             <Button icon="fa fa-check" disabled={!selReportsCount} onClick={this.importReports} label="Import" type="primary" />
         </>;
     }

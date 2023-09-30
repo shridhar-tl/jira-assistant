@@ -1,0 +1,27 @@
+.pivot-config {
+    height: 100%;
+    overflow-y: auto;
+    width: 320px;
+
+    .icon-toggle {
+        width: 20px;
+    }
+
+    .fields-config {
+        padding: 8px;
+
+        .drop-placeholder {
+            font-style: italic;
+            opacity: .6;
+        }
+
+        .sortable {
+            width: 100%;
+
+            .drop-placeholder {
+                min-height: 30px;
+                border-radius: 8px;
+            }
+        }
+    }
+}

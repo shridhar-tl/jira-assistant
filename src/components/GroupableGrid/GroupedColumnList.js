@@ -1,9 +1,9 @@
 import React, { PureComponent } from 'react';
-import { Sortable } from '../../externals/jsd-report';
+import { Sortable } from '../../controls';
 import PropTypes from 'prop-types';
 import { showContextMenu } from '../../externals/jsd-report';
 
-const emptyGroupPlaceholder = <div className="empty-group-msg">Drag and drop column here to group data</div>;
+const emptyGroupPlaceholder = <span className="empty-group-msg">Drag and drop column here to group data</span>;
 const addGroupItemPlaceholder = <span>Drag and drop more columns here</span>;
 
 class GroupedColumnList extends PureComponent {
@@ -56,7 +56,7 @@ class GroupedColumnList extends PureComponent {
             <div className="group-bar">
                 <span className={`fa group-mode-icon fa-columns${showColumns ? " active" : ""}`}
                     onClick={toggleColumns} title="Click to choose what column to display">
-                    {badgeText && <span className="badge badge-warning visible-cols">{badgeText}</span>}
+                    {badgeText && <span className="badge bg-warning text-dark visible-cols">{badgeText}</span>}
                 </span>
                 {groupBy.length > 0 && <span className={`fa group-mode-icon fa-th-list${foldable ? "" : " active"}`}
                     onClick={() => this.toggleMode(false)} title="Display group values in columns" />}
@@ -65,10 +65,10 @@ class GroupedColumnList extends PureComponent {
 
                 <span className="group-label">Group by:</span>
                 <div className="group-list-container">
-                    <Sortable className="group-list" items={groupBy} itemType="column" onChange={this.columnReordered} accepts={["column"]}
+                    <Sortable useDropRef className="group-list" items={groupBy} defaultItemType="column" onChange={this.columnReordered}
                         placeholder={groupBy.length ? addGroupItemPlaceholder : emptyGroupPlaceholder}>
-                        {(g, i, dropProps) => <GroupedColumn key={i} group={g} index={i} toggleSort={this.toggleSort}
-                            removeGroup={this.removeGroup} settingsChanged={this.changeSettings} dropProps={dropProps} />}
+                        {(g, i, { droppable }) => <GroupedColumn key={i} group={g} index={i} toggleSort={this.toggleSort}
+                            removeGroup={this.removeGroup} settingsChanged={this.changeSettings} dropProps={droppable} />}
                     </Sortable>
                 </div>
             </div>
@@ -89,10 +89,10 @@ class GroupedColumn extends PureComponent {
 
     setRef = (el) => {
         this.el = el;
-        const { dropProps: { dropConnector } = {} } = this.props;
+        const { dropProps: { dropRef } = {} } = this.props;
 
-        if (dropConnector) {
-            dropConnector(el);
+        if (dropRef) {
+            dropRef(el);
         }
     };
 
@@ -141,9 +141,9 @@ class GroupedColumn extends PureComponent {
         return (
             <div ref={this.setRef} className="group-list-item"
                 onContextMenu={g.groupOptions?.length ? this.showMenu : undefined}>
-                {!g.sortDesc && <span className="fa fa-sort-amount-asc sort-icon"
+                {!g.sortDesc && <span className="fa fa-sort-amount-desc sort-icon"
                     onClick={this.sortDesc} title="Click to sort desc" />}
-                {!!g.sortDesc && <span className="fa fa-sort-amount-desc sort-icon"
+                {!!g.sortDesc && <span className="fa fa-sort-amount-asc sort-icon"
                     onClick={this.sortAsc} title="Click to sort asc" />}
                 {g.displayText}
 

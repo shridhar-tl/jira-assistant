@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import Button from '../../controls/Button';
+import { Button } from '../../controls';
 import DashboardName from './DashboardName';
 import { inject } from '../../services/injector-service';
 import { showContextMenu } from '../../externals/jsd-report';
@@ -20,7 +20,7 @@ class Header extends PureComponent {
 
         const contextMenu = [
             { label: "Create dashboard", icon: "fa fa-plus", command: () => this.$dashboard.createDashboard(this.state.config) },
-            { label: "Delete dashboard", icon: "fa fa-trash-o", command: () => this.deleteDashboard(), disabled: index === 0 }
+            { label: "Delete dashboard", icon: "fa fa-trash", command: () => this.deleteDashboard(), disabled: index === 0 }
         ];
 
         if (!this.props.isQuickView) {
@@ -83,10 +83,10 @@ class Header extends PureComponent {
 
         return (
             <div className="page-header">
-                <div className="pull-left"><DashboardName icon={icon} value={name} onChange={this.nameChanged} /></div>
-                <div className="pull-right">
-                    <Button type="success" icon="fa fa-cubes" label="Add gadgets" onClick={this.props.onShowGadgets} />
-                    {!this.props.isQuickView && <Button icon="fa fa-wrench" onClick={this.showContext} />}
+                <div className="float-start"><DashboardName icon={icon} value={name} onChange={this.nameChanged} /></div>
+                <div className="float-end">
+                    <Button text type="success" icon="fa fa-cubes" label="Add gadgets" onClick={this.props.onShowGadgets} />
+                    {!this.props.isQuickView && <Button text icon="fa fa-wrench" onClick={this.showContext} />}
                 </div>
             </div>
         );

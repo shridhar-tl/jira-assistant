@@ -1,73 +1,74 @@
-import React, { PureComponent } from 'react';
-import { UncontrolledDropdown, DropdownItem, DropdownMenu, DropdownToggle } from 'reactstrap';
+import React from 'react';
+import { OverlayPanel } from 'primereact/overlaypanel';
 import { inject } from '../../services';
-import './JiraUpdates.scss';
+import { Link } from 'src/controls';
 import { DateDisplay, UserDisplay } from '../../display-controls';
+import { Icons } from 'src/constants/icons';
+import './JiraUpdates.scss';
 
-class JiraUpdates extends PureComponent {
-    constructor(props) {
-        super(props);
-        inject(this, "JiraUpdatesService", "AnalyticsService", "UtilsService");
-        this.state = {};
+function JiraUpdates() {
+    const op = React.useRef();
+
+    const [state, setState] = React.useState({});
+    const { list, total, ticketCount } = state;
+
+    const showPanel = React.useCallback((e) => {
+        op.current.show(e);
+        trackViewList(total);
+    }, [op, total]);
+
+    const { $utils } = inject('UtilsService');
+
+    React.useEffect(() => {
+        getUpdates().then(setState);
+    }, []);
+
+
+    if (!list || !list.length) {
+        return null;
     }
 
-    componentDidMount() {
-        this.$jupdates.getRescentUpdates().then(res => {
-            this.setState(res);
-        });
-    }
-
-    trackViewList = () => {
-        const { total } = this.state;
-        this.$analytics.trackEvent("Jira Updates: List viewed", "Updates", `Updates: Total: ${total}`);
-    };
-
-    trackAnalytics(msg, event) {
-        this.$analytics.trackEvent((msg.type === "versionInfo" ? "Update Info: " : "Message: ") + event, "Messages", `Message Id: ${msg.id}`);
-    }
-
-    render() {
-        const { list, total, ticketCount } = this.state;
-
-        if (!list || !list.length) {
-            return null;
-        }
-
-        return (
-            <UncontrolledDropdown nav direction="down">
-                <DropdownToggle nav onClick={this.trackViewList}>
-                    <i className="fa fa-comments"></i>{total > 0 && <span className="badge badge-warning">{total}</span>}
-                </DropdownToggle>
-                <DropdownMenu right className="jira-notifications">
-                    <DropdownItem header tag="div">
-                        <div className="text-center"><strong>You have {total} updates on {ticketCount} issues</strong></div>
-                    </DropdownItem>
-                    <div className="noti-messages">
-                        {list.map((msg, i) => (<Message key={i} message={msg} cut={this.$utils.cut} />))}
-                    </div>
-                </DropdownMenu>
-            </UncontrolledDropdown>
-        );
-    }
+    return (<>
+        <li className="nav-item">
+            <span className="drop-icon" onClick={showPanel} title="Notification updates from Jira">{Icons.bellNotification}</span>
+            {total > 0 && <span className="badge bg-warning text-dark">{total > 99 ? '99+' : total}</span>}
+        </li>
+        <OverlayPanel ref={op} className="drop-op">
+            <div className="jira-notifications drop-op-container">
+                <div className="title text-center">
+                    <strong>You have {total} updates on {ticketCount} issues</strong>
+                </div>
+                <div className="drop-op-body noti-messages">
+                    {list.map((msg, i) => (<Message key={i} message={msg} cut={$utils.cut} />))}
+                </div>
+            </div>
+        </OverlayPanel>
+    </>);
 }
 
 export default JiraUpdates;
 
-class Message extends PureComponent {
-    render() {
-        const { message: msg, cut } = this.props;
+function Message({ message: msg, cut }) {
+    return (
+        <Link className="drop-item" title="Click to view this ticket in jira" href={msg.href}>
+            <div className="text-truncate fw-bold" title={msg.summary}>
+                {msg.key} - {cut(msg.summary, 100, true)}
+            </div>
+            {msg.updates.map(({ date, author, field, fromString, toString }, i) => <div key={i} className="small text-muted message-text">
+                <UserDisplay tag="span" className="user-display" user={author} />
+                <span> updated {field} from {fromString} to {toString} </span>
+                <DateDisplay tag="span" className="date-display" date={date} quick={true} />
+            </div>)}
+        </Link>
+    );
+}
 
-        return (
-            <DropdownItem tag="a" title="Click to view this ticket in jira" href={msg.href} target="_blank">
-                <div className={"text-truncate font-weight-bold"} title={msg.summary}>
-                    {msg.key} - {cut(msg.summary, 100, true)}
-                </div>
-                {msg.updates.map(({ date, author, field, fromString, toString }, i) => <div key={i} className="small text-muted message">
-                    <UserDisplay tag="span" className="user-display" user={author} />
-                    <span> updated {field} from {fromString} to {toString} </span>
-                    <DateDisplay tag="span" className="date-display" date={date} quick={true} />
-                </div>)}
-            </DropdownItem>
-        );
-    }
+async function getUpdates() {
+    const { $jupdates } = inject('JiraUpdatesService');
+    return await $jupdates.getRescentUpdates();
+}
+
+function trackViewList(total) {
+    const { $analytics } = inject('AnalyticsService');
+    $analytics.trackEvent("Jira Updates: List viewed", "Updates", `Updates: Total: ${total}`);
 }

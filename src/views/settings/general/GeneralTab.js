@@ -129,8 +129,8 @@ class GeneralTab extends TabControlBase {
                             </a>
                         </div>
                         <span className="help-block">
-                            You can choose to hide the donate button / menu displayed in the tool using this option. But before hiding it consider donating
-                            a small amount of your wish.
+                            You have the option to hide the donation button/menu within the tool. However, we kindly encourage you to consider making
+                            a voluntary contribution of your choice before choosing to hide it
                         </span>
                     </div>
                 </div>}

@@ -48,7 +48,7 @@ const fieldMapping = {
 
 class ImportWorklog extends BaseImport {
     constructor(props) {
-        super(props, "Worklog", "fa fa-clock-o");
+        super(props, "Worklog", "fa fa-clock");
         inject(this, "UtilsService", "UserUtilsService", "TicketService", "QueueService", "WorklogService", "SessionService", "MessageService");
 
         this.maxHrsToLog = this.$session.CurrentUser.maxHours;
@@ -67,7 +67,7 @@ class ImportWorklog extends BaseImport {
             return null;
         }
 
-        return fieldMapping[c.replace(/ /g, '').toLowerCase()] || null;
+        return fieldMapping[c.replace(/[ "]/g, '').toLowerCase()] || null;
     };
 
     processData(data) {
@@ -339,13 +339,13 @@ class ImportWorklog extends BaseImport {
         } = this;
 
         return <div className="pnl-footer">
-            <div className="pull-left">
+            <div className="float-start">
                 <Checkbox checked={autoUpload} label="Directly upload worklog to Jira" disabled={isLoading} onChange={this.toggleAutoUpload} />
             </div>
 
-            <div className="pull-right">
-                <Button type="info" icon="fa fa-list" label="Clear" disabled={isLoading} onClick={this.clearWorklogs} />
-                <Button type="success" icon={autoUpload ? "fa fa-upload" : "fa fa-floppy-o"} disabled={isLoading || !(selectedCount > 0)}
+            <div className="float-end">
+                <Button text type="info" icon="fa fa-list" label="Clear" disabled={isLoading} onClick={this.clearWorklogs} />
+                <Button type="primary" icon={autoUpload ? "fa fa-upload" : "fa fa-save"} disabled={isLoading || !(selectedCount > 0)}
                     label={autoUpload ? `Upload ${selectedCount} worklogs` : `Import ${selectedCount} worklogs`} onClick={this.importWorklogs} />
             </div>
         </div>;

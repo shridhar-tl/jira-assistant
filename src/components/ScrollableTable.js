@@ -1,7 +1,7 @@
 import React, { PureComponent, createContext } from 'react';
-import "./ScrollableTable.scss";
-import { EventEmitter } from 'events';
 import classNames from "classnames";
+import { EventEmitter } from 'events';
+import "./ScrollableTable.scss";
 
 const TableContext = createContext({});
 

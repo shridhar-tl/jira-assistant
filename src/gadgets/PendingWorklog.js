@@ -12,15 +12,15 @@ import Link from '../controls/Link';
 class PendingWorklog extends BaseGadget {
     static contextType = WorklogContext;
     constructor(props) {
-        super(props, 'Worklog - [Pending upload]', 'fa-clock-o');
+        super(props, 'Worklog - [Pending upload]', 'fa-clock');
         inject(this, "WorklogService", "UtilsService", "UserUtilsService", "MessageService");
 
         this.contextMenu = [
-            { label: "Select worklog", icon: "fa fa-check-square-o", command: () => this.selectRowItem(this.selectedItem) },
+            { label: "Select worklog", icon: "fa fa-check-square", command: () => this.selectRowItem(this.selectedItem) },
             { label: "Edit worklog", icon: "fa fa-edit", command: () => this.editWorklogObj() },
             { label: "Copy worklog", icon: "fa fa-copy", command: () => this.editWorklogObj(true) },
             { label: "Upload worklog", icon: "fa fa-upload", command: () => this.uploadWorklog([this.selectedItem]) },
-            { label: "Delete worklog", icon: "fa fa-trash-o", command: () => this.deleteWorklog([this.selectedItem]) }
+            { label: "Delete worklog", icon: "fa fa-trash", command: () => this.deleteWorklog([this.selectedItem]) }
         ];
 
         this.state.selAllChk = true;
@@ -136,8 +136,8 @@ class PendingWorklog extends BaseGadget {
 
     renderCustomActions() {
         return <>
-            <Button icon="fa fa-upload" onClick={() => this.uploadWorklog()} title="Upload selected worklogs" />
-            <Button type="danger" icon="fa fa-trash-o" onClick={() => this.deleteWorklog()} title="Delete selected worklogs" />
+            <Button text icon="fa fa-upload" onClick={() => this.uploadWorklog()} title="Upload selected worklogs" />
+            <Button text type="danger" icon="fa fa-trash" onClick={() => this.deleteWorklog()} title="Delete selected worklogs" />
         </>;
     }
 

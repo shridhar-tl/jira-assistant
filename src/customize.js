@@ -14,6 +14,7 @@ const config = {
         // Reports
         worklogReport: true,
         worklogReportOld: true,
+        pivotReport: true,
         sprintReport: !isPluginBuild,
         customReport: true,
         estimateVsActual: true,

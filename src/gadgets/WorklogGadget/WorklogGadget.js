@@ -256,8 +256,8 @@ class WorklogGadget extends BaseGadget {
 
         return <>
             <DatePicker value={dateRange} range={true} onChange={this.dateSelected} style={{ marginRight: '35px' }} />
-            <Button icon="fa fa-users" onClick={this.showGroupsPopup} title="Add users / groups to report" />
-            <Button icon="fa fa-cogs" onClick={this.showSettings} title="Show settings" />
+            <Button text icon="fa fa-users" onClick={this.showGroupsPopup} title="Add users / groups to report" />
+            <Button text icon="fa fa-cogs" onClick={this.showSettings} title="Show settings" />
         </>;
     }
 

@@ -22,19 +22,19 @@
   &.docked {
     .worklog-report-container {
       .scroll-table-container {
-        height: calc(100vh - 121px);
+        height: calc(100vh - 135px);
 
         &.flat-data-grid {
-          height: calc(100vh - 168px);
+          height: calc(100vh - 182px);
         }
       }
 
       .p-tabview.multi-view {
         .scroll-table-container {
-          height: calc(100vh - 156px);
+          height: calc(100vh - 170px);
 
           &.flat-data-grid {
-            height: calc(100vh - 203px);
+            height: calc(100vh - 215px);
           }
         }
       }
