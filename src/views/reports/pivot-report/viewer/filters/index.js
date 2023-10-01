@@ -166,14 +166,22 @@ function create_InExpressionListPredicate(expr, scope) {
 function validate_ExpressionList(expr, scope, leftFn, hasNot) {
     const { value } = expr;
 
-    const values = value.map(v => createFilterForObject(v, scope));
+    let values = value.map(v => createFilterForObject(v, scope));
+
+    if (values.length === 1 && value[0].name?.toLowerCase() === 'parameters' && value[0].type === 'FunctionCall') {
+        values = values[0]();
+    }
 
     if (leftFn.returnsArrayOfValues) {
         return (issue) => {
             const leftValue = leftFn(issue);
 
-            for (const rightFn of values) {
-                if (leftValue.includes(rightFn(issue))) {
+            for (let rightFn of values) {
+                if (typeof rightFn === 'function') { // When parameters are directly as first argument, array would contain direct values itself
+                    rightFn = rightFn(issue);
+                }
+
+                if (leftValue.includes(rightFn)) {
                     return hasNot ? null : issue;
                 }
             }
@@ -241,7 +249,7 @@ function handle_Identifier(expr, scope) {
     const schema = scope.isLikeComparison ? normalizeTypeForLikeComparison(field) : normalizeTypeForComparison(field);
     const { type, keyField } = schema;
     const propName = field.key;
-    let converter = lCase;
+    let converter = toComparableCase;
 
     if (type === 'date' || type === 'datetime') {
         converter = convertDateTime;
@@ -261,7 +269,7 @@ function handle_Identifier(expr, scope) {
                 return valObj;
             }
 
-            return keyField.map(k => lCase(valObj[k]) ?? {}); // if the prop value is null then construct empty object so that it doesn't match comparison
+            return keyField.map(k => toComparableCase(valObj[k]) ?? {}); // if the prop value is null then construct empty object so that it doesn't match comparison
         };
 
         converter.returnsArrayOfValues = true;
@@ -278,7 +286,7 @@ function handle_Identifier(expr, scope) {
     }
 }
 
-function lCase(value) {
+function toComparableCase(value) {
     if (typeof value === 'string') {
         return value.toLowerCase();
     }
@@ -311,8 +319,8 @@ function handle_FunctionCall(expr, scope) {
         return (issue) => issue && func.apply(scope, args.map(a => a(issue)));
     } else {
         // Function without args or arguments which is static would return same value every time.
-        // There is no need of passing scope as well
-        const funcValue = func();
+        // There is no need of passing scope as well except for parameters function
+        const funcValue = func.apply(scope, args.map(a => a()));
         const funcResult = () => funcValue;
         func.isStaticValue = true;
         return funcResult;
@@ -325,7 +333,7 @@ function getHardCodedValues(expr) {
 
     switch (type.toLowerCase()) {
         case 'string':
-            valueToCompare = lCase(value.substring(1, value.length - 1));
+            valueToCompare = toComparableCase(value.substring(1, value.length - 1));
             break;
         case 'number':
             valueToCompare = Number(value);
@@ -337,7 +345,7 @@ function getHardCodedValues(expr) {
             valueToCompare = null;
             break;
         default:
-            valueToCompare = lCase(value);
+            valueToCompare = toComparableCase(value);
             break;
     }
 

@@ -53,7 +53,8 @@ class AddBookmark extends BaseDialog {
         const { state: { ticketsList } } = this;
 
         return super.renderBase(<div className="pad-22">
-            <MultiValueText value={ticketsList} onChange={this.listChanged} placeholder="Enter one or more ticket numbers" />
+            <MultiValueText value={ticketsList} onChange={this.listChanged} className="mb-2"
+                minItemLength={4} useUpperCase placeholder="Enter one or more ticket numbers" />
             <strong>Note:</strong> Press enter key to add multiple items
         </div>);
     }

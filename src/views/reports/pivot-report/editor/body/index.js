@@ -2,7 +2,7 @@ import React from 'react';
 import GroupTable from './group-table';
 import { updateParameters, usePivotConfig, useReportData } from '../../store/pivot-config';
 import ReportInfo from './ReportInfo';
-import { Form, FormDatePicker, FormTextBox } from 'react-controls/controls/form';
+import { Form, FormDatePicker, FormTextBox, FormMultiValueText } from 'react-controls/controls/form';
 import { Button } from 'react-controls/controls';
 import { generateReport } from '../../viewer/generator';
 
@@ -47,7 +47,7 @@ function ReportParameters() {
             <br />
             {keys.map((key) => <div key={key} className="param-field py-3">
                 <label className="font-bold me-3">{parameters[key].name}: </label>
-                <ParameterControl type={parameters[key].type} name={parameters[key].name} />
+                <ParameterControl {...parameters[key]} />
             </div>)}
             <br />
             <Button icon="fa fa-refresh" label="Generate Report" onClick={generateReport} />
@@ -55,11 +55,16 @@ function ReportParameters() {
     </Form>);
 }
 
-function ParameterControl({ type, name }) {
-    const field = `${name}.value`;
+function ParameterControl({ type, isArray, name }) {
+    const field = `${name.toLowerCase()}.value`;
+
     switch (type) {
         default:
-            return (<FormTextBox field={field} />);
+            if (isArray) {
+                return (<FormMultiValueText field={field} clearIfEmpty />);
+            } else {
+                return (<FormTextBox field={field} />);
+            }
         case 'daterange':
             return (<FormDatePicker field={field} range={true} />);
         case 'datetime':

@@ -192,6 +192,10 @@ function validate_InExpressionListPredicate(expr, result) {
 function validate_ExpressionList(expr, result, leftPart) {
     const { value } = expr;
 
+    if (value.length === 1) {
+        leftPart = { ...leftPart, isArray: true };
+    }
+
     for (const item of value) {
         const itemType = validateObject(item, result, leftPart);
 
@@ -298,7 +302,7 @@ function validateParametersFunctionArgs(funcName, params, result, leftPart) {
             throw new Error(`Parameter ${nameParam.value} is used across incompatible types`);
         }
 
-        result.parameters[nameLCase] = { name: paramNameWithoutQuotes, type: leftPart.type?.type || leftPart.type };
+        result.parameters[nameLCase] = { name: paramNameWithoutQuotes, type: leftPart.type?.type || leftPart.type, isArray: leftPart.isArray || undefined };
     }
 }
 

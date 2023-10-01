@@ -59,8 +59,8 @@ function validateReportParameters({ parameters: list }) {
         const paramNameLCase = cur.name.toLowerCase();
         let curParameter = values[paramNameLCase];
 
-        if (!curParameter || curParameter.type !== cur.type) {
-            curParameter = { name: cur.name, type: cur.type };
+        if (!curParameter || curParameter.type !== cur.type || curParameter.isArray !== cur.isArray) {
+            curParameter = { name: cur.name, type: cur.type, isArray: cur.isArray };
         }
 
         if (!curParameter.value) {
