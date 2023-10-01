@@ -74,6 +74,10 @@ const comparibleTypesMapping = {
 };
 
 export function normalizeType(field) {
+    return normalizeTypeWithOptions(field, keyFieldMapping, 'id');
+}
+
+export function normalizeTypeWithOptions(field, keyFieldMapping, knownTypeFields) {
     const { schema, key } = field;
     const { type = key, system } = schema || {};
 
@@ -86,7 +90,7 @@ export function normalizeType(field) {
     }
 
     if (fixedValueObjectTypes.includes(type)) {
-        return { type, knownObject: true, keyField: 'id' };
+        return { type, knownObject: true, keyField: knownTypeFields };
     }
 
     if (type === 'array') {
@@ -95,3 +99,4 @@ export function normalizeType(field) {
 
     return type;
 }
+

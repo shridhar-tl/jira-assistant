@@ -8,7 +8,19 @@ export function currentUser() {
 }
 
 export function parameters(paramName) {
-    return this.parameters[paramName.toLowerCase()];
+    return toComparableCase(this.parameters[paramName.toLowerCase()]?.value);
+}
+
+function toComparableCase(value) {
+    if (Array.isArray(value)) {
+        return value.map(toComparableCase);
+    }
+
+    if (typeof value === 'string') {
+        return value.toLowerCase();
+    }
+
+    return value;
 }
 
 export function as_date(value, format) {

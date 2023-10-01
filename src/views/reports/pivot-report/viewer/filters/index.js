@@ -1,9 +1,29 @@
-import { normalizeType } from "src/display-controls";
+import { normalizeTypeWithOptions } from "src/display-controls";
 import { parseWhereClause } from "../../editor/controls/config/filter-options/validators";
 import * as functions from './functions';
 import { usePivotConfig } from "../../store/pivot-config";
 import { useFieldsList } from "../../utils/fields";
 import moment from "moment";
+
+const comparerFieldMapping = {
+    parent: ['key', 'id'],
+    project: ['name', 'key'],
+    user: ['displayName', 'emailAddress', 'name', 'accountId']
+};
+
+function normalizeTypeForComparison(field) {
+    return normalizeTypeWithOptions(field, comparerFieldMapping, ['name', 'id']);
+}
+
+const likeComparerFieldMapping = {
+    parent: ['key'],
+    project: ['name', 'key'],
+    user: ['displayName', 'emailAddress', 'name', 'accountId']
+};
+
+function normalizeTypeForLikeComparison(field) {
+    return normalizeTypeWithOptions(field, likeComparerFieldMapping, 'name');
+}
 
 const functionsMap = Object.keys(functions).reduce((result, key) => {
     result[key.toLowerCase()] = functions[key];
@@ -45,6 +65,7 @@ const expressionType = {
     BetweenPredicate: create_BetweenPredicate,
 
     InExpressionListPredicate: create_InExpressionListPredicate,
+    LikePredicate: create_LikePredicate,
 
     Identifier: handle_Identifier,
     FunctionCall: handle_FunctionCall,
@@ -74,7 +95,14 @@ function create_ComparisonBooleanPrimary(json, scope) {
     const leftFn = createFilterForObject(left, scope);
     const rightFn = createFilterForObject(right, scope);
 
-    const oprFn = createOperatorFn(operator, leftFn, rightFn);
+    let oprFn;
+    if (leftFn.returnsArrayOfValues) {
+        oprFn = createArrayOperatorFn(operator, leftFn, rightFn);
+    } else if (rightFn.returnsArrayOfValues) {
+        oprFn = createArrayOperatorFn(operator, rightFn, leftFn);
+    } else {
+        oprFn = createOperatorFn(operator, leftFn, rightFn);
+    }
 
     return (issue) => (issue && oprFn(issue) ? issue : undefined);
 }
@@ -100,6 +128,18 @@ function createOperatorFn(operator, leftFn, rightFn) {
     }
 }
 
+function createArrayOperatorFn(operator, leftFn, rightFn) {
+    // eslint-disable-next-line default-case
+    switch (operator) {
+        case '=':
+            return (issue) => leftFn(issue).includes(rightFn(issue));
+
+        case '!=':
+        case '<>':
+            return (issue) => !leftFn(issue).includes(rightFn(issue));
+    }
+}
+
 function create_BetweenPredicate(expr, scope) {
     const { left: leftField, right: { left, right } } = expr;
 
@@ -116,37 +156,100 @@ function create_BetweenPredicate(expr, scope) {
 }
 
 function create_InExpressionListPredicate(expr, scope) {
-    const { left, right } = expr;
+    const { left, right, hasNot } = expr;
 
     const leftFn = createFilterForObject(left, scope);
 
-    return validate_ExpressionList(right, scope, leftFn);
+    return validate_ExpressionList(right, scope, leftFn, !!hasNot);
 }
 
-function validate_ExpressionList(expr, scope, leftFn) {
+function validate_ExpressionList(expr, scope, leftFn, hasNot) {
     const { value } = expr;
 
-    const values = value.map(v => createFilterForObject(v, scope));
+    let values = value.map(v => createFilterForObject(v, scope));
 
-    return (issue) => {
-        const leftValue = leftFn(issue);
+    if (values.length === 1 && value[0].name?.toLowerCase() === 'parameters' && value[0].type === 'FunctionCall') {
+        values = values[0]();
+    }
 
-        for (const rightFn of values) {
-            if (leftValue === rightFn(issue)) {
+    if (leftFn.returnsArrayOfValues) {
+        return (issue) => {
+            const leftValue = leftFn(issue);
+
+            for (let rightFn of values) {
+                if (typeof rightFn === 'function') { // When parameters are directly as first argument, array would contain direct values itself
+                    rightFn = rightFn(issue);
+                }
+
+                if (leftValue.includes(rightFn)) {
+                    return hasNot ? null : issue;
+                }
+            }
+
+            if (hasNot) { // If nothing matches execution reaches this position and if its not case, then return issue
                 return issue;
             }
-        }
-    };
+        };
+    } else {
+        return (issue) => {
+            const leftValue = leftFn(issue);
+
+            for (const rightFn of values) {
+                if (leftValue === rightFn(issue)) {
+                    return hasNot ? null : issue;
+                }
+            }
+
+            if (hasNot) { // If nothing matches execution reaches this position and if its not case, then return issue
+                return issue;
+            }
+        };
+    }
+}
+
+function create_LikePredicate(expr, scope) {
+    scope = { ...scope, isLikeComparison: true }; // Modify scope so that old scope is not used
+
+    const { left, right, hasNot } = expr;
+
+    const leftFn = createFilterForObject(left, scope);
+
+    return validate_LikeExpression(right, scope, leftFn, !!hasNot);
+}
+
+function validate_LikeExpression(expr, scope, leftFn, hasNot) {
+    let { value } = expr;
+    value = value.substring(1, value.length - 1);
+
+    value = new RegExp(`^${value.replace(/%/g, '.*').replace(/_/g, '.')}$`, 'im');
+
+    if (leftFn.returnsArrayOfValues) {
+        return (issue) => {
+            if (leftFn(issue).some(val => value.test(val))) {
+                return hasNot ? null : issue;
+            }
+
+            if (hasNot) { return issue; }
+        };
+    } else {
+        return (issue) => {
+            if (value.test(leftFn(issue))) {
+                return hasNot ? null : issue;
+            }
+
+            if (hasNot) { return issue; }
+        };
+    }
 }
 
 function handle_Identifier(expr, scope) {
     const { value: fieldNameExpr } = expr;
     const fieldName = fieldNameExpr.toLowerCase();
     const field = scope.fieldsMap[fieldName];
-    const schema = normalizeType(field);
+    const schema = scope.isLikeComparison ? normalizeTypeForLikeComparison(field) : normalizeTypeForComparison(field);
     const { type, keyField } = schema;
     const propName = field.key;
-    let converter = lCase;
+    let converter = toComparableCase;
 
     if (type === 'date' || type === 'datetime') {
         converter = convertDateTime;
@@ -154,6 +257,24 @@ function handle_Identifier(expr, scope) {
 
     if (!keyField) {
         return (issue) => converter(issue?.[propName]);
+    } else if (Array.isArray(keyField)) {
+        converter = (issue) => {
+            if (!issue) {
+                return null;
+            }
+
+            const valObj = issue[propName];
+
+            if (typeof valObj !== 'object') {
+                return valObj;
+            }
+
+            return keyField.map(k => toComparableCase(valObj[k]) ?? {}); // if the prop value is null then construct empty object so that it doesn't match comparison
+        };
+
+        converter.returnsArrayOfValues = true;
+
+        return converter;
     } else if (typeof keyField === 'function') {
         return (issue) => {
             const val = issue?.[propName];
@@ -165,7 +286,7 @@ function handle_Identifier(expr, scope) {
     }
 }
 
-function lCase(value) {
+function toComparableCase(value) {
     if (typeof value === 'string') {
         return value.toLowerCase();
     }
@@ -194,13 +315,15 @@ function handle_FunctionCall(expr, scope) {
 
     const args = params.map(p => createFilterForObject(p, scope));
 
-    if (args?.length) {
+    if (args?.length && args.some(a => !a.isStaticValue)) {
         return (issue) => issue && func.apply(scope, args.map(a => a(issue)));
     } else {
-        // Function without args would return same value every time.
-        // There is no need of scope as well
-        const funcValue = func();
-        return () => funcValue;
+        // Function without args or arguments which is static would return same value every time.
+        // There is no need of passing scope as well except for parameters function
+        const funcValue = func.apply(scope, args.map(a => a()));
+        const funcResult = () => funcValue;
+        func.isStaticValue = true;
+        return funcResult;
     }
 }
 
@@ -210,7 +333,7 @@ function getHardCodedValues(expr) {
 
     switch (type.toLowerCase()) {
         case 'string':
-            valueToCompare = lCase(value.substring(1, value.length - 1));
+            valueToCompare = toComparableCase(value.substring(1, value.length - 1));
             break;
         case 'number':
             valueToCompare = Number(value);
@@ -222,9 +345,11 @@ function getHardCodedValues(expr) {
             valueToCompare = null;
             break;
         default:
-            valueToCompare = lCase(value);
+            valueToCompare = toComparableCase(value);
             break;
     }
 
-    return () => valueToCompare;
+    const func = () => valueToCompare;
+    func.isStaticValue = true;
+    return func;
 }
