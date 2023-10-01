@@ -101,7 +101,12 @@ function getDerivedFields() {
 
 function normalizeFields(fields) {
     return fields.filter(filterFields).map(f => {
-        const { id, key, name, custom, schema } = f;
+        const { id, key, name, custom } = f;
+        let { schema } = f;
+
+        if (!schema) {
+            schema = { type: key };
+        }
 
         return { id, key, name, custom, schema };
     }).orderBy(f => f.name);

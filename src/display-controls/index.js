@@ -25,6 +25,7 @@ export function getComponentFor(type) {
         case 'date': return { Component: DateDisplay, props: { dateOnly: true } };
         case 'datetime': return { Component: DateDisplay };
         case 'parent': return { Component: IssueDisplay, props: { settings: { valueType: 'both' } } };
+        case 'issuekey': return { Component: IssueDisplay };
         case 'progress': return { Component: ProgressDisplay };
         case 'project': return { Component: ProjectDisplay, props: { settings: { valueType: 'both' } } };
         case 'timespent': return { Component: TimeSpentDisplay };
