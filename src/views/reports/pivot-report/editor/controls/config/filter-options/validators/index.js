@@ -151,18 +151,32 @@ function validate_BetweenPredicate(eqExpr, result) {
     }
 }
 
+const fieldsNotSupportedForLikeComparison = ['date', 'datetime', 'number', 'timespent'];
 function validate_LikePredicate(likeExpr, result) {
     const { left, right } = likeExpr;
 
     const type1 = validateObject(left, result);
 
-    if (!compareTypes(type1, ['string'])) {
+    if (compareTypes(type1, fieldsNotSupportedForLikeComparison)) {
         throw new Error(`Like comparison is used with incompatible types`);
+    }
+
+    const { type: rightType, value } = right;
+    if (rightType.toLowerCase() !== 'string') {
+        throw new Error('Only string is supported on right hand side of Like predicate');
+    }
+
+    if (!['*', '.', '%', '_'].some(p => value.includes(p))) {
+        throw new Error('The string in right hand side of Like predicate doesn\'t contain any expressions and would never be met. Either use some expression or use other operators');
+    }
+
+    if (value.replace(/[%.*]/g, '').length < 3) { // Length includes enclosing double quotes
+        throw new Error('The string in right hand side of Like predicate is too short. Either use some expression or use other operators');
     }
 
     const type2 = validateObject(right, result, { type: type1 });
 
-    if (!compareTypes(type1, type2)) {
+    if (!compareTypes(type2, ['string'])) {
         throw new Error(`Like comparison done between incompatible types`);
     }
 }
@@ -178,6 +192,10 @@ function validate_InExpressionListPredicate(expr, result) {
 function validate_ExpressionList(expr, result, leftPart) {
     const { value } = expr;
 
+    if (value.length === 1) {
+        leftPart = { ...leftPart, isArray: true };
+    }
+
     for (const item of value) {
         const itemType = validateObject(item, result, leftPart);
 
@@ -190,7 +208,10 @@ function validate_ExpressionList(expr, result, leftPart) {
 
 function validate_Identifier(obj, result) {
     const { value } = obj;
-    const fieldName = value.toLowerCase();
+    let fieldName = value.toLowerCase();
+    if (fieldName.startsWith('`')) {
+        fieldName = fieldName.substring(1, fieldName.length - 1);
+    }
     const field = result.fieldsMap[fieldName];
 
     if (!field) {
@@ -281,7 +302,7 @@ function validateParametersFunctionArgs(funcName, params, result, leftPart) {
             throw new Error(`Parameter ${nameParam.value} is used across incompatible types`);
         }
 
-        result.parameters[nameLCase] = { name: paramNameWithoutQuotes, type: leftPart.type?.type || leftPart.type };
+        result.parameters[nameLCase] = { name: paramNameWithoutQuotes, type: leftPart.type?.type || leftPart.type, isArray: leftPart.isArray || undefined };
     }
 }
 

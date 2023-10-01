@@ -18,12 +18,16 @@ function PivotReport() {
     }, [reportId]);
 
     const isLoading = useReportData(({ isFetching }) => isFetching);
-    const reportName = usePivotConfig(({ queryName }) => queryName);
+    const { queryName: reportName, parameters } = usePivotConfig(({ queryName, parameters }) => ({ queryName, parameters }));
 
-    const customActions = (
+    const hasParams = parameters && Object.keys(parameters).length > 0;
+
+    const customActions = (<>
+        {hasParams && <Button type="secondary" icon="fa fa-list-check" className="mx-1"
+            onClick={toggleParameters} title="Show report parameters" />}
         <Button type="secondary" icon="fa fa-edit" className="mx-1"
             onClick={toggleEdit} title="Edit report definition" />
-    );
+    </>);
 
     return (<>
         <EditorControls reportId={reportId} show={editMode} onHide={toggleEdit} />
@@ -39,3 +43,7 @@ function PivotReport() {
 }
 
 export default PivotReport;
+
+function toggleParameters() {
+    useReportData.setState(({ showParameters }) => ({ showParameters: !showParameters }));
+}

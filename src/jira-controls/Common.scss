@@ -9,7 +9,7 @@
 
     &.plugged {
         .jql-query {
-            height: 30px;
+            min-height: 30px;
             width: calc(100% - 70px);
         }
     }
@@ -17,7 +17,9 @@
     .jql-query-text {
         display: inline-block;
         width: 100%;
-        height: 30px;
+        min-height: 30px;
+        overflow: auto;
+        cursor: pointer;
         padding: 4px 8px;
         border: 1px solid transparent;
         border-radius: 5px;

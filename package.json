@@ -51,9 +51,9 @@
         }
     },
     "dependencies": {
-        "@forge/api": "^2.19.0",
+        "@forge/api": "^2.19.1",
         "@forge/bridge": "^2.6.0",
-        "@forge/resolver": "^1.5.16",
+        "@forge/resolver": "^1.5.17",
         "@fortawesome/fontawesome-free": "6.4.2",
         "@fullcalendar/core": "6.1.9",
         "@fullcalendar/daygrid": "6.1.9",

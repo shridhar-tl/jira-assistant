@@ -1,4 +1,3 @@
-import { normalizeType } from 'src/display-controls';
 import { inject } from '../../../../services';
 import { create } from 'zustand';
 
@@ -97,22 +96,14 @@ function getDerivedFields() {
         { id: 'worklogUpdateAuthor', key: 'worklog.updateAuthor', name: 'Worklog Updated By', schema: { type: 'user', derived: true, isArray: true } },
         { id: 'worklogUpdated', key: 'worklog.updated', name: 'Worklog Updated Time', schema: { type: 'datetime', derived: true, isArray: true } },
 
-    ].orderBy(f => f.name)
-        .map(f => {
-            f.schema = {
-                ...f.schema,
-                ...normalizeType(f)
-            };
-
-            return f;
-        });
+    ].orderBy(f => f.name);
 }
 
 function normalizeFields(fields) {
     return fields.filter(filterFields).map(f => {
-        const { id, key, name, custom } = f;
+        const { id, key, name, custom, schema } = f;
 
-        return { id, key, name, custom, schema: normalizeType(f) };
+        return { id, key, name, custom, schema };
     }).orderBy(f => f.name);
 }
 

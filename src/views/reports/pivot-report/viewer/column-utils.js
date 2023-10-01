@@ -24,7 +24,7 @@ export function processColumns(columns, headerOpts, issues, depth = -1) {
 function processColumn(col, headerOpts, issues, depth, hasSiblings, processColumns) {
     const { header } = headerOpts;
     const currentHeader = header[depth];
-    const { key, subItems, name, headerText = name, ...otherProps } = col;
+    const { key, subItems, name, headerText = name, showTotal, showTotalFirst, ...otherProps } = col;
     const cellProps = getCellProps(col);
 
     if (!depth) {
@@ -50,10 +50,26 @@ function processColumn(col, headerOpts, issues, depth, hasSiblings, processColum
         issues = filterFn(issues);
     }
 
-    const colGroupFn = getIssuesGroupFunction(col);
+    const totalColumn = showTotal && {
+        headerText: 'Total',
+        colGroup: true,
+        enableGrouping: true,
+        depth,
+        tagProps: {}
+    };
 
+    let countOfSubColumnsUnderTotalColumn = 0;
     const childItems = [];
+
+    if (totalColumn && showTotalFirst) {
+        currentHeader.push(totalColumn);
+        childItems.push(totalColumn);
+        countOfSubColumnsUnderTotalColumn = generateTotalColumn(totalColumn, headerOpts, subItems, depth, issues);
+    }
+
+    const colGroupFn = getIssuesGroupFunction(col);
     let colSpan = 0;
+
     colGroupFn(issues, (value, subIssues, grpKey) => {
         const headerObj = {
             key, ...otherProps, colGroup: true, depth, colGroupFn,
@@ -79,13 +95,33 @@ function processColumn(col, headerOpts, issues, depth, hasSiblings, processColum
         childItems.push(headerObj);
     });
 
-    return [colSpan ? colSpan : childItems.length, childItems];
+    if (totalColumn && !showTotalFirst) {
+        currentHeader.push(totalColumn);
+        childItems.push(totalColumn);
+        countOfSubColumnsUnderTotalColumn = generateTotalColumn(totalColumn, headerOpts, subItems, depth, issues);
+    }
+
+    return [colSpan ? colSpan + countOfSubColumnsUnderTotalColumn : childItems.length, childItems];
 }
 
 export function getMaxDepth() {
     const { fields } = usePivotConfig.getState();
     const columns = fields.filter(f => f.colGroup);
     return iterateAndFindDepth({ subItems: columns, enableGrouping: true });
+}
+
+function generateTotalColumn(totalColumn, headerOpts, subItems, depth, issues) {
+    const [childCount, child] = processColumns(subItems, headerOpts, issues, depth);
+
+    if (childCount) {
+        totalColumn.tagProps.colSpan = childCount;
+    }
+
+    if (child) {
+        totalColumn.subItems = child.flat();
+    }
+
+    return childCount || 1;
 }
 
 function iterateAndFindDepth(col, hasSibling, curDepth = 0, maxDepth = 1) {

@@ -2,6 +2,7 @@ import { getPathValue } from "react-controls/common/utils";
 import { inject } from "../../../../services";
 import { getQueryInfo } from "../store/pivot-config";
 import { getComponentFor, normalizeType } from "src/display-controls";
+import { valuePropsMap } from "../editor/controls/config/display-options/formatting";
 
 export async function fetchData(scope) {
     const { jql, fields } = getQueryInfo(scope.fields);
@@ -25,10 +26,16 @@ function normalizeArrays(fields) {
 }
 
 export function getCellProps(cell) {
-    const { schema: { type } } = cell;
+    const { schema: { type }, format } = cell;
+    const renderer = getComponentFor(type);
+    const props = format && valuePropsMap[format];
+
+    if (props) {
+        renderer.props = props;
+    }
 
     return {
-        renderer: getComponentFor(type)
+        renderer
     };
 }
 

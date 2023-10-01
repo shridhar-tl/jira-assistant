@@ -3,6 +3,7 @@ import { getPathValue } from 'src/common/utils';
 import { create } from 'zustand';
 
 export const useReportData = create(() => ({
+    showParameters: false,
     isFetching: false
 }));
 
