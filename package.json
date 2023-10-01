@@ -51,8 +51,8 @@
         }
     },
     "dependencies": {
-        "@syncfusion/ej2-react-gantt": "^21.2.8",
-        "@syncfusion/ej2-react-layouts": "^21.2.6",
+        "@syncfusion/ej2-react-gantt": "^23.1.38",
+        "@syncfusion/ej2-react-layouts": "^23.1.36",
         "@forge/api": "^2.19.1",
         "@forge/bridge": "^2.6.0",
         "@forge/resolver": "^1.5.17",
