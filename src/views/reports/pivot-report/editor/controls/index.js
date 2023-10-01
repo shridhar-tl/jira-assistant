@@ -48,7 +48,7 @@ function Source({ onDone }) {
         <RadioButton className="block"
             value={dataSourceType} defaultValue={2}
             label="Pull issues for select sprints and apply JQL filter"
-            onChange={updateDataSourceType} />
+            onChange={updateDataSourceType} disabled />
 
         <label className="font-bold mt-3">JQL Query:</label>
         <JQLEditor jql={jql} plugged onChange={updateJQL} />
