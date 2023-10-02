@@ -150,6 +150,31 @@ export default class JiraService {
         return result;
     }
 
+    async getWithCache(cacheKey, fallback) {
+        let result = await this.$jaCache.session.getPromise(cacheKey);
+
+        if (result) {
+            return result;
+        }
+
+        result = await fallback();
+
+        this.$jaCache.session.set(cacheKey, result, 10);
+
+        return result;
+    }
+
+    async getAgileScrumBoard(boardId) {
+        const boards = await this.$jaCache.session.getPromise("rapidViews");
+        boardId = parseInt(boardId);
+
+        if (boards) {
+            return boards.filter(b => b.id === boardId)[0];
+        }
+
+        return this.getWithCache(`scrumBoard_${boardId}`, () => this.$ajax.get(ApiUrls.scrumBoard, boardId));
+    }
+
     async getRapidViews() {
         let result = await this.$jaCache.session.getPromise("rapidViews");
 
@@ -312,8 +337,8 @@ export default class JiraService {
         return task;
     }
 
-    deleteIssue(issuekey) {
-        return this.$ajax.delete(ApiUrls.individualIssue, issuekey);
+    deleteIssue(key) {
+        return this.$ajax.delete(ApiUrls.individualIssue, key);
     }
 
     bulkImportIssues(issueUpdates) {
@@ -324,10 +349,14 @@ export default class JiraService {
         return this.$ajax.put(ApiUrls.individualIssue, issue, key);
     }
 
+    moveIssuesToSprint(sprintId, data) {
+        return this.$ajax.post(ApiUrls.moveIssueToSprint, data, sprintId);
+    }
+
     getRapidSprintList = (rapidIds, opts) => {
         const asObj = typeof opts === 'boolean' ? opts : false;
         const defaultState = 'active,closed';
-        const { state = defaultState, maxResults } = opts ?? {};
+        const { state = defaultState, maxResults, sortDesc = true } = opts ?? {};
 
         const reqArr = rapidIds.map((rapidId) => this.$jaCache.session.getPromise(`rapidSprintList${rapidId}_${state || defaultState}_${maxResults}`)
             .then(async (value) => {
@@ -374,7 +403,7 @@ export default class JiraService {
                 });
 
                 // By default sort the sprint in desc order
-                sprints = sprints.sortBy(s => s.startDate?.getTime(), true);
+                sprints = sprints.sortBy(s => s.startDate?.getTime(), sortDesc);
 
                 // Assign prev and next sprint start & end dates
                 let prevSprint = null;

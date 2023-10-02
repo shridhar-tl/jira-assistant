@@ -1,11 +1,11 @@
 import React, { useEffect } from 'react';
-import { Column, ScrollableTable, TBody, THead, TRow } from '../../../components/ScrollableTable';
-import { connect } from './store';
-import { UserDisplay } from '../../../display-controls';
-import { loadLeaveDetails } from './store/actions';
 import classNames from 'classnames';
-import { getResourceAvailability } from './utils';
-import Indicator from '../../../components/worklog-indicator';
+import { Column, ScrollableTable, TBody, THead, TRow } from '../../../../components/ScrollableTable';
+import { UserDisplay } from '../../../../display-controls';
+import { connect } from '../store';
+import { loadLeaveDetails } from '../store/actions';
+import { getResourceAvailability } from '../utils';
+import Indicator from '../../../../components/worklog-indicator';
 
 function Resources({
     resources, daysList: { groups, days },

@@ -35,7 +35,9 @@ export default function Renderer({ initValue, authInfo, authTypeChosen }) {
         <Route exact path="/options" name="Options Page" element={<OptionsPage />} />
 
         <Route path="/poker/*" name="Planning Poker" element={<Poker hasExtensionSupport={isExtnValid} />} />
-        <Route path="/:userId/planning/sprint-planner" name="Sprint Planner" element={<SprintPlanner />} />
+        <Route path="/:userId/planning/sprint-planner" name="Sprint Planner" element={<SprintPlanner />}>
+            <Route path=":boardId" name="Sprint Planner" element={<SprintPlanner />} />
+        </Route>
 
         {!!authType && userId && <Route path="/:userId/*" name="Home" element={<DefaultLayout key={userId} />} />}
     </Routes>);

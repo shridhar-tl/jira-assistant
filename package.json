@@ -51,8 +51,6 @@
         }
     },
     "dependencies": {
-        "@syncfusion/ej2-react-gantt": "^23.1.38",
-        "@syncfusion/ej2-react-layouts": "^23.1.36",
         "@forge/api": "^2.19.1",
         "@forge/bridge": "^2.6.0",
         "@forge/resolver": "^1.5.17",
@@ -64,10 +62,14 @@
         "@fullcalendar/moment": "^6.1.9",
         "@fullcalendar/react": "^6.1.9",
         "@fullcalendar/timegrid": "^6.1.9",
+        "@syncfusion/ej2-react-gantt": "^23.1.38",
+        "@syncfusion/ej2-react-layouts": "^23.1.36",
         "bootstrap": "^5.3.2",
         "bootstrap-daterangepicker": "^3.1.0",
         "chart.js": "^4.4.0",
         "classnames": "^2.3.2",
+        "color-converter": "^1.4.1",
+        "contrast-color": "^1.0.1",
         "dexie": "^3.2.4",
         "electron-about-window": "^1.15.2",
         "electron-is-dev": "^2.0.0",

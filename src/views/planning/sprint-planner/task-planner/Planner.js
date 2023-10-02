@@ -4,9 +4,9 @@ import {
     Selection, Toolbar, Edit, ColumnsDirective, ColumnDirective,
     EventMarkersDirective, EventMarkerDirective
 } from '@syncfusion/ej2-react-gantt';
-import { connect } from './store';
-import { IssueDisplay } from '../../../display-controls';
-import { taskBarEdited } from './handlers/index';
+import { connect } from '../store';
+import { IssueDisplay } from '../../../../display-controls';
+import { taskBarEdited } from '../handlers/index';
 
 const resourceFields = {
     id: 'id',

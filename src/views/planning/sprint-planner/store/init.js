@@ -14,7 +14,7 @@ export async function loadSprintsList(boardId, setState, getState) {
     const state = getState();
 
     // Get list of sprints from Jira based on board
-    const sprintLists = await $jira.getRapidSprintList([boardId], { state: 'future,active' });
+    const sprintLists = await $jira.getRapidSprintList([boardId], { state: 'future,active', sortDesc: false });
     const daysList = getDaysListBasedOnSprints(sprintLists, state.workingDays);
 
     const {
@@ -28,49 +28,17 @@ export async function loadSprintsList(boardId, setState, getState) {
     resources = resources ? [...resources] : [];
 
     // Pull the list of issues based on sprint
-    const sprintIds = sprintLists.map(({ id }) => id);
     const sprintMap = sprintLists.reduce((obj, sp) => {
         obj[sp.id] = sp;
         return obj;
     }, {});
-    let sprintWiseIssues = {}, issuesMap = {};
 
-    const userStoryMap = resources?.reduce((mapr, u) => {
-        mapr[u.id] = [];
-        return mapr;
-    }, { [unassignedUser]: [] });
+    const issueDetails = await getSprintIssueDetails(sprintLists, resources, estimation, setState);
 
-    if (sprintIds.length) {
-        sprintWiseIssues = await $jira.getSprintIssues(sprintIds, {
-            fields: ['summary', 'issuetype', 'assignee', 'parent', 'subtask', estimation.fieldId]
-        });
-
-        issuesMap = Object.keys(sprintWiseIssues).reduce((obj, sid) => {
-            sprintWiseIssues[sid].forEach((issue) => {
-                const { key, fields: { assignee } } = issue;
-                const uName = getUserName(assignee);
-
-                obj[key] = { assignee: uName, sprintId: sid, issue };
-
-                if (uName) {
-                    if (!userStoryMap[uName]) {
-                        resources.push({ ...assignee, id: uName });
-                        userStoryMap[uName] = [];
-                    }
-                    userStoryMap[uName].push(key);
-                } else {
-                    userStoryMap[unassignedUser].push(key);
-                }
-            });
-
-            return obj;
-        }, {});
-    }
-
-    // Sprint list is sorted in desc order
+    // Sprint list is sorted in asc order based on param passed
     // Take start and end date for planning based on first and last sprint
-    const planStartDate = moment(sprintLists[sprintLists.length - 1]?.startDate || new Date()).startOf('day').toDate();
-    const planEndDate = moment(sprintLists[0]?.endDate || moment().add(2, 'weeks'))
+    const planStartDate = moment(sprintLists[0]?.startDate || new Date()).startOf('day').toDate();
+    const planEndDate = moment(sprintLists[sprintLists.length - 1]?.endDate || moment().add(2, 'weeks'))
         .endOf('day').add(5, 'days').toDate();
 
     const velocityInfo = await computeAverageSprintVelocity(boardId, state, estimation.fieldId, $jira);
@@ -79,16 +47,141 @@ export async function loadSprintsList(boardId, setState, getState) {
         loading: false,
         columnConfig, estimation,
         sprintLists, sprintMap, daysList,
-        sprintWiseIssues, issuesMap,
-        resources, userStoryMap,
+        resources,
         planStartDate, planEndDate,
-        velocityInfo
+        velocityInfo,
+        ...issueDetails
     };
 
     preparePlanningData(newState, state);
 
     // Update state with all the objects
     setState(newState);
+}
+
+async function getSprintIssueDetails(sprintLists, resources, estimation, setState) {
+    const sprintIds = sprintLists.map(({ id }) => id);
+
+    const { $session } = inject('SessionService');
+    const { epicNameField } = $session.CurrentUser;
+    if (!sprintIds.length) {
+        return { epicNameField };
+    }
+
+    const sprintWiseIssues = await getSprintWiseIssuesList(sprintIds, epicNameField, estimation);
+
+    const { epicInfoMap, ...others } = mapIssues(sprintWiseIssues, resources, epicNameField);
+
+    // Intentionally did not add await as this data is not immediately necessary
+    loadEpicList(epicInfoMap, sprintLists, setState);
+
+    return { sprintWiseIssues, epicNameField, ...others };
+}
+
+function getSprintWiseIssuesList(sprintIds, epicNameField, estimation) {
+    const { $jira } = inject('JiraService');
+
+    return $jira.getSprintIssues(sprintIds, {
+        fields: [
+            'summary', 'issuetype', 'priority', 'status',
+            'assignee', 'parent', 'subtask',
+            epicNameField?.id, estimation.fieldId
+        ]
+    });
+}
+
+function getUserStoryMap(resources) {
+    return resources?.reduce((map, u) => {
+        map[u.id] = [];
+        return map;
+    }, { [unassignedUser]: [] });
+}
+
+function mapIssues(sprintWiseIssues, resources, epicNameField) {
+    const userStoryMap = getUserStoryMap(resources);
+
+    const epicInfoMap = {};
+    const issuesMap = Object.keys(sprintWiseIssues).reduce((obj, sid, index) => {
+        sprintWiseIssues[sid].forEach((issue) => {
+            const { key, fields: { assignee, [epicNameField?.id]: epicLink } } = issue;
+            const uName = getUserName(assignee);
+
+            if (epicLink) {
+                let epicInfo = epicInfoMap[epicLink];
+                if (!epicInfo) {
+                    epicInfo = {};
+                    epicInfoMap[epicLink] = epicInfo;
+                }
+
+                if (epicInfo.startSprintIndex === undefined || epicInfo.startSprintIndex > index) {
+                    epicInfo.startSprintIndex = index;
+                    epicInfo.startSprintId = sid;
+                }
+
+                if (epicInfo.endSprintIndex === undefined || epicInfo.endSprintIndex < index) {
+                    epicInfo.endSprintIndex = index;
+                }
+            }
+
+            obj[key] = { assignee: uName, sprintId: sid, issue };
+
+            if (uName) {
+                if (!userStoryMap[uName]) {
+                    resources.push({ ...assignee, id: uName });
+                    userStoryMap[uName] = [];
+                }
+                userStoryMap[uName].push(key);
+            } else {
+                userStoryMap[unassignedUser].push(key);
+            }
+        });
+
+        return obj;
+    }, {});
+
+    return { issuesMap, epicInfoMap, userStoryMap };
+}
+
+async function loadEpicList(epicInfoMap, sprintLists, setState) {
+    const keys = Object.keys(epicInfoMap);
+    if (!keys?.length) {
+        return;
+    }
+
+    const { $ticket, $jira } = inject('TicketService', 'JiraService');
+    const customFields = await $jira.getCustomFields();
+    const issueColorField = customFields.filter(f => f.name.toLowerCase() === 'issue color')[0];
+
+    const epicList = await $ticket.fetchTicketDetails(keys, ['key', 'summary', 'name', 'duedate', 'issuetype', issueColorField?.id]);
+    const epicMap = epicList.reduce((map, t) => {
+        map[t.key] = t;
+        const epicInfo = epicInfoMap[t.key];
+
+        t.startSprintIndex = epicInfo.startSprintIndex;
+        t.endSprintIndex = epicInfo.endSprintIndex;
+        t.startSprintId = epicInfo.startSprintId;
+
+        let { duedate } = t.fields;
+
+        if (duedate) {
+            duedate = moment(duedate);
+            let dueSprintIndex = sprintLists.findIndex(sprint => duedate.isBetween(sprint.startDate, sprint.endDate));
+
+            if (dueSprintIndex === -1) {
+                const lastSprintIndex = sprintLists.length - 1;
+                const lastSprint = sprintLists[lastSprintIndex];
+                if (duedate.isAfter(lastSprint.endDate)) {
+                    dueSprintIndex = lastSprintIndex;
+                }
+            }
+
+            t.dueSprintIndex = dueSprintIndex;
+        }
+
+        return map;
+    }, {});
+
+    setState({ epicList: epicList.sortBy(e => e.startSprintIndex), epicMap, issueColorField });
 }
 
 //#region Private functions

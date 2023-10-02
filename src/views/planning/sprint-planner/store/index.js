@@ -26,7 +26,7 @@ const initialData = {
         noOfSprintsForVelocity: 6,
         workHours: 6,
         hoursPerStoryPoint: 4,
-        allowStorySpan: true, // Whether to allow spaning story or not
+        allowStorySpan: true, // Whether to allow spanning story or not
         workspace: [],
         leaveCalendar: [],
         holidayCalendar: []

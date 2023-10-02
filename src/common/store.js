@@ -53,7 +53,7 @@ function createStore(initialData = {}) {
 
         return function (props) {
             const state = useContext(Context);
-            const propsToPass = mapProps ? mapProps(state, props) : undefined;
+            const propsToPass = mapProps ? mapProps(state, { ...props, ...actions }) : undefined;
             return (<Component {...propsToPass} {...props} {...actions} />);
         };
     }

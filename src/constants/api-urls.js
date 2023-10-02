@@ -33,6 +33,8 @@ export const ApiUrls = {
     getSprintIssues: "~/rest/agile/1.0/sprint/{0}/issue",
     rapidViews: "~/rest/greenhopper/1.0/rapidview",
     scrumBoards: "~/rest/agile/1.0/board?maxResults=100&orderBy=name&type=scrum,simple",
+    scrumBoard: "~/rest/agile/1.0/board/{0}",
+    moveIssueToSprint: "~/rest/agile/1.0/sprint/{0}/issue",
     scrumBoardConfig: "~/rest/agile/1.0/board/{0}/configuration",
     sprintListByBoard: "~/rest/agile/1.0/board/{0}/sprint?startAt={1}&state={2}&maxResults={3}",
     burndownChart: "~/rest/greenhopper/1.0/rapid/charts/scopechangeburndownchart.json?rapidViewId={0}&sprintId={1}",

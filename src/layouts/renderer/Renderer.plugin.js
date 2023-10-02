@@ -16,7 +16,9 @@ export default function Renderer({ authInfo: { userId } }) {
         <Route exact path="/options" name="Options Page" element={<OptionsPage />} />
 
         <Route path="/poker/*" name="Planning Poker" element={<Poker hasExtensionSupport={false} />} />
-        <Route path="/:userId/planning/sprint-planner" name="Sprint Planner" element={<SprintPlanner />} />
+        <Route path="/:userId/planning/sprint-planner" name="Sprint Planner" element={<SprintPlanner />}>
+            <Route path=":boardId" name="Sprint Planner" element={<SprintPlanner />} />
+        </Route>
 
         <Route path="/:userId/*" name="Home" element={layout} />
     </Routes>);
