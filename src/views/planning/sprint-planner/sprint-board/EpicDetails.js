@@ -7,17 +7,54 @@ import { connect } from '../store';
 import { useSprintIssueStatus } from './actions';
 import './EpicDetails.scss';
 
-function EpicDetails({ epicList, issueColorField, scope, collapsedStates }) {
+function EpicDetails({ columns, epicList, issueColorField, scope, collapsedStates }) {
     if (!epicList) {
         return;
     }
 
+    const generateEpicCells = () => {
+        const rows = [];
+
+        epicList.forEach(epic => {
+            const props = spreadProps({ epic, scope, issueColorField, collapsed: collapsedStates[epic.startSprintId] });
+
+            let currentRow = rows[rows.length - 1];
+
+            if (!currentRow || currentRow[props.startSprintIndex]) {
+                currentRow = new Array(columns.length).fill(null);
+                rows.push(currentRow);
+                props.emptyRowColSpan = props.startSprintIndex;
+            } else {
+                let index = (props.startSprintIndex - 1);
+                let count = 0;
+                while (index > 0) {
+                    if (currentRow[index]) {
+                        break;
+                    }
+
+                    count++;
+                    index--;
+                }
+                props.emptyRowColSpan = count;
+            }
+
+            if (props.startSprintIndex < props.endSprintIndex) {
+                currentRow.fill(true, props.startSprintIndex + 1, props.endSprintIndex + 1);
+            }
+
+
+            const epicItem = (<EpicRow {...props} />);
+            currentRow[props.startSprintIndex] = epicItem;
+        });
+
+        return rows.map((row, i) => (<tr key={i}>{row}</tr>));
+    };
+
     return (<tbody className="epic-body">
-        {epicList.map(epic => <EpicRow key={epic.key}
-            epic={epic} scope={scope}
-            issueColorField={issueColorField} collapsed={collapsedStates[epic.startSprintId]} />)}
+        {generateEpicCells()}
     </tbody>);
 }
+
 
 function mapServices({
     $userutils: { formatDate, getTicketUrl }
@@ -28,32 +65,19 @@ function mapServices({
 export default connect(EpicDetails, mapEpicStateToProps, null,
     ['UserUtilsService', mapServices]);
 
-function EpicRow({ epic, scope, issueColorField, collapsed }) {
-    const { startSprintIndex, endSprintIndex, dueSprintIndex, key,
-        fields: { summary,
-            [issueColorField?.id]: epicColor,
-            issuetype: { iconUrl: typeUrl, name: issuetype }
-        }
-    } = epic;
+function EpicRow(props) {
+    const { issueKey, startSprintIndex, emptyRowColSpan, cutEnd, endSprintIndex, epicSpan, epicText, showEpicDetails, collapsed, style, typeUrl, issuetype, scope, summary } = props;
 
-    const toggleSelection = React.useCallback(() => selectEpic(key), [key]);
-    const isSelected = useSprintIssueStatus(({ selectedEpic }) => selectedEpic === key);
+    const toggleSelection = React.useCallback(() => selectEpic(issueKey), [issueKey]);
+    const isSelected = useSprintIssueStatus(({ selectedEpic }) => selectedEpic === issueKey);
 
-    const emptyStart = startSprintIndex > 0 ? <td colSpan={startSprintIndex}></td> : null;
-    const cutEnd = (!dueSprintIndex || endSprintIndex <= dueSprintIndex) ? endSprintIndex : dueSprintIndex;
-
-    const style = getContrastColorStyles(epicColor);
+    const emptyStart = startSprintIndex > 0 && emptyRowColSpan ? <td colSpan={emptyRowColSpan}></td> : null;
 
     const delayDetails = cutEnd < endSprintIndex ? <td colSpan={(endSprintIndex - cutEnd) + 1}>
         <div className="epic-delay-info p-2 font-bold">
             <span className="fa fa-exclamation-triangle float-end text-danger" title="Due date past" />
         </div>
     </td> : null;
-
-    const epicSpan = (cutEnd - startSprintIndex) + 1;
-    const showEpicDetails = !collapsed || epicSpan > 1;
-
-    const epicText = `${key} - ${summary}`;
 
     const epicDetails = (<td colSpan={epicSpan} title={epicText} onClick={toggleSelection}>
         <div className={classNames(
@@ -69,17 +93,40 @@ function EpicRow({ epic, scope, issueColorField, collapsed }) {
             <img className={`img-x24 ${showEpicDetails ? 'me-2' : 'ms-1'}`} src={typeUrl}
                 alt={issuetype} title={epicText} style={{ verticalAlign: 'top' }} />
             {showEpicDetails && <>
-                <Link href={scope.getTicketUrl(key)} style={style}>{key}</Link> - {summary}
+                <Link href={scope.getTicketUrl(issueKey)} style={style}>{issueKey}</Link> - {summary}
             </>}
         </div>
     </td>);
 
 
-    return (<tr>
+    return (<React.Fragment key={issueKey}>
         {emptyStart}
         {epicDetails}
         {delayDetails}
-    </tr>);
+    </React.Fragment>);
+}
+
+function spreadProps({ epic, scope, issueColorField, collapsed }) {
+    const { startSprintIndex, endSprintIndex, dueSprintIndex, key,
+        fields: { summary,
+            [issueColorField?.id]: epicColor,
+            issuetype: { iconUrl: typeUrl, name: issuetype }
+        }
+    } = epic;
+
+    const cutEnd = (!dueSprintIndex || endSprintIndex <= dueSprintIndex) ? endSprintIndex : dueSprintIndex;
+
+    const style = getContrastColorStyles(epicColor);
+
+    const epicSpan = (cutEnd - startSprintIndex) + 1;
+    const showEpicDetails = !collapsed || epicSpan > 1;
+    const epicText = `${key} - ${summary}`;
+
+    return {
+        issueKey: key, startSprintIndex, cutEnd, endSprintIndex, epicSpan,
+        epicText, showEpicDetails, collapsed, style, typeUrl,
+        issuetype, scope, summary
+    };
 }
 
 function mapEpicStateToProps({ epicList, issueColorField }) {

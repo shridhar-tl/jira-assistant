@@ -23,7 +23,7 @@ function KanbanBoard({
                 templateScope={templateScope}
                 toggleCollapse={toggleCollapse}
             />
-            {BodyHeaderTemplate && <BodyHeaderTemplate collapsedStates={collapsedStates} />}
+            {BodyHeaderTemplate && <BodyHeaderTemplate columns={columns} collapsedStates={collapsedStates} />}
             <BoardBody columns={columns}
                 columnKeyField={columnKeyField}
                 collapsedStates={collapsedStates}
