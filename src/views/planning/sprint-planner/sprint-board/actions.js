@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { inject } from "src/services";
 
-export const useSprintUpdateStatus = create(() => ({}));
+export const useSprintIssueStatus = create(() => ({}));
 
 export function rearrangeIssue(setState, getState) {
     return async function (issues, sprint, { source, target } = {}) {
@@ -35,10 +35,10 @@ export function rearrangeIssue(setState, getState) {
 
         const { $jira } = inject('JiraService');
 
-        useSprintUpdateStatus.setState({ [issueKey]: true });
+        useSprintIssueStatus.setState({ [issueKey]: true });
 
         await $jira.moveIssuesToSprint(sprint.id, data);
 
-        useSprintUpdateStatus.setState({ [issueKey]: undefined });
+        useSprintIssueStatus.setState({ [issueKey]: undefined });
     };
 }

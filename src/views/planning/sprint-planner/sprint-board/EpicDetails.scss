@@ -4,14 +4,19 @@ tbody.epic-body {
 
         div.epic-info {
             background-color: #eeebfd;
-            border-left: 3px solid #eeebfd;
             height: 40px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            border-left: 3px solid #eeebfd;
             border-radius: 5px;
             margin-left: 5px;
             width: calc(100% - 1px);
+            cursor: pointer;
+
+            &.selected {
+                opacity: 0.6;
+            }
 
             &:not(.delayed):not(.collapsed) {
                 width: calc(100% - 12px);

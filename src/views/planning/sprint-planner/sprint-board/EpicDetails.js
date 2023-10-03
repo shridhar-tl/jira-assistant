@@ -1,10 +1,11 @@
 import React from 'react';
+import classNames from 'classnames';
 import Color from 'color-converter';
 import { contrastColor } from 'contrast-color';
 import { Link } from 'src/controls';
 import { connect } from '../store';
+import { useSprintIssueStatus } from './actions';
 import './EpicDetails.scss';
-import classNames from 'classnames';
 
 function EpicDetails({ epicList, issueColorField, scope, collapsedStates }) {
     if (!epicList) {
@@ -35,6 +36,9 @@ function EpicRow({ epic, scope, issueColorField, collapsed }) {
         }
     } = epic;
 
+    const toggleSelection = React.useCallback(() => selectEpic(key), [key]);
+    const isSelected = useSprintIssueStatus(({ selectedEpic }) => selectedEpic === key);
+
     const emptyStart = startSprintIndex > 0 ? <td colSpan={startSprintIndex}></td> : null;
     const cutEnd = (!dueSprintIndex || endSprintIndex <= dueSprintIndex) ? endSprintIndex : dueSprintIndex;
 
@@ -51,14 +55,15 @@ function EpicRow({ epic, scope, issueColorField, collapsed }) {
 
     const epicText = `${key} - ${summary}`;
 
-    const epicDetails = (<td colSpan={epicSpan} title={epicText}>
+    const epicDetails = (<td colSpan={epicSpan} title={epicText} onClick={toggleSelection}>
         <div className={classNames(
             'epic-info font-bold',
             {
                 'delayed': !!delayDetails,
                 'p-2': showEpicDetails,
                 'py-2': !showEpicDetails,
-                'collapsed': collapsed
+                'collapsed': collapsed,
+                selected: isSelected
             }
         )} style={style}>
             <img className={`img-x24 ${showEpicDetails ? 'me-2' : 'ms-1'}`} src={typeUrl}
@@ -99,4 +104,8 @@ function getContrastColorStyles(color) {
     const fontColor = contrastColor({ bgColor });
 
     return { backgroundColor: bgColor, color: fontColor, borderLeftColor: color };
+}
+
+function selectEpic(key) {
+    useSprintIssueStatus.setState(({ selectedEpic }) => ({ selectedEpic: selectedEpic === key ? undefined : key }));
 }

@@ -1,12 +1,10 @@
 import React from 'react';
 import Link from '../../../../controls/Link';
-import { useSprintUpdateStatus } from './actions';
+import { useSprintIssueStatus } from './actions';
 
 const alignBottomStyle = { verticalAlign: 'bottom' };
 
 function Card({ item, scope: { getTicketUrl, epicNameField, estimation } }) {
-    const isUpdating = useSprintUpdateStatus(({ [item.key]: updating }) => updating);
-
     const {
         key,
         fields: {
@@ -20,6 +18,11 @@ function Card({ item, scope: { getTicketUrl, epicNameField, estimation } }) {
         }
     } = item;
 
+    const { isUpdating, isEpicSelected } = useSprintIssueStatus(({ [item.key]: updating, selectedEpic }) => ({
+        isUpdating: updating,
+        isEpicSelected: epic && selectedEpic === epic
+    }));
+
     let style = status.statusCategory?.colorName;
     if (style?.includes('-')) {
         style = style.split('-')[0];
@@ -29,6 +32,10 @@ function Card({ item, scope: { getTicketUrl, epicNameField, estimation } }) {
     if (isUpdating) {
         style = style || {};
         style.opacity = .5;
+    }
+
+    if (isEpicSelected) {
+        style.backgroundColor = '#ffd6ff';
     }
 
     return (<div className="card-container" style={style}>
