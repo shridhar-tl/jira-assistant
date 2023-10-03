@@ -2,6 +2,7 @@ import moment from 'moment';
 import { inject } from "../../../../services/injector-service";
 import { getUserName } from '../../../../common/utils';
 import { getDaysListBasedOnSprints } from './utils';
+import { getEpicDetailsForSprints } from './epic-helper';
 
 const unassignedUser = '--UNASSIGNED--';
 //const unassignedUserObj = { displayName: '-- UNASSIGNED ISSUES --' };
@@ -70,12 +71,12 @@ async function getSprintIssueDetails(sprintLists, resources, estimation, setStat
 
     const sprintWiseIssues = await getSprintWiseIssuesList(sprintIds, epicNameField, estimation);
 
-    const { epicInfoMap, ...others } = mapIssues(sprintWiseIssues, resources, epicNameField);
+    const issueMaps = mapIssues(sprintWiseIssues, resources);
 
     // Intentionally did not add await as this data is not immediately necessary
-    loadEpicList(epicInfoMap, sprintLists, setState);
+    getEpicDetailsForSprints(sprintWiseIssues, sprintLists, epicNameField).then(setState);
 
-    return { sprintWiseIssues, epicNameField, ...others };
+    return { sprintWiseIssues, epicNameField, ...issueMaps };
 }
 
 function getSprintWiseIssuesList(sprintIds, epicNameField, estimation) {
@@ -97,31 +98,13 @@ function getUserStoryMap(resources) {
     }, { [unassignedUser]: [] });
 }
 
-function mapIssues(sprintWiseIssues, resources, epicNameField) {
+function mapIssues(sprintWiseIssues, resources) {
     const userStoryMap = getUserStoryMap(resources);
 
-    const epicInfoMap = {};
     const issuesMap = Object.keys(sprintWiseIssues).reduce((obj, sid, index) => {
         sprintWiseIssues[sid].forEach((issue) => {
-            const { key, fields: { assignee, [epicNameField?.id]: epicLink } } = issue;
+            const { key, fields: { assignee } } = issue;
             const uName = getUserName(assignee);
-
-            if (epicLink) {
-                let epicInfo = epicInfoMap[epicLink];
-                if (!epicInfo) {
-                    epicInfo = {};
-                    epicInfoMap[epicLink] = epicInfo;
-                }
-
-                if (epicInfo.startSprintIndex === undefined || epicInfo.startSprintIndex > index) {
-                    epicInfo.startSprintIndex = index;
-                    epicInfo.startSprintId = sid;
-                }
-
-                if (epicInfo.endSprintIndex === undefined || epicInfo.endSprintIndex < index) {
-                    epicInfo.endSprintIndex = index;
-                }
-            }
 
             obj[key] = { assignee: uName, sprintId: sid, issue };
 
@@ -139,50 +122,9 @@ function mapIssues(sprintWiseIssues, resources, epicNameField) {
         return obj;
     }, {});
 
-    return { issuesMap, epicInfoMap, userStoryMap };
+    return { issuesMap, userStoryMap };
 }
 
-async function loadEpicList(epicInfoMap, sprintLists, setState) {
-    const keys = Object.keys(epicInfoMap);
-    if (!keys?.length) {
-        return;
-    }
-
-    const { $ticket, $jira } = inject('TicketService', 'JiraService');
-    const customFields = await $jira.getCustomFields();
-    const issueColorField = customFields.filter(f => f.name.toLowerCase() === 'issue color')[0];
-
-    const epicList = await $ticket.fetchTicketDetails(keys, ['key', 'summary', 'name', 'duedate', 'issuetype', issueColorField?.id]);
-    const epicMap = epicList.reduce((map, t) => {
-        map[t.key] = t;
-        const epicInfo = epicInfoMap[t.key];
-
-        t.startSprintIndex = epicInfo.startSprintIndex;
-        t.endSprintIndex = epicInfo.endSprintIndex;
-        t.startSprintId = epicInfo.startSprintId;
-
-        let { duedate } = t.fields;
-
-        if (duedate) {
-            duedate = moment(duedate);
-            let dueSprintIndex = sprintLists.findIndex(sprint => duedate.isBetween(sprint.startDate, sprint.endDate));
-
-            if (dueSprintIndex === -1) {
-                const lastSprintIndex = sprintLists.length - 1;
-                const lastSprint = sprintLists[lastSprintIndex];
-                if (duedate.isAfter(lastSprint.endDate)) {
-                    dueSprintIndex = lastSprintIndex;
-                }
-            }
-
-            t.dueSprintIndex = dueSprintIndex;
-        }
-
-        return map;
-    }, {});
-
-    setState({ epicList: epicList.sortBy(e => e.startSprintIndex), epicMap, issueColorField });
-}
 
 //#region Private functions
 async function computeAverageSprintVelocity(boardId, { settings: { noOfSprintsForVelocity } }, storypointFieldName, $jira) {

@@ -73,7 +73,7 @@ function EpicRow(props) {
 
     const emptyStart = startSprintIndex > 0 && emptyRowColSpan ? <td colSpan={emptyRowColSpan}></td> : null;
 
-    const delayDetails = cutEnd < endSprintIndex ? <td colSpan={(endSprintIndex - cutEnd) + 1}>
+    const delayDetails = cutEnd < endSprintIndex ? <td colSpan={endSprintIndex - cutEnd}>
         <div className="epic-delay-info p-2 font-bold">
             <span className="fa fa-exclamation-triangle float-end text-danger" title="Due date past" />
         </div>
