@@ -179,7 +179,7 @@ function preparePlanningData(newState, allState) {
 
     const progCols = columns.slice(1, -1);
     const result = [];
-    for (let i = sprintLists.length - 1; i > 0; i--) {
+    for (let i = 0; i < sprintLists.length; i++) {
         const { id: sprintId, startDate } = sprintLists[i];
         const issues = sprintWiseIssues[sprintId];
 

@@ -1,4 +1,4 @@
-import createStore from "../../../../common/store";
+import createStore from "../../../../common/state-store";
 
 const initialData = {
     planId: '', // Id of plan
@@ -33,6 +33,6 @@ const initialData = {
     }
 };
 
-const { withProvider, connect } = createStore(initialData);
+const { useStateStore, withProvider, connect } = createStore(initialData);
 
-export { withProvider, connect };
+export { useStateStore, withProvider, connect };

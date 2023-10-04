@@ -14,7 +14,7 @@ export function getDaysListBasedOnSprints(sprints, workingDays) {
 
     const daysMap = { groups, days };
 
-    for (let i = sprints.length - 1; i >= 0; i--) {
+    for (let i = 0; i < sprints.length; i++) {
         const sprint = sprints[i];
         const { id, name, startDate, endDate } = sprint;
 

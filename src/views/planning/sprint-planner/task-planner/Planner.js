@@ -43,7 +43,8 @@ const editSettings = {
 };
 const toolbar = ['Add', 'Edit', 'Update', 'Delete', 'Cancel', 'ExpandAll', 'CollapseAll'];
 
-function Planner({ height, sprintLists, planStartDate, planEndDate, planningData, resources,
+function Planner({
+    height, sprintLists, planStartDate, planEndDate, planningData, resources,
     taskBarEdited }) {
     return (<div className="ja-plan-container">
         <GanttComponent id='JASprintPlanner' dataSource={planningData} treeColumnIndex={1}

@@ -31,6 +31,7 @@ function SprintBoards({ sprintLists, scope, getIssuesForSprint, rearrangeIssue }
 function mapStateToProps({ sprintLists, epicNameField, estimation }, { scope }) {
     scope.epicNameField = epicNameField;
     scope.estimation = estimation;
+
     return { sprintLists, scope };
 }
 
@@ -40,7 +41,7 @@ function mapServices({
     return { scope: { formatDate, getTicketUrl } };
 }
 
-export default connect(React.memo(SprintBoards),
+export default connect(SprintBoards,
     mapStateToProps,
     { getIssuesForSprint, rearrangeIssue },
     ['UserUtilsService', mapServices]);
