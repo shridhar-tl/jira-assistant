@@ -50,6 +50,6 @@ function VerticalSplit({ velocityInfo }) {
     return (<>
         <SprintVelocity velocityInfo={velocityInfo} />
         <br /><br />
-        <VelocityPicker />
+        <VelocityPicker velocityInfo={velocityInfo} />
     </>);
 }

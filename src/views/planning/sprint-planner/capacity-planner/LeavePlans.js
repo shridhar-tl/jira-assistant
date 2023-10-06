@@ -9,26 +9,27 @@ function LeavePlans({ resources, leavePlans, groups }) {
         <THead>
             <tr>
                 <Column>Resources</Column>
-                {groups.map(g => <Column key={g.sprintId}>{g.name}</Column>)}
-                <Column>Total</Column>
+                {groups.map(g => <Column className="text-center" key={g.sprintId}>{g.name}</Column>)}
+                <Column className="text-center">Total</Column>
             </tr>
         </THead>
         <TBody>
             {resources.map(r => <tr key={r.id}>
                 <td>{r.displayName}</td>
-                {groups.map(g => <td key={g.sprintId}>{leavePlans[g.sprintId][r.accountId]}</td>)}
+                {groups.map(g => <td key={g.sprintId} className="text-center">{leavePlans[g.sprintId][r.accountId]}</td>)}
+                <td className="text-center">0</td>
             </tr>)}
             <tr>
                 <td><strong>Public holidays</strong></td>
-                {groups.map(g => <td key={g.sprintId}>{leavePlans[g.sprintId][publicHolidayKey]}</td>)}
-                <td></td>
+                {groups.map(g => <td key={g.sprintId} className="text-center">{leavePlans[g.sprintId][publicHolidayKey]}</td>)}
+                <td className="text-center">0</td>
             </tr>
         </TBody>
         <tfoot>
             <tr>
                 <th>Total</th>
-                {groups.map(g => <th key={g.sprintId}>0</th>)}
-                <th></th>
+                {groups.map(g => <th key={g.sprintId} className="text-center">0</th>)}
+                <th className="text-center">0</th>
             </tr>
         </tfoot>
     </ScrollableTable>);

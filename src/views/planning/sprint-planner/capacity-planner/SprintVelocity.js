@@ -13,22 +13,22 @@ function SprintVelocity({ velocityInfo }) {
         <THead>
             <tr>
                 <Column>Sprint</Column>
-                <Column>Completed</Column>
-                <Column>Total</Column>
+                <Column className="text-center">Completed</Column>
+                <Column className="text-center">Total</Column>
             </tr>
         </THead>
         <TBody>
             {closedSprintLists.map(sprint => <tr key={sprint.id}>
                 <td>{sprint.name}</td>
-                <td>{sprint.completedStoryPoints}</td>
-                <td>{sprint.comittedStoryPoints}</td>
+                <td className="text-center">{sprint.completedStoryPoints}</td>
+                <td className="text-center">{sprint.comittedStoryPoints}</td>
             </tr>)}
         </TBody>
         <tfoot>
             <tr>
                 <th>Average</th>
-                <th>{averageCompleted}</th>
-                <th>{averageComitted}</th>
+                <th className="text-center">{averageCompleted}</th>
+                <th className="text-center">{averageComitted}</th>
             </tr>
         </tfoot>
     </ScrollableTable>);

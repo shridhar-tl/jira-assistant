@@ -9,21 +9,22 @@ function TeamCapacity({ groups, resources, leavePlans }) {
         <THead>
             <tr>
                 <Column>Resources</Column>
-                {groups.map(g => <Column key={g.sprintId}>{g.name}</Column>)}
-                <Column>Total</Column>
+                {groups.map(g => <Column key={g.sprintId} className="text-center">{g.name}</Column>)}
+                <Column className="text-center">Total</Column>
             </tr>
         </THead>
         <TBody>
             {resources.map(r => <tr key={r.id}>
                 <td>{r.displayName}</td>
-                {groups.map(g => <td key={g.sprintId}>{availability[g.sprintId][r.accountId]}%</td>)}
+                {groups.map(g => <td key={g.sprintId} className="text-center">{availability[g.sprintId][r.accountId]}%</td>)}
+                <th className="text-center">100%</th>
             </tr>)}
         </TBody>
         <tfoot>
             <tr>
                 <th>Average Allocation</th>
-                {groups.map(g => <th key={g.sprintId}>{availability[g.sprintId].sprintAverage}%</th>)}
-                <th></th>
+                {groups.map(g => <th key={g.sprintId} className="text-center">{availability[g.sprintId].sprintAverage}%</th>)}
+                <th className="text-center">100%</th>
             </tr>
         </tfoot>
     </ScrollableTable>);

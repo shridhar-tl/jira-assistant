@@ -1,5 +1,5 @@
 /* eslint-disable no-loop-func */
-import moment from "moment";
+import moment from 'moment';
 import { getResourceAvailability } from "../utils";
 
 export function updateTaskbar(event, { planData, resourceLeaveDays, resourceHolidays, settings: { workHours, workingDays } }) {

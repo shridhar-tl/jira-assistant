@@ -36,6 +36,9 @@ export async function loadSprintsList(boardId, setState, getState) {
 
     const issueDetails = await getSprintIssueDetails(sprintLists, resources, estimation, setState);
 
+    // Intentionally did not use await as this data is not immediately necessary
+    getEpicDetailsForSprints(issueDetails.sprintWiseIssues, sprintLists, issueDetails.epicNameField).then(setState);
+
     // Sprint list is sorted in asc order based on param passed
     // Take start and end date for planning based on first and last sprint
     const planStartDate = moment(sprintLists[0]?.startDate || new Date()).startOf('day').toDate();
@@ -60,7 +63,7 @@ export async function loadSprintsList(boardId, setState, getState) {
     setState(newState);
 }
 
-async function getSprintIssueDetails(sprintLists, resources, estimation, setState) {
+async function getSprintIssueDetails(sprintLists, resources, estimation) {
     const sprintIds = sprintLists.map(({ id }) => id);
 
     const { $session } = inject('SessionService');
@@ -72,9 +75,6 @@ async function getSprintIssueDetails(sprintLists, resources, estimation, setStat
     const sprintWiseIssues = await getSprintWiseIssuesList(sprintIds, epicNameField, estimation);
 
     const issueMaps = mapIssues(sprintWiseIssues, resources);
-
-    // Intentionally did not add await as this data is not immediately necessary
-    getEpicDetailsForSprints(sprintWiseIssues, sprintLists, epicNameField).then(setState);
 
     return { sprintWiseIssues, epicNameField, ...issueMaps };
 }
