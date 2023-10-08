@@ -44,7 +44,7 @@ class TagsDisplay extends BaseControl {
 
             const data = (
                 <span title={titleProp ? a[titleProp] : undefined}
-                    className="badge rounded-pill skin-bg-font">
+                    className="badge skin-bg-font">
                     {icon} {val}
                 </span>
             );

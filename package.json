@@ -96,20 +96,20 @@
         "react-router-dom": "^6.16.0",
         "react-scripts": "^5.0.1",
         "static-eval": "^2.1.0",
-        "zustand": "^4.4.1"
+        "zustand": "^4.4.3"
     },
     "devDependencies": {
         "@craco/craco": "^7.1.0",
         "concurrently": "^8.2.1",
         "cross-env": "^7.0.3",
-        "electron": "^26.2.4",
+        "electron": "^26.3.0",
         "electron-builder": "^24.6.4",
         "electronmon": "^2.0.2",
-        "eslint": "^8.50.0",
+        "eslint": "^8.51.0",
         "eslint-plugin-react-hooks": "^4.6.0",
         "gh-pages": "^6.0.0",
         "react-app-alias": "^2.2.2",
-        "sass": "^1.68.0",
+        "sass": "^1.69.0",
         "wait-on": "^7.0.1",
         "webpack-bundle-analyzer": "^4.9.1"
     },
