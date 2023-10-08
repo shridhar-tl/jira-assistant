@@ -28,6 +28,10 @@ class UnknownItemDisplay extends BaseControl {
         if (typeof obj === 'string') {
             return (<TagsDisplay value={value} tagProp="" tag="span" />);
         } else if (obj['value']) {
+            if (typeof obj['value'] === 'string' && !Array.isArray(value)) { // Dropdown and radio button would go to this block
+                return obj['value'];
+            }
+
             return (<TagsDisplay value={value} tagProp="value" tag="span" />);
         }
         else if (obj['name']) {
