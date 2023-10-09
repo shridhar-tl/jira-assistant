@@ -12,6 +12,7 @@ import TimeSpentDisplay from './TimeSpentDisplay';
 import TimeTrackDisplay from './TimeTrackDisplay';
 import UnknownItemDisplay from './UnknownItemDisplay';
 import UserDisplay from './UserDisplay';
+import CascadeSelect from './CascadeSelect';
 
 export {
     CommentsDisplay, DateDisplay, IssueDisplay, IssueLinkDisplay,
@@ -25,6 +26,7 @@ export function getComponentFor(type) {
         case 'date': return { Component: DateDisplay, props: { dateOnly: true } };
         case 'datetime': return { Component: DateDisplay };
         case 'parent': return { Component: IssueDisplay, props: { settings: { valueType: 'both' } } };
+        case 'issuekey': return { Component: IssueDisplay };
         case 'progress': return { Component: ProgressDisplay };
         case 'project': return { Component: ProjectDisplay, props: { settings: { valueType: 'both' } } };
         case 'timespent': return { Component: TimeSpentDisplay };
@@ -37,6 +39,8 @@ export function getComponentFor(type) {
         case 'resolution':
         case 'priority':
             return { Component: ItemDisplay };
+        case 'option-with-child':
+            return { Component: CascadeSelect };
         default: return { Component: UnknownItemDisplay };
     }
 }

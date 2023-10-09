@@ -26,6 +26,10 @@ export function getField(field) {
             obj.type = system;
             break;
 
+        case "option-with-child":
+            obj.type = type;
+            break;
+
         case "number":
             switch (system) {
                 case "timeoriginalestimate":
