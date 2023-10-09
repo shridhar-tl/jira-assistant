@@ -36,6 +36,7 @@ async function initializeApp(jiraContext) {
     try {
         const { $user } = inject('UserService');
         const users = await $user.getUsersList();
+        console.log('Count of user found in cache:', users.length);
 
         if (!users.length) { // If no user is created in db so far, then create new user
             const { $request } = inject('AjaxRequestService');
@@ -45,7 +46,9 @@ async function initializeApp(jiraContext) {
                 jiraUrl = await getInstanceUrl();
             }
             const profile = await $request.execute('GET', ApiUrls.mySelf.replace('~', jiraUrl));
+            console.log('User profile pulled from Jira');
             await $user.createUser(profile, jiraUrl);
+            console.log('User created in browser cache');
         }
 
         return true;
@@ -63,6 +66,7 @@ async function getInstanceUrl() {
         const result = await response.json();
         return result.baseUrl.clearEnd('/') || dummyInstUrl;
     } catch {
+        console.error('Fetching server info failed. Falling back to: ', dummyInstUrl);
         return dummyInstUrl;
     }
 }
