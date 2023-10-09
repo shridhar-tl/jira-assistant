@@ -19,9 +19,9 @@ export default class JiraService {
     searchTickets(jql, fields, startAt, opts) {
         startAt = startAt || 0;
         fields = fields || defaultJiraFields;
-        const { worklogStartDate, worklogEndDate } = opts || {};
+        const { worklogStartDate, worklogEndDate, properties } = opts || {};
         return new Promise((resolve, reject) => {
-            const postData = { jql, fields, maxResults: opts?.maxResults || 1000 };
+            const postData = { jql, fields, maxResults: opts?.maxResults || 1000, properties };
             if (opts?.expand?.length) {
                 postData.expand = opts.expand;
             }
@@ -29,6 +29,7 @@ export default class JiraService {
             if (startAt > 0) {
                 postData.startAt = startAt;
             }
+
             this.$ajax.get(prepareUrlWithQueryString(ApiUrls.search, postData))
                 .then((result) => {
                     const issues = result.issues;
@@ -148,6 +149,10 @@ export default class JiraService {
         this.$jaCache.session.set("customFields", result, 10);
 
         return result;
+    }
+
+    async updateProperty(key, field, value) {
+        return this.$ajax.put(ApiUrls.updateProperty, value, key, field);
     }
 
     async getWithCache(cacheKey, fallback) {

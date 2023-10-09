@@ -8,20 +8,31 @@ export function getEpicDetailsForSprints(sprintWiseIssues, sprintLists, epicName
 }
 
 //#region Internal functions
-
+const noEpicId = 'No Epic';
 function getEpicInfoMap(sprintWiseIssues, sprintLists, epicNameField) {
     const epicInfoMap = {};
+
+    function addToEpic(epicLink, issue) {
+        if (!epicLink) { epicLink = noEpicId; }
+        let epicInfo = epicInfoMap[epicLink];
+        if (!epicInfo) {
+            epicInfo = { issuesList: [] };
+            epicInfoMap[epicLink] = epicInfo;
+        }
+
+        epicInfo.issuesList.push(issue);
+
+        return epicInfo;
+    }
 
     sprintLists.forEach(({ id: sid }, index) => {
         sprintWiseIssues[sid].forEach((issue) => {
             const { fields: { [epicNameField?.id]: epicLink } } = issue;
 
-            if (!epicLink) { return; }
+            const epicInfo = addToEpic(epicLink, issue);
 
-            let epicInfo = epicInfoMap[epicLink];
-            if (!epicInfo) {
-                epicInfo = {};
-                epicInfoMap[epicLink] = epicInfo;
+            if (!epicLink) {
+                return;
             }
 
             if (epicInfo.startSprintIndex === undefined || epicInfo.startSprintIndex > index) {
@@ -39,7 +50,7 @@ function getEpicInfoMap(sprintWiseIssues, sprintLists, epicNameField) {
 }
 
 async function getEpicList(epicInfoMap, sprintLists) {
-    const keys = Object.keys(epicInfoMap);
+    const keys = Object.keys(epicInfoMap).filter(epic => epic !== noEpicId);
     if (!keys?.length) {
         return;
     }
@@ -49,9 +60,12 @@ async function getEpicList(epicInfoMap, sprintLists) {
     const issueColorField = customFields.filter(f => f.name.toLowerCase() === 'issue color')[0];
 
     const epicList = await $ticket.fetchTicketDetails(keys, ['key', 'summary', 'name', 'duedate', 'issuetype', issueColorField?.id]);
+
+    epicList.push({ key: noEpicId, fields: { summary: 'Issues without Epic', issuetype: { name: 'No Epic' } } });
     const epicMap = epicList.reduce((map, t) => {
         map[t.key] = t;
         const epicInfo = epicInfoMap[t.key];
+        t.child = epicInfo.issuesList;
 
         t.startSprintIndex = epicInfo.startSprintIndex;
         t.endSprintIndex = epicInfo.endSprintIndex;

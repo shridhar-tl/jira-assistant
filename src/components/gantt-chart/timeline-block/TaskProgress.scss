@@ -1,0 +1,30 @@
+.progress-row {
+    width: 100%;
+    height: 100%;
+    -ms-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
+
+    .task-progress {
+        background-color: #008786;
+        height: 40px;
+        top: 2px;
+        border-radius: 4px;
+        position: absolute;
+        cursor: move;
+
+        .fa-ellipsis-vertical {
+            color: #fff;
+            padding: 8px 5px;
+            height: 80%;
+            font-size: 22px;
+            opacity: 0.8;
+            cursor: ew-resize;
+            display: none;
+        }
+
+        &:hover .fa-ellipsis-vertical {
+            display: block;
+        }
+    }
+}

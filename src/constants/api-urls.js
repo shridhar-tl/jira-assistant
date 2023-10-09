@@ -21,6 +21,7 @@ export const ApiUrls = {
     searchIssueForPicker: "~/rest/api/2/issue/picker",
     getGroupMembers: "~/rest/api/2/group/member?maxResults={1}&includeInactiveUsers=true&groupId={0}",
     getCustomFields: "~/rest/api/2/field",
+    updateProperty: "~/rest/api/2/issue/{0}/properties/{1}",
     getJQLAutocomplete: "~/rest/api/2/jql/autocompletedata",
     getJQLSuggestions: "~/rest/api/2/jql/autocompletedata/suggestions",
     getUserDetails: "~/rest/api/2/user?username={0}",

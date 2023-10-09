@@ -79,16 +79,34 @@ async function getSprintIssueDetails(sprintLists, resources, estimation) {
     return { sprintWiseIssues, epicNameField, ...issueMaps };
 }
 
-function getSprintWiseIssuesList(sprintIds, epicNameField, estimation) {
+async function getSprintWiseIssuesList(sprintIds, epicNameField, estimation) {
     const { $jira } = inject('JiraService');
 
-    return $jira.getSprintIssues(sprintIds, {
-        fields: [
+    const customFields = await $jira.getCustomFields();
+    const sprintFieldName = customFields.filter(f => f.name.toLowerCase() === 'sprint')[0];
+
+    const results = await $jira.searchTickets(`sprint in (${sprintIds.join(',')})`,
+        [
             'summary', 'issuetype', 'priority', 'status',
-            'assignee', 'parent', 'subtask',
+            'assignee', 'parent', 'subtask', sprintFieldName.id,
             epicNameField?.id, estimation.fieldId
-        ]
-    });
+        ], 0,
+        { properties: 'ja_planner_tasks' }
+    );
+
+    return results.reduce((map, issue) => {
+        const { [sprintFieldName.id]: sprint } = issue.fields;
+        const { id: sprintId } = sprint[sprint.length - 1];
+        let sprintWiseIssues = map[sprintId];
+        if (!sprintWiseIssues) {
+            sprintWiseIssues = [issue];
+            map[sprintId] = sprintWiseIssues;
+        } else {
+            sprintWiseIssues.push(issue);
+        }
+
+        return map;
+    }, {});
 }
 
 function getUserStoryMap(resources) {

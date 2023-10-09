@@ -1,0 +1,47 @@
+.gantt-chart {
+
+    .gantt-chart-header {
+        table-layout: fixed;
+        width: 0px;
+
+        &.fields-header {
+            border: 1px solid #e0e0e0;
+            border-left: none;
+            border-right: none;
+
+            th {
+                font-weight: 500;
+                font-size: 13px;
+                height: 72px;
+                padding: 13px 12px;
+                color: #0000008a;
+            }
+        }
+    }
+
+    .gantt-chart-body {
+        table-layout: fixed;
+        width: 0px;
+
+        &.fields-body {
+            border: 1px solid #e0e0e0;
+            border-left: none;
+            border-right: none;
+
+            td {
+                font-size: 13px;
+                height: 47px;
+                padding: 3px 5px;
+                border-bottom: 1px solid #e0e0e0;
+
+                div.cell-data {
+                    display: block;
+                    width: 100%;
+                    overflow: hidden;
+                    white-space: nowrap;
+                    text-overflow: ellipsis;
+                }
+            }
+        }
+    }
+}

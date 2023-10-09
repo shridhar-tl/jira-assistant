@@ -37,7 +37,7 @@ let _commonInjected = false;
 const allowAnalytics = !isPluginBuild && config.features.common.analytics !== false;
 
 // Any new classes injected should be added in index.d.ts file as well to support intellisense in VS Code.
-// IMPORTANT - As of now all services are singleton only unless explicitely marked false
+// IMPORTANT - As of now all services are singleton only unless explicitly marked false
 export default function registerServices() {
     if (_commonInjected) { return; }
 

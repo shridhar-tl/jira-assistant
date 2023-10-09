@@ -33,6 +33,6 @@ const initialData = {
     }
 };
 
-const { useStateStore, withProvider, connect } = createStore(initialData);
+const { useStateStore: usePlannerState, withProvider, connect } = createStore(initialData);
 
-export { useStateStore, withProvider, connect };
+export { usePlannerState, withProvider, connect };

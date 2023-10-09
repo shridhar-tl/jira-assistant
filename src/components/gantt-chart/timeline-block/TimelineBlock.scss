@@ -1,0 +1,46 @@
+.gantt-chart {
+    .gantt-chart-header {
+        &.days-header {
+            th {
+                border: 1px solid #e0e0e0;
+                text-align: center;
+                font-size: 13px;
+            }
+
+            tr.group-head th {
+                border-top: none;
+                color: #2e6c99;
+                padding: 5px 0;
+            }
+
+            tr.days-head th {
+                width: 35px;
+                color: #498b4b;
+            }
+        }
+    }
+
+    .gantt-chart-body {
+        table-layout: fixed;
+        width: 100%;
+
+        &.days-body {
+            border: 1px solid #e0e0e0;
+            border-left: none;
+            border-right: none;
+
+            td {
+                font-size: 13px;
+                height: 47px;
+                padding: 0;
+                border-bottom: 1px solid #e0e0e0;
+
+                div.progress-row {
+                    display: block;
+                    width: 100%;
+                    position: relative;
+                }
+            }
+        }
+    }
+}
