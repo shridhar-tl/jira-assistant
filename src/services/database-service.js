@@ -72,6 +72,7 @@ class DatabaseService extends Dexie {
             this.$analytics.setUserId(instId);
             this.$analytics.setIfEnabled(anLog?.value !== false, exLog?.value !== false);
             this._initialized = true;
+            console.log('Completed loading system settings');
         } catch (e) {
             console.error('Error loading settings:', e);
         }
@@ -91,6 +92,7 @@ class DatabaseService extends Dexie {
 
             this.$analytics.setUserId(instId);
             this.$analytics.trackEvent("New installation", EventCategory.Instance);
+            console.log('Completed populating system settings');
         } catch (e) {
             this.reportError(e.message, "database-service.js", 103, 0, e.stack);
             console.error("Unable to initialize the database:-", e);
