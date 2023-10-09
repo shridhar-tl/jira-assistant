@@ -64,8 +64,8 @@ class ChooseAuthType extends PureComponent {
         const allowExtn = !extnUnavailable && isExtnValid;
 
         return (<>
-            {extnUnavailable && <span className="badge badge-success" onClick={this.navigateToStore} title="Click to visit webstore and install the extension">Install Extension</span>}
-            {!extnUnavailable && !isExtnValid && !allowExtn && <span className="badge badge-success" onClick={this.navigateToStore} title="Click to visit webstore and update the extension">Update Extension</span>}
+            {extnUnavailable && <span className="badge bg-success" onClick={this.navigateToStore} title="Click to visit webstore and install the extension">Install Extension</span>}
+            {!extnUnavailable && !isExtnValid && !allowExtn && <span className="badge bg-success" onClick={this.navigateToStore} title="Click to visit webstore and update the extension">Update Extension</span>}
             <div className={classNames("auth-type", !allowExtn && "disabled")} onClick={allowExtn ? this.extnSelected : undefined} data-test-id="extn-auth">
                 <div className="auth-type-title">Use Jira Assistant Extension</div>
                 {this.getExtensionMessage()}

@@ -67,7 +67,7 @@ class ImportWorklog extends BaseImport {
             return null;
         }
 
-        return fieldMapping[c.replace(/ /g, '').toLowerCase()] || null;
+        return fieldMapping[c.replace(/[ "]/g, '').toLowerCase()] || null;
     };
 
     processData(data) {

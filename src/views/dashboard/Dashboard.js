@@ -1,4 +1,5 @@
 import React, { PureComponent } from 'react';
+import { TabView, TabPanel } from 'primereact/tabview';
 import { inject } from '../../services/injector-service';
 import {
     GadgetActionType, Calendar, DateWiseWorklog, MyBookmarks, MyOpenTickets, MyReports,
@@ -8,7 +9,6 @@ import Header from './Header';
 import AddGadget from './AddGadget';
 import AddWorklog from '../../dialogs/AddWorklog';
 import BaseGadget, { onDashboardEvent } from '../../gadgets/BaseGadget';
-import { TabView, TabPanel } from 'primereact/tabview';
 import CustomReport from '../reports/custom-groupable/ReportViewer';
 import AdvancedReport from '../reports/report-builder/ReportViewer';
 import { Sortable } from '../../controls';
@@ -192,7 +192,7 @@ class Dashboard extends PureComponent {
             <>
                 {!this.isQuickView && <AddGadget show={showGadgetPanel} onHide={this.hideGadgetDialog} addedGadgets={widgets}
                     addGadget={this.addGadget} removeGadget={this.removeGadget} />}
-                <div className="dashboard-container">
+                <div className="page-container dashboard-container">
                     {!this.isQuickView && <Header {...this.props} config={currentBoard} index={dashboardIndex} userId={this.$session.userId}
                         onShowGadgets={this.onShowGadgets} tabViewChanged={this.tabViewChanged} isQuickView={this.isQuickView} />}
                     {this.getGadgets(widgets)}

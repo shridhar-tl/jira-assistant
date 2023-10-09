@@ -86,36 +86,40 @@ class QueryEditor extends BaseGadget {
                 <TabView panelContainerClassName="no-pad">
                     <TabPanel header="How to use">
                         <div className="pad-8">
-                            <strong>Filter (JQL):</strong> JQL is used to filter and pull data from Jira. You can read more about JQL from atlassian site.<br /><br />
+                            <strong>Filter (JQL):</strong> JQL (Jira Query Language) is a powerful tool for filtering and extracting data from Jira.
+                            To learn more about JQL, you can refer to the Atlassian documentation.
+                            <br /><br />
 
-                            <strong>Display Settings:</strong> Display settings tab lets you to select and pull all the fields required by you for report generation. Only the fields selected in this tab would be pulled from Jira.
-                            You can use Expressions for each field to control how the data is rendered. You can hide the fields if it is not required as a column in the report and can be used within expressions of other fields.<br /><br />
+                            <strong>Display Settings:</strong> In the Display Settings tab, you can select and retrieve specific fields needed for your report generation.
+                            Only the fields you select here will be pulled from Jira. You can also use expressions for each field to control how the data is presented.
+                            If certain fields are not required as columns in the report but are needed within expressions for other fields, you can hide them.
+                            <br /><br />
 
                             <strong>Expressions:</strong>
                             <ul>
-                                <li>Any valid JavaScript expression syntax can be used in expressions.</li>
-                                <li>To access current field, "this" can be used and to access all the available fields, "Fields" object can be used. (Eg: Fields.summary, Fields.created.name)</li>
-                                <li>Only the fields selected under Display Settings tab can be used in expressions and other fields would be unavailable. Hence add all the required fields before using it in expression.</li>
-                                <li>Some of the native functions and custom utility functions are available within expressions.</li>
-                                <li>If an object is returned by the expression, then it is converted as JSON and displayed within the cell.</li>
+                                <li>You can use any valid JavaScript expression syntax in expressions.</li>
+                                <li>To access the current field, use "this." and to access all available fields, use the "Fields" object (e.g., Fields.summary, Fields.created.name).</li>
+                                <li>Only the fields selected under Display Settings tab can be used in expressions; other fields will not be available. Therefore, ensure you add all required fields before using them in expressions.</li>
+                                <li>Some native functions and custom utility functions are available within expressions.</li>
+                                <li>If an object is returned by the expression, it is converted to JSON and displayed within the cell.</li>
                             </ul>
 
                             <strong>Native libraries:</strong>
                             <ul>
-                                <li>Some of the native functions are available for use directly in expressions.</li>
+                                <li>Some native functions are available for direct use in expressions.</li>
                                 <li>Available Functions List: parseInt, parseFloat, isNaN, Math.*, Date, Number</li>
                             </ul>
 
                             <strong>Utility functions:</strong>
                             <ul>
-                                <li>Set of custom utility functions are available under "Utils" object in expressions. These functions can be called like "Utils.formatDate(Fields.created)" in expressions.</li>
+                                <li>A set of custom utility functions is available under the "Utils" object in expressions. These functions can be called as follows: "Utils.formatDate(Fields.created)" within expressions.</li>
                                 <li>
-                                    <strong>Available Functions list:</strong>
+                                    <strong>Available Functions List:</strong>
                                     <ul>
-                                        <li><strong>formatDate, formatTime, formatDateTime:</strong> Accepts date object and returns formatted date as string</li>
-                                        <li><strong>formatSecs:</strong> Accepts number of secs and returns it in readable format</li>
-                                        <li><strong>formatMS:</strong> Accepts number of milliseconds and returns it in readable format</li>
-                                        {/*<li><strong>showAsLink:</strong> Accepts Jira issue key as string and returns anchor tag pointing to Jira Issue</li>*/}
+                                        <li><strong>formatDate, formatTime, formatDateTime:</strong> Accepts a date object and returns a formatted date as a string.</li>
+                                        <li><strong>formatSecs:</strong> Accepts the number of seconds and returns it in a readable format.</li>
+                                        <li><strong>formatMS:</strong> Accepts the number of milliseconds and returns it in a readable format.</li>
+                                        {/*<li><strong>showAsLink:</strong> Accepts a Jira issue key as a string and returns an anchor tag pointing to the Jira Issue.</li>*/}
                                     </ul>
                                 </li>
                             </ul>

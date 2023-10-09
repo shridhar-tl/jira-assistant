@@ -25,9 +25,9 @@ function HeaderRight(props) {
     } = props;
     const { version, isBeta } = notifications?.updatesAvailable || {};
     return (<>
-        <ul className="ml-auto navbar-nav" navbar>
+        <ul className="ml-auto navbar-nav">
             {allowWebVersion && !isAppBuild && !isQuickView && <LaunchWeb />}
-            {!!version && <span className={`update-available badge badge-${isBeta ? "warning" : "success"}`}
+            {!!version && <span className={`update-available badge p-1 px-2 pointer bg-${isBeta ? "warning text-dark" : "success"}`}
                 title={`Jira Assist ${isBeta ? 'BETA ' : ''}v${version} is now available. Click to know more.`}
                 onClick={showVersionInfo}><i className="fa fa-download" /> Updates available</span>}
             {!disableJiraUpdates && <JiraUpdates />}
@@ -38,7 +38,7 @@ function HeaderRight(props) {
             <SkinPicker />
             {showShareOption && <ShareWithOthers />}
             {showContactUs && <li className="nav-item d-md-down-none">
-                <NavLink to={`/${userId}/contactus`} className="nav-link"><i className="fa fa-phone" title="Contact us"></i></NavLink>
+                <NavLink to={`/${userId}/contact-us`} className="nav-link"><i className="fa fa-phone" title="Contact us"></i></NavLink>
             </li>}
             {!isQuickView && !isPluginBuild && <UserBox onLogout={onLogout} />}
         </ul>

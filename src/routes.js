@@ -10,6 +10,7 @@ const ImportWorklogComponent = config.modules.importWorklog && React.lazy(() => 
 const BulkImportIssueComponent = config.modules.importIssues && React.lazy(() => import('./views/bulk-import/issue/BulkImportIssue'));
 
 // Reports
+const PivotReportComponent = config.modules.pivotReport && React.lazy(() => import('./views/reports/pivot-report'));
 const CustomReportComponent = config.modules.customReport && React.lazy(() => import('./views/reports/custom-groupable/CustomReport'));
 const EstimateActualComponent = config.modules.estimateVsActual && React.lazy(() => import('./views/reports/estimate-actual/EstimateActualReport'));
 const SprintReportComponent = config.modules.sprintReport && React.lazy(() => import('./views/reports/sprint-report/SprintReport'));
@@ -48,6 +49,14 @@ const sessionBasedRoute = [
     NewWorklogReportComponent && {
         path: '/reports/worklog',
         component: NewWorklogReportComponent
+    },
+    PivotReportComponent && {
+        path: '/reports/pivot',
+        component: PivotReportComponent
+    },
+    PivotReportComponent && {
+        path: '/reports/pivot/:reportId',
+        component: PivotReportComponent
     },
     EstimateActualComponent && {
         path: '/reports/estimateactual',
@@ -98,7 +107,7 @@ const sessionBasedRoute = [
         component: ContributeComponent
     },
     FeedbackViewComponent && {
-        path: '/contactus',
+        path: '/contact-us',
         component: FeedbackViewComponent
     }
 ].filter(Boolean);

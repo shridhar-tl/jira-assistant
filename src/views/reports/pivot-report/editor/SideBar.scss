@@ -1,0 +1,104 @@
+$container-width: 550px;
+$transition-duration :500ms;
+$transition-delay :50ms;
+
+.skin-dark {
+    .side-bar-container {
+        .header {
+            background-color: #262a2e;
+        }
+    }
+}
+
+.side-bar-container {
+    float: right;
+    height: 100%;
+    border-left: 2px solid #ebecf0;
+    overflow: hidden;
+    position: sticky;
+    top: 0;
+
+    .site-bar-block {
+        height: 100%;
+        width: $container-width;
+        overflow-y: auto;
+
+        .site-bar-content {
+            height: calc(100% - 52px);
+            padding-left: 15px;
+            position: relative;
+
+            .gadget-info {
+                width: 100%;
+                padding: 12px 0;
+                -webkit-box-shadow: 0px 2px 0px #ebecf0;
+                -moz-box-shadow: 0px 2px 0px #ebecf0;
+                box-shadow: 0px 2px 0px #ebecf0;
+
+                .details {
+                    .name {
+                        font-weight: 600;
+                        line-height: 19px;
+                        display: block;
+                    }
+
+                    .desc {
+                        padding: 10px 0;
+                        display: block;
+                    }
+                }
+            }
+        }
+    }
+
+    .header {
+        padding: 10px 15px;
+        background-color: #fff;
+        position: sticky;
+        z-index: 1;
+        top: 0;
+
+        .title {
+            padding-top: 5px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .close-icon {
+            float: right;
+
+            .fa {
+                font-size: 22px;
+                cursor: pointer;
+            }
+        }
+
+        .back-icon {
+            margin-top: -2px;
+        }
+    }
+
+    &.open {
+        width: $container-width;
+        transition-duration: $transition-duration;
+        transition-delay: $transition-delay;
+
+        &+.page-container {
+            width: calc(100% - $container-width);
+            transition-duration: $transition-duration;
+            transition-delay: $transition-delay;
+        }
+    }
+
+    &.closed {
+        width: 0;
+        transition-duration: $transition-duration;
+        transition-delay: $transition-delay;
+
+        &+.page-container {
+            width: 100%;
+            transition-duration: $transition-duration;
+            transition-delay: $transition-delay;
+        }
+    }
+}

@@ -6,6 +6,7 @@ import {
 } from "../../../display-controls";
 import { resolve } from "../../../services/injector-service";
 import { execAst, parseCustExpr } from "../../../common/jsExec";
+import CascadeSelect from "src/display-controls/CascadeSelect";
 
 export async function loadReportData(query, utils) {
     if (!query) { return {}; }
@@ -346,6 +347,8 @@ function getViewComponent(fieldType, col, isArray) {
 
             return TagsDisplay;
         case 'number': return UnknownItemDisplay;
+        case 'option-with-child':
+            return CascadeSelect;
         default:
             col.allowSorting = false;
             col.allowGrouping = false;

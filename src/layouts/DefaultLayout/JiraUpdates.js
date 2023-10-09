@@ -31,7 +31,7 @@ function JiraUpdates() {
     return (<>
         <li className="nav-item">
             <span className="drop-icon" onClick={showPanel} title="Notification updates from Jira">{Icons.bellNotification}</span>
-            {total > 0 && <span className="badge badge-warning">{total}</span>}
+            {total > 0 && <span className="badge bg-warning text-dark">{total > 99 ? '99+' : total}</span>}
         </li>
         <OverlayPanel ref={op} className="drop-op">
             <div className="jira-notifications drop-op-container">
@@ -51,7 +51,7 @@ export default JiraUpdates;
 function Message({ message: msg, cut }) {
     return (
         <Link className="drop-item" title="Click to view this ticket in jira" href={msg.href}>
-            <div className="text-truncate font-weight-bold" title={msg.summary}>
+            <div className="text-truncate fw-bold" title={msg.summary}>
                 {msg.key} - {cut(msg.summary, 100, true)}
             </div>
             {msg.updates.map(({ date, author, field, fromString, toString }, i) => <div key={i} className="small text-muted message-text">

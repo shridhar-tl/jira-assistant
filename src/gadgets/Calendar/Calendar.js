@@ -1042,7 +1042,7 @@ class Calendar extends BaseGadget {
                 <SelectBox dataset={viewModes} value={viewMode} valueField="value" displayField="label" style={{ width: '120px' }} onChange={this.viewModeChanged} />
             </>}
             <span className="info-badge" title={pendingWorklogCount ? `Upload ${pendingWorklogCount} pending worklog(s)` : 'No worklog pending to be uploaded'}>
-                {pendingWorklogCount > 0 && <span className="info btn-warning">{pendingWorklogCount}</span>}
+                {pendingWorklogCount > 0 && <span className="info bg-warning text-dark">{pendingWorklogCount}</span>}
                 <Button text type="success" icon={uploading ? 'fa fa-spin fa-spinner' : 'fa fa-upload'} disabled={uploading || pendingWorklogCount < 1 || isLoading} onClick={() => this.uploadWorklog(true)} />
             </span>
             <Button text icon="fa fa-refresh" disabled={isLoading || uploading} onClick={this.refreshData} title="Refresh meetings and worklogs" />

@@ -15,22 +15,24 @@ import { EventCategory } from '../../../constants/settings';
 import "./Common.scss";
 
 const notes = <div className="padding-15">
-    <strong>Experimental:</strong> This report is experimental and development / bug fixes are in progress. If you encounter any issues or have any
-    suggestions for improvement please send us a feedback by clicking on <i className="fa fa-phone" /> icon on top right corner of the page.
+    <strong>Experimental Notice:</strong> This report is currently in an experimental phase, and development and bug fixes are actively underway.
+    If you encounter any issues or have suggestions for improvement, please provide us with your feedback by clicking the <i className="fa fa-phone" /> icon
+    located in the top right corner of the page.
     <br />
     <br />
-    <strong>How to use:</strong> To generate the sprint report follow the below steps
+    <strong>How to Use:</strong> To generate the sprint report, follow these steps:
     <ul>
-        <li>Rapid view: This is the name of the Agile board which contains the sprint.</li>
-        <li>Select one or more rapid view from the list. You can alternatively start typing the id or name of the board which will filter the list</li>
-        <li>If you want to repeatedly view the sprint of selective rapid views, then add it in Settings -&gt; General -&gt; Default values tab.</li>
-        <li>Once all the required rapid view is selected, sprint field will be populated with the list of available sprints.</li>
-        <li>You can either click on the drop icon and select the sprint or start typing the sprint name to filter the list</li>
-        <li>You can add one or more sprints in the sprint field and once done click Generate report button to generate the report</li>
-        <li>Select worklog option to see the worklog added by the individual users on each ticket grouped based on sprint, issue type and tickets</li>
-        <li>Add at least 2 sprint to see the velocity chart. Having minimum of 5 sprint would give better insights on the chart.</li>
+        <li><strong>Rapid View:</strong> This refers to the name of the Agile board containing the sprint.</li>
+        <li>Select one or more Rapid Views from the list. Alternatively, you can start typing the ID or name of the board, and the list will filter accordingly.</li>
+        <li>If you frequently view sprints for specific Rapid Views, consider adding them to Settings → General → Default Values tab for quicker access.</li>
+        <li>Once you've selected the necessary Rapid Views, the sprint field will populate with available sprints.</li>
+        <li>You can either click the dropdown icon to select a sprint or begin typing the sprint name to filter the options.</li>
+        <li>Add one or more sprints to the sprint field, and when you're ready, click the "Generate Report" button to generate the report.</li>
+        <li>Select the "Worklog" option to view individual user worklogs for each ticket, organized by sprint, issue type, and tickets.</li>
+        <li>To see the velocity chart, ensure you have added at least two sprints. For more insightful chart data, consider having a minimum of five sprints.</li>
     </ul>
-</div>;
+</div>
+    ;
 
 class SprintReport extends BaseGadget {
     constructor(props) {
@@ -219,7 +221,7 @@ class SprintReport extends BaseGadget {
                                     </div>
                                 </div>
                             </div>
-                            <div className="ui-g ui-fluid">
+                            <div className="ui-g ui-fluid py-3">
                                 <div className="ui-g-12 ui-md-2 ui-lg-2 ui-xl-1">
                                     <strong>Sprints</strong>
                                 </div>
@@ -230,7 +232,7 @@ class SprintReport extends BaseGadget {
                                     </div>
                                 </div>
                             </div>
-                            <div className="ui-g ui-fluid">
+                            <div className="ui-g ui-fluid py-2">
                                 <div className="ui-g-12 ui-md-5 ui-lg-4 ui-xl-3">
                                     <div className="form-group">
                                         <Checkbox checked={includeWorklogs} onChange={this.incWorklogChanged} label="Include worklog details in report for " />
@@ -238,7 +240,7 @@ class SprintReport extends BaseGadget {
                                     </div>
                                 </div>
                             </div>
-                            <div className="ui-g ui-fluid">
+                            <div className="ui-g ui-fluid py-3">
                                 <div className="ui-g-12 ui-md-3 ui-lg-3 ui-xl-2">
                                     <Button className="ui-button-primary" disabled={!selectedSprints || selectedSprints.length === 0}
                                         icon="fa fa-play-circle" label="Generate report" onClick={this.refreshData} />

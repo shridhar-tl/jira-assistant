@@ -55,8 +55,7 @@ export default class OutlookOAuthService extends BaseService {
             console.log('Outlook: New access token generated successfully');
             await this.saveTokenData(userId, token, expires, refresh_token);
         } else {
-            console.error(message);
-            throw new Error(message);
+            console.error('Outlook Auth failed: ', message);
         }
 
         return token;

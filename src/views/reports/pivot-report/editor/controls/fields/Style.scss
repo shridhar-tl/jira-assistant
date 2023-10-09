@@ -1,0 +1,68 @@
+.editor-controls .controls {
+    .p-splitter-panel .fields-collection {
+
+        .fields-group-view {
+            height: calc(100% - 30px);
+            padding: 0;
+            overflow: auto;
+        }
+    }
+
+    .fields-collection {
+        height: 100%;
+        width: calc(100% - 300px);
+
+        .search-container {
+            position: relative;
+
+            span.fa {
+                position: absolute;
+                top: 7px;
+                right: 15px;
+            }
+
+            input {
+                width: 100%;
+                border: none;
+                height: 30px;
+                border: 1px solid transparent;
+
+                &.p-inputtext:enabled:focus {
+                    box-shadow: none;
+                }
+
+                &.p-inputtext {
+
+                    &:focus,
+                    &:hover {
+                        border-color: #ced4da;
+                    }
+                }
+            }
+        }
+
+        .fields-group-view {
+            height: calc(100% - 30px);
+            padding: 0;
+            overflow: auto;
+        }
+
+        .fields-list {
+            padding: 5px 5px;
+
+            .jira-field {
+                padding: 3px 10px;
+                border-radius: 10px;
+                cursor: move;
+
+                &:hover {
+                    background-color: #f8f9fa;
+                }
+
+                .fa {
+                    color: #707b86;
+                }
+            }
+        }
+    }
+}

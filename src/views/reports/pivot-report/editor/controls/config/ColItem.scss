@@ -1,0 +1,29 @@
+.col-item {
+    background-color: #f1f3f4;
+    border-radius: 8px;
+    padding: 8px;
+    cursor: move;
+
+    &.open {
+        margin: 8px 0;
+        padding: 8px;
+    }
+
+    .icon-col {
+        width: 16px;
+    }
+
+    .icon-pivot {
+        cursor: help;
+    }
+
+    .sub-items {
+        .col-item.open {
+            border-left: 1px dashed grey;
+        }
+
+        .drop-placeholder {
+            padding: 6px 5px;
+        }
+    }
+}

@@ -1,5 +1,5 @@
-import { Button, Loader } from 'react-controls';
-import DndProvider, { Sortable, Draggable } from 'react-controls/drag-drop';
+import { Button, Loader, MultiValueText } from 'react-controls/controls';
+import DndProvider, { Sortable, Draggable } from 'react-controls/controls/drag-drop';
 import AutoComplete from './AutoComplete';
 import Checkbox from './Checkbox';
 import ColorPicker from './ColorPicker';
@@ -9,7 +9,6 @@ import Link from './Link';
 import SelectBox from './SelectBox';
 import TextBox from './TextBox';
 import RadioButton from './RadioButton';
-import MultiValueText from './MultiValueText';
 import './Common.scss';
 
 export {

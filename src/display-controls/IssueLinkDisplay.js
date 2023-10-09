@@ -24,7 +24,7 @@ class IssueLinkDisplay extends BaseControl {
                     <IssueDisplay tag="span" issue={type ? (a.inwardIssue || a.outwardIssue) : a}
                         title={linkType}
                         getTicketUrl={getTicketUrl}
-                        className="badge badge-pill skin-bg-font" />
+                        className="badge rounded-pill skin-bg-font" />
                 </li>);
             })}
         </ul>);

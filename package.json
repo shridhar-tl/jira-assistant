@@ -1,6 +1,6 @@
 {
     "name": "jira-assistant",
-    "version": "2.54.0",
+    "version": "2.57.0",
     "description": "Help to track & upload work done on a Jira Ticket on timely basis and generate Worklog, Sprint and other custom reports",
     "homepage": "/",
     "author": {
@@ -8,7 +8,7 @@
         "email": "shridhar.tl@gmail.com"
     },
     "bugs": {
-        "url": "https://www.jiraassistant.com/contactus"
+        "url": "https://jiraassistant.com/contact-us"
     },
     "private": true,
     "license": "MIT",
@@ -51,35 +51,37 @@
         }
     },
     "dependencies": {
-        "@forge/api": "^2.18.3",
+        "@forge/api": "^2.19.1",
         "@forge/bridge": "^2.6.0",
-        "@forge/resolver": "^1.5.13",
+        "@forge/resolver": "^1.5.17",
         "@fortawesome/fontawesome-free": "6.4.2",
-        "@fullcalendar/core": "6.1.8",
-        "@fullcalendar/daygrid": "6.1.8",
-        "@fullcalendar/interaction": "6.1.8",
-        "@fullcalendar/list": "6.1.8",
-        "@fullcalendar/moment": "6.1.8",
-        "@fullcalendar/react": "6.1.8",
-        "@fullcalendar/timegrid": "6.1.8",
+        "@fullcalendar/core": "6.1.9",
+        "@fullcalendar/daygrid": "6.1.9",
+        "@fullcalendar/interaction": "6.1.9",
+        "@fullcalendar/list": "6.1.9",
+        "@fullcalendar/moment": "6.1.9",
+        "@fullcalendar/react": "6.1.9",
+        "@fullcalendar/timegrid": "6.1.9",
+        "bootstrap": "5.3.2",
         "bootstrap-daterangepicker": "3.1.0",
-        "chart.js": "4.3.3",
+        "chart.js": "4.4.0",
         "classnames": "2.3.2",
         "dexie": "3.2.4",
         "espree": "9.6.1",
         "exceljs": "4.3.0",
-        "firebase": "10.1.0",
-        "jquery": "3.7.0",
+        "firebase": "10.4.0",
+        "jquery": "3.7.1",
+        "js-sql-parser": "1.4.1",
         "jsd-report": "0.1.11",
         "jspdf": "2.5.1",
-        "jspdf-autotable": "3.5.31",
+        "jspdf-autotable": "3.6.0",
         "moment": "2.29.4",
         "moment-timezone": "0.5.43",
         "papaparse": "5.4.1",
         "patternomaly": "1.3.2",
         "primeflex": "3.3.1",
         "primeicons": "6.0.1",
-        "primereact": "9.6.1",
+        "primereact": "9.6.2",
         "queue": "7.0.0",
         "rc-time-picker": "3.7.3",
         "react": "18.2.0",
@@ -88,19 +90,20 @@
         "react-dnd": "14.0.4",
         "react-dnd-html5-backend": "14.0.2",
         "react-dom": "18.2.0",
-        "react-router-dom": "6.14.2",
+        "react-router-dom": "6.16.0",
         "react-scripts": "5.0.1",
-        "static-eval": "2.1.0"
+        "static-eval": "2.1.0",
+        "zustand": "4.4.3"
     },
     "devDependencies": {
         "@craco/craco": "^7.1.0",
         "cross-env": "^7.0.3",
-        "eslint": "^8.46.0",
+        "eslint": "^8.51.0",
         "eslint-plugin-react-hooks": "^4.6.0",
-        "gh-pages": "^5.0.0",
+        "gh-pages": "^6.0.0",
         "react-app-alias": "^2.2.2",
-        "sass": "^1.64.2",
-        "webpack-bundle-analyzer": "^4.9.0"
+        "sass": "^1.69.0",
+        "webpack-bundle-analyzer": "^4.9.1"
     },
     "scripts": {
         "start": "cross-env REACT_APP_BUILD_MODE=WEB craco start",
@@ -195,8 +198,8 @@
     },
     "aliases": {
         "react-controls": [
-            "externals/react-controls/src/controls",
-            "node_modules/react-controls/src/controls"
+            "externals/react-controls/src/",
+            "node_modules/react-controls/src/"
         ]
     }
 }

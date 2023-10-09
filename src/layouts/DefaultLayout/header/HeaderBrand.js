@@ -11,7 +11,7 @@ function HeaderBrand({ showVersionInfo, versionNumber }) {
     return (<>
         <Link href={siteUrl} className="navbar-brand">
             {/*<img src={process.env.PUBLIC_URL + '/assets/icon_24.png'} width="24" height="24" alt="Jira Assistant" className="navbar-brand-minimized" />*/}
-            <span className="navbar-brand-full">Jira Assistant <span className="v-info badge badge-success" onClick={showVersionInfo}>{versionNumber}</span></span>
+            <span className="navbar-brand-full">Jira Assistant <span className="v-info badge bg-success" onClick={showVersionInfo}>{versionNumber}</span></span>
         </Link>
         <button className="navbar-toggler quick-view-show">
             <Link href={isWebBuild ? "/" : "/index.html"} title="Open in new tab">

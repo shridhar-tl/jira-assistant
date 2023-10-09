@@ -66,7 +66,7 @@ module.exports = function (window, basePath) {
             submenu: [
                 getExternalMenu('Learn More', 'https://www.jiraassistant.com'),
                 getExternalMenu('FAQ\'s', 'https://www.jiraassistant.com/faq'),
-                getExternalMenu('Contact us', 'https://www.jiraassistant.com/contactus'),
+                getExternalMenu('Contact us', 'https://www.jiraassistant.com/contact-us'),
                 getExternalMenu('Version History', 'https://www.jiraassistant.com/version-history#latest-updates'),
                 getExternalMenu('Issue tracker', 'https://github.com/shridhar-tl/jira-assistant/issues'),
                 getExternalMenu('Launch Web', 'https://app.jiraassistant.com'),
@@ -110,7 +110,7 @@ module.exports = function (window, basePath) {
                     product_name: 'Jira Assistant v2.41',
                     //package_json_dir: '',
                     //about_page_dir: '',
-                    bug_report_url: 'https://www.jiraassistant.com/contactus',
+                    bug_report_url: 'https://www.jiraassistant.com/contact-us',
                     bug_link_text: 'Contact us',
                     copyright: 'Copyright (c) 2016-2022 Jira Assistant',
                     homepage: 'https://www.jiraassistant.com',

@@ -6,7 +6,7 @@ export const jiraCloudAuthorizeUrl = 'https://auth.atlassian.com/authorize';
 export const jiraCloudScopes = 'offline_access read:jira-user read:jira-work write:jira-work read:sprint:jira-software read:issue-details:jira read:jql:jira';
 export const jiraCloudClientId = 'WcuXzz2GICjwK6ZUMSlJwcDbTaIC31B6';
 export const jiraCloudRedirectUrl = `${JAWebRootUrl}?oauth=jc`;
-export const jaJiraTokenExchangeUrl = `${JAApiBasePath}/jira/oauth/token`;
+export const jaJiraTokenExchangeUrl = `${JAApiBasePath}/oauth/jira/token`;
 
 export function getJiraCloudOAuthAuthorizeUrl(state) {
     if (typeof state === 'object') {
@@ -27,5 +27,6 @@ export function getJiraCloudOAuthAuthorizeUrl(state) {
 }
 // #endregion
 
-export const outlookTokenExchangeUrl = `${JAApiBasePath}/outlook/oauth/token`;
-export const pokerTokenExchangeUrl = `${JAApiBasePath}/poker/oauth/token`;
+export const outlookRedirectUrl = `${JAApiBasePath}/oauth/outlook`;
+export const outlookTokenExchangeUrl = `${JAApiBasePath}/oauth/outlook/token`;
+export const pokerTokenExchangeUrl = `${JAApiBasePath}/oauth/poker/token`;

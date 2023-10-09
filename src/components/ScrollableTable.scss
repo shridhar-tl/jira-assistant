@@ -1,5 +1,5 @@
 div.scroll-table-container {
-    width: calc(100% - 3px);
+    width: calc(100% - 2px);
     height: 100%;
     overflow: auto;
 
@@ -155,7 +155,7 @@ div.scroll-table-container {
 
                     th,
                     td {
-                        border-color: #dfe1e6;
+                        border: 1px solid #dfe1e6;
                     }
                 }
             }

@@ -54,7 +54,7 @@ class Notifications extends PureComponent {
             <li className="nav-item">
                 <span className="notification-icon pointer" title="Announcement / updates from developer" onClick={this.viewList}>
                     {Icons.announcement}
-                    {unread > 0 && <span className="badge badge-danger">{unread}</span>}
+                    {unread > 0 && <span className="badge bg-danger">{unread}</span>}
                 </span>
             </li>
             <OverlayPanel ref={this.setRef} className="notification-op drop-op">
@@ -86,7 +86,7 @@ function Message({ message, onOpen, onRead, cut }) {
         <div className="message" title="Click to view this message">
             {!message.read && <small className="float-end mt-0" onClick={markRead} title="Click to mark this message as read">
                 <span className="fa fa-eye mark-read" /></small>}
-            <div className={`message-title text-truncate${message.read ? "" : " font-weight-bold"}`} onClick={readMessage}>
+            <div className={`message-title text-truncate${message.read ? "" : " fw-bold"}`} onClick={readMessage}>
                 {message.important && <span className="fa fa-exclamation text-danger"></span>} {message.title}
             </div>
             <div className="small text-muted message-text" onClick={readMessage}><TextParser message={cut(message.message, 175, true)} /></div>

@@ -22,7 +22,11 @@ class IssueDisplay extends BaseControl {
         if (!issue) { return badge; }
 
         if (typeof issue === 'string') {
-            return issue;
+            return (
+                <Link href={this.getTicketUrl(issue)} className={`link ${className}`}>
+                    {issue} {badge}
+                </Link>
+            );
         }
 
         const key = issue.key;
