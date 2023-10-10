@@ -1,22 +1,27 @@
 import React from 'react';
 import GanttChart from 'src/components/gantt-chart';
-import { IssueDisplay } from 'src/display-controls';
+import { IssueDisplay, UserDisplay } from 'src/display-controls';
 import { connect } from '../store';
-import { addTaskProgress, updateTaskResized, plannerTaskPropertyName } from './actions';
+import { addTaskProgress, updateTaskResized, beginTaskEdit, plannerTaskPropertyName } from './actions';
 import AddTaskPlanDialog from './AddTaskPlanDialog';
 import moment from 'moment';
+import { getUserName } from 'src/common/utils';
 
 const columnsList = [
     { field: 'display', headerText: 'Task / Activity', width: 200, template: DisplayTemplate },
     { field: 'fields.summary', headerText: 'Summary', width: 300 },
-    { field: 'resources', headerText: 'Resources', width: 300 },
-    { field: 'effort', headerText: 'Effort', width: 300 }
+    { field: 'assignee', headerText: 'Assignee', width: 300, template: AssigneeTemplate }
 ];
 
 function SprintPlanner({
     height, sprintLists, planStartDate, planEndDate, planningData, resources,
     taskBarEdited, epicList, showTaskEditor,
     $userutils }) {
+    const resourceMap = React.useMemo(() => resources.reduce((map, r) => {
+        map[getUserName(r)] = r;
+        return map;
+    }, {}), [resources]);
+
     return (<div className="ja-plan-container">
         <GanttChart height={height} columns={columnsList}
             items={epicList}
@@ -24,9 +29,10 @@ function SprintPlanner({
             isDayHoliday={$userutils.isHoliday}
             onAddTask={addTaskProgress}
             onTaskResized={updateTaskResized}
+            onTaskEdit={beginTaskEdit}
             getItemTaskDetails={getIssueTaskDetails}
             taskDetailTemplate={TaskTemplate}
-            taskDetailTemplateArgs={resources}
+            taskDetailTemplateArgs={resourceMap}
         />
         {showTaskEditor && <AddTaskPlanDialog />}
     </div>);
@@ -47,6 +53,12 @@ function DisplayTemplate(props) {
     return (<IssueDisplay value={issue} tag="span"
         settings={{ showStatus: false }}
     />);
+}
+
+function AssigneeTemplate(props) {
+    const { taskData: { fields: { assignee } } } = props;
+
+    return (<UserDisplay value={assignee} tag="span" imgClassName="img-x28" settings={{ showImage: true }} />);
 }
 
 function getIssueTaskDetails(issue, columns) {
@@ -70,8 +82,20 @@ function getTaskDetail(task, planStartDate) {
     return { startCol, noOfDays, resources };
 }
 
-function TaskTemplate({ item, task: { resources } }) {
-    return (<div>
+function TaskTemplate({ item, args, task: { resources } }) {
+    return (<>
+        <ResourceView resources={resources} resourceMap={args} />
+    </>);
+}
 
-    </div>);
+function ResourceView({ resources, resourceMap }) {
+    const resource = resourceMap[resources[0]];
+    const { displayName, avatarUrls: { '24x24': imageUrl } = {} } = resource || {};
+
+    return (<figure className="profile-picture p-1">
+        <img src={imageUrl} alt={displayName} title={displayName}
+            className="rounded-circle img-x26" />
+        {resources.length > 1 && <span style={{ marginLeft: '-6px' }}
+            className="badge bg-warning font-bold text-dark">+{resources.length - 1}</span>}
+    </figure>);
 }

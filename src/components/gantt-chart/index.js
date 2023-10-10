@@ -21,7 +21,7 @@ function GanttChart(props) {
     return (<div className="gantt-chart">
         <PropsProvider value={props}>
             <Splitter style={{ height }}>
-                <SplitterPanel>
+                <SplitterPanel size={10}>
                     <GanttFieldsContainer columns={columns} items={items} />
                 </SplitterPanel>
                 <SplitterPanel>

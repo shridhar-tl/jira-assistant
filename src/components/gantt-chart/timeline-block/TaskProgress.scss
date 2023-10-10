@@ -7,24 +7,34 @@
 
     .task-progress {
         background-color: #008786;
-        height: 40px;
+        height: 33px;
         top: 2px;
         border-radius: 4px;
         position: absolute;
         cursor: move;
 
-        .fa-ellipsis-vertical {
-            color: #fff;
-            padding: 8px 5px;
-            height: 80%;
-            font-size: 22px;
-            opacity: 0.8;
+        div.v-resize-container {
+            height: 100%;
+            display: block;
             cursor: ew-resize;
-            display: none;
+            padding: 6px 0 0 1px;
+
+            &.float-end {
+                padding-right: 3px;
+            }
+
+            div.resize-holder {
+                width: 5px;
+                height: 20px;
+                width: 1px;
+                border: 2px dotted #fff;
+                display: block;
+                opacity: 0;
+            }
         }
 
-        &:hover .fa-ellipsis-vertical {
-            display: block;
+        &:hover div.v-resize-container div.resize-holder {
+            opacity: 0.8;
         }
     }
 }

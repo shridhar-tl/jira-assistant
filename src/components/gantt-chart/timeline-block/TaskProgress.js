@@ -4,7 +4,7 @@ import './TaskProgress.scss';
 import { GanttContext } from '../store';
 import { stop } from 'src/common/utils';
 
-const widthOfDayInPx = 35;
+export const widthOfDayInPx = 35;
 
 function getLeftPosition(e, containerRef, start) {
     const containerRect = containerRef.current.getBoundingClientRect();
@@ -45,6 +45,7 @@ function TaskProgress(props) {
     };
 
     const beginResize = (e) => {
+        stop(e);
         const el = e.currentTarget;
         const taskIndex = parseInt(el.attributes.getNamedItem('data-task-index').value);
         const task = taskDetails[taskIndex];
@@ -58,6 +59,17 @@ function TaskProgress(props) {
         setIsDragging(true);
     };
 
+    const beginMove = (e) => {
+        stop(e);
+        const el = e.currentTarget;
+        const taskIndex = parseInt(el.attributes.getNamedItem('data-task-index').value);
+        const task = taskDetails[taskIndex];
+
+        setTask({ task, index: taskIndex, move: true });
+
+        handleMouseDown(e);
+    };
+
     const handleMouseUp = (e) => {
         if (!isDragging) {
             return;
@@ -67,9 +79,20 @@ function TaskProgress(props) {
 
         const { item, columns } = propsRef.current;
         const { onAddTask, onTaskResized } = rootPropsRef.current;
-        let start = startX, end = endX;
 
-        if (editedTask) {
+        if (editedTask?.move) {
+            const diff = endX - startX;
+            if (diff) {
+                let start = editedTask.task.startCol + diff;
+                if (start < 0) {
+                    start = 0;
+                }
+                const end = (start + editedTask.task.noOfDays) - 1;
+
+                onTaskResized(item, editedTask.index, columns[start], columns[end]);
+            }
+        } else if (editedTask) {
+            let start = startX, end = endX;
             if (editedTask.start) {
                 start = col < (endX - 1) ? col : endX - 1;
                 setStartX(start);
@@ -86,13 +109,14 @@ function TaskProgress(props) {
             onAddTask(item, columns[startCol], columns[endCol - 1]);
         }
 
+        setTask(null);
         setIsDragging(false);
     };
 
     const handleMouseMove = (e) => {
         if (isDragging) {
-            const col = getLeftPosition(e, containerRef, editedTask?.start ? undefined : startX);
-            if (editedTask) {
+            const col = getLeftPosition(e, containerRef, editedTask?.start || editedTask?.move ? undefined : startX);
+            if (editedTask && !editedTask.move) {
                 if (editedTask.start) {
                     setStartX(col < (endX - 1) ? col : endX - 1);
                 } else {
@@ -104,6 +128,15 @@ function TaskProgress(props) {
         }
     };
 
+    const taskEditHandler = (e) => {
+        const el = e.currentTarget;
+        const taskIndex = parseInt(el.attributes.getNamedItem('data-task-index').value);
+        const { onTaskEdit } = rootPropsRef.current;
+        const { item } = propsRef.current;
+
+        onTaskEdit(item, taskIndex);
+    };
+
     const startCol = Math.min(startX, endX);
     const endCol = Math.max(startX, endX);
 
@@ -113,7 +146,17 @@ function TaskProgress(props) {
         onMouseMove={isDragging ? handleMouseMove : undefined}>
         {taskDetails?.map((task, i) => {
             if (isDragging && editedTask?.index === i) {
-                task = { ...task, startCol, noOfDays: endCol - startCol };
+                if (editedTask.move) {
+                    task = {
+                        ...task,
+                        startCol: task.startCol + (endX - startX)
+                    };
+                    if (task.startCol < 0) {
+                        task.startCol = 0;
+                    }
+                } else {
+                    task = { ...task, startCol, noOfDays: endCol - startCol };
+                }
             }
 
             return (<TaskProgressBar key={i}
@@ -125,6 +168,8 @@ function TaskProgress(props) {
                 template={taskDetailTemplate}
                 templateArgs={taskDetailTemplateArgs}
                 beginResize={beginResize}
+                beginMove={beginMove}
+                onTaskEdit={taskEditHandler}
             />);
         })}
         &nbsp;
@@ -134,14 +179,16 @@ function TaskProgress(props) {
 
 export default TaskProgress;
 
-function TaskProgressBar({ startCol, noOfDays, template: Template, templateArgs, item, task, index, beginResize }) {
-    return (<div className="task-progress"
+function TaskProgressBar({ startCol, noOfDays, template: Template, templateArgs, item, task, index, beginResize, beginMove, onTaskEdit }) {
+    return (<div className="task-progress" data-task-index={index}
         style={{
             left: `${(startCol * widthOfDayInPx) + 3}px`,
             width: `${(noOfDays * widthOfDayInPx) - 3}px`
-        }} onMouseDown={stop}>
-        <span className="fa-solid fa-ellipsis-vertical float-end" data-task-index={index} onMouseDown={beginResize} />
-        {Template && <Template item={item} task={task} args={templateArgs} />}
-        <span className="fa-solid fa-ellipsis-vertical float-start" data-task-index={index} onMouseDown={beginResize} />
+        }} onMouseDown={beginMove} onDoubleClick={onTaskEdit}>
+        <div className="v-resize-container float-end" data-task-index={index} onMouseDown={beginResize}><div className="resize-holder" /></div>
+        <div className="v-resize-container float-start" data-task-index={index} onMouseDown={beginResize}><div className="resize-holder" /></div>
+        {Template && noOfDays > 1 && <div className="float-start">
+            <Template item={item} task={task} args={templateArgs} />
+        </div>}
     </div>);
 }

@@ -18,6 +18,16 @@ export function addTaskProgress(issue, startDate, endDate) {
     });
 }
 
+export function beginTaskEdit(issue, index) {
+    usePlannerState.setState({
+        editedProgressObject: {
+            issue,
+            index,
+            state: issue.properties[plannerTaskPropertyName][index]
+        }
+    });
+}
+
 export async function updateTaskResized(issue, index, startDate, endDate) {
     const taskList = issue.properties[plannerTaskPropertyName];
     const task = taskList[index];
@@ -29,18 +39,27 @@ export async function updateTaskResized(issue, index, startDate, endDate) {
 }
 
 export async function saveEditedObject(_, value) {
-    const { editedProgressObject: { issue } } = usePlannerState.getState();
+    const { editedProgressObject: { issue, index } } = usePlannerState.getState();
 
     cancelEdit();
 
     const taskList = issue.properties[plannerTaskPropertyName] || [];
-    taskList.push(value);
+    if (index >= 0) {
+        taskList[index] = value;
+    } else {
+        taskList.push(value);
+    }
 
     await updateIssueTaskProperty(issue, taskList);
 }
 
 function updateIssueTaskProperty(issue, value) {
-    value = value?.map(prepareTaskForSave);
+    value = value?.sortBy(task => {
+        const { startDate, endDate } = task;
+        const noOfDays = moment(endDate).diff(startDate, 'days');
+
+        return moment(startDate).valueOf() + noOfDays;
+    }).map(prepareTaskForSave);
 
     const { $jira } = inject('JiraService');
 

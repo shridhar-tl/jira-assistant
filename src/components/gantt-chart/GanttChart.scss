@@ -8,6 +8,8 @@
     }
 
     .gantt-table-container {
+        top: 0;
+        left: 0;
         height: 100%;
         width: 100%;
     }
@@ -16,5 +18,15 @@
         table-layout: fixed;
         width: 0px;
 
+    }
+
+    .relative {
+        .weekend-marker {
+            width: 35px;
+            position: absolute;
+            height: 100%;
+            background-color: #fafafa;
+            top: 28px;
+        }
     }
 }

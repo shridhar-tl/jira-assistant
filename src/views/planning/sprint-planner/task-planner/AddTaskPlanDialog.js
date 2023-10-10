@@ -5,9 +5,11 @@ import Form from 'react-controls/controls/form/Form';
 import { connect } from '../store';
 import { FormDatePicker, FormMultiSelect } from 'react-controls/controls/form';
 import { saveEditedObject, cancelEdit } from './actions';
+import { getUserName } from 'src/common/utils';
 
-function AddTaskPlanDialog({ editedObject }) {
+function AddTaskPlanDialog({ editedObject, resources }) {
     const [state, setState] = React.useState(editedObject.state);
+    const users = React.useMemo(() => resources.map(r => ({ value: getUserName(r), label: r.displayName })), [resources]);
 
     const footer = (<>
         <Button text label="Cancel" onClick={cancelEdit} />
@@ -15,7 +17,8 @@ function AddTaskPlanDialog({ editedObject }) {
     </>);
 
     return (
-        <Dialog header="Task Information" visible={true} style={{ width: '600px' }} onHide={cancelEdit} footer={footer}>
+        <Dialog header="Task Information" visible={true} style={{ width: '600px' }}
+            onHide={cancelEdit} footer={footer}>
             <Form value={state} onChange={setState}>
                 <div className="px-3">
                     <div className="row">
@@ -29,7 +32,7 @@ function AddTaskPlanDialog({ editedObject }) {
                         </div>
                         <div className="col-12">
                             <label>Resources</label>
-                            <FormMultiSelect field="resources" />
+                            <FormMultiSelect field="resources" dataset={users} />
                         </div>
                     </div>
                 </div>
@@ -38,4 +41,7 @@ function AddTaskPlanDialog({ editedObject }) {
     );
 }
 
-export default connect(AddTaskPlanDialog, (state) => ({ editedObject: state.editedProgressObject }));
+export default connect(AddTaskPlanDialog, (state) => ({
+    editedObject: state.editedProgressObject,
+    resources: state.resources
+}));
