@@ -11,8 +11,6 @@ class DatabaseService extends Dexie {
         this.$message = $message;
         this.$analytics = $analytics;
 
-        this.initDatabase();
-
         if (typeof window !== 'undefined') {
             if (window.addEventListener) {
                 window.addEventListener('unhandledrejection', (event) => this.handleError(event));
@@ -21,18 +19,20 @@ class DatabaseService extends Dexie {
                     const { error, filename, lineno, colno, message } = e || {};
                     const { stack } = error || {};
                     this.reportError(message, filename, lineno, colno, stack);
-                    this.$message.error("An unknown error occured while processing your request", "Unhandled error", true);
+                    this.$message.error("An unknown error occurred while processing your request", "Unhandled error", true);
                     console.error("Global handler:-", e);
                 });
             } else {
                 window.onerror = (msg, url, line, col, error) => {
                     const { stack } = error || {};
                     this.reportError(msg, url, line, col, stack);
-                    this.$message.error("An unknown error occured while processing your request", "Unhandled error", true);
+                    this.$message.error("An unknown error occurred while processing your request", "Unhandled error", true);
                     console.error(msg, url, line, col, error);
                 };
             }
         }
+
+        this.initDatabase();
     }
 
     initDatabase() {
@@ -72,6 +72,7 @@ class DatabaseService extends Dexie {
             this.$analytics.setUserId(instId);
             this.$analytics.setIfEnabled(anLog?.value !== false, exLog?.value !== false);
             this._initialized = true;
+            console.log('Completed loading system settings');
         } catch (e) {
             console.error('Error loading settings:', e);
         }
@@ -91,6 +92,7 @@ class DatabaseService extends Dexie {
 
             this.$analytics.setUserId(instId);
             this.$analytics.trackEvent("New installation", EventCategory.Instance);
+            console.log('Completed populating system settings');
         } catch (e) {
             this.reportError(e.message, "database-service.js", 103, 0, e.stack);
             console.error("Unable to initialize the database:-", e);

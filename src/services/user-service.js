@@ -136,6 +136,8 @@ export default class UserService {
             options = undefined;
         }
 
+        console.log('About to check if user exists in db before creation:', root, userId, emailAddress);
+
         let user = await this.getUserFromDB(root, userId, emailAddress);
         if (!user) {
             user = {
@@ -153,7 +155,9 @@ export default class UserService {
                 user.apiUrl = apiUrl;
             }
 
+            console.log('User does not exist. About to create new user', user);
             const id = await this.$storage.addUser(user);
+            console.log('User created with id:', id);
 
             const defaultSettings = [
                 { userId: id, category: SettingsCategory.General, name: 'dateFormat', value: 'dd-MMM-yyyy', _ts: 2 },
@@ -169,9 +173,13 @@ export default class UserService {
 
             await this.$storage.bulkPutSettings(defaultSettings, false);
 
+            console.log('Settings added for user');
+
             return id;
         }
         else {
+            console.log('User already exists in DB. About to update it');
+
             user.jiraUrl = root;
             user.userId = userId;
             user.email = emailAddress;

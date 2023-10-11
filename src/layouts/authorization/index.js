@@ -39,6 +39,8 @@ const withAuthInfo = function (Component) {
                     if (result !== undefined) {
                         setAuthInfo(result);
 
+                        console.log('JA: Auth result:', result);
+
                         // If user is not integrated yet, then navigate to integrate page
                         if (!bgAuth && result.needIntegration && !pathname.startsWith('/integrate')) {
                             navigate('/integrate');
@@ -69,6 +71,8 @@ export default withAuthInfo;
 async function authenticateUser(userIdFromPath, authInfo, pathname, navigate) {
     const { $auth, $session, $settings } = inject('AuthService', 'SessionService', 'SettingsService');
 
+    console.log('JA: Validating user auth settings...');
+
     if (userIdFromPath && userIdFromPath === $session.userId && $session.authenticated) {
         if (authInfo?.userId !== $session.userId) {
             return {
@@ -82,26 +86,33 @@ async function authenticateUser(userIdFromPath, authInfo, pathname, navigate) {
     }
 
     try {
+        console.log('JA: Authenticating user');
         const authenticated = await $auth.authenticate(userIdFromPath);
         const jiraUrl = $session.rootUrl;
 
         if (authenticated) {
+            console.log('JA: User is authenticated');
+
             const userId = $session.userId || null;
 
             if (navigate) {
                 if (!userIdFromPath && userId) {
                     navigate(userId + pathname);
-                } else if (userIdFromPath && userId) { // If userid comes from url, then update the user id in db
+                } else if (userIdFromPath && userId) { // If user id comes from url, then update the user id in db
                     // ToDo: Ensuring if value from db is different would be more appropriate
                     //await $settings.set("CurrentJiraUrl", jiraUrl);
                     await $settings.set("CurrentUserId", userId);
                 }
             }
 
+            console.log('JA: Authenticated jira url:', jiraUrl, userId);
+
             return { authenticated, jiraUrl, userId };
         }
         return { authenticated, jiraUrl, needIntegration: $session.needIntegration };
-    } catch {
+    } catch (err) {
+        console.error('JA: Authentication failed with following error:', err);
+
         const { needIntegration, rootUrl: jiraUrl } = $session;
         return { needIntegration, jiraUrl };
     }
