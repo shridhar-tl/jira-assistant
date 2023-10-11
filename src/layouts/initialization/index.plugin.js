@@ -62,8 +62,10 @@ const dummyInstUrl = 'https://api.atlassian.net';
 
 async function getInstanceUrl() {
     try {
+        console.log('About to fetch Server Info');
         const response = await requestJira('/rest/api/3/serverInfo'); // XML Response: `/rest/applinks/latest/manifest`
         const result = await response.json();
+        console.log('Received server info', result);
         return result.baseUrl.clearEnd('/') || dummyInstUrl;
     } catch {
         console.error('Fetching server info failed. Falling back to: ', dummyInstUrl);
