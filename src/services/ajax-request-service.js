@@ -80,10 +80,19 @@ export default class AjaxRequestService {
     async _processResult(result) {
         if (result.ok) {
             try {
-                if (result.status !== 204) {
-                    return await result.json();
-                } else {
+                if (result.status === 204) {
                     return {};
+                }
+
+                const responseText = await result.text();
+                if (!responseText) {
+                    return {};
+                }
+
+                try {
+                    return JSON.parse(responseText);
+                } catch {
+                    return responseText;
                 }
             } catch (err) {
                 return Promise.reject({ status: -1, statusText: err.message, error: err });
