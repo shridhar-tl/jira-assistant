@@ -13,7 +13,7 @@ function KanbanBoard({
     const [collapsedStates, setCollapsedStates] = React.useState({});
     const toggleCollapse = React.useCallback((colId, collapse) => setCollapsedStates(state => ({ ...state, [colId]: collapse })), [setCollapsedStates]);
 
-    return (<div className="board-container">
+    return (<div className="board-container h-100">
         <table className="board w-100">
             <BoardHeader
                 columns={columns}
@@ -23,19 +23,29 @@ function KanbanBoard({
                 templateScope={templateScope}
                 toggleCollapse={toggleCollapse}
             />
-            {BodyHeaderTemplate && <BodyHeaderTemplate columns={columns} collapsedStates={collapsedStates} />}
-            <BoardBody columns={columns}
-                columnKeyField={columnKeyField}
-                collapsedStates={collapsedStates}
-                itemsTemplate={itemsTemplate}
-                headerTextField={headerTextField}
-                templateScope={templateScope}
-                filterItems={filterItems}
-                placeholder={placeholder}
-                toggleCollapse={toggleCollapse}
-                onChange={onChange}
-            />
         </table>
+
+        {BodyHeaderTemplate && <div className="board-header-block w-100">
+            <table className="board w-100">
+                <BodyHeaderTemplate columns={columns} collapsedStates={collapsedStates} columnKeyField={columnKeyField} />
+            </table>
+        </div>}
+
+        <div>
+            <table className="board w-100 h-100">
+                <BoardBody columns={columns}
+                    columnKeyField={columnKeyField}
+                    collapsedStates={collapsedStates}
+                    itemsTemplate={itemsTemplate}
+                    headerTextField={headerTextField}
+                    templateScope={templateScope}
+                    filterItems={filterItems}
+                    placeholder={placeholder}
+                    toggleCollapse={toggleCollapse}
+                    onChange={onChange}
+                />
+            </table>
+        </div>
     </div>);
 }
 

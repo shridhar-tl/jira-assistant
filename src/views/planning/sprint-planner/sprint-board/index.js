@@ -6,14 +6,13 @@ import { getIssuesForSprint } from '../store/actions';
 import { rearrangeIssue } from './actions';
 import EpicDetails from './EpicDetails';
 import CardTemplate from './CardTemplate';
-import './SprintBoard.scss';
 
 function SprintBoards({ sprintLists, scope, getIssuesForSprint, rearrangeIssue }) {
     if (!sprintLists) {
         return null;
     }
 
-    return (<div className="sprint-board">
+    return (<div className="h-100">
         <DragDropProvider>
             <KanbanBoard
                 columns={sprintLists} columnTemplate={ColumnTemplate}

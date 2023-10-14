@@ -219,3 +219,38 @@ a:hover {
 .inline-block {
     display: inline-block !important;
 }
+
+/* Scrollbar styles */
+div {
+
+    /* Track */
+    &::-webkit-scrollbar {
+        width: 5px;
+        height: 5px;
+    }
+
+    /* Handle */
+    &::-webkit-scrollbar-thumb {
+        background: #dfdada;
+        /* Customize scrollbar color */
+    }
+
+    &:hover {
+
+        /* Handle on hover */
+        &::-webkit-scrollbar-thumb {
+            background: #c4c4c4;
+        }
+    }
+
+    /* For Firefox and edge */
+    scrollbar-width: thin;
+    /* thin or auto */
+
+    /* Color of the scrollbar */
+    scrollbar-color: #888 #eee;
+
+    /* For Microsoft Edge */
+    /* -ms-overflow-style controls scrollbar visibility (none, scrollbar, etc.) */
+    -ms-overflow-style: scrollbar;
+}

@@ -22,7 +22,7 @@ function NavSideBar({ onLogout, menus, location: { pathname } }) {
     return (
         <div className={className} onMouseLeave={leaveSideBar}>
             <div className="sidebar-placeholder" />
-            <div className="sidebar-toggler" onMouseEnter={isHovering ? enterSideBar : undefined}            >
+            <div className="sidebar-toggler" onMouseEnter={isHovering ? enterSideBar : undefined}>
                 <button tabIndex={0} title={isOpen ? "Collapse" : "Expand"} onClick={toggleSidebar}>
                     {isOpen ? Icons.angleLeft : Icons.angleRight}
                 </button>

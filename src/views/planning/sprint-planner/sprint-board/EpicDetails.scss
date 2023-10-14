@@ -1,10 +1,32 @@
+.board-header-block {
+    display: block;
+    width: 100%;
+    max-height: 280px;
+    overflow-y: auto;
+}
+
+.board-container table.board thead.epic-head {
+    tr {
+        height: 1px;
+
+        th {
+            height: 1px;
+
+            &.collapsed-epic-cell {
+                width: 40px;
+            }
+        }
+    }
+}
+
 tbody.epic-body {
     tr td {
-        padding: 0;
+        padding: 3px 0;
+        height: 35px;
 
         div.epic-info {
             background-color: #eeebfd;
-            height: 40px;
+            height: 32px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -25,15 +47,20 @@ tbody.epic-body {
             &.delayed {
                 border-top-right-radius: 0;
                 border-bottom-right-radius: 0;
+                border: 1px dashed grey;
+                border-left: 3px solid #eeebfd;
+                border-right: 0;
             }
         }
 
         div.epic-delay-info {
-            background-color: #f8ee9c;
-            height: 40px;
+            background-color: #fffae6;
+            height: 32px;
             width: calc(100% - 6px);
             border-radius: 0 5px 5px 0;
             margin-left: -1px;
+            border: 1px dashed grey;
+            border-left: 0;
 
             span.fa {
                 margin-top: 3px;

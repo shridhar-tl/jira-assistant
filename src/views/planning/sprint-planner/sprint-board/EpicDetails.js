@@ -7,7 +7,7 @@ import { connect } from '../store';
 import { useSprintIssueStatus } from './actions';
 import './EpicDetails.scss';
 
-function EpicDetails({ columns, epicList, issueColorField, scope, collapsedStates }) {
+function EpicDetails({ columns, epicList, issueColorField, scope, collapsedStates, columnKeyField }) {
     if (!epicList) {
         return;
     }
@@ -50,9 +50,19 @@ function EpicDetails({ columns, epicList, issueColorField, scope, collapsedState
         return rows.map((row, i) => (<tr key={i}>{row}</tr>));
     };
 
-    return (<tbody className="epic-body">
-        {generateEpicCells()}
-    </tbody>);
+    return (<>
+        <thead className="epic-head">
+            <tr>{columns.map((column, i) => {
+                const keyValue = columnKeyField ? column[columnKeyField] : i;
+                const collapsed = collapsedStates[keyValue];
+
+                return (<th className={collapsed ? 'collapsed-epic-cell' : undefined}></th>);
+            })}</tr>
+        </thead>
+        <tbody className="epic-body">
+            {generateEpicCells()}
+        </tbody>
+    </>);
 }
 
 
@@ -74,7 +84,7 @@ function EpicRow(props) {
     const emptyStart = startSprintIndex > 0 && emptyRowColSpan ? <td colSpan={emptyRowColSpan}></td> : null;
 
     const delayDetails = cutEnd < endSprintIndex ? <td colSpan={endSprintIndex - cutEnd}>
-        <div className="epic-delay-info p-2 font-bold">
+        <div className="epic-delay-info p-1 font-bold">
             <span className="fa fa-exclamation-triangle float-end text-danger" title="Due date past" />
         </div>
     </td> : null;
@@ -84,8 +94,8 @@ function EpicRow(props) {
             'epic-info font-bold',
             {
                 'delayed': !!delayDetails,
-                'p-2': showEpicDetails,
-                'py-2': !showEpicDetails,
+                'p-1': showEpicDetails,
+                'py-1': !showEpicDetails,
                 'collapsed': collapsed,
                 selected: isSelected
             }
