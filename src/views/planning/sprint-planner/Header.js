@@ -8,10 +8,10 @@ import Settings from './Settings';
 import './Header.scss';
 
 const menus = [
-    { icon: 'fa fa-table', label: 'Sprint boards' },
-    { icon: 'fa fa-users', label: 'Planner' },
-    { icon: 'fa fa-calendar', label: 'Calendar' },
-    { icon: 'fa fa-calendar', label: 'Capacity' },
+    { icon: 'fa fa-table', label: 'Sprint boards', route: '' },
+    { icon: 'fa fa-users', label: 'Planner', route: 'planner' },
+    { icon: 'fa fa-calendar', label: 'Capacity', route: 'capacity' },
+    //{ icon: 'fa fa-calendar', label: 'Calendar',route:'' },
 ];
 
 function getMenuItem(icon, label, onClick, tabIndex, index) {
@@ -25,12 +25,12 @@ function getMenuItem(icon, label, onClick, tabIndex, index) {
     return template;
 }
 
-const Header = connect(function ({ selectedBoard, tabIndex, onTabChange }) {
+const Header = connect(function ({ selectedBoard, module, onTabChange }) {
     const [isSettingsVisible, showSettings] = useState(false);
     const toggleSettings = useCallback(() => showSettings(visible => !visible), [showSettings]);
 
-    const menuItems = menus.map((menu, index) => getMenuItem(menu.icon, menu.label, onTabChange, tabIndex, index))
-        .concat(getMenuItem('fa fa-cogs', 'Config', toggleSettings, tabIndex));
+    const menuItems = menus.map(menu => getMenuItem(menu.icon, menu.label, onTabChange, module, menu.route))
+        .concat(getMenuItem('fa fa-cogs', 'Config', toggleSettings, null));
 
     const start = (<div className="float-start">
         <img src="/assets/icon_32.png" alt="JA" className="logo" />

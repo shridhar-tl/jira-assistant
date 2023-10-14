@@ -51,6 +51,7 @@ export async function loadSprintsList(boardId, setState, getState) {
 
     const newState = {
         loading: false,
+        loadedBoardId: boardId.toString(),
         columnConfig, estimation,
         sprintLists, sprintMap, daysList,
         resources,

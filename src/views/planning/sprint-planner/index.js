@@ -1,6 +1,7 @@
 import React from 'react';
-import { useParams } from 'react-router-dom';
-import { withProvider } from './store';
+import { useNavigate, useParams } from 'react-router-dom';
+import { Loader } from 'react-controls/controls';
+import { usePlannerState, withProvider } from './store';
 import { getInitialPlaningData } from './store/utils';
 import Header from './Header';
 import SprintBoards from './sprint-board';
@@ -10,10 +11,13 @@ import { setSelectedBoard } from './store/actions';
 import './Styles.scss';
 
 function SprintPlanner({ setSelectedBoard }) {
-    const { boardId } = useParams() || {};
-    const [currentTab, setCurrentTab] = React.useState(0);
+    const { boardId, module } = useParams() || {};
+    const navigate = useNavigate();
+
     const ref = React.useRef({ setSelectedBoard });
     ref.current.setSelectedBoard = setSelectedBoard;
+
+    const setCurrentTab = (route) => boardId && navigate(`${boardId}/${route}`);
 
     React.useEffect(() => {
         if (!boardId) {
@@ -23,13 +27,19 @@ function SprintPlanner({ setSelectedBoard }) {
         ref.current.setSelectedBoard(boardId);
     }, [boardId]);
 
+    const loading = usePlannerState(state => state.loading);
+    const loadedBoardId = usePlannerState(state => state.loadedBoardId);
+
     return (<>
-        <Header onTabChange={setCurrentTab} tabIndex={currentTab} />
-        <div className="ja-sprint-planner">
-            {currentTab === 0 && <SprintBoards />}
-            {currentTab === 1 && <PlannerContainer />}
-            {currentTab === 3 && <CapacityPlanner />}
-        </div>
+        <Header onTabChange={setCurrentTab} module={module} />
+        {loading && <div className="ja-sprint-planner">
+            <Loader />
+        </div>}
+        {boardId && loadedBoardId === boardId && <div className="ja-sprint-planner">
+            {(!module || module === 'board') && <SprintBoards />}
+            {module === 'planner' && <PlannerContainer />}
+            {module === 'capacity' && <CapacityPlanner />}
+        </div>}
     </>);
 }
 
