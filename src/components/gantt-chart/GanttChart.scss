@@ -1,5 +1,6 @@
 .gantt-chart {
     min-height: 200px;
+    height: 100%;
     width: 100%;
 
     &>.p-splitter>.p-splitter-panel {
@@ -16,8 +17,7 @@
 
     .gantt-chart-header {
         table-layout: fixed;
-        width: 0px;
-
+        width: 100%;
     }
 
     .relative {

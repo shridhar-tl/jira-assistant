@@ -61,8 +61,6 @@ export async function loadSprintsList(boardId, setState, getState) {
 
     newState.allocationData = getAllocationDetails(newState, state);
 
-    preparePlanningData(newState, state);
-
     // Update state with all the objects
     setState(newState);
 }
@@ -120,6 +118,7 @@ function getUserStoryMap(resources) {
     }, { [unassignedUser]: [] });
 }
 
+// ToDo: Need to see if this is really required
 function mapIssues(sprintWiseIssues, resources) {
     const userStoryMap = getUserStoryMap(resources);
 
@@ -189,57 +188,4 @@ async function computeAverageSprintVelocity(boardId, { settings: { noOfSprintsFo
     const averageCompleted = Math.round(closedSprintLists.sum(s => s.completedStoryPoints) / closedSprintLists.length);
 
     return { closedSprintLists, averageComitted, averageCompleted };
-}
-
-function preparePlanningData(newState, allState) {
-    const { sprintLists, sprintWiseIssues,
-        columnConfig: { columns },
-        estimation: { fieldId: storyPointField } = {},
-
-    } = newState;
-    const { settings: { hoursPerStoryPoint, workHours } } = allState;
-
-    const progCols = columns.slice(1, -1);
-    const result = [];
-    for (let i = 0; i < sprintLists.length; i++) {
-        const { id: sprintId, startDate } = sprintLists[i];
-        const issues = sprintWiseIssues[sprintId];
-
-        issues.forEach(issue => {
-            const { key } = issue;
-            const userId = null;
-            const storyPoint = issue.fields[storyPointField] || 1;
-            const totalHours = storyPoint * hoursPerStoryPoint;
-            const totalDays = Math.ceil(totalHours / workHours);
-            const _55Perc = totalDays * 55 / 100;
-            const _remaining = totalDays - _55Perc;
-
-            let prevEndDate = startDate;
-            const child = progCols.map((c, i) => {
-                const duration = i === 0 ? _55Perc : _remaining / (progCols.length - 1);
-                const res = {
-                    rowType: 'status',
-                    id: `${key}_${c.name}`,
-                    source: c, startDate: prevEndDate,
-                    duration, progress: 100,
-                    isManual: true
-                };
-
-                prevEndDate = moment(res.startDate)
-                    .add(duration + 1, 'days')
-                    .startOf('day').toDate();
-
-                return res;
-            });
-
-            result.push({
-                rowType: 'task', id: key, userId, sprintId,
-                summary: issue.fields.summary,
-                source: issue,
-                child
-            });
-        });
-    }
-    newState.planningData = result;
-    console.log('newState.planningData=', newState.planningData);
 }

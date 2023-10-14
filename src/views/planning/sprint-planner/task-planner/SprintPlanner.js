@@ -1,12 +1,12 @@
 import React from 'react';
+import moment from 'moment';
+import { getUserName } from 'src/common/utils';
 import GanttChart from 'src/components/gantt-chart';
 import { IssueDisplay, UserDisplay } from 'src/display-controls';
 import { connect } from '../store';
 import { plannerTaskPropertyName } from '../store/constants';
 import { addTaskProgress, updateTaskResized, beginTaskEdit } from './actions';
 import AddTaskPlanDialog from './AddTaskPlanDialog';
-import moment from 'moment';
-import { getUserName } from 'src/common/utils';
 
 const columnsList = [
     { field: 'display', headerText: 'Task / Activity', width: 200, template: DisplayTemplate },
@@ -15,15 +15,14 @@ const columnsList = [
 ];
 
 function SprintPlanner({
-    height, sprintLists, planStartDate, planEndDate, planningData, resources,
-    taskBarEdited, epicList, showTaskEditor,
-    $userutils }) {
+    height, sprintLists, planStartDate, planEndDate, resources,
+    epicList, showTaskEditor, $userutils }) {
     const resourceMap = React.useMemo(() => resources.reduce((map, r) => {
         map[getUserName(r)] = r;
         return map;
     }, {}), [resources]);
 
-    return (<div className="ja-plan-container">
+    return (<div className="ja-plan-container absolute">
         <GanttChart height={height} columns={columnsList}
             items={epicList}
             fromDate={planStartDate} toDate={planEndDate}

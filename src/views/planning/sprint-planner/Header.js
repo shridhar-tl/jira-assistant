@@ -1,34 +1,38 @@
 import React, { useRef, useState, useCallback } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { connect } from './store';
 import RapidViewList from '../../../components/RapidViewList';
 import { setSelectedBoard } from './store/actions';
-import { Menubar } from 'primereact/menubar';
 import { OverlayPanel } from 'primereact/overlaypanel';
 import Settings from './Settings';
-import { useLocation, useNavigate } from 'react-router-dom';
+import './Header.scss';
 
-function getMenuItem(icon, label, onClick) {
-    const template = (<span role="menuitem" className="p-menuitem-link" onClick={onClick}>
-        <span className={`p-menuitem-icon ${icon}`} />
-        <span className="p-menuitem-text">{label}</span>
+const menus = [
+    { icon: 'fa fa-table', label: 'Sprint boards' },
+    { icon: 'fa fa-users', label: 'Planner' },
+    { icon: 'fa fa-calendar', label: 'Calendar' },
+    { icon: 'fa fa-calendar', label: 'Capacity' },
+];
+
+function getMenuItem(icon, label, onClick, tabIndex, index) {
+    const template = (<span role="menuitem"
+        className={`menu p-2${tabIndex === index ? ' active' : ''}`}
+        onClick={() => onClick(index)}>
+        <span className={`me-1 ${icon}`} />
+        <span className="menu-text">{label}</span>
     </span>);
 
-    return { icon, label, template };
+    return template;
 }
 
-const Header = connect(function ({ selectedBoard, onTabChange }) {
+const Header = connect(function ({ selectedBoard, tabIndex, onTabChange }) {
     const [isSettingsVisible, showSettings] = useState(false);
     const toggleSettings = useCallback(() => showSettings(visible => !visible), [showSettings]);
 
-    const menuItems = [
-        getMenuItem('fa fa-table', 'Sprint boards', () => onTabChange(0)),
-        getMenuItem('fa fa-users', 'Planner', () => onTabChange(1)),
-        getMenuItem('fa fa-calendar', 'Calendar', () => onTabChange(2)),
-        getMenuItem('fa fa-calendar', 'Capacity', () => onTabChange(3)),
-        getMenuItem('fa fa-cogs', 'Config', toggleSettings)
-    ];
+    const menuItems = menus.map((menu, index) => getMenuItem(menu.icon, menu.label, onTabChange, tabIndex, index))
+        .concat(getMenuItem('fa fa-cogs', 'Config', toggleSettings, tabIndex));
 
-    const start = (<div>
+    const start = (<div className="float-start">
         <img src="/assets/icon_32.png" alt="JA" className="logo" />
         <div className="title">
             <span className="info">PLANNING</span>
@@ -39,7 +43,8 @@ const Header = connect(function ({ selectedBoard, onTabChange }) {
     </div>);
 
     return (<div className="pl-header">
-        <Menubar model={menuItems} start={start} />
+        <div className="float-end menus">{menuItems}</div>
+        {start}
         <Settings visible={isSettingsVisible} onHide={toggleSettings} />
     </div>);
 }, ({ selectedBoard }) => ({ selectedBoard }));

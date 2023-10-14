@@ -22,7 +22,7 @@ function Resources({
         return null;
     }
 
-    return (<div className="ja-resource-container">
+    return (<div className="ja-resource-container absolute">
         <ScrollableTable height={height}>
             <THead>
                 <TRow>

@@ -1,0 +1,55 @@
+.pl-header {
+    top: 0;
+    height: 50px;
+    width: 100%;
+    padding: 3px 10px 0 10px;
+    border-bottom: 1px solid grey;
+    display: block;
+    overflow: hidden;
+    position: fixed;
+
+    img.logo {
+        margin: auto 12px 17px 0;
+        display: inline-block;
+    }
+
+    .title {
+        display: inline-block;
+
+        span.info {
+            font-size: 10px;
+            color: gray;
+        }
+
+        h1.board-name {
+            font-size: 18px;
+        }
+    }
+
+    .picker {
+        margin: 12px;
+        color: grey;
+        cursor: pointer;
+
+        &:hover {
+            color: blue;
+        }
+
+        margin-right: 150px;
+    }
+
+    .menus {
+        margin-top: 7px;
+        padding-right: 10px;
+
+        .menu {
+            display: inline-block;
+            cursor: pointer;
+
+            &.active,
+            &:hover {
+                border-bottom: 2px solid blue;
+            }
+        }
+    }
+}

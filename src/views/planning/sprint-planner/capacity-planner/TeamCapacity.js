@@ -4,30 +4,32 @@ import { Column, ScrollableTable, TBody, THead } from "../../../../components/Sc
 function TeamCapacity({ groups, resources, leavePlans }) {
     const availability = useMemo(() => getTeamAvailability(groups, resources, leavePlans), [resources, groups, leavePlans]);
 
-    return (<ScrollableTable>
-        <caption>Team Capacity</caption>
-        <THead>
-            <tr>
-                <Column>Resources</Column>
-                {groups.map(g => <Column key={g.sprintId} className="text-center">{g.name}</Column>)}
-                <Column className="text-center">Total</Column>
-            </tr>
-        </THead>
-        <TBody>
-            {resources.map(r => <tr key={r.id}>
-                <td>{r.displayName}</td>
-                {groups.map(g => <td key={g.sprintId} className="text-center">{availability[g.sprintId][r.accountId]}%</td>)}
-                <th className="text-center">100%</th>
-            </tr>)}
-        </TBody>
-        <tfoot>
-            <tr>
-                <th>Average Allocation</th>
-                {groups.map(g => <th key={g.sprintId} className="text-center">{availability[g.sprintId].sprintAverage}%</th>)}
-                <th className="text-center">100%</th>
-            </tr>
-        </tfoot>
-    </ScrollableTable>);
+    return (<div className="absolute h-100 w-100">
+        <ScrollableTable height="100%">
+            <caption>Team Capacity</caption>
+            <THead>
+                <tr>
+                    <Column>Resources</Column>
+                    {groups.map(g => <Column key={g.sprintId} className="text-center">{g.name}</Column>)}
+                    <Column className="text-center">Total</Column>
+                </tr>
+            </THead>
+            <TBody>
+                {resources.map(r => <tr key={r.id}>
+                    <td>{r.displayName}</td>
+                    {groups.map(g => <td key={g.sprintId} className="text-center">{availability[g.sprintId][r.accountId]}%</td>)}
+                    <th className="text-center">100%</th>
+                </tr>)}
+            </TBody>
+            <tfoot>
+                <tr>
+                    <th>Average Allocation</th>
+                    {groups.map(g => <th key={g.sprintId} className="text-center">{availability[g.sprintId].sprintAverage}%</th>)}
+                    <th className="text-center">100%</th>
+                </tr>
+            </tfoot>
+        </ScrollableTable>
+    </div>);
 }
 
 export default TeamCapacity;
