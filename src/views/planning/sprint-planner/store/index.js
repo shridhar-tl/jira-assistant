@@ -13,7 +13,6 @@ const initialData = {
     columnConfig: {},
     estimation: {},
 
-    planData: {}, // Ticket, status wise data
     allocationData: {}, // Contains user wise daily time allocation
 
     resources: [], // List of resources

@@ -1,6 +1,7 @@
 import moment from 'moment';
 import { inject } from "../../../../services/injector-service";
 import { getUserName } from '../../../../common/utils';
+import { getAllocationDetails } from '../handlers/allocation';
 import { getDaysListBasedOnSprints } from './utils';
 import { getEpicDetailsForSprints } from './epic-helper';
 
@@ -47,6 +48,7 @@ export async function loadSprintsList(boardId, setState, getState) {
 
     const velocityInfo = await computeAverageSprintVelocity(boardId, state, estimation.fieldId, $jira);
 
+
     const newState = {
         loading: false,
         columnConfig, estimation,
@@ -56,6 +58,8 @@ export async function loadSprintsList(boardId, setState, getState) {
         velocityInfo,
         ...issueDetails
     };
+
+    newState.allocationData = getAllocationDetails(newState, state);
 
     preparePlanningData(newState, state);
 
@@ -239,37 +243,3 @@ function preparePlanningData(newState, allState) {
     newState.planningData = result;
     console.log('newState.planningData=', newState.planningData);
 }
-
-/*
-function preparePlanningData(newState) {
-    const { sprintMap, userList, userStoryMap, issuesMap } = newState;
-
-    const getUserRow = (userId, user) => {
-        const stories = userStoryMap[userId];
-        const segments = {};
-
-        const child = stories.map(key => {
-            const { sprintId, issue } = issuesMap[key];
-            const { startDate, endDate } = sprintMap[sprintId];
-            if (!segments[sprintId]) {
-                segments[sprintId] = { startDate, duration: moment(endDate).diff(startDate, 'days') };
-            }
-
-            return {
-                rowType: 'task', id: key, userId, sprintId,
-                source: issue, startDate,
-                duration: 4, progress: 55
-            };
-        });
-
-        return { rowType: 'user', id: userId, source: user, child, segments: Object.values(segments) };
-    };
-
-    newState.planningData = userList.map(u => {
-        const userId = getUserName(u);
-        return getUserRow(userId, u);
-    });
-    console.log('newState.planningData=', newState.planningData);
-    newState.planningData.push(getUserRow(unassignedUser, unassignedUserObj));
-}*/
-//#endregion

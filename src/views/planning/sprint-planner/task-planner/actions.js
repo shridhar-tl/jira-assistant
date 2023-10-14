@@ -1,8 +1,8 @@
+import moment from "moment";
 import { inject } from "src/services";
 import { usePlannerState } from "../store";
-import moment from "moment";
-
-export const plannerTaskPropertyName = 'ja_planner_tasks';
+import { plannerTaskPropertyName } from "../store/constants";
+import { getAllocationDetails } from "../handlers/allocation";
 
 export function addTaskProgress(issue, startDate, endDate) {
     usePlannerState.setState({
@@ -53,6 +53,17 @@ export async function saveEditedObject(_, value) {
     await updateIssueTaskProperty(issue, taskList);
 }
 
+export async function deleteCurrentTask(_, value) {
+    const { editedProgressObject: { issue, index } } = usePlannerState.getState();
+
+    cancelEdit();
+
+    const taskList = [...(issue.properties[plannerTaskPropertyName] || [])];
+    taskList.splice(index);
+
+    await updateIssueTaskProperty(issue, taskList);
+}
+
 function updateIssueTaskProperty(issue, value) {
     value = value?.sortBy(task => {
         const { startDate, endDate } = task;
@@ -64,8 +75,19 @@ function updateIssueTaskProperty(issue, value) {
     const { $jira } = inject('JiraService');
 
     issue.properties[plannerTaskPropertyName] = value;
+    delete issue.taskDetails;
+    const epicKey = issue.epicKey;
+    const allState = usePlannerState.getState();
+    if (epicKey) {
+        const { epicMap } = allState;
+        const epic = epicMap[epicKey];
+        delete epic.taskDetails;
+    }
 
-    return $jira.updateProperty(issue.key, plannerTaskPropertyName, value);
+    $jira.updateProperty(issue.key, plannerTaskPropertyName, value);
+
+    const allocationData = getAllocationDetails(allState, allState);
+    usePlannerState.setState(({ epicList }) => ({ epicList: [...epicList], allocationData }));
 }
 
 function prepareTaskForSave(task) {

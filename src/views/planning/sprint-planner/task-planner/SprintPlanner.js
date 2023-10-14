@@ -2,7 +2,8 @@ import React from 'react';
 import GanttChart from 'src/components/gantt-chart';
 import { IssueDisplay, UserDisplay } from 'src/display-controls';
 import { connect } from '../store';
-import { addTaskProgress, updateTaskResized, beginTaskEdit, plannerTaskPropertyName } from './actions';
+import { plannerTaskPropertyName } from '../store/constants';
+import { addTaskProgress, updateTaskResized, beginTaskEdit } from './actions';
 import AddTaskPlanDialog from './AddTaskPlanDialog';
 import moment from 'moment';
 import { getUserName } from 'src/common/utils';
@@ -65,21 +66,82 @@ function getIssueTaskDetails(issue, columns) {
     const [{ date: planStartDate }] = columns;
 
     if (issue.child) {
-        return { allowAdd: false, taskDetails: [] }; // ToDo: generate task details based on child
+        return getParentTaskDetails(issue, planStartDate);
     }
 
-    const { [plannerTaskPropertyName]: taskDetails } = issue.properties;
-
-    return { taskDetails: taskDetails?.map(t => getTaskDetail(t, planStartDate)) };
+    return generateIssueTaskDetails(issue, planStartDate);
 }
 
-function getTaskDetail(task, planStartDate) {
+function generateIssueTaskDetails(issue, planStartDate) {
+    if (issue.taskDetails) {
+        return { taskDetails: issue.taskDetails };
+    }
+
+    const { [plannerTaskPropertyName]: tasks } = issue.properties;
+
+    const taskDetails = tasks?.map((t, i) => getTaskDetail(issue, t, planStartDate, i, tasks.length));
+
+    issue.taskDetails = taskDetails;
+
+    return { taskDetails };
+}
+
+function getParentTaskDetails(epic, planStartDate) {
+    if (epic.taskDetails) {
+        return { allowAdd: false, taskDetails: epic.taskDetails };
+    }
+
+    const taskDetail = epic.child.reduce((result, issue) => {
+        issue.epicKey = epic.key;
+        const { taskDetails } = generateIssueTaskDetails(issue, planStartDate);
+        if (!taskDetails?.length) {
+            return result;
+        }
+
+        const firstTask = taskDetails[0];
+        const lastTask = taskDetails[taskDetails.length - 1];
+
+        if (!result.startCol || result.startCol > firstTask.startCol) {
+            if (result.noOfDays) {
+                const curNoOfDays = (result.startCol + result.noOfDays) - firstTask.startCol;
+                if (result.noOfDays < curNoOfDays) {
+                    result.noOfDays = curNoOfDays;
+                }
+            }
+            result.startCol = firstTask.startCol;
+
+        }
+
+        if (!result.noOfDays || result.noOfDays < firstTask.noOfDays) {
+            result.noOfDays = firstTask.noOfDays;
+        }
+
+        const actualEndCol = lastTask.startCol + lastTask.noOfDays;
+
+        const actualNoOfDays = actualEndCol - result.startCol;
+
+        if (actualNoOfDays > result.noOfDays) {
+            result.noOfDays = actualNoOfDays;
+        }
+
+        return result;
+    }, { allowEdit: false, resources: [] });
+
+    epic.taskDetails = [taskDetail];
+
+    return { allowAdd: false, taskDetails: epic.taskDetails };
+}
+
+function getTaskDetail(issue, task, planStartDate, index, count) {
     const { startDate, endDate, resources } = task;
     const $startDate = moment(startDate);
     const startCol = $startDate.diff(planStartDate, 'days');
     const noOfDays = moment(endDate).diff($startDate, 'days') + 1;
 
-    return { startCol, noOfDays, resources };
+    return {
+        startCol, noOfDays, resources,
+        taskId: `task-bar-${issue.key}-${index === 0 ? 'first' : (index === count - 1 ? 'last' : index)}`
+    };
 }
 
 function TaskTemplate({ item, args, task: { resources } }) {
@@ -89,7 +151,8 @@ function TaskTemplate({ item, args, task: { resources } }) {
 }
 
 function ResourceView({ resources, resourceMap }) {
-    const resource = resourceMap[resources[0]];
+    const firstResource = resources[0]?.id;
+    const resource = firstResource && resourceMap[firstResource];
     const { displayName, avatarUrls: { '24x24': imageUrl } = {} } = resource || {};
 
     return (<figure className="profile-picture p-1">

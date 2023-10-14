@@ -161,6 +161,7 @@ function TaskProgress(props) {
 
             return (<TaskProgressBar key={i}
                 index={i}
+                isLast={taskDetails.length - 1 === i}
                 task={task}
                 startCol={task.startCol}
                 noOfDays={task.noOfDays || 1}
@@ -170,6 +171,7 @@ function TaskProgress(props) {
                 beginResize={beginResize}
                 beginMove={beginMove}
                 onTaskEdit={taskEditHandler}
+                allowEdit={task.allowEdit !== false}
             />);
         })}
         &nbsp;
@@ -179,16 +181,35 @@ function TaskProgress(props) {
 
 export default TaskProgress;
 
-function TaskProgressBar({ startCol, noOfDays, template: Template, templateArgs, item, task, index, beginResize, beginMove, onTaskEdit }) {
-    return (<div className="task-progress" data-task-index={index}
-        style={{
-            left: `${(startCol * widthOfDayInPx) + 3}px`,
-            width: `${(noOfDays * widthOfDayInPx) - 3}px`
-        }} onMouseDown={beginMove} onDoubleClick={onTaskEdit}>
-        <div className="v-resize-container float-end" data-task-index={index} onMouseDown={beginResize}><div className="resize-holder" /></div>
-        <div className="v-resize-container float-start" data-task-index={index} onMouseDown={beginResize}><div className="resize-holder" /></div>
-        {Template && noOfDays > 1 && <div className="float-start">
+function TaskProgressBar({
+    startCol, noOfDays, template: Template, templateArgs, item, task,
+    index, isLast, beginResize, beginMove, onTaskEdit, allowEdit
+}) {
+    const left = (startCol * widthOfDayInPx) + 3;
+    const width = (noOfDays * widthOfDayInPx) - 3;
+
+    return (<div id={task?.taskId}
+        className={`task-progress${allowEdit ? ' editable' : ''}`}
+        data-task-index={index}
+        style={{ left: `${left}px`, width: `${width}px` }}
+        onMouseDown={allowEdit ? beginMove : undefined}
+        onDoubleClick={allowEdit ? onTaskEdit : undefined}
+    >
+        {allowEdit && <div className="v-resize-container float-end"
+            data-task-index={index} onMouseDown={beginResize}>
+            <div className="resize-holder" />
+        </div>}
+        {allowEdit && <div className="v-resize-container float-start"
+            data-task-index={index} onMouseDown={beginResize}>
+            <div className="resize-holder" />
+        </div>}
+        {Template && noOfDays > 1 && <div className="float-start relative">
             <Template item={item} task={task} args={templateArgs} />
+            {(isLast || index === 0) && <div
+                className="circle rounded-circle absolute"
+                style={{ left: `${isLast ? (width - 4) : -16}px` }}>
+                <div className="point rounded-circle" />
+            </div>}
         </div>}
     </div>);
 }
