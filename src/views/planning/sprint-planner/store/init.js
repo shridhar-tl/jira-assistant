@@ -156,7 +156,7 @@ function mapIssues(sprintWiseIssues, resources) {
 //#region Private functions
 async function computeAverageSprintVelocity(boardId, { settings: { noOfSprintsForVelocity } }, storypointFieldName, $jira) {
     const allClosedSprintLists = await $jira.getRapidSprintList([boardId], { state: 'closed' });
-    const closedSprintLists = allClosedSprintLists.slice(0, noOfSprintsForVelocity);
+    const closedSprintLists = allClosedSprintLists.slice(0, noOfSprintsForVelocity).sortBy(({ completeDate }) => completeDate.getTime());
     const availableSprintCount = closedSprintLists.length;
 
     if (!availableSprintCount) {
