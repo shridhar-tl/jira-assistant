@@ -21,6 +21,8 @@ const initialData = {
     resourceLeaveDays: {}, // List of user wise leave plans
     resourceHolidays: {}, // List of holidays
 
+    velocity: { selected: 'C' },
+
     settings: {
         startOfDay: '11:00',
         endOfDay: '20:00',

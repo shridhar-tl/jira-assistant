@@ -194,6 +194,8 @@ async function computeAverageSprintVelocity(boardId, { settings: { noOfSprintsFo
 
     const averageComitted = Math.round(closedSprintLists.sum(s => s.comittedStoryPoints) / closedSprintLists.length);
     const averageCompleted = Math.round(closedSprintLists.sum(s => s.completedStoryPoints) / closedSprintLists.length);
+    const diff = Math.abs(averageComitted - averageCompleted);
+    const median = Math.round(averageCompleted + (diff / 2));
 
-    return { closedSprintLists, averageComitted, averageCompleted };
+    return { closedSprintLists, averageComitted, median, averageCompleted };
 }

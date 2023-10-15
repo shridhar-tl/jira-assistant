@@ -9,7 +9,7 @@ import VelocityPicker from './VelocityPicker';
 
 const defaultSize = { height: "100%", width: "100%" };
 
-function CapacityPlanner({ velocityInfo, ...otherProps }) {
+function CapacityPlanner({ velocityInfo, velocity, ...otherProps }) {
     return (<Splitter style={defaultSize}>
         <SplitterPanel size={80} minSize={40}>
             <HorizontalComponent {...otherProps} />
@@ -42,6 +42,6 @@ function VerticalSplit({ velocityInfo }) {
     return (<>
         <SprintVelocity velocityInfo={velocityInfo} />
         <br /><br />
-        <VelocityPicker velocityInfo={velocityInfo} />
+        <VelocityPicker />
     </>);
 }
