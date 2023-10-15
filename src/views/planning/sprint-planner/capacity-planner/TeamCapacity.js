@@ -4,7 +4,11 @@ import { usePlannerState } from '../store';
 
 function TeamCapacity({ groups, resources }) {
     const sprintWiseLeaveAndHolidays = usePlannerState(s => s.sprintWiseLeaveAndHolidays);
-    const availability = useMemo(() => getTeamAvailability(groups, resources, sprintWiseLeaveAndHolidays), [resources, groups, sprintWiseLeaveAndHolidays]);
+    const velocity = usePlannerState(s => s.velocity);
+    const velocityInfo = usePlannerState(s => s.velocityInfo);
+    const storyPoints = getStoryPoints(velocity, velocityInfo);
+    const availability = useMemo(() => getTeamAvailability(groups, resources, sprintWiseLeaveAndHolidays, storyPoints),
+        [resources, groups, sprintWiseLeaveAndHolidays, storyPoints]);
 
     return (<div className="absolute h-100 w-100">
         <ScrollableTable height="100%">
@@ -13,21 +17,23 @@ function TeamCapacity({ groups, resources }) {
                 <tr>
                     <Column>Resources</Column>
                     {groups.map(g => <Column key={g.sprintId} className="text-center">{g.name}</Column>)}
-                    <Column className="text-center">Total</Column>
+                    <Column></Column>
                 </tr>
             </THead>
             <TBody>
                 {resources.map(r => <tr key={r.id}>
                     <td>{r.displayName}</td>
                     {groups.map(g => <td key={g.sprintId} className="text-center">{availability[g.sprintId][r.accountId]}%</td>)}
-                    <th className="text-center">100%</th>
+                    <th></th>
                 </tr>)}
             </TBody>
             <tfoot>
                 <tr>
                     <th>Average Allocation</th>
-                    {groups.map(g => <th key={g.sprintId} className="text-center">{availability[g.sprintId].sprintAverage}%</th>)}
-                    <th className="text-center">100%</th>
+                    {groups.map(g => <th key={g.sprintId} className="text-center">
+                        {availability[g.sprintId].sprintAverage}% ({availability[g.sprintId].avgStoryPoint})
+                    </th>)}
+                    <th></th>
                 </tr>
             </tfoot>
         </ScrollableTable>
@@ -36,7 +42,21 @@ function TeamCapacity({ groups, resources }) {
 
 export default TeamCapacity;
 
-function getTeamAvailability(groups, resources, leavePlans) {
+function getStoryPoints(velocity, velocityInfo) {
+    if (!velocity || !velocityInfo) { return 0; }
+
+    const { averageComitted, averageCompleted, median } = velocityInfo;
+    const { custom, selected } = velocity;
+
+    switch (selected) {
+        default: return averageCompleted;
+        case 'U': return parseInt(custom || averageCompleted);
+        case 'M': return parseInt(median || averageCompleted);
+        case 'T': return parseInt(averageComitted || averageCompleted);
+    }
+}
+
+function getTeamAvailability(groups, resources, leavePlans, storyPoints) {
     const result = {};
 
     groups.forEach(g => {
@@ -50,7 +70,8 @@ function getTeamAvailability(groups, resources, leavePlans) {
             sprintAverage += value;
         });
 
-        sprintData.sprintAverage = Math.round(sprintAverage / groups.length);
+        sprintData.sprintAverage = Math.round(sprintAverage / resources.length);
+        sprintData.avgStoryPoint = Math.ceil(storyPoints * sprintData.sprintAverage / 100);
     });
 
     return result;

@@ -24,7 +24,7 @@ function LeavePlans({ resources, groups }) {
             </TBody>
             <tfoot>
                 <tr>
-                    <th>Days In Sprint</th>
+                    <th>Days in sprint</th>
                     {groups.map(g => <th key={g.sprintId} className="text-center">{g.workingDaysCount}</th>)}
                     <th className="text-center">{groups.sum(g => g.workingDaysCount || 0)}</th>
                 </tr>
@@ -34,7 +34,7 @@ function LeavePlans({ resources, groups }) {
                     <th className="text-center">{groups.sum(g => sprintWiseLeaveAndHolidays[g.sprintId]?.holidayCount || 0)}</th>
                 </tr>
                 <tr>
-                    <th><strong>Working Days</strong></th>
+                    <th><strong>Working days</strong></th>
                     {groups.map(g => <th key={g.sprintId} className="text-center">{g.workingDaysCount - (sprintWiseLeaveAndHolidays[g.sprintId]?.holidayCount || 0)}</th>)}
                     <th className="text-center">{groups.sum(g => g.workingDaysCount - (sprintWiseLeaveAndHolidays[g.sprintId]?.holidayCount || 0))}</th>
                 </tr>
