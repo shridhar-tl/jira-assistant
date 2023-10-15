@@ -15,7 +15,7 @@ const menus = [
 ];
 
 function getMenuItem(icon, label, onClick, module, route) {
-    const template = (<span role="menuitem"
+    const template = (<span key={route || 0} role="menuitem"
         className={`menu p-2${module === route ? ' active' : ''}`}
         onClick={() => onClick(route)}>
         <span className={`me-1 ${icon}`} />

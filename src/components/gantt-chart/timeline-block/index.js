@@ -1,6 +1,7 @@
 import React from 'react';
 import { useGanttProps } from '../store';
 import TaskProgress, { widthOfDayInPx } from './TaskProgress';
+import Markers from './markers';
 import './TimelineBlock.scss';
 
 function DateRangeContainer({ items }) {
@@ -22,6 +23,7 @@ function DateRangeContainer({ items }) {
             </table>
             <TaskListFields items={items} columns={dateRange} />
         </div>
+        <Markers columns={dateRange} />
     </div>
     );
 }

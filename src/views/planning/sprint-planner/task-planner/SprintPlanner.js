@@ -17,13 +17,14 @@ const columnsList = [
 function SprintPlanner({
     height, sprintLists, planStartDate, planEndDate, resources,
     epicList, showTaskEditor, $userutils }) {
+    const milestones = React.useMemo(() => sprintLists.map(s => ({ date: s.endDate, name: s.name })), [sprintLists]);
     const resourceMap = React.useMemo(() => resources.reduce((map, r) => {
         map[getUserName(r)] = r;
         return map;
     }, {}), [resources]);
 
     return (<div className="ja-plan-container absolute">
-        <GanttChart height={height} columns={columnsList}
+        <GanttChart height={height} columns={columnsList} markers={milestones}
             items={epicList}
             fromDate={planStartDate} toDate={planEndDate}
             isDayHoliday={$userutils.isHoliday}

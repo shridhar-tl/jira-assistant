@@ -1,0 +1,43 @@
+.gantt-chart-markers {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    top: 0;
+    left: 0;
+
+    .marker {
+        position: absolute;
+        border-left: 1px dashed red;
+        display: block;
+        top: 70px;
+        height: 100%;
+
+        span {
+            display: block;
+            background-color: #f9d9f9;
+            color: #e104e1;
+            padding: 3px 8px;
+            position: absolute;
+            top: 5px;
+            margin-left: 10px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 200px;
+            border-radius: 8px;
+            font-weight: 500;
+            font-size: 12px;
+        }
+
+        .marker-left-arrow {
+            border-bottom: 7px solid rgba(0, 0, 0, 0);
+            border-right: 7px solid #f9d9f9;
+            border-top: 7px solid rgba(0, 0, 0, 0);
+            height: 0;
+            position: absolute;
+            margin-left: 3px;
+            top: 10px;
+            width: 0;
+        }
+    }
+}
