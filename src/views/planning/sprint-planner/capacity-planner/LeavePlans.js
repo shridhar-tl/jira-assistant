@@ -21,17 +21,22 @@ function LeavePlans({ resources, groups }) {
                     {groups.map(g => <td key={g.sprintId} className="text-center">{sprintWiseLeaveAndHolidays[g.sprintId]?.[r.accountId] || 0}</td>)}
                     <td className="text-center">{groups.sum(g => sprintWiseLeaveAndHolidays[g.sprintId]?.[r.accountId] || 0)}</td>
                 </tr>)}
-                <tr>
-                    <td><strong>Public holidays</strong></td>
-                    {groups.map(g => <td key={g.sprintId} className="text-center">{sprintWiseLeaveAndHolidays[g.sprintId]?.holidayCount || 0}</td>)}
-                    <td className="text-center">{groups.sum(g => sprintWiseLeaveAndHolidays[g.sprintId]?.holidayCount || 0)}</td>
-                </tr>
             </TBody>
             <tfoot>
                 <tr>
-                    <th>Total</th>
-                    {groups.map(g => <th key={g.sprintId} className="text-center">0</th>)}
-                    <th className="text-center">0</th>
+                    <th>Days In Sprint</th>
+                    {groups.map(g => <th key={g.sprintId} className="text-center">{g.workingDaysCount}</th>)}
+                    <th className="text-center">{groups.sum(g => g.workingDaysCount || 0)}</th>
+                </tr>
+                <tr>
+                    <th>Public holidays</th>
+                    {groups.map(g => <th key={g.sprintId} className="text-center">{sprintWiseLeaveAndHolidays[g.sprintId]?.holidayCount || 0}</th>)}
+                    <th className="text-center">{groups.sum(g => sprintWiseLeaveAndHolidays[g.sprintId]?.holidayCount || 0)}</th>
+                </tr>
+                <tr>
+                    <th><strong>Working Days</strong></th>
+                    {groups.map(g => <th key={g.sprintId} className="text-center">{g.workingDaysCount - (sprintWiseLeaveAndHolidays[g.sprintId]?.holidayCount || 0)}</th>)}
+                    <th className="text-center">{groups.sum(g => g.workingDaysCount - (sprintWiseLeaveAndHolidays[g.sprintId]?.holidayCount || 0))}</th>
                 </tr>
             </tfoot>
         </ScrollableTable>
