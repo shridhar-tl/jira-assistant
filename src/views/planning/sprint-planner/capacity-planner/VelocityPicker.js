@@ -5,7 +5,7 @@ import { RadioButton } from "../../../../controls";
 function VelocityPicker({ velocity = {}, velocityInfo = {} }) {
     const { averageComitted, averageCompleted, median } = velocityInfo || {};
 
-    return (<ScrollableTable>
+    return (<ScrollableTable height="auto">
         <caption>Pick Velocity</caption>
         <THead>
             <tr>

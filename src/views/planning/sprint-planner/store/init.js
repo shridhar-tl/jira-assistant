@@ -155,7 +155,8 @@ function mapIssues(sprintWiseIssues, resources) {
 
 //#region Private functions
 async function computeAverageSprintVelocity(boardId, { settings: { noOfSprintsForVelocity } }, storypointFieldName, $jira) {
-    const closedSprintLists = await $jira.getRapidSprintList([boardId], { state: 'closed', maxResults: noOfSprintsForVelocity });
+    const allClosedSprintLists = await $jira.getRapidSprintList([boardId], { state: 'closed' });
+    const closedSprintLists = allClosedSprintLists.slice(0, noOfSprintsForVelocity);
     const availableSprintCount = closedSprintLists.length;
 
     if (!availableSprintCount) {
@@ -173,6 +174,7 @@ async function computeAverageSprintVelocity(boardId, { settings: { noOfSprintsFo
     });
 
     closedSprintLists.forEach(sprint => {
+        const startDate = moment(sprint.startDate);
         const completeDate = moment(sprint.completeDate);
         const issues = sprintWiseIssues[sprint.id];
 
@@ -182,7 +184,7 @@ async function computeAverageSprintVelocity(boardId, { settings: { noOfSprintsFo
         issues.forEach(issue => {
             const { resolutiondate, [storypointFieldName]: storypoint } = issue.fields;
 
-            if (resolutiondate && moment(resolutiondate).isBefore(completeDate)) {
+            if (resolutiondate && moment(resolutiondate).isBetween(startDate, completeDate)) {
                 sprint.completedStoryPoints += storypoint;
             }
 

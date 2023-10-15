@@ -8,7 +8,7 @@ function SprintVelocity({ velocityInfo }) {
 
     const { closedSprintLists, averageComitted, averageCompleted } = velocityInfo;
 
-    return (<ScrollableTable>
+    return (<ScrollableTable height="auto">
         <caption>Sprint Velocity</caption>
         <THead>
             <tr>
