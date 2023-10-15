@@ -31,12 +31,12 @@ function SprintPlanner({ setSelectedBoard }) {
     const loadedBoardId = usePlannerState(state => state.loadedBoardId);
 
     return (<>
-        <Header onTabChange={setCurrentTab} module={module} />
+        <Header onTabChange={setCurrentTab} module={module ?? ''} />
         {loading && <div className="ja-sprint-planner">
             <Loader />
         </div>}
         {boardId && loadedBoardId === boardId && <div className="ja-sprint-planner">
-            {(!module || module === 'board') && <SprintBoards />}
+            {!module && <SprintBoards />}
             {module === 'planner' && <PlannerContainer />}
             {module === 'capacity' && <CapacityPlanner />}
         </div>}

@@ -14,10 +14,10 @@ const menus = [
     //{ icon: 'fa fa-calendar', label: 'Calendar',route:'' },
 ];
 
-function getMenuItem(icon, label, onClick, tabIndex, index) {
+function getMenuItem(icon, label, onClick, module, route) {
     const template = (<span role="menuitem"
-        className={`menu p-2${tabIndex === index ? ' active' : ''}`}
-        onClick={() => onClick(index)}>
+        className={`menu p-2${module === route ? ' active' : ''}`}
+        onClick={() => onClick(route)}>
         <span className={`me-1 ${icon}`} />
         <span className="menu-text">{label}</span>
     </span>);

@@ -126,7 +126,7 @@ function getParentTaskDetails(epic, planStartDate) {
         return result;
     }, { allowEdit: false, resources: [] });
 
-    epic.taskDetails = [taskDetail];
+    epic.taskDetails = taskDetail.noOfDays ? [taskDetail] : [];
 
     return { allowAdd: false, taskDetails: epic.taskDetails };
 }
