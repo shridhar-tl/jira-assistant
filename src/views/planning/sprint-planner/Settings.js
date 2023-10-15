@@ -37,7 +37,7 @@ const CalendarSettings = connect(function ({ workspace,
                 <div className="col-12">
                     <div className="form-group">
                         <WikiCalendar value={leaveCalendar} field="leaveCalendar" workspace={workspace} onChange={setCalendar} />
-                        <span className="help-block">Workspace to pull calendar from</span>
+                        <span className="help-block">Entries considered as leave for individual resources</span>
                     </div>
                 </div>
 
@@ -47,7 +47,7 @@ const CalendarSettings = connect(function ({ workspace,
                 <div className="col-12">
                     <div className="form-group">
                         <WikiCalendar value={holidayCalendar} field="holidayCalendar" workspace={workspace} onChange={setCalendar} />
-                        <span className="help-block">Workspace to pull calendar from</span>
+                        <span className="help-block">Events considered as holiday for all resource</span>
                     </div>
                 </div>
             </div>

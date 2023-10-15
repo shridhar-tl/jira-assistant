@@ -8,7 +8,7 @@ function Workspace({ value, multiple = true,
     const [spaces, setSpaces] = useState([]);
 
     useEffect(() => {
-        getSpaces().then(setSpaces);
+        getSpaces().then(setSpaces, err => console.error('Unable to pull workspaces. Error:- ', err));
     }, []);
 
     const search = (query) => {

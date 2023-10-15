@@ -9,7 +9,7 @@ function WikiCalendar({ value, multiple = true, workspace, field,
 
     useEffect(() => {
         if (workspace?.length) {
-            getCalendars(workspace.map(s => s.key)).then(setCalendars);
+            getCalendars(workspace.map(s => s.key)).then(setCalendars, err => console.error('Unable to pull calendar list. Error:-', err));
         } else {
             setCalendars([]);
         }
