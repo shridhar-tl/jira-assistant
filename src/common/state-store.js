@@ -11,7 +11,10 @@ function createStore(initialData = {}) {
 
     const useStateStore = createWithEqualityFn(initialData);
 
-    const setStoreState = (partial, replace) => useStateStore.setState(partial, replace);
+    const setStoreState = (partial, replace) => {
+        if (partial === undefined) { return; }
+        useStateStore.setState(partial, replace);
+    };
     const getStoreState = (args) => {
         const state = useStateStore.getState();
         if (!args) {

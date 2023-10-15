@@ -20,7 +20,7 @@ export function ColumnBody({ column, filterItems, scope, onChange, onDrop, place
     return (<td className="column-td">
         <div className="column-body">
             {!items && <span>Loading...</span>}
-            {items && !items.length && <span>No items to show</span>}
+            {items && !items.length && <span className="p-2">No issues available</span>}
             {items && <Sortable items={items}
                 args={column}
                 accept="card-item"

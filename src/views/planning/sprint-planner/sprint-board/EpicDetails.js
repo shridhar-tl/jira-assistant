@@ -143,24 +143,35 @@ function mapEpicStateToProps({ epicList, issueColorField }) {
     return { epicList, issueColorField };
 }
 
+const colorCache = {};
 function getContrastColorStyles(color) {
-    if (!color) {
+    if (!color || typeof color !== 'string') {
         return;
     }
 
-    let bgColor = Color.fromCSS(color);
-
-    const threshold = 0.2;
-
-    if (bgColor.lightness > threshold) {
-        bgColor = bgColor.lighten(parseInt((bgColor.lightness - threshold) * 100));
+    if (colorCache[color]) { // This cache is necessary because Color.fromCSS sometimes fails for repeated color
+        return colorCache[color];
     }
 
-    bgColor = bgColor.css();
+    try {
+        let bgColor = Color.fromCSS(color);
 
-    const fontColor = contrastColor({ bgColor });
+        const threshold = 0.2;
 
-    return { backgroundColor: bgColor, color: fontColor, borderLeftColor: color };
+        if (bgColor.lightness > threshold) {
+            bgColor = bgColor.lighten(parseInt((bgColor.lightness - threshold) * 100));
+        }
+
+        bgColor = bgColor.css();
+
+        const fontColor = contrastColor({ bgColor });
+
+        colorCache[color] = { backgroundColor: bgColor, color: fontColor, borderLeftColor: color };
+
+        return colorCache[color];
+    } catch (err) {
+        console.error('Trying to get color contrast failed for:', color, err);
+    }
 }
 
 function selectEpic(key) {

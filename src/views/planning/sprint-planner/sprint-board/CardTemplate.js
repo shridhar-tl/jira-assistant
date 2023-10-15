@@ -11,7 +11,7 @@ function Card({ item, scope: { getTicketUrl, epicNameField, estimation } }) {
             summary,
             assignee = {},
             [estimation.fieldId]: storypoint,
-            [epicNameField?.id]: epic = {},
+            [epicNameField?.id]: epic,
             status = {},
             priority: { iconUrl: priorityUrl, name: priority } = {},
             issuetype: { iconUrl: typeUrl, name: issuetype }

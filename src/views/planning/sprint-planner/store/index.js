@@ -1,6 +1,8 @@
 import createStore from "../../../../common/state-store";
 
 const initialData = {
+    loading: false,
+
     planId: '', // Id of plan
 
     // Contains selected board
