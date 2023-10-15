@@ -27,9 +27,10 @@ function SprintBoards({ sprintLists, scope, getIssuesForSprint, rearrangeIssue }
     </div>);
 }
 
-function mapStateToProps({ sprintLists, epicNameField, estimation }, { scope }) {
+function mapStateToProps({ sprintLists, epicNameField, estimation, epicMap }, { scope }) {
     scope.epicNameField = epicNameField;
     scope.estimation = estimation;
+    scope.epicMap = epicMap;
 
     return { sprintLists, scope };
 }

@@ -59,7 +59,7 @@ async function getEpicList(epicInfoMap, sprintLists) {
     const customFields = await $jira.getCustomFields();
     const issueColorField = customFields.filter(f => f.name.toLowerCase() === 'issue color')[0];
 
-    const epicList = await $ticket.fetchTicketDetails(keys, ['key', 'summary', 'name', 'duedate', 'issuetype', issueColorField?.id]);
+    const epicList = await $ticket.fetchTicketDetails(keys, ['key', 'summary', 'name', 'duedate', 'issuetype', 'status', issueColorField?.id]);
 
     epicList.push({ key: noEpicId, fields: { summary: 'Issues without Epic', issuetype: { name: 'No Epic' } } });
     const epicMap = epicList.reduce((map, t) => {

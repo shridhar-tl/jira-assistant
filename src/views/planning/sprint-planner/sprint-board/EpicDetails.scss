@@ -61,11 +61,11 @@ tbody.epic-body {
             margin-left: -1px;
             border: 1px dashed grey;
             border-left: 0;
-
-            span.fa {
-                margin-top: 3px;
-                font-size: 18px;
-            }
         }
     }
+}
+
+span.fa.epic-past-due {
+    margin-top: 3px;
+    font-size: 18px;
 }

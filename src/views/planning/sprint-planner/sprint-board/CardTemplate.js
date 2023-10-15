@@ -1,22 +1,22 @@
 import React from 'react';
-import Link from '../../../../controls/Link';
 import { useSprintIssueStatus } from './actions';
+import IssueDisplay from 'src/display-controls/IssueDisplay';
 
 const alignBottomStyle = { verticalAlign: 'bottom' };
 
-function Card({ item, scope: { getTicketUrl, epicNameField, estimation } }) {
+function Card({ item, scope: { epicNameField, estimation, epicMap } }) {
     const {
-        key,
         fields: {
             summary,
             assignee = {},
             [estimation.fieldId]: storypoint,
             [epicNameField?.id]: epic,
             status = {},
-            priority: { iconUrl: priorityUrl, name: priority } = {},
-            issuetype: { iconUrl: typeUrl, name: issuetype }
+            priority: { iconUrl: priorityUrl, name: priority } = {}
         }
     } = item;
+
+    const epicObj = epic && epicMap?.[epic];
 
     const { isUpdating, isEpicSelected } = useSprintIssueStatus(({ [item.key]: updating, selectedEpic }) => ({
         isUpdating: updating,
@@ -43,8 +43,9 @@ function Card({ item, scope: { getTicketUrl, epicNameField, estimation } }) {
         <div className="controls">
             <div className="w-100">
                 <div className="float-end">
-                    {epic && <Link className="link pointer font-bold me-2"
-                        href={getTicketUrl(epic)} style={alignBottomStyle}>{epic}</Link>}
+                    {epicObj && <IssueDisplay tag={null} value={epicObj}
+                        className="pointer font-bold me-2" iconClass="img-x16 me-1"
+                        style={alignBottomStyle} settings={{ showStatus: false }} />}
                     {(storypoint || storypoint === 0) && <div
                         className="rounded-circle inline-block img-x24 px-2 bg-grey me-1"
                         style={alignBottomStyle}>{storypoint}</div>}
@@ -54,8 +55,7 @@ function Card({ item, scope: { getTicketUrl, epicNameField, estimation } }) {
                         alt={assignee.displayName} title={assignee.displayName} />}
                 </div>
                 <div className="float-start">
-                    <img src={typeUrl} className="img-x16 me-1" alt={issuetype} title={issuetype} />
-                    <Link className="link pointer" href={getTicketUrl(key)}>{key}</Link>
+                    <IssueDisplay tag={null} value={item} iconClass="img-x16 me-1" />
                     {isUpdating && <span className="fa fa-spinner fa-spin ms-2" />}
                 </div>
             </div>

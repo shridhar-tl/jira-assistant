@@ -56,7 +56,7 @@ function EpicDetails({ columns, epicList, issueColorField, scope, collapsedState
                 const keyValue = columnKeyField ? column[columnKeyField] : i;
                 const collapsed = collapsedStates[keyValue];
 
-                return (<th className={collapsed ? 'collapsed-epic-cell' : undefined}></th>);
+                return (<th key={i} className={collapsed ? 'collapsed-epic-cell' : undefined}></th>);
             })}</tr>
         </thead>
         <tbody className="epic-body">
@@ -76,16 +76,20 @@ export default connect(EpicDetails, mapEpicStateToProps, null,
     ['UserUtilsService', mapServices]);
 
 function EpicRow(props) {
-    const { issueKey, startSprintIndex, emptyRowColSpan, cutEnd, endSprintIndex, epicSpan, epicText, showEpicDetails, collapsed, style, typeUrl, issuetype, scope, summary } = props;
+    const {
+        issueKey, isDone, startSprintIndex, emptyRowColSpan, cutEnd, endSprintIndex, dueSprintIndex,
+        epicSpan, epicText, showEpicDetails, collapsed, style, typeUrl, issuetype, scope, summary
+    } = props;
 
     const toggleSelection = React.useCallback(() => selectEpic(issueKey), [issueKey]);
     const isSelected = useSprintIssueStatus(({ selectedEpic }) => selectedEpic === issueKey);
 
     const emptyStart = startSprintIndex > 0 && emptyRowColSpan ? <td colSpan={emptyRowColSpan}></td> : null;
 
-    const delayDetails = cutEnd < endSprintIndex ? <td colSpan={endSprintIndex - cutEnd}>
+    const delayDetails = dueSprintIndex >= 0 && cutEnd < endSprintIndex ? <td colSpan={endSprintIndex - cutEnd}>
         <div className="epic-delay-info p-1 font-bold">
-            <span className="fa fa-exclamation-triangle float-end text-danger" title="Due date past" />
+            <span className="fa fa-exclamation-triangle float-end text-danger epic-past-due"
+                title="Due date past" />
         </div>
     </td> : null;
 
@@ -103,8 +107,12 @@ function EpicRow(props) {
             <img className={`img-x24 ${showEpicDetails ? 'me-2' : 'ms-1'}`} src={typeUrl}
                 alt={issuetype} title={epicText} style={{ verticalAlign: 'top' }} />
             {showEpicDetails && <>
-                <Link href={scope.getTicketUrl(issueKey)} style={style}>{issueKey}</Link> - {summary}
+                <Link className={isDone ? 'strike-out' : undefined}
+                    href={scope.getTicketUrl(issueKey)}
+                    style={style}>{issueKey}</Link> - {summary}
             </>}
+            {dueSprintIndex < 0 && <span className="fa fa-exclamation-triangle float-end text-danger epic-past-due"
+                title="Due date past" />}
         </div>
     </td>);
 
@@ -117,23 +125,32 @@ function EpicRow(props) {
 }
 
 function spreadProps({ epic, scope, issueColorField, collapsed }) {
-    const { startSprintIndex, endSprintIndex, dueSprintIndex, key,
-        fields: { summary,
+    const {
+        key,
+        fields: {
+            summary,
             [issueColorField?.id]: epicColor,
-            issuetype: { iconUrl: typeUrl, name: issuetype }
-        }
+            status = {},
+            issuetype: {
+                iconUrl: typeUrl,
+                name: issuetype
+            }
+        },
+        startSprintIndex, endSprintIndex, dueSprintIndex
     } = epic;
 
-    const cutEnd = (!dueSprintIndex || endSprintIndex <= dueSprintIndex) ? endSprintIndex : dueSprintIndex;
+    const isDone = status?.statusCategory?.key === 'done' || status?.name?.toLowerCase() === 'done';
+
+    const cutEnd = ((!dueSprintIndex && dueSprintIndex !== 0) || endSprintIndex <= dueSprintIndex) ? endSprintIndex : dueSprintIndex;
 
     const style = getContrastColorStyles(epicColor);
 
-    const epicSpan = (cutEnd - startSprintIndex) + 1;
+    const epicSpan = (dueSprintIndex < 0 ? endSprintIndex : (cutEnd - startSprintIndex)) + 1;
     const showEpicDetails = !collapsed || epicSpan > 1;
     const epicText = `${key} - ${summary}`;
 
     return {
-        issueKey: key, startSprintIndex, cutEnd, endSprintIndex, epicSpan,
+        key, issueKey: key, isDone, startSprintIndex, dueSprintIndex, cutEnd, endSprintIndex, epicSpan,
         epicText, showEpicDetails, collapsed, style, typeUrl,
         issuetype, scope, summary
     };
