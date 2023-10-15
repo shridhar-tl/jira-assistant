@@ -1,8 +1,10 @@
 import React, { useMemo } from 'react';
 import { Column, ScrollableTable, TBody, THead } from "../../../../components/ScrollableTable";
+import { usePlannerState } from '../store';
 
-function TeamCapacity({ groups, resources, leavePlans }) {
-    const availability = useMemo(() => getTeamAvailability(groups, resources, leavePlans), [resources, groups, leavePlans]);
+function TeamCapacity({ groups, resources }) {
+    const sprintWiseLeaveAndHolidays = usePlannerState(s => s.sprintWiseLeaveAndHolidays);
+    const availability = useMemo(() => getTeamAvailability(groups, resources, sprintWiseLeaveAndHolidays), [resources, groups, sprintWiseLeaveAndHolidays]);
 
     return (<div className="absolute h-100 w-100">
         <ScrollableTable height="100%">
@@ -58,8 +60,12 @@ function getAvailabilityInPercentage(leavePlans, resource, sprint) {
     const { sprintId, workingDaysCount } = sprint;
     const { accountId } = resource;
 
-    const leaveDays = (leavePlans[sprintId][accountId] || 0);
-    const availableDays = workingDaysCount - leaveDays;
+    const leaveDays = (leavePlans[sprintId]?.[accountId] || 0);
+    const holiday = leavePlans[sprintId]?.holidayCount || 0;
+    let availableDays = (workingDaysCount - leaveDays) - holiday;
+    if (availableDays < 0) {
+        availableDays = 0;
+    }
 
     return Math.round(availableDays * 100 / workingDaysCount);
 }

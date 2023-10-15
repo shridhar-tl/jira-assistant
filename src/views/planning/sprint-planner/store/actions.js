@@ -1,6 +1,6 @@
 import { inject } from "src/services";
 import { loadSprintsList } from "./init";
-import { getLeaveDetails } from "./utils";
+import { getLeaveDetails, getSprintWiseLeavesAndHolidays } from "./utils";
 
 /*export function loadBoardsList(setState) {
     return async function () {
@@ -22,11 +22,13 @@ export function setSelectedBoard(setState, getState) {
 export function loadLeaveDetails(setState, getState) {
     return async function () {
         setState({ isLoadingEvents: true });
-        const { settings, planStartDate, planEndDate } = getState();
+        const { settings, planStartDate, planEndDate, sprintLists } = getState();
 
-        const leaveDetails = await getLeaveDetails(settings, planStartDate, planEndDate);
+        const { resourceLeaveDays, resourceHolidays } = await getLeaveDetails(settings, planStartDate, planEndDate);
 
-        setState({ isLoadingEvents: false, ...leaveDetails });
+        const sprintWiseLeaveAndHolidays = getSprintWiseLeavesAndHolidays(sprintLists, resourceLeaveDays, resourceHolidays);
+
+        setState({ isLoadingEvents: false, resourceLeaveDays, resourceHolidays, sprintWiseLeaveAndHolidays });
     };
 }
 

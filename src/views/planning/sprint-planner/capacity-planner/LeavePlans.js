@@ -1,8 +1,9 @@
 import React from 'react';
 import { Column, ScrollableTable, TBody, THead } from "../../../../components/ScrollableTable";
-import { publicHolidayKey } from './utils';
+import { usePlannerState } from '../store';
 
-function LeavePlans({ resources, leavePlans, groups }) {
+function LeavePlans({ resources, groups }) {
+    const sprintWiseLeaveAndHolidays = usePlannerState(s => s.sprintWiseLeaveAndHolidays);
 
     return (<div className="absolute h-100 w-100">
         <ScrollableTable height="100%">
@@ -17,13 +18,13 @@ function LeavePlans({ resources, leavePlans, groups }) {
             <TBody>
                 {resources.map(r => <tr key={r.id}>
                     <td>{r.displayName}</td>
-                    {groups.map(g => <td key={g.sprintId} className="text-center">{leavePlans[g.sprintId][r.accountId]}</td>)}
-                    <td className="text-center">0</td>
+                    {groups.map(g => <td key={g.sprintId} className="text-center">{sprintWiseLeaveAndHolidays[g.sprintId]?.[r.accountId] || 0}</td>)}
+                    <td className="text-center">{groups.sum(g => sprintWiseLeaveAndHolidays[g.sprintId]?.[r.accountId] || 0)}</td>
                 </tr>)}
                 <tr>
                     <td><strong>Public holidays</strong></td>
-                    {groups.map(g => <td key={g.sprintId} className="text-center">{leavePlans[g.sprintId][publicHolidayKey]}</td>)}
-                    <td className="text-center">0</td>
+                    {groups.map(g => <td key={g.sprintId} className="text-center">{sprintWiseLeaveAndHolidays[g.sprintId]?.holidayCount || 0}</td>)}
+                    <td className="text-center">{groups.sum(g => sprintWiseLeaveAndHolidays[g.sprintId]?.holidayCount || 0)}</td>
                 </tr>
             </TBody>
             <tfoot>

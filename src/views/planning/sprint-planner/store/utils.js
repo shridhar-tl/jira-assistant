@@ -1,6 +1,7 @@
 import { inject } from "../../../../services/injector-service";
 import moment from 'moment';
 import { isWeekEndDay } from "../utils";
+import { getDateArray } from "src/utils/date";
 
 export async function getInitialPlaningData() {
     const { $jira } = inject('JiraService');
@@ -61,10 +62,38 @@ export async function getLeaveDetails({ leaveCalendar, holidayCalendar, startOfD
 
     const calendars = await $wiki.getCalendarEvents(allCalendarIds, planStartDate, planEndDate);
 
-    const resourceLeaveDays = leaveCalIds.reduce(getLeavesObject(calendars, false, startOfDay, endOfDay), []);
-    const resourceHolidays = holidayCalIds.reduce(getLeavesObject(calendars, true), []);
+    const resourceLeaveDays = leaveCalIds.reduce(getLeavesObject(calendars, false, startOfDay, endOfDay), {});
+    const resourceHolidays = holidayCalIds.reduce(getLeavesObject(calendars, true), {});
 
     return { resourceLeaveDays, resourceHolidays };
+}
+
+export function getSprintWiseLeavesAndHolidays(sprintLists, resourceLeaveDays, resourceHolidays) {
+    const userIds = Object.keys(resourceLeaveDays);
+
+    return sprintLists.reduce((map, sprint) => {
+        const { id, startDate, endDate } = sprint;
+        const daysInSprint = getDateArray(startDate, endDate);
+        const curSprintPlans = {};
+        map[id] = curSprintPlans;
+
+        curSprintPlans.holidayCount = daysInSprint.reduce((count, d) => {
+            const obj = resourceHolidays[d.format('yyyyMMdd')];
+            if (!obj) { return count; }
+            return count + (obj.allDay ? 1 : .5);
+        }, 0);
+
+        userIds.forEach(u => {
+            const userLeaves = resourceLeaveDays[u];
+            curSprintPlans[u] = daysInSprint.reduce((count, d) => {
+                const obj = userLeaves[d.format('yyyyMMdd')];
+                if (!obj) { return count; }
+                return count + (obj.allDay ? 1 : .5);
+            }, 0);
+        });
+
+        return map;
+    }, {});
 }
 
 function getLeavesObject(calendars, isHoliday) {

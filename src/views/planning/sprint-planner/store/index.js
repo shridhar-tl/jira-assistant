@@ -20,6 +20,7 @@ const initialData = {
     resources: [], // List of resources
     resourceLeaveDays: {}, // List of user wise leave plans
     resourceHolidays: {}, // List of holidays
+    sprintWiseLeaveAndHolidays: {}, // Computed list of holiday for sprint user wise
 
     velocity: { selected: 'C' },
 
