@@ -1,6 +1,6 @@
 .gantt-chart-markers {
     position: absolute;
-    height: 100%;
+    height: calc(100% - 1px);
     width: 100%;
     top: 0;
     left: 0;
@@ -9,8 +9,9 @@
         position: absolute;
         border-left: 1px dashed red;
         display: block;
-        top: 70px;
+        top: 1px;
         height: 100%;
+        z-index: 9;
 
         span {
             display: block;

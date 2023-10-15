@@ -3,7 +3,7 @@ import moment from 'moment';
 import { GanttContext } from '../../store';
 import './Markers.scss';
 
-function Markers() {
+function Markers({ divRef }) {
     const { markers, fromDate } = React.useContext(GanttContext);
 
     const markersList = React.useMemo(() => {
@@ -19,7 +19,7 @@ function Markers() {
         return null;
     }
 
-    return (<div className="gantt-chart-markers">
+    return (<div ref={divRef} className="gantt-chart-markers">
         {markersList.map((ms, i) => (<div key={i} className="marker" style={{ left: `${ms.colIndex * 35}px` }}>
             <span>{ms.name}</span>
             <div className="marker-left-arrow" />

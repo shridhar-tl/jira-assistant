@@ -18,14 +18,17 @@ function GanttChart(props) {
         initStoreWithProps(fromDate, toDate, propsRef.current.isDayHoliday);
     }, [fromDate, toDate]);
 
+    const leftBlock = React.useRef(null);
+    const rightBlock = React.useRef(null);
+
     return (<div className="gantt-chart">
         <PropsProvider value={props}>
             <Splitter style={{ height }}>
                 <SplitterPanel size={10}>
-                    <GanttFieldsContainer columns={columns} items={items} />
+                    <GanttFieldsContainer columns={columns} items={items} leftBlock={leftBlock} rightBlock={rightBlock} />
                 </SplitterPanel>
                 <SplitterPanel>
-                    <GanttDateRangeContainer items={items} />
+                    <GanttDateRangeContainer items={items} leftBlock={leftBlock} rightBlock={rightBlock} />
                 </SplitterPanel>
             </Splitter>
         </PropsProvider>

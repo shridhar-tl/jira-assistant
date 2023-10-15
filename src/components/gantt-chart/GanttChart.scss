@@ -4,8 +4,7 @@
     width: 100%;
 
     &>.p-splitter>.p-splitter-panel {
-        overflow-y: hidden;
-        overflow-x: auto;
+        overflow: hidden;
     }
 
     .gantt-table-container {
@@ -26,7 +25,18 @@
             position: absolute;
             height: 100%;
             background-color: #fafafa;
-            top: 28px;
+            top: 1px;
         }
     }
+
+    .gantt-body-container {
+        height: calc(100% - 68px);
+        width: 100%;
+        overflow: auto;
+    }
+}
+
+.abs-height {
+    position: absolute;
+    height: calc(100% - 1px);
 }

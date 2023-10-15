@@ -45,3 +45,12 @@
         }
     }
 }
+
+.hide-scroll-v {
+    &::-webkit-scrollbar {
+        width: 0;
+    }
+
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}

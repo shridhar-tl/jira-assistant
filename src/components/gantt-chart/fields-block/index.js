@@ -2,28 +2,44 @@ import React from 'react';
 import { getPathValue } from 'react-controls/common/utils';
 import './FieldBlockStyles.scss';
 
-function FieldsContainer({ columns, items }) {
+function FieldsContainer({ columns, items, leftBlock, rightBlock }) {
+    const tableHeader = React.useRef(null);
+
+    const scrollHandler = React.useCallback((e) => {
+        const left = `${-e.target.scrollLeft}px`;
+
+        if (rightBlock.current) {
+            rightBlock.current.scrollTo({ top: e.target.scrollTop });
+        }
+
+        if (tableHeader.current) {
+            tableHeader.current.style.marginLeft = left;
+        }
+    }, [rightBlock]);
+
     return (<div className="gantt-table-container">
-        <table className="gantt-chart-header fields-header">
+        <table ref={tableHeader} className="gantt-chart-header fields-header">
             <thead>
                 <tr>
                     {columns.map(column => (<th key={column.field} style={{ width: column.width }}>{column.headerText}</th>))}
                 </tr>
             </thead>
         </table>
-        <TaskListFields columns={columns} items={items} />
+        <TaskListFields columns={columns} items={items} containerRef={leftBlock} onScroll={scrollHandler} />
     </div>);
 }
 
 export default FieldsContainer;
 
-function TaskListFields({ columns, items }) {
+function TaskListFields({ columns, items, onScroll, containerRef }) {
     return (
-        <table className="gantt-chart-body fields-body">
-            <tbody>
-                <TaskRenderer depth={0} columns={columns} items={items} />
-            </tbody>
-        </table>);
+        <div ref={containerRef} className="gantt-body-container hide-scroll-v" onScroll={onScroll}>
+            <table className="gantt-chart-body fields-body">
+                <tbody>
+                    <TaskRenderer depth={0} columns={columns} items={items} />
+                </tbody>
+            </table>
+        </div>);
 }
 
 function TaskRenderer({ columns, items, depth }) {
