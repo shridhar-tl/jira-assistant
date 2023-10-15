@@ -97,19 +97,24 @@ async function getSprintWiseIssuesList(sprintIds, epicNameField, estimation) {
         { properties: 'ja_planner_tasks' }
     );
 
+    const emptyMapObj = sprintIds.reduce((map, id) => {
+        map[id] = [];
+        return map;
+    }, {});
+
     return results.reduce((map, issue) => {
         const { [sprintFieldName.id]: sprint } = issue.fields;
         const { id: sprintId } = sprint[sprint.length - 1];
-        let sprintWiseIssues = map[sprintId];
+        const sprintWiseIssues = map[sprintId];
+
         if (!sprintWiseIssues) {
-            sprintWiseIssues = [issue];
-            map[sprintId] = sprintWiseIssues;
-        } else {
-            sprintWiseIssues.push(issue);
+            return map;
         }
 
+        sprintWiseIssues.push(issue);
+
         return map;
-    }, {});
+    }, emptyMapObj);
 }
 
 function getUserStoryMap(resources) {
