@@ -1,11 +1,12 @@
 import moment from 'moment';
 import { inject } from 'src/services';
 import DayColumn from 'src/display-controls/DayColumn';
+import { getDateRange, getWeekGroup } from 'src/utils/date';
 
 export function generateDateRangeColumns(column, headerOpts, issues, depth, hasSiblings, processColumns) {
     const { dateRange, rangeType = 'days', filterField, showTotal, showTotalFirst, subItems } = column;
 
-    const dates = getDateRange(dateRange.fromDate, dateRange.toDate);
+    const dates = getDateRangeArray(dateRange.fromDate, dateRange.toDate);
 
     const totalColumn = showTotal && {
         headerText: 'Total',
@@ -20,7 +21,7 @@ export function generateDateRangeColumns(column, headerOpts, issues, depth, hasS
     };
 
     if (rangeType === 'days') {
-        const weeks = getWeekHeader(dates);
+        const weeks = getWeekGroup(dates);
         const { header } = headerOpts;
         const currentHeader = header[depth];
         const datesHeader = header[depth + 1];
@@ -149,49 +150,8 @@ function getDateRangeGroupTransformFn({ start, end }, filterField) {
     }
 }
 
-function getDateRange(fromDate, toDate) {
-    const { $utils, $userutils } = inject('UtilsService', 'UserUtilsService');
-    const datesArr = $utils.getDateArray(fromDate, toDate);
+function getDateRangeArray(fromDate, toDate) {
+    const { $userutils } = inject('UserUtilsService');
 
-    const dates = datesArr.map(d => ({
-        prop: d.format('yyyyMMdd'),
-        date: d,
-        dispFormat: d.format('MMM yyyy').toUpperCase(),
-        month: d.getMonth(),
-        week: moment(d).week(),
-        dayOfWeek: moment(d).day(),
-        day: d.format('DD').toUpperCase(),
-        dateNum: d.getDate(),
-        isHoliday: $userutils.isHoliday(d)
-    }));
-
-    return dates;
-}
-
-function getWeekHeader(dates) {
-    return dates.groupBy(d => (`${d.month}_${d.week}`)).map(({ values }) => {
-        const days = values.length;
-        let display = '';
-
-        const { 0: start, [days - 1]: end } = values;
-
-        const { week, dispFormat, dateNum: first, date: startDate } = start;
-        const { dateNum: last, date: endDate } = end;
-
-        if (days > 4) {
-            display = `${dispFormat}, ${first} to ${last} (W-${week})`;
-        } else if (days > 3) {
-            display = `${dispFormat}, ${first}-${last}`;
-        } else if (days > 2) {
-            display = `${dispFormat.split(' ')[0]} (W-${week})`;
-        } else {
-            display = dispFormat.split(' ')[0];
-        }
-
-        return {
-            display, days, values,
-            start: moment(startDate).startOf('day').valueOf(),
-            end: moment(endDate).endOf('day').valueOf()
-        };
-    });
+    return getDateRange(fromDate, toDate, $userutils.isHoliday);
 }

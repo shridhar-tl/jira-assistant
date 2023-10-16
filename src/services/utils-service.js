@@ -1,11 +1,13 @@
 import { SHORT_MONTH_NAMES, FULL_MONTH_NAMES, TINY_DAY_NAMES, SHORT_DAY_NAMES, FULL_DAY_NAMES } from '../constants/settings';
 import { convertToDate, getUserName, parseJiraCustomCSV } from '../common/utils';
+import { getDateArray } from '../utils/date';
 
 const secsPerDay = 86400;
 const secsPerHour = 3600;
 
 export default class UtilsService {
     convertDate = convertToDate;
+    getDateArray = getDateArray;
 
     formatDate(date, format) {
         if (!(date instanceof Date)) {
@@ -90,29 +92,6 @@ export default class UtilsService {
         }
     }
 
-    getDateArray(startDate, endDate) {
-        const retVal = [];
-        let current = new Date(startDate);
-        while (current <= endDate) {
-            retVal.push(new Date(current));
-            current = current.addDays(1);
-        }
-        return retVal;
-    }
-
-
-    yesno(val) {
-        if (val === true) {
-            return "Yes";
-        }
-        else if (val === false) {
-            return "Yes";
-        }
-        else {
-            return val;
-        }
-    }
-
     avg(arr, prop) {
         if (!arr) {
             return null;
@@ -151,14 +130,7 @@ export default class UtilsService {
         if (prop) { return arr.max((v) => v[prop]); }
         else { return arr.max(); }
     }
-    bytes(bytes, precision) {
-        if (isNaN(parseFloat(bytes)) || !isFinite(bytes)) { return '-'; }
-        if (typeof precision === 'undefined') {
-            precision = 1;
-        }
-        const units = ['bytes', 'kB', 'MB', 'GB', 'TB', 'PB'], number = Math.floor(Math.log(bytes) / Math.log(1024));
-        return `${(bytes / Math.pow(1024, Math.floor(number))).toFixed(precision)} ${units[number]}`;
-    }
+
     convertSecs = (d, opts) => {
         if (!opts) {
             opts = {};

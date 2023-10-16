@@ -86,9 +86,11 @@ export default class JiraAuthService extends BaseService {
         await this.$settings.saveGeneralSetting(userId, 'JiraCloudId', cloudId);
     }
 
-    async transformHeaders(userId, customHeaders) {
-        if (!userId) {
-            return customHeaders;
+    async transformHeaders(userId, headers) {
+        const { noAuthHeaders, ...customHeaders } = headers || {};
+
+        if (!userId || noAuthHeaders) {
+            return (typeof headers === 'object' ? customHeaders : headers);
         }
 
         const user = await this.$user.getUser(userId);
@@ -101,7 +103,7 @@ export default class JiraAuthService extends BaseService {
                 pwd = user.pwd && atob(user.pwd);
             }
 
-            customHeaders = { ...customHeaders, ...getBasicTokenHeader(user.uid, pwd) };
+            return { ...customHeaders, ...getBasicTokenHeader(user.uid, pwd) };
         }
         else if (user.apiUrl) {
             let auth = await this.$settings.getGeneralSetting(userId, 'JOAT');
@@ -120,7 +122,7 @@ export default class JiraAuthService extends BaseService {
 
                 const { token } = auth;
 
-                customHeaders = { ...customHeaders, ...getBearerTokenHeader(token) };
+                return { ...customHeaders, ...getBearerTokenHeader(token) };
             }
         }
 

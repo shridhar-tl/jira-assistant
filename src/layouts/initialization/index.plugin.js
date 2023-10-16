@@ -21,7 +21,10 @@ const withInitParams = function (Component) {
         } else if (typeof initValue === 'string') {
             return (<div className="setup-error">
                 <div className="header-msg">Setup Failed</div>
-                <div className="details">Error Details :- {initValue}</div>
+                <div className="details">Error Details :- {initValue}
+                    <br />
+                    Look at console log for more details.
+                </div>
             </div>);
         } else {
             return getLoader('Setting up... Please wait...');

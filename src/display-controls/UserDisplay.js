@@ -4,7 +4,7 @@ import BaseControl from './BaseControl';
 
 class UserDisplay extends BaseControl {
     renderControl(badge) {
-        const { value, user = value, settings } = this.props;
+        const { value, user = value, settings, imgClassName = 'img-x32' } = this.props;
 
         if (!user) { return badge; }
 
@@ -24,7 +24,7 @@ class UserDisplay extends BaseControl {
             disp = (<>{user.displayName} ({user.emailAddress})</>);
         }
 
-        return (<>{!!imageUrl && <Image className="img-x32" src={imageUrl} />}{disp}{badge}</>);
+        return (<>{!!imageUrl && <Image className={`${imgClassName} rounded-circle me-2`} src={imageUrl} />}{disp}{badge}</>);
     }
 }
 
