@@ -84,8 +84,10 @@ html[dir="rtl"] {
       width: 100%;
     }
 
-    .app-body {
-      margin-top: $navbar-height;
+    @media (max-width: 991px) {
+      .app-body {
+        margin-top: $navbar-height;
+      }
     }
   }
 
