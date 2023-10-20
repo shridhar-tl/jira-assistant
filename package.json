@@ -71,8 +71,8 @@
         "electron-is-dev": "^2.0.0",
         "electron-updater": "^6.1.1",
         "espree": "^9.6.1",
-        "exceljs": "^4.3.0",
-        "firebase": "^10.4.0",
+        "exceljs": "^4.4.0",
+        "firebase": "^10.5.0",
         "jquery": "^3.7.1",
         "js-sql-parser": "^1.4.1",
         "jsd-report": "^0.1.11",
@@ -93,7 +93,7 @@
         "react-dnd": "^14.0.4",
         "react-dnd-html5-backend": "^14.0.2",
         "react-dom": "^18.2.0",
-        "react-router-dom": "^6.16.0",
+        "react-router-dom": "^6.17.0",
         "react-scripts": "^5.0.1",
         "static-eval": "^2.1.0",
         "zustand": "^4.4.3"
@@ -109,7 +109,7 @@
         "eslint-plugin-react-hooks": "^4.6.0",
         "gh-pages": "^6.0.0",
         "react-app-alias": "^2.2.2",
-        "sass": "^1.69.2",
+        "sass": "^1.69.4",
         "wait-on": "^7.0.1",
         "webpack-bundle-analyzer": "^4.9.1"
     },
