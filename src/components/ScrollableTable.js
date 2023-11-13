@@ -73,15 +73,18 @@ export class ScrollableTable extends PureComponent {
         onSortFieldChanged: (callback) => {
             this.eventEmitter.on(sortChangedEvent, callback);
             return () => this.eventEmitter.off(sortChangedEvent, callback);
-        }
+        },
+        getScrollTop: () => (this.container?.scrollTop || 0)
     };
 
+    setContainer = el => this.container = el;
+
     render() {
-        const { className, style, children, exportable, exportSheetName } = this.props;
+        const { className, style, children, exportable, exportSheetName, height } = this.props;
 
         return (
-            <div className={classNames("scroll-table-container", className)}
-                ref={el => this.container = el}>
+            <div className={classNames("scroll-table-container", className)} style={{ height }}
+                ref={this.setContainer}>
                 <TableContext.Provider value={this.sharedProps}>
                     <table ref={el => this.table = el}
                         export-sheet-name={exportSheetName}
@@ -113,7 +116,14 @@ export class THead extends PureComponent {
         });
     }
 
-    setScrollTop(cells, defTop) { cells.forEach(c => c.style.top = `${(c.offsetTop || defTop)}px`); }
+    setScrollTop(cells, defTop) {
+        const scrollTop = this.context.getScrollTop();
+        console.log('scroll top is ', scrollTop);
+        cells.forEach(c => {
+            const top = c.offsetTop && scrollTop && c.offsetTop > scrollTop ? c.offsetTop - scrollTop : c.offsetTop;
+            c.style.top = `${(top || defTop)}px`;
+        });
+    }
 
     render() {
         const { className, style, children } = this.props;
