@@ -8,9 +8,11 @@ import { usePivotConfig, useReportData } from './store/pivot-config';
 import { loadReport } from './utils/common';
 import EditorControls from './editor/controls';
 import EditorBody from './editor/body';
+import ReportSelectList from '../../../components/ReportSelectList';
+import './Style.scss';
 
 function PivotReport() {
-    const { reportId } = useParams();
+    const { reportId, userId } = useParams();
     const [editMode, toggleEdit] = useToggler(!reportId);
 
     React.useEffect(() => {
@@ -23,6 +25,7 @@ function PivotReport() {
     const hasParams = parameters && Object.keys(parameters).length > 0;
 
     const customActions = (<>
+        <ReportSelectList reportType="pivot" reportId={reportId} reportPath={`/${userId}/reports/pivot`} />
         {hasParams && <Button type="secondary" icon="fa fa-list-check" className="mx-1"
             onClick={toggleParameters} title="Show report parameters" />}
         <Button type="secondary" icon="fa fa-edit" className="mx-1"
