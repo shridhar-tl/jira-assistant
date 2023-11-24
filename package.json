@@ -51,9 +51,9 @@
         }
     },
     "dependencies": {
-        "@forge/api": "^2.20.0",
-        "@forge/bridge": "^3.0.0",
-        "@forge/resolver": "^1.5.21",
+        "@forge/api": "^2.20.1",
+        "@forge/bridge": "^3.1.0",
+        "@forge/resolver": "^1.5.22",
         "@fortawesome/fontawesome-free": "^6.4.2",
         "@fullcalendar/core": "^6.1.9",
         "@fullcalendar/daygrid": "^6.1.9",
@@ -76,7 +76,7 @@
         "jquery": "^3.7.1",
         "js-sql-parser": "^1.5.0",
         "jsd-report": "^0.1.11",
-        "jspdf": "^2.5.1",
+        "jspdf": "github:shridhar-tl/jsPDF",
         "jspdf-autotable": "^3.7.1",
         "moment": "^2.29.4",
         "moment-timezone": "^0.5.43",
@@ -93,7 +93,7 @@
         "react-dnd": "^14.0.4",
         "react-dnd-html5-backend": "^14.0.2",
         "react-dom": "^18.2.0",
-        "react-router-dom": "^6.18.0",
+        "react-router-dom": "^6.20.0",
         "react-scripts": "^5.0.1",
         "static-eval": "^2.1.0",
         "zustand": "^4.4.6"
@@ -102,16 +102,16 @@
         "@craco/craco": "^7.1.0",
         "concurrently": "^8.2.2",
         "cross-env": "^7.0.3",
-        "electron": "^27.0.4",
+        "electron": "^27.1.2",
         "electron-builder": "^24.6.4",
         "electronmon": "^2.0.2",
-        "eslint": "^8.53.0",
+        "eslint": "^8.54.0",
         "eslint-plugin-react-hooks": "^4.6.0",
-        "gh-pages": "^6.0.0",
+        "gh-pages": "^6.1.0",
         "react-app-alias": "^2.2.2",
         "sass": "^1.69.5",
-        "wait-on": "^7.1.0",
-        "webpack-bundle-analyzer": "^4.9.1"
+        "wait-on": "^7.2.0",
+        "webpack-bundle-analyzer": "^4.10.1"
     },
     "scripts": {
         "start": "cross-env REACT_APP_BUILD_MODE=WEB craco start",
@@ -214,6 +214,9 @@
         "react-controls": [
             "externals/react-controls/src/",
             "node_modules/react-controls/src/"
+        ],
+        "jspdf": [
+            "node_modules/jspdf/dist/"
         ]
     }
 }
