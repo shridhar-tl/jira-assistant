@@ -57,7 +57,9 @@ class CalendarSettings extends BaseDialog {
                 <label className="col-md-3 col-form-label">Worklog entry color</label>
                 <div className="col-md-9 col-form-label">
                     <ColorPicker value={settings.worklogColor} fieldName="worklogColor" onChange={this.setValue} />
-                    <label className="form-check-label">Specify the color of the worklog entry</label>
+                    <label className="form-check-label block">
+                        Specify the color of the worklog entry
+                    </label>
                 </div>
             </div>
             <div className="form-group row">
@@ -87,7 +89,7 @@ class CalendarSettings extends BaseDialog {
                     </label>
                 </div>
             </div>
-            <h3 className="control-sidebar-heading">Show / Hide Entries</h3>
+            <h3 className="control-sidebar-heading mt-3">Show / Hide Entries</h3>
             {showMeetings && <div className="form-group">
                 <Checkbox checked={settings.showMeetings || false} onChange={(val) => this.setValue(val, "showMeetings")} label="Display entry for meetings integrated from calendar" />
             </div>}
@@ -97,13 +99,13 @@ class CalendarSettings extends BaseDialog {
             <div className="form-group">
                 <Checkbox checked={settings.showInfo || false} onChange={(val) => this.setValue(val, "showInfo")} label="Display information about total hours logged on daily basis" />
             </div>
-            <h5 className="control-sidebar-heading">Entry details</h5>
+            <h5 className="control-sidebar-heading mt-2">Entry details</h5>
             <div className="form-group">
                 <RadioButton value={settings.detailsMode || '1'} defaultValue="1" onChange={(val) => this.setValue(val, "detailsMode")} label="Display worklog comments on worklog entry" /><br />
                 <RadioButton value={settings.detailsMode || '1'} defaultValue="2" onChange={(val) => this.setValue(val, "detailsMode")} label="Display ticket summary on worklog entry" /><br />
                 <RadioButton value={settings.detailsMode || '1'} defaultValue="3" onChange={(val) => this.setValue(val, "detailsMode")} label="Try accomidate both worklog comments and ticket summary on worklog entry" />
             </div>
-            <h3 className="control-sidebar-heading">Other options</h3>
+            <h3 className="control-sidebar-heading mt-3">Other options</h3>
             <div className="form-group">
                 <Checkbox checked={settings.rowBanding || false} onChange={(val) => this.setValue(val, "rowBanding")} label="Enable alternate row color on calendar time grid" />
             </div>

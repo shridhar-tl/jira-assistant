@@ -78,18 +78,15 @@
     "notifications",
     "activeTab",
     "idle",
-    "scripting"
-  ],
-  "optional_permissions": [
+    "scripting",
     "unlimitedStorage"
   ],
   "host_permissions": [
+    "https://*.atlassian.net/*"
+  ],
+  "optional_host_permissions": [
     "http://*/",
-    "https://*/",
-    "http://calendar.google.com/calendar/*",
-    "https://calendar.google.com/calendar/*",
-    "https://login.microsoftonline.com/common/oauth2/v2.0/*",
-    "https://graph.microsoft.com/v1.0/me/*"
+    "https://*/"
   ],
   "author": "Shridhar",
   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAqgOeieQeQWZRxeoAGGLjXGCutm354BFj5jX7XmQdfUlfAsxYeLiQpvXH0dk9SgIpIVfiGJoI59oKhlixbwUTs8Zp/v0NQaMQc3MhhvRtYz+UjQuPajR59HyoVzZB3+/2ESe0RC+LT3sEXUVSNxy7Zoc8RUOkLW4+53hsQkVtVvOrFUB+jTdn9Tlk7nLSnFBit510pmR8/tvVusDRnLcvqlTObF+axpgmi+kyciqc/cXiYqKzOU75Y2nWot7E8XfjhGXmMbm4jG24gGejNgazERpBEjb6U1WK+sAO9ZO23C1kjaVuqllEnzjTz08do+Fa9rgmUC5Lr05sbQJ/kMKV9wIDAQAB"
