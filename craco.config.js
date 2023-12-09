@@ -25,11 +25,11 @@ const packageJSON = fs.readJsonSync('./package.json');
 const alias = getAliasPackages(packageJSON.aliases);
 
 module.exports = {
-    style: shouldUseSourceMap && !shouldUseSourceMap_CSS && {
+    /*style: shouldUseSourceMap && !shouldUseSourceMap_CSS && {
         css: { loaderOptions: styleLoaderOptions },
         sass: { loaderOptions: styleLoaderOptions },
         postcss: { loaderOptions: styleLoaderOptions }
-    },
+    },*/
     plugins: [
         {
             plugin: CracoAliasPlugin,
@@ -37,7 +37,7 @@ module.exports = {
         }
     ],
     webpack: {
-        plugins: getPlugins(),
+        //plugins: getPlugins(),
         configure: (wpConfig, { env, paths }) => {
             const isProd = wpConfig.mode === 'production';
 
@@ -76,7 +76,7 @@ module.exports = {
                     : existingCSSFileName
                 );
 
-                if (shouldUseSourceMap && !shouldUseSourceMap_CSS) {
+                /*if (shouldUseSourceMap && !shouldUseSourceMap_CSS) {
                     const filesList = ['.module.scss', '.module.sass', '.module.css'];
                     wpConfig.module.rules.forEach(rule => {
                         if (Array.isArray(rule.oneOf)) {
@@ -91,7 +91,7 @@ module.exports = {
                             });
                         }
                     });
-                }
+                }*/
             }
 
             if (isAppBuild) {

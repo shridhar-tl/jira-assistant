@@ -9,8 +9,6 @@ const IntegrateExtn = React.lazy(() => import('../../views/pages/integrate/Integ
 const BasicAuth = React.lazy(() => import('../../views/pages/authenticate/BasicAuth'));
 const OptionsPage = React.lazy(() => import('../../views/settings/global/GlobalSettings'));
 
-const Poker = React.lazy(() => import('../../views/poker/Poker'));
-
 export default function Renderer({ authInfo: { userId } }) {
     return (<Routes>
         <Route exact path="/integrate" name="Integrate Page" element={<IntegrateExtn />} />
@@ -20,8 +18,6 @@ export default function Renderer({ authInfo: { userId } }) {
         </Route>
 
         <Route exact path="/options" name="Options Page" element={<OptionsPage />} />
-
-        <Route path="/poker/*" name="Planning Poker" element={<Poker hasExtensionSupport={true} />} />
 
         {userId && <Route path="/:userId/*" name="Home" element={<DefaultLayout key={userId} />} />}
     </Routes>);
