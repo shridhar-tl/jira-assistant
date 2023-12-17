@@ -73,14 +73,17 @@
   "offline_enabled": true,
   "permissions": [
     "activeTab",
+    "tabs",
     "storage",
     "idle",
     "scripting"
   ],
   "optional_permissions": [
     "unlimitedStorage",
-    "identity",
-    "tabs"
+    "identity"
+  ],
+  "host_permissions": [
+    "https://*.atlassian.net/"
   ],
   "optional_host_permissions": [
     "http://*/",

@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { ScrollableTable } from '../../../components/ScrollableTable';
-import { getComponentFor } from '../../../display-controls';
+import { getComponentFor, normalizeType } from '../../../display-controls';
 import { connect } from "../datastore";
 import GroupHead from './GroupHead';
 import GroupBody from './GroupBody';
@@ -17,7 +17,10 @@ function GroupedDataGrid({ boardId, splitWorklogDays, fields, exportSheetName, c
             cols.splice(0, 0, logDateTime);
         }
 
-        return cols.map(f => ({ ...f, ...getComponentFor(f.type) }));
+        return cols.map(f => {
+            const { type = f.type } = normalizeType(f);
+            return ({ ...f, type, ...getComponentFor(type || f.type) });
+        });
     }, [optional, daywiseFields, splitWorklogDays]);
 
     return (

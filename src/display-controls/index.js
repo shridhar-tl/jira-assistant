@@ -31,9 +31,10 @@ export function getComponentFor(type) {
         case 'project': return { Component: ProjectDisplay, props: { settings: { valueType: 'both' } } };
         case 'timespent': return { Component: TimeSpentDisplay };
         case 'timetracking': return { Component: TimeTrackDisplay };
-        case 'comments-page': return { Component: CommentsDisplay };
+        case 'comments-page': case 'comment': return { Component: CommentsDisplay };
         case 'user': return { Component: UserDisplay };
         case 'votes': return { Component: TagsDisplay, props: { tagProp: 'votes' } };
+        case 'attachment': return { Component: TagsDisplay, props: { tagProp: 'filename', hrefProp: 'content', iconClass: 'fa-paperclip' } };
         case 'issuetype':
         case 'status':
         case 'resolution':

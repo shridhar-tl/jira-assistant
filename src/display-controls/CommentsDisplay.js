@@ -2,7 +2,13 @@ import BaseControl from './BaseControl';
 
 class CommentsDisplay extends BaseControl {
     renderControl() {
-        const { value } = this.props;
+        let { value } = this.props;
+
+        if (typeof value?.maxResults === 'number') {
+            return `${value.maxResults} comments`;
+        } else if (Array.isArray(value?.comments)) {
+            value = value.comments;
+        }
 
         if (!value?.length) { return null; }
 

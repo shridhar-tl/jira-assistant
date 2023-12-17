@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "Jira Assistant: Worklog, Sprint report, etc",
   "short_name": "Jira Assist",
-  "version": "2.57",
+  "version": "2.58",
   "updateURL": "https://raw.githubusercontent.com/shridhar-tl/jira-assistant/master/release/firefox/update_manifest.json",
   "updateLink": "https://github.com/shridhar-tl/jira-assistant/raw/master/release/firefox/JiraAssist_Latest.xpi",
   "applications": {
@@ -64,12 +64,11 @@
       "description": "Open JiraAssist dashboard page"
     }
   },
-  "content_security_policy": "script-src 'self' 'unsafe-eval' https://apis.google.com https://calendar.google.com https://ssl.google-analytics.com https://www.google-analytics.com https://login.microsoftonline.com https://graph.microsoft.com ; object-src 'self';",
+  "content_security_policy": "script-src 'self' ; object-src 'self';",
   "permissions": [
     "tabs",
+    "activeTab",
     "identity",
-    "http://*/",
-    "https://*/",
     "https://*.atlassian.net/*",
     "storage",
     "notifications",
@@ -77,7 +76,8 @@
     "scripting"
   ],
   "optional_permissions": [
-    "activeTab"
+    "http://*/",
+    "https://*/"
   ],
   "developer": {
     "name": "Shridhar",
