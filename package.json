@@ -1,6 +1,6 @@
 {
     "name": "jira-assistant",
-    "version": "2.57.0",
+    "version": "2.58.0",
     "description": "Help to track & upload work done on a Jira Ticket on timely basis and generate Worklog, Sprint and other custom reports",
     "homepage": "/",
     "author": {
@@ -51,9 +51,9 @@
         }
     },
     "dependencies": {
-        "@forge/api": "^2.21.0",
-        "@forge/bridge": "^3.1.0",
-        "@forge/resolver": "^1.5.23",
+        "@forge/api": "^2.22.0",
+        "@forge/bridge": "^3.2.0",
+        "@forge/resolver": "^1.5.24",
         "@fortawesome/fontawesome-free": "6.5.1",
         "@fullcalendar/core": "6.1.10",
         "@fullcalendar/daygrid": "6.1.10",
@@ -69,12 +69,12 @@
         "dexie": "3.2.4",
         "espree": "9.6.1",
         "exceljs": "4.4.0",
-        "firebase": "10.7.0",
+        "firebase": "10.7.1",
         "jquery": "3.7.1",
         "js-sql-parser": "1.5.0",
         "jsd-report": "0.1.11",
         "jspdf": "2.5.1",
-        "jspdf-autotable": "3.7.1",
+        "jspdf-autotable": "3.8.1",
         "moment": "2.29.4",
         "moment-timezone": "0.5.43",
         "papaparse": "5.4.1",
@@ -90,7 +90,7 @@
         "react-dnd": "14.0.4",
         "react-dnd-html5-backend": "14.0.2",
         "react-dom": "18.2.0",
-        "react-router-dom": "6.20.1",
+        "react-router-dom": "6.21.0",
         "react-scripts": "github:shridhar-tl/react-scripts",
         "static-eval": "2.1.0",
         "zustand": "4.4.7"
@@ -98,7 +98,7 @@
     "devDependencies": {
         "@craco/craco": "^7.1.0",
         "cross-env": "^7.0.3",
-        "eslint": "^8.55.0",
+        "eslint": "^8.56.0",
         "eslint-plugin-react-hooks": "^4.6.0",
         "gh-pages": "^6.1.0",
         "react-app-alias": "^2.2.2",

@@ -2,8 +2,7 @@ import React, { useCallback } from 'react';
 import Checkbox from '../../../controls/Checkbox';
 import JiraFieldMultiSelect from '../../../jira-controls/JiraFieldMultiSelect';
 
-const hideTypes = ['array', 'option'];
-const hideKeys = ['key', 'summary'];
+const hideKeys = ['key', 'summary', 'worklog', 'issuekey'];
 
 function FieldsListSettings({ setFieldValue, fields }) {
     const {
@@ -36,7 +35,7 @@ function FieldsListSettings({ setFieldValue, fields }) {
             <div className="col-12">
                 <strong>Additional fields to pull from Jira</strong>
                 <JiraFieldMultiSelect value={optional} field="optional" onChange={setFieldValue}
-                    hideTypes={hideTypes} hideKeys={hideKeys} />
+                    hideKeys={hideKeys} />
                 <span>These fields would be displayed in Flat (Groupable)</span>
             </div>
             <div className="col-12">
