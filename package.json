@@ -51,9 +51,9 @@
         }
     },
     "dependencies": {
-        "@forge/api": "^2.22.0",
+        "@forge/api": "^2.22.1",
         "@forge/bridge": "^3.2.0",
-        "@forge/resolver": "^1.5.24",
+        "@forge/resolver": "^1.5.25",
         "@fortawesome/fontawesome-free": "6.5.1",
         "@fullcalendar/core": "6.1.10",
         "@fullcalendar/daygrid": "6.1.10",
@@ -73,7 +73,7 @@
         "jquery": "3.7.1",
         "js-sql-parser": "1.5.0",
         "jsd-report": "0.1.11",
-        "jspdf": "2.5.1",
+        "jspdf": "github:shridhar-tl/jsPDF",
         "jspdf-autotable": "3.8.1",
         "moment": "2.29.4",
         "moment-timezone": "0.5.43",
