@@ -84,7 +84,7 @@ export function normalizeType(field) {
 
 export function normalizeTypeWithOptions(field, keyFieldMapping, knownTypeFields) {
     const { schema, key } = field;
-    const { type = key, system } = schema || {};
+    const { type = key, system } = schema || { type: field.type || key };
 
     if (type === 'number' && system && (system.endsWith('timespent') || system.endsWith('estimate'))) {
         return { type: 'timespent', compatibleTypes: comparibleTypesMapping['timespent'] };
