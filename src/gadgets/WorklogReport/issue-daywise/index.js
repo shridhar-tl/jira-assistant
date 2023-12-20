@@ -11,7 +11,7 @@ const logDateTime = { key: 'logDateTime', type: 'datetime', name: 'Worklog date'
 function GroupedDataGrid({ boardId, splitWorklogDays, fields, exportSheetName, costView }) {
     const { optional, daywiseFields } = fields || {};
     const additionalCols = useMemo(() => {
-        const cols = [worklogAuthorField, ...optional?.filter(f => daywiseFields?.[f.key]) ?? []];
+        const cols = [worklogAuthorField, ...optional?.filter(f => daywiseFields?.[f.id]) ?? []];
 
         if (splitWorklogDays) {
             cols.splice(0, 0, logDateTime);
