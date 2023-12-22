@@ -18,7 +18,7 @@ class TagsDisplay extends BaseControl {
                 const data = (
                     <Link href={a[hrefProp] || undefined}
                         title={titleProp ? a[titleProp] : undefined}
-                        className="link badge rounded-pill skin-bg-font">
+                        className="link badge skin-bg-font">
                         {icon} {val}
                     </Link>
                 );

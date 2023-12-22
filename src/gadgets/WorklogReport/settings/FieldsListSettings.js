@@ -2,8 +2,7 @@ import React, { useCallback } from 'react';
 import Checkbox from '../../../controls/Checkbox';
 import JiraFieldMultiSelect from '../../../jira-controls/JiraFieldMultiSelect';
 
-const hideTypes = ['array', 'option'];
-const hideKeys = ['key', 'summary'];
+const hideKeys = ['key', 'summary', 'worklog', 'issuekey'];
 
 function FieldsListSettings({ setFieldValue, fields }) {
     const {
@@ -22,6 +21,8 @@ function FieldsListSettings({ setFieldValue, fields }) {
         }
     }, [daywiseFields, setFieldValue]);
 
+    const hasOptionalFields = optional?.length > 0;
+
     return (<div className="settings-group">
         <div className="row">
             <div className="col-4">
@@ -36,19 +37,19 @@ function FieldsListSettings({ setFieldValue, fields }) {
             <div className="col-12">
                 <strong>Additional fields to pull from Jira</strong>
                 <JiraFieldMultiSelect value={optional} field="optional" onChange={setFieldValue}
-                    hideTypes={hideTypes} hideKeys={hideKeys} />
+                    hideKeys={hideKeys} />
                 <span>These fields would be displayed in Flat (Groupable)</span>
             </div>
-            <div className="col-12">
+            {hasOptionalFields && <div className="col-12">
                 <strong>Additional fields to be displayed in Grouped - [User daywise] report</strong>
                 <div className="row">
-                    {optional?.map(f => (
+                    {optional.map(f => (
                         <div className="col-4">
-                            <Checkbox key={f.key} checked={daywiseFields?.[f.key]} onChange={setSelectedFields} field={f.key} label={f.name} />
+                            <Checkbox key={f.id} checked={daywiseFields?.[f.id]} onChange={setSelectedFields} field={f.id} label={f.name} />
                         </div>
                     ))}
                 </div>
-            </div>
+            </div>}
         </div>
     </div>
     );
