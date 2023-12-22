@@ -33,7 +33,13 @@ export default class WorklogService extends BaseService {
             listForQuery = `"${userList.join("\", \"")}"`;
         }
 
-        const jql = `worklogAuthor in (${listForQuery}) and worklogDate >= '${mfromDate.clone().add(-1, 'days').format("YYYY-MM-DD")}' and worklogDate < '${mtoDate.clone().add(1, 'days').format("YYYY-MM-DD")}'`;
+        const worklogJQLSuffix = this.$session?.CurrentUser?.worklogJQLSuffix?.trim() || '';
+
+        if (worklogJQLSuffix) {
+            console.warn('Appended custom JQL to pull worklog information');
+        }
+
+        const jql = `worklogAuthor in (${listForQuery}) and worklogDate >= '${mfromDate.clone().add(-1, 'days').format("YYYY-MM-DD")}' and worklogDate < '${mtoDate.clone().add(1, 'days').format("YYYY-MM-DD")}' ${worklogJQLSuffix}`.trim();
         if (!fields || fields.length === 0) {
             fields = ["worklog"];
         } //, "summary", "issuetype", "parent", "status", "assignee"
