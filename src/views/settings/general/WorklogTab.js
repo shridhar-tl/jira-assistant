@@ -82,10 +82,27 @@ class WorklogTab extends TabControlBase {
                     <div className="ui-g-12 ui-md-9 ui-lg-9 ui-xl-10">
                         <div className="form-group">
                             <TicketNo value={settings.meetingTicket} field="meetingTicket" onChange={this.saveSetting} />
-                            <span className="help-block">Provide the list of meeting tickets seperated by ',' for which you would add worklog</span>
+                            <span className="help-block">Provide the list of meeting tickets separated by ',' for which you would add worklog</span>
                         </div>
                     </div>
                 </>}
+                <div className="form-label ui-g-12 ui-md-3 ui-lg-3 ui-xl-2">
+                    <strong>Worklog JQL suffix while pulling worklogs</strong>
+                </div>
+                <div className="ui-g-12 ui-md-9 ui-lg-9 ui-xl-10">
+                    <div className="form-group">
+                        <TextBox value={settings.worklogJQLSuffix} field="worklogJQLSuffix"
+                            maxLength={150} style={{ width: '100%', maxWidth: '500px' }}
+                            onChange={this.saveSetting} />
+                        <span className="help-block">
+                            Appends this custom JQL while pulling issues list for worklog information.
+                            <br />
+                            For some Jira Cloud users, adding "ORDER BY updatedDate DESC" may solve performance issue while pulling worklogs.
+                            <br />
+                            <strong>Note:</strong> Do not use this field unless you know what exactly you are doing.
+                        </span>
+                    </div>
+                </div>
                 {/*<div className="form-label ui-g-12 ui-md-3 ui-lg-3 ui-xl-2">
                     <strong>Notify for missing worklog</strong>
                 </div>

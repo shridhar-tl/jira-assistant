@@ -90,7 +90,7 @@
         "react-dnd": "14.0.4",
         "react-dnd-html5-backend": "14.0.2",
         "react-dom": "18.2.0",
-        "react-router-dom": "6.21.0",
+        "react-router-dom": "6.21.1",
         "react-scripts": "github:shridhar-tl/react-scripts",
         "static-eval": "2.1.0",
         "zustand": "4.4.7"
