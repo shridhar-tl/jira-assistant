@@ -27,6 +27,7 @@ import UtilsService from './utils-service';
 import WorklogService from './worklog-service';
 import WorklogTimerService from './worklog-timer-service';
 import SettingsService from './settings-service';
+import SprintService from './sprint-service';
 import { injectable, AnalyticsServiceFake } from './index.common';
 import { isPluginBuild } from '../constants/build-info';
 import config from '../customize';
@@ -68,6 +69,7 @@ export default function registerServices() {
     injectable(ReportConfigService, "ReportConfigService", "$reportConfig");
     injectable(SessionService, "SessionService", "$session");
     injectable(SettingsService, "SettingsService", "$settings", { isSingleton: true });
+    injectable(SprintService, "SprintService", "$sprint");
     injectable(TicketService, "TicketService", "$ticket");
     injectable(UserService, "UserService", "$user", { isSingleton: true });
     injectable(UserGroupService, "UserGroupService", "$usergroup");
