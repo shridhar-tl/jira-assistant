@@ -24,7 +24,7 @@ const { dashboards,
     calendar, importWorklog, importIssues, planningPoker,
 
     // Reports
-    worklogReport, worklogReportOld, sprintReport, customReport, estimateVsActual, reportBuilder, pivotReport,
+    worklogReport, worklogReportOld, sprintReport, customReport, estimateVsActual, reportBuilder, pivotReport, sayDoRatioReport,
 
     // Settings
     userGroups, generalSettings, advancedSettings,
@@ -105,6 +105,12 @@ const navigation = [
                     text: 'BETA'
                 }
             },
+            sayDoRatioReport && {
+                name: 'Say-Do Ratio',
+                id: 'R-SDR',
+                url: '/reports/say-do-ratio',
+                icon: 'fa fa-chart-line'
+            },
             worklogReportOld && {
                 name: 'Worklog Report',
                 id: 'R-UD',
@@ -139,8 +145,8 @@ const navigation = [
                 url: '/reports/advanced',
                 icon: 'fa fa-table',
                 badge: {
-                    variant: 'success',
-                    text: 'BETA'
+                    variant: 'danger',
+                    text: 'DEPR'
                 }
             }
         ].filter(Boolean)

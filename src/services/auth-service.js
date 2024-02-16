@@ -79,7 +79,8 @@ export default class AuthService {
                 settings.page_reports_UserDayWise,
                 sett_page_reports_UserDayWise
             ),
-            reports_WorklogReport: this.parseIfJson(settings.page_reports_WorklogReport, {})
+            reports_WorklogReport: this.parseIfJson(settings.page_reports_WorklogReport, {}),
+            reports_SayDoRatioReport: this.parseIfJson(settings.page_reports_SayDoRatioReport, {})
         };
 
         let lastVisisted = await this.$settings.get('LV');

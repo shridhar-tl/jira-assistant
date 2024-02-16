@@ -80,10 +80,10 @@ export class ScrollableTable extends PureComponent {
     setContainer = el => this.container = el;
 
     render() {
-        const { className, style, children, exportable, exportSheetName, height } = this.props;
+        const { className, style, children, exportable, exportSheetName, height, containerStyle } = this.props;
 
         return (
-            <div className={classNames("scroll-table-container", className)} style={{ height }}
+            <div className={classNames("scroll-table-container", className)} style={containerStyle ? containerStyle : { height }}
                 ref={this.setContainer}>
                 <TableContext.Provider value={this.sharedProps}>
                     <table ref={el => this.table = el}
