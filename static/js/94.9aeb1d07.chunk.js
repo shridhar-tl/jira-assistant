@@ -1,1 +1,0 @@
-"use strict";(globalThis.webpackChunkjira_assistant=globalThis.webpackChunkjira_assistant||[]).push([[94],{3094:(s,a,e)=>{e.r(a),e.d(a,{default:()=>l});var n=e(9584),r=e(1720),t=e(7884);class i extends n.PureComponent{render(){return(0,t.jsx)("div",{className:"calendar-view",children:(0,t.jsx)(r.Yf,{isGadget:!1})})}}const l=i}}]);
