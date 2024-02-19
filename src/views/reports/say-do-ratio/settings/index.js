@@ -19,8 +19,9 @@ function ReportSettings({ settings: actualSettings, show, onHide, onDone }) {
     const generateReport = React.useCallback(() => $this.current.onDone($this.current.settings), []);
 
     const allowGeneratingReport = settings?.sprintBoards?.length > 0
-        && settings.noOfSprints > 3
-        && settings.velocitySprints > 3;
+        && settings.noOfSprints >= 3 && settings.noOfSprints < 13
+        && settings.velocitySprints >= 3
+        && !!settings.storyPointField;
 
     return (
         <SideBar show={show} onHide={onHide} title="Report Config"
@@ -34,14 +35,14 @@ function ReportSettings({ settings: actualSettings, show, onHide, onDone }) {
             </div>
             <div className="p-3">
                 <label className="font-bold pb-2 block">Number of Sprints:</label>
-                <TextBox value={settings.noOfSprints} field="noOfSprints" onChange={setNumeric} />
+                <TextBox value={settings.noOfSprints} field="noOfSprints" onChange={setNumeric} maxLength={2} />
                 <span className="help-text block">
                     Provide the number of sprints to be displayed in chart and table. Minimum value allowed is 3.
                 </span>
             </div>
             <div className="p-3">
                 <label className="font-bold pb-2 block">Number of Sprints for velocity:</label>
-                <TextBox value={settings.velocitySprints} field="velocitySprints" onChange={setNumeric} />
+                <TextBox value={settings.velocitySprints} field="velocitySprints" onChange={setNumeric} maxLength={1} />
                 <span className="help-text block">
                     Provide the number of sprints to be used for velocity calculation.
                     The average completed story points count of all the sprints would be considered as velocity of each sprint.
@@ -51,7 +52,7 @@ function ReportSettings({ settings: actualSettings, show, onHide, onDone }) {
             {!settings?.storyPointField && <div className="p-3">
                 <label className="font-bold pb-2 block">Story Points field unavailable:</label>
                 Select value for "Story Points field" under General settings -&gt; "Default Values" tab.
-                This report cannot be generated without having that setting configured.
+                Report cannot be generated without having "Story Points field" configured.
             </div>}
             <div className="p-3">
                 <Button className="float-end me-2" icon="fa fa-arrow-right"
