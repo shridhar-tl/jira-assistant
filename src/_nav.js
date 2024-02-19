@@ -118,7 +118,7 @@ const navigation = [
                 icon: 'fa fa-users',
                 badge: {
                     variant: 'danger',
-                    text: 'OLD'
+                    text: 'DEPR'
                 }
             },
             sprintReport && {
