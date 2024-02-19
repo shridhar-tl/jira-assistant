@@ -16,14 +16,14 @@ export async function getSprintWiseSayDoRatio(settings) {
         result.push({ id, name, sprintList, averageCommitted, averageCompleted, sayDoRatio });
     }
 
-    await $config.saveSettings(settingsName, settings);
+    await $config.saveSettings(settingsName, { sprintBoards, noOfSprints, velocitySprints });
 
     return result;
 }
 
 export function getSettings() {
     const { $session } = inject('SessionService');
-    const settings = $session.pageSettings[settingsName] || { sprintBoards: [], noOfSprints: 6, velocitySprints: 6 };
+    const settings = { sprintBoards: [], noOfSprints: 6, velocitySprints: 6, ...($session.pageSettings[settingsName] || {}) };
     settings.storyPointField = $session.CurrentUser.storyPointField?.id;
 
     return settings;
