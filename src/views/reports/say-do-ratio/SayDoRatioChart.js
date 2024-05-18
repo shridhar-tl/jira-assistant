@@ -100,7 +100,7 @@ function SayDoRatioChart({ board }) {
     }, [board]);
 
     return (
-        <div className="col-12 col-md-6 p-4">
+        <div className="col-12 col-xl-6">
             <Chart type="line" data={data} options={options} height="350px" />
         </div>
     );

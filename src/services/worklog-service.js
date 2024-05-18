@@ -182,10 +182,10 @@ export default class WorklogService extends BaseService {
         let uploadRequest = null;
 
         if (worklogId > 0) {
-            uploadRequest = this.$ajax.put(prepareUrlWithQueryString(ApiUrls.updateIndividualWorklog, query), request, ticketNo, worklogId);
+            uploadRequest = this.$ajax.put(prepareUrlWithQueryString(ApiUrls.individualWorklog, query), request, ticketNo, worklogId);
         }
         else {
-            uploadRequest = this.$ajax.post(prepareUrlWithQueryString(ApiUrls.addIssueWorklog, query), request, ticketNo, worklogId || 0);
+            uploadRequest = this.$ajax.post(prepareUrlWithQueryString(ApiUrls.issueWorklog, query), request, ticketNo, worklogId || 0);
         }
 
         return uploadRequest.then(null, (err) => {
