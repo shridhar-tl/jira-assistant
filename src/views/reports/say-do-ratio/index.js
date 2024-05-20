@@ -70,7 +70,7 @@ function SayDoRatioReport() {
                     </TBody>
                     <NoDataRow span={7}>No data available.</NoDataRow>
                 </ScrollableTable>
-                <div className="row">
+                <div className="row m-0">
                     {reportData?.map(b => <SayDoRatioChart key={b.id} board={b} />)}
                 </div>
             </GadgetLayout>
