@@ -10,7 +10,7 @@ const resolveBuildPath = (...relativePath) => path.resolve(paths.appBuild, ...re
 
 const browsersList = ["chrome", "edge", "opera", "firefox", "firefox_selfhost"];
 
-const buildMode = process.env.REACT_APP_BUILD_MODE;
+const buildMode = process.env.VITE_BUILD_MODE || process.env.REACT_APP_BUILD_MODE;
 console.log(`Build mode set to: ${buildMode}`);
 
 if (buildMode === 'WEB') {
