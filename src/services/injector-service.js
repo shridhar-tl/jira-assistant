@@ -153,9 +153,9 @@ export function clearInstances() { injector.clearInstances(); }
 
 export function useService(...svc) { return inject({}, ...svc); }
 
-export function withServices(Component, ...dependencies) {
+/*export function withServices(Component, ...dependencies) {
     const svc = inject(...dependencies);
     return function (props) {
         return (<Component {...props} {...svc} />);
     };
-}
+}*/
