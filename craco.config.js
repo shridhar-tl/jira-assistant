@@ -117,7 +117,7 @@ function getEntryObject(paths) {
         result.menu = resolvePath('src/common/menu.js');
         result.jira_cs = resolvePath('src/content-scripts/jira.js');
     } else if (isPluginBuild) {
-        result.index = resolvePath('src/index.plugin.js');
+        result.index = resolvePath('src/index.plugin.jsx');
     }
 
     return result;
