@@ -15,12 +15,12 @@ import './scss/plugin.scss';
 
     //#region Modal Dialogs
     if (modalId === 'ja-dlg-user-groups') {
-        const UserGroups = React.lazy(() => import('./jcloud/modals/UserGroup.js'));
+        const UserGroups = React.lazy(() => import('./jcloud/modals/UserGroup'));
         root.render(<UserGroups jiraContext={context} />);
     }
 
     else if (modalId === 'ja-dlg-wl-report-config') {
-        const WLReportConfig = React.lazy(() => import('./jcloud/gadgets/team-worklog/ConfigModal.js'));
+        const WLReportConfig = React.lazy(() => import('./jcloud/gadgets/team-worklog/ConfigModal'));
         root.render(<WLReportConfig jiraContext={context} />);
     }
     //#endregion
