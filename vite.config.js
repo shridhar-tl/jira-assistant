@@ -4,6 +4,7 @@ import alias from '@rollup/plugin-alias';
 import EnvCompatible from 'vite-plugin-env-compatible';
 //import { minifyHTMLLiterals } from 'minify-html-literals';
 import { createHtmlPlugin } from 'vite-plugin-html';
+import { esbuildCommonjs } from '@originjs/vite-plugin-commonjs';
 import fs from 'fs-extra';
 import path from 'path';
 import packageJSON from './package.json';
@@ -53,6 +54,11 @@ export default defineConfig({
         host: '0.0.0.0',
         //watch: { usePolling: writeToDisk },
     },
+    optimizeDeps: {
+        esbuildOptions: {
+            plugins: [esbuildCommonjs(['moment'])],
+        },
+    },
     plugins: [
         react(),
         alias({
@@ -80,12 +86,18 @@ export default defineConfig({
             output: {
                 dir: 'build',
                 assetFileNames: chunkInfo => {
+                    let ext = path.extname(chunkInfo.name);
+                    if (ext.startsWith('.')) { ext = ext.substring(1); }
+
+                    const folder = ext === 'js' || ext === 'css' ? ext : 'media';
+
                     if (modulesWithoutHashName.includes(chunkInfo.name)) {
-                        return 'static/js/[name].js';
-                    } else if (chunkInfo.name === 'jira_cs') {
-                        return 'static/css/[name].css';
+                        return `static/${folder}/[name].${ext}`;
+                    } else if (chunkInfo.name.includes('jira_cs')) {
+                        return `static/${folder}/[name].${ext}`;
                     }
-                    return `static/js/[name].[hash].js`;
+
+                    return `static/${folder}/[name].[hash].${ext}`;
                 },
                 entryFileNames: chunkInfo => modulesWithoutHashName.includes(chunkInfo.name)
                     ? 'static/js/[name].js'

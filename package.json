@@ -62,6 +62,7 @@
         "@fullcalendar/moment": "^6.1.11",
         "@fullcalendar/react": "^6.1.11",
         "@fullcalendar/timegrid": "^6.1.11",
+        "@originjs/vite-plugin-commonjs": "^1.0.3",
         "@vitejs/plugin-react": "^4.3.3",
         "bootstrap": "^5.3.3",
         "bootstrap-daterangepicker": "^3.1.0",
