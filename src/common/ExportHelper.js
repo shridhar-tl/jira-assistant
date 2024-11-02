@@ -109,7 +109,7 @@ export class ExportHelper {
                     if (!rowarr) {
                         rowarr = header[i] = [];
                     }
-                    while (rowarr[j] != null) {
+                    while (rowarr[j] !== null && rowarr[j] !== undefined) {
                         j++;
                     }
                     const info = colInfo[j];

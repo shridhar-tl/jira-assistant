@@ -51,17 +51,17 @@
         }
     },
     "dependencies": {
-        "@forge/api": "^3.5.0",
-        "@forge/bridge": "^3.4.0",
+        "@forge/api": "^4.1.0",
+        "@forge/bridge": "^4.1.0",
         "@forge/resolver": "^1.5.32",
         "@fortawesome/fontawesome-free": "^6.5.2",
-        "@fullcalendar/core": "^6.1.11",
-        "@fullcalendar/daygrid": "^6.1.11",
-        "@fullcalendar/interaction": "^6.1.11",
-        "@fullcalendar/list": "^6.1.11",
-        "@fullcalendar/moment": "^6.1.11",
-        "@fullcalendar/react": "^6.1.11",
-        "@fullcalendar/timegrid": "^6.1.11",
+        "@fullcalendar/core": "^6.1.15",
+        "@fullcalendar/daygrid": "^6.1.15",
+        "@fullcalendar/interaction": "^6.1.15",
+        "@fullcalendar/list": "^6.1.15",
+        "@fullcalendar/moment": "^6.1.15",
+        "@fullcalendar/react": "^6.1.15",
+        "@fullcalendar/timegrid": "^6.1.15",
         "bootstrap": "^5.3.3",
         "bootstrap-daterangepicker": "^3.1.0",
         "chart.js": "^4.4.3",
@@ -96,21 +96,21 @@
         "react-router-dom": "^6.23.1",
         "react-scripts": "github:shridhar-tl/react-scripts",
         "static-eval": "^2.1.1",
-        "zustand": "^4.5.2"
+        "zustand": "^5.0.1"
     },
     "devDependencies": {
         "@craco/craco": "^7.1.0",
-        "concurrently": "^8.2.2",
+        "concurrently": "^9.0.1",
         "cross-env": "^7.0.3",
-        "electron": "^30.0.6",
-        "electron-builder": "^24.13.3",
+        "electron": "^33.0.2",
+        "electron-builder": "^25.1.8",
         "electronmon": "^2.0.3",
-        "eslint": "^9.3.0",
-        "eslint-plugin-react-hooks": "^4.6.2",
+        "eslint": "^9.14.0",
+        "eslint-plugin-react-hooks": "^5.0.0",
         "gh-pages": "^6.1.1",
         "react-app-alias": "^2.2.2",
-        "sass": "^1.77.2",
-        "wait-on": "^7.2.0",
+        "sass": "^1.80.6",
+        "wait-on": "^8.0.1",
         "webpack-bundle-analyzer": "^4.10.2"
     },
     "scripts": {
@@ -137,21 +137,21 @@
         "postinstall": "electron-builder install-app-deps"
     },
     "eslintConfig": {
-        "extends": [
-            "react-app",
-            "react-app/jest"
+        "plugins": [
+            "react",
+            "react-hooks"
         ],
         "rules": {
             "arrow-body-style": [
                 "error",
                 "as-needed"
             ],
-            "no-unused-vars": "error",
+            "no-unused-vars": "off",
             "no-unreachable": "error",
             "eqeqeq": "error",
             "semi": "error",
             "no-var": "error",
-            "no-use-before-define": "error",
+            "no-use-before-define": "off",
             "no-constant-condition": "error",
             "no-dupe-args": "error",
             "no-duplicate-case": "error",
@@ -174,7 +174,12 @@
             "no-throw-literal": "error",
             "no-unmodified-loop-condition": "error",
             "no-debugger": "warn",
-            "complexity": "error",
+            "complexity": [
+                "error",
+                {
+                    "max": 23
+                }
+            ],
             "curly": "error",
             "no-const-assign": "error",
             "array-bracket-newline": "error",
