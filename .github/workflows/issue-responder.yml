@@ -1,0 +1,64 @@
+name: Issue Responder
+
+on:
+  issues:
+    types: [opened]
+  issue_comment:
+    types: [created]
+    
+permissions:
+  issues: write
+  discussions: write
+  statuses: write
+
+jobs:
+  run-script:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check if comment is from bot user
+        run: |
+          if [[ "${{ github.actor }}" == "github-actions[bot]" ]]; then
+            echo "Comment was made by the GitHub Actions bot. Exiting without running the script."
+            exit 0
+          fi
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Download script
+        run: |
+          curl -o github.mjs https://bot.jiraassistant.com/actions/github/github.mjs
+
+      - name: Retrieve collaborators
+        id: get-collaborators
+        run: |
+          collaborators=$(curl -s -H "Authorization: token ${{ github.token }}" \
+            "https://api.github.com/repos/${{ github.repository }}/collaborators" | \
+            jq -r '.[].login')
+          echo "${collaborators}" > collaborators.txt
+
+      - name: Check if comment is from collaborator
+        run: |
+          COMMENT_USER="${{ github.actor }}"
+          if grep -q "$COMMENT_USER" collaborators.txt; then
+            echo "Comment was made by a collaborator."
+            node github.mjs --ticket "${{ github.event.issue.number }}" \
+                  --repo "${{ github.repository }}" \
+                  --orgId "${{ vars.RESPONDER_ORG_ID }}" \
+                  --botId "${{ vars.RESPONDER_BOT_ID }}" \
+                  --ghToken "${{ github.token }}" \
+                  --authToken "${{ secrets.RESPONDER_TOKEN }}" \
+                  --updateOnly
+            exit 0
+          fi
+
+      - name: Execute script
+        run: |
+          node github.mjs --ticket "${{ github.event.issue.number }}" \
+                  --repo "${{ github.repository }}" \
+                  --orgId "${{ vars.RESPONDER_ORG_ID }}" \
+                  --botId "${{ vars.RESPONDER_BOT_ID }}" \
+                  --ghToken "${{ github.token }}" \
+                  --authToken "${{ secrets.RESPONDER_TOKEN }}"
