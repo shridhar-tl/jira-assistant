@@ -1,11 +1,34 @@
 name: Issue Responder
 
 on:
+  workflow_dispatch:
+    inputs:
+      ticket_number:
+        description: 'Ticket Number'
+        required: true
+        type: integer
+      ticket_type:
+        description: 'Ticket Type'
+        required: true
+        type: choice
+        options:
+          - issues
+          - discussions
+        default: issues
+      avoidUpdate:
+        description: 'Do not update Resource center'
+        required: false
+        type: boolean
+        default: false
   issues:
     types: [opened]
   issue_comment:
     types: [created]
-    
+  discussion:
+    types: [created]
+  discussion_comment:
+    types: [created]
+
 permissions:
   issues: write
   discussions: write
@@ -17,7 +40,7 @@ jobs:
     steps:
       - name: Check if comment is from bot user
         run: |
-          if [[ "${{ github.actor }}" == "github-actions[bot]" ]]; then
+          if [[ "${{ github.actor }}" == "github-actions[bot]" ]] && [[ "${{ github.event_name }}" != "workflow_dispatch" ]]; then
             echo "Comment was made by the GitHub Actions bot. Exiting without running the script."
             exit 0
           fi
@@ -31,32 +54,51 @@ jobs:
         run: |
           curl -o github.mjs https://bot.jiraassistant.com/actions/github/github.mjs
 
+      - name: Identify Action
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            echo "TICKET_TYPE=${{ github.event.inputs.ticket_type }}" >> $GITHUB_ENV
+            echo "TICKET_NUMBER=${{ github.event.inputs.ticket_number }}" >> $GITHUB_ENV
+          elif [[ "${{ github.event_name }}" == "discussion_comment" ]] || [[ "${{ github.event_name }}" == "discussion" ]]; then
+            echo "TICKET_TYPE=discussions" >> $GITHUB_ENV
+            echo "TICKET_NUMBER=${{ github.event.discussion.number }}" >> $GITHUB_ENV
+          else
+            echo "TICKET_TYPE=issues" >> $GITHUB_ENV
+            echo "TICKET_NUMBER=${{ github.event.issue.number }}" >> $GITHUB_ENV
+          fi
+
       - name: Retrieve collaborators
         id: get-collaborators
         run: |
-          collaborators=$(curl -s -H "Authorization: token ${{ github.token }}" \
-            "https://api.github.com/repos/${{ github.repository }}/collaborators" | \
-            jq -r '.[].login')
-          echo "${collaborators}" > collaborators.txt
+          if [[ "${{ github.event_name }}" != "workflow_dispatch" ]]; then
+            collaborators=$(curl -s -H "Authorization: token ${{ github.token }}" \
+              "https://api.github.com/repos/${{ github.repository }}/collaborators" | \
+              jq -r '.[].login')
+            echo "${collaborators}" > collaborators.txt
+          fi
 
       - name: Check if comment is from collaborator
         run: |
-          COMMENT_USER="${{ github.actor }}"
-          if grep -q "$COMMENT_USER" collaborators.txt; then
-            echo "Comment was made by a collaborator."
-            node github.mjs --ticket "${{ github.event.issue.number }}" \
-                  --repo "${{ github.repository }}" \
-                  --orgId "${{ vars.RESPONDER_ORG_ID }}" \
-                  --botId "${{ vars.RESPONDER_BOT_ID }}" \
-                  --ghToken "${{ github.token }}" \
-                  --authToken "${{ secrets.RESPONDER_TOKEN }}" \
-                  --updateOnly
-            exit 0
+          if [[ "${{ github.event_name }}" != "workflow_dispatch" ]]; then
+            COMMENT_USER="${{ github.actor }}"
+            if grep -q "$COMMENT_USER" collaborators.txt; then
+              echo "Comment was made by a collaborator."
+              node github.mjs --ticket "$TICKET_NUMBER" \
+                    --ticketType "$TICKET_TYPE" \
+                    --repo "${{ github.repository }}" \
+                    --orgId "${{ vars.RESPONDER_ORG_ID }}" \
+                    --botId "${{ vars.RESPONDER_BOT_ID }}" \
+                    --ghToken "${{ github.token }}" \
+                    --authToken "${{ secrets.RESPONDER_TOKEN }}" \
+                    --updateOnly
+              exit 0
+            fi
           fi
 
       - name: Execute script
         run: |
-          node github.mjs --ticket "${{ github.event.issue.number }}" \
+          node github.mjs --testMode "${{ github.event.inputs.avoidUpdate }}" --ticket "$TICKET_NUMBER" \
+                  --ticketType "$TICKET_TYPE" \
                   --repo "${{ github.repository }}" \
                   --orgId "${{ vars.RESPONDER_ORG_ID }}" \
                   --botId "${{ vars.RESPONDER_BOT_ID }}" \
