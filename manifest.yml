@@ -74,6 +74,8 @@ permissions:
     - write:jira-work
 app:
   id: ari:cloud:ecosystem::app/3864d3bc-aad3-4650-ac35-e15af61fd92d
+  runtime:
+    name: nodejs20.x
 remotes:
   - key: mso-account
     baseUrl: https://login.microsoftonline.com
