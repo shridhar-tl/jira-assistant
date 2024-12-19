@@ -3,7 +3,7 @@ import { isExtnBuild, isWebBuild } from '../../constants/build-info';
 import { JAWebLaunchUrl } from '../../constants/urls';
 import { withRouter } from '../../pollyfills';
 import { inject } from '../../services/injector-service';
-import { showContextMenu } from 'src/externals/jsd-report';
+import { showContextMenu } from 'src/components/ContextMenu';
 import { Button } from '../../controls';
 
 const options = isWebBuild ? {

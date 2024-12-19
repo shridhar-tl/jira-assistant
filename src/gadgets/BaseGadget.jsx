@@ -4,7 +4,7 @@ import { Tooltip } from 'primereact/tooltip';
 import { EventEmitter } from 'events';
 import { Button, Loader } from '../controls';
 import classNames from 'classnames';
-import { showContextMenu } from '../externals/jsd-report';
+import { showContextMenu } from '../components/ContextMenu';
 import { ExportHelper } from '../common/ExportHelper';
 import { ExportFormat } from '../common/Exporter';
 import { GadgetActionType } from './_constants';

@@ -1,4 +1,5 @@
 import React from 'react';
+import { useShallow } from 'zustand/react/shallow';
 import GroupTable from './group-table';
 import { updateParameters, usePivotConfig, useReportData } from '../../store/pivot-config';
 import ReportInfo from './ReportInfo';
@@ -7,9 +8,9 @@ import { Button } from 'react-controls/controls';
 import { generateReport } from '../../viewer/generator';
 
 function EditorBody() {
-    const { hasReportData, reportErrors, isFetching, showParameters } = useReportData(({
+    const { hasReportData, reportErrors, isFetching, showParameters } = useReportData(useShallow(({
         reportData, reportErrors, isFetching, showParameters
-    }) => ({ hasReportData: !!reportData, reportErrors, isFetching, showParameters }));
+    }) => ({ hasReportData: !!reportData, reportErrors, isFetching, showParameters })));
 
     if (isFetching) {
         return (<div className="editor-body p-4">

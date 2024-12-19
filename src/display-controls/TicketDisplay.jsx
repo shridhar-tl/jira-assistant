@@ -1,7 +1,7 @@
 import React from 'react';
 import { inject } from '../services/injector-service';
 import BaseControl from './BaseControl';
-import { showContextMenu } from '../externals/jsd-report';
+import { showContextMenu } from '../components/ContextMenu';
 import { WorklogContext } from '../common/context';
 import Link from '../controls/Link';
 

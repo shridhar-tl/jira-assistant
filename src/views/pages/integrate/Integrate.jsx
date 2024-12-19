@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import browser from '../../../common/browsers';
-import { showContextMenu, ContextMenu } from '../../../externals/jsd-report';
+import { showContextMenu, ContextMenu } from '../../../components/ContextMenu';
 import { inject } from '../../../services';
 import { Button, TextBox } from '../../../controls';
 import { ApiUrls } from '../../../constants/api-urls';

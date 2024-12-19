@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { Button } from '../../controls';
 import DashboardName from './DashboardName';
 import { inject } from '../../services/injector-service';
-import { showContextMenu } from '../../externals/jsd-report';
+import { showContextMenu } from '../../components/ContextMenu';
 
 class Header extends PureComponent {
     constructor(props) {

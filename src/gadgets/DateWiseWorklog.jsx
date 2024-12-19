@@ -3,7 +3,7 @@ import BaseGadget, { GadgetActionType } from './BaseGadget';
 import { inject } from '../services';
 import moment from 'moment';
 import { DatePicker } from '../controls';
-import { showContextMenu } from '../externals/jsd-report';
+import { showContextMenu } from '../components/ContextMenu';
 import ChangeTracker from '../components/ChangeTracker';
 import { WorklogContext } from '../common/context';
 import UserDateWiseWorklog from '../components/shared/UserDateWiseWorklog';

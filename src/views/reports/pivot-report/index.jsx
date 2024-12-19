@@ -20,7 +20,8 @@ function PivotReport() {
     }, [reportId]);
 
     const isLoading = useReportData(({ isFetching }) => isFetching);
-    const { queryName: reportName, parameters } = usePivotConfig(({ queryName, parameters }) => ({ queryName, parameters }));
+    const reportName = usePivotConfig(({ queryName }) => queryName);
+    const parameters = usePivotConfig(({ parameters }) => parameters);
 
     const hasParams = parameters && Object.keys(parameters).length > 0;
 

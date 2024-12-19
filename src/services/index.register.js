@@ -17,7 +17,6 @@ import OutlookOAuthService from './outlook-oauth-service';
 import OutlookCalendar from './outlook-service';
 import QueueService from './queue-service';
 import ReportService from './report-service';
-import ReportConfigService from './reportconfig-service';
 import SessionService from './session-service';
 import TicketService from './ticket-service';
 import UserService from './user-service';
@@ -66,7 +65,6 @@ export default function registerServices() {
     injectable(OutlookCalendar, "OutlookService", "$outlook");
     injectable(QueueService, "QueueService", "$q", { isSingleton: false });
     injectable(ReportService, "ReportService", "$report");
-    injectable(ReportConfigService, "ReportConfigService", "$reportConfig");
     injectable(SessionService, "SessionService", "$session");
     injectable(SettingsService, "SettingsService", "$settings", { isSingleton: true });
     injectable(SprintService, "SprintService", "$sprint");

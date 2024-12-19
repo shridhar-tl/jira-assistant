@@ -3,7 +3,7 @@ import Dialog from "../../dialogs";
 // sidebar nav config
 import navigation, { getDashboardMenu } from '../../_nav';
 import { inject } from '../../services/injector-service';
-import { ContextMenu } from '../../externals/jsd-report';
+import { ContextMenu } from '../../components/ContextMenu';
 import { setStartOfWeek } from '../../common/utils';
 import { WorklogContextProvider } from '../../common/context';
 import { isWebBuild, redirectToRoute } from '../../constants/build-info';
