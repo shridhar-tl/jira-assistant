@@ -10,7 +10,6 @@ import AddGadget from './AddGadget';
 import AddWorklog from '../../dialogs/AddWorklog';
 import BaseGadget, { onDashboardEvent } from '../../gadgets/BaseGadget';
 import CustomReport from '../reports/custom-groupable/ReportViewer';
-import AdvancedReport from '../reports/report-builder/ReportViewer';
 import { Sortable } from '../../controls';
 import './Dashboard.scss';
 
@@ -227,7 +226,6 @@ function getGadgetsList() {
         listWeek: { title: "Calendar", control: Calendar, getProps: () => ({ viewMode: "listWeek" }) },
         listMonth: { title: "Calendar", control: Calendar, getProps: () => ({ viewMode: "listMonth" }) },
         CR: { title: "Custom report", control: CustomReport, getProps: (sett, opts) => ({ reportId: parseInt(opts[0]), title: opts[1] }) },
-        AR: { title: "Advanced report", control: AdvancedReport, getProps: (sett, opts) => ({ reportId: parseInt(opts[0]), title: opts[1] }) },
     };
 
     controls.myBookmarks = controls.bookmarksList;

@@ -11,6 +11,7 @@ import { updateJQL, updateDataSourceType, usePivotConfig, useSelectedItem } from
 import ControlButtons from './ControlButtons';
 import useToggler from 'react-controls/hooks/useToggler';
 import './Controls.scss';
+import { useShallow } from 'zustand/react/shallow';
 
 function EditorControls({ show, onHide, reportId }) {
     const [showSource, toggleSource] = useToggler(!reportId);
@@ -30,7 +31,7 @@ function EditorControls({ show, onHide, reportId }) {
 export default EditorControls;
 
 function Source({ onDone }) {
-    const { jql, dataSourceType } = usePivotConfig(({ jql, dataSourceType }) => ({ jql, dataSourceType }));
+    const { jql, dataSourceType } = usePivotConfig(useShallow(({ jql, dataSourceType }) => ({ jql, dataSourceType })));
 
     return (<div className="p-3">
         <p>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { initReportBuilder } from '../externals/jsd-report';
+import { initReportBuilder } from '../components/ContextMenu';
 import EventEmitter from 'events';
 import { GadgetActionType } from '../gadgets/_constants';
 import { getUserName } from '../common/utils';
@@ -21,29 +21,14 @@ export default class ReportConfigService {
         this.eventPipe = new EventEmitter();
     }
 
-    hasScriptExecPermission() {
-        try {
-            // eslint-disable-next-line no-new-func
-            return !!Function("return true")();
-        } catch {
-            // eslint-disable-next-line no-console
-            console.log("Jira Assistant is not granted permission for executing expressions. Hence some dynamic expressions in Report Builder will not work.");
-            return false;
-        }
-    }
-
     configureReport() {
         if (this.isConfigured) {
             return;
         }
 
-        const selfHandleScriptExecution = !this.hasScriptExecPermission();
+        const selfHandleScriptExecution = true;
 
-        const compiler = selfHandleScriptExecution ? exec :
-            function (code, sandbox) {
-                // eslint-disable-next-line no-new-func
-                return Function(...sandbox, code)();
-            };
+        const compiler = exec;
 
         const { dateFormat, timeFormat, jiraUrl } = this.$session.CurrentUser;
         const dateTimeFormat = `${dateFormat} ${timeFormat}`;

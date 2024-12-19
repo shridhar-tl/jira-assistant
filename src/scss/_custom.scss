@@ -53,14 +53,6 @@ body {
 /* #endregion */
 
 /* #region Padding related styles */
-.no-b-pad {
-    padding-bottom: 0 !important;
-}
-
-.no-t-pad {
-    padding-top: 0 !important;
-}
-
 .no-pad {
     padding: 0 !important;
 }
@@ -71,11 +63,6 @@ body {
 
 .pad-b {
     padding-bottom: 8px;
-}
-
-.pad-h-8 {
-    padding-left: 8px !important;
-    padding-right: 8px !important;
 }
 
 .pad-8 {
@@ -136,11 +123,6 @@ body {
 .img-x26 {
     height: 26px;
     width: 26px;
-}
-
-.img-x28 {
-    height: 28px;
-    width: 28px;
 }
 
 .img-x32 {

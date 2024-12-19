@@ -12,7 +12,7 @@ import { inject } from '../../services/injector-service';
 import { GadgetActionType } from '../_constants';
 import { Button } from '../../controls';
 import SelectBox from '../../controls/SelectBox';
-import { hideContextMenu, showContextMenu } from '../../externals/jsd-report';
+import { hideContextMenu, showContextMenu } from '../../components/ContextMenu';
 import AddWorklog from '../../dialogs/AddWorklog';
 import { OverlayPanel } from 'primereact/overlaypanel';
 import MeetingDetails from './MeetingDetails';
