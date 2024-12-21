@@ -43,6 +43,13 @@ export default class SprintService {
                 const allLogs = issueLogs[issue.id];
                 const modifiedWithinSprint = allLogs?.filter(log => moment(log.created).isBetween(startDate, completeDate));
 
+                const sprintFields = modifiedWithinSprint?.filter(log => log.fieldId === sprintFieldId);
+                const firstSprintLog = sprintFields?.[0];
+                const lastSprintLog = sprintFields?.[0];
+
+                issue.fields.removedFromSprint = lastSprintLog && !lastSprintLog.to.split(',').some(sid => parseInt(sid) === sprint.id);
+                issue.fields.addedToSprint = firstSprintLog && !firstSprintLog.from.split(',').some(sid => parseInt(sid) === sprint.id);
+
                 issue.initialStoryPoints = parseInt(storyPoint) || 0;
 
                 if (modifiedWithinSprint?.length) {
@@ -65,7 +72,7 @@ export default class SprintService {
                     }
                 }
 
-                if ($resolutiondate) {
+                if ($resolutiondate && !issue.fields.removedFromSprint) {
                     if (allLogs?.length) {
                         const statusLog = getFirstModifiedLog(allLogs, 'status', 'To Do');
                         if (statusLog) {
@@ -84,7 +91,9 @@ export default class SprintService {
                     }
                 }
 
-                sprint.committedStoryPoints += issue.initialStoryPoints;
+                if (!issue.fields.addedToSprint) {
+                    sprint.committedStoryPoints += issue.initialStoryPoints;
+                }
             });
 
             sprint.averageCycleTime = parseFloat((cycleTimes.sum(i => i) / cycleTimes.length).toFixed(2)) || 0;
@@ -117,6 +126,10 @@ export default class SprintService {
 }
 
 function getFirstModifiedLog(logs, fieldId, fromString, toString) {
+    if (!logs?.length) {
+        return;
+    }
+
     for (const item of logs) {
         if (item.fieldId === fieldId
             && (!fromString || item.fromString === fromString)
