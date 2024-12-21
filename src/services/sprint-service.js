@@ -17,12 +17,8 @@ export default class SprintService {
         }
 
         const sprintIds = closedSprintLists.map(({ id }) => id);
-        const storyPointFieldForQuery = storyPointFieldName.startsWith('customfield_')
-            ? `cf[${storyPointFieldName.split('_')[1]}]`
-            : storyPointFieldName;
 
         const sprintWiseIssues = await this.$jira.getSprintIssues(sprintIds, {
-            jql: `${storyPointFieldForQuery} > 0`,
             fields: ['resolutiondate', storyPointFieldName]
         });
 
@@ -37,6 +33,7 @@ export default class SprintService {
 
             sprint.committedStoryPoints = 0;
             sprint.completedStoryPoints = 0;
+            sprint.sayDoRatio = 0;
             const cycleTimes = [];
 
             issues.forEach(issue => {
@@ -65,7 +62,7 @@ export default class SprintService {
                     }
 
                     if ($resolutiondate.isBetween(startDate, completeDate)) {
-                        sprint.completedStoryPoints += storyPoint;
+                        sprint.completedStoryPoints += (storyPoint || 0);
                     }
                 }
 
@@ -74,13 +71,11 @@ export default class SprintService {
 
             sprint.averageCycleTime = parseFloat((cycleTimes.sum(i => i) / cycleTimes.length).toFixed(2));
             if (sprint.completedStoryPoints) {
-                if (sprint.committedStoryPoints < sprint.completedStoryPoints) {
+                if (sprint.committedStoryPoints > sprint.completedStoryPoints) {
                     sprint.sayDoRatio = parseFloat((sprint.completedStoryPoints * 100 / sprint.committedStoryPoints).toFixed(2));
                 } else {
                     sprint.sayDoRatio = 100;
                 }
-            } else {
-                sprint.sayDoRatio = 0;
             }
 
             if (index) {
