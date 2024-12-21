@@ -33,7 +33,7 @@ export default class SprintService {
             const issues = sprintWiseIssues[sprint.id];
 
             const issueLogs = await this.$jira.getBulkIssueChangelogs(issues.map(({ key }) => key),
-                ['status', storyPointFieldForQuery]);
+                ['status', storyPointFieldName]);
 
             sprint.committedStoryPoints = 0;
             sprint.completedStoryPoints = 0;
@@ -42,35 +42,46 @@ export default class SprintService {
             issues.forEach(issue => {
                 const { resolutiondate, [storyPointFieldName]: storyPoint } = issue.fields;
                 const $resolutiondate = resolutiondate && moment(resolutiondate);
+
                 const allLogs = issueLogs[issue.id];
                 const modifiedWithinSprint = allLogs?.filter(log => moment(log.created).isBetween(startDate, completeDate));
 
-                let initialStoryPoints = storyPoint;
+                let initialStoryPoints = storyPoint || 0;
 
                 if (modifiedWithinSprint?.length) {
-                    const spLog = getFirstModifiedLog(modifiedWithinSprint, storyPointFieldForQuery);
+                    const spLog = getFirstModifiedLog(modifiedWithinSprint, storyPointFieldName);
                     if (spLog) {
-                        initialStoryPoints = parseInt(spLog.from) || 0;
+                        initialStoryPoints = parseInt(spLog.fromString) || 0;
                     }
                 }
 
-                if (allLogs?.length) {
-                    const statusLog = getFirstModifiedLog(allLogs, 'status', 'To Do');
-                    if (statusLog) {
-                        issue.fields.cycleTime = $resolutiondate.diff(statusLog.created, 'days');
-                        cycleTimes.push(issue.fields.cycleTime);
+                if ($resolutiondate) {
+                    if (allLogs?.length) {
+                        const statusLog = getFirstModifiedLog(allLogs, 'status', 'To Do');
+                        if (statusLog) {
+                            issue.fields.cycleTime = $resolutiondate.diff(statusLog.created, 'days');
+                            cycleTimes.push(issue.fields.cycleTime);
+                        }
                     }
-                }
 
-                if (resolutiondate && $resolutiondate.isBetween(startDate, completeDate)) {
-                    sprint.completedStoryPoints += storyPoint;
+                    if ($resolutiondate.isBetween(startDate, completeDate)) {
+                        sprint.completedStoryPoints += storyPoint;
+                    }
                 }
 
                 sprint.committedStoryPoints += initialStoryPoints;
             });
 
             sprint.averageCycleTime = parseFloat((cycleTimes.sum(i => i) / cycleTimes.length).toFixed(2));
-            sprint.sayDoRatio = parseFloat((sprint.completedStoryPoints * 100 / sprint.committedStoryPoints).toFixed(2));
+            if (sprint.completedStoryPoints) {
+                if (sprint.committedStoryPoints < sprint.completedStoryPoints) {
+                    sprint.sayDoRatio = parseFloat((sprint.completedStoryPoints * 100 / sprint.committedStoryPoints).toFixed(2));
+                } else {
+                    sprint.sayDoRatio = 100;
+                }
+            } else {
+                sprint.sayDoRatio = 0;
+            }
 
             if (index) {
                 const sprints = closedSprintLists.slice(index <= noOfSprintsForVelocity ? 0 : index - noOfSprintsForVelocity, index);
@@ -91,9 +102,9 @@ export default class SprintService {
     };
 }
 
-function getFirstModifiedLog(logs, field, fromString) {
+function getFirstModifiedLog(logs, fieldId, fromString) {
     for (const item of logs) {
-        if (item.field === field && (!fromString || item.fromString === fromString)) {
+        if (item.fieldId === fieldId && (!fromString || item.fromString === fromString)) {
             return item;
         }
     }
