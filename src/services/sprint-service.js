@@ -56,7 +56,7 @@ export default class SprintService {
                     if (allLogs?.length) {
                         const statusLog = getFirstModifiedLog(allLogs, 'status', 'To Do');
                         if (statusLog) {
-                            issue.fields.cycleTime = $resolutiondate.diff(statusLog.created, 'days');
+                            issue.fields.cycleTime = $resolutiondate.diff(statusLog.created, 'days') || 0;
                             cycleTimes.push(issue.fields.cycleTime);
                         }
                     }
@@ -69,7 +69,7 @@ export default class SprintService {
                 sprint.committedStoryPoints += initialStoryPoints;
             });
 
-            sprint.averageCycleTime = parseFloat((cycleTimes.sum(i => i) / cycleTimes.length).toFixed(2));
+            sprint.averageCycleTime = parseFloat((cycleTimes.sum(i => i) / cycleTimes.length).toFixed(2)) || 0;
             if (sprint.completedStoryPoints) {
                 if (sprint.committedStoryPoints > sprint.completedStoryPoints) {
                     sprint.sayDoRatio = parseFloat((sprint.completedStoryPoints * 100 / sprint.committedStoryPoints).toFixed(2));
@@ -89,7 +89,7 @@ export default class SprintService {
 
         const averageCommitted = Math.round(sprintsToConsider.sum(s => s.committedStoryPoints) / sprintsToConsider.length);
         const averageCompleted = Math.round(sprintsToConsider.sum(s => s.completedStoryPoints) / sprintsToConsider.length);
-        const averageCycleTime = (sprintsToConsider.sum(s => s.averageCycleTime) / sprintsToConsider.length);
+        const averageCycleTime = parseFloat((sprintsToConsider.sum(s => s.averageCycleTime) / sprintsToConsider.length).toFixed(2));
         const sayDoRatio = parseFloat((averageCompleted * 100 / averageCommitted).toFixed(2));
         const diff = Math.abs(averageCommitted - averageCompleted);
         const median = Math.round(averageCompleted + (diff / 2));

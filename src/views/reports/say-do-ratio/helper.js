@@ -7,13 +7,13 @@ export async function getSprintWiseSayDoRatio(settings) {
 
     const result = [];
     for (const { id, name } of sprintBoards) {
-        const { closedSprintLists, averageCommitted, averageCompleted, sayDoRatio } = await $sprint.computeAverageSprintVelocity(id, velocitySprints, storyPointField, noOfSprints + velocitySprints);
+        const { closedSprintLists, ...boardProps } = await $sprint.computeAverageSprintVelocity(id, velocitySprints, storyPointField, noOfSprints + velocitySprints);
 
         const sprintList = closedSprintLists.slice(-noOfSprints);
         while (sprintList.length < noOfSprints) {
             sprintList.splice(0, 0, null);
         }
-        result.push({ id, name, sprintList, averageCommitted, averageCompleted, sayDoRatio });
+        result.push({ id, name, sprintList, ...boardProps });
     }
 
     await $config.saveSettings(settingsName, { sprintBoards, noOfSprints, velocitySprints });
