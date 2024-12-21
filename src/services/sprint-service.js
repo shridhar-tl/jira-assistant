@@ -7,7 +7,7 @@ export default class SprintService {
         this.$jira = $jira;
     }
 
-    computeAverageSprintVelocity = async (boardId, noOfSprintsForVelocity = 6, storyPointFieldName, noOfSprintsToPull = noOfSprintsForVelocity * 2) => {
+    computeAverageSprintVelocity = async (boardId, noOfSprintsForVelocity = 6, storyPointFieldName, sprintFieldId, noOfSprintsToPull = noOfSprintsForVelocity * 2) => {
         const allClosedSprintLists = await this.$jira.getRapidSprintList([boardId], { state: 'closed' });
         const closedSprintLists = allClosedSprintLists.slice(0, noOfSprintsToPull).sortBy(({ completeDate }) => completeDate.getTime());
         const availableSprintCount = closedSprintLists.length;
@@ -29,7 +29,7 @@ export default class SprintService {
             const issues = sprintWiseIssues[sprint.id];
 
             const issueLogs = await this.$jira.getBulkIssueChangelogs(issues.map(({ key }) => key),
-                ['status', storyPointFieldName]);
+                ['status', sprintFieldId, storyPointFieldName]);
 
             sprint.committedStoryPoints = 0;
             sprint.completedStoryPoints = 0;
