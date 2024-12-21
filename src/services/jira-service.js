@@ -583,6 +583,24 @@ export default class JiraService {
         });
     }
 
+    async getBulkIssueChangelogs(issueIdsOrKeys, fieldIds) {
+        try {
+            const { issueChangeLogs } = await this.$ajax.post(ApiUrls.bulkIssueChangelogs, {
+                maxResults: 10000,
+                issueIdsOrKeys,
+                fieldIds
+            });
+
+            return issueChangeLogs.reduce((obj, item) => {
+                obj[item.issueId] = item.changeHistories.sortBy(ch => ch.created);
+                return obj;
+            }, {});
+        } catch (err) {
+            console.error("Unable to fetch changelogs for tickets: ", err);
+            return {};
+        }
+    }
+
     fillWL(issue, startDate, endDate) {
         console.log(`Started fetching worklog for ${issue.key} between ${startDate} & ${endDate}`);
         return this.getWorklogs(issue.key, startDate, endDate).then((res) => {

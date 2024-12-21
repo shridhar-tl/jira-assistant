@@ -26,24 +26,49 @@ export default class SprintService {
             fields: ['resolutiondate', storyPointFieldName]
         });
 
-        closedSprintLists.forEach((sprint, index) => {
+        for (let index = 0; index < closedSprintLists.length; index++) {
+            const sprint = closedSprintLists[index];
             const startDate = moment(sprint.startDate);
             const completeDate = moment(sprint.completeDate);
             const issues = sprintWiseIssues[sprint.id];
 
+            const issueLogs = await this.$jira.getBulkIssueChangelogs(issues.map(({ key }) => key),
+                ['status', storyPointFieldForQuery]);
+
             sprint.committedStoryPoints = 0;
             sprint.completedStoryPoints = 0;
+            const cycleTimes = [];
 
             issues.forEach(issue => {
                 const { resolutiondate, [storyPointFieldName]: storyPoint } = issue.fields;
+                const allLogs = issueLogs[issue.id];
+                const modifiedWithinSprint = allLogs?.filter(log => moment(log.created).isBetween(startDate, completeDate));
+
+                let initialStoryPoints = storyPoint;
+
+                if (modifiedWithinSprint?.length) {
+                    const [spLog] = getFirstModifiedLog(modifiedWithinSprint, storyPointFieldForQuery);
+                    if (spLog) {
+                        initialStoryPoints = parseInt(spLog.from) || 0;
+                    }
+                }
+
+                if (allLogs?.length) {
+                    const [, statusLog] = getFirstModifiedLog(allLogs, 'status');
+                    if (statusLog) {
+                        issue.fields.cycleTime = moment(statusLog.created).diff(resolutiondate, 'days');
+                        cycleTimes.push(issue.fields.cycleTime);
+                    }
+                }
 
                 if (resolutiondate && moment(resolutiondate).isBetween(startDate, completeDate)) {
                     sprint.completedStoryPoints += storyPoint;
                 }
 
-                sprint.committedStoryPoints += storyPoint;
+                sprint.committedStoryPoints += initialStoryPoints;
             });
 
+            sprint.averageCycleTime = parseFloat((cycleTimes.sum(i => i) / cycleTimes.length).toFixed(2));
             sprint.sayDoRatio = parseFloat((sprint.completedStoryPoints * 100 / sprint.committedStoryPoints).toFixed(2));
 
             if (index) {
@@ -51,7 +76,7 @@ export default class SprintService {
                 sprint.averageCommitted = Math.round(sprints.sum(s => s.committedStoryPoints) / sprints.length);
                 sprint.velocity = Math.round(sprints.sum(s => s.completedStoryPoints) / sprints.length);
             }
-        });
+        }
 
         const sprintsToConsider = closedSprintLists.slice(-noOfSprintsForVelocity);
 
@@ -63,4 +88,14 @@ export default class SprintService {
 
         return { closedSprintLists, averageCommitted, median, averageCompleted, sayDoRatio };
     };
+}
+
+function getFirstModifiedLog(logs, field) {
+    for (const log of logs) {
+        for (const item of log.items) {
+            if (item.field === field) {
+                return [item, log];
+            }
+        }
+    }
 }
