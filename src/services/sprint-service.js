@@ -43,18 +43,23 @@ export default class SprintService {
                 const allLogs = issueLogs[issue.id];
                 const modifiedWithinSprint = allLogs?.filter(log => moment(log.created).isBetween(startDate, completeDate));
 
-                let initialStoryPoints = storyPoint || 0;
+                issue.initialStoryPoints = parseInt(storyPoint) || 0;
 
                 if (modifiedWithinSprint?.length) {
                     const spLog = getFirstModifiedLog(modifiedWithinSprint, storyPointFieldName);
                     if (spLog) {
-                        initialStoryPoints = parseInt(spLog.fromString) || 0;
+                        issue.initialStoryPoints = parseInt(spLog.fromString) || 0;
                     }
 
                     if (!$resolutiondate || $resolutiondate.isAfter(completeDate)) { // If the issue is reopened after Done, then there would be no resolution date
-                        const completedLog = getFirstModifiedLog(modifiedWithinSprint, 'status', null, 'Done');
-                        if (completedLog) {
-                            $resolutiondate = moment(completedLog.created); // use the date completed within sprint as resolution date
+                        const listOfStatusChanges = modifiedWithinSprint.filter(log => log.fieldId === 'status');
+                        const lastStatus = listOfStatusChanges.length > 0 && listOfStatusChanges[listOfStatusChanges.length - 1];
+
+                        if (lastStatus && lastStatus.toString === 'Done') {
+                            $resolutiondate = moment(lastStatus.created); // use the date completed within sprint as resolution date
+                            console.log('Discrepancy found. Issue status toggled within sprint:', sprint.name, 'issue:', issue.key);
+                        } else if ($resolutiondate) {
+                            $resolutiondate = completeDate; // use the sprint completed date as resolution date if the issue is reopened within sprint
                             console.log('Discrepancy found. Issue reopened after Done:', sprint.name, 'issue:', issue.key);
                         }
                     }
@@ -79,7 +84,7 @@ export default class SprintService {
                     }
                 }
 
-                sprint.committedStoryPoints += initialStoryPoints;
+                sprint.committedStoryPoints += issue.initialStoryPoints;
             });
 
             sprint.averageCycleTime = parseFloat((cycleTimes.sum(i => i) / cycleTimes.length).toFixed(2)) || 0;
