@@ -26,7 +26,7 @@ export default class SprintService {
             const sprint = closedSprintLists[index];
             const startDate = moment(sprint.startDate);
             const completeDate = moment(sprint.completeDate);
-            const issues = sprintWiseIssues[sprint.id];
+            const issues = sprintWiseIssues[sprint.id].sortBy(t => t.key);
 
             const issueLogs = await this.$jira.getBulkIssueChangelogs(issues.map(({ key }) => key),
                 ['status', sprintFieldId, storyPointFieldName]);
