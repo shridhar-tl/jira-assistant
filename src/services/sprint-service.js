@@ -56,13 +56,26 @@ export default class SprintService {
                     if (allLogs?.length) {
                         const statusLog = getFirstModifiedLog(allLogs, 'status', 'To Do');
                         if (statusLog) {
-                            issue.fields.cycleTime = $resolutiondate.diff(statusLog.created, 'days') || 0;
+                            const dateToUse = completeDate.isBefore($resolutiondate) ? completeDate : $resolutiondate;
+                            issue.fields.cycleTime = dateToUse.diff(statusLog.created, 'days') || 0;
                             cycleTimes.push(issue.fields.cycleTime);
                         }
                     }
 
-                    if ($resolutiondate.isBetween(startDate, completeDate)) {
+                    let hasResolvedWithinSprint = $resolutiondate.isBetween(startDate, completeDate);
+
+                    if (!hasResolvedWithinSprint && storyPoint) {
+                        const statusLog = getFirstModifiedLog(allLogs, 'status', null, 'Done');
+                        if (statusLog) {
+                            hasResolvedWithinSprint = true;
+                            console.log('Discrepancy found. Issue reopened after Done:', sprint.name, 'issue:', issue.key);
+                        }
+                    }
+
+                    if (lastResolvedWithinSprint) {
                         sprint.completedStoryPoints += (storyPoint || 0);
+                    } else {
+                        console.log('Story point not counted for sprint:', sprint.name, 'issue:', issue.key);
                     }
                 }
 
@@ -98,9 +111,11 @@ export default class SprintService {
     };
 }
 
-function getFirstModifiedLog(logs, fieldId, fromString) {
+function getFirstModifiedLog(logs, fieldId, fromString, toString) {
     for (const item of logs) {
-        if (item.fieldId === fieldId && (!fromString || item.fromString === fromString)) {
+        if (item.fieldId === fieldId
+            && (!fromString || item.fromString === fromString)
+            && (!toString || item.toString === toString)) {
             return item;
         }
     }
