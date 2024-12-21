@@ -52,6 +52,7 @@ function SayDoRatioReport() {
                             <Column sortBy="name">Board Name</Column>
                             <Column sortBy="averageCompleted" className="text-center">Velocity</Column>
                             <Column sortBy="sayDoRatio" className="text-center">Say-Do-Ratio</Column>
+                            <Column sortBy="averageCycleTime" className="text-center">Cycle Time</Column>
                             {loop(settings.noOfSprints, (i) => <Column key={i} className="text-center">Sprint {i + 1}</Column>)}
                         </tr>
                     </THead>
@@ -64,6 +65,7 @@ function SayDoRatioReport() {
                                 <Indicator value={b.sayDoRatio} maxHours={100} />
                             </td>}
                             {!b.sayDoRatio && <td className="text-center">-</td>}
+                            <td className="text-center">{b.averageCycleTime ? `${b.averageCycleTime} days` : '-'}</td>
                             {b.sprintList.map(s => (s?.sayDoRatio ? (<td className={getLogClass(s.sayDoRatio)}>
                                 {s.sayDoRatio}%
                                 <Indicator value={parseInt(s.sayDoRatio)} maxHours={100} />

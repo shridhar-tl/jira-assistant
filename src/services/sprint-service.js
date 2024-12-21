@@ -89,11 +89,12 @@ export default class SprintService {
 
         const averageCommitted = Math.round(sprintsToConsider.sum(s => s.committedStoryPoints) / sprintsToConsider.length);
         const averageCompleted = Math.round(sprintsToConsider.sum(s => s.completedStoryPoints) / sprintsToConsider.length);
+        const averageCycleTime = (sprintsToConsider.sum(s => s.averageCycleTime) / sprintsToConsider.length);
         const sayDoRatio = parseFloat((averageCompleted * 100 / averageCommitted).toFixed(2));
         const diff = Math.abs(averageCommitted - averageCompleted);
         const median = Math.round(averageCompleted + (diff / 2));
 
-        return { closedSprintLists, averageCommitted, median, averageCompleted, sayDoRatio };
+        return { closedSprintLists, averageCommitted, median, averageCompleted, sayDoRatio, averageCycleTime };
     };
 }
 

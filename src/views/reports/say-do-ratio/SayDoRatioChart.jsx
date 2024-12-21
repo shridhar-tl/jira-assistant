@@ -71,8 +71,8 @@ function SayDoRatioChart({ board }) {
         const labels = availableSprints.map(s => s.name);
         const datasets = [
             getChartData(availableSprints, 'velocity', 'Velocity', '#4169E1', { borderDash: [5, 5] }),
-            getChartData(availableSprints, 'committedStoryPoints', 'Committed', '#228B22'),
-            getChartData(availableSprints, 'completedStoryPoints', 'Completed', '#FF6347')
+            getChartData(availableSprints, 'committedStoryPoints', 'Committed', '#FF6347'),
+            getChartData(availableSprints, 'completedStoryPoints', 'Completed', '#228B22')
         ];
 
         let minY = 7, maxY = 7;
