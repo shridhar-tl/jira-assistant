@@ -19,7 +19,7 @@ export default class SprintService {
         const sprintIds = closedSprintLists.map(({ id }) => id);
 
         const sprintWiseIssues = await this.$jira.getSprintIssues(sprintIds, {
-            fields: ['resolutiondate', storyPointFieldName]
+            fields: ['created', 'resolutiondate', storyPointFieldName]
         });
 
         for (let index = 0; index < closedSprintLists.length; index++) {
@@ -37,7 +37,7 @@ export default class SprintService {
             const cycleTimes = [];
 
             issues.forEach(issue => { // eslint-disable-line complexity
-                const { resolutiondate, [storyPointFieldName]: storyPoint } = issue.fields;
+                const { resolutiondate, [storyPointFieldName]: storyPoint, created: issueCreated } = issue.fields;
                 let $resolutiondate = resolutiondate && moment(resolutiondate);
 
                 if ($resolutiondate && $resolutiondate.isBefore(startDate)) {
@@ -53,7 +53,8 @@ export default class SprintService {
                 const lastSprintLog = sprintFields?.[0];
 
                 issue.fields.removedFromSprint = lastSprintLog && !lastSprintLog.to.split(',').some(sid => parseInt(sid) === sprint.id);
-                issue.fields.addedToSprint = firstSprintLog && !firstSprintLog.from.split(',').some(sid => parseInt(sid) === sprint.id);
+                issue.fields.addedToSprint = startDate.isBefore(issueCreated)
+                    || (firstSprintLog && !firstSprintLog.from.split(',').some(sid => parseInt(sid) === sprint.id));
 
                 issue.initialStoryPoints = parseInt(storyPoint) || 0;
 
