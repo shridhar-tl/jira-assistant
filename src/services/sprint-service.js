@@ -38,7 +38,7 @@ export default class SprintService {
 
             issues.forEach(issue => {
                 const { resolutiondate, [storyPointFieldName]: storyPoint } = issue.fields;
-                const $resolutiondate = resolutiondate && moment(resolutiondate);
+                let $resolutiondate = resolutiondate && moment(resolutiondate);
 
                 const allLogs = issueLogs[issue.id];
                 const modifiedWithinSprint = allLogs?.filter(log => moment(log.created).isBetween(startDate, completeDate));
@@ -52,6 +52,14 @@ export default class SprintService {
                     }
                 }
 
+                if (!$resolutiondate || $resolutiondate.isAfter(completeDate)) { // If the issue is reopened after Done, then there would be no resolution date
+                    const completedLog = getFirstModifiedLog(modifiedWithinSprint, 'status', null, 'Done');
+                    if (completedLog) {
+                        $resolutiondate = moment(completedLog.created); // use the date completed within sprint as resolution date
+                        console.log('Discrepancy found. Issue reopened after Done:', sprint.name, 'issue:', issue.key);
+                    }
+                }
+
                 if ($resolutiondate) {
                     if (allLogs?.length) {
                         const statusLog = getFirstModifiedLog(allLogs, 'status', 'To Do');
@@ -62,20 +70,12 @@ export default class SprintService {
                         }
                     }
 
-                    let hasResolvedWithinSprint = $resolutiondate.isBetween(startDate, completeDate);
+                    const hasResolvedWithinSprint = $resolutiondate.isBetween(startDate, completeDate);
 
-                    if (!hasResolvedWithinSprint && storyPoint) {
-                        const statusLog = getFirstModifiedLog(allLogs, 'status', null, 'Done');
-                        if (statusLog) {
-                            hasResolvedWithinSprint = true;
-                            console.log('Discrepancy found. Issue reopened after Done:', sprint.name, 'issue:', issue.key);
-                        }
-                    }
-
-                    if (lastResolvedWithinSprint) {
+                    if (hasResolvedWithinSprint) {
                         sprint.completedStoryPoints += (storyPoint || 0);
-                    } else {
-                        console.log('Story point not counted for sprint:', sprint.name, 'issue:', issue.key);
+                    } else if (storyPoint) {
+                        console.log('Discrepancy found. Issue resolution date is in appropriate:', sprint.name, 'issue:', issue.key);
                     }
                 }
 
