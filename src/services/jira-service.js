@@ -592,7 +592,7 @@ export default class JiraService {
             });
 
             return issueChangeLogs.reduce((obj, item) => {
-                obj[item.issueId] = item.changeHistories.sortBy(ch => ch.created);
+                obj[item.issueId] = item.changeHistories.sortBy(ch => ch.created).flatMap(ch => ch.items.map(i => ({ ...ch, ...i })));
                 return obj;
             }, {});
         } catch (err) {

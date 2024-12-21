@@ -41,27 +41,28 @@ export default class SprintService {
 
             issues.forEach(issue => {
                 const { resolutiondate, [storyPointFieldName]: storyPoint } = issue.fields;
+                const $resolutiondate = resolutiondate && moment(resolutiondate);
                 const allLogs = issueLogs[issue.id];
                 const modifiedWithinSprint = allLogs?.filter(log => moment(log.created).isBetween(startDate, completeDate));
 
                 let initialStoryPoints = storyPoint;
 
                 if (modifiedWithinSprint?.length) {
-                    const [spLog] = getFirstModifiedLog(modifiedWithinSprint, storyPointFieldForQuery);
+                    const spLog = getFirstModifiedLog(modifiedWithinSprint, storyPointFieldForQuery);
                     if (spLog) {
                         initialStoryPoints = parseInt(spLog.from) || 0;
                     }
                 }
 
                 if (allLogs?.length) {
-                    const [, statusLog] = getFirstModifiedLog(allLogs, 'status');
+                    const statusLog = getFirstModifiedLog(allLogs, 'status', 'To Do');
                     if (statusLog) {
-                        issue.fields.cycleTime = moment(statusLog.created).diff(resolutiondate, 'days');
+                        issue.fields.cycleTime = $resolutiondate.diff(statusLog.created, 'days');
                         cycleTimes.push(issue.fields.cycleTime);
                     }
                 }
 
-                if (resolutiondate && moment(resolutiondate).isBetween(startDate, completeDate)) {
+                if (resolutiondate && $resolutiondate.isBetween(startDate, completeDate)) {
                     sprint.completedStoryPoints += storyPoint;
                 }
 
@@ -90,12 +91,10 @@ export default class SprintService {
     };
 }
 
-function getFirstModifiedLog(logs, field) {
-    for (const log of logs) {
-        for (const item of log.items) {
-            if (item.field === field) {
-                return [item, log];
-            }
+function getFirstModifiedLog(logs, field, fromString) {
+    for (const item of logs) {
+        if (item.field === field && (!fromString || item.fromString === fromString)) {
+            return item;
         }
     }
 }
