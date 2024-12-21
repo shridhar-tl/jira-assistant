@@ -36,9 +36,14 @@ export default class SprintService {
             sprint.sayDoRatio = 0;
             const cycleTimes = [];
 
-            issues.forEach(issue => {
+            issues.forEach(issue => { // eslint-disable-line complexity
                 const { resolutiondate, [storyPointFieldName]: storyPoint } = issue.fields;
                 let $resolutiondate = resolutiondate && moment(resolutiondate);
+
+                if ($resolutiondate && $resolutiondate.isBefore(startDate)) {
+                    issue.fields.completedOutside = true;
+                    return;
+                }
 
                 const allLogs = issueLogs[issue.id];
                 const modifiedWithinSprint = allLogs?.filter(log => moment(log.created).isBetween(startDate, completeDate));
