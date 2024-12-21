@@ -50,13 +50,13 @@ export default class SprintService {
                     if (spLog) {
                         initialStoryPoints = parseInt(spLog.fromString) || 0;
                     }
-                }
 
-                if (!$resolutiondate || $resolutiondate.isAfter(completeDate)) { // If the issue is reopened after Done, then there would be no resolution date
-                    const completedLog = getFirstModifiedLog(modifiedWithinSprint, 'status', null, 'Done');
-                    if (completedLog) {
-                        $resolutiondate = moment(completedLog.created); // use the date completed within sprint as resolution date
-                        console.log('Discrepancy found. Issue reopened after Done:', sprint.name, 'issue:', issue.key);
+                    if (!$resolutiondate || $resolutiondate.isAfter(completeDate)) { // If the issue is reopened after Done, then there would be no resolution date
+                        const completedLog = getFirstModifiedLog(modifiedWithinSprint, 'status', null, 'Done');
+                        if (completedLog) {
+                            $resolutiondate = moment(completedLog.created); // use the date completed within sprint as resolution date
+                            console.log('Discrepancy found. Issue reopened after Done:', sprint.name, 'issue:', issue.key);
+                        }
                     }
                 }
 
