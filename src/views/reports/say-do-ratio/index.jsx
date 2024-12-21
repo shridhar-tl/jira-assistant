@@ -50,13 +50,15 @@ function SayDoRatioReport() {
                     <THead>
                         <tr>
                             <Column sortBy="name">Board Name</Column>
-                            <Column sortBy="sayDoRatio" className="text-center">Average</Column>
+                            <Column sortBy="averageCompleted" className="text-center">Velocity</Column>
+                            <Column sortBy="sayDoRatio" className="text-center">Say-Do-Ratio</Column>
                             {loop(settings.noOfSprints, (i) => <Column key={i} className="text-center">Sprint {i + 1}</Column>)}
                         </tr>
                     </THead>
                     <TBody className="no-log-bg-hl">
                         {(b) => <tr key={b.id}>
                             <td>{b.name}</td>
+                            <td className="text-center">{b.averageCompleted || '-'}</td>
                             {b.sayDoRatio && <td className={getLogClass(b.sayDoRatio)}>
                                 {b.sayDoRatio}%
                                 <Indicator value={b.sayDoRatio} maxHours={100} />
