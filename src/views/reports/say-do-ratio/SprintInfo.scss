@@ -1,0 +1,77 @@
+$sprint-info-bg: #f9f9f9;
+$sprint-info-border: #ddd;
+$header-bg: #64b5f6; // Bootstrap primary color
+$close-icon-color: #fff; // Close icon color
+$metric-item-bg: #ffffff;
+$metric-item-border: #e2e2e2;
+$group-title-bg: #f1f1f1;
+
+.sprint-info {
+    background: $sprint-info-bg;
+    border: 1px solid $sprint-info-border;
+    border-radius: 5px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    position: relative; // For positioning close icon
+    margin: 20px 0;
+
+    .sprint-info-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: $header-bg;
+        color: $close-icon-color;
+        padding: 10px 15px;
+        border-radius: 5px 5px 0 0;
+
+        h2 {
+            margin: 0; // Remove default margin
+            font-size: 1.5rem;
+        }
+
+        .close-icon {
+            cursor: pointer;
+            font-size: 1.5rem;
+        }
+    }
+
+    .sprint-details {
+        display: flex;
+        flex-wrap: wrap;
+        margin-top: 15px;
+
+        .metric-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: $metric-item-bg;
+            border: 1px solid $metric-item-border;
+            border-radius: 3px;
+            padding: 10px;
+            margin-right: 15px;
+            margin-bottom: 10px;
+
+            strong {
+                font-weight: 600;
+                margin-right: 10px;
+            }
+
+            &:last-child {
+                margin-right: 0;
+            }
+        }
+    }
+
+    .issue-group {
+        margin-top: 20px;
+
+        h3 {
+            background: $group-title-bg;
+            padding: 10px;
+            border-radius: 3px;
+            margin: 0 0 10px 0; // Only margin at the bottom
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+    }
+}

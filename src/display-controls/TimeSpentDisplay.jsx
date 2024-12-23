@@ -16,7 +16,13 @@ class TimeSpentDisplay extends BaseControl {
 
         if (!timespent) { return badge; }
 
-        if (inputType === "ticks" && timespent > 500) {
+        if (inputType === "days") {
+            const mins = timespent * 24 * 60;
+            timespent = parseInt(mins) * 60; // Ignore the seconds part
+            if (!timespent && mins) {
+                timespent = { text: '< 1m' };
+            }
+        } else if (inputType === "ticks" && timespent > 500) {
             timespent = parseInt(timespent / 1000);
         }
 

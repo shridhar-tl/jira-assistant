@@ -7,9 +7,12 @@ import { Column, NoDataRow, ScrollableTable, TBody, THead } from 'src/components
 import SayDoRatioChart from './SayDoRatioChart';
 import Indicator from '../../../components/worklog-indicator';
 import { Button } from '../../../controls';
+import SprintInfo from './SprintInfo';
+import './SayDoRatioReport.scss';
 
 function SayDoRatioReport() {
     const [isLoading, setLoader] = React.useState(false);
+    const [selectedSprint, setSprint] = React.useState();
     const [editMode, toggleEdit] = useToggler(true);
     const [settings, updateSettings] = React.useState(getSettings());
     const [reportData, setReportData] = React.useState([]);
@@ -50,27 +53,38 @@ function SayDoRatioReport() {
                     <THead>
                         <tr>
                             <Column sortBy="name">Board Name</Column>
-                            <Column sortBy="sayDoRatio" className="text-center">Average</Column>
-                            {loop(settings.noOfSprints, (i) => <Column key={i} className="text-center">Sprint {i + 1}</Column>)}
+                            <Column sortBy="velocity" className="text-center">Velocity</Column>
+                            <Column sortBy="sayDoRatio" className="text-center">Say-Do-Ratio</Column>
+                            <Column sortBy="averageCycleTime" className="text-center">Cycle Time</Column>
+                            {loop(settings.noOfSprints, (i) => {
+                                const sprintTitle = settings.noOfSprints === (i + 1) ? `Last sprint (n-1)` : `Sprint n${i - settings.noOfSprints}`;
+                                return (<Column key={i} className="text-center">{sprintTitle}</Column>);
+                            })}
                         </tr>
                     </THead>
                     <TBody className="no-log-bg-hl">
                         {(b) => <tr key={b.id}>
                             <td>{b.name}</td>
+                            <td className="text-center">{b.velocity || '-'} {!!b.velocity && <span>({parseFloat(b.velocityGrowth?.toFixed(2) || 0)}%)</span>}</td>
                             {b.sayDoRatio && <td className={getLogClass(b.sayDoRatio)}>
                                 {b.sayDoRatio}%
                                 <Indicator value={b.sayDoRatio} maxHours={100} />
                             </td>}
                             {!b.sayDoRatio && <td className="text-center">-</td>}
-                            {b.sprintList.map(s => (s?.sayDoRatio ? (<td className={getLogClass(s.sayDoRatio)}>
+                            <td className="text-center">{b.averageCycleTime ? `${b.averageCycleTime} days` : '-'}</td>
+                            {b.sprintList.map(s => (s?.sayDoRatio ? (<td className={getLogClass(s.sayDoRatio, s === selectedSprint)} onClick={() => setSprint(s)} key={s.id}>
+                                <span className="fas fa-info-circle float-end" />
                                 {s.sayDoRatio}%
                                 <Indicator value={parseInt(s.sayDoRatio)} maxHours={100} />
                             </td>) : <td className="text-center">-</td>))}
                         </tr>}
                     </TBody>
-                    <NoDataRow span={7}>No data available.</NoDataRow>
+                    {!reportData?.length && <NoDataRow span={7}>No data available.</NoDataRow>}
                 </ScrollableTable>
-                <div className="row m-0">
+                {selectedSprint && <div className="row m-0 mt-3">
+                    <SprintInfo sprint={selectedSprint} onClose={() => setSprint(null)} />
+                </div>}
+                <div className="row m-0 mt-3">
                     {reportData?.map(b => <SayDoRatioChart key={b.id} board={b} />)}
                 </div>
             </GadgetLayout>
@@ -80,7 +94,7 @@ function SayDoRatioReport() {
 
 export default SayDoRatioReport;
 
-function getLogClass(value) {
+function getLogClass(value, isSelected) {
     let className = 'log-good';
 
     if (value >= 85) {
@@ -91,7 +105,7 @@ function getLogClass(value) {
         className = 'log-high';
     }
 
-    return `log-indi-cntr ${className}`;
+    return `log-indi-cntr ${className}${isSelected ? ' selected' : ''}`;
 }
 
 function loop(num, callback) {

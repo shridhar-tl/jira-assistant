@@ -15,7 +15,7 @@ function PivotConfig() {
 export default PivotConfig;
 
 const accept = ['jira-field'];
-const fieldPlaceholder = (<span className="p-3 block">Drag and drop required fields from list to be shown in report</span>);
+const fieldPlaceholder = (<span className="p-3 d-block">Drag and drop required fields from list to be shown in report</span>);
 function FieldsConfig() {
     const fields = usePivotConfig(({ fields }) => fields);
 
