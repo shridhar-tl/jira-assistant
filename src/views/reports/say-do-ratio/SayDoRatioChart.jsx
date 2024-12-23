@@ -28,7 +28,23 @@ function getOptions(titleText, subTitle, minY, maxY) {
                 labels: {
                     color: textColor
                 }
+            },
+            tooltip: {
+                mode: 'index',
+                intersect: false,
+                padding: 12,
+                boxPadding: 6,
+                callbacks: {
+                    title: (tooltipItems) => `Sprint: ${tooltipItems[0].label}`,
+                    label: (tooltipItem) =>
+                        `${tooltipItem.dataset.label}: ${tooltipItem.formattedValue} ${tooltipItem.dataset.yAxisID === 'y1' ? 'days' : 'points'}`
+                },
+                bodySpacing: 10
             }
+        },
+        hover: {
+            mode: 'index',
+            intersect: false
         },
         scales: {
             x: {
@@ -40,6 +56,10 @@ function getOptions(titleText, subTitle, minY, maxY) {
                 }
             },
             y: {
+                title: {
+                    display: true,
+                    text: 'Story Points'
+                },
                 min: minY,
                 max: maxY,
                 ticks: {
@@ -47,6 +67,19 @@ function getOptions(titleText, subTitle, minY, maxY) {
                 },
                 grid: {
                     color: surfaceBorder
+                }
+            },
+            y1: {
+                position: 'right',
+                title: {
+                    display: true,
+                    text: 'Cycle Time (Days)'
+                },
+                ticks: {
+                    color: textColorSecondary
+                },
+                grid: {
+                    drawOnChartArea: false
                 }
             }
         }
@@ -64,43 +97,58 @@ function getChartData(sprintList, key, label, borderColor, others) {
     };
 }
 
+function getCycleTimeData(sprintList) {
+    return {
+        label: 'Cycle Time',
+        data: sprintList.map(({ averageCycleTime }) => averageCycleTime),
+        backgroundColor: '#FFD700',
+        yAxisID: 'y1',
+        type: 'bar'
+    };
+}
+
 function SayDoRatioChart({ board }) {
     const { data, options } = React.useMemo(() => {
-        const { name, sprintList, averageCompleted } = board;
+        const { name, sprintList, velocity } = board;
         const availableSprints = sprintList.filter(Boolean);
         const labels = availableSprints.map(s => s.name);
         const datasets = [
             getChartData(availableSprints, 'velocity', 'Velocity', '#4169E1', { borderDash: [5, 5] }),
-            getChartData(availableSprints, 'committedStoryPoints', 'Committed', '#228B22'),
-            getChartData(availableSprints, 'completedStoryPoints', 'Completed', '#FF6347')
+            getChartData(availableSprints, 'committedStoryPoints', 'Committed', '#FF6347'),
+            getChartData(availableSprints, 'completedStoryPoints', 'Completed', '#228B22'),
+            getCycleTimeData(availableSprints)
         ];
 
         let minY = 7, maxY = 7;
 
         for (const ds of datasets) {
-            for (const val of ds.data) {
-                if (val < minY) {
-                    minY = val;
-                }
+            if (ds.yAxisID !== 'y1') {
+                for (const val of ds.data) {
+                    if (val < minY) {
+                        minY = val;
+                    }
 
-                if (val > maxY) {
-                    maxY = val;
+                    if (val > maxY) {
+                        maxY = val;
+                    }
                 }
             }
         }
 
         if (minY <= 2) {
             minY = 0;
+        } else {
+            minY -= 1;
         }
 
         return {
             data: { labels, datasets },
-            options: getOptions(name, `Velocity: ${averageCompleted}`, minY, maxY + 2)
+            options: getOptions(name, `Velocity: ${velocity ?? '(Unavailable)'}`, minY, maxY + 2)
         };
     }, [board]);
 
     return (
-        <div className="col-12 col-xl-6">
+        <div className="col-12 col-xl-6 mb-4">
             <Chart type="line" data={data} options={options} height="350px" />
         </div>
     );

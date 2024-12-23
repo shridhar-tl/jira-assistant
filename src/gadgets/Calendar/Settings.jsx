@@ -57,7 +57,7 @@ class CalendarSettings extends BaseDialog {
                 <label className="col-md-3 col-form-label">Worklog entry color</label>
                 <div className="col-md-9 col-form-label">
                     <ColorPicker value={settings.worklogColor} fieldName="worklogColor" onChange={this.setValue} />
-                    <label className="form-check-label block">
+                    <label className="form-check-label d-block">
                         Specify the color of the worklog entry
                     </label>
                 </div>

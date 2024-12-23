@@ -3,17 +3,20 @@ const settingsName = 'reports_SayDoRatioReport';
 
 export async function getSprintWiseSayDoRatio(settings) {
     const { sprintBoards, noOfSprints, velocitySprints, storyPointField } = settings;
-    const { $sprint, $config } = inject('SprintService', 'SessionService', 'ConfigService');
+    const { $sprint, $jira, $config } = inject('SprintService', 'JiraService', 'ConfigService');
+
+    const customFields = await $jira.getCustomFields();
+    const sprintFieldId = customFields.find(({ name }) => name === 'Sprint')?.id;
 
     const result = [];
     for (const { id, name } of sprintBoards) {
-        const { closedSprintLists, averageCommitted, averageCompleted, sayDoRatio } = await $sprint.computeAverageSprintVelocity(id, velocitySprints, storyPointField, noOfSprints + velocitySprints);
+        const { closedSprintLists, ...boardProps } = await $sprint.computeAverageSprintVelocity(id, velocitySprints, storyPointField, sprintFieldId, noOfSprints + velocitySprints);
 
         const sprintList = closedSprintLists.slice(-noOfSprints);
         while (sprintList.length < noOfSprints) {
             sprintList.splice(0, 0, null);
         }
-        result.push({ id, name, sprintList, averageCommitted, averageCompleted, sayDoRatio });
+        result.push({ id, name, sprintList, ...boardProps });
     }
 
     await $config.saveSettings(settingsName, { sprintBoards, noOfSprints, velocitySprints });

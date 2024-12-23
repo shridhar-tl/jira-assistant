@@ -432,7 +432,7 @@ export default class JiraService {
                 await this.fillMissingWorklogs(issues, worklogStartDate, worklogEndDate);
             }
 
-            return issues;
+            return issues.sortBy(t => t.key);
         };
 
         if (!Array.isArray(sprintIds)) {
@@ -581,6 +581,24 @@ export default class JiraService {
 
             issue.fields.worklog = res;
         });
+    }
+
+    async getBulkIssueChangelogs(issueIdsOrKeys, fieldIds) {
+        try {
+            const { issueChangeLogs } = await this.$ajax.post(ApiUrls.bulkIssueChangelogs, {
+                maxResults: 10000,
+                issueIdsOrKeys,
+                fieldIds
+            });
+
+            return issueChangeLogs.reduce((obj, item) => {
+                obj[item.issueId] = item.changeHistories.sortBy(ch => ch.created).flatMap(({ items, ...ch }) => items.map(i => ({ ...ch, ...i })));
+                return obj;
+            }, {});
+        } catch (err) {
+            console.error("Unable to fetch changelogs for tickets: ", err);
+            return {};
+        }
     }
 
     fillWL(issue, startDate, endDate) {
