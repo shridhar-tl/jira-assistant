@@ -26,6 +26,7 @@ export const ApiUrls = {
     rapidSprintList: "~/rest/greenhopper/1.0/sprintquery/{0}",
     rapidSprintDetails: "~/rest/greenhopper/1.0/rapid/charts/sprintreport?rapidViewId={0}&sprintId={1}",
     sprintListAll: "~/rest/greenhopper/1.0/integration/teamcalendars/sprint/list?jql=project+in+({0})",
+    getSprintProperty: "~/rest/agile/1.0/sprint/{0}/properties/{1}",
     getSprintIssues: "~/rest/agile/1.0/sprint/{0}/issue",
     bulkIssueChangelogs: '~/rest/api/3/changelog/bulkfetch',
     rapidViews: "~/rest/greenhopper/1.0/rapidview",

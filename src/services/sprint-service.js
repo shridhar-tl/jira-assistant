@@ -20,7 +20,8 @@ export default class SprintService {
 
         const sprintWiseIssues = await this.$jira.getSprintIssues(sprintIds, {
             jql: 'issuetype not in subTaskIssueTypes()',
-            fields: ['created', 'resolutiondate', storyPointFieldName]
+            fields: ['created', 'resolutiondate', storyPointFieldName],
+            includeRemoved: true
         });
 
         for (let index = 0; index < closedSprintLists.length; index++) {
@@ -58,16 +59,18 @@ export default class SprintService {
                 issue.addedToSprint = startDate.isBefore(issueCreated)
                     || (firstSprintLog && !firstSprintLog.from.split(',').some(sid => parseInt(sid) === sprint.id));
 
-                issue.initialStoryPoints = parseInt(storyPoint) || 0;
+                if (!('initialStoryPoints' in issue)) {
+                    issue.initialStoryPoints = parseFloat(storyPoint) || 0;
 
-                if (allLogs?.length) {
-                    const spLog = getFirstModifiedLog(modifiedWithinSprint, storyPointFieldName);
-                    if (spLog) {
-                        issue.initialStoryPoints = parseInt(spLog.fromString) || 0;
-                    } else {
-                        const spModifiedAfterSprint = allLogs.filter(log => log.fieldId === storyPointFieldName && moment(log.created).isAfter(completeDate))[0];
-                        if (spModifiedAfterSprint) {
-                            issue.initialStoryPoints = parseInt(spModifiedAfterSprint.fromString) || 0;
+                    if (allLogs?.length) {
+                        const spLog = getFirstModifiedLog(modifiedWithinSprint, storyPointFieldName);
+                        if (spLog) {
+                            issue.initialStoryPoints = parseFloat(spLog.fromString) || 0;
+                        } else {
+                            const spModifiedAfterSprint = allLogs.filter(log => log.fieldId === storyPointFieldName && moment(log.created).isAfter(completeDate))[0];
+                            if (spModifiedAfterSprint) {
+                                issue.initialStoryPoints = parseFloat(spModifiedAfterSprint.fromString) || 0;
+                            }
                         }
                     }
                 }
