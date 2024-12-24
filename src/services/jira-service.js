@@ -423,11 +423,57 @@ export default class JiraService {
         return this.$ajax.get(ApiUrls.rapidSprintDetails, rapidViewId, sprintId);
     }
 
+    async getSprintProperty(sprintId, propertyKey) {
+        try {
+            const result = await this.$ajax.get(ApiUrls.getSprintProperty.format(sprintId, propertyKey));
+            return result?.value;
+        } catch (err) {
+            if (!err.error?.errorMessages?.[0]?.includes("does not exist")) {
+                console.error(`Failed to fetch property ${propertyKey} for sprint ${sprintId}:`, error);
+            }
+            return null;
+        }
+    }
+
     async getSprintIssues(sprintIds, options) {
-        const { worklogStartDate, worklogEndDate, ...opts } = options || {};
+        const { worklogStartDate, worklogEndDate, includeRemoved, ...opts } = options || {};
 
         const worker = async (sprintId) => {
             const { issues } = await this.$ajax.get(ApiUrls.getSprintIssues.format(sprintId), opts);
+
+            try { // if includeRemoved is true, then fetch removed issues based on custom properties added in sprint and add them to the list
+                const removedIssues = includeRemoved ? await this.getSprintProperty(sprintId, 'jaSprintStartInfo') : null;
+                if (removedIssues) {
+                    const removedIssueKeys = Object.keys(removedIssues);
+                    let jql = `key in (${removedIssueKeys.join(',')})`;
+
+                    if (opts?.jql) {
+                        jql = `(${opts.jql}) AND (${jql})`;
+                    }
+
+                    const closedTickets = await this.searchTickets(jql, options?.fields, 0, { ignoreErrors: true });
+                    if (closedTickets?.length) {
+                        const issuesMap = issues.reduce((obj, issue) => {
+                            obj[issue.key] = issue;
+                            return obj;
+                        }, {});
+
+                        closedTickets.forEach(t => {
+                            let existingIssue = issuesMap[t.key];
+                            if (!existingIssue) {
+                                issues.push(t);
+                                existingIssue = t;
+                            }
+                            if (removedIssues[t.key] && "sp" in removedIssues[t.key]) {
+                                existingIssue.initialStoryPoints = parseFloat(removedIssues[t.key].sp) || 0;
+                            }
+                        });
+                    }
+                }
+            } catch (e) {
+                console.error("Error trying to retrieve removed issues for sprint", sprintId, e);
+            }
+
             if (options?.fields?.indexOf("worklog") > -1) {
                 await this.fillMissingWorklogs(issues, worklogStartDate, worklogEndDate);
             }
