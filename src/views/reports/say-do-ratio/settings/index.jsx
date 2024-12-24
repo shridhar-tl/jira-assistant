@@ -1,4 +1,5 @@
 import React from 'react';
+import { isPluginBuild } from 'src/constants/build-info';
 import SideBar from '../../pivot-report/editor/SideBar';
 import RapidViewList from '../../../../components/RapidViewList';
 import { Button, Checkbox, TextBox } from 'src/controls';
@@ -27,21 +28,21 @@ function ReportSettings({ settings: actualSettings, show, onHide, onDone }) {
         <SideBar show={show} onHide={onHide} title="Report Config"
             controls={null} width="500" contentClassName="p-0">
             <div className="p-3">
-                <label className="font-bold pb-2 d-block">Select Sprint Boards:</label>
+                <label className="fw-bold pb-2 d-block">Select Sprint Boards:</label>
                 <RapidViewList value={settings.sprintBoards} multiple onChange={setSprintBoards} />
                 <span className="help-text d-block">
                     Select all the sprint boards for which you would like to view Say-Do Ratio report.
                 </span>
             </div>
             <div className="p-3">
-                <label className="font-bold pb-2 d-block">Number of Sprints:</label>
+                <label className="fw-bold pb-2 d-block">Number of Sprints:</label>
                 <TextBox value={settings.noOfSprints} field="noOfSprints" onChange={setNumeric} maxLength={2} />
                 <span className="help-text d-block">
                     Provide the number of sprints to be displayed in chart and table. Minimum value allowed is 3.
                 </span>
             </div>
             <div className="p-3">
-                <label className="font-bold pb-2 d-block">Number of Sprints for velocity:</label>
+                <label className="fw-bold pb-2 d-block">Number of Sprints for velocity:</label>
                 <TextBox value={settings.velocitySprints} field="velocitySprints" onChange={setNumeric} maxLength={1} />
                 <span className="help-text d-block">
                     Provide the number of sprints to be used for velocity calculation.
@@ -50,16 +51,16 @@ function ReportSettings({ settings: actualSettings, show, onHide, onDone }) {
                 </span>
             </div>
             {!settings?.storyPointField && <div className="p-3">
-                <label className="font-bold pb-2 d-block">Story Points field unavailable:</label>
+                <label className="fw-bold pb-2 d-block msg-error">Story Points field unavailable:</label>
                 Select value for "Story Points field" under General settings -&gt; "Default Values" tab.
                 Report cannot be generated without having "Story Points field" configured.
             </div>}
-            <div className="p-3">
+            {!isPluginBuild && <div className="p-3">
                 <Checkbox checked={true} label="Do not show issues removed from sprint as committed" />
                 <div className="help-text d-block mt-1">
                     If an issue is removed from sprint before closing it, then it would not be considered as committed which impacts Sa-Do-Ratio.
                 </div>
-            </div>
+            </div>}
             <div className="p-3">
                 <Checkbox checked={true} label="Include non working days in cycle time calculation" />
             </div>

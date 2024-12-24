@@ -47,7 +47,7 @@ function ReportParameters() {
             <strong>Provide values for missing parameters to generate report:</strong>
             <br />
             {keys.map((key) => <div key={key} className="param-field py-3">
-                <label className="font-bold me-3">{parameters[key].name}: </label>
+                <label className="fw-bold me-3">{parameters[key].name}: </label>
                 <ParameterControl {...parameters[key]} />
             </div>)}
             <br />

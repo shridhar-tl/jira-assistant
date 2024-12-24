@@ -41,7 +41,7 @@ function Source({ onDone }) {
             applying a JQL filter to refine the results.
         </p>
 
-        <label className="font-bold mt-3">Data source type:</label>
+        <label className="fw-bold mt-3">Data source type:</label>
         <RadioButton className="block"
             value={dataSourceType} defaultValue={1}
             label="Use raw JQL to filter and pull issues list"
@@ -51,7 +51,7 @@ function Source({ onDone }) {
             label="Pull issues for select sprints and apply JQL filter"
             onChange={updateDataSourceType} disabled />
 
-        <label className="font-bold mt-3">JQL Query:</label>
+        <label className="fw-bold mt-3">JQL Query:</label>
         <JQLEditor jql={jql} plugged onChange={updateJQL} />
 
         <Button className="float-end me-2" icon="fa fa-arrow-right"

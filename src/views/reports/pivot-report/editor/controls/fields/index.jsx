@@ -40,7 +40,7 @@ function FieldsList({ fields, title }) {
     if (!items?.length) { return null; }
 
     return (<div className="fields-list">
-        <div className="block font-bold">{title}</div>
+        <div className="block fw-bold">{title}</div>
         {items.map((field, i) => (<Draggable key={i}
             className="jira-field"
             itemType="jira-field"
