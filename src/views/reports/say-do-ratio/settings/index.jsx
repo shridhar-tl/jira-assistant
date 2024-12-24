@@ -6,6 +6,7 @@ import { Button, Checkbox, TextBox } from 'src/controls';
 
 function ReportSettings({ settings: actualSettings, show, onHide, onDone }) {
     const [settings, updateSettings] = React.useState(actualSettings);
+    const [isLoading, setIsLoading] = React.useState(false);
     const $this = React.useRef({});
     $this.current.settings = settings;
     $this.current.onDone = onDone;
@@ -16,8 +17,12 @@ function ReportSettings({ settings: actualSettings, show, onHide, onDone }) {
     }, []);
     const setSprintBoards = React.useCallback((sprintBoards) => handleChange({ sprintBoards }), [handleChange]);
     const setNumeric = React.useCallback((value, field) => handleChange({ [field]: parseInt(value) || '' }), [handleChange]);
+    const setBoolean = React.useCallback((value, field) => handleChange({ [field]: !!value }), [handleChange]);
 
-    const generateReport = React.useCallback(() => $this.current.onDone($this.current.settings), []);
+    const generateReport = React.useCallback(() => {
+        setIsLoading(true);
+        $this.current.onDone($this.current.settings).finally(() => setIsLoading(false));
+    }, []);
 
     const allowGeneratingReport = settings?.sprintBoards?.length > 0
         && settings.noOfSprints >= 3 && settings.noOfSprints < 13
@@ -56,17 +61,23 @@ function ReportSettings({ settings: actualSettings, show, onHide, onDone }) {
                 Report cannot be generated without having "Story Points field" configured.
             </div>}
             {!isPluginBuild && <div className="p-3">
-                <Checkbox checked={true} label="Do not show issues removed from sprint as committed" />
+                <Checkbox checked={true} disabled label="Do not show issues removed from sprint as committed" />
                 <div className="help-text d-block mt-1">
                     If an issue is removed from sprint before closing it, then it would not be considered as committed which impacts Sa-Do-Ratio.
+                    <br />
+                    Note: As of now Jira doesn't support pulling issues which are removed from sprint.
                 </div>
             </div>}
             <div className="p-3">
-                <Checkbox checked={true} label="Include non working days in cycle time calculation" />
+                <Checkbox checked={settings.includeNonWorkingDays} field="includeNonWorkingDays" onChange={setBoolean}
+                    label="Include non working days in cycle time calculation" />
+                <div className="help-text d-block mt-1">
+                    You can configure working days from General Settings page.
+                </div>
             </div>
             <div className="p-3">
-                <Button className="float-end me-2" icon="fa fa-arrow-right"
-                    iconPos="right" label="Generate Report" disabled={!allowGeneratingReport}
+                <Button className="float-end me-2" icon="fa fa-arrow-right" isLoading={isLoading}
+                    iconPos="right" label="Generate Report" disabled={!allowGeneratingReport || isLoading}
                     onClick={generateReport} title="Generated report for selected boards" />
             </div>
         </SideBar>

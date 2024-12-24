@@ -1,4 +1,5 @@
 import moment from "moment";
+import { getDaysDiffForDateRange } from "src/utils/date";
 
 export default class SprintService {
     static dependencies = ['JiraService'];
@@ -7,7 +8,7 @@ export default class SprintService {
         this.$jira = $jira;
     }
 
-    computeAverageSprintVelocity = async (boardId, noOfSprintsForVelocity = 6, storyPointFieldName, sprintFieldId, noOfSprintsToPull = noOfSprintsForVelocity * 2) => {
+    computeAverageSprintVelocity = async (boardId, noOfSprintsForVelocity = 6, storyPointFieldName, sprintFieldId, noOfSprintsToPull = noOfSprintsForVelocity * 2, workingDays) => {
         const allClosedSprintLists = await this.$jira.getRapidSprintList([boardId], { state: 'closed' });
         const closedSprintLists = allClosedSprintLists.slice(0, noOfSprintsToPull).sortBy(({ completeDate }) => completeDate.getTime());
         const availableSprintCount = closedSprintLists.length;
@@ -99,7 +100,7 @@ export default class SprintService {
                         const firstClosed = getFirstModifiedLog(allLogs, 'status', undefined, ['done', 'closed']);
                         if (statusLog && (!firstClosed || startDate.isBefore(firstClosed.created))) { // If ticket is once closed before sprint start, then is should not be considered for cycle time
                             const dateToUse = completeDate.isBefore($resolutiondate) ? completeDate : $resolutiondate;
-                            const ct = dateToUse.diff(statusLog.created, 'days', true) || 0;
+                            const ct = getDaysDiffForDateRange(statusLog.created, dateToUse, workingDays);
                             if (ct > 0) {
                                 issue.cycleTime = ct;
                                 cycleTimes.push(issue.cycleTime);

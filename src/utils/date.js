@@ -55,3 +55,72 @@ export function getWeekGroup(dates) {
         };
     });
 }
+
+/**
+ * Calculates the precise number of working days between two dates.
+ *
+ * @param {moment.Moment} fromDate - The start date.
+ * @param {moment.Moment} toDate - The end date.
+ * @param {number[]} [workingDays=[]] - Array of working days (0 = Sunday, ..., 6 = Saturday).
+ * @returns {number} - The precise number of working days.
+ */
+export function getDaysDiffForDateRange(fromDate, toDate, workingDays) {
+    fromDate = moment(fromDate);
+
+    if (!workingDays?.length) {
+        return fromDate.diff(toDate, 'days', true) || 0;
+    }
+
+    toDate = moment(toDate);
+
+    // If workingDays is empty, consider all days as working days
+    const allWorking = workingDays.length === 0;
+
+    // If fromDate is after toDate, swap them
+    if (fromDate.isAfter(toDate)) {
+        [fromDate, toDate] = [toDate, fromDate];
+    }
+
+    // If both dates are the same day
+    if (fromDate.isSame(toDate, 'day')) {
+        if (allWorking || workingDays.includes(fromDate.day())) {
+            return toDate.diff(fromDate, 'days', true) || 0;
+        } else {
+            return 0;
+        }
+    }
+
+    let totalDays = 0;
+
+    // Clone dates to avoid mutating the originals
+    let current = fromDate.clone();
+
+    // First day (from fromDate to end of the day)
+    if (allWorking || workingDays.includes(current.day())) {
+        const endOfDay = current.clone().endOf('day');
+        const diff = endOfDay.diff(current, 'days', true);
+        totalDays += diff;
+    }
+
+    // Move to the start of the next day
+    current = current.add(1, 'day').startOf('day');
+
+    // Iterate through full days
+    while (current.isBefore(toDate, 'day')) {
+        if (allWorking || workingDays.includes(current.day())) {
+            totalDays += 1;
+        }
+        current = current.add(1, 'day');
+    }
+
+    // Last day (from start of the day to toDate)
+    if (current.isSame(toDate, 'day')) {
+        if (allWorking || workingDays.includes(current.day())) {
+            const startOfDay = current.clone().startOf('day');
+            const diff = toDate.diff(startOfDay, 'milliseconds') / (1000 * 60 * 60 * 24);
+            totalDays += diff;
+        }
+    }
+
+    return totalDays || 0;
+}

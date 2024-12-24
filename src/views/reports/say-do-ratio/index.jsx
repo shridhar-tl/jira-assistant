@@ -34,7 +34,7 @@ function SayDoRatioReport() {
     const applySettings = React.useCallback((newSettings) => {
         updateSettings(newSettings);
         $this.current.settings = newSettings;
-        $this.current.loadReportData().then($this.current.toggleEdit);
+        return $this.current.loadReportData().then($this.current.toggleEdit);
     }, []);
 
     const customActions = (
