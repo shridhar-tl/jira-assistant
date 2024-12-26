@@ -128,7 +128,7 @@ export class THead extends PureComponent {
     render() {
         const { className, style, children } = this.props;
 
-        return (<thead ref={this.setRef} className={className} style={style}>
+        return (<thead ref={this.setRef} className={className} style={style} exportignore={this.props.exportIgnore || undefined}>
             {children}
         </thead>);
     }

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import classNames from 'classnames';
 import { Panel } from 'primereact/panel';
 import { Tooltip } from 'primereact/tooltip';
 //import { EventEmitter } from 'events';
-import { Button, Loader } from '../controls';
-import classNames from 'classnames';
+import { Button, Loader, ProgressSpinner } from '../controls';
 import { showContextMenu } from '../components/ContextMenu';
 import { ExportHelper } from '../common/ExportHelper';
 import { ExportFormat } from '../common/Exporter';
@@ -16,7 +16,7 @@ import './BaseGadget.scss';
 
 function GadgetLayout(props) {
     const {
-        title, iconClass, hideRefresh, gadgetHint, hideMenu, isLoading,
+        title, iconClass, hideRefresh, gadgetHint, hideMenu, isLoading, loadingProgress,
         customActions,
         onRefresh,
         settings: propsSettings
@@ -202,7 +202,8 @@ function GadgetLayout(props) {
 
     return (
         <div ref={setRef} className={className} data-test-id={gadgetType}>
-            {isLoading && <Loader />}
+            {isLoading && typeof loadingProgress !== 'number' && <Loader />}
+            {isLoading && typeof loadingProgress === 'number' && <ProgressSpinner progress={loadingProgress} backdrop />}
             <Panel header={getHeader()}>
                 {children}
                 {/* renderFooter logic */}
