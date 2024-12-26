@@ -52,7 +52,7 @@ function SprintInfo({ sprint, onClose }) {
             {groupedIssues.map(group => (
                 <div key={group.title} className="issue-group">
                     <h3>{group.title}</h3>
-                    <ScrollableTable dataset={group.issues} className="issues-table" height="calc(100vh - 560px)">
+                    <ScrollableTable dataset={group.issues} className="issues-table" containerStyle={{ height: 'auto', maxHeight: 'calc(100vh - 560px)' }} exportable={false}>
                         <THead>
                             <tr>
                                 <Column style={{ width: '100px' }}>Key</Column>
