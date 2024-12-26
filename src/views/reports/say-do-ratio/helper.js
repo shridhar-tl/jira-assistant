@@ -1,30 +1,38 @@
+import FeedbackPromise from "src/common/FeedbackPromise";
 import { inject } from "src/services";
 const settingsName = 'reports_SayDoRatioReport';
 
-export async function getSprintWiseSayDoRatio(settings) {
-    const { sprintBoards, noOfSprints, velocitySprints, storyPointField, workingDays, includeNonWorkingDays } = settings;
-    const { $sprint, $jira, $config } = inject('SprintService', 'JiraService', 'ConfigService');
+export function getSprintWiseSayDoRatio(settings) {
+    return new FeedbackPromise(async (resolve, _, progress) => {
+        const { sprintBoards, noOfSprints, velocitySprints, storyPointField, workingDays, includeNonWorkingDays } = settings;
+        const { $sprint, $jira, $config } = inject('SprintService', 'JiraService', 'ConfigService');
 
-    await $config.saveSettings(settingsName, { sprintBoards, noOfSprints, velocitySprints, includeNonWorkingDays });
+        await $config.saveSettings(settingsName, { sprintBoards, noOfSprints, velocitySprints, includeNonWorkingDays });
 
-    const customFields = await $jira.getCustomFields();
-    const sprintFieldId = customFields.find(({ name }) => name === 'Sprint')?.id;
+        const customFields = await $jira.getCustomFields();
+        const sprintFieldId = customFields.find(({ name }) => name === 'Sprint')?.id;
+        progress({ data: [], completed: 5 });
 
-    const workingDaysToUse = includeNonWorkingDays ? undefined : workingDays;
+        const workingDaysToUse = includeNonWorkingDays ? undefined : workingDays;
 
-    const result = [];
-    for (const { id, name } of sprintBoards) {
-        const { closedSprintLists, ...boardProps } = await $sprint.computeAverageSprintVelocity(id,
-            velocitySprints, storyPointField, sprintFieldId, noOfSprints + velocitySprints, workingDaysToUse);
+        const result = [];
+        for (const { id, name } of sprintBoards) {
+            const { closedSprintLists, ...boardProps } = await $sprint.computeAverageSprintVelocity(id,
+                velocitySprints, storyPointField, sprintFieldId, noOfSprints + velocitySprints, workingDaysToUse)
+                .progress(({ completed }) => {
+                    progress({ completed: 5 + (((result.length + (completed / 100)) * 95) / sprintBoards.length) });
+                });
 
-        const sprintList = closedSprintLists.slice(-noOfSprints);
-        while (sprintList.length < noOfSprints) {
-            sprintList.splice(0, 0, null);
+            const sprintList = closedSprintLists.slice(-noOfSprints);
+            while (sprintList.length < noOfSprints) {
+                sprintList.splice(0, 0, null); // Add nulls to the beginning if there are no sufficient number of sprints
+            }
+            result.push({ id, name, sprintList, ...boardProps });
+            progress({ data: [...result], completed: 5 + (result.length * 95 / sprintBoards.length) });
         }
-        result.push({ id, name, sprintList, ...boardProps });
-    }
 
-    return result;
+        resolve(result);
+    });
 }
 
 export function getSettings() {

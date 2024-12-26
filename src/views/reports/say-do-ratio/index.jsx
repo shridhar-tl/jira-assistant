@@ -14,6 +14,7 @@ const changeLogErrorMessage = "Unable to fetch change logs and hence data may no
 
 function SayDoRatioReport() {
     const [isLoading, setLoader] = React.useState(false);
+    const [progress, setProgress] = React.useState();
     const [selectedSprint, setSprint] = React.useState();
     const [editMode, toggleEdit] = useToggler(true);
     const [settings, updateSettings] = React.useState(getSettings());
@@ -24,8 +25,14 @@ function SayDoRatioReport() {
 
     const loadReportData = React.useCallback(async () => {
         try {
+            setProgress(0);
             setLoader(true);
-            const reportData = await getSprintWiseSayDoRatio($this.current.settings);
+            const reportData = await getSprintWiseSayDoRatio($this.current.settings).progress(({ completed, data }) => {
+                setProgress(completed);
+                if (data) {
+                setReportData(data);
+                }
+            });
             setReportData(reportData);
         } finally {
             setLoader(false);
@@ -48,7 +55,7 @@ function SayDoRatioReport() {
         <ReportSettings settings={settings} show={editMode} onHide={toggleEdit} onDone={applySettings} />
         <div className="page-container">
             <GadgetLayout title="Say Do Ratio Report"
-                isGadget={false} isLoading={isLoading}
+                isGadget={false} isLoading={isLoading} loadingProgress={progress}
                 onRefresh={loadReportData} customActions={customActions}
             >
                 <ScrollableTable dataset={reportData} containerStyle={{ height: 'auto', maxHeight: '70%' }} exportable={false}>

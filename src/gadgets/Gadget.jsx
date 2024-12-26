@@ -11,12 +11,13 @@ import { GadgetActionType } from './_constants';
 import { inject } from '../services';
 import { EventCategory } from '../constants/settings';
 import './BaseGadget.scss';
+import ProgressSpinner from 'react-controls/controls/ProgressSpinner';
 
 //export const onDashboardEvent = new EventEmitter();
 
 function GadgetLayout(props) {
     const {
-        title, iconClass, hideRefresh, gadgetHint, hideMenu, isLoading,
+        title, iconClass, hideRefresh, gadgetHint, hideMenu, isLoading, loadingProgress,
         customActions,
         onRefresh,
         settings: propsSettings
@@ -202,7 +203,8 @@ function GadgetLayout(props) {
 
     return (
         <div ref={setRef} className={className} data-test-id={gadgetType}>
-            {isLoading && <Loader />}
+            {isLoading && typeof loadingProgress !== 'number' && <Loader />}
+            {isLoading && typeof loadingProgress === 'number' && <ProgressSpinner progress={loadingProgress} backdrop />}
             <Panel header={getHeader()}>
                 {children}
                 {/* renderFooter logic */}

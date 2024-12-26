@@ -4,6 +4,7 @@ import { defaultSettings, defaultJiraFields } from '../constants/settings';
 import { ApiUrls } from '../constants/api-urls';
 import * as moment from 'moment';
 import { mergeUrl, prepareUrlWithQueryString, viewIssueUrl, waitFor } from '../common/utils';
+import FeedbackPromise from 'src/common/FeedbackPromise';
 
 export default class JiraService {
     static dependencies = ["AjaxService", "CacheService", "MessageService", "SessionService"];
@@ -435,7 +436,7 @@ export default class JiraService {
         }
     }
 
-    async getSprintIssues(sprintIds, options) {
+    getSprintIssues(sprintIds, options) {
         const { worklogStartDate, worklogEndDate, includeRemoved, ...opts } = options || {};
 
         const worker = async (sprintId) => {
@@ -481,15 +482,22 @@ export default class JiraService {
             return issues.sortBy(t => t.key);
         };
 
+
         if (!Array.isArray(sprintIds)) {
             return worker(sprintIds);
         } else {
-            const sprints = {};
-            await runOnQueue(sprintIds, 3, async (id) => {
-                sprints[id] = await worker(id);
-            });
+            return new FeedbackPromise(async (resolve, _, progress) => {
+                const sprints = {};
+                const total = sprintIds.length;
+                let completed = 0;
+                await runOnQueue(sprintIds, 3, async (id) => {
+                    sprints[id] = await worker(id, progress);
+                    completed++;
+                    progress(completed * 100 / total);
+                });
 
-            return sprints;
+                resolve(sprints);
+            });
         }
     }
 
