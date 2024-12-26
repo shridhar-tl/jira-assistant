@@ -10,6 +10,8 @@ import { Button } from '../../../controls';
 import SprintInfo from './SprintInfo';
 import './SayDoRatioReport.scss';
 
+const changeLogErrorMessage = "Unable to fetch change logs and hence data may not be accurate";
+
 function SayDoRatioReport() {
     const [isLoading, setLoader] = React.useState(false);
     const [selectedSprint, setSprint] = React.useState();
@@ -64,7 +66,7 @@ function SayDoRatioReport() {
                     </THead>
                     <TBody className="no-log-bg-hl">
                         {(b) => <tr key={b.id}>
-                            <td>{b.name}</td>
+                            <td>{b.name} {b.logUnavailable && <span className="fas fa-exclamation-triangle msg-warning" title={changeLogErrorMessage} />}</td>
                             <td className="text-center">{b.velocity || '-'} {!!b.velocity && <span>({parseFloat(b.velocityGrowth?.toFixed(2) || 0)}%)</span>}</td>
                             <td className={getLogClass(b.sayDoRatio)}>
                                 {formatValue(b.sayDoRatio)}
@@ -74,6 +76,7 @@ function SayDoRatioReport() {
                             {b.sprintList.map(s => (s?.sayDoRatio ? (<td className={getLogClass(s.sayDoRatio, s === selectedSprint)} onClick={() => setSprint(s)} key={s.id}>
                                 <span className="fas fa-info-circle float-end" />
                                 {s.sayDoRatio}%
+                                {!b.logUnavailable && s.logUnavailable && <span className="fas fa-exclamation-triangle msg-warning" title={changeLogErrorMessage} />}
                                 <Indicator value={parseInt(s.sayDoRatio)} maxHours={100} />
                             </td>) : <td className="text-center">-</td>))}
                         </tr>}

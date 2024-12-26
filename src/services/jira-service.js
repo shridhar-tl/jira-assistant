@@ -643,7 +643,6 @@ export default class JiraService {
             }, {});
         } catch (err) {
             console.error("Unable to fetch changelogs for tickets: ", err);
-            return {};
         }
     }
 

@@ -31,8 +31,12 @@ export default class SprintService {
             const completeDate = moment(sprint.completeDate);
             sprint.issues = sprintWiseIssues[sprint.id];
 
-            const issueLogs = await this.$jira.getBulkIssueChangelogs(sprint.issues.map(({ key }) => key),
+            let issueLogs = await this.$jira.getBulkIssueChangelogs(sprint.issues.map(({ key }) => key),
                 ['status', sprintFieldId, storyPointFieldName]);
+            if (!issueLogs) {
+                sprint.logUnavailable = true;
+                issueLogs = {};
+            }
 
             sprint.committedStoryPoints = 0;
             sprint.completedStoryPoints = 0;
@@ -158,8 +162,9 @@ export default class SprintService {
         const velocityGrowth = previousSprint?.velocityGrowth;
         //const diff = Math.abs(averageCommitted - averageCompleted);
         //const median = Math.round(averageCompleted + (diff / 2));
+        const logUnavailable = sprintsToConsider.every(s => s.logUnavailable);
 
-        return { closedSprintLists, averageCommitted, averageCompleted, velocity: boardVelocity, velocityGrowth, sayDoRatio, averageCycleTime };
+        return { closedSprintLists, averageCommitted, averageCompleted, velocity: boardVelocity, velocityGrowth, sayDoRatio, averageCycleTime, logUnavailable };
     };
 }
 
