@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import classNames from 'classnames';
 import { Panel } from 'primereact/panel';
 import { Tooltip } from 'primereact/tooltip';
 //import { EventEmitter } from 'events';
-import { Button, Loader } from '../controls';
-import classNames from 'classnames';
+import { Button, Loader, ProgressSpinner } from '../controls';
 import { showContextMenu } from '../components/ContextMenu';
 import { ExportHelper } from '../common/ExportHelper';
 import { ExportFormat } from '../common/Exporter';
@@ -11,7 +11,6 @@ import { GadgetActionType } from './_constants';
 import { inject } from '../services';
 import { EventCategory } from '../constants/settings';
 import './BaseGadget.scss';
-import ProgressSpinner from 'react-controls/controls/ProgressSpinner';
 
 //export const onDashboardEvent = new EventEmitter();
 
