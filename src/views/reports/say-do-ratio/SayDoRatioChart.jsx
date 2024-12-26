@@ -149,7 +149,7 @@ function SayDoRatioChart({ board }) {
 
     return (
         <div className="col-12 col-xl-6 mb-4">
-            <Chart type="line" data={data} options={options} height="350px" />
+            <Chart className="exportable-image" type="line" data={data} options={options} height="350px" />
         </div>
     );
 }

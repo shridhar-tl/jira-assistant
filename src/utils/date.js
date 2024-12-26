@@ -65,13 +65,13 @@ export function getWeekGroup(dates) {
  * @returns {number} - The precise number of working days.
  */
 export function getDaysDiffForDateRange(fromDate, toDate, workingDays) {
-    fromDate = moment(fromDate);
+    toDate = moment(toDate);
 
     if (!workingDays?.length) {
-        return fromDate.diff(toDate, 'days', true) || 0;
+        return toDate.diff(fromDate, 'days', true) || 0;
     }
 
-    toDate = moment(toDate);
+    fromDate = moment(fromDate);
 
     // If workingDays is empty, consider all days as working days
     const allWorking = workingDays.length === 0;
@@ -97,7 +97,7 @@ export function getDaysDiffForDateRange(fromDate, toDate, workingDays) {
 
     // First day (from fromDate to end of the day)
     if (allWorking || workingDays.includes(current.day())) {
-        const endOfDay = current.clone().endOf('day');
+        const endOfDay = current.endOf('day');
         const diff = endOfDay.diff(current, 'days', true);
         totalDays += diff;
     }
@@ -116,8 +116,8 @@ export function getDaysDiffForDateRange(fromDate, toDate, workingDays) {
     // Last day (from start of the day to toDate)
     if (current.isSame(toDate, 'day')) {
         if (allWorking || workingDays.includes(current.day())) {
-            const startOfDay = current.clone().startOf('day');
-            const diff = toDate.diff(startOfDay, 'milliseconds') / (1000 * 60 * 60 * 24);
+            const startOfDay = current.startOf('day');
+            const diff = toDate.diff(startOfDay, 'days', true);
             totalDays += diff;
         }
     }
