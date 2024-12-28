@@ -160,7 +160,7 @@ async function computeAverageSprintVelocity(boardId, { settings: { noOfSprintsFo
     const availableSprintCount = closedSprintLists.length;
 
     if (!availableSprintCount) {
-        return { closedSprintLists, averageComitted: 0, averageCompleted: 0 };
+        return { closedSprintLists, averageCommitted: 0, averageCompleted: 0 };
     }
 
     const sprintIds = closedSprintLists.map(({ id }) => id);
@@ -178,7 +178,7 @@ async function computeAverageSprintVelocity(boardId, { settings: { noOfSprintsFo
         const completeDate = moment(sprint.completeDate);
         const issues = sprintWiseIssues[sprint.id];
 
-        sprint.comittedStoryPoints = 0;
+        sprint.committedStoryPoints = 0;
         sprint.completedStoryPoints = 0;
 
         issues.forEach(issue => {
@@ -188,14 +188,14 @@ async function computeAverageSprintVelocity(boardId, { settings: { noOfSprintsFo
                 sprint.completedStoryPoints += storypoint;
             }
 
-            sprint.comittedStoryPoints += storypoint;
+            sprint.committedStoryPoints += storypoint;
         });
     });
 
-    const averageComitted = Math.round(closedSprintLists.sum(s => s.comittedStoryPoints) / closedSprintLists.length);
+    const averageCommitted = Math.round(closedSprintLists.sum(s => s.committedStoryPoints) / closedSprintLists.length);
     const averageCompleted = Math.round(closedSprintLists.sum(s => s.completedStoryPoints) / closedSprintLists.length);
-    const diff = Math.abs(averageComitted - averageCompleted);
+    const diff = Math.abs(averageCommitted - averageCompleted);
     const median = Math.round(averageCompleted + (diff / 2));
 
-    return { closedSprintLists, averageComitted, median, averageCompleted };
+    return { closedSprintLists, averageCommitted, median, averageCompleted };
 }

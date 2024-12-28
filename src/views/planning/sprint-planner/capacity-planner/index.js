@@ -36,9 +36,8 @@ function HorizontalSplit({ resources, daysList: { groups } }) {
 const HorizontalComponent = React.memo(HorizontalSplit);
 
 function VerticalSplit({ velocityInfo }) {
-    return (<>
+    return (<div className="d-flex flex-column w-100">
         <SprintVelocity velocityInfo={velocityInfo} />
-        <br /><br />
         <VelocityPicker />
-    </>);
+    </div>);
 }

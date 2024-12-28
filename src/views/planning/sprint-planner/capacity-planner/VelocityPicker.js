@@ -7,7 +7,7 @@ function VelocityPicker() {
     const velocity = usePlannerState(s => s.velocity);
     const velocityInfo = usePlannerState(s => s.velocityInfo);
 
-    const { averageComitted, averageCompleted, median } = velocityInfo || {};
+    const { averageCommitted, averageCompleted, median } = velocityInfo || {};
 
     return (<Form value={velocity} onChange={setVelocitySelection}>
         <ScrollableTable height="auto">
@@ -16,24 +16,24 @@ function VelocityPicker() {
                 <tr>
                     <th>#</th>
                     <th>Type</th>
-                    <th>Value</th>
+                    <th className="text-center">Value</th>
                 </tr>
             </THead>
             <TBody>
                 <tr>
                     <td><FormRadioButton field="selected" defaultValue="C" /></td>
                     <td>Completed average</td>
-                    <td className="pl-4">{averageCompleted}</td>
+                    <td className="text-center">{averageCompleted}</td>
                 </tr>
                 <tr>
                     <td><FormRadioButton field="selected" defaultValue="T" /></td>
                     <td>Total average</td>
-                    <td className="ps-4">{averageComitted}</td>
+                    <td className="text-center">{averageCommitted}</td>
                 </tr>
                 <tr>
                     <td><FormRadioButton field="selected" defaultValue="M" /></td>
                     <td>Median</td>
-                    <td className="ps-4">{median}</td>
+                    <td className="text-center">{median}</td>
                 </tr>
                 <tr>
                     <td><FormRadioButton field="selected" defaultValue="U" /></td>

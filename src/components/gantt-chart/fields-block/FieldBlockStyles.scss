@@ -47,7 +47,9 @@
 }
 
 .hide-scroll-v {
-    &::-webkit-scrollbar {
+    padding-bottom: 11px;
+
+    &::-webkit-scrollbar-vertical {
         width: 0;
     }
 

@@ -6,9 +6,9 @@ function SprintVelocity({ velocityInfo }) {
         return null;
     }
 
-    const { closedSprintLists, averageComitted, averageCompleted } = velocityInfo;
+    const { closedSprintLists, averageCommitted, averageCompleted } = velocityInfo;
 
-    return (<ScrollableTable height="auto">
+    return (<ScrollableTable containerStyle={{ height: 'auto', maxHeight: 'calc(100vh - 292px)', marginBottom: '20px' }}>
         <caption>Sprint Velocity</caption>
         <THead>
             <tr>
@@ -21,14 +21,14 @@ function SprintVelocity({ velocityInfo }) {
             {closedSprintLists.map(sprint => <tr key={sprint.id}>
                 <td>{sprint.name}</td>
                 <td className="text-center">{sprint.completedStoryPoints}</td>
-                <td className="text-center">{sprint.comittedStoryPoints}</td>
+                <td className="text-center">{sprint.committedStoryPoints}</td>
             </tr>)}
         </TBody>
         <tfoot>
             <tr>
                 <th>Average</th>
                 <th className="text-center">{averageCompleted}</th>
-                <th className="text-center">{averageComitted}</th>
+                <th className="text-center">{averageCommitted}</th>
             </tr>
         </tfoot>
     </ScrollableTable>);

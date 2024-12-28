@@ -45,14 +45,14 @@ export default TeamCapacity;
 function getStoryPoints(velocity, velocityInfo) {
     if (!velocity || !velocityInfo) { return 0; }
 
-    const { averageComitted, averageCompleted, median } = velocityInfo;
+    const { averageCommitted, averageCompleted, median } = velocityInfo;
     const { custom, selected } = velocity;
 
     switch (selected) {
         default: return averageCompleted;
         case 'U': return parseInt(custom || averageCompleted);
         case 'M': return parseInt(median || averageCompleted);
-        case 'T': return parseInt(averageComitted || averageCompleted);
+        case 'T': return parseInt(averageCommitted || averageCompleted);
     }
 }
 

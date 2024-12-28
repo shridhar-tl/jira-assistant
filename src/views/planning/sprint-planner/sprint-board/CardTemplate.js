@@ -1,6 +1,7 @@
 import React from 'react';
 import { useSprintIssueStatus } from './actions';
 import IssueDisplay from 'src/display-controls/IssueDisplay';
+import { useShallow } from 'zustand/shallow';
 
 const alignBottomStyle = { verticalAlign: 'bottom' };
 
@@ -18,10 +19,10 @@ function Card({ item, scope: { epicNameField, estimation, epicMap } }) {
 
     const epicObj = epic && epicMap?.[epic];
 
-    const { isUpdating, isEpicSelected } = useSprintIssueStatus(({ [item.key]: updating, selectedEpic }) => ({
+    const { isUpdating, isEpicSelected } = useSprintIssueStatus(useShallow(({ [item.key]: updating, selectedEpic }) => ({
         isUpdating: updating,
         isEpicSelected: epic && selectedEpic === epic
-    }));
+    })));
 
     let style = status.statusCategory?.colorName;
     if (style?.includes('-')) {
