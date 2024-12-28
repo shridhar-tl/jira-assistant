@@ -49,10 +49,12 @@ module.exports = {
 
             // Use js specific for build target to be pulled while importing a file
             if (!isWebBuild) { // As .web.js is already part of module extns, no need to customize for web build
-                // Caution: This may cause issue when there is some .web.js files in any any npm packages
+                // Caution: This may cause issue when there is some .web.js files in any npm packages
                 const extns = wpConfig.resolve.extensions.filter(ext => !ext.includes('.web.js')); // Remove .web.js
                 const jsIdx = extns.indexOf('.js');
                 extns.splice(jsIdx, 0, `.${buildMode.toLowerCase()}.js`);
+                const jsxIdx = extns.indexOf('.jsx');
+                extns.splice(jsxIdx, 0, `.${buildMode.toLowerCase()}.jsx`);
                 wpConfig.resolve.extensions = extns;
             }
 
@@ -115,7 +117,7 @@ function getEntryObject(paths) {
         result.menu = resolvePath('src/common/menu.js');
         result.jira_cs = resolvePath('src/content-scripts/jira.js');
     } else if (isPluginBuild) {
-        result.index = resolvePath('src/index.plugin.js');
+        result.index = resolvePath('src/index.plugin.jsx');
     }
 
     return result;

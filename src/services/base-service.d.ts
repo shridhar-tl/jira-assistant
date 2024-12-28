@@ -47,7 +47,6 @@ export default class BaseService {
     $outlook: OutlookCalendar
     $q: QueueService
     $report: ReportService
-    $reportConfig: ReportConfigService
     $session: SessionService
     $settings: SettingsService
     $storage: StorageService

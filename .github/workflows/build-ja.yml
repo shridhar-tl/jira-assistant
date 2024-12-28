@@ -19,7 +19,7 @@ jobs:
         node-version: [18.x]
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v1
       with:
@@ -38,7 +38,7 @@ jobs:
       uses: Saionaro/extract-package-version@v1.0.6
       
     - name: Save build package
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: JA_Build_${{ steps.extract_version.outputs.version }}
         path: build/

@@ -56,7 +56,6 @@ export interface IServicesList {
     $outlook: OutlookCalendar
     $q: QueueService
     $report: ReportService
-    $reportConfig: ReportConfigService
     $session: SessionService
     $settings: SettingsService
     $sprint: SprintService

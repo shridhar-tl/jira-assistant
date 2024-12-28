@@ -24,14 +24,14 @@ const { dashboards,
     calendar, importWorklog, importIssues, planningPoker,
 
     // Reports
-    worklogReport, worklogReportOld, sprintReport, customReport, estimateVsActual, reportBuilder, pivotReport, sayDoRatioReport,
+    worklogReport, worklogReportOld, sprintReport, customReport, estimateVsActual, pivotReport, sayDoRatioReport,
 
     // Settings
     userGroups, generalSettings, advancedSettings,
 
     // Menu groups
     activitiesGroup = calendar || importWorklog || importIssues || planningPoker,
-    reportsGroup = worklogReport || worklogReportOld || sprintReport || customReport || estimateVsActual || reportBuilder,
+    reportsGroup = worklogReport || worklogReportOld || sprintReport || customReport || estimateVsActual,
     settingsGroup = userGroups || generalSettings || advancedSettings
 } = config.modules;
 
@@ -138,16 +138,6 @@ const navigation = [
                 id: 'R-EA',
                 url: '/reports/estimateactual',
                 icon: 'fa fa-bar-chart'
-            },
-            reportBuilder && {
-                name: 'Report Builder',
-                id: 'R-CG',
-                url: '/reports/advanced',
-                icon: 'fa fa-table',
-                badge: {
-                    variant: 'danger',
-                    text: 'DEPR'
-                }
             }
         ].filter(Boolean)
     },
