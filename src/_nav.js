@@ -1,4 +1,5 @@
-import { getRouteUrl, isPluginBuild, isWebBuild } from "./constants/build-info";
+import { getRouteUrl, isExtnBuild, isPluginBuild, isWebBuild } from "./constants/build-info";
+import { JAWebRootUrl } from "./constants/urls";
 import config from './customize';
 
 export function getDashboardMenu(d, idx, userId) {
@@ -23,14 +24,14 @@ const { dashboards,
     calendar, importWorklog, importIssues, planningPoker, sprintPlanner,
 
     // Reports
-    worklogReport, worklogReportOld, sprintReport, customReport, estimateVsActual, reportBuilder, pivotReport,
+    worklogReport, worklogReportOld, sprintReport, customReport, estimateVsActual, pivotReport, sayDoRatioReport,
 
     // Settings
     userGroups, generalSettings, advancedSettings,
 
     // Menu groups
     activitiesGroup = calendar || importWorklog || importIssues,
-    reportsGroup = worklogReport || worklogReportOld || sprintReport || customReport || estimateVsActual || reportBuilder,
+    reportsGroup = worklogReport || worklogReportOld || sprintReport || customReport || estimateVsActual,
     planningGroup = planningPoker || sprintPlanner,
     settingsGroup = userGroups || generalSettings || advancedSettings
 } = config.modules;
@@ -98,6 +99,12 @@ const navigation = [
                     text: 'BETA'
                 }
             },
+            sayDoRatioReport && {
+                name: 'Say-Do Ratio',
+                id: 'R-SDR',
+                url: '/reports/say-do-ratio',
+                icon: 'fa fa-chart-line'
+            },
             worklogReportOld && {
                 name: 'Worklog Report',
                 id: 'R-UD',
@@ -105,7 +112,7 @@ const navigation = [
                 icon: 'fa fa-users',
                 badge: {
                     variant: 'danger',
-                    text: 'OLD'
+                    text: 'DEPR'
                 }
             },
             sprintReport && {
@@ -125,20 +132,10 @@ const navigation = [
                 id: 'R-EA',
                 url: '/reports/estimateactual',
                 icon: 'fa fa-bar-chart'
-            },
-            reportBuilder && {
-                name: 'Report Builder',
-                id: 'R-CG',
-                url: '/reports/advanced',
-                icon: 'fa fa-table',
-                badge: {
-                    variant: 'success',
-                    text: 'BETA'
-                }
-            }
-        ].filter(Boolean)
-    },
-    planningGroup && {
+			},
+		].filter(Boolean)
+	},
+	planningGroup && {
         title: true,
         name: 'Planning',
         items: [
@@ -146,7 +143,7 @@ const navigation = [
                 name: 'Poker',
                 id: 'PLP',
                 external: !isPluginBuild,
-                url: getRouteUrl(isWebBuild ? '/../poker' : '/poker'),
+                url: isExtnBuild ? `${JAWebRootUrl}/poker` : getRouteUrl(isWebBuild ? '/../poker' : '/poker'),
                 icon: 'fa fa-gamepad'
             },
             sprintPlanner && {

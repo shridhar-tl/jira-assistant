@@ -1,6 +1,6 @@
 {
     "name": "jira-assistant",
-    "version": "2.57.0",
+    "version": "2.59.0",
     "description": "Help to track & upload work done on a Jira Ticket on timely basis and generate Worklog, Sprint and other custom reports",
     "homepage": "/",
     "author": {
@@ -51,71 +51,69 @@
         }
     },
     "dependencies": {
-        "@forge/api": "^2.19.2",
-        "@forge/bridge": "^2.6.1",
-        "@forge/resolver": "^1.5.18",
-        "@fortawesome/fontawesome-free": "^6.4.2",
-        "@fullcalendar/core": "^6.1.9",
-        "@fullcalendar/daygrid": "^6.1.9",
-        "@fullcalendar/interaction": "^6.1.9",
-        "@fullcalendar/list": "^6.1.9",
-        "@fullcalendar/moment": "^6.1.9",
-        "@fullcalendar/react": "^6.1.9",
-        "@fullcalendar/timegrid": "^6.1.9",
         "@syncfusion/ej2-react-gantt": "^23.1.39",
         "@syncfusion/ej2-react-layouts": "^23.1.36",
-        "bootstrap": "^5.3.2",
+        "@forge/api": "^4.1.2",
+        "@forge/bridge": "^4.2.0",
+        "@forge/resolver": "^1.6.3",
+        "@fortawesome/fontawesome-free": "^6.7.2",
+        "@fullcalendar/core": "^6.1.15",
+        "@fullcalendar/daygrid": "^6.1.15",
+        "@fullcalendar/interaction": "^6.1.15",
+        "@fullcalendar/list": "^6.1.15",
+        "@fullcalendar/moment": "^6.1.15",
+        "@fullcalendar/react": "^6.1.15",
+        "@fullcalendar/timegrid": "^6.1.15",
+        "bootstrap": "^5.3.3",
         "bootstrap-daterangepicker": "^3.1.0",
-        "chart.js": "^4.4.0",
-        "classnames": "^2.3.2",
         "color-converter": "^1.4.1",
         "contrast-color": "^1.0.1",
-        "dexie": "^3.2.4",
+        "chart.js": "^4.4.7",
+        "classnames": "^2.5.1",
+        "dexie": "^4.0.10",
         "electron-about-window": "^1.15.2",
-        "electron-is-dev": "^2.0.0",
-        "electron-updater": "^6.1.1",
-        "espree": "^9.6.1",
+        "electron-is-dev": "^3.0.1",
+        "electron-updater": "^6.1.8",
+        "espree": "^10.3.0",
         "exceljs": "^4.4.0",
-        "firebase": "^10.5.0",
+        "firebase": "^11.1.0",
         "jquery": "^3.7.1",
-        "js-sql-parser": "^1.4.1",
-        "jsd-report": "^0.1.11",
-        "jspdf": "^2.5.1",
-        "jspdf-autotable": "^3.7.0",
-        "moment": "^2.29.4",
-        "moment-timezone": "^0.5.43",
+        "js-sql-parser": "^1.6.0",
+        "jspdf": "github:shridhar-tl/jsPDF",
+        "jspdf-autotable": "^3.8.2",
+        "moment": "^2.30.1",
+        "moment-timezone": "^0.5.45",
         "papaparse": "^5.4.1",
         "patternomaly": "^1.3.2",
         "primeflex": "^3.3.1",
-        "primeicons": "^6.0.1",
-        "primereact": "^9.6.2",
+        "primeicons": "^7.0.0",
+        "primereact": "^10.8.5",
         "queue": "^7.0.0",
-        "rc-time-picker": "^3.7.3",
-        "react": "^18.2.0",
+        "react": "^18.3.1",
         "react-bootstrap-daterangepicker": "^8.0.0",
         "react-controls": "github:shridhar-tl/react-controls",
-        "react-dnd": "^14.0.4",
-        "react-dnd-html5-backend": "^14.0.2",
-        "react-dom": "^18.2.0",
-        "react-router-dom": "^6.17.0",
-        "react-scripts": "^5.0.1",
-        "static-eval": "^2.1.0",
-        "zustand": "^4.4.3"
+        "react-dnd": "^16.0.1",
+        "react-dnd-html5-backend": "^16.0.1",
+        "react-dom": "^18.3.1",
+        "react-router-dom": "^7.1.0",
+        "react-scripts": "github:shridhar-tl/react-scripts",
+        "static-eval": "^2.1.1",
+        "zustand": "^5.0.2"
     },
     "devDependencies": {
         "@craco/craco": "^7.1.0",
-        "concurrently": "^8.2.1",
+        "concurrently": "^9.1.0",
         "cross-env": "^7.0.3",
-        "electron": "^27.0.0",
-        "electron-builder": "^24.6.4",
-        "electronmon": "^2.0.2",
-        "eslint": "^8.51.0",
-        "eslint-plugin-react-hooks": "^4.6.0",
-        "gh-pages": "^6.0.0",
+        "electron": "^33.1.1",
+        "electron-builder": "^25.1.8",
+        "electronmon": "^2.0.3",
+        "eslint": "^9.17.0",
+        "eslint-plugin-react-hooks": "^5.1.0",
+        "gh-pages": "^6.1.1",
         "react-app-alias": "^2.2.2",
-        "sass": "^1.69.4",
-        "wait-on": "^7.0.1",
-        "webpack-bundle-analyzer": "^4.9.1"
+        "sass": "^1.83.0",
+        "wait-on": "^8.0.1",
+        "webpack-bundle-analyzer": "^4.10.2"
     },
     "scripts": {
         "start": "cross-env REACT_APP_BUILD_MODE=WEB craco start",
@@ -141,21 +139,21 @@
         "postinstall": "electron-builder install-app-deps"
     },
     "eslintConfig": {
-        "extends": [
-            "react-app",
-            "react-app/jest"
+        "plugins": [
+            "react",
+            "react-hooks"
         ],
         "rules": {
             "arrow-body-style": [
                 "error",
                 "as-needed"
             ],
-            "no-unused-vars": "error",
+            "no-unused-vars": "off",
             "no-unreachable": "error",
             "eqeqeq": "error",
             "semi": "error",
             "no-var": "error",
-            "no-use-before-define": "error",
+            "no-use-before-define": "off",
             "no-constant-condition": "error",
             "no-dupe-args": "error",
             "no-duplicate-case": "error",
@@ -178,7 +176,12 @@
             "no-throw-literal": "error",
             "no-unmodified-loop-condition": "error",
             "no-debugger": "warn",
-            "complexity": "error",
+            "complexity": [
+                "error",
+                {
+                    "max": 23
+                }
+            ],
             "curly": "error",
             "no-const-assign": "error",
             "array-bracket-newline": "error",
@@ -210,14 +213,12 @@
         ]
     },
     "aliases": {
-        "js-report-builder": [
-            "externals/js-report-builder/src/lib",
-            "node_modules/js-report-builder/src/lib",
-            "node_modules/jsd-report/build"
-        ],
         "react-controls": [
             "externals/react-controls/src/",
             "node_modules/react-controls/src/"
+        ],
+        "jspdf": [
+            "node_modules/jspdf/dist/"
         ]
     }
 }

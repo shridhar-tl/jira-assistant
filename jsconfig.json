@@ -2,11 +2,11 @@
     "compilerOptions": {
         "baseUrl": "./",
         "paths": {
-            "js-report-builder/*": [
-                "./node_modules/js-report-builder/src/lib/*"
-            ],
             "react-controls/*": [
                 "./node_modules/react-controls/src/*"
+            ],
+            "jspdf": [
+                "./node_modules/jspdf/dist/jspdf.es.min.js"
             ]
         }
     }

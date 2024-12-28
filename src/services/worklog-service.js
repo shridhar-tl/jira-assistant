@@ -33,7 +33,13 @@ export default class WorklogService extends BaseService {
             listForQuery = `"${userList.join("\", \"")}"`;
         }
 
-        const jql = `worklogAuthor in (${listForQuery}) and worklogDate >= '${mfromDate.clone().add(-1, 'days').format("YYYY-MM-DD")}' and worklogDate < '${mtoDate.clone().add(1, 'days').format("YYYY-MM-DD")}'`;
+        const worklogJQLSuffix = this.$session?.CurrentUser?.worklogJQLSuffix?.trim() || '';
+
+        if (worklogJQLSuffix) {
+            console.warn('Appended custom JQL to pull worklog information');
+        }
+
+        const jql = `worklogAuthor in (${listForQuery}) and worklogDate >= '${mfromDate.clone().add(-1, 'days').format("YYYY-MM-DD")}' and worklogDate < '${mtoDate.clone().add(1, 'days').format("YYYY-MM-DD")}' ${worklogJQLSuffix}`.trim();
         if (!fields || fields.length === 0) {
             fields = ["worklog"];
         } //, "summary", "issuetype", "parent", "status", "assignee"
@@ -176,10 +182,10 @@ export default class WorklogService extends BaseService {
         let uploadRequest = null;
 
         if (worklogId > 0) {
-            uploadRequest = this.$ajax.put(prepareUrlWithQueryString(ApiUrls.updateIndividualWorklog, query), request, ticketNo, worklogId);
+            uploadRequest = this.$ajax.put(prepareUrlWithQueryString(ApiUrls.individualWorklog, query), request, ticketNo, worklogId);
         }
         else {
-            uploadRequest = this.$ajax.post(prepareUrlWithQueryString(ApiUrls.addIssueWorklog, query), request, ticketNo, worklogId || 0);
+            uploadRequest = this.$ajax.post(prepareUrlWithQueryString(ApiUrls.issueWorklog, query), request, ticketNo, worklogId || 0);
         }
 
         return uploadRequest.then(null, (err) => {

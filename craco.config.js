@@ -25,11 +25,11 @@ const packageJSON = fs.readJsonSync('./package.json');
 const alias = getAliasPackages(packageJSON.aliases);
 
 module.exports = {
-    style: shouldUseSourceMap && !shouldUseSourceMap_CSS && {
+    /*style: shouldUseSourceMap && !shouldUseSourceMap_CSS && {
         css: { loaderOptions: styleLoaderOptions },
         sass: { loaderOptions: styleLoaderOptions },
         postcss: { loaderOptions: styleLoaderOptions }
-    },
+    },*/
     plugins: [
         {
             plugin: CracoAliasPlugin,
@@ -37,7 +37,7 @@ module.exports = {
         }
     ],
     webpack: {
-        plugins: getPlugins(),
+        //plugins: getPlugins(),
         configure: (wpConfig, { env, paths }) => {
             const isProd = wpConfig.mode === 'production';
 
@@ -49,10 +49,12 @@ module.exports = {
 
             // Use js specific for build target to be pulled while importing a file
             if (!isWebBuild) { // As .web.js is already part of module extns, no need to customize for web build
-                // Caution: This may cause issue when there is some .web.js files in any any npm packages
+                // Caution: This may cause issue when there is some .web.js files in any npm packages
                 const extns = wpConfig.resolve.extensions.filter(ext => !ext.includes('.web.js')); // Remove .web.js
                 const jsIdx = extns.indexOf('.js');
                 extns.splice(jsIdx, 0, `.${buildMode.toLowerCase()}.js`);
+                const jsxIdx = extns.indexOf('.jsx');
+                extns.splice(jsxIdx, 0, `.${buildMode.toLowerCase()}.jsx`);
                 wpConfig.resolve.extensions = extns;
             }
 
@@ -76,7 +78,7 @@ module.exports = {
                     : existingCSSFileName
                 );
 
-                if (shouldUseSourceMap && !shouldUseSourceMap_CSS) {
+                /*if (shouldUseSourceMap && !shouldUseSourceMap_CSS) {
                     const filesList = ['.module.scss', '.module.sass', '.module.css'];
                     wpConfig.module.rules.forEach(rule => {
                         if (Array.isArray(rule.oneOf)) {
@@ -91,7 +93,7 @@ module.exports = {
                             });
                         }
                     });
-                }
+                }*/
             }
 
             if (isAppBuild) {
@@ -115,7 +117,7 @@ function getEntryObject(paths) {
         result.menu = resolvePath('src/common/menu.js');
         result.jira_cs = resolvePath('src/content-scripts/jira.js');
     } else if (isPluginBuild) {
-        result.index = resolvePath('src/index.plugin.js');
+        result.index = resolvePath('src/index.plugin.jsx');
     }
 
     return result;
