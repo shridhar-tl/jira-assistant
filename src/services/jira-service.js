@@ -476,7 +476,11 @@ export default class JiraService {
     // Based on internal API, try to find the list of removed issues part of sprint
     async getRemovedIssuesWithStoryPointForSprint(boardId, sprintId) {
         const details = await this.getRapidSprintDetails(boardId, sprintId);
+        const addedLater = details?.contents?.issueKeysAddedDuringSprint || {};
+
         const getIssueObject = (issues, issueMap) => issues?.reduce((map, t) => {
+            if (addedLater[t.key]) { return map; }
+
             const sp = t?.estimateStatistic?.statFieldValue?.value || 0;
             map[t.key] = { sp };
             return map;
