@@ -12,7 +12,7 @@ export default class SprintService {
     computeAverageSprintVelocity = (boardId, noOfSprintsForVelocity = 6, storyPointFieldName,
         sprintFieldId, noOfSprintsToPull = noOfSprintsForVelocity * 2, workingDays) => new FeedbackPromise(async (resolve, _, progress) => {
             const allClosedSprintLists = await this.$jira.getRapidSprintList([boardId], { state: 'closed' });
-            progress({ completed: 5 });
+            progress({ completed: 2 });
             const closedSprintLists = allClosedSprintLists.slice(0, noOfSprintsToPull).sortBy(({ completeDate }) => completeDate.getTime());
             const availableSprintCount = closedSprintLists.length;
 
@@ -118,7 +118,7 @@ export default class SprintService {
                         }
                     }
 
-                    if (!issue.addedToSprint) {
+                    if (!issue.addedToSprint && issue.initialStoryPoints) {
                         sprint.committedStoryPoints += issue.initialStoryPoints;
                     }
 
@@ -193,7 +193,7 @@ async function getIssueLogsForSprints(closedSprintLists, $jira, sprintWiseIssues
         updateProgress({ completed: 50 + ((index + 1) * 50 / closedSprintLists.length) });
 
         if (sprintIssueLogs) {
-            issueLogs = { ...sprintIssueLogs };
+            issueLogs = { ...issueLogs, ...sprintIssueLogs };
             addRemovedIssuesToMissingSprints(sprintWiseIssues, sprintIssueLogs, sprint.id, firstTimeIssuesToPull, sprintFieldId);
         } else {
             sprint.logUnavailable = true;

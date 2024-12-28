@@ -26,6 +26,8 @@ function SayDoRatioReport() {
     const loadReportData = React.useCallback(async () => {
         try {
             setProgress(0);
+            setSprint(null);
+            setReportData([]);
             setLoader(true);
             const reportData = await getSprintWiseSayDoRatio($this.current.settings).progress(({ completed, data }) => {
                 setProgress(completed);

@@ -451,7 +451,7 @@ export default class JiraService {
                 await this.fillMissingWorklogs(issues, worklogStartDate, worklogEndDate);
             }
 
-            return issues.sortBy(t => t.id);
+            return issues.sortBy(t => parseInt(t.id));
         };
 
 
