@@ -25,23 +25,16 @@ export default class SprintService {
             const sprintWiseIssues = await this.$jira.getSprintIssues(sprintIds, {
                 jql: 'issuetype not in subTaskIssueTypes()',
                 fields: ['created', 'resolutiondate', storyPointFieldName],
-                includeRemoved: true
+                includeRemoved: true, boardId
             }).progress(done => progress({ completed: done / 2 }));
+
+            const issueLogs = await getIssueLogsForSprints(closedSprintLists, this.$jira, sprintWiseIssues, progress, sprintFieldId, storyPointFieldName);
 
             for (let index = 0; index < closedSprintLists.length; index++) {
                 const sprint = closedSprintLists[index];
                 const startDate = moment(sprint.startDate);
                 const completeDate = moment(sprint.completeDate);
                 sprint.issues = sprintWiseIssues[sprint.id];
-
-                let issueLogs = await this.$jira.getBulkIssueChangelogs(sprint.issues.map(({ key }) => key),
-                    ['status', sprintFieldId, storyPointFieldName]);
-                progress({ completed: 50 + ((index + 1) * 50 / closedSprintLists.length) });
-
-                if (!issueLogs) {
-                    sprint.logUnavailable = true;
-                    issueLogs = {};
-                }
 
                 sprint.committedStoryPoints = 0;
                 sprint.completedStoryPoints = 0;
@@ -185,4 +178,59 @@ function getFirstModifiedLog(logs, fieldId, fromString, toString) {
             return item;
         }
     }
+}
+
+async function getIssueLogsForSprints(closedSprintLists, $jira, sprintWiseIssues, updateProgress, sprintFieldId, storyPointFieldName) {
+    let issueLogs = {};
+
+    for (let index = 0; index < closedSprintLists.length; index++) {
+        const sprint = closedSprintLists[index];
+        const firstTimeIssuesToPull = sprintWiseIssues[sprint.id].filter(issue => !issueLogs[issue.key]);
+        const issueLogsToPull = firstTimeIssuesToPull.map(({ key }) => key);
+        const sprintIssueLogs = await $jira.getBulkIssueChangelogs(issueLogsToPull, ['status', sprintFieldId, storyPointFieldName]);
+
+        // Always add 50%, as 50% is already completed as part of pulling ticket details for sprint. Remaining 50% is for pulling change logs
+        updateProgress({ completed: 50 + ((index + 1) * 50 / closedSprintLists.length) });
+
+        if (sprintIssueLogs) {
+            issueLogs = { ...sprintIssueLogs };
+            addRemovedIssuesToMissingSprints(sprintWiseIssues, sprintIssueLogs, sprint.id, firstTimeIssuesToPull, sprintFieldId);
+        } else {
+            sprint.logUnavailable = true;
+        }
+    }
+
+    return issueLogs;
+}
+
+// If an issue is removed from sprint in between, then Jira does not provide any option to pull those issues.
+// So looking at change logs for each issue in sprints, this function will add stories to individual sprints
+// This is a workaround primarily for extensions and web versions.
+function addRemovedIssuesToMissingSprints(sprintWiseIssues, sprintIssueLogs, currentSprintId, firstTimeIssuesToPull, sprintFieldId) {
+    firstTimeIssuesToPull.forEach(issue => {
+        const key = issue.key;
+        const logsForCurrentTicket = sprintIssueLogs[key]?.filter(l => l.fieldId === sprintFieldId);
+
+        // Take the list of sprints current issue is part of
+        const sprintIdsFromCurrentTicket = logsForCurrentTicket?.flatMap(l => [...(l.from?.split(',') || []), ...(l.to?.split(',') || [])]).filter(sid => !!sid).distinct();
+
+        if (!sprintIdsFromCurrentTicket?.length) { return; }
+
+        // Based on list of sprints, add that ticket to all those sprints if that ticket is not already available
+        sprintIdsFromCurrentTicket.forEach((sprintId) => {
+            if (parseInt(sprintId) === currentSprintId) { return; } // In current sprint already ticket would exist. Hence no need of checking
+
+            const sprintIssues = sprintWiseIssues[sprintId];
+
+            // Its not necessary that sprint for all the sprint id is available in this list
+            if (!sprintIssues?.length) { return; }
+
+            if (!sprintIssues.some(t => t.key === key)) {
+                sprintIssues.push({ // Clone the issue as it would be mutated later
+                    ...issue,
+                    fields: { ...(issue.fields || {}) }
+                });
+            }
+        });
+    });
 }

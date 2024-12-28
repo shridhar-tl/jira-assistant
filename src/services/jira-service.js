@@ -5,6 +5,7 @@ import { ApiUrls } from '../constants/api-urls';
 import * as moment from 'moment';
 import { mergeUrl, prepareUrlWithQueryString, viewIssueUrl, waitFor } from '../common/utils';
 import FeedbackPromise from 'src/common/FeedbackPromise';
+import { isPluginBuild } from 'src/constants/build-info';
 
 export default class JiraService {
     static dependencies = ["AjaxService", "CacheService", "MessageService", "SessionService"];
@@ -437,49 +438,20 @@ export default class JiraService {
     }
 
     getSprintIssues(sprintIds, options) {
-        const { worklogStartDate, worklogEndDate, includeRemoved, ...opts } = options || {};
+        const { worklogStartDate, worklogEndDate, includeRemoved, boardId, ...opts } = options || {};
 
         const worker = async (sprintId) => {
             const { issues } = await this.$ajax.get(ApiUrls.getSprintIssues.format(sprintId), opts);
 
-            try { // if includeRemoved is true, then fetch removed issues based on custom properties added in sprint and add them to the list
-                const removedIssues = includeRemoved ? await this.getSprintProperty(sprintId, 'jaSprintStartInfo') : null;
-                if (removedIssues) {
-                    const removedIssueKeys = Object.keys(removedIssues);
-                    let jql = `key in (${removedIssueKeys.join(',')})`;
-
-                    if (opts?.jql) {
-                        jql = `(${opts.jql}) AND (${jql})`;
-                    }
-
-                    const closedTickets = await this.searchTickets(jql, options?.fields, 0, { ignoreErrors: true });
-                    if (closedTickets?.length) {
-                        const issuesMap = issues.reduce((obj, issue) => {
-                            obj[issue.key] = issue;
-                            return obj;
-                        }, {});
-
-                        closedTickets.forEach(t => {
-                            let existingIssue = issuesMap[t.key];
-                            if (!existingIssue) {
-                                issues.push(t);
-                                existingIssue = t;
-                            }
-                            if (removedIssues[t.key] && "sp" in removedIssues[t.key]) {
-                                existingIssue.initialStoryPoints = parseFloat(removedIssues[t.key].sp) || 0;
-                            }
-                        });
-                    }
-                }
-            } catch (e) {
-                console.error("Error trying to retrieve removed issues for sprint", sprintId, e);
+            if (includeRemoved) {
+                await this.addRemovedIssuesToList(boardId, sprintId, issues, options?.fields, opts.jql);
             }
 
             if (options?.fields?.indexOf("worklog") > -1) {
                 await this.fillMissingWorklogs(issues, worklogStartDate, worklogEndDate);
             }
 
-            return issues.sortBy(t => t.key);
+            return issues.sortBy(t => t.id);
         };
 
 
@@ -498,6 +470,62 @@ export default class JiraService {
 
                 resolve(sprints);
             });
+        }
+    }
+
+    // Based on internal API, try to find the list of removed issues part of sprint
+    async getRemovedIssuesWithStoryPointForSprint(boardId, sprintId) {
+        const details = await this.getRapidSprintDetails(boardId, sprintId);
+        const getIssueObject = (issues, issueMap) => issues?.reduce((map, t) => {
+            const sp = t?.estimateStatistic?.statFieldValue?.value || 0;
+            map[t.key] = { sp };
+            return map;
+        }, issueMap || {}) ?? {};
+
+        let result = getIssueObject(details?.contents?.completedIssues);
+        result = getIssueObject(details?.contents?.issuesNotCompletedInCurrentSprint, result);
+        result = getIssueObject(details?.contents?.issuesCompletedInAnotherSprint, result);
+        result = getIssueObject(details?.contents?.puntedIssues, result);
+
+        return result;
+    }
+
+    async addRemovedIssuesToList(boardId, sprintId, issues, fieldsList, optsJql) {
+        try { // if includeRemoved is true, then fetch removed issues based on custom properties added in sprint and add them to the list
+            const issuesMapAtTheBeginningOfSprint = isPluginBuild ?
+                await this.getSprintProperty(sprintId, 'jaSprintStartInfo') // If currently running as plugin, then issues list is stored in property
+                : await this.getRemovedIssuesWithStoryPointForSprint(boardId, sprintId); // For extension/web users, get the details by calling internal reports api
+
+            if (issuesMapAtTheBeginningOfSprint) {
+                const allIssueKeys = Object.keys(issuesMapAtTheBeginningOfSprint);
+
+                if (!allIssueKeys.length) { return; }
+
+                const removedIssueKeys = allIssueKeys.filter(key => !issues.some(t => t.key === key)); // Remove all the issues which is already part of list
+
+                if (removedIssueKeys.length) {
+                    let jql = `key in (${removedIssueKeys.join(',')})`;
+
+                    if (optsJql) {
+                        jql = `(${optsJql}) AND (${jql})`;
+                    }
+
+                    const closedTickets = await this.searchTickets(jql, fieldsList, 0, { ignoreErrors: true });
+                    closedTickets.forEach(t => t.removedFromSprint = true); // Set the removed from sprint flag to true
+                    if (closedTickets?.length) {
+                        issues.push(...closedTickets);
+                    }
+                }
+
+                issues.forEach(t => {
+                    const issueValue = issuesMapAtTheBeginningOfSprint[t.key];
+                    if (issueValue && "sp" in issueValue) {
+                        t.initialStoryPoints = parseFloat(issueValue.sp) || 0;
+                    }
+                });
+            }
+        } catch (e) {
+            console.error("Error trying to retrieve removed issues for sprint", sprintId, e);
         }
     }
 

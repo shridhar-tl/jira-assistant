@@ -30,7 +30,7 @@ function SayDoRatioReport() {
             const reportData = await getSprintWiseSayDoRatio($this.current.settings).progress(({ completed, data }) => {
                 setProgress(completed);
                 if (data) {
-                setReportData(data);
+                    setReportData(data);
                 }
             });
             setReportData(reportData);
@@ -77,15 +77,16 @@ function SayDoRatioReport() {
                             <td className="text-center">{b.velocity || '-'} {!!b.velocity && <span>({parseFloat(b.velocityGrowth?.toFixed(2) || 0)}%)</span>}</td>
                             <td className={getLogClass(b.sayDoRatio)}>
                                 {formatValue(b.sayDoRatio)}
-                                {b.sayDoRatio && <Indicator value={b.sayDoRatio} maxHours={100} />}
+                                {!!b.sayDoRatio && <Indicator value={b.sayDoRatio} maxHours={100} />}
                             </td>
                             <td className="text-center">{b.averageCycleTime ? `${b.averageCycleTime} days` : '-'}</td>
-                            {b.sprintList.map(s => (s?.sayDoRatio ? (<td className={getLogClass(s.sayDoRatio, s === selectedSprint)} onClick={() => setSprint(s)} key={s.id}>
+                            {b.sprintList.map(s => (s ? (<td className={`sprint-info-cell ${getLogClass(s.sayDoRatio, s === selectedSprint)}`} onClick={() => setSprint(s)} key={s.id}>
                                 <span className="fas fa-info-circle float-end" />
-                                {s.sayDoRatio}%
+                                {!!s.sayDoRatio && <span>{s.sayDoRatio}%</span>}
+                                {!s.sayDoRatio && <span>-</span>}
                                 {!b.logUnavailable && s.logUnavailable && <span className="fas fa-exclamation-triangle msg-warning" title={changeLogErrorMessage} />}
-                                <Indicator value={parseInt(s.sayDoRatio)} maxHours={100} />
-                            </td>) : <td className="text-center">-</td>))}
+                                {!!s.sayDoRatio && <Indicator value={parseInt(s.sayDoRatio)} maxHours={100} />}
+                            </td>) : <td className="text-center" key={s.id}>-</td>))}
                         </tr>}
                     </TBody>
                     {!reportData?.length && <NoDataRow span={7}>No data available.</NoDataRow>}
@@ -142,6 +143,10 @@ function formatValue(value, suffix = "%", defaultValue = '') {
 }
 
 function getLogClass(value, isSelected) {
+    if (!value) {
+        return isSelected ? 'text-center selected' : 'text-center';
+    }
+
     let className = 'log-good';
 
     if (value >= 85) {
