@@ -1,5 +1,4 @@
 import React from 'react';
-import { isPluginBuild } from 'src/constants/build-info';
 import SideBar from '../../pivot-report/editor/SideBar';
 import RapidViewList from '../../../../components/RapidViewList';
 import { Button, Checkbox, TextBox } from 'src/controls';
@@ -59,14 +58,6 @@ function ReportSettings({ settings: actualSettings, show, onHide, onDone }) {
                 <label className="fw-bold pb-2 d-block msg-error">Story Points field unavailable:</label>
                 Select value for "Story Points field" under General settings -&gt; "Default Values" tab.
                 Report cannot be generated without having "Story Points field" configured.
-            </div>}
-            {!isPluginBuild && <div className="p-3">
-                <Checkbox checked={true} disabled label="Do not show issues removed from sprint as committed" />
-                <div className="help-text d-block mt-1">
-                    If an issue is removed from sprint before closing it, then it would not be considered as committed which impacts Sa-Do-Ratio.
-                    <br />
-                    Note: As of now Jira doesn't support pulling issues which are removed from sprint.
-                </div>
             </div>}
             <div className="p-3">
                 <Checkbox checked={settings.includeNonWorkingDays} field="includeNonWorkingDays" onChange={setBoolean}

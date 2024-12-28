@@ -1,6 +1,6 @@
 import { asApp, route } from '@forge/api'
 
-export async function onSprintStarted(event, context) {
+export async function onSprintStarted(event) {
     if (event.eventType !== "avi:jira-software:started:sprint") {
         console.error("Invalid event type received", event.eventType);
     }
@@ -20,7 +20,7 @@ export async function onSprintStarted(event, context) {
         console.error("onSprintStarted: Story points field not found");
     }
 
-    const response = await asApp().requestJira(route`/rest/agile/1.0/sprint/${sprintId}/issue?maxResults=1000&fields=key,${storyPointFieldId}`, {
+    const response = await asApp().requestJira(route`/rest/agile/1.0/sprint/${sprintId}/issue?maxResults=1000&fields=key,${storyPointFieldId}&jql=${encodeURIComponent('issuetype not in subTaskIssueTypes()')}`, {
         headers: {
             'Accept': 'application/json'
         }
