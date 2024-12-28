@@ -82,13 +82,13 @@ function SayDoRatioReport() {
                                 {!!b.sayDoRatio && <Indicator value={b.sayDoRatio} maxHours={100} />}
                             </td>
                             <td className="text-center">{b.averageCycleTime ? `${b.averageCycleTime} days` : '-'}</td>
-                            {b.sprintList.map(s => (s ? (<td className={`sprint-info-cell ${getLogClass(s.sayDoRatio, s === selectedSprint)}`} onClick={() => setSprint(s)} key={s.id}>
+                            {b.sprintList.map((s, index) => (s ? (<td className={`sprint-info-cell ${getLogClass(s.sayDoRatio, s === selectedSprint)}`} onClick={() => setSprint(s)} key={s.id}>
                                 <span className="fas fa-info-circle float-end" />
                                 {!!s.sayDoRatio && <span>{s.sayDoRatio}%</span>}
                                 {!s.sayDoRatio && <span>-</span>}
                                 {!b.logUnavailable && s.logUnavailable && <span className="fas fa-exclamation-triangle msg-warning" title={changeLogErrorMessage} />}
                                 {!!s.sayDoRatio && <Indicator value={parseInt(s.sayDoRatio)} maxHours={100} />}
-                            </td>) : <td className="text-center" key={s.id}>-</td>))}
+                            </td>) : <td className="text-center" key={index}>-</td>))}
                         </tr>}
                     </TBody>
                     {!reportData?.length && <NoDataRow span={7}>No data available.</NoDataRow>}
