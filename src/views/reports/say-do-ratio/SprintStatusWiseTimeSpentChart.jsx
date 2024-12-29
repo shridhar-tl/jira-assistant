@@ -124,7 +124,7 @@ function SprintStatusWiseTimeSpentChart({ board }) {
         const datasets = statusList.map((s, i) => getChartData(availableSprints, s, s, defaultLineColors[i]));
         datasets.push(getCycleTimeData(availableSprints));
 
-        let minY = 7, maxY = 7;
+        let minY = 2, maxY = 4;
 
         for (const ds of datasets) {
             if (ds.yAxisID !== 'y1') {
@@ -140,7 +140,9 @@ function SprintStatusWiseTimeSpentChart({ board }) {
             }
         }
 
-        if (minY <= 2) {
+        if (minY <= 1) {
+            minY = -1;
+        } else if (minY <= 2) {
             minY = 0;
         } else {
             minY -= 1;
@@ -148,7 +150,7 @@ function SprintStatusWiseTimeSpentChart({ board }) {
 
         return {
             data: { labels, datasets },
-            options: getOptions(name, `Status Wise Time Spent`, minY, maxY + 2)
+            options: getOptions(name, `Status Wise Time Spent`, minY, maxY + 1)
         };
     }, [board]);
 

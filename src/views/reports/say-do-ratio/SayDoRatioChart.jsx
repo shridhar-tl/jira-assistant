@@ -73,8 +73,10 @@ function getOptions(titleText, subTitle, minY, maxY) {
                 position: 'right',
                 title: {
                     display: true,
-                    text: 'Cycle Time (Days)'
+                    text: 'Say Do Ratio (%)'
                 },
+                min: 0,
+                max: 100,
                 ticks: {
                     color: textColorSecondary
                 },
@@ -97,16 +99,6 @@ function getChartData(sprintList, key, label, borderColor, others) {
     };
 }
 
-function getCycleTimeData(sprintList) {
-    return {
-        label: 'Cycle Time',
-        data: sprintList.map(({ averageCycleTime }) => averageCycleTime),
-        backgroundColor: '#FFD700',
-        yAxisID: 'y1',
-        type: 'bar'
-    };
-}
-
 function SayDoRatioChart({ board }) {
     const { data, options } = React.useMemo(() => {
         const { name, sprintList, velocity } = board;
@@ -116,7 +108,7 @@ function SayDoRatioChart({ board }) {
             getChartData(availableSprints, 'velocity', 'Velocity', '#4169E1', { borderDash: [5, 5] }),
             getChartData(availableSprints, 'committedStoryPoints', 'Committed', '#FF6347'),
             getChartData(availableSprints, 'completedStoryPoints', 'Completed', '#228B22'),
-            getCycleTimeData(availableSprints)
+            getChartData(availableSprints, 'sayDoRatio', 'Say Do Ratio', '#FFD700', { yAxisID: 'y1', fill: true })
         ];
 
         let minY = 7, maxY = 7;
