@@ -37,7 +37,7 @@ function getOptions(titleText, subTitle, minY, maxY) {
                 callbacks: {
                     title: (tooltipItems) => `Sprint: ${tooltipItems[0].label}`,
                     label: (tooltipItem) =>
-                        `${tooltipItem.dataset.label}: ${tooltipItem.formattedValue} ${tooltipItem.dataset.yAxisID === 'y1' ? 'days' : 'points'}`
+                        `${tooltipItem.dataset.label}: ${tooltipItem.formattedValue} days`
                 },
                 bodySpacing: 10
             }
