@@ -80,7 +80,7 @@ function processSprintData(sprint, issueLogs, { index, noOfSprintsForVelocity, s
 
                 avgStatusWiseLog[status] = spent / issueCount;
 
-                return statusWiseLogs;
+                return avgStatusWiseLog;
             }, {});
         } else {
             return [statusWiseLogs, statusWiseIssueCount];
@@ -203,11 +203,6 @@ function processSprintIssues(sprint, issue, allLogs, cycleTimes, startDate, comp
     return calculateStatusWiseTimeSpent(issue, modifiedWithinSprint, allLogs, startDate, completeDate);
 }
 
-function isStatusToBeIgnored(status) {
-    status = status?.toLowerCase();
-    return !status || ['backlog', 'assigned'].includes(status);
-}
-
 function calculateStatusWiseTimeSpent(issue, logsWithinSprint, allLogs, sprintStartDate, sprintEndDate) {
     if (!allLogs?.length || issue.removedFromSprint) { return {}; }
 
@@ -215,8 +210,27 @@ function calculateStatusWiseTimeSpent(issue, logsWithinSprint, allLogs, sprintSt
         sprintStartDate = moment(issue.addedToSprintDate); // If issue added to sprint later, then consider that as start date
     }
 
-    const statusLogs = logsWithinSprint.filter(l => l.fieldId === 'status');
+    // filter and simplify status logs for entire duration
+    const statusLogs = allLogs.filter(l => l.fieldId === 'status' && moment(l.created).isSameOrBefore(sprintEndDate))
+        .map(l => ({ status: l.toString, startDate: moment(l.created) }));
+    if (!statusLogs.length) { return {}; }
 
+    const indexOfFirstChangeAfterSprintStart = statusLogs.findIndex(l => l.isSameOrAfter(sprintStartDate));
+    if (indexOfFirstChangeAfterSprintStart > 1) { // See if more than one log is available before start of sprint
+        statusLogs.splice(0, indexOfFirstChangeAfterSprintStart - 1); // Keep only the last log which happened before start of sprint
+    }
+
+    if (statusLogs[0].startDate.isBefore(sprintStartDate)) { // If first log has happened before start of sprint, then change it to exact start of sprint
+        statusLogs[0].startDate = sprintStartDate;
+    }
+
+    const statusWiseTimeSpent = statusLogs.reduce((result, log, i) => {
+        const nextLogTime = statusLogs[i + 1]?.date ?? sprintEndDate;
+        result[log.status] = (result[log.status] || 0) + (nextLogTime.diff(log.startDate, 'days', true) || 0);
+        return result;
+    });
+
+    /*
     if (!statusLogs.length) {
         const allStatusLogs = allLogs.filter(l => l.fieldId === 'status' && moment(l.created).isBefore(sprintStartDate));
         const lastLog = allStatusLogs[allStatusLogs.length - 1];
@@ -241,7 +255,7 @@ function calculateStatusWiseTimeSpent(issue, logsWithinSprint, allLogs, sprintSt
             statusWiseTimeSpent[toString] = (statusWiseTimeSpent[toString] || 0) + (sprintEndDate.diff(currentStatusChangeTime, 'days', true) || 0);
         }
     });
-
+    */
     issue.statusWiseTimeSpent = statusWiseTimeSpent;
 
     return statusWiseTimeSpent;
