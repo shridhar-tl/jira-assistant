@@ -228,7 +228,7 @@ function calculateStatusWiseTimeSpent(issue, logsWithinSprint, allLogs, sprintSt
         const nextLogTime = statusLogs[i + 1]?.startDate ?? sprintEndDate;
         result[log.status] = (result[log.status] || 0) + (nextLogTime.diff(log.startDate, 'days', true) || 0);
         return result;
-    });
+    }, {});
 
     /*
     if (!statusLogs.length) {
