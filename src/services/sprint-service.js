@@ -34,7 +34,7 @@ export default class SprintService {
                 const sprint = closedSprintLists[index];
                 sprint.issues = sprintWiseIssues[sprint.id];
 
-                processSprintData(sprint, issueLogs, { index, noOfSprintsForVelocity, storyPointFieldName, closedSprintLists, workingDays });
+                processSprintData(sprint, issueLogs, { index, noOfSprintsForVelocity, storyPointFieldName, sprintFieldId, closedSprintLists, workingDays });
             }
 
             const sprintsToConsider = closedSprintLists.slice(-noOfSprintsForVelocity);
@@ -55,7 +55,7 @@ export default class SprintService {
         });
 }
 
-function processSprintData(sprint, issueLogs, { index, noOfSprintsForVelocity, storyPointFieldName, closedSprintLists, workingDays }) {
+function processSprintData(sprint, issueLogs, { index, noOfSprintsForVelocity, storyPointFieldName, sprintFieldId, closedSprintLists, workingDays }) {
     const startDate = moment(sprint.startDate);
     const completeDate = moment(sprint.completeDate);
 
@@ -65,7 +65,7 @@ function processSprintData(sprint, issueLogs, { index, noOfSprintsForVelocity, s
     const cycleTimes = [];
 
     sprint.statusWiseTimeSpent = sprint.issues.reduce(([statusWiseLogs, statusWiseIssueCount], issue, index, issuesList) => {
-        const timeSpentInfo = processSprintIssues(sprint, issue, issueLogs[issue.id], cycleTimes, startDate, completeDate, storyPointFieldName, workingDays);
+        const timeSpentInfo = processSprintIssues(sprint, issue, issueLogs[issue.id], cycleTimes, startDate, completeDate, storyPointFieldName, sprintFieldId, workingDays);
         Object.keys(timeSpentInfo).forEach(status => {
             statusWiseLogs[status] = (statusWiseLogs[status] || 0) + timeSpentInfo[status];
             statusWiseIssueCount[status] = (statusWiseIssueCount[status] || 0) + 1;
@@ -107,7 +107,7 @@ function processSprintData(sprint, issueLogs, { index, noOfSprintsForVelocity, s
 }
 
 // eslint-disable-next-line complexity
-function processSprintIssues(sprint, issue, allLogs, cycleTimes, startDate, completeDate, storyPointFieldName, workingDays) {
+function processSprintIssues(sprint, issue, allLogs, cycleTimes, startDate, completeDate, storyPointFieldName, sprintFieldId, workingDays) {
     const { resolutiondate, [storyPointFieldName]: storyPoint, created: issueCreated } = issue.fields;
     issue.fields.storyPoints = storyPoint;
     let $resolutiondate = resolutiondate && moment(resolutiondate);

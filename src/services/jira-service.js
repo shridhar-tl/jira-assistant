@@ -431,7 +431,7 @@ export default class JiraService {
             return result?.value;
         } catch (err) {
             if (!err.error?.errorMessages?.[0]?.includes("does not exist")) {
-                console.error(`Failed to fetch property ${propertyKey} for sprint ${sprintId}:`, error);
+                console.error(`Failed to fetch property ${propertyKey} for sprint ${sprintId}:`, err);
             }
             return null;
         }
