@@ -119,7 +119,7 @@ function processSprintIssues(sprint, issue, allLogs, cycleTimes, startDate, comp
         return;
     }
     const startDateForComparison = startDate.clone().add(3, "seconds"); // This is to avoid any logs automatically added due to moving issue to sprint
-    const modifiedWithinSprint = allLogs?.filter(log => moment(log.created).isBetween(startDateForComparison, completeDate, "milliseconds"));
+    let modifiedWithinSprint = allLogs?.filter(log => moment(log.created).isBetween(startDateForComparison, completeDate, "milliseconds"));
 
     const sprintFields = modifiedWithinSprint?.filter(log => log.fieldId === sprintFieldId);
     const firstSprintLog = sprintFields?.[0];
@@ -131,6 +131,9 @@ function processSprintIssues(sprint, issue, allLogs, cycleTimes, startDate, comp
 
     if (issue.addedToSprint) {
         issue.addedToSprintDate = moment(isIssueCreatedAfterSprintStart && !firstSprintLog?.created ? issueCreated : firstSprintLog.created).add(2, "seconds").toDate();
+        // start date should be considered from the time the issue is added to sprint for calculation to work accurately
+        startDate = moment(issue.addedToSprintDate);
+        modifiedWithinSprint = allLogs?.filter(log => moment(log.created).isBetween(startDate, completeDate, "milliseconds"));
     }
 
     if (!('initialStoryPoints' in issue)) {
