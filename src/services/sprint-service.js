@@ -130,7 +130,7 @@ function processSprintIssues(sprint, issue, allLogs, cycleTimes, startDate, comp
         || (firstSprintLog && !firstSprintLog.from.split(',').some(sid => parseInt(sid) === sprint.id));
 
     if (issue.addedToSprint) {
-        issue.addedToSprintDate = moment(isIssueCreatedAfterSprintStart && !firstSprintLog?.created ? issueCreated : firstSprintLog.created + 2000).toDate();
+        issue.addedToSprintDate = moment(isIssueCreatedAfterSprintStart && !firstSprintLog?.created ? issueCreated : firstSprintLog.created).add(2, "seconds").toDate();
     }
 
     if (!('initialStoryPoints' in issue)) {
@@ -198,6 +198,11 @@ function processSprintIssues(sprint, issue, allLogs, cycleTimes, startDate, comp
     }
 
     return calculateStatusWiseTimeSpent(issue, modifiedWithinSprint, allLogs, startDate, completeDate);
+}
+
+function isStatusToBeIgnored(status) {
+    status = status?.toLowerCase();
+    return !status || ['backlog', 'assigned'].includes(status);
 }
 
 function calculateStatusWiseTimeSpent(issue, logsWithinSprint, allLogs, sprintStartDate, sprintEndDate) {
