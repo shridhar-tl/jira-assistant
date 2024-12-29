@@ -8,9 +8,9 @@ const surfaceBorder = documentStyle.getPropertyValue('--surface-border');
 const defaultLineColors = [
     'rgba(255, 99, 132)',
     'rgba(54, 162, 235)',
-    'rgba(255, 206, 86)',
+    'rgb(105 0 251)',
     'rgba(75, 192, 192)',
-    'rgba(153, 102, 255)',
+    'rgba(123, 12, 55)',
     'rgba(255, 159, 64)',
     'rgba(34, 33, 219)',
     'rgba(25, 100, 229)',
