@@ -1,5 +1,6 @@
 import { Image, Link } from '../../../controls';
 import { connect } from "../datastore";
+import TicketEstimate from '../TicketEstimate';
 
 export const WeeksList = connect(function ({ weeks }) {
     return weeks.map((day, i) => <th key={i} className="week-head" colSpan={day.days}>{day.display}</th>);
@@ -59,8 +60,7 @@ export function IssueInfo({ issue: t, showParentSummary, hideEstimate, convertSe
             <Link href={t.url} className="link">{t.ticketNo}</Link> -
             <span>{t.summary}</span>
         </div>
-        {!hideEstimate && !!(oe || re) && <span className="estimate" title={estTitle}>
-            (est: {oe || 0} / rem: {re || 0} / log: {logged} / var: {variance})</span>}
+        {!hideEstimate && !!(oe || re) && <TicketEstimate est={oe} rem={re} logged={logged} variance={variance} />}
     </td>);
 }
 
