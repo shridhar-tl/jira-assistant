@@ -200,10 +200,10 @@ function processSprintIssues(sprint, issue, allLogs, cycleTimes, startDate, comp
         delete issue.initialStoryPoints;
     }
 
-    return calculateStatusWiseTimeSpent(issue, modifiedWithinSprint, allLogs, startDate, completeDate);
+    return calculateStatusWiseTimeSpent(issue, allLogs, startDate, completeDate, workingDays);
 }
 
-function calculateStatusWiseTimeSpent(issue, logsWithinSprint, allLogs, sprintStartDate, sprintEndDate) {
+function calculateStatusWiseTimeSpent(issue, allLogs, sprintStartDate, sprintEndDate, workingDays) {
     if (!allLogs?.length || issue.removedFromSprint) { return {}; }
 
     if (issue.addedToSprint && issue.addedToSprintDate) {
@@ -226,36 +226,10 @@ function calculateStatusWiseTimeSpent(issue, logsWithinSprint, allLogs, sprintSt
 
     const statusWiseTimeSpent = statusLogs.reduce((result, log, i) => {
         const nextLogTime = statusLogs[i + 1]?.startDate ?? sprintEndDate;
-        result[log.status] = (result[log.status] || 0) + (nextLogTime.diff(log.startDate, 'days', true) || 0);
+        result[log.status] = (result[log.status] || 0) + getDaysDiffForDateRange(log.startDate, nextLogTime, workingDays);
         return result;
     }, {});
 
-    /*
-    if (!statusLogs.length) {
-        const allStatusLogs = allLogs.filter(l => l.fieldId === 'status' && moment(l.created).isBefore(sprintStartDate));
-        const lastLog = allStatusLogs[allStatusLogs.length - 1];
-
-        if (!lastLog) { return {}; }
-
-        const startStatus = lastLog.toString;
-        return { [startStatus]: sprintEndDate.diff(sprintStartDate, 'days', true) || 0 };
-    }
-
-    const statusWiseTimeSpent = {};
-    let lastStatusTime = sprintStartDate;
-
-    statusLogs.forEach((log, i, statusLogs) => {
-        const { fromString, toString, created } = log;
-        const currentStatusChangeTime = moment(created);
-
-        statusWiseTimeSpent[fromString] = (statusWiseTimeSpent[fromString] || 0) + (currentStatusChangeTime.diff(lastStatusTime, 'days', true) || 0);
-        lastStatusTime = currentStatusChangeTime;
-
-        if (i + 1 === statusLogs.length) { // If it is last log, then calculate until end of sprint
-            statusWiseTimeSpent[toString] = (statusWiseTimeSpent[toString] || 0) + (sprintEndDate.diff(currentStatusChangeTime, 'days', true) || 0);
-        }
-    });
-    */
     issue.statusWiseTimeSpent = statusWiseTimeSpent;
 
     return statusWiseTimeSpent;
