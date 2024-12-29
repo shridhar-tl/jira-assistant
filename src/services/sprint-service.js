@@ -193,15 +193,15 @@ function processSprintIssues(sprint, issue, allLogs, cycleTimes, startDate, comp
         delete issue.initialStoryPoints;
     }
 
-    return calculateStatusWiseTimeSpent(issue, modifiedWithinSprint, startDate, completeDate);
+    return calculateStatusWiseTimeSpent(issue, modifiedWithinSprint, allLogs, startDate, completeDate);
 }
 
 function calculateStatusWiseTimeSpent(issue, logsWithinSprint, allLogs, sprintStartDate, sprintEndDate) {
     if (!allLogs?.length) { return {}; }
-    const statusLogs = logsWithinSprint.filter(l => l.fieldId = 'status');
+    const statusLogs = logsWithinSprint.filter(l => l.fieldId === 'status');
 
     if (!statusLogs.length) {
-        const allStatusLogs = allLogs.filter(l => l.fieldId = 'status' && moment(l.created).isBefore(sprintStartDate));
+        const allStatusLogs = allLogs.filter(l => l.fieldId === 'status' && moment(l.created).isBefore(sprintStartDate));
         const lastLog = allStatusLogs[allStatusLogs.length - 1];
 
         if (!lastLog) { return {}; }
