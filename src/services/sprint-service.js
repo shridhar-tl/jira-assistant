@@ -219,7 +219,7 @@ function calculateStatusWiseTimeSpent(issue, allLogs, sprintStartDate, sprintEnd
     if (indexOfFirstChangeAfterSprintStart > 1) { // See if more than one log is available before start of sprint
         statusLogs.splice(0, indexOfFirstChangeAfterSprintStart - 1); // Keep only the last log which happened before start of sprint
     } else if (indexOfFirstChangeAfterSprintStart === -1) {
-        statusLogs.splice(0, statusLogs.length - 2); // Keep only the last log which happened before start of sprint
+        statusLogs.splice(0, statusLogs.length - 1); // Keep only the last log which happened before start of sprint
     }
 
     if (statusLogs[0].startDate.isBefore(sprintStartDate)) { // If first log has happened before start of sprint, then change it to exact start of sprint
