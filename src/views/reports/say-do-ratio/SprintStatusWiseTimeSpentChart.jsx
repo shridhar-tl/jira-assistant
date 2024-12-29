@@ -5,6 +5,14 @@ const documentStyle = getComputedStyle(document.documentElement);
 const textColor = documentStyle.getPropertyValue('--text-color');
 const textColorSecondary = documentStyle.getPropertyValue('--text-color-secondary');
 const surfaceBorder = documentStyle.getPropertyValue('--surface-border');
+const defaultLineColors = [
+    'rgba(255, 99, 132)',
+    'rgba(54, 162, 235)',
+    'rgba(255, 206, 86)',
+    'rgba(75, 192, 192)',
+    'rgba(153, 102, 255)',
+    'rgba(255, 159, 64)',
+];
 
 function getOptions(titleText, subTitle, minY, maxY) {
     return {
@@ -113,14 +121,8 @@ function SprintStatusWiseTimeSpentChart({ board }) {
         const availableSprints = sprintList.filter(Boolean);
         const labels = availableSprints.map(s => s.name);
         const statusList = availableSprints.flatMap(s => Object.keys(s.statusWiseTimeSpent)).distinct();
-        const datasets = statusList.map(s => getChartData(availableSprints, s, s));
+        const datasets = statusList.map((s, i) => getChartData(availableSprints, s, s, defaultLineColors[i]));
         datasets.push(getCycleTimeData(availableSprints));
-        /*const datasets = [
-            getChartData(availableSprints, 'velocity', 'Velocity', '#4169E1', { borderDash: [5, 5] }),
-            getChartData(availableSprints, 'committedStoryPoints', 'Committed', '#FF6347'),
-            getChartData(availableSprints, 'completedStoryPoints', 'Completed', '#228B22'),
-            getCycleTimeData(availableSprints)
-        ];*/
 
         let minY = 7, maxY = 7;
 
