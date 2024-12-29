@@ -1,0 +1,50 @@
+div.ticket-estimate {
+    display: flex;
+    align-items: center;
+    max-width: 500px;
+    height: 25px;
+    overflow: hidden;
+
+    .ticket-item {
+        display: flex;
+        align-items: center;
+        clip-path: polygon(10% 0%, 90% 0%, 77% 50%, 90% 100%, 10% 100%, 0% 50%);
+        padding: 0 25px 0 8px;
+        margin: 0;
+        font-size: 12px;
+        color: #fff;
+        white-space: nowrap;
+        height: 21px;
+        transition: transform 0.2s;
+        cursor: pointer;
+
+        .fas {
+            margin-right: 4px;
+            font-size: 10px;
+        }
+
+        &:hover {
+            transform: scale(1.08);
+        }
+
+        &.est {
+            background: linear-gradient(135deg, #d1e7dd, #98e2d6);
+            color: #0f5132;
+        }
+
+        &.rem {
+            background: linear-gradient(135deg, #cff4fc, #89dffd);
+            color: #055160;
+        }
+
+        &.log {
+            background: linear-gradient(135deg, #fff3cd, #ffe066);
+            color: #664d03;
+        }
+
+        &.var {
+            background: linear-gradient(135deg, #f8d7da, #f8d7da);
+            color: #842029;
+        }
+    }
+}

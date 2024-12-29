@@ -49,8 +49,9 @@ div.scroll-table-container .scroll-table {
 
 td {
     div.wl-ticket-detail {
-        width: 360px;
-        height: 25px;
+        width: 100%;
+        max-width: 500px;
+        height: 22px;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
