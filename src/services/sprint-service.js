@@ -64,7 +64,26 @@ function processSprintData(sprint, issueLogs, { index, noOfSprintsForVelocity, s
     sprint.sayDoRatio = 0;
     const cycleTimes = [];
 
-    sprint.issues.forEach(issue => processSprintIssues(sprint, issue, issueLogs[issue.id], cycleTimes, startDate, completeDate, storyPointFieldName, workingDays));
+    sprint.statusWiseTimeSpent = sprint.issues.reduce(([statusWiseLogs, statusWiseIssueCount], issue, index, issuesList) => {
+        const timeSpentInfo = processSprintIssues(sprint, issue, issueLogs[issue.id], cycleTimes, startDate, completeDate, storyPointFieldName, workingDays);
+        Object.keys(timeSpentInfo).forEach(status => {
+            statusWiseLogs[status] = (statusWiseLogs[status] || 0) + timeSpentInfo[status];
+            statusWiseIssueCount[status] = (statusWiseIssueCount[status] || 0) + 1;
+        });
+
+        if (index === issuesList.length - 1) { // If it is last issue, then return the average status wise time spent log
+            return Object.keys(statusWiseLogs).reduce((avgStatusWiseLog, status) => {
+                const { [status]: spent } = statusWiseLogs;
+                const { [status]: issueCount } = statusWiseIssueCount;
+
+                avgStatusWiseLog[status] = spent / issueCount;
+
+                return statusWiseLogs;
+            }, {});
+        } else {
+            return [statusWiseLogs, statusWiseIssueCount];
+        }
+    }, [{}, {}]);
 
     sprint.averageCycleTime = cycleTimes.avg();
     sprint.cycleTimesIssuesCount = cycleTimes.length;
@@ -171,6 +190,42 @@ function processSprintIssues(sprint, issue, allLogs, cycleTimes, startDate, comp
     if (issue.initialStoryPoints === storyPoint) {
         delete issue.initialStoryPoints;
     }
+
+    return calculateStatusWiseTimeSpent(issue, modifiedWithinSprint, startDate, completeDate);
+}
+
+function calculateStatusWiseTimeSpent(issue, logsWithinSprint, allLogs, sprintStartDate, sprintEndDate) {
+    if (!allLogs?.length) { return {}; }
+    const statusLogs = logsWithinSprint.filter(l => l.fieldId = 'status');
+
+    if (!statusLogs.length) {
+        const allStatusLogs = allLogs.filter(l => l.fieldId = 'status' && moment(l.created).isBefore(sprintStartDate));
+        const lastLog = allStatusLogs[allStatusLogs.length - 1];
+
+        if (!lastLog) { return {}; }
+
+        const startStatus = lastLog.toString;
+        return { [startStatus]: sprintEndDate.diff(sprintStartDate, 'days', true) || 0 };
+    }
+
+    const statusWiseTimeSpent = {};
+    let lastStatusTime = sprintStartDate;
+
+    statusLogs.forEach((log, i, statusLogs) => {
+        const { fromString, toString, created } = log;
+        const currentStatusChangeTime = moment(created);
+
+        statusWiseTimeSpent[fromString] = (statusWiseTimeSpent[fromString] || 0) + (currentStatusChangeTime.diff(lastStatusTime, 'days', true) || 0);
+        lastStatusTime = currentStatusChangeTime;
+
+        if (i + 1 === statusLogs.length) { // If it is last log, then calculate until end of sprint
+            statusWiseTimeSpent[toString] = (statusWiseTimeSpent[toString] || 0) + (sprintEndDate.diff(currentStatusChangeTime, 'days', true) || 0);
+        }
+    });
+
+    issue.statusWiseTimeSpent = statusWiseTimeSpent;
+
+    return statusWiseTimeSpent;
 }
 
 function getFirstModifiedLog(logs, fieldId, fromString, toString) {
