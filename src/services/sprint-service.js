@@ -66,10 +66,12 @@ function processSprintData(sprint, issueLogs, { index, noOfSprintsForVelocity, s
 
     sprint.statusWiseTimeSpent = sprint.issues.reduce(([statusWiseLogs, statusWiseIssueCount], issue, index, issuesList) => {
         const timeSpentInfo = processSprintIssues(sprint, issue, issueLogs[issue.id], cycleTimes, startDate, completeDate, storyPointFieldName, sprintFieldId, workingDays);
-        Object.keys(timeSpentInfo).forEach(status => {
-            statusWiseLogs[status] = (statusWiseLogs[status] || 0) + timeSpentInfo[status];
-            statusWiseIssueCount[status] = (statusWiseIssueCount[status] || 0) + 1;
-        });
+        if (timeSpentInfo) {
+            Object.keys(timeSpentInfo).forEach(status => {
+                statusWiseLogs[status] = (statusWiseLogs[status] || 0) + timeSpentInfo[status];
+                statusWiseIssueCount[status] = (statusWiseIssueCount[status] || 0) + 1;
+            });
+        }
 
         if (index === issuesList.length - 1) { // If it is last issue, then return the average status wise time spent log
             return Object.keys(statusWiseLogs).reduce((avgStatusWiseLog, status) => {
