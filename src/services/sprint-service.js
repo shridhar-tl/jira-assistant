@@ -123,11 +123,15 @@ function processSprintIssues(sprint, issue, allLogs, cycleTimes, startDate, comp
 
     const sprintFields = modifiedWithinSprint?.filter(log => log.fieldId === sprintFieldId);
     const firstSprintLog = sprintFields?.[0];
-    //const lastSprintLog = sprintFields?.[0];
 
-    //issue.removedFromSprint = lastSprintLog && !lastSprintLog.to.split(',').some(sid => parseInt(sid) === sprint.id);
-    issue.addedToSprint = startDate.isBefore(issueCreated)
+    //issue.removedFromSprint = // This would be already set from JiraService
+    const isIssueCreatedAfterSprintStart = startDate.isBefore(issueCreated);
+    issue.addedToSprint = isIssueCreatedAfterSprintStart
         || (firstSprintLog && !firstSprintLog.from.split(',').some(sid => parseInt(sid) === sprint.id));
+
+    if (issue.addedToSprint) {
+        issue.addedToSprintDate = moment(isIssueCreatedAfterSprintStart ? issueCreated : firstSprintLog.created).toDate();
+    }
 
     if (!('initialStoryPoints' in issue)) {
         issue.initialStoryPoints = parseFloat(storyPoint) || 0;
@@ -197,7 +201,12 @@ function processSprintIssues(sprint, issue, allLogs, cycleTimes, startDate, comp
 }
 
 function calculateStatusWiseTimeSpent(issue, logsWithinSprint, allLogs, sprintStartDate, sprintEndDate) {
-    if (!allLogs?.length) { return {}; }
+    if (!allLogs?.length || issue.removedFromSprint) { return {}; }
+
+    if (issue.addedToSprint && issue.addedToSprintDate) {
+        sprintStartDate = moment(issue.addedToSprintDate); // If issue added to sprint later, then consider that as start date
+    }
+
     const statusLogs = logsWithinSprint.filter(l => l.fieldId === 'status');
 
     if (!statusLogs.length) {
