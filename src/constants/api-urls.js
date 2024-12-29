@@ -7,6 +7,7 @@ export const ApiUrls = {
     bulkImportIssue: "~/rest/api/2/issue/bulk",
     getProjectImportMetadata: "~/rest/api/2/issue/createmeta?expand=projects.issuetypes.fields&projectKeys=",
     getProjectStatuses: "~/rest/api/2/project/{0}/statuses",
+    getJiraStatuses: "~/rest/api/2/status",
     getIssueMetadata: "~/rest/api/2/issue/{0}/editmeta",
     individualIssue: "~/rest/api/2/issue/{0}",
     getAllIssueTypes: "~/rest/api/2/issuetype",

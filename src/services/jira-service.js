@@ -268,7 +268,7 @@ export default class JiraService {
 
         const result = await Promise.all(projects.map(async p => {
             const cacheKey = `projectStatuses_${p}`;
-            let project = this.$jaCache.session.get();
+            let project = this.$jaCache.session.get(cacheKey);
 
             if (!project) {
                 project = await this.$ajax.get(ApiUrls.getProjectStatuses, p);
@@ -279,6 +279,18 @@ export default class JiraService {
         }));
 
         return onlyOne ? result[0] : result;
+    }
+
+    async getJiraStatuses() {
+        const cacheKey = `jiraStatuses`;
+        let statuses = this.$jaCache.session.get(cacheKey);
+
+        if (!statuses) {
+            statuses = await this.$ajax.get(ApiUrls.getJiraStatuses);
+            this.$jaCache.session.set(cacheKey, statuses);
+        }
+
+        return statuses;
     }
 
     async getIssueMetadata(issuekey) {

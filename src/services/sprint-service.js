@@ -10,7 +10,7 @@ export default class SprintService {
     }
 
     computeAverageSprintVelocity = (boardId, noOfSprintsForVelocity = 6, storyPointFieldName,
-        sprintFieldId, noOfSprintsToPull = noOfSprintsForVelocity * 2, workingDays) => new FeedbackPromise(async (resolve, _, progress) => {
+        sprintFieldId, noOfSprintsToPull = noOfSprintsForVelocity * 2, workingDays, statusMap) => new FeedbackPromise(async (resolve, _, progress) => {
             const allClosedSprintLists = await this.$jira.getRapidSprintList([boardId], { state: 'closed' });
             progress({ completed: 2 });
             const closedSprintLists = allClosedSprintLists.slice(0, noOfSprintsToPull).sortBy(({ completeDate }) => completeDate.getTime());
@@ -20,6 +20,10 @@ export default class SprintService {
                 return resolve({ closedSprintLists, averageCommitted: 0, averageCompleted: 0 });
             }
 
+            const boardConfig = await this.$jira.getBoardConfig(boardId);
+            const statusBoardColMap = getStatusBoardColMap(statusMap, boardConfig);
+            progress({ completed: 4 });
+
             const sprintIds = closedSprintLists.map(({ id }) => id);
 
             const sprintWiseIssues = await this.$jira.getSprintIssues(sprintIds, {
@@ -28,13 +32,14 @@ export default class SprintService {
                 includeRemoved: true, boardId
             }).progress(done => progress({ completed: done / 2 }));
 
+
             const issueLogs = await getIssueLogsForSprints(closedSprintLists, this.$jira, sprintWiseIssues, progress, sprintFieldId, storyPointFieldName);
 
             for (let index = 0; index < closedSprintLists.length; index++) {
                 const sprint = closedSprintLists[index];
                 sprint.issues = sprintWiseIssues[sprint.id];
 
-                processSprintData(sprint, issueLogs, { index, noOfSprintsForVelocity, storyPointFieldName, sprintFieldId, closedSprintLists, workingDays });
+                processSprintData(sprint, issueLogs, { index, noOfSprintsForVelocity, storyPointFieldName, sprintFieldId, closedSprintLists, workingDays, statusBoardColMap });
             }
 
             const sprintsToConsider = closedSprintLists.slice(-noOfSprintsForVelocity);
@@ -55,7 +60,7 @@ export default class SprintService {
         });
 }
 
-function processSprintData(sprint, issueLogs, { index, noOfSprintsForVelocity, storyPointFieldName, sprintFieldId, closedSprintLists, workingDays }) {
+function processSprintData(sprint, issueLogs, { index, noOfSprintsForVelocity, storyPointFieldName, sprintFieldId, closedSprintLists, workingDays, statusBoardColMap }) {
     const startDate = moment(sprint.startDate);
     const completeDate = moment(sprint.completeDate);
 
@@ -67,9 +72,20 @@ function processSprintData(sprint, issueLogs, { index, noOfSprintsForVelocity, s
     sprint.statusWiseTimeSpent = sprint.issues.reduce(([statusWiseLogs, statusWiseIssueCount], issue, index, issuesList) => {
         const timeSpentInfo = processSprintIssues(sprint, issue, issueLogs[issue.id], cycleTimes, startDate, completeDate, storyPointFieldName, sprintFieldId, workingDays);
         if (timeSpentInfo) {
+            const countIncremented = {};
             Object.keys(timeSpentInfo).forEach(status => {
+                if (statusBoardColMap) {
+                    status = statusBoardColMap[status];
+                }
+
+                if (!status) { return; }
+
                 statusWiseLogs[status] = (statusWiseLogs[status] || 0) + timeSpentInfo[status];
-                statusWiseIssueCount[status] = (statusWiseIssueCount[status] || 0) + 1;
+
+                if (!countIncremented[status]) { // While multiple status falls under same column, don't increment count for same issue
+                    countIncremented[status] = true;
+                    statusWiseIssueCount[status] = (statusWiseIssueCount[status] || 0) + 1;
+                }
             });
         }
 
@@ -304,4 +320,25 @@ function addRemovedIssuesToMissingSprints(sprintWiseIssues, sprintIssueLogs, cur
             }
         });
     });
+}
+
+function getStatusBoardColMap(statusMap, boardConfig) {
+    const statusBoardColMap = {};
+    const boardColumns = boardConfig?.columnConfig?.columns;
+    if (!boardColumns) {
+        return;
+    }
+
+    boardColumns.forEach(col => {
+        const boardColName = col.name;
+        col.statuses.forEach(s => {
+            const statusText = statusMap[s.id];
+            if (statusBoardColMap[statusText]) { // This should not happen ideally
+                console.error(`Unexpected Error: Status ${statusText} is mapped to ${statusBoardColMap[statusText]} and ${boardColName}`);
+            }
+            statusBoardColMap[statusText] = boardColName;
+        });
+    });
+
+    return Object.keys(statusBoardColMap).length ? statusBoardColMap : undefined;
 }
