@@ -12,6 +12,8 @@ const defaultLineColors = [
     'rgba(75, 192, 192)',
     'rgba(153, 102, 255)',
     'rgba(255, 159, 64)',
+    'rgba(34, 33, 219)',
+    'rgba(25, 100, 229)',
 ];
 
 function getOptions(titleText, subTitle, minY, maxY) {

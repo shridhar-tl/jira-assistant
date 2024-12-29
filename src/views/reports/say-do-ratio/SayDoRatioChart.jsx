@@ -108,7 +108,7 @@ function SayDoRatioChart({ board }) {
             getChartData(availableSprints, 'velocity', 'Velocity', '#4169E1', { borderDash: [5, 5] }),
             getChartData(availableSprints, 'committedStoryPoints', 'Committed', '#FF6347'),
             getChartData(availableSprints, 'completedStoryPoints', 'Completed', '#228B22'),
-            getChartData(availableSprints, 'sayDoRatio', 'Say Do Ratio', '#FFD700', { yAxisID: 'y1', fill: true })
+            getChartData(availableSprints, 'sayDoRatio', 'Say Do Ratio', '#FFD700', { yAxisID: 'y1', fill: true, backgroundColor: '#ffed8cc4' })
         ];
 
         let minY = 7, maxY = 7;
