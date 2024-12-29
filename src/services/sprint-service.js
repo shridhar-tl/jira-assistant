@@ -215,7 +215,7 @@ function calculateStatusWiseTimeSpent(issue, logsWithinSprint, allLogs, sprintSt
         .map(l => ({ status: l.toString, startDate: moment(l.created) }));
     if (!statusLogs.length) { return {}; }
 
-    const indexOfFirstChangeAfterSprintStart = statusLogs.findIndex(l => l.isSameOrAfter(sprintStartDate));
+    const indexOfFirstChangeAfterSprintStart = statusLogs.findIndex(l => l.startDate.isSameOrAfter(sprintStartDate));
     if (indexOfFirstChangeAfterSprintStart > 1) { // See if more than one log is available before start of sprint
         statusLogs.splice(0, indexOfFirstChangeAfterSprintStart - 1); // Keep only the last log which happened before start of sprint
     }
@@ -225,7 +225,7 @@ function calculateStatusWiseTimeSpent(issue, logsWithinSprint, allLogs, sprintSt
     }
 
     const statusWiseTimeSpent = statusLogs.reduce((result, log, i) => {
-        const nextLogTime = statusLogs[i + 1]?.date ?? sprintEndDate;
+        const nextLogTime = statusLogs[i + 1]?.startDate ?? sprintEndDate;
         result[log.status] = (result[log.status] || 0) + (nextLogTime.diff(log.startDate, 'days', true) || 0);
         return result;
     });
