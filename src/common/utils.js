@@ -329,7 +329,7 @@ export function replaceRepeatedWords(names) {
         if (middle === '') {
             return parts.start + parts.end;
         }
-        return parts.start + middle + parts.end;
+        return (parts.start + middle + parts.end).replace(/([.]+\s*){3,}/g, '...').replace(/([.]+\s*){2}/g, '...');
     });
 
     return replacedNames;
