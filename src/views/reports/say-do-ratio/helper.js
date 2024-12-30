@@ -10,17 +10,24 @@ export function getSprintWiseSayDoRatio(settings) {
         await $config.saveSettings(settingsName, { sprintBoards, noOfSprints, velocitySprints, includeNonWorkingDays });
 
         const customFields = await $jira.getCustomFields();
+        const statuses = await $jira.getJiraStatuses();
+
+        const statusMap = statuses.reduce((map, s) => {
+            map[s.id] = s.untranslatedName || s.name;
+            return map;
+        }, {});
+
         const sprintFieldId = customFields.find(({ name }) => name === 'Sprint')?.id;
-        progress({ data: [], completed: 5 });
+        progress({ data: [], completed: 2 });
 
         const workingDaysToUse = includeNonWorkingDays ? undefined : workingDays;
 
         const result = [];
         for (const { id, name } of sprintBoards) {
             const { closedSprintLists, ...boardProps } = await $sprint.computeAverageSprintVelocity(id,
-                velocitySprints, storyPointField, sprintFieldId, noOfSprints + velocitySprints, workingDaysToUse)
+                velocitySprints, storyPointField, sprintFieldId, noOfSprints + velocitySprints, workingDaysToUse, statusMap)
                 .progress(({ completed }) => {
-                    progress({ completed: 5 + (((result.length + (completed / 100)) * 95) / sprintBoards.length) });
+                    progress({ completed: 2 + (((result.length + (completed / 100)) * 98) / sprintBoards.length) });
                 });
 
             const sprintList = closedSprintLists.slice(-noOfSprints);

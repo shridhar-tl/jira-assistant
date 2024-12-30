@@ -136,6 +136,7 @@
                 "as-needed"
             ],
             "no-unused-vars": "off",
+            "no-undef": "error",
             "no-unreachable": "error",
             "eqeqeq": "error",
             "semi": "error",
