@@ -75,7 +75,7 @@ function getOptions(titleText, subTitle, minY, maxY, xAxisLabels) {
             y: {
                 title: {
                     display: true,
-                    text: 'Story Points'
+                    text: 'Time Spent (days)'
                 },
                 min: minY,
                 max: maxY,
