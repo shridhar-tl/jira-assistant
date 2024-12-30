@@ -261,3 +261,76 @@ export function stop(e) {
     e.stopPropagation();
     e.preventDefault();
 }
+
+export function replaceRepeatedWords(names) {
+    const total = names.length;
+    if (total === 0) { return []; }
+
+    // Separate first two and last one characters, and middle part
+    const separated = names.map(name => {
+        if (name.length <= 3) {
+            // If the name is too short, no replacement
+            return { start: name, middle: '', end: '' };
+        }
+        return {
+            start: name.slice(0, 2),
+            middle: name.slice(2, -1),
+            end: name.slice(-1)
+        };
+    });
+
+    // Split the middle parts into tokens
+    const middleTokens = separated.map(parts => parts.middle.split(' '));
+
+    // Find the maximum number of tokens in the middle parts
+    const maxTokens = middleTokens.reduce((max, tokens) => Math.max(max, tokens.length), 0);
+
+    // Initialize an array to hold token counts for each position
+    const tokenCounts = Array.from({ length: maxTokens }, () => ({}));
+
+    // Count occurrences of each token in each position
+    for (let i = 0; i < maxTokens; i++) {
+        for (let j = 0; j < total; j++) {
+            const tokens = middleTokens[j];
+            if (i < tokens.length) {
+                const token = tokens[i];
+                // Ignore tokens with numbers and those with length <= 3
+                if (!/\d/.test(token) && token.length > 3) {
+                    tokenCounts[i][token] = (tokenCounts[i][token] || 0) + 1;
+                }
+            }
+        }
+    }
+
+    // Determine which token positions should be replaced
+    const positionsToReplace = new Set();
+    for (let i = 0; i < maxTokens; i++) {
+        for (const [token, count] of Object.entries(tokenCounts[i])) {
+            if (count / total >= 0.5) {
+                positionsToReplace.add(i);
+                break; // Replace if any token in this position meets the criteria
+            }
+        }
+    }
+
+    // Replace the tokens in the middle parts
+    const processedMiddle = middleTokens.map(tokens => tokens.map((token, idx) => {
+        if (positionsToReplace.has(idx) && token.length > 3 && !/\d/.test(token)) {
+            return '...';
+        }
+        return token;
+    }).join(' ')
+    );
+
+    // Reconstruct the full strings ensuring first two and last one characters are intact
+    const replacedNames = separated.map((parts, idx) => {
+        const middle = processedMiddle[idx];
+        // Handle cases where middle is empty
+        if (middle === '') {
+            return parts.start + parts.end;
+        }
+        return parts.start + middle + parts.end;
+    });
+
+    return replacedNames;
+}

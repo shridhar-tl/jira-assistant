@@ -1,5 +1,6 @@
 import { Chart } from 'primereact/chart';
 import React from 'react';
+import { replaceRepeatedWords } from 'src/common/utils';
 
 const documentStyle = getComputedStyle(document.documentElement);
 const textColor = documentStyle.getPropertyValue('--text-color');
@@ -16,7 +17,20 @@ const defaultLineColors = [
     'rgba(25, 100, 229)',
 ];
 
-function getOptions(titleText, subTitle, minY, maxY) {
+function getOptions(titleText, subTitle, minY, maxY, xAxisLabels) {
+    const xAxis = {
+        ticks: {
+            color: textColorSecondary
+        },
+        grid: {
+            color: surfaceBorder
+        }
+    };
+
+    if (xAxisLabels.length > 4) {
+        xAxis.ticks.callback = (_, index) => xAxisLabels[index];
+    }
+
     return {
         maintainAspectRatio: false,
         responsive: true,
@@ -57,14 +71,7 @@ function getOptions(titleText, subTitle, minY, maxY) {
             intersect: false
         },
         scales: {
-            x: {
-                ticks: {
-                    color: textColorSecondary
-                },
-                grid: {
-                    color: surfaceBorder
-                }
-            },
+            x: xAxis,
             y: {
                 title: {
                     display: true,
@@ -122,6 +129,7 @@ function SprintStatusWiseTimeSpentChart({ board }) {
         const { name, sprintList } = board;
         const availableSprints = sprintList.filter(Boolean);
         const labels = availableSprints.map(s => s.name);
+        const shortenedLabels = replaceRepeatedWords(labels);
         const statusList = availableSprints.flatMap(s => Object.keys(s.statusWiseTimeSpent)).distinct();
         const datasets = statusList.map((s, i) => getChartData(availableSprints, s, s, defaultLineColors[i]));
         datasets.push(getCycleTimeData(availableSprints));
@@ -152,7 +160,7 @@ function SprintStatusWiseTimeSpentChart({ board }) {
 
         return {
             data: { labels, datasets },
-            options: getOptions(name, `Status Wise Time Spent`, minY, maxY + 1)
+            options: getOptions(name, `Status Wise Time Spent`, minY, maxY + 1, shortenedLabels)
         };
     }, [board]);
 
