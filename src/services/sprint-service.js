@@ -21,7 +21,7 @@ export default class SprintService {
             }
 
             const boardConfig = await this.$jira.getBoardConfig(boardId);
-            const statusBoardColMap = getStatusBoardColMap(statusMap, boardConfig);
+            const [boardColumnsOrder, statusBoardColMap] = getStatusBoardColMap(statusMap, boardConfig);
             progress({ completed: 4 });
 
             const sprintIds = closedSprintLists.map(({ id }) => id);
@@ -56,7 +56,7 @@ export default class SprintService {
             //const median = Math.round(averageCompleted + (diff / 2));
             const logUnavailable = sprintsToConsider.every(s => s.logUnavailable);
 
-            resolve({ closedSprintLists, averageCommitted, averageCompleted, velocity: boardVelocity, velocityGrowth, sayDoRatio, averageCycleTime, logUnavailable });
+            resolve({ boardColumnsOrder, closedSprintLists, averageCommitted, averageCompleted, velocity: boardVelocity, velocityGrowth, sayDoRatio, averageCycleTime, logUnavailable });
         });
 }
 
@@ -329,8 +329,11 @@ function getStatusBoardColMap(statusMap, boardConfig) {
         return;
     }
 
-    boardColumns.forEach(col => {
+    const boardColumnsOrder = {};
+    boardColumns.forEach((col, i) => {
         const boardColName = col.name;
+        boardColumnsOrder[boardColName] = i;
+
         col.statuses.forEach(s => {
             const statusText = statusMap[s.id];
             if (statusBoardColMap[statusText]) { // This should not happen ideally
@@ -340,5 +343,5 @@ function getStatusBoardColMap(statusMap, boardConfig) {
         });
     });
 
-    return Object.keys(statusBoardColMap).length ? statusBoardColMap : undefined;
+    return [boardColumnsOrder, Object.keys(statusBoardColMap).length ? statusBoardColMap : undefined];
 }

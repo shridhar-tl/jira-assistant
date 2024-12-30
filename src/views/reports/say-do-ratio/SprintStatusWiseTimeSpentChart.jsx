@@ -126,11 +126,11 @@ function getCycleTimeData(sprintList) {
 
 function SprintStatusWiseTimeSpentChart({ board }) {
     const { data, options } = React.useMemo(() => {
-        const { name, sprintList } = board;
+        const { name, sprintList, boardColumnsOrder } = board;
         const availableSprints = sprintList.filter(Boolean);
         const labels = availableSprints.map(s => s.name);
         const shortenedLabels = replaceRepeatedWords(labels);
-        const statusList = availableSprints.flatMap(s => Object.keys(s.statusWiseTimeSpent)).distinct();
+        const statusList = availableSprints.flatMap(s => Object.keys(s.statusWiseTimeSpent)).distinct().sortBy(s => boardColumnsOrder[s] ?? 10);
         const datasets = statusList.map((s, i) => getChartData(availableSprints, s, s, defaultLineColors[i]));
         datasets.push(getCycleTimeData(availableSprints));
 
