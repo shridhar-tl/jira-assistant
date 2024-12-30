@@ -3,6 +3,7 @@ import { Column, NoDataRow, ScrollableTable, TBody, THead } from 'src/components
 import SayDoRatioChart from './SayDoRatioChart';
 import Indicator from '../../../components/worklog-indicator';
 import SprintInfo from './SprintInfo';
+import SprintStatusWiseTimeSpentChart from './SprintStatusWiseTimeSpentChart';
 
 const changeLogErrorMessage = "Unable to fetch change logs and hence data may not be accurate";
 
@@ -81,7 +82,10 @@ function ReportData({ reportData, settings }) {
             <SprintInfo sprint={selectedSprint} onClose={() => setSprint(null)} />
         </div>}
         <div className="row m-0 mt-3">
-            {reportData?.map(b => <SayDoRatioChart key={b.id} board={b} />)}
+            {reportData?.map(b => <>
+                <SayDoRatioChart key={b.id} board={b} />
+                <SprintStatusWiseTimeSpentChart key={b.id} board={b} />
+            </>)}
         </div>
     </>);
 }

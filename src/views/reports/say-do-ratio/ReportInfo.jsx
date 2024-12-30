@@ -1,7 +1,5 @@
 import React from 'react';
 import { isPluginBuild } from 'src/constants/build-info';
-import { WebSiteUrl } from 'src/constants/urls';
-import { Link } from 'src/controls';
 
 function HelpText() {
     return (
