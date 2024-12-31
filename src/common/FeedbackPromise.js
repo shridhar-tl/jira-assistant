@@ -14,7 +14,10 @@ class FeedbackPromise extends Promise {
             };
 
             try {
-                executor(resolve, reject, progress);
+                const result = executor(resolve, reject, progress);
+                if (typeof result?.then === 'function') {
+                    result.then(resolve, reject);
+                }
             } catch (err) {
                 reject(err);
             }
