@@ -330,7 +330,7 @@ class SprintWiseWorklog extends PureComponent {
                         </tr>
                     </THead>
                     <TBody>
-                        {(sprint, i) => <SprintDetails key={sprint._uniqueId} groups={groups} sprint={sprint} showIncomplete={showIncomplete}
+                        {(sprint) => <SprintDetails key={sprint._uniqueId} groups={groups} sprint={sprint} showIncomplete={showIncomplete}
                             showSubtask={showSubtask} convertSecs={this.convertSecs} />}
                     </TBody>
                 </ScrollableTable>

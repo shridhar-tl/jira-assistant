@@ -6,6 +6,16 @@ const documentStyle = getComputedStyle(document.documentElement);
 const textColor = documentStyle.getPropertyValue('--text-color');
 const textColorSecondary = documentStyle.getPropertyValue('--text-color-secondary');
 const surfaceBorder = documentStyle.getPropertyValue('--surface-border');
+const defaultLineColors = [
+    'rgba(255, 99, 132)',
+    'rgba(54, 162, 235)',
+    'rgb(105 0 251)',
+    'rgba(75, 192, 192)',
+    'rgba(123, 12, 55)',
+    'rgba(255, 159, 64)',
+    'rgba(34, 33, 219)',
+    'rgba(25, 100, 229)',
+];
 
 function getOptions(titleText, subTitle, minY, maxY, xAxisLabels) {
     const xAxis = {
@@ -51,7 +61,7 @@ function getOptions(titleText, subTitle, minY, maxY, xAxisLabels) {
                 callbacks: {
                     title: (tooltipItems) => `Sprint: ${tooltipItems[0].label}`,
                     label: (tooltipItem) =>
-                        `${tooltipItem.dataset.label}: ${tooltipItem.formattedValue} ${tooltipItem.dataset.yAxisID === 'y1' ? 'days' : 'points'}`
+                        `${tooltipItem.dataset.label}: ${tooltipItem.formattedValue} days`
                 },
                 bodySpacing: 10
             }
@@ -65,7 +75,7 @@ function getOptions(titleText, subTitle, minY, maxY, xAxisLabels) {
             y: {
                 title: {
                     display: true,
-                    text: 'Story Points'
+                    text: 'Time Spent (days)'
                 },
                 min: minY,
                 max: maxY,
@@ -80,10 +90,8 @@ function getOptions(titleText, subTitle, minY, maxY, xAxisLabels) {
                 position: 'right',
                 title: {
                     display: true,
-                    text: 'Say Do Ratio (%)'
+                    text: 'Cycle Time (Days)'
                 },
-                min: 0,
-                max: 100,
                 ticks: {
                     color: textColorSecondary
                 },
@@ -98,7 +106,7 @@ function getOptions(titleText, subTitle, minY, maxY, xAxisLabels) {
 function getChartData(sprintList, key, label, borderColor, others) {
     return {
         label,
-        data: sprintList.map(({ [key]: value }) => value),
+        data: sprintList.map(s => s.statusWiseTimeSpent[key] || 0),
         fill: false,
         borderColor,
         tension: 0.4,
@@ -106,21 +114,27 @@ function getChartData(sprintList, key, label, borderColor, others) {
     };
 }
 
-function SayDoRatioChart({ board }) {
+function getCycleTimeData(sprintList) {
+    return {
+        label: 'Cycle Time',
+        data: sprintList.map(({ averageCycleTime }) => averageCycleTime),
+        backgroundColor: '#FFD700',
+        yAxisID: 'y1',
+        type: 'bar'
+    };
+}
+
+function SprintStatusWiseTimeSpentChart({ board }) {
     const { data, options } = React.useMemo(() => {
-        const { name, sprintList, velocity } = board;
+        const { name, sprintList, boardColumnsOrder } = board;
         const availableSprints = sprintList.filter(Boolean);
         const labels = availableSprints.map(s => s.name);
         const shortenedLabels = replaceRepeatedWords(labels);
+        const statusList = availableSprints.flatMap(s => Object.keys(s.statusWiseTimeSpent)).distinct().sortBy(s => boardColumnsOrder[s] ?? 10);
+        const datasets = statusList.map((s, i) => getChartData(availableSprints, s, s, defaultLineColors[i]));
+        datasets.push(getCycleTimeData(availableSprints));
 
-        const datasets = [
-            getChartData(availableSprints, 'velocity', 'Velocity', '#4169E1', { borderDash: [5, 5] }),
-            getChartData(availableSprints, 'committedStoryPoints', 'Committed', '#FF6347'),
-            getChartData(availableSprints, 'completedStoryPoints', 'Completed', '#228B22'),
-            getChartData(availableSprints, 'sayDoRatio', 'Say Do Ratio', '#c4a6ff', { yAxisID: 'y1', fill: true, backgroundColor: '#c4a6ff6b' })
-        ];
-
-        let minY = 7, maxY = 7;
+        let minY = 2, maxY = 4;
 
         for (const ds of datasets) {
             if (ds.yAxisID !== 'y1') {
@@ -136,7 +150,9 @@ function SayDoRatioChart({ board }) {
             }
         }
 
-        if (minY <= 2) {
+        if (minY <= 1) {
+            minY = -1;
+        } else if (minY <= 2) {
             minY = 0;
         } else {
             minY -= 1;
@@ -144,7 +160,7 @@ function SayDoRatioChart({ board }) {
 
         return {
             data: { labels, datasets },
-            options: getOptions(name, `Velocity: ${velocity ?? '(Unavailable)'}`, minY, maxY + 2, shortenedLabels)
+            options: getOptions(name, `Status Wise Time Spent`, minY, maxY + 1, shortenedLabels)
         };
     }, [board]);
 
@@ -155,4 +171,4 @@ function SayDoRatioChart({ board }) {
     );
 }
 
-export default SayDoRatioChart;
+export default SprintStatusWiseTimeSpentChart;

@@ -66,12 +66,15 @@ class MeetingsTab extends TabControlBase {
     enableOIntegration = (val) => this.saveSetting(val, "outlookIntegration");
 
     googleSignIn = () => {
-        this.$calendar.authenticate(true).then((result) => {
+        this.$calendar.authenticate(true).then(() => {
             this.saveSetting(true, "hasGoogleCredentials");
             this.$session.CurrentUser.hasGoogleCredentials = true;
             this.$analytics.trackEvent("Signedin to Google Calendar");
             this.$message.success("Successfully integrated with google account.");
-        }, (err) => { this.$message.warning("Unable to integrate with Google Calendar!"); });
+        }, (err) => {
+            this.$message.warning("Unable to integrate with Google Calendar!");
+            console.error("Unable to integrate with Google Calendar!", err);
+        });
     };
 
     outlookSignIn = () => {
