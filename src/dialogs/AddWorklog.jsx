@@ -318,7 +318,7 @@ class AddWorklog extends BaseDialog {
                     <strong>Ticket no</strong>
                 </div>
                 <div className="col-sm-9">
-                    <IssuePicker value={log.ticketNo} useDisplay={true} className="w-p-100" tabIndex="3"
+                    <IssuePicker value={log.ticketNo} useDisplay={true} className="w-100" tabIndex="3"
                         placeholder="Enter the ticket number or start typing the summary to get suggestion"
                         disabled={log.isUploaded} maxLength={20} onPick={(val) => this.setValue("ticketNo", val, true)} />
                     <span className={`help-block ${vald.ticketNo ? '' : 'msg-error'}`}>Provide the ticket no on which you had to log your work</span>
