@@ -83,7 +83,7 @@ class QueryEditor extends BaseGadget {
 
         return super.renderBase(
             <div className="query-editor">
-                <TabView panelContainerClassName="no-pad">
+                <TabView panelContainerClassName="p-0">
                     <TabPanel header="How to use">
                         <div className="pad-8">
                             <strong>Filter (JQL):</strong> JQL (Jira Query Language) is a powerful tool for filtering and extracting data from Jira.

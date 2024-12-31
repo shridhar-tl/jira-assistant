@@ -41,11 +41,6 @@ function HelpText() {
                         <li><strong>Sprints:</strong> Each sprint is represented in individual columns, showing the average Say-Do Ratio for that sprint.</li>
                     </ul>
                 </p>
-                <p>
-                    <strong>Chart Structure:</strong>
-                    The Y-axis represents story points, and the Y1-axis represents cycle time.
-                    The chart displays Velocity, Committed Story Points, and Completed Story Points as lines, with Cycle Time as bars.
-                </p>
 
                 <div>
                     <p>

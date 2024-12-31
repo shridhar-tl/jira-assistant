@@ -51,7 +51,7 @@ class TextBox extends PureComponent {
         if (multiline) {
             return (
                 <InputTextarea rows={rows} value={value} autoResize={autoResize} keyfilter={keyfilter} style={style} maxLength={maxLength} disabled={disabled}
-                    className={`w-p-100 ${className || ''}`} placeholder={placeholder} onChange={this.onChange} onKeyPress={this.keyPress}
+                    className={`w-100 ${className || ''}`} placeholder={placeholder} onChange={this.onChange} onKeyPress={this.keyPress}
                     onBlur={this.props.onBlur} />
             );
         }
