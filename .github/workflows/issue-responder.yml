@@ -20,6 +20,11 @@ on:
         required: false
         type: boolean
         default: false
+      updateDocsOnly:
+        description: 'Do not add comments to the ticket'
+        required: false
+        type: boolean
+        default: false
   issues:
     types: [opened]
   issue_comment:
@@ -83,6 +88,7 @@ jobs:
             COMMENT_USER="${{ github.actor }}"
             if grep -q "$COMMENT_USER" collaborators.txt; then
               echo "Comment was made by a collaborator."
+              echo "avoidComments=true" >> $GITHUB_ENV
               node github.mjs --ticket "$TICKET_NUMBER" \
                     --ticketType "$TICKET_TYPE" \
                     --repo "${{ github.repository }}" \
@@ -93,9 +99,20 @@ jobs:
                     --updateOnly
               exit 0
             fi
+          elif [[ "${{ github.event_name }}" == "workflow_dispatch" ]] && [[ "${{ github.event.inputs.updateDocsOnly }}" == "true" ]]; then
+            echo "avoidComments=true" >> $GITHUB_ENV
+            node github.mjs --ticket "$TICKET_NUMBER" \
+                  --ticketType "$TICKET_TYPE" \
+                  --repo "${{ github.repository }}" \
+                  --orgId "${{ vars.RESPONDER_ORG_ID }}" \
+                  --botId "${{ vars.RESPONDER_BOT_ID }}" \
+                  --ghToken "${{ github.token }}" \
+                  --authToken "${{ secrets.RESPONDER_TOKEN }}" \
+                  --updateOnly
           fi
 
-      - name: Execute script
+      - name: Add comment to ticket
+        if: env.avoidComments != 'true'
         run: |
           node github.mjs --testMode "${{ github.event.inputs.avoidUpdate }}" --ticket "$TICKET_NUMBER" \
                   --ticketType "$TICKET_TYPE" \
