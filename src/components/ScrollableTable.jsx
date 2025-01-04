@@ -118,7 +118,6 @@ export class THead extends PureComponent {
 
     setScrollTop(cells, defTop) {
         const scrollTop = this.context.getScrollTop();
-        console.log('scroll top is ', scrollTop);
         cells.forEach(c => {
             const top = c.offsetTop && scrollTop && c.offsetTop > scrollTop ? c.offsetTop - scrollTop : c.offsetTop;
             c.style.top = `${(top || defTop)}px`;

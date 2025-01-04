@@ -418,7 +418,7 @@ export default class WorklogService extends BaseService {
                 pro = pro.then(() => this.uploadWorklog(worklog, upload));
             }
             return pro.then(() => this.getWLCalendarEntry(worklog));
-        }, (err) => { console.log("error for ticket number", err); return Promise.reject(err); });
+        }, (err) => { console.error("Error for ticket number", err); return Promise.reject(err); });
     }
 
     getWLCalendarEntry(worklog) {
