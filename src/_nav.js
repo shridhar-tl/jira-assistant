@@ -111,6 +111,16 @@ const navigation = [
                 url: '/reports/say-do-ratio',
                 icon: 'fa fa-chart-line'
             },
+            {
+                name: 'Query Report',
+                id: 'R-PR',
+                url: '/reports/query',
+                icon: 'fa fa-table',
+                badge: {
+                    variant: 'warning',
+                    text: 'BETA'
+                }
+            },
             sprintReport && {
                 name: 'Sprint Report',
                 id: 'R-SP',
