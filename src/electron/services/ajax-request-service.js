@@ -9,7 +9,7 @@ module.exports = {
                 request.on('response', (response) => {
                     response.on('error', (error) => {
                         clearTimeout(hdl);
-                        console.log('HTTP Error:-', error);
+                        console.error('HTTP Error:-', error);
                         fail({ status: response.statusCode, statusText: response.statusMessage, response: error });
                     });
                     response.on('data', (chunk) => {
@@ -19,7 +19,7 @@ module.exports = {
                         try {
                             chunk = JSON.parse(chunk);
                         } catch (err) {
-                            console.log('Unable to convert to JSON Obj:-', chunk);
+                            console.error('Unable to convert to JSON Obj:-', chunk);
                         }
 
                         if (response.statusCode >= 200 && response.statusCode < 300) {

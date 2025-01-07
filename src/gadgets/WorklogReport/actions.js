@@ -27,7 +27,7 @@ export function groupsChanged(setState) {
 }
 
 export function addWorklog(setState) {
-    const { $session: { CurrentUser: { maxHours } } } = inject('SessionService');
+    const { $session: { CurrentUser: { maxHours }, UserSettings: { startOfDay } } } = inject('SessionService');
     const maxSecsPerDay = (maxHours || 8) * 60 * 60;
 
     return function (user, ticketNo, dateStarted, logged) {
@@ -38,6 +38,9 @@ export function addWorklog(setState) {
 
         if (moment(dateStarted).isSame(moment(), 'day')) {
             dateStarted = new Date();
+        } else if (startOfDay) {
+            dateStarted = new Date(dateStarted);
+            dateStarted.setHours(...startOfDay.split(':'));
         }
 
         setState({ showWorklogPopup: true, worklogItem: { ticketNo, dateStarted, timeSpent } });

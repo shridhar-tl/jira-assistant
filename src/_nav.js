@@ -24,14 +24,14 @@ const { dashboards,
     calendar, importWorklog, importIssues, planningPoker,
 
     // Reports
-    worklogReport, worklogReportOld, sprintReport, customReport, estimateVsActual, pivotReport, sayDoRatioReport,
+    worklogReport, sprintReport, customReport, estimateVsActual, pivotReport, sayDoRatioReport,
 
     // Settings
     userGroups, generalSettings, advancedSettings,
 
     // Menu groups
     activitiesGroup = calendar || importWorklog || importIssues || planningPoker,
-    reportsGroup = worklogReport || worklogReportOld || sprintReport || customReport || estimateVsActual,
+    reportsGroup = worklogReport || sayDoRatioReport || sprintReport || customReport || estimateVsActual,
     settingsGroup = userGroups || generalSettings || advancedSettings
 } = config.modules;
 
@@ -110,16 +110,6 @@ const navigation = [
                 id: 'R-SDR',
                 url: '/reports/say-do-ratio',
                 icon: 'fa fa-chart-line'
-            },
-            worklogReportOld && {
-                name: 'Worklog Report',
-                id: 'R-UD',
-                url: '/reports/userdaywise',
-                icon: 'fa fa-users',
-                badge: {
-                    variant: 'danger',
-                    text: 'DEPR'
-                }
             },
             sprintReport && {
                 name: 'Sprint Report',

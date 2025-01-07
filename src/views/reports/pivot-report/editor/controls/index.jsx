@@ -42,11 +42,11 @@ function Source({ onDone }) {
         </p>
 
         <label className="fw-bold mt-3">Data source type:</label>
-        <RadioButton className="block"
+        <RadioButton className="d-block"
             value={dataSourceType} defaultValue={1}
             label="Use raw JQL to filter and pull issues list"
             onChange={updateDataSourceType} />
-        <RadioButton className="block"
+        <RadioButton className="d-block"
             value={dataSourceType} defaultValue={2}
             label="Pull issues for select sprints and apply JQL filter"
             onChange={updateDataSourceType} disabled />

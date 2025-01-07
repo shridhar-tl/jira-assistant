@@ -84,8 +84,7 @@ class MeetingsTab extends TabControlBase {
             this.$message.success("Successfully integrated with outlook account.");
             this.props.onChange('hasOutlookCredentials', true); // No need to save this setting. So just update state
         }, (err) => {
-            console.log("Outlook integration failed with error: ");
-            console.error(err);
+            console.error("Outlook integration failed with error:", err);
             this.$message.warning("Unable to integrate with Outlook Calendar!");
         });
     };
@@ -137,7 +136,7 @@ class MeetingsTab extends TabControlBase {
                     This page allows you to integrate your calendar from external sources like Outlook & Google. Worklog will be automatically created
                     for the events in your calendar based on your preferences
                 </p>
-                <div className="block">
+                <div className="d-block">
                     {outlookCalendar !== false && <div className="ui-g ui-fluid">
                         <div><h4>Outlook Calendar</h4></div>
                         <div className="form-label ui-g-12 ui-md-3 ui-lg-3 ui-xl-2">

@@ -190,7 +190,7 @@ class MenuOptionsTab extends TabControlBase {
         return (
             <div>
                 <p>This page allows you to set what is displayed when you click on JA icon in your browser</p>
-                <div className="block">
+                <div className="d-block">
                     <div className="ui-g ui-fluid">
                         <div className="form-label ui-g-12 ui-md-3 ui-lg-3 ui-xl-2">
                             <strong>What should happen when clicking on JA icon?</strong>
