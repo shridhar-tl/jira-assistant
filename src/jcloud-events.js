@@ -1,14 +1,26 @@
 import { asApp, route } from '@forge/api'
 
-export async function onSprintStarted(event) {
-    if (event.eventType !== "avi:jira-software:started:sprint") {
-        console.error("Invalid event type received", event.eventType);
-    }
+const eventsHandlerMap = {
+    "avi:jira-software:started:sprint": onSprintStarted,
+    "avi:jira-software:closed:sprint": onSprintClosed
+};
 
+export async function onSprintAction(event) {
+    const handler = eventsHandlerMap[event.eventType];
+
+    if (handler) {
+        handler(event);
+    } else {
+        console.error("Unhandled event type received:", event.eventType);
+    }
+}
+
+async function onSprintStarted(event) {
     const sprintId = event.sprint.id;
 
     if (!sprintId) {
         console.error("onSprintStarted: Sprint id unavailable", sprintId);
+        return;
     }
 
     const customFieldsResponse = await asApp().requestJira(route`/rest/api/3/field`);
@@ -55,5 +67,14 @@ export async function onSprintStarted(event) {
         console.log("Issue keys stored successfully within sprint of id:", sprintId);
     } else {
         console.error("Failed to store issue keys within sprint of id:", sprintId, saveRequest.status, await saveRequest.text());
+    }
+}
+
+async function onSprintClosed(event) {
+    const sprintId = event.sprint.id;
+
+    if (!sprintId) {
+        console.error("onSprintClosed: Sprint id unavailable", sprintId);
+        return;
     }
 }
