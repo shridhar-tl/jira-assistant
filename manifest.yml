@@ -45,6 +45,7 @@ modules:
       function: sprint-started-handler
       events:
         - avi:jira-software:started:sprint
+        - avi:jira-software:closed:sprint
       filter:
         ignoreSelf: true
         onError: RECEIVE_AND_LOG
@@ -85,6 +86,7 @@ permissions:
     - read:project:jira
     - read:issue-meta:jira
     - read:avatar:jira
+    - read:board-scope.admin:jira-software
     - read:issue.changelog:jira
     - write:jira-work
     - write:sprint:jira-software

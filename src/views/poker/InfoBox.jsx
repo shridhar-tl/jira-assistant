@@ -15,15 +15,15 @@ export default InfoBox;
 
 const VoteInfo = connect(function ({ vote: { reveal, average, finalScore } }) {
     return (<div className="est-info">
-        <div className="block">
+        <div className="d-block">
             <span className="label">Final score:</span>
             <span className="value">{reveal ? finalScore : 'N/A'}</span>
         </div>
-        <div className="block">
+        <div className="d-block">
             <span className="label">Average:</span>
             <span className="value">{reveal ? average : 'N/A'}</span>
         </div>
-        <div className="block">
+        <div className="d-block">
             <span className="label">Status:</span>
             <span className="value fa fa-clock" />
         </div>
