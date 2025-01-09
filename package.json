@@ -91,7 +91,7 @@
         "react-router-dom": "7.1.1",
         "react-scripts": "github:shridhar-tl/react-scripts",
         "static-eval": "2.1.1",
-        "zustand": "5.0.2"
+        "zustand": "5.0.3"
     },
     "devDependencies": {
         "@craco/craco": "^7.1.0",

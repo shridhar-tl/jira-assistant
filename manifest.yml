@@ -51,7 +51,7 @@ modules:
         onError: RECEIVE_AND_LOG
   function:
     - key: sprint-started-handler
-      handler: jcloud-events.onSprintStarted
+      handler: jcloud-events.onSprintAction
     - key: resolver
       handler: jcloud.handler
       providers:
