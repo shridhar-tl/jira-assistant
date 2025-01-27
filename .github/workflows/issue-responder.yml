@@ -94,6 +94,7 @@ jobs:
                     --repo "${{ github.repository }}" \
                     --orgId "${{ vars.RESPONDER_ORG_ID }}" \
                     --botId "${{ vars.RESPONDER_BOT_ID }}" \
+                    --overrideFile "${{ vars.RESP_OVERRIDE_FILE_URL }}" \
                     --ghToken "${{ github.token }}" \
                     --authToken "${{ secrets.RESPONDER_TOKEN }}" \
                     --updateOnly
@@ -106,6 +107,7 @@ jobs:
                   --repo "${{ github.repository }}" \
                   --orgId "${{ vars.RESPONDER_ORG_ID }}" \
                   --botId "${{ vars.RESPONDER_BOT_ID }}" \
+                  --overrideFile "${{ vars.RESP_OVERRIDE_FILE_URL }}" \
                   --ghToken "${{ github.token }}" \
                   --authToken "${{ secrets.RESPONDER_TOKEN }}" \
                   --updateOnly
@@ -119,5 +121,6 @@ jobs:
                   --repo "${{ github.repository }}" \
                   --orgId "${{ vars.RESPONDER_ORG_ID }}" \
                   --botId "${{ vars.RESPONDER_BOT_ID }}" \
+                  --overrideFile "${{ vars.RESP_OVERRIDE_FILE_URL }}" \
                   --ghToken "${{ github.token }}" \
                   --authToken "${{ secrets.RESPONDER_TOKEN }}"
