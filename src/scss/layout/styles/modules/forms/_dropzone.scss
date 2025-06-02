@@ -1,0 +1,42 @@
+// DROPZONE
+// -----------------------------------------------------------------------------
+.dropzone {
+    background: rgba(0, 0, 0, 0.03) none repeat scroll 0 0;
+    border: 1px solid rgba(0, 0, 0, 0.03);
+    border-radius: 3px;
+    min-height: 122px;
+    padding: 23px;
+    .dz-default {
+    	span {
+    		@include transition(color .1s ease-in);
+    		font-size: 20px;
+    		color: rgba(0, 0, 0, 0.2);
+    	}
+    }
+    &:hover {
+	    .dz-default {
+	    	span {
+	    		color: rgba(0, 0, 0, 0.3);
+	    	}
+	    }
+    }
+}
+
+// DARK
+// -----------------------------------------------------------------------------
+html.dark {
+	.dropzone {
+	    .dz-default {
+	    	span {
+	    		color: rgba(255, 255, 255, 0.2);
+	    	}
+	    }
+	    &:hover {
+		    .dz-default {
+		    	span {
+		    		color: rgba(255, 255, 255, 0.3);
+		    	}
+		    }
+	    }
+	}
+}

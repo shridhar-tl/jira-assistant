@@ -1,0 +1,105 @@
+.brand-char {
+    font-family: 'Edson_Comics_Bold';
+    font-size: 34px;
+    font-weight: 700;
+    color: #0302da;
+    text-shadow: 0 0 2px #f1f310, 0 0 2px #da071f;
+}
+
+a.navbar-brand {
+    .brand-logo {
+        vertical-align: top;
+        margin-right: 5px;
+        display: none;
+    }
+
+    .navbar-brand-full {
+        color: #000;
+        font-size: 24px;
+        font-weight: 700;
+        margin: 0 8px 0 0;
+        line-height: 36px;
+        display: inline-block;
+    }
+
+    .badge.v-info {
+        font-size: 10px;
+        display: inline-block;
+    }
+}
+
+html.dark {
+    .header {
+        .logo-container {
+            background: #1d2127;
+            border-bottom-color: #161a1e;
+            border-top-color: #1d2127;
+        }
+
+        .header-right {
+            background: #1d2127;
+        }
+    }
+
+    a.navbar-brand .navbar-brand-full {
+        color: #abb4be;
+    }
+}
+
+html.header-dark {
+    .header {
+        .logo-container {
+            background: #1d2127;
+            border-bottom-color: #161a1e;
+            border-top-color: #1d2127;
+        }
+
+        .header-right {
+            background: #1d2127;
+        }
+    }
+}
+
+@media only screen and (max-width:767px) {
+    .header {
+        background: 0 0;
+        border: none;
+        height: auto;
+        position: static;
+
+        .logo-container {
+            height: 60px;
+            left: 0;
+            position: fixed;
+            right: 0;
+            top: 0;
+            z-index: 99;
+            background-image: linear-gradient(#F6F6F6 0%, #FFFFFF 45%);
+            border-bottom: 1px solid #e9e9e6;
+            border-top: 3px solid #ededed;
+
+            .logo {
+                float: none;
+                display: inline-block;
+                line-height: 57px;
+                margin-top: 0;
+            }
+        }
+
+        .header-right {
+            background: #fff;
+            float: none !important;
+            height: 60px;
+            margin-top: 60px;
+            width: 100%;
+        }
+
+        .search {
+            display: none;
+        }
+
+        .separator {
+            display: none;
+        }
+    }
+}

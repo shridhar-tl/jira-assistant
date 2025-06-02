@@ -1,0 +1,125 @@
+// CALL TO ACTION
+// -----------------------------------------------------------------------------
+.call-to-action {
+	padding: 25px;
+	border-radius: 5px;
+	
+	&.call-to-action-primary {
+		background-color: $color-primary;
+	}
+	.call-to-action-content {
+		text-align: left;
+		h2 {
+			color: $color-primary-inverse;
+			font-weight: 100;
+		}
+		p {
+			color: $color-primary-inverse;
+    		font-size: 16px;
+			font-weight: 100;
+		}
+	}
+	.call-to-action-btn {
+		margin-top: 45px;
+		a.btn:not(.btn-primary) {
+			background-color: #006699;
+			border-color: #006699 #006699 #004466;
+			color: #fff;
+			border-radius: 6px;
+			font-size: 16px;
+			padding: 12px 33px;
+			margin-right: 15px;
+		    &:hover {
+				background-color: #0077b3;
+				border-color: #0077b3 #0077b3 #005580;
+		    }
+		}
+		> span {
+			position: relative;
+			color: $color-primary-inverse;
+			.arrow {
+				position: absolute;
+			    top: -55px;
+			    left: -70px;
+			}
+			@media (max-width: 1276px) {
+				display: none;
+			}
+		}
+		@media (max-width: 767px) {
+			margin-top: 0;
+			float: none !important;
+		}
+	}
+
+	// Call To Action Grey
+	&.call-to-action-grey {
+		position: relative;
+		background-color: #ecedf0;
+		&:before {
+			content: '';
+			display: block;
+			position: absolute;
+			top: 0;
+			left: 50%;
+			width: 100vw;
+			height: 100%;
+			background-color: #ecedf0;
+			z-index: 0;
+			@include transform(translateX(-50%));
+		}
+		.call-to-action-content {
+			h2 {
+				color: $color-dark;
+			}
+			p {
+				color: $color-default-inverse;
+			}
+		}
+	}
+
+	&.call-to-action-top {
+		margin: -40px;
+		border-radius: 0;
+		padding: 40px 25px;
+		@media (max-width: 767px) {
+			margin-top: -16px;
+		}
+	}
+}
+
+/* Responsive */
+html:not(.sidebar-left-collapsed) {
+	.call-to-action {
+		@media (max-width: 1400px) {
+			.call-to-action-btn {
+				> span {
+					display: none;
+				}
+			}
+		}
+		@media (min-width: 768px) and (max-width: 1199px) {
+			.call-to-action-btn {
+				margin-top: 0;
+				float: none !important;
+			}
+		}
+		@media (min-width: 768px) and (max-width: 991px) {
+			.col-sm-4, .col-sm-8, .col-sm-3, .col-sm-9 {
+				width: 100%;
+			}
+		}
+	}
+	/* Boxed Layout */
+	&.boxed {
+		.call-to-action {
+			.call-to-action-btn {
+				margin-top: 0;
+				float: none !important;
+				> span {
+					display: none;
+				}
+			}
+		}
+	}
+}

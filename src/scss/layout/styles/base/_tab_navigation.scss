@@ -1,0 +1,733 @@
+// HEADER RIGHT - TAB NAVIGATION
+// -----------------------------------------------------------------------------
+/* Margin to show the menu button on mobile */
+@media (max-width: 991px) {
+	html.has-tab-navigation {
+		.header-right {
+			margin-right: 50px;
+		}
+	}
+}
+
+// BUTTON TOGGLE MENU ON MOBILE - TAB NAVIGATION
+// -----------------------------------------------------------------------------
+html.has-tab-navigation {
+	.toggle-menu {
+		background: $color-primary;
+		border-radius: 100px;
+		color: $color-primary-inverse;
+		height: 30px;
+		line-height: 30px;
+		position: absolute;
+		right: 15px;
+		text-align: center;
+		top: 14px;
+		width: 30px;
+	}
+}
+
+// INNER WRAPPER - TAB NAVIGATION
+// -----------------------------------------------------------------------------
+html.has-tab-navigation {
+	.inner-wrapper {
+	    padding: 80px 15px 15px;
+	    background-color: #1d2127;
+	    @media (max-width: 991px) {
+	    	padding: 75px 15px 15px;
+	    }
+	    @media (max-width: 767px) {
+	    	padding: 15px;
+	    }
+	}
+}
+
+// CONTENT BODY - TAB NAVIGATION
+// -----------------------------------------------------------------------------
+html.has-tab-navigation {
+	.content-body {
+        padding: 25px 25px;
+        background-color: #eee;
+        border-radius: 0 7px 7px 7px;
+        @include transition(ease padding 300ms);
+        
+        /* Only for desktop */
+        @media (min-width: 992px) {
+			&.tab-menu-opened {
+	        	padding: 70px 25px 25px;
+	        }
+        }
+	}
+	&.dark,
+	&.dark.boxed {
+		.content-body {
+	        background-color: #17191d;
+		}
+	}
+
+	/* Mobile */
+    @media (max-width: 991px) {
+    	.content-body {
+        	border-radius: 5px;
+    	}
+    }
+
+    /* IE */
+    &.ie {
+    	.content-body {
+	    	flex: none;
+    	}
+    }
+}
+
+// PAGE HEADER - TAB NAVIGATION
+// -----------------------------------------------------------------------------
+html.has-tab-navigation {
+	.page-header {
+        margin: 0;
+        background-color: transparent;
+        border: none;
+        box-shadow: none;
+        padding: 0 0 10px 0;
+        .breadcrumbs {
+			a,
+			span {
+				font-size: 13px;
+			}
+        }
+	}
+	&.dark {
+		.page-header {
+			h2 {
+				color: #FFF;
+			}
+		}
+	}
+}
+
+// TIP - TAB NAVIGATION
+// -----------------------------------------------------------------------------
+html.has-tab-navigation {
+	// Not Included
+	.not-included {
+		color: #b7b7b7;
+		display: block;
+		font-size: 0.8em;
+		font-style: normal;
+		margin: -4px 0;
+		padding: 0;
+		&.custom-pos-1 {
+			margin-top: 2px;
+			margin-left: 8px;
+			@media (max-width: 991px) {
+				float: none !important;
+				display: inline-block;
+			}
+		}
+	}
+
+	// Tip
+	.tip {
+		display: inline-block;
+		padding: 0 5px;
+		background: $color-dark;
+		color: #FFF;
+		text-shadow: none;
+		border-radius: 3px;
+		margin-left: 8px;
+		position: relative;
+		text-transform: uppercase;
+		font-size: 10px;
+		font-weight: bold;
+		&:before {
+			right: 100%;
+			top: 50%;
+			border: solid transparent;
+			content: " ";
+			height: 0;
+			width: 0;
+			position: absolute;
+			pointer-events: none;
+			border-color: rgba($color-dark, 0);
+			border-right-color: $color-dark;
+			border-width: 5px;
+			margin-top: -5px;
+		}
+		&.skin {
+			color: $color-dark;
+		}
+	}
+}
+
+// TAB NAVIGATION
+// -----------------------------------------------------------------------------
+/* Desktop */
+@media (min-width: 992px) {
+	.tab-navigation {
+		height: initial !important; // Overwrite the style when menu is collapsed
+		display: block !important; // Overwrite the style when menu is collapsed
+		z-index: 3;
+		nav {
+			// Tabs
+			> ul {
+				position: relative;
+				> li {
+					position: static;
+					&.active {
+						a {
+							background: transparent;
+							&:hover, &:focus {
+								background: transparent;
+							}
+						}
+						> a {
+							background: #17191d;
+							&:hover, &:focus {
+								background: #17191d;
+							}
+						}
+					}
+					&.nav-expanded {
+						> a {
+							color: #33353F;
+							background: #FFF;
+							&:hover, &:focus {
+								color: #33353F;
+								background: #FFF;
+							}
+						}
+						> ul {
+							display: block;
+						}
+					}
+					&:hover:not(.nav-expanded) {
+						> a {
+							color: #FFF;
+							background: $color-primary;
+						}
+					}
+					> a {
+						background: #17191d none repeat scroll 0 0;
+						border-radius: 4px 4px 0 0;
+						color: #fff;
+						font-weight: $font-weight-semibold;
+						min-width: 130px;
+						padding: 13px 30px;
+						text-align: center;
+						text-transform: uppercase;
+						font-size: 11px;
+
+						.fa {
+							font-size: 14px;
+							margin-right: 7px;
+							position: relative;
+							top: 1px;
+						}
+					}
+					a {
+						cursor: pointer;
+						.label {
+						    margin-top: 2px;
+						    margin-left: 10px;
+						}
+					}
+
+					// Dropdowns
+					> ul {
+						margin: 0;
+					    border: 0;
+					    border-radius: 0 7px 0px 0px;
+						left: 0;
+						right: 0;
+						box-shadow: none;
+
+						> li {
+							position: relative;
+							float: left;
+							&.nav-active {
+								> a {
+									color: $color-primary !important;
+								}
+							}
+							&:hover {
+								> a {
+									color: #33353F;
+								}
+							}
+							.dropdown-menu {
+								padding: 2px 0;
+								margin: 0;
+							    border: none;
+								li {
+									a {
+									    padding: 10px;
+									    min-width: 230px;
+									    color: #777;
+									    white-space: initial;
+									    font-size: 12px;
+									    border-bottom: 1px solid #f4f4f4;
+									    &:hover {
+									    	background-color: transparent;
+									    	color: #33353F;
+									    }
+									    &.dropdown-toggle {
+											&:after {
+												content: "\f0da";
+												display: inline-block;
+												font-family: FontAwesome;
+												float: right;
+											}
+										}
+									}
+									&.nav-active {
+										> a {
+											color: $color-primary !important;
+										}
+									}
+									&:hover {
+										> a {
+											color: #33353F;
+										}
+										&.dropdown-submenu {
+											position: relative;
+											> .dropdown-menu {
+												display: block;
+												opacity: 1;
+											    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.08);
+												left: 100%;
+												top: 0;
+												margin-top: -2px;
+												margin-left: 0;
+											}
+										}
+									}
+									&:last-child {
+										> a {
+										    border-bottom: none;
+										}
+									}
+								}
+							}
+							> a {
+								background-color: transparent !important;
+								color: #777;
+								font-size: 11px;
+								font-weight: 700;
+								padding: 15px 5px 15px 25px;
+								text-transform: uppercase;
+								white-space: initial;
+								&:hover, &:focus {
+									color: #33353F;
+								}
+								&.dropdown-toggle {
+									&:after {
+										content: "\f0d7";
+										display: inline-block;
+										font-family: FontAwesome;
+										margin-left: 7px;
+										font-size: 12px;
+									}
+								}
+							}
+							&:hover {
+								&.dropdown-submenu {
+									> .dropdown-menu {
+										top: auto;
+										display: block;
+										opacity: 1;
+										box-shadow: 0 20px 45px rgba(0, 0, 0, 0.08);
+										margin-left: 12px;
+										padding: 2px 5px;
+									}
+									> a {
+										
+									}	
+								}
+							}
+						}
+					}
+				}
+			}
+		}	
+	}
+}
+
+/* Mobile */
+@media (max-width: 991px) {
+	.tab-navigation {
+		margin-bottom: 25px;
+		border-radius: 5px;
+		overflow: hidden;
+		nav {
+			> ul {
+				> li {
+					width: 100%;
+					margin-left: 0;
+					&.expanding {
+						> a {
+							color: #33353F !important;
+							background: #FFF !important;
+						}
+					}
+					&.nav-expanded {
+						> a {
+							color: #33353F !important;
+							background: #FFF !important;
+						}
+						> ul {
+							display: block;
+						}
+					}
+					&.active {
+						> a {
+							background: #17191d;
+							&:hover, &:focus {
+						    	background: #17191d;
+						    }
+						}
+						ul {
+							li {
+								a {
+									background: transparent !important;
+									&:hover {
+										background: #f5f5f5 !important;
+									}
+								}
+							}
+						}
+					}
+					&:hover {
+						&:not(.nav-expanded) {
+							> a {
+							    background: #17191d;
+							    &:hover, &:focus {
+							    	background: #17191d;
+							    }
+							}
+						}
+					}
+					> a {
+					    border-radius: 0;
+					    color: #FFF;
+					    background: #17191d;
+					}
+					a {
+						cursor: pointer;
+					}
+					a.dropdown-toggle {
+						&:after {
+							content: "\f107";
+							display: inline-block;
+							font-family: FontAwesome;
+							float: right;
+						}
+					}
+
+					.fa {
+						margin-right: 10px;
+					}
+
+					> ul {
+						position: static;
+						width: 100%;
+					    margin: 0;
+					    border: 0;
+					    border-radius: 0;
+					    background: #FFF;
+					    padding-left: 23px;
+					    padding-top: 0;
+						> li {
+							&.nav-expanded {
+								> ul {
+									display: block;
+								}
+							}
+							&.dropdown-submenu {
+								&:hover {
+									> a {
+										color: #33353F;
+									}
+								}
+							}
+							&.active {
+								a {
+									color: #777;
+									&:hover, &:focus {
+									    color: #33353F;
+									}
+								}
+							}
+							> a {
+								color: #777;
+								padding: 10px 15px;
+								white-space: initial;
+								font-size: 13px;
+								&:hover, &:focus {
+								    color: #33353F;
+								    background-color: transparent;
+								}
+							}
+
+							.dropdown-menu {
+								position: static;
+							    float: none;
+							    box-shadow: none;
+							    border: none;
+							    padding-left: 15px;
+							    background-color: #FFF;
+								border-radius: 0;
+								li {
+									&.nav-expanded {
+										> ul {
+											display: block;
+										}
+									}
+									&:hover {
+										> a {
+											color: #33353F;
+										}
+									}
+									> a {
+										padding: 10px 15px;
+										color: #777;
+										white-space: initial;
+										&:hover, &:focus {
+											color: #33353F;
+											background-color: transparent;
+										}
+									}
+								}
+							}
+							
+						}
+					}
+				}
+				li.nav-expanded {
+					> a.dropdown-toggle {
+						&:after {
+							content: "\f106";
+							display: inline-block;
+							font-family: FontAwesome;
+							float: right;
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+// TAB NAVIGATION - DARK COLORS
+// -----------------------------------------------------------------------------
+html.dark {
+	.tab-navigation {
+		nav {
+			// Tabs
+			> ul {
+				> li {
+					&.nav-expanded {
+						> a {
+							color: #FFF;
+							background: #282d36;
+						}
+					}
+
+					> a {
+					    color: #FFF;
+					    background: #17191d;
+					}
+
+					// Dropdowns
+					> ul {
+					    background: #282d36;
+						> li {
+							&:hover {
+								> a {
+									color: #CCC;
+								}
+							}
+							.dropdown-menu {
+								background-color: #282d36;
+								border-radius: 0;
+								li {
+									> a {
+										color: #777;
+										border-bottom-color: #35393d;
+									}
+									&:hover {
+										&.dropdown-submenu {
+											> .dropdown-menu {
+
+											}
+										}
+										> a {
+											color: #CCC;
+										}
+									}
+								}
+							}
+							> a {
+								color: #777;
+								&:hover, &:focus {
+									background-color: transparent;
+								    color: #CCC;
+								}
+							}
+						}
+					}
+				}
+			}
+		}	
+	}
+}
+
+/* Tab Navigation Mobile - Dark Colors */
+@media (max-width: 991px) {
+	html.dark {
+		.tab-navigation {
+			nav {
+				// Tabs
+				> ul {
+					> li {
+						&.expanding {
+							> a {
+								color: #FFF !important;
+								background: #282d36 !important;
+							}
+						}
+						&.nav-expanded {
+							> a {
+								color: #FFF !important;
+								background: #282d36 !important;
+							}
+						}
+						&.active {
+							> a {
+								background: #17191d;
+								&:hover, &:focus {
+							    	background: #17191d;
+							    }
+							}
+							ul {
+								li {
+									a {
+										background: transparent !important;
+										&:hover {
+											background: #282d36 !important;
+										}
+									}
+								}
+							}
+						}
+						&:hover {
+							&:not(.nav-expanded) {
+								> a {
+								    background: #17191d;
+								    &:hover, &:focus {
+								    	background: #17191d;
+								    }
+								}
+							}
+						}
+
+						> a {
+						    color: #FFF;
+						    background: #17191d;
+						}
+
+						// Dropdowns
+						> ul {
+						    background: #282d36;
+							> li {
+								&.dropdown-submenu {
+									&:hover {
+										> a {
+											color: #CCC;
+										}
+									}
+								}
+								.dropdown-menu {
+									background-color: #282d36;
+									border-radius: 0;
+									li {
+										> a {
+											color: #777;
+											background-color: transparent;
+										}
+										&:hover {
+											&.dropdown-submenu {
+												> .dropdown-menu {
+
+												}
+											}
+											> a {
+												color: #CCC;
+											}
+										}
+									}
+								}
+								> a {
+									color: #777;
+									&:hover, &:focus {
+										background-color: transparent;
+									    color: #CCC;
+									}
+								}
+							}
+						}
+					}
+				}
+			}	
+		}
+	}
+}
+
+// TAB NAVIGATION - BOXED
+// -----------------------------------------------------------------------------
+html.boxed.has-tab-navigation {
+	body {
+		background: #1d2127;
+	}
+	.inner-wrapper {
+		box-shadow: none;
+	}
+	@media (min-width: 992px) {
+		.header {
+			margin-top: -5px;
+			border-top-color: transparent;
+			border-bottom-color: transparent;
+			.separator {
+				width: 1px;
+				@include linear-gradient(#1d2127 0%, #121518, #1d2127 100%);
+			}
+		}
+	}
+}
+
+// TAB NAVIGATION - IE FIXES
+// -----------------------------------------------------------------------------
+html.ie {
+	.tab-navigation {
+		nav {
+			> ul {
+				> li {
+					a {
+						.label {
+							float: none !important;
+						}
+						.not-included {
+							float: none !important;
+							display: inline;
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+/* ie9 */
+html.ie9 {
+	.tab-navigation {
+		display: table-row !important;
+	}
+}

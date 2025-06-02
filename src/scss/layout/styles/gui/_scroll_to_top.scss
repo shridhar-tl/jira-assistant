@@ -1,0 +1,42 @@
+/* Scroll to Top */
+html {
+	.scroll-to-top {
+		@include transition (all 0.3s);
+		background: $dark-color-3;
+		border-radius: 7px 7px 0 0;
+		bottom: 0px;
+		color: #FFF;
+		display: block;
+		height: 9px;
+		opacity: 0;
+		padding: 5px 10px 25px;
+		position: fixed;
+		right: 10px;
+		text-align: center;
+		text-decoration: none;
+		min-width: 39px;
+		z-index: 1040;
+		&:hover {
+			opacity: 1;
+		}
+		&.visible {
+			opacity: 0.75;
+		}
+		span {
+			display: inline-block;
+			padding: 0 5px;
+		}
+	}
+	&.ie11 {
+		.scroll-to-top {
+			right: 25px;
+		}
+	}
+}
+
+/* Responsive */
+@media (max-width: 991px) {
+	html .scroll-to-top.hidden-mobile {
+		display: none !important;
+	}
+}

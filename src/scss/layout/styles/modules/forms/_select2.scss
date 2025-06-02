@@ -1,0 +1,25 @@
+// DARK SKIN
+// -----------------------------------------------------------------------------
+html.dark {
+	.select2-container--bootstrap {
+		.select2-selection,
+		.select2-dropdown,
+		.select2-choices .select2-search-field input,
+		.select2-choice,
+		.select2-choices {
+			color: #EEE;
+			background-color: $dark-color-3;
+			border-color: $dark-color-3;
+		}
+		.select2-selection--single .select2-selection__rendered {
+			color: #EEE;
+		}
+		.select2-results__option[aria-selected="true"],
+		.select2-search--dropdown .select2-search__field {
+			color: #EEE;
+			background-color: $dark-color-4;
+			border-color: $dark-color-4;
+		}
+	}
+
+}

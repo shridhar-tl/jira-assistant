@@ -1,0 +1,509 @@
+// CHARTS
+// -----------------------------------------------------------------------------
+.chart {
+	width: 100%;
+	&.chart-xs {
+		height: 150px;
+	}
+	&.chart-sm {
+		height: 184px;
+	}
+	&.chart-md {
+		height: 350px;
+	}
+	&.chart-lg {
+		height: 500px;
+	}
+}
+
+// CHARTS TOOLTIP
+// -----------------------------------------------------------------------------
+#flotTip {
+	padding: 4px 8px;
+	background-color: #000;
+	z-index: 100;
+	color: #FFF;
+	opacity: .7;
+	font-size: 11px;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+}
+
+.jqstooltip {
+	min-width: 30px;
+	min-height: 25px;
+	border: 0 !important;
+	height: auto !important;
+	width: auto !important;
+}
+
+// CIRCULAR
+// -----------------------------------------------------------------------------
+.circular-bar {
+	margin: 25px 0;
+	.circular-bar-chart {
+		position: relative;
+	}
+	strong {
+		display: block;
+		font-weight: 600;
+		font-size: 18px;
+		line-height: 30px;
+		position: absolute;
+		top: 35%;
+		width: 80%;
+		left: 10%;
+		text-align: center;
+	}
+	label {
+		display: block;
+		font-weight: 100;
+		font-size: 17px;
+		line-height: 20px;
+		position: absolute;
+		top: 50%;
+		width: 80%;
+		left: 10%;
+		text-align: center;
+	}
+	&.circular-bar-xs {
+		width: 50px;
+		strong {
+			display: none;
+		}
+		label {
+			font-size: 11px;
+			left: 0;
+			text-align: center;
+			top: 28%;
+			width: 100%;
+		}
+	}
+}
+
+// GAUGE
+// -----------------------------------------------------------------------------
+.gauge-chart {
+	margin: 25px 0;
+	strong {
+		display: block;
+		font-weight: 600;
+		font-size: 18px;
+		line-height: 30px;
+		text-align: center;
+		margin-top: 10px;
+	}
+	label {
+		display: block;
+		font-weight: 100;
+		font-size: 17px;
+		line-height: 20px;
+		padding-bottom: 5px;
+		text-align: center;
+	}
+}
+
+// SMALL CHARTS
+// -----------------------------------------------------------------------------
+.small-chart-wrapper {
+	display: inline-block;
+	margin: 10px 15px;
+	width: 100%;
+	.small-chart {
+		display: inline-block;
+		float: left;
+		margin-bottom: 8px;
+		min-width: 80px;
+	}
+	.small-chart-info {
+		display: inline-block;
+		padding: 0 0 0 10px;
+		label {
+			display: block;
+			font-size: 11px;
+			text-transform: uppercase;
+			color: #a0a0a0;
+			padding: 0;
+			margin: 0;
+			line-height: 15px;
+		}
+		strong {
+			display: block;
+			font-size: 13px;
+			padding: 0;
+			margin: 0;
+			line-height: 15px;
+		}
+	}
+	+ .small-chart-wrapper {
+		margin-left: 25px;
+	}
+}
+
+@media only screen and (max-width: 767px) {
+	.small-chart-wrapper {
+		margin-right: 0;
+		margin-left: 0;
+		text-align: center;
+		.small-chart {
+			width: 100%;
+			text-align: center;
+		}
+		.small-chart-info {
+			padding-left: 0;
+		}
+	}
+}
+
+// LIQUID
+// -----------------------------------------------------------------------------
+.liquid-meter {
+	position: relative;
+	max-height: 200px;
+	max-width: 200px;
+	margin: 0 auto;
+	width: 100%;
+	padding-bottom: 50%;
+
+	meter {
+		display: none;
+	}
+
+	&.liquid-meter-loaded {
+		width: auto;
+		padding-bottom: 0;
+
+		&:before {
+			display: none;
+		}
+	}
+}
+
+.liquid-meter-wrapper {
+	&.liquid-meter-xs {
+		.liquid-meter {
+			max-height: 120px;
+			max-width: 120px;
+		}
+	}
+	&.liquid-meter-sm {
+		.liquid-meter {
+			max-height: 150px;
+			max-width: 150px;
+		}
+	}
+	&.liquid-meter-md {
+		.liquid-meter {
+			max-height: 200px;
+			max-width: 200px;
+		}
+	}
+	&.liquid-meter-lg {
+		.liquid-meter {
+			max-height: 230px;
+			max-width: 230px;
+		}
+	}
+
+	.liquid-meter-selector {
+		margin-top: 3px;
+		a {
+			text-transform: uppercase;
+			font-weight: $font-weight-light;
+			font-size: 11px;
+			color: #9b9b9b;
+			border-right: 1px solid #e4e4e4;
+			display: inline-block;
+			padding-right: 8px;
+			margin-right: 8px;
+			&.active {
+				color: $color-primary;
+			}
+			&:last-child {
+				border-right: 0;
+				padding-right: 0;
+				margin-right: 0;
+			}
+		}
+	}
+}
+
+// CHART SELECTOR
+// -----------------------------------------------------------------------------
+.chart-data-selector {
+	visibility: hidden;
+	max-height: 255px;
+	padding: 6px;
+	h2 {
+		color: $panel-title-color;
+		font-size: $panel-title-size;
+		line-height: $panel-title-size;
+		margin: 0;
+		padding: 0;
+		text-transform: none;
+		letter-spacing: -1px;
+		.multiselect {
+			background: $panel-heading-background;
+			border: 0 none;
+			font-size: 18px;
+			font-weight: 600;
+			margin: -4px 0 0 4px !important;
+			padding: 3px 12px 3px 8px;
+			&:hover, &:focus, &:active {
+				text-decoration: none;
+			}
+		}
+		.multiselect-container {
+			margin: 0 0 0 4px;
+			min-width: 120%;
+		}
+	}
+	.chart-data-selector-items {
+		position: relative;
+		overflow: hidden;
+		.chart-active {
+			visibility: hidden;
+		}
+		.chart-hidden {
+			visibility: hidden;
+		}
+	}
+	&.ready {
+		max-height: none;
+		visibility: visible;
+		.chart-active {
+			visibility: visible;
+			position: relative;
+			z-index: 2;
+		}
+		.chart-hidden {
+			visibility: hidden;
+			position: absolute;
+			z-index: 1;
+			top: -9999px;
+		}
+	}
+}
+
+// CHARTIST
+// -----------------------------------------------------------------------------
+.ct-chart .ct-label,
+.ct-chart .ct-label.ct-horizontal,
+.ct-chart .ct-label.ct-vertical {
+	@include font-size(12);
+}
+
+.ct-chart .ct-series.ct-series-a .ct-bar,
+.ct-chart .ct-series.ct-series-a .ct-line,
+.ct-chart .ct-series.ct-series-a .ct-point,
+.ct-chart .ct-series.ct-series-a .ct-slice.ct-donut {
+	stroke: $color-primary;
+}
+
+.ct-chart .ct-series.ct-series-a .ct-area,
+.ct-chart .ct-series.ct-series-a .ct-slice:not(.ct-donut) {
+	fill: $color-primary;
+}
+
+.ct-chart .ct-series.ct-series-b .ct-bar,
+.ct-chart .ct-series.ct-series-b .ct-line,
+.ct-chart .ct-series.ct-series-b .ct-point,
+.ct-chart .ct-series.ct-series-b .ct-slice.ct-donut {
+	stroke: darken($color-primary, 15%);
+}
+
+.ct-chart .ct-series.ct-series-b .ct-area,
+.ct-chart .ct-series.ct-series-b .ct-slice:not(.ct-donut) {
+	fill: darken($color-primary, 15%);
+}
+
+.ct-chart .ct-series.ct-series-c .ct-bar,
+.ct-chart .ct-series.ct-series-c .ct-line,
+.ct-chart .ct-series.ct-series-c .ct-point,
+.ct-chart .ct-series.ct-series-c .ct-slice.ct-donut {
+	stroke: $color-secondary;
+}
+
+.ct-chart .ct-series.ct-series-c .ct-area,
+.ct-chart .ct-series.ct-series-c .ct-slice:not(.ct-donut) {
+	fill: $color-secondary;
+}
+
+.ct-chart .ct-series.ct-series-d .ct-bar,
+.ct-chart .ct-series.ct-series-d .ct-line,
+.ct-chart .ct-series.ct-series-d .ct-point,
+.ct-chart .ct-series.ct-series-d .ct-slice.ct-donut {
+	stroke: darken($color-secondary, 15%);
+}
+
+.ct-chart .ct-series.ct-series-d .ct-area,
+.ct-chart .ct-series.ct-series-d .ct-slice:not(.ct-donut) {
+	fill: darken($color-secondary, 15%);
+}
+
+.ct-chart .ct-series.ct-series-e .ct-bar,
+.ct-chart .ct-series.ct-series-e .ct-line,
+.ct-chart .ct-series.ct-series-e .ct-point,
+.ct-chart .ct-series.ct-series-e .ct-slice.ct-donut {
+	stroke: $color-tertiary;
+}
+
+.ct-chart .ct-series.ct-series-e .ct-area,
+.ct-chart .ct-series.ct-series-e .ct-slice:not(.ct-donut) {
+	fill: $color-tertiary;
+}
+
+.ct-chart .ct-series.ct-series-f .ct-bar,
+.ct-chart .ct-series.ct-series-f .ct-line,
+.ct-chart .ct-series.ct-series-f .ct-point,
+.ct-chart .ct-series.ct-series-f .ct-slice.ct-donut {
+	stroke: darken($color-tertiary, 15%);
+}
+
+.ct-chart .ct-series.ct-series-f .ct-area,
+.ct-chart .ct-series.ct-series-f .ct-slice:not(.ct-donut) {
+	fill: darken($color-tertiary, 15%);
+}
+
+.ct-chart .ct-series.ct-series-g .ct-bar,
+.ct-chart .ct-series.ct-series-g .ct-line,
+.ct-chart .ct-series.ct-series-g .ct-point,
+.ct-chart .ct-series.ct-series-g .ct-slice.ct-donut {
+	stroke: $color-quaternary;
+}
+
+.ct-chart .ct-series.ct-series-g .ct-area,
+.ct-chart .ct-series.ct-series-g .ct-slice:not(.ct-donut) {
+	fill: $color-quaternary;
+}
+
+.ct-chart .ct-series.ct-series-h .ct-bar,
+.ct-chart .ct-series.ct-series-h .ct-line,
+.ct-chart .ct-series.ct-series-h .ct-point,
+.ct-chart .ct-series.ct-series-h .ct-slice.ct-donut {
+	stroke: darken($color-quaternary, 15%);
+}
+
+.ct-chart .ct-series.ct-series-h .ct-area,
+.ct-chart .ct-series.ct-series-h .ct-slice:not(.ct-donut) {
+	fill: darken($color-quaternary, 15%);
+}
+
+.ct-chart .ct-series.ct-series-i .ct-bar,
+.ct-chart .ct-series.ct-series-i .ct-line,
+.ct-chart .ct-series.ct-series-i .ct-point,
+.ct-chart .ct-series.ct-series-i .ct-slice.ct-donut {
+	stroke: darken($color-primary, 15%);
+}
+
+.ct-chart .ct-series.ct-series-i .ct-area,
+.ct-chart .ct-series.ct-series-i .ct-slice:not(.ct-donut) {
+	fill: darken($color-primary, 15%);
+}
+
+.ct-chart .ct-series.ct-series-j .ct-bar,
+.ct-chart .ct-series.ct-series-j .ct-line,
+.ct-chart .ct-series.ct-series-j .ct-point,
+.ct-chart .ct-series.ct-series-j .ct-slice.ct-donut {
+	stroke: lighten($color-primary, 15%);
+}
+
+.ct-chart .ct-series.ct-series-j .ct-area,
+.ct-chart .ct-series.ct-series-j .ct-slice:not(.ct-donut) {
+	fill: lighten($color-primary, 15%);
+}
+
+.ct-chart .ct-series.ct-series-k .ct-bar,
+.ct-chart .ct-series.ct-series-k .ct-line,
+.ct-chart .ct-series.ct-series-k .ct-point,
+.ct-chart .ct-series.ct-series-k .ct-slice.ct-donut {
+	stroke: lighten($color-secondary, 15%);
+}
+
+.ct-chart .ct-series.ct-series-k .ct-area,
+.ct-chart .ct-series.ct-series-k .ct-slice:not(.ct-donut) {
+	fill: lighten($color-secondary, 15%);
+}
+
+.ct-chart .ct-series.ct-series-l .ct-bar,
+.ct-chart .ct-series.ct-series-l .ct-line,
+.ct-chart .ct-series.ct-series-l .ct-point,
+.ct-chart .ct-series.ct-series-l .ct-slice.ct-donut {
+	stroke: lighten($color-tertiary, 15%);
+}
+
+.ct-chart .ct-series.ct-series-l .ct-area,
+.ct-chart .ct-series.ct-series-l .ct-slice:not(.ct-donut) {
+	fill: lighten($color-tertiary, 15%);
+}
+
+.ct-chart .ct-series.ct-series-m .ct-bar,
+.ct-chart .ct-series.ct-series-m .ct-line,
+.ct-chart .ct-series.ct-series-m .ct-point,
+.ct-chart .ct-series.ct-series-m .ct-slice.ct-donut {
+	stroke: lighten($color-quaternary, 15%);
+}
+
+.ct-chart .ct-series.ct-series-m .ct-area,
+.ct-chart .ct-series.ct-series-m .ct-slice:not(.ct-donut) {
+	fill: lighten($color-quaternary, 15%);
+}
+
+.ct-chart .ct-series.ct-series-n .ct-bar,
+.ct-chart .ct-series.ct-series-n .ct-line,
+.ct-chart .ct-series.ct-series-n .ct-point,
+.ct-chart .ct-series.ct-series-n .ct-slice.ct-donut {
+	stroke: darken($color-primary, 35%);
+}
+
+.ct-chart .ct-series.ct-series-n .ct-area,
+.ct-chart .ct-series.ct-series-n .ct-slice:not(.ct-donut) {
+	fill: darken($color-primary, 35%);
+}
+
+.ct-chart .ct-series.ct-series-o .ct-bar,
+.ct-chart .ct-series.ct-series-o .ct-line,
+.ct-chart .ct-series.ct-series-o .ct-point,
+.ct-chart .ct-series.ct-series-o .ct-slice.ct-donut {
+	stroke: lighten($color-primary, 35%);
+}
+
+.ct-chart .ct-series.ct-series-o .ct-area,
+.ct-chart .ct-series.ct-series-o .ct-slice:not(.ct-donut) {
+	fill: lighten($color-primary, 35%);
+}
+
+.ct-chart .tooltip {
+	opacity: 1;
+	position: absolute;
+	display: inline-block;
+	min-width: 115px;
+	padding: 8px;
+	background: $color-primary;
+	color: $color-primary-inverse;
+	font-weight: 500;
+	text-align: center;
+	pointer-events: none;
+	z-index: 1;
+
+	&:after {
+		content: "";
+		position: absolute;
+		top: 100%;
+		left: 50%;
+		width: 0;
+		height: 0;
+		margin-left: -15px;
+		border: 15px solid transparent;
+		border-top-color: $color-primary;
+	}
+}
+
+// DARK
+// -----------------------------------------------------------------------------
+html.dark {
+	.chart-data-selector h2 .multiselect {
+		background-color: $dark-color-3;
+	}
+}
