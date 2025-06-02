@@ -55,14 +55,18 @@ class Notifications extends PureComponent {
 
         return (
             <UncontrolledDropdown nav direction="down">
-                <DropdownToggle nav onClick={this.trackViewList}>
-                    <i className="fa fa-bell"></i>{unread > 0 && <span className="badge badge-danger">{unread}</span>}
+                <DropdownToggle nav onClick={this.trackViewList} className="notification-icon">
+                    <i className="bx bx-bell"></i>{unread > 0 && <span className="float-end badge badge-danger">{unread}</span>}
                 </DropdownToggle>
-                <DropdownMenu end className="messages">
-                    <DropdownItem header tag="div">
+                <DropdownMenu end className="messages notification-menu">
+                    <DropdownItem header tag="div" className="notification-title">
+                        <span className="float-end badge badge-default">{unread}</span>
                         <div className="text-center"><strong>You have {unread || total} {unread ? "unread" : ""} messages</strong></div>
                     </DropdownItem>
                     {list.map((msg, i) => (<Message key={i} message={msg} onOpen={this.readMessage} onRead={this.markRead} cut={this.$utils.cut} />))}
+                    {/*<div className="text-end">
+                        <span className="view-more">View All</span>
+                    </div>*/}
                 </DropdownMenu>
             </UncontrolledDropdown>
         );
@@ -71,18 +75,24 @@ class Notifications extends PureComponent {
 
 export default Notifications;
 
-function Message({ message, onOpen, onRead, cut }) {
-    const readMessage = React.useCallback(() => onOpen(message), [message, onOpen]);
-    const markRead = React.useCallback(() => onRead(message), [message, onRead]);
+class Message extends PureComponent {
+    readMessage = () => this.props.onOpen(this.props.message);
+    markRead = () => this.props.onRead(this.props.message);
 
-    return (
-        <DropdownItem tag="div" title="Click to view this message">
-            {!message.read && <small className="float-end mt-0" onClick={markRead} title="Click to mark this message as read">
-                <span className="fa fa-eye mark-read" /></small>}
-            <div className={`text-truncate${message.read ? "" : " font-weight-bold"}`} onClick={readMessage}>
-                {message.important && <span className="fa fa-exclamation text-danger"></span>} {message.title}
-            </div>
-            <div className="small text-muted message" onClick={readMessage}><TextParser message={cut(message.message, 175, true)} /></div>
-        </DropdownItem>
-    );
+    render() {
+        const { message: msg, cut } = this.props;
+
+        return (
+            <DropdownItem tag="div" title="Click to view this message">
+                {!msg.read && <small className="float-end mt-0" onClick={this.markRead} title="Click to mark this message as read">
+                    <span className="fa fa-eye mark-read" /></small>}
+                <div className={`text-truncate${msg.read ? "" : " message-unread"}`} onClick={this.readMessage}>
+                    {msg.important && <span className="fa fa-exclamation text-danger"></span>} {msg.title}
+                </div>
+                <div className="small text-muted message" onClick={this.readMessage}><TextParser message={cut(msg.message, 175, true)} /></div>
+                <hr />
+            </DropdownItem>
+        );
+    }
 }
+

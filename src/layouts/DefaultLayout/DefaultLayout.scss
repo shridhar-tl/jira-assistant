@@ -1,20 +1,18 @@
-.header-fixed .app-body {
-    margin-top: 43px;
+.body {
+    min-height: 100vh;
+    width: 100%;
 }
 
-.sidebar-fixed .app-header+.app-body .sidebar {
-    height: calc(100vh - 43px);
+.inner-wrapper {
+    display: table;
+    min-height: 100vh;
+    padding-top: 60px;
+    table-layout: fixed;
+    overflow: hidden;
+    width: 100%;
 }
 
-.main {
-    .container-fluid {
-        padding: 0 0;
-        height: calc(100vh - 41px);
-        overflow-y: auto;
-        overflow-x: hidden;
-    }
-}
-
+/* Custom styles */
 body.quick-view {
     div#root {
         height: 550px;
@@ -41,45 +39,4 @@ body.quick-view {
 
 body:not(.quick-view) .quick-view-show {
     display: none;
-}
-
-.app-body {
-    overflow: hidden;
-}
-
-.sidebar {
-    .sidebar-header {
-        padding: 0;
-
-        .user-panel {
-            position: relative;
-            width: 100%;
-            padding: 10px 10px 30px 10px;
-            overflow: hidden;
-
-            .image {
-                .img-circle {
-                    border-radius: 50%;
-                    max-width: 35px;
-                    height: 35px;
-                }
-            }
-
-            .info {
-                color: #fff;
-                position: absolute;
-                left: 55px;
-                text-align: left;
-            }
-        }
-
-        .dropdown-menu {
-            max-width: 300px;
-
-            .icon-extl {
-                vertical-align: top;
-                padding-top: 15px;
-            }
-        }
-    }
 }

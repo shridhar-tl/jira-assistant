@@ -434,6 +434,14 @@
   }
 }
 
+html:not(.dark) {
+  $header-logo-bg: #555299;
+  $header-bg: #605ca8;
+
+  @include base-style($header-logo-bg, $header-bg);
+}
+
+/*
 .skin-blue {
   $header-logo-bg: #367fa9;
   $header-bg: #3c8dbc;
@@ -529,9 +537,9 @@
   $header-logo-bg: #64485c;
   $header-bg: #83677b;
   @include base-style($header-logo-bg, $header-bg);
-}
+}*/
 
-.skin-dark {
+html.dark {
   $dark-color: #2f353a;
   $second-dark-color: rgba(0, 0, 0, 0.2);
   $primary-color: #64afd8;

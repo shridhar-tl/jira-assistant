@@ -13,8 +13,7 @@ const BulkImportIssueComponent = config.modules.importIssues && React.lazy(() =>
 const CustomReportComponent = config.modules.customReport && React.lazy(() => import('./views/reports/custom-groupable/CustomReport'));
 const EstimateActualComponent = config.modules.estimateVsActual && React.lazy(() => import('./views/reports/estimate-actual/EstimateActualReport'));
 const SprintReportComponent = config.modules.sprintReport && React.lazy(() => import('./views/reports/sprint-report/SprintReport'));
-const WorklogReportComponent = config.modules.worklogReportOld && React.lazy(() => import('./views/reports/worklog-report/WorklogReport'));
-const NewWorklogReportComponent = config.modules.worklogReport && React.lazy(() => import('./views/reports/worklog-report/NewWorklogReport'));
+const WorklogReportComponent = config.modules.worklogReport && React.lazy(() => import('./views/reports/worklog-report/WorklogReport'));
 const ReportBuilderComponent = config.modules.reportBuilder && React.lazy(() => import('./views/reports/report-builder/ReportBuilder'));
 
 // Settings
@@ -42,12 +41,8 @@ const sessionBasedRoute = [
         component: CalendarViewComponent
     },
     WorklogReportComponent && {
-        path: '/reports/userdaywise',
-        component: WorklogReportComponent
-    },
-    NewWorklogReportComponent && {
         path: '/reports/worklog',
-        component: NewWorklogReportComponent
+        component: WorklogReportComponent
     },
     EstimateActualComponent && {
         path: '/reports/estimateactual',

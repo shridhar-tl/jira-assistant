@@ -1,44 +1,61 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
 import React from 'react';
-import {
-    ButtonItem,
-    LinkItem,
-    NavigationFooter,
-    NavigationHeader,
-    NestableNavigationContent,
-    Section,
-    SideNavigation
-} from '@atlaskit/side-navigation';
-import { isPluginBuild } from '../../constants/build-info';
-import AsideUserInfo from './AsideUserInfo';
+import { Link } from 'react-router-dom';
 import BuildDate from './BuildDate';
 import './NavSideBar.scss';
 
-const NavSideBar = function ({ onLogout, menus, navigate, location }) {
-    const renderMenu = menu => {
-        const Item = menu.external ? LinkItem : ButtonItem;
-        const isSelected = menu.url === location.pathname;
-        return (<Item key={menu.id} testId={menu.id} href={menu.url} target="_blank" rel="noreferrer noopener"
-            className={`${isSelected ? "selected " : ""}btn-menu`} onClick={menu.external ? undefined : () => navigate(menu.url)}
-            iconBefore={<span className={menu.icon} />} isSelected={isSelected}
-            iconAfter={menu.badge ? (<span className={`badge bg-${menu.badge.variant}`}>{menu.badge.text}</span>) : undefined}
-        >{menu.name}</Item>);
-    };
+function NavItem({ menu, pathname }) {
+    const isSelected = menu.url === pathname;
 
-    return (<div className="sidebar-container sidebar">
-        <SideNavigation label="Navigation Menus" testId="side-navigation">
-            {!isPluginBuild && <NavigationHeader className="nav-header">
-                <AsideUserInfo onLogout={onLogout} />
-            </NavigationHeader>}
-            <NestableNavigationContent initialStack={[]} testId="nestable-navigation-content">
-                {menus.map((section, i) => (<Section key={i} title={section.name}>
-                    {section.items.map(renderMenu)}
-                </Section>))}
-            </NestableNavigationContent>
-            <NavigationFooter className="nav-footer" testId="nav-footer">
+    return (<li className={isSelected ? 'nav-active' : undefined}>
+        <Link key={menu.id} testId={menu.id} to={menu.url} target={menu.external ? "_blank" : undefined} rel="noreferrer noopener"
+            className={`nav-link ${isSelected ? "selected " : ""}btn-menu`}
+        >
+            <span className={`icon ${menu.icon}`} />
+            {menu.name}
+            {menu.badge ? (<span className={`float-end badge bg-${menu.badge.variant}`}>{menu.badge.text}</span>) : null}
+        </Link>
+    </li>);
+}
+
+function NavSection({ section, pathname }) {
+    const [isExpanded, setIsExpanded] = React.useState(true);
+    const toggleExpand = React.useCallback(() => setIsExpanded(val => !val), [setIsExpanded]);
+
+    const isActive = section.items.some(m => m.url === pathname);
+
+    return (<li className={`nav-parent${isExpanded ? ' nav-expanded' : ''}${isActive ? ' nav-active' : ''}`}>
+        <a className="nav-link" onClick={toggleExpand}>
+            <i className={section.icon} aria-hidden="true"></i>
+            <span>{section.name}</span>
+        </a>
+        <ul className="nav nav-children">
+            {section.items.map((menu, i) => <NavItem key={i} menu={menu} pathname={pathname} />)}
+        </ul>
+    </li>);
+
+}
+
+const NavSideBar = function ({ onLogout, menus, navigate, location: { pathname } = {} }) {
+    return (<aside id="sidebar-left" className="sidebar-left">
+        <div className="nano has-scrollbar">
+            <div className="nano-content" tabIndex="0" style={{ right: '-17px' }}>
+                <nav id="menu" className="nav-main" role="navigation">
+                    <ul className="nav nav-main">
+                        {menus.map((section, i) => <NavSection key={i} section={section} pathname={pathname} />)}
+                    </ul>
+                </nav>
+            </div>
+        </div>
+        <div className="sidebar-header">
+            <div className="sidebar-title">
                 <BuildDate />
-            </NavigationFooter>
-        </SideNavigation>
-    </div>);
+            </div>
+            <div className="sidebar-toggle d-none d-md-block">
+                <i className="fas fa-indent" aria-label="Toggle sidebar" />
+            </div>
+        </div>
+    </aside>);
 };
 
 export default React.memo(NavSideBar);

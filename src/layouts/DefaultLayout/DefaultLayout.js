@@ -149,14 +149,14 @@ class DefaultLayout extends PureComponent {
 
     return (
       <WorklogContextProvider value={this.worklogContextProps}>
-        <div className="app">
+        <section className="body">
           <DefaultHeader onLogout={this.signOut} />
-          <div className="app-body">
+          <div className="inner-wrapper">
             <NavSideBar onLogout={this.signOut} menus={menus} navigate={this.props.navigate} location={this.props.location} />
             <AppContent loader={this.loading} />
           </div>
           <ContextMenu />
-        </div>
+        </section>
       </WorklogContextProvider>
     );
   }

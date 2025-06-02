@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { UncontrolledDropdown, DropdownMenu, DropdownToggle, Nav, NavItem } from 'reactstrap';
+import { UncontrolledDropdown, DropdownMenu, DropdownToggle, DropdownItem, Nav, NavItem } from 'reactstrap';
 import config from '../../../customize';
 import { isAppBuild, isPluginBuild } from '../../../constants/build-info';
 import ShareWithOthers from '../header/ShareWithOthers';
@@ -12,6 +12,7 @@ import Notifications from '../Notifications';
 import JiraUpdates from '../JiraUpdates';
 import LaunchWeb from '../LaunchWeb';
 import BackupImporter from '../BackupImporter';
+import AsideUserInfo from '../AsideUserInfo';
 
 const showShareOption = config.features.header.shareWithOthers !== false;
 const allowWebVersion = config.features.common.allowWebVersion !== false;
@@ -25,8 +26,36 @@ function HeaderRight(props) {
         onLogout,
     } = props;
     const { version, isBeta } = notifications?.updatesAvailable || {};
-    return (<>
-        <Nav className="ml-auto" navbar>
+
+    return (<div className="header-right">
+        <ul className="notifications">
+            {!disableNotification && notifications && <Notifications notifications={notifications} />}
+            <UncontrolledDropdown nav direction="down">
+                <DropdownToggle nav className="notification-icon">
+                    <i className="fa fa-adjust"></i>
+                </DropdownToggle>
+                <DropdownMenu end className="notification-menu">
+                    <DropdownItem header tag="div" className="notification-title">
+                        Pick theme
+                    </DropdownItem>
+                    <SkinPicker />
+                </DropdownMenu>
+            </UncontrolledDropdown>
+            {showYoutubeOption && <NavItem className="d-md-down-none">
+                <div className="notification-icon">
+                    <span className="nav-link" onClick={showYoutubeHelp}><i className="fa-brands fa-youtube"></i></span>
+                </div>
+            </NavItem>}
+            {showShareOption && <ShareWithOthers />}
+
+            {showContactUs && <NavItem className="d-md-down-none">
+                <div className="notification-icon">
+                    <NavLink to={`/${userId}/contactus`} className="nav-link"><i className="fa fa-phone" title="Contact us"></i></NavLink>
+                </div>
+            </NavItem>}
+        </ul>
+        <span className="separator"></span>
+        <Nav className="ml-auto d-none" navbar>
             {!isPluginBuild && <BackupImporter>
                 {(importSettings) => <SwitchAccountOption instance={currentJiraInstance} onLogout={onLogout} onImport={importSettings} />}
             </BackupImporter>}
@@ -35,26 +64,10 @@ function HeaderRight(props) {
                 title={`Jira Assist ${isBeta ? 'BETA ' : ''}v${version} is now available. Click to know more.`}
                 onClick={showVersionInfo}><i className="fa fa-download" /> Updates available</span>}
             {!disableJiraUpdates && <JiraUpdates />}
-            {!disableNotification && notifications && <Notifications notifications={notifications} />}
-            {showYoutubeOption && <NavItem className="d-md-down-none">
-                <span className="nav-link" onClick={showYoutubeHelp}><i className="fa-brands fa-youtube"></i></span>
-            </NavItem>}
-            <UncontrolledDropdown nav direction="down">
-                <DropdownToggle nav>
-                    <i className="fa fa-adjust"></i>
-                </DropdownToggle>
-                <DropdownMenu end>
-                    <SkinPicker />
-                </DropdownMenu>
-            </UncontrolledDropdown>
-            {showShareOption && <ShareWithOthers />}
-            {showContactUs && <NavItem className="d-md-down-none">
-                <NavLink to={`/${userId}/contactus`} className="nav-link"><i className="fa fa-phone" title="Contact us"></i></NavLink>
-            </NavItem>}
         </Nav>
+        <AsideUserInfo />
         {showYoutubeOption && showYoutubeVideo && <YoutubeVideo onHide={hideYoutube} />}
-    </>
-    );
+    </div>);
 }
 
 export default HeaderRight;

@@ -1,47 +1,72 @@
-a.navbar-brand {
-    span.navbar-brand-full {
-        color: #000;
-        font-size: 20px;
+.header {
+    height: 60px;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    background: #fff;
+    border-bottom: 1px solid #e9e9e6;
+    border-top: 3px solid #ededed;
+    z-index: 1000;
+
+    .logo {
+        float: left;
+        margin: 10px 0 0 15px;
+
+        img {
+            color: transparent;
+            image-rendering: -webkit-optimize-contrast;
+            transform: translateZ(0);
+        }
+    }
+
+    .separator {
+        background-image: linear-gradient(#F6F6F6 60%, #EDEDED);
+        display: inline-block;
+        height: 100%;
+        margin: 0 25px;
+        width: 1px;
+        vertical-align: middle;
+    }
+
+    .search {
+        width: 170px;
+        display: inline-block;
+        vertical-align: middle;
+
+        .form-control {
+            border-color: #ededed;
+            box-shadow: none !important;
+        }
+
+        .btn {
+            border-color: #ededed;
+            box-shadow: none !important;
+
+            i {
+                position: relative;
+                top: 3px;
+                font-size: 16px;
+                font-size: 1rem;
+            }
+        }
+    }
+
+    .toggle-sidebar-left {
+        background: #ccc;
+        border-radius: 100px;
+        color: #fff;
+        height: 30px;
+        line-height: 30px;
+        position: absolute;
+        right: 15px;
+        text-align: center;
+        top: 14px;
+        width: 30px;
     }
 }
 
-.app-header {
-    color: #fff !important;
-
-    .fa-bars {
-        color: #fff !important;
-        font-size: 17.5px;
-    }
-
-    .nav-item {
-        min-width: 35px;
-    }
-
-    &.navbar {
-        height: 44px !important;
-
-        .navbar-brand {
-            height: 43px;
-        }
-
-        .navbar-nav .nav-link,
-        .navbar-toggler-icon {
-            color: #fff !important;
-        }
-    }
-
-    i.fa {
-        font-size: 16px;
-    }
-
-    .navbar-brand {
-        width: 215px;
-
-        .navbar-brand-full {
-            color: #fff !important;
-        }
-    }
-}
+/* Custom styles */
 
 strong.share-header-text {
     font-size: 16px;
@@ -94,6 +119,7 @@ body.no-donation .btn-donate {
     }
 }
 
+/*
 .skin-items {
     width: 200px;
     padding: 6px;
@@ -115,14 +141,12 @@ body.no-donation .btn-donate {
     div.selected {
         opacity: 1;
     }
-}
-
-.badge.v-info {
-    font-size: 10px;
-}
+}*/
 
 .messages {
-    max-width: 450px;
+    &.notification-menu {
+        width: 450px;
+    }
 
     .dropdown-item {
         cursor: pointer;

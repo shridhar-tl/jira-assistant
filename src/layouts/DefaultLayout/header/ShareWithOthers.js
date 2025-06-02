@@ -31,11 +31,11 @@ function ShareWithOthers() {
     const trackShare = () => $analytics.trackEvent("Share option viewed", EventCategory.HeaderActions);
 
     return (<UncontrolledDropdown nav direction="down" onClick={trackShare}>
-        <DropdownToggle nav>
+        <DropdownToggle nav className="notification-icon">
             <i className="fa fa-share-alt"></i>
         </DropdownToggle>
-        <DropdownMenu end>
-            <DropdownItem header tag="div" className="text-center">
+        <DropdownMenu end className="notification-menu">
+            <DropdownItem header tag="div" className="notification-title">
                 <strong className="share-header-text">Share or rate this tool</strong>
             </DropdownItem>
             <div className="share-items">

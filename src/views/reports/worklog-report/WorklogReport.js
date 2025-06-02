@@ -1,10 +1,10 @@
 import React, { PureComponent } from 'react';
-import { WorklogGadget } from '../../../gadgets';
+import { WorklogReport as WorklogReportGadget } from '../../../gadgets';
 
 class WorklogReport extends PureComponent {
     render() {
         return (
-            <WorklogGadget className="widget-cntr" isGadget={false} />
+            <WorklogReportGadget className="widget-cntr" isGadget={false} />
         );
     }
 }

@@ -104,7 +104,7 @@ class DefaultHeader extends PureComponent {
     } = this;
 
     return (
-      <header className="app-header navbar">
+      <header className="header header-nav-menu header-nav-links">
         <HeaderBrand showVersionInfo={this.showVersionInfo} versionNumber={this.versionNumber} />
 
         {showDonateButton && <NavLink to={`/${this.userId}/contribute`} className="btn-donate"
@@ -122,9 +122,23 @@ class DefaultHeader extends PureComponent {
           userId={this.userId}
           hideYoutube={this.hideYoutube}
         />
-      </header>
-    );
+      </header>);
+    /*
+    return (
+      <>
+        <AppSidebarToggler className="d-lg-none quick-view-hide" display="md" mobile><span className="fa fa-bars" /></AppSidebarToggler>
+        <AppSidebarToggler className="d-md-down-none quick-view-hide" display="lg"><span className="fa fa-bars" /></AppSidebarToggler>
+      </>
+    );*/
   }
 }
 
 export default DefaultHeader;
+/*
+function AppSidebarToggler({ className, display }) {
+  const onClick = useCallback(() => {
+    document.body.classList.toggle(`sidebar-${display}-show`);
+  }, [display]);
+
+  return (<span className={className} style={{ marginLeft: 17, marginRight: 17, paddingTop: 2, cursor: 'pointer' }} onClick={onClick}><span className="fa fa-bars" /></span>);
+}*/

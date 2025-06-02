@@ -23,14 +23,14 @@ const { dashboards,
     calendar, importWorklog, importIssues, planningPoker,
 
     // Reports
-    worklogReport, worklogReportOld, sprintReport, customReport, estimateVsActual, reportBuilder,
+    worklogReport, sprintReport, customReport, estimateVsActual, reportBuilder,
 
     // Settings
     userGroups, generalSettings, advancedSettings,
 
     // Menu groups
     activitiesGroup = calendar || importWorklog || importIssues || planningPoker,
-    reportsGroup = worklogReport || worklogReportOld || sprintReport || customReport || estimateVsActual || reportBuilder,
+    reportsGroup = worklogReport || sprintReport || customReport || estimateVsActual || reportBuilder,
     settingsGroup = userGroups || generalSettings || advancedSettings
 } = config.modules;
 
@@ -38,6 +38,7 @@ const navigation = [
     dashboards && {
         title: true,
         name: 'Dashboards',
+        icon: 'fa fa-tachometer',
         isDashboard: true,
         items: [
             {
@@ -52,6 +53,7 @@ const navigation = [
     activitiesGroup && {
         title: true,
         name: 'Activities',
+        icon: 'fa fa-tachometer',
         items: [
             calendar && {
                 name: 'Worklog Calendar',
@@ -87,22 +89,13 @@ const navigation = [
     reportsGroup && {
         title: true,
         name: 'Reports',
+        icon: 'fa fa-bar-chart',
         items: [
             worklogReport && {
                 name: 'Worklog Report',
                 id: 'R-WL',
                 url: '/reports/worklog',
                 icon: 'fa fa-users'
-            },
-            worklogReportOld && {
-                name: 'Worklog Report',
-                id: 'R-UD',
-                url: '/reports/userdaywise',
-                icon: 'fa fa-users',
-                badge: {
-                    variant: 'danger',
-                    text: 'OLD'
-                }
             },
             sprintReport && {
                 name: 'Sprint Report',
@@ -137,6 +130,7 @@ const navigation = [
     settingsGroup && {
         title: true,
         name: 'Settings',
+        icon: 'fa fa-cogs',
         items: [
             generalSettings && {
                 name: 'General',

@@ -8,22 +8,29 @@
 @import "@fontsource/poppins/600.css";
 @import "@fontsource/poppins/700.css";
 
+@font-face {
+    font-family: 'Edson_Comics_Bold';
+    src: url(layout/Edson_Comics_Bold.woff) format('woff');
+    font-weight: 700;
+    font-style: normal;
+}
+
 // Font icons
 @import "@fortawesome/fontawesome-free/scss/fontawesome";
 @import "@fortawesome/fontawesome-free/scss/regular";
 @import "@fortawesome/fontawesome-free/scss/solid";
 @import "@fortawesome/fontawesome-free/scss/brands";
+@import "boxicons";
 
 // 3rd party styles
+@import "~bootstrap/dist/css/bootstrap.min.css";
 @import "primereact/resources/themes/bootstrap4-light-purple/theme.css";
 @import "primereact/resources/primereact.min.css";
 @import "primeicons/primeicons.css";
 
-// Import styles
-@import "~@coreui/coreui/scss/coreui.scss";
-
+@import "layout/styles/theme.scss";
 // bootstrap overrides
-@import "bootstrap.scss";
+// @import "bootstrap.scss";
 
 // Prime related style overrides
 @import "prime.scss";
