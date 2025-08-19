@@ -57,7 +57,7 @@ class GlobalTab extends TabControlBase {
             await executeService('SELF', 'RELOAD', [], this.$message);
         } catch (err) {
             this.$message.error('This settings would work only with JA extension v2.41 or above.', 'Unsupported Settings');
-            console.log("Error reloading settings:", err);
+            console.error("Error reloading settings:", err);
         }
     };
 
