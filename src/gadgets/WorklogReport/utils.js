@@ -75,8 +75,71 @@ function getFlatMapper(usr, groupName, sprintName) {
         remainingestimate: log.remainingestimate,
         totalLogged: log.totalLogged,
         estVariance: log.estVariance,
-        comment: log.comment
+        comment: stringifyComment(log.comment)
     });
+}
+
+function stringifyComment(comment) {
+  if (!comment || typeof comment === "string") {
+    return comment;
+  }
+
+  if (comment.content) {
+    return extractDescription(comment.content);
+  }
+}
+
+function extractDescription(description) {
+  if (!description || !Array.isArray(description.content)) {
+    return "";
+  }
+
+  const lines = [];
+
+  function extractTextFromNode(node) {
+    if (!node) {
+      return "";
+    }
+    if (node.type === "text") {
+      return node.text || "";
+    }
+    if (node.content) {
+      return node.content.map(extractTextFromNode).join("");
+    }
+    return "";
+  }
+
+  for (const block of description.content) {
+    switch (block.type) {
+      case "paragraph":
+      case "blockquote":
+      case "panel":
+      case "heading":
+      case "codeBlock":
+        lines.push(extractTextFromNode(block));
+        break;
+
+      case "bulletList":
+      case "orderedList":
+        for (const item of block.content ?? []) {
+          if (item.type === "listItem") {
+            const itemText =
+              item.content?.map(extractTextFromNode).join("") || "";
+            lines.push(itemText);
+          }
+        }
+        break;
+
+      default:
+        lines.push(extractTextFromNode(block));
+        break;
+    }
+  }
+
+  return lines
+    .filter((line) => line.trim().length > 0)
+    .join("\n")
+    .trim();
 }
 
 export function generateIssueDayWiseData(groupReport, state) {
