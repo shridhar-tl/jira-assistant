@@ -1,11 +1,12 @@
-import Queue from 'queue';
-import { DummyWLId } from '../constants/common';
-import { defaultSettings, defaultJiraFields } from '../constants/settings';
-import { ApiUrls } from '../constants/api-urls';
 import * as moment from 'moment';
-import { mergeUrl, prepareUrlWithQueryString, viewIssueUrl, waitFor } from '../common/utils';
+import Queue from 'queue';
 import FeedbackPromise from 'src/common/FeedbackPromise';
+import { stringifyComment } from 'src/common/worklog-utils';
 import { isPluginBuild } from 'src/constants/build-info';
+import { mergeUrl, prepareUrlWithQueryString, viewIssueUrl, waitFor } from '../common/utils';
+import { ApiUrls } from '../constants/api-urls';
+import { DummyWLId } from '../constants/common';
+import { defaultJiraFields, defaultSettings } from '../constants/settings';
 
 export default class JiraService {
     static dependencies = ["AjaxService", "CacheService", "MessageService", "SessionService"];
@@ -82,6 +83,18 @@ export default class JiraService {
             else {
                 return issues;
             }
+      }).then((issues) => {
+          if (fields.includes("worklog")) {
+              issues.forEach(issue => {
+                  const worklogs = issue.fields?.worklog?.worklogs;
+                  if (Array.isArray(worklogs) && worklogs.length) {
+                      worklogs.forEach(w => {
+                          w.comment = stringifyComment(w.comment);
+                      });
+                  }
+              });
+           }
+          return issues;
         });
     }
 
