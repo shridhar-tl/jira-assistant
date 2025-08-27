@@ -11,6 +11,7 @@ import { updateJQL, updateDataSourceType, usePivotConfig, useSelectedItem } from
 import ControlButtons from './ControlButtons';
 import useToggler from 'react-controls/hooks/useToggler';
 import './Controls.scss';
+import { useShallow } from 'zustand/react/shallow';
 
 function EditorControls({ show, onHide, reportId }) {
     const [showSource, toggleSource] = useToggler(!reportId);
@@ -30,7 +31,7 @@ function EditorControls({ show, onHide, reportId }) {
 export default EditorControls;
 
 function Source({ onDone }) {
-    const { jql, dataSourceType } = usePivotConfig(({ jql, dataSourceType }) => ({ jql, dataSourceType }));
+    const { jql, dataSourceType } = usePivotConfig(useShallow(({ jql, dataSourceType }) => ({ jql, dataSourceType })));
 
     return (<div className="p-3">
         <p>
@@ -40,17 +41,17 @@ function Source({ onDone }) {
             applying a JQL filter to refine the results.
         </p>
 
-        <label className="font-bold mt-3">Data source type:</label>
-        <RadioButton className="block"
+        <label className="fw-bold mt-3">Data source type:</label>
+        <RadioButton className="d-block"
             value={dataSourceType} defaultValue={1}
             label="Use raw JQL to filter and pull issues list"
             onChange={updateDataSourceType} />
-        <RadioButton className="block"
+        <RadioButton className="d-block"
             value={dataSourceType} defaultValue={2}
             label="Pull issues for select sprints and apply JQL filter"
             onChange={updateDataSourceType} disabled />
 
-        <label className="font-bold mt-3">JQL Query:</label>
+        <label className="fw-bold mt-3">JQL Query:</label>
         <JQLEditor jql={jql} plugged onChange={updateJQL} />
 
         <Button className="float-end me-2" icon="fa fa-arrow-right"

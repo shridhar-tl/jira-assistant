@@ -1,4 +1,5 @@
 import React from 'react';
+import { useShallow } from 'zustand/react/shallow';
 import GroupTable from './group-table';
 import { updateParameters, usePivotConfig, useReportData } from '../../store/pivot-config';
 import ReportInfo from './ReportInfo';
@@ -7,9 +8,9 @@ import { Button } from 'react-controls/controls';
 import { generateReport } from '../../viewer/generator';
 
 function EditorBody() {
-    const { hasReportData, reportErrors, isFetching, showParameters } = useReportData(({
+    const { hasReportData, reportErrors, isFetching, showParameters } = useReportData(useShallow(({
         reportData, reportErrors, isFetching, showParameters
-    }) => ({ hasReportData: !!reportData, reportErrors, isFetching, showParameters }));
+    }) => ({ hasReportData: !!reportData, reportErrors, isFetching, showParameters })));
 
     if (isFetching) {
         return (<div className="editor-body p-4">
@@ -46,7 +47,7 @@ function ReportParameters() {
             <strong>Provide values for missing parameters to generate report:</strong>
             <br />
             {keys.map((key) => <div key={key} className="param-field py-3">
-                <label className="font-bold me-3">{parameters[key].name}: </label>
+                <label className="fw-bold me-3">{parameters[key].name}: </label>
                 <ParameterControl {...parameters[key]} />
             </div>)}
             <br />

@@ -1,0 +1,22 @@
+td.sprint-info-cell {
+    cursor: pointer;
+
+    .fa-info-circle {
+        color: #6c757d;
+        opacity: 0;
+    }
+
+    &:hover .fa-info-circle {
+        opacity: 1;
+    }
+
+    &.selected {
+        font-weight: bold;
+        opacity: 1;
+
+        .fa-info-circle {
+            color: green;
+            opacity: 1;
+        }
+    }
+}

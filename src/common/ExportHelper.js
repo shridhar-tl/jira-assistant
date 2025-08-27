@@ -37,15 +37,71 @@ export class ExportHelper {
     }
 
     exportToPDF() {
-        const el = $(this.element).find('table.exportable:first-child');
+        const root = $(this.element);
+
+        const el = root.is("table") ? root : root.find("table.exportable");
+
         const fileName = el.attr("export-sheet-name") || this.fileName || 'download';
         const doc = new jsPDF({
             orientation: 'landscape',
-            unit: 'in',
+            unit: 'px',
             format: "a3"
         });
         doc.autoTable({ html: el.get(0) });
+
+        const images = root.find(".exportable-image");
+        if (images.length) {
+            doc.addPage();
+            images.each((_, img) => this.addImageToPdf(doc, img));
+        }
+
         doc.save(`${fileName}.pdf`);
+    }
+
+    addImageToPdf(doc, element) {
+        if (!element) { return; }
+
+        const tag = element.tagName ? element.tagName.toLowerCase() : null;
+        let imgData = null;
+        const format = 'PNG';
+
+        if (tag === 'canvas' || tag === 'img') {
+            imgData = element;
+        } else if (tag === 'svg') {
+            const svgData = new XMLSerializer().serializeToString(element);
+            imgData = new Image();
+            imgData.src = `data:image/svg+xml;base64,${btoa(svgData)}`;
+        }
+
+        if (imgData) {
+            if (typeof doc.currentY === 'undefined') {
+                doc.currentY = 80;
+            }
+
+            const pageWidth = doc.internal.pageSize.getWidth();
+            const pageHeight = doc.internal.pageSize.getHeight();
+            const margin = 80;
+            const maxWidth = pageWidth - margin * 2;
+
+            const width = element.width || element.clientWidth;
+            const height = element.height || element.clientHeight;
+
+            const ratio = Math.min(maxWidth / width, 1);
+            const imgWidth = width * ratio;
+            const imgHeight = height * ratio;
+
+            if (doc.currentY + imgHeight > pageHeight - margin) {
+                doc.addPage();
+                doc.currentY = margin;
+            }
+
+            doc.addImage(imgData, format, margin, doc.currentY, imgWidth, imgHeight);
+            doc.currentY += imgHeight + 10;
+        } else if (element.children && element.children.length > 0) {
+            Array.from(element.children).forEach(child => {
+                this.addImageToPdf(doc, child);
+            });
+        }
     }
 
     /**

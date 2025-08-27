@@ -7,16 +7,13 @@
 @import "@fortawesome/fontawesome-free/scss/solid";
 @import "@fortawesome/fontawesome-free/scss/brands";
 
+// Import styles
+@import "base/index.scss";
+
 // 3rd party styles
 @import "primereact/resources/themes/bootstrap4-light-blue/theme.css";
 @import "primereact/resources/primereact.min.css";
 @import "primeicons/primeicons.css";
-
-// Import styles
-@import "base/index.scss";
-
-// bootstrap overrides
-@import "bootstrap.scss";
 
 // Prime related style overrides
 @import "prime.scss";

@@ -164,7 +164,6 @@ a.p-menuitem-link {
     }
 
     .p-tabview-nav-content {
-        overflow-y: auto;
         overflow-x: auto;
         height: 34px;
 
@@ -182,4 +181,33 @@ a.p-menuitem-link {
 
 .p-splitter-gutter:hover {
     background: #e3165b;
+}
+
+.p-reset {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+ul.p-dropdown-items,
+ul.p-autocomplete-items,
+ul.p-multiselect-items,
+ul.p-contextmenu-root-list,
+ul.p-listbox-list {
+    padding: 0;
+}
+
+ul.p-autocomplete-multiple-container {
+    padding: 0.25rem 0.75rem;
+    margin-bottom: 0;
+}
+
+.p-inputnumber {
+    height: 28px;
+    min-width: 40px;
+
+    input {
+        width: 100%;
+        border: none;
+    }
 }

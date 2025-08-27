@@ -12,7 +12,7 @@ import { inject } from '../../services/injector-service';
 import { GadgetActionType } from '../_constants';
 import { Button } from '../../controls';
 import SelectBox from '../../controls/SelectBox';
-import { hideContextMenu, showContextMenu } from '../../externals/jsd-report';
+import { hideContextMenu, showContextMenu } from '../../components/ContextMenu';
 import AddWorklog from '../../dialogs/AddWorklog';
 import { OverlayPanel } from 'primereact/overlaypanel';
 import MeetingDetails from './MeetingDetails';
@@ -795,6 +795,12 @@ class Calendar extends BaseGadget {
 
                 this.addEvent({ previousTime: oldDate, edited: entry });
                 //this.updateAllDayEvent(event);
+            }).finally(() => {
+                const icon = e.el.querySelector('i.fa-refresh');
+                if (icon) {
+                    icon.classList.replace('fa-refresh', 'fa-ellipsis-v');
+                    icon.classList.remove('fa-spin');
+                }
             });
         }
     }

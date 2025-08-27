@@ -1,6 +1,7 @@
 name: Build & Deploy JA
 
 on:
+  workflow_dispatch:
   push:
     branches: [ package ]
   pull_request:

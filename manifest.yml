@@ -40,7 +40,18 @@ modules:
       label: View time tracker
       resource: main
       icon: https://app.jiraassistant.com/assets/icon_24.png
+  trigger:
+    - key: sprint-started-trigger
+      function: sprint-started-handler
+      events:
+        - avi:jira-software:started:sprint
+        - avi:jira-software:closed:sprint
+      filter:
+        ignoreSelf: true
+        onError: RECEIVE_AND_LOG
   function:
+    - key: sprint-started-handler
+      handler: jcloud-events.onSprintAction
     - key: resolver
       handler: jcloud.handler
       providers:
@@ -71,11 +82,18 @@ permissions:
     - read:issue-details:jira
     - read:jql:jira
     - read:jira-work
+    - read:board-scope:jira-software
+    - read:project:jira
+    - read:issue-meta:jira
+    - read:avatar:jira
+    - read:board-scope.admin:jira-software
+    - read:issue.changelog:jira
     - write:jira-work
+    - write:sprint:jira-software
 app:
   id: ari:cloud:ecosystem::app/3864d3bc-aad3-4650-ac35-e15af61fd92d
   runtime:
-    name: nodejs20.x
+    name: nodejs22.x
 remotes:
   - key: mso-account
     baseUrl: https://login.microsoftonline.com

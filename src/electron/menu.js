@@ -49,8 +49,7 @@ module.exports = function (window, basePath) {
                 getMenu('Worklog report', '/reports/userdaywise'),
                 getMenu('Sprint report', '/reports/sprint'),
                 getMenu('Custom report', '/reports/custom'),
-                getMenu('Estimate vs Actual', '/reports/estimateactual'),
-                getMenu('Report builder', '/reports/advanced')
+                getMenu('Estimate vs Actual', '/reports/estimateactual')
             ]
         },
         // { role: 'windowMenu' }

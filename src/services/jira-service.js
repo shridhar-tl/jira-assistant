@@ -1,9 +1,12 @@
-import Queue from 'queue';
-import { DummyWLId } from '../constants/common';
-import { defaultSettings, defaultJiraFields } from '../constants/settings';
-import { ApiUrls } from '../constants/api-urls';
 import * as moment from 'moment';
+import Queue from 'queue';
+import FeedbackPromise from 'src/common/FeedbackPromise';
+import { stringifyComment } from 'src/common/worklog-utils';
+import { isPluginBuild } from 'src/constants/build-info';
 import { mergeUrl, prepareUrlWithQueryString, viewIssueUrl, waitFor } from '../common/utils';
+import { ApiUrls } from '../constants/api-urls';
+import { DummyWLId } from '../constants/common';
+import { defaultJiraFields, defaultSettings } from '../constants/settings';
 
 export default class JiraService {
     static dependencies = ["AjaxService", "CacheService", "MessageService", "SessionService"];
@@ -80,6 +83,18 @@ export default class JiraService {
             else {
                 return issues;
             }
+      }).then((issues) => {
+          if (fields.includes("worklog")) {
+              issues.forEach(issue => {
+                  const worklogs = issue.fields?.worklog?.worklogs;
+                  if (Array.isArray(worklogs) && worklogs.length) {
+                      worklogs.forEach(w => {
+                          w.comment = stringifyComment(w.comment);
+                      });
+                  }
+              });
+           }
+          return issues;
         });
     }
 
@@ -266,7 +281,7 @@ export default class JiraService {
 
         const result = await Promise.all(projects.map(async p => {
             const cacheKey = `projectStatuses_${p}`;
-            let project = this.$jaCache.session.get();
+            let project = this.$jaCache.session.get(cacheKey);
 
             if (!project) {
                 project = await this.$ajax.get(ApiUrls.getProjectStatuses, p);
@@ -277,6 +292,18 @@ export default class JiraService {
         }));
 
         return onlyOne ? result[0] : result;
+    }
+
+    async getJiraStatuses() {
+        const cacheKey = `jiraStatuses`;
+        let statuses = this.$jaCache.session.get(cacheKey);
+
+        if (!statuses) {
+            statuses = await this.$ajax.get(ApiUrls.getJiraStatuses);
+            this.$jaCache.session.set(cacheKey, statuses);
+        }
+
+        return statuses;
     }
 
     async getIssueMetadata(issuekey) {
@@ -423,27 +450,111 @@ export default class JiraService {
         return this.$ajax.get(ApiUrls.rapidSprintDetails, rapidViewId, sprintId);
     }
 
-    async getSprintIssues(sprintIds, options) {
-        const { worklogStartDate, worklogEndDate, ...opts } = options || {};
+    async getSprintProperty(sprintId, propertyKey) {
+        try {
+            const result = await this.$ajax.get(ApiUrls.getSprintProperty.format(sprintId, propertyKey));
+            return result?.value;
+        } catch (err) {
+            if (!err.error?.errorMessages?.[0]?.includes("does not exist")) {
+                console.error(`Failed to fetch property ${propertyKey} for sprint ${sprintId}:`, err);
+            }
+            return null;
+        }
+    }
+
+    getSprintIssues(sprintIds, options) {
+        const { worklogStartDate, worklogEndDate, includeRemoved, boardId, ...opts } = options || {};
 
         const worker = async (sprintId) => {
             const { issues } = await this.$ajax.get(ApiUrls.getSprintIssues.format(sprintId), opts);
+
+            if (includeRemoved) {
+                await this.addRemovedIssuesToList(boardId, sprintId, issues, options?.fields, opts.jql);
+            }
+
             if (options?.fields?.indexOf("worklog") > -1) {
                 await this.fillMissingWorklogs(issues, worklogStartDate, worklogEndDate);
             }
 
-            return issues;
+            return issues.sortBy(t => parseInt(t.id));
         };
+
 
         if (!Array.isArray(sprintIds)) {
             return worker(sprintIds);
         } else {
-            const sprints = {};
-            await runOnQueue(sprintIds, 3, async (id) => {
-                sprints[id] = await worker(id);
-            });
+            return new FeedbackPromise(async (resolve, _, progress) => {
+                const sprints = {};
+                const total = sprintIds.length;
+                let completed = 0;
+                await runOnQueue(sprintIds, 3, async (id) => {
+                    sprints[id] = await worker(id, progress);
+                    completed++;
+                    progress(completed * 100 / total);
+                });
 
-            return sprints;
+                resolve(sprints);
+            });
+        }
+    }
+
+    // Based on internal API, try to find the list of removed issues part of sprint
+    async getRemovedIssuesWithStoryPointForSprint(boardId, sprintId) {
+        const details = await this.getRapidSprintDetails(boardId, sprintId);
+        const addedLater = details?.contents?.issueKeysAddedDuringSprint || {};
+
+        const getIssueObject = (issues, issueMap) => issues?.reduce((map, t) => {
+            if (addedLater[t.key]) { return map; }
+
+            const sp = t?.estimateStatistic?.statFieldValue?.value || 0;
+            map[t.key] = { sp };
+            return map;
+        }, issueMap || {}) ?? {};
+
+        let result = getIssueObject(details?.contents?.completedIssues);
+        result = getIssueObject(details?.contents?.issuesNotCompletedInCurrentSprint, result);
+        result = getIssueObject(details?.contents?.issuesCompletedInAnotherSprint, result);
+        result = getIssueObject(details?.contents?.puntedIssues, result);
+
+        return result;
+    }
+
+    async addRemovedIssuesToList(boardId, sprintId, issues, fieldsList, optsJql) {
+        try { // if includeRemoved is true, then fetch removed issues based on custom properties added in sprint and add them to the list
+            const issuesMapAtTheBeginningOfSprint = isPluginBuild ?
+                await this.getSprintProperty(sprintId, 'jaSprintStartInfo') // If currently running as plugin, then issues list is stored in property
+                : await this.getRemovedIssuesWithStoryPointForSprint(boardId, sprintId); // For extension/web users, get the details by calling internal reports api
+
+            if (issuesMapAtTheBeginningOfSprint) {
+                const allIssueKeys = Object.keys(issuesMapAtTheBeginningOfSprint);
+
+                if (!allIssueKeys.length) { return; }
+
+                const removedIssueKeys = allIssueKeys.filter(key => !issues.some(t => t.key === key)); // Remove all the issues which is already part of list
+
+                if (removedIssueKeys.length) {
+                    let jql = `key in (${removedIssueKeys.join(',')})`;
+
+                    if (optsJql) {
+                        jql = `(${optsJql}) AND (${jql})`;
+                    }
+
+                    const closedTickets = await this.searchTickets(jql, fieldsList, 0, { ignoreErrors: true });
+                    closedTickets.forEach(t => t.removedFromSprint = true); // Set the removed from sprint flag to true
+                    if (closedTickets?.length) {
+                        issues.push(...closedTickets);
+                    }
+                }
+
+                issues.forEach(t => {
+                    const issueValue = issuesMapAtTheBeginningOfSprint[t.key];
+                    if (issueValue && "sp" in issueValue) {
+                        t.initialStoryPoints = parseFloat(issueValue.sp) || 0;
+                    }
+                });
+            }
+        } catch (e) {
+            console.error("Error trying to retrieve removed issues for sprint", sprintId, e);
         }
     }
 
@@ -581,6 +692,23 @@ export default class JiraService {
 
             issue.fields.worklog = res;
         });
+    }
+
+    async getBulkIssueChangelogs(issueIdsOrKeys, fieldIds) {
+        try {
+            const { issueChangeLogs } = await this.$ajax.post(ApiUrls.bulkIssueChangelogs, {
+                maxResults: 10000,
+                issueIdsOrKeys,
+                fieldIds
+            });
+
+            return issueChangeLogs.reduce((obj, item) => {
+                obj[item.issueId] = item.changeHistories.sortBy(ch => ch.created).flatMap(({ items, ...ch }) => items.map(i => ({ ...ch, ...i })));
+                return obj;
+            }, {});
+        } catch (err) {
+            console.error("Unable to fetch changelogs for tickets: ", err);
+        }
     }
 
     fillWL(issue, startDate, endDate) {

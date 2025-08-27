@@ -1,3 +1,4 @@
+import { stringifyComment } from "src/common/worklog-utils";
 import { getUserName } from "../../common/utils";
 import { inject } from "../../services/injector-service";
 
@@ -75,7 +76,7 @@ function getFlatMapper(usr, groupName, sprintName) {
         remainingestimate: log.remainingestimate,
         totalLogged: log.totalLogged,
         estVariance: log.estVariance,
-        comment: log.comment
+        comment: stringifyComment(log.comment)
     });
 }
 

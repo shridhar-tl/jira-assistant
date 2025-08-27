@@ -25,7 +25,7 @@ function HeaderRight(props) {
     } = props;
     const { version, isBeta } = notifications?.updatesAvailable || {};
     return (<>
-        <ul className="ml-auto navbar-nav">
+        <ul className="navbar-nav" style={{ marginLeft: 'auto' }}>
             {allowWebVersion && !isAppBuild && !isQuickView && <LaunchWeb />}
             {!!version && <span className={`update-available badge p-1 px-2 pointer bg-${isBeta ? "warning text-dark" : "success"}`}
                 title={`Jira Assist ${isBeta ? 'BETA ' : ''}v${version} is now available. Click to know more.`}

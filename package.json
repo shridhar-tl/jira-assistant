@@ -1,6 +1,6 @@
 {
     "name": "jira-assistant",
-    "version": "2.59.0",
+    "version": "2.60.0",
     "description": "Help to track & upload work done on a Jira Ticket on timely basis and generate Worklog, Sprint and other custom reports",
     "homepage": "/",
     "author": {
@@ -72,50 +72,49 @@
         "electron-about-window": "^1.15.2",
         "electron-is-dev": "^3.0.1",
         "electron-updater": "^6.1.8",
-        "espree": "^9.6.1",
+        "espree": "^10.3.0",
         "exceljs": "^4.4.0",
-        "firebase": "^10.12.0",
+        "firebase": "^11.1.0",
         "jquery": "^3.7.1",
         "js-sql-parser": "^1.6.0",
-        "jsd-report": "^0.1.11",
         "jspdf": "github:shridhar-tl/jsPDF",
         "minify-html-literals": "^1.3.5",
         "jspdf-autotable": "^3.8.2",
         "moment": "^2.30.1",
         "moment-timezone": "^0.5.45",
-        "papaparse": "^5.4.1",
+        "papaparse": "^5.5.1",
         "patternomaly": "^1.3.2",
         "primeflex": "^3.3.1",
-        "primeicons": "^6.0.1",
-        "primereact": "^9.6.4",
+        "primeicons": "^7.0.0",
+        "primereact": "^10.9.1",
         "queue": "^7.0.0",
-        "rc-time-picker": "^3.7.3",
         "react": "^18.3.1",
         "react-bootstrap-daterangepicker": "^8.0.0",
         "react-controls": "github:shridhar-tl/react-controls",
-        "react-dnd": "^14.0.4",
-        "react-dnd-html5-backend": "^14.0.2",
+        "react-dnd": "^16.0.1",
+        "react-dnd-html5-backend": "^16.0.1",
         "react-dom": "^18.3.1",
-        "react-router-dom": "^6.23.1",
+        "react-router-dom": "^7.1.0",
         "static-eval": "^2.1.1",
         "vite": "^6.0.3",
         "vite-plugin-alias": "^0.1.1",
         "vite-plugin-env-compatible": "^2.0.1",
         "vite-plugin-eslint": "^1.8.1",
         "vite-plugin-html": "^3.2.2",
-        "zustand": "^5.0.2"
+        "zustand": "^5.0.3"
     },
     "devDependencies": {
-        "concurrently": "^9.1.0",
+        "concurrently": "^9.1.2",
         "cross-env": "^7.0.3",
-        "electron": "^33.1.1",
+        "electron": "^33.3.1",
         "electron-builder": "^25.1.8",
         "electronmon": "^2.0.3",
-        "eslint": "^9.17.0",
+        "eslint": "^9.18.0",
         "eslint-plugin-react-hooks": "^5.1.0",
-        "gh-pages": "^6.1.1",
-        "sass": "^1.83.0",
-        "wait-on": "^8.0.1",
+        "gh-pages": "^6.3.0",
+        "sass": "^1.83.1",
+        "wait-on": "^8.0.2",
+        "react-app-alias": "^2.2.2",
         "webpack-bundle-analyzer": "^4.10.2"
     },
     "scripts": {
@@ -149,7 +148,8 @@
                 "error",
                 "as-needed"
             ],
-            "no-unused-vars": "error",
+            "no-unused-vars": "off",
+            "no-undef": "error",
             "no-unreachable": "error",
             "eqeqeq": "error",
             "semi": "error",
@@ -209,14 +209,6 @@
         ]
     },
     "aliases": {
-        "src": [
-            "src"
-        ],
-        "js-report-builder": [
-            "externals/js-report-builder/src/lib",
-            "node_modules/js-report-builder/src/lib",
-            "node_modules/jsd-report/build"
-        ],
         "react-controls": [
             "externals/react-controls/src/",
             "node_modules/react-controls/src/"

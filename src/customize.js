@@ -12,13 +12,11 @@ const config = {
 
         // Reports
         worklogReport: true,
-        worklogReportOld: true,
         pivotReport: true,
         sayDoRatioReport: true,
         sprintReport: !isPluginBuild,
         customReport: true,
         estimateVsActual: true,
-        reportBuilder: true,
 
         // Settings
         userGroups: true,
