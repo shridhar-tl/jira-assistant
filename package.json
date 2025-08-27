@@ -1,209 +1,209 @@
 {
-    "name": "jira-assistant",
-    "version": "2.59.0",
-    "description": "Help to track & upload work done on a Jira Ticket on timely basis and generate Worklog, Sprint and other custom reports",
-    "homepage": "/",
-    "author": {
-        "name": "Shridhar TL",
-        "email": "shridhar.tl@gmail.com"
+  "name": "jira-assistant",
+  "version": "2.61.0",
+  "description": "Help to track & upload work done on a Jira Ticket on timely basis and generate Worklog, Sprint and other custom reports",
+  "homepage": "/",
+  "author": {
+    "name": "Shridhar TL",
+    "email": "shridhar.tl@gmail.com"
+  },
+  "bugs": {
+    "url": "https://jiraassistant.com/contact-us"
+  },
+  "private": true,
+  "license": "MIT",
+  "types": "./src/services/index.d.ts",
+  "main": "./src/electron/index.js",
+  "build": {
+    "extends": null,
+    "appId": "com.jiraassistant.app",
+    "productName": "Jira Assistant",
+    "mac": {
+      "category": "public.app-category.developer-tools"
     },
-    "bugs": {
-        "url": "https://jiraassistant.com/contact-us"
+    "dmg": {
+      "icon": false
     },
-    "private": true,
-    "license": "MIT",
-    "types": "./src/services/index.d.ts",
-    "main": "./src/electron/index.js",
-    "build": {
-        "extends": null,
-        "appId": "com.jiraassistant.app",
-        "productName": "Jira Assistant",
-        "mac": {
-            "category": "public.app-category.developer-tools"
-        },
-        "dmg": {
-            "icon": false
-        },
-        "linux": {
-            "target": [
-                "AppImage"
-            ],
-            "category": "Utility"
-        },
-        "files": [
-            "build/**/*",
-            "**/node_modules/electron",
-            "!**/node_modules/*/{CHANGELOG.md,README.md,README,readme.md,readme}",
-            "!**/node_modules/*/{test,__tests__,tests,powered-test,example,examples}",
-            "!**/node_modules/*.d.ts",
-            "!**/node_modules/.bin"
-        ],
-        "extraMetadata": {
-            "main": "./build/electron.js"
-        },
-        "win": {
-            "target": {
-                "target": "zip",
-                "arch": [
-                    "x64"
-                ]
-            }
-        }
+    "linux": {
+      "target": [
+        "AppImage"
+      ],
+      "category": "Utility"
     },
-    "dependencies": {
-        "@forge/api": "^4.1.2",
-        "@forge/bridge": "^4.2.0",
-        "@forge/resolver": "^1.6.3",
-        "@fortawesome/fontawesome-free": "6.7.2",
-        "@fullcalendar/core": "6.1.15",
-        "@fullcalendar/daygrid": "6.1.15",
-        "@fullcalendar/interaction": "6.1.15",
-        "@fullcalendar/list": "6.1.15",
-        "@fullcalendar/moment": "6.1.15",
-        "@fullcalendar/react": "6.1.15",
-        "@fullcalendar/timegrid": "6.1.15",
-        "bootstrap": "5.3.3",
-        "bootstrap-daterangepicker": "3.1.0",
-        "chart.js": "4.4.7",
-        "classnames": "2.5.1",
-        "dexie": "4.0.10",
-        "espree": "10.3.0",
-        "exceljs": "4.4.0",
-        "firebase": "11.1.0",
-        "jquery": "3.7.1",
-        "js-sql-parser": "1.6.0",
-        "jspdf": "github:shridhar-tl/jsPDF",
-        "jspdf-autotable": "3.8.4",
-        "moment": "2.30.1",
-        "moment-timezone": "0.5.46",
-        "papaparse": "5.4.1",
-        "patternomaly": "1.3.2",
-        "primeflex": "3.3.1",
-        "primeicons": "7.0.0",
-        "primereact": "10.9.1",
-        "queue": "7.0.0",
-        "react": "18.3.1",
-        "react-bootstrap-daterangepicker": "8.0.0",
-        "react-controls": "github:shridhar-tl/react-controls",
-        "react-dnd": "16.0.1",
-        "react-dnd-html5-backend": "16.0.1",
-        "react-dom": "18.3.1",
-        "react-router-dom": "7.1.1",
-        "react-scripts": "github:shridhar-tl/react-scripts",
-        "static-eval": "2.1.1",
-        "zustand": "5.0.3"
+    "files": [
+      "build/**/*",
+      "**/node_modules/electron",
+      "!**/node_modules/*/{CHANGELOG.md,README.md,README,readme.md,readme}",
+      "!**/node_modules/*/{test,__tests__,tests,powered-test,example,examples}",
+      "!**/node_modules/*.d.ts",
+      "!**/node_modules/.bin"
+    ],
+    "extraMetadata": {
+      "main": "./build/electron.js"
     },
-    "devDependencies": {
-        "@craco/craco": "^7.1.0",
-        "cross-env": "^7.0.3",
-        "eslint": "^9.17.0",
-        "eslint-plugin-react-hooks": "^5.1.0",
-        "gh-pages": "^6.3.0",
-        "react-app-alias": "^2.2.2",
-        "sass": "^1.83.1",
-        "webpack-bundle-analyzer": "^4.10.2"
-    },
-    "scripts": {
-        "start": "cross-env REACT_APP_BUILD_MODE=WEB craco start",
-        "start-extn": "cross-env REACT_APP_BUILD_MODE=EXTN craco start",
-        "start-app": "concurrently -k npm:app:*",
-        "build": "cross-env REACT_APP_BUILD_MODE=EXTN GENERATE_SOURCEMAP=false INLINE_RUNTIME_CHUNK=false craco build",
-        "postbuild": "cross-env REACT_APP_BUILD_MODE=EXTN node post-build.js",
-        "publish-extn": "gh-pages -d build -b ja-extn",
-        "build-web": "cross-env REACT_APP_BUILD_MODE=WEB GENERATE_SOURCEMAP=false INLINE_RUNTIME_CHUNK=false craco build",
-        "postbuild-web": "cross-env REACT_APP_BUILD_MODE=WEB node post-build.js",
-        "deploy-web": "echo app.jiraassistant.com > ./build/CNAME && gh-pages -d build",
-        "build-app": "cross-env REACT_APP_BUILD_MODE=APP GENERATE_SOURCEMAP=false INLINE_RUNTIME_CHUNK=false craco build",
-        "postbuild-app": "cross-env REACT_APP_BUILD_MODE=APP node post-build.js",
-        "deploy-app": "gh-pages -d build --dotfiles true -b ja-app",
-        "start-plugin": "cross-env REACT_APP_BUILD_MODE=PLUGIN PORT=6060 craco start",
-        "build-plugin": "cross-env REACT_APP_BUILD_MODE=PLUGIN PUBLIC_URL=. GENERATE_SOURCEMAP=false INLINE_RUNTIME_CHUNK=false craco build",
-        "postbuild-plugin": "cross-env REACT_APP_BUILD_MODE=PLUGIN node post-build.js",
-        "test": "react-scripts test",
-        "eject": "react-scripts eject",
-        "craco-start": "cross-env REACT_APP_BUILD_MODE=EXTN craco start",
-        "app:web": "cross-env REACT_APP_BUILD_MODE=APP craco start",
-        "app:electron": "wait-on tcp:80 && electron ."
-    },
-    "eslintConfig": {
-        "plugins": [
-            "react",
-            "react-hooks"
-        ],
-        "rules": {
-            "arrow-body-style": [
-                "error",
-                "as-needed"
-            ],
-            "no-unused-vars": "off",
-            "no-undef": "error",
-            "no-unreachable": "error",
-            "eqeqeq": "error",
-            "semi": "error",
-            "no-var": "error",
-            "no-use-before-define": "off",
-            "no-constant-condition": "error",
-            "no-dupe-args": "error",
-            "no-duplicate-case": "error",
-            "no-empty": "error",
-            "no-extra-boolean-cast": "warn",
-            "no-extra-semi": "error",
-            "no-alert": "error",
-            "no-caller": "error",
-            "no-irregular-whitespace": "error",
-            "guard-for-in": "error",
-            "valid-typeof": "error",
-            "no-empty-function": "error",
-            "no-empty-pattern": "error",
-            "no-eq-null": "error",
-            "no-extend-native": "error",
-            "template-curly-spacing": "error",
-            "no-new-wrappers": "error",
-            "no-self-compare": "error",
-            "no-sequences": "error",
-            "no-throw-literal": "error",
-            "no-unmodified-loop-condition": "error",
-            "no-debugger": "warn",
-            "complexity": [
-                "error",
-                {
-                    "max": 23
-                }
-            ],
-            "curly": "error",
-            "no-const-assign": "error",
-            "array-bracket-newline": "error",
-            "no-confusing-arrow": "error",
-            "prefer-const": "error",
-            "prefer-numeric-literals": "error",
-            "prefer-template": "error",
-            "max-len": [
-                "error",
-                300,
-                2
-            ]
-        }
-    },
-    "browserslist": {
-        "production": [
-            "last 1 electron version",
-            "last 1 chrome version",
-            "last 1 firefox version",
-            "last 1 safari version",
-            "not ie >= 0",
-            "not dead",
-            "not op_mini all"
-        ],
-        "development": [
-            "last 1 chrome version",
-            "last 1 firefox version",
-            "last 1 safari version"
+    "win": {
+      "target": {
+        "target": "zip",
+        "arch": [
+          "x64"
         ]
-    },
-    "aliases": {
-        "react-controls": [
-            "externals/react-controls/src/",
-            "node_modules/react-controls/src/"
-        ]
+      }
     }
+  },
+  "dependencies": {
+    "@forge/api": "^6.1.0",
+    "@forge/bridge": "^5.3.0",
+    "@forge/resolver": "^1.7.0",
+    "@fortawesome/fontawesome-free": "6.7.2",
+    "@fullcalendar/core": "6.1.19",
+    "@fullcalendar/daygrid": "6.1.19",
+    "@fullcalendar/interaction": "6.1.19",
+    "@fullcalendar/list": "6.1.19",
+    "@fullcalendar/moment": "6.1.19",
+    "@fullcalendar/react": "6.1.19",
+    "@fullcalendar/timegrid": "6.1.19",
+    "bootstrap": "5.3.8",
+    "bootstrap-daterangepicker": "3.1.0",
+    "chart.js": "4.5.0",
+    "classnames": "2.5.1",
+    "dexie": "4.2.0",
+    "espree": "10.4.0",
+    "exceljs": "4.4.0",
+    "firebase": "11.1.0",
+    "jquery": "3.7.1",
+    "js-sql-parser": "1.6.0",
+    "jspdf": "github:shridhar-tl/jsPDF",
+    "jspdf-autotable": "3.8.4",
+    "moment": "2.30.1",
+    "moment-timezone": "0.6.0",
+    "papaparse": "5.5.3",
+    "patternomaly": "1.3.2",
+    "primeflex": "3.3.1",
+    "primeicons": "7.0.0",
+    "primereact": "10.9.7",
+    "queue": "7.0.0",
+    "react": "18.3.1",
+    "react-bootstrap-daterangepicker": "8.0.0",
+    "react-controls": "github:shridhar-tl/react-controls",
+    "react-dnd": "16.0.1",
+    "react-dnd-html5-backend": "16.0.1",
+    "react-dom": "18.3.1",
+    "react-router-dom": "7.8.2",
+    "react-scripts": "github:shridhar-tl/react-scripts",
+    "static-eval": "2.1.1",
+    "zustand": "5.0.8"
+  },
+  "devDependencies": {
+    "@craco/craco": "^7.1.0",
+    "cross-env": "^10.0.0",
+    "eslint": "^9.34.0",
+    "eslint-plugin-react-hooks": "^5.1.0",
+    "gh-pages": "^6.3.0",
+    "react-app-alias": "^2.2.2",
+    "sass": "^1.91.0",
+    "webpack-bundle-analyzer": "^4.10.2"
+  },
+  "scripts": {
+    "start": "cross-env REACT_APP_BUILD_MODE=WEB craco start",
+    "start-extn": "cross-env REACT_APP_BUILD_MODE=EXTN craco start",
+    "start-app": "concurrently -k npm:app:*",
+    "build": "cross-env REACT_APP_BUILD_MODE=EXTN GENERATE_SOURCEMAP=false INLINE_RUNTIME_CHUNK=false craco build",
+    "postbuild": "cross-env REACT_APP_BUILD_MODE=EXTN node post-build.js",
+    "publish-extn": "gh-pages -d build -b ja-extn",
+    "build-web": "cross-env REACT_APP_BUILD_MODE=WEB GENERATE_SOURCEMAP=false INLINE_RUNTIME_CHUNK=false craco build",
+    "postbuild-web": "cross-env REACT_APP_BUILD_MODE=WEB node post-build.js",
+    "deploy-web": "echo app.jiraassistant.com > ./build/CNAME && gh-pages -d build",
+    "build-app": "cross-env REACT_APP_BUILD_MODE=APP GENERATE_SOURCEMAP=false INLINE_RUNTIME_CHUNK=false craco build",
+    "postbuild-app": "cross-env REACT_APP_BUILD_MODE=APP node post-build.js",
+    "deploy-app": "gh-pages -d build --dotfiles true -b ja-app",
+    "start-plugin": "cross-env REACT_APP_BUILD_MODE=PLUGIN PORT=6060 craco start",
+    "build-plugin": "cross-env REACT_APP_BUILD_MODE=PLUGIN PUBLIC_URL=. GENERATE_SOURCEMAP=false INLINE_RUNTIME_CHUNK=false craco build",
+    "postbuild-plugin": "cross-env REACT_APP_BUILD_MODE=PLUGIN node post-build.js",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "craco-start": "cross-env REACT_APP_BUILD_MODE=EXTN craco start",
+    "app:web": "cross-env REACT_APP_BUILD_MODE=APP craco start",
+    "app:electron": "wait-on tcp:80 && electron ."
+  },
+  "eslintConfig": {
+    "plugins": [
+      "react",
+      "react-hooks"
+    ],
+    "rules": {
+      "arrow-body-style": [
+        "error",
+        "as-needed"
+      ],
+      "no-unused-vars": "off",
+      "no-undef": "error",
+      "no-unreachable": "error",
+      "eqeqeq": "error",
+      "semi": "error",
+      "no-var": "error",
+      "no-use-before-define": "off",
+      "no-constant-condition": "error",
+      "no-dupe-args": "error",
+      "no-duplicate-case": "error",
+      "no-empty": "error",
+      "no-extra-boolean-cast": "warn",
+      "no-extra-semi": "error",
+      "no-alert": "error",
+      "no-caller": "error",
+      "no-irregular-whitespace": "error",
+      "guard-for-in": "error",
+      "valid-typeof": "error",
+      "no-empty-function": "error",
+      "no-empty-pattern": "error",
+      "no-eq-null": "error",
+      "no-extend-native": "error",
+      "template-curly-spacing": "error",
+      "no-new-wrappers": "error",
+      "no-self-compare": "error",
+      "no-sequences": "error",
+      "no-throw-literal": "error",
+      "no-unmodified-loop-condition": "error",
+      "no-debugger": "warn",
+      "complexity": [
+        "error",
+        {
+          "max": 23
+        }
+      ],
+      "curly": "error",
+      "no-const-assign": "error",
+      "array-bracket-newline": "error",
+      "no-confusing-arrow": "error",
+      "prefer-const": "error",
+      "prefer-numeric-literals": "error",
+      "prefer-template": "error",
+      "max-len": [
+        "error",
+        300,
+        2
+      ]
+    }
+  },
+  "browserslist": {
+    "production": [
+      "last 1 electron version",
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version",
+      "not ie >= 0",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "aliases": {
+    "react-controls": [
+      "externals/react-controls/src/",
+      "node_modules/react-controls/src/"
+    ]
+  }
 }

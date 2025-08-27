@@ -3,7 +3,7 @@
   "minimum_chrome_version": "102",
   "name": "Jira Assistant: Worklog, Sprint report, etc",
   "short_name": "Jira Assist",
-  "version": "2.59",
+  "version": "2.61",
   "description": "Help to track & upload work done on a Jira Ticket on timely basis and generate Worklog, Sprint and other custom reports.",
   "icons": {
     "24": "assets/icon_24.png",
@@ -40,9 +40,7 @@
   },
   "web_accessible_resources": [
     {
-      "resources": [
-        "index.html"
-      ],
+      "resources": ["index.html"],
       "matches": [
         "https://*.jiraassistant.com/*",
         "http://local.jiraassistant.com/*"
@@ -55,16 +53,12 @@
         "/static/js/jira_cs.js",
         "/static/css/jira_cs.css"
       ],
-      "matches": [
-        "<all_urls>"
-      ]
+      "matches": ["<all_urls>"]
     }
   ],
   "oauth2": {
     "client_id": "692513716183-s97kv5slq5ihm410jq2kc4r8hr77rcku.apps.googleusercontent.com",
-    "scopes": [
-      "https://www.googleapis.com/auth/calendar.readonly"
-    ]
+    "scopes": ["https://www.googleapis.com/auth/calendar.readonly"]
   },
   "content_security_policy": {
     "extension_pages": "script-src 'self' ; object-src 'self';"
@@ -81,13 +75,8 @@
     "scripting",
     "unlimitedStorage"
   ],
-  "host_permissions": [
-    "https://*.atlassian.net/*"
-  ],
-  "optional_host_permissions": [
-    "http://*/",
-    "https://*/"
-  ],
+  "host_permissions": ["https://*.atlassian.net/*"],
+  "optional_host_permissions": ["http://*/", "https://*/"],
   "author": "Shridhar",
   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAqgOeieQeQWZRxeoAGGLjXGCutm354BFj5jX7XmQdfUlfAsxYeLiQpvXH0dk9SgIpIVfiGJoI59oKhlixbwUTs8Zp/v0NQaMQc3MhhvRtYz+UjQuPajR59HyoVzZB3+/2ESe0RC+LT3sEXUVSNxy7Zoc8RUOkLW4+53hsQkVtVvOrFUB+jTdn9Tlk7nLSnFBit510pmR8/tvVusDRnLcvqlTObF+axpgmi+kyciqc/cXiYqKzOU75Y2nWot7E8XfjhGXmMbm4jG24gGejNgazERpBEjb6U1WK+sAO9ZO23C1kjaVuqllEnzjTz08do+Fa9rgmUC5Lr05sbQJ/kMKV9wIDAQAB"
 }
