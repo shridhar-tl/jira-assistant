@@ -19,82 +19,85 @@ export default class JiraService {
         this.runningRequests = {};
     }
 
-    searchTickets(jql, fields, startAt, opts) {
-        startAt = startAt || 0;
+    // eslint-disable-next-line complexity
+    async searchTickets(jql, fields, nextPageToken, opts) {
         fields = fields || defaultJiraFields;
         const { worklogStartDate, worklogEndDate } = opts || {};
-        return new Promise((resolve, reject) => {
+    
+        try {
             const postData = { jql, fields, maxResults: opts?.maxResults || 1000 };
             if (opts?.expand?.length) {
                 postData.expand = opts.expand;
             }
 
-            if (startAt > 0) {
-                postData.startAt = startAt;
+            if (nextPageToken) {
+                postData.nextPageToken = nextPageToken;
             }
-            this.$ajax.get(prepareUrlWithQueryString(ApiUrls.search, postData))
-                .then((result) => {
-                    const issues = result.issues;
-                    issues.total = result.total;
-                    if (opts?.ignoreWarnings !== true) {
-                        if (result.warningMessages?.length) {
-                            const msg = result.warningMessages.join('\r\n');
-                            this.$message.warning(msg, 'Query Error');
-                        }
-                    }
-                    //if (result.maxResults < result.total) {
-                    //  this.$message.warning("Your filter returned " + result.total + " tickets but only first " + result.maxResults + " were fetched!");
-                    //}
-                    if (fields.indexOf("worklog") > -1) {
-                        let prevCount = issues.length;
-                        let retryCount = 3;
-                        const cback = (remaining, isus) => {
-                            if (remaining === 0) {
-                                resolve({ total: result.total, issues: issues, startAt: startAt });
-                            }
-                            else if (prevCount > remaining || --retryCount >= 0) {
-                                prevCount = remaining;
-                                this.fillWorklogs(isus, worklogStartDate, worklogEndDate, cback);
-                            }
-                            else {
-                                reject(null);
-                            }
-                        };
-                        cback(false, issues);
-                        retryCount = 3;
-                    }
-                    else {
-                        resolve({ total: result.total, issues: issues, startAt: startAt });
-                    }
-                }, (err) => {
-                    if (opts?.ignoreErrors !== true) {
-                        const messages = err.error?.errorMessages;
-                        if (messages?.length > 0) {
-                            this.$message.error(messages.join('<br/>'), "Error fetching ticket details");
-                        }
-                    }
-                    reject(err);
-                });
-        }).then((result) => {
+
+            const result = await this.$ajax.get(prepareUrlWithQueryString(ApiUrls.search, postData));
+        
             const issues = result.issues;
-            if (!opts?.maxResults && ((issues.length + result.startAt) < result.total && issues.length > 0)) {
-                return this.searchTickets(jql, fields, result.startAt + issues.length, opts).then(res => issues.addRange(res));
+        
+            if (opts?.ignoreWarnings !== true) {
+                if (result.warningMessages?.length) {
+                    const msg = result.warningMessages.join('\r\n');
+                    this.$message.warning(msg, 'Query Error');
+                }
             }
-            else {
-                return issues;
+
+            // Process worklog comments
+            if (fields.includes("worklog")) {
+                await this.validateForWorklogs(issues, worklogStartDate, worklogEndDate);
+                
             }
-      }).then((issues) => {
-          if (fields.includes("worklog")) {
-              issues.forEach(issue => {
-                  const worklogs = issue.fields?.worklog?.worklogs;
-                  if (Array.isArray(worklogs) && worklogs.length) {
-                      worklogs.forEach(w => {
-                          w.comment = stringifyComment(w.comment);
-                      });
-                  }
-              });
-           }
-          return issues;
+
+            // Handle pagination using v3 API tokens
+            if (!opts?.maxResults && !result.isLast && issues.length > 0) {
+                const nextResults = await this.searchTickets(jql, fields, result.nextPageToken, opts);
+                issues.addRange(nextResults);
+            }
+
+            return issues;
+        
+        } catch (err) {
+            if (opts?.ignoreErrors !== true) {
+                const messages = err.error?.errorMessages;
+                if (messages?.length > 0) {
+                    this.$message.error(messages.join('<br/>'), "Error fetching ticket details");
+                }
+            }
+            throw err;
+        }
+    }
+
+    async validateForWorklogs(issues, worklogStartDate, worklogEndDate) {
+        await new Promise((resolve, reject) => {
+            let prevCount = issues.length;
+            let retryCount = 3;
+            const cback = (remaining, isus) => {
+                if (remaining === 0) {
+                    resolve();
+                }
+                else if (prevCount > remaining || --retryCount >= 0) {
+                    prevCount = remaining;
+                    this.fillWorklogs(isus, worklogStartDate, worklogEndDate, cback);
+                }
+                else {
+                    reject(null);
+                }
+            };
+            cback(false, issues);
+            retryCount = 3;
+        });
+
+        
+        issues.forEach(issue => {
+            const worklogs = issue.fields?.worklog?.worklogs;
+            if (Array.isArray(worklogs) && worklogs.length) {
+                worklogs.forEach(w => {
+                    w.comment = stringifyComment(w.comment);
+                });
+            }
         });
     }
 
