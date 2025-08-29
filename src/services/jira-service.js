@@ -48,7 +48,6 @@ export default class JiraService {
             // Process worklog comments
             if (fields.includes("worklog")) {
                 await this.validateForWorklogs(issues, worklogStartDate, worklogEndDate);
-                
             }
 
             // Handle pagination using v3 API tokens
@@ -59,6 +58,62 @@ export default class JiraService {
 
             return issues;
         
+        } catch (err) {
+            if (!nextPageToken) { // Fallback to v2 only for the failure in first call.
+                console.error('JQL v3 search failed. Fallback to v2 search', err);
+                return this.searchTicketsFallback_V2(jql, fields, undefined, opts);
+            }
+
+            if (opts?.ignoreErrors !== true) {
+                const messages = err.error?.errorMessages;
+                if (messages?.length > 0) {
+                    this.$message.error(messages.join('<br/>'), "Error fetching ticket details");
+                }
+            }
+            throw err;
+        }
+    }
+
+    // This function can be deleted after all Jira instances started supporting v3 API.
+    // eslint-disable-next-line complexity
+    async searchTicketsFallback_V2(jql, fields, startAt, opts) {
+        startAt = startAt || 0;
+        fields = fields || defaultJiraFields;
+        const { worklogStartDate, worklogEndDate } = opts || {};
+    
+        const postData = { jql, fields, maxResults: opts?.maxResults || 1000 };
+        if (opts?.expand?.length) {
+            postData.expand = opts.expand;
+        }
+
+        if (startAt > 0) {
+            postData.startAt = startAt;
+        }
+
+        try {
+            const result = await this.$ajax.get(prepareUrlWithQueryString(ApiUrls.searchLegacyV2, postData));
+            const issues = result.issues;
+            issues.total = result.total;
+        
+            if (opts?.ignoreWarnings !== true) {
+                if (result.warningMessages?.length) {
+                    const msg = result.warningMessages.join('\r\n');
+                    this.$message.warning(msg, 'Query Error');
+                }
+            }
+
+            if (fields.includes("worklog")) {
+                await this.validateForWorklogs(issues, worklogStartDate, worklogEndDate);
+            }
+
+            const searchResult = { total: result.total, issues: issues, startAt: startAt };
+        
+            if (!opts?.maxResults && ((issues.length + searchResult.startAt) < searchResult.total && issues.length > 0)) {
+                const res = await this.searchTicketsFallback_V2(jql, fields, searchResult.startAt + issues.length, opts);
+                issues.addRange(res);
+            }
+
+            return issues;
         } catch (err) {
             if (opts?.ignoreErrors !== true) {
                 const messages = err.error?.errorMessages;
