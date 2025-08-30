@@ -73,7 +73,7 @@
     "jquery": "3.7.1",
     "js-sql-parser": "1.6.0",
     "jspdf": "github:shridhar-tl/jsPDF",
-    "jspdf-autotable": "3.8.4",
+    "jspdf-autotable": "5.0.2",
     "moment": "2.30.1",
     "moment-timezone": "0.6.0",
     "papaparse": "5.5.3",

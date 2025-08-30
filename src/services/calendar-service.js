@@ -9,9 +9,6 @@ export default class CalendarService {
         this.$config = $config;
         this.$message = $message;
         this.$request = $request;
-        // Client ID and API key from the Developer Console
-        //var CLIENT_ID = "692513716183-s97kv5slq5ihm410jq2kc4r8hr77rcku.apps.googleusercontent.com";
-        //var API_KEY = "AIzaSyC6BS-Z_7E7ejv-nfJgq1KmrJ146xneenI";
         this.CALENDAR_EVENTS_API_URL = "https://www.googleapis.com/calendar/v3/calendars/{calendarId}/events?";
     }
 
