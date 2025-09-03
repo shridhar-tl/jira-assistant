@@ -1,6 +1,6 @@
 {
   "name": "jira-assistant",
-  "version": "2.62.0",
+  "version": "2.63.0",
   "description": "Help to track & upload work done on a Jira Ticket on timely basis and generate Worklog, Sprint and other custom reports",
   "homepage": "/",
   "author": {
@@ -100,7 +100,7 @@
     "eslint-plugin-react-hooks": "^5.1.0",
     "gh-pages": "^6.3.0",
     "react-app-alias": "^2.2.2",
-    "sass": "^1.91.0",
+    "sass": "^1.92.0",
     "webpack-bundle-analyzer": "^4.10.2"
   },
   "scripts": {
