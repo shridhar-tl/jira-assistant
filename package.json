@@ -1,6 +1,6 @@
 {
     "name": "jira-assistant",
-    "version": "2.62.0",
+    "version": "2.63.0",
     "description": "Help to track & upload work done on a Jira Ticket on timely basis and generate Worklog, Sprint and other custom reports",
     "homepage": "/",
     "author": {
@@ -51,8 +51,8 @@
         }
     },
     "dependencies": {
-        "@forge/api": "^6.1.0",
-        "@forge/bridge": "^5.3.0",
+        "@forge/api": "^6.1.1",
+        "@forge/bridge": "^5.4.0",
         "@forge/resolver": "^1.6.3",
         "@fortawesome/fontawesome-free": "^6.7.2",
         "@fullcalendar/core": "^6.1.15",
@@ -100,14 +100,14 @@
         "@craco/craco": "^7.1.0",
         "concurrently": "^9.2.1",
         "cross-env": "^10.0.0",
-        "electron": "^37.4.0",
+        "electron": "^38.0.0",
         "electron-builder": "^26.0.12",
         "electronmon": "^2.0.3",
         "eslint": "^9.34.0",
         "eslint-plugin-react-hooks": "^5.1.0",
         "gh-pages": "^6.3.0",
         "react-app-alias": "^2.2.2",
-        "sass": "^1.91.0",
+        "sass": "^1.92.0",
         "wait-on": "^8.0.2",
         "webpack-bundle-analyzer": "^4.10.2"
     },
