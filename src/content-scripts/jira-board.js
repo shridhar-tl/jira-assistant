@@ -16,8 +16,8 @@ export async function applyBoardLogic(currentPage, settings, firstTime, applyMod
 }
 
 async function handleForCloudJira(triggerFunc, firstTime, currentPage, settings) {
-    $('#ak-main-content div[data-test-id="platform-board-kit.ui.card.card"] span.ghx-field.ja-issue-el').remove();
-    const selector = '#ak-main-content div[data-test-id="platform-board-kit.ui.card.card"]';
+    const selector = '#ak-main-content div[data-testid="platform-board-kit.ui.card.card"]';
+    $(`${selector} span.ghx-field.ja-issue-el`).remove();
 
     const issues = firstTime ? (await waitAndGet(selector)) : $(selector);
     issues.each((i, el) => {
