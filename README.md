@@ -33,7 +33,7 @@ If you like Jira Assistant then kindly spend a minute to rate it in web store fr
 
 Link to Atlassian Marketplace: https://marketplace.atlassian.com/apps/1221570/jassistant
 
-## Would like to contribute in development and maintainence?
+## Would like to contribute in development and maintenance?
 You are very much welcome if you would wish to contribute in the development of Jira Assistant and keep it free and open source for ever. Your contributions would encourage me to actively enhance the features in Jira Assistant.
 
 You can contribute to Jira Assistant by donating a small sum through following a link: https://paypal.me/shridhartl
