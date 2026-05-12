@@ -88,6 +88,8 @@ permissions:
     - read:avatar:jira
     - read:board-scope.admin:jira-software
     - read:issue.changelog:jira
+    - read:group:jira
+    - read:user:jira
     - write:jira-work
     - write:sprint:jira-software
 app:
