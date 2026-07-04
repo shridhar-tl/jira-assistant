@@ -1,4 +1,5 @@
-import { storage, asUser } from '@forge/api';
+import { asUser } from '@forge/api';
+import { kvs } from '@forge/kvs';
 import Resolver from '@forge/resolver';
 
 type StorageValue = string | number | boolean | Record<string, any> | any[];
@@ -16,11 +17,11 @@ resolver.define('StorageService', (req) => {
     const key = `${accountId}_${category}`;
 
     if (action === 1) {
-        return storage.set(key, value as StorageValue);
+        return kvs.set(key, value as StorageValue);
     } else if (action === 0) {
-        return storage.get(key);
+        return kvs.get(key);
     } else if (action === -1) {
-        return storage.delete(key);
+        return kvs.delete(key);
     }
 
     return Promise.reject(`Unknown action:-${action}`);

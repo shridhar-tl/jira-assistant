@@ -38,6 +38,7 @@
     "dependencies": {
         "@forge/api": "^8.0.0",
         "@forge/bridge": "^6.0.0",
+        "@forge/kvs": "^2.0.0",
         "@forge/resolver": "^2.0.0",
         "@fortawesome/fontawesome-free": "^7.3.0",
         "chart.js": "^4.5.1",
@@ -45,9 +46,9 @@
         "date-fns": "^4.4.0",
         "dexie": "^4.4.4",
         "espree": "^11.2.0",
-        "fluxo-ui": "^0.4.92",
         "exceljs": "^4.4.0",
         "firebase": "^12.15.0",
+        "fluxo-ui": "^0.4.92",
         "js-sql-parser": "^1.6.0",
         "jspdf": "github:shridhar-tl/jsPDF",
         "jspdf-autotable": "^5.0.8",
