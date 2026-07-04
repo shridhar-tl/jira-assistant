@@ -41,4 +41,4 @@ jobs:
       uses: actions/upload-artifact@v7
       with:
         name: JA_Build_${{ steps.extract_version.outputs.version }}
-        path: build/
+        path: dist/

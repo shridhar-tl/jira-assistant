@@ -34,7 +34,7 @@ if (buildMode === 'WEB') {
         postinstall: 'electron-builder install-app-deps',
     };
 
-    fs.writeJsonSync(resolveApp('build/package.json'), {
+    fs.writeJsonSync(resolveBuildPath('package.json'), {
         name,
         version,
         description,
