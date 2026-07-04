@@ -1,7 +1,7 @@
 import * as moment from 'moment';
+import { getUserName, prepareUrlWithQueryString } from '../common/utils';
 import { ApiUrls } from '../constants/api-urls';
 import { DummyWLId } from '../constants/common';
-import { getUserName, prepareUrlWithQueryString } from '../common/utils';
 import BaseService from './base-service';
 
 export default class WorklogService extends BaseService {
@@ -87,7 +87,7 @@ export default class WorklogService extends BaseService {
     }
 
     getPendingWorklogs() {
-        return this.$storage.getPendingWorlogByUserId(this.$session.userId).then((worklogs) => {
+        return this.$storage.getPendingWorklogByUserId(this.$session.userId).then((worklogs) => {
             const keys = worklogs.distinct((w) => w.ticketNo);
             return this.$ticket.getTicketDetails(keys).then((tickets) => {
                 const wlList = worklogs.map((w) => {

@@ -51,7 +51,7 @@ export default class JiraService {
             }
 
             // Handle pagination using v3 API tokens
-            if (!opts?.maxResults && !result.isLast && issues.length > 0) {
+            if (!opts?.maxResults && result.nextPageToken && !result.isLast && issues.length > 0) {
                 const nextResults = await this.searchTickets(jql, fields, result.nextPageToken, opts);
                 issues.addRange(nextResults);
             }

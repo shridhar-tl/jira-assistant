@@ -218,7 +218,7 @@ function generateSprintGroupReport(sprint, data, settings, state) {
     const { userListMode, userGroups } = state;
     const groups = userListMode === '2' ? userGroups : generateGroupForSprint(sprint, data, settings);
 
-    const groupReport = generateUserDayWiseData(data, groups, settings, state);
+    const groupReport = generateUserDayWiseData(data, groups, settings);
     const flatWorklogs = generateFlatWorklogData(data, groups, sprint.name);
 
     return { groupReport, flatWorklogs };

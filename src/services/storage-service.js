@@ -1,7 +1,7 @@
 export default class StorageService {
     // This class gets proxied when accessed as webapp
     // When new method is added or method name is changed in this class, this list has to be updated with the method name
-    static availableMethods = "getPendingWorlogByUserId,getWorklogsWithIds,getSingleWorklogWithId,getWorklogsBetween,filterWorklogs,addOrUpdateWorklog,"
+    static availableMethods = "getPendingWorlogByUserId,getPendingWorklogByUserId,getWorklogsWithIds,getSingleWorklogWithId,getWorklogsBetween,filterWorklogs,addOrUpdateWorklog,"
         + "addWorklog,deleteWorklog,getReportsWithIds,getReportsByUserId,getSingleReportById,filterReports,getReportByNameForValidation,addOrUpdateReport,addReport,"
         + "deleteReportsWithIds,getAllUsers,getUser,getUserWithNameAndJiraUrl,getUserWithEmailAndJiraUrl,filterUsers,addUser,addOrUpdateUser,deleteUser,"
         //+ "setCache,getCache,removeCache,clearCache,getAllCachedValues"
@@ -14,7 +14,11 @@ export default class StorageService {
     }
 
     //#region Worklog table operations
-    getPendingWorlogByUserId(userId) {
+    getPendingWorlogByUserId(userId) { // This method has to be removed in next release
+        return this.getPendingWorklogByUserId(userId);
+    }
+
+    getPendingWorklogByUserId(userId) {
         return this.$db.worklogs.where("createdBy").equals(userId).and((w) => !w.isUploaded).toArray();
     }
 
