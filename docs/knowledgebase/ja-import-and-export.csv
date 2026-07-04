@@ -1,0 +1,22 @@
+title,content
+"Bulk Import module in Jira Assistant","Jira Assistant (JA) lets you bulk import data into Jira for both Issues and Worklogs by uploading a CSV file with the required columns. A sample template is available for download that lists the necessary columns.
+The worklog import supports only the columns in the sample template, while issue import also allows additional custom columns. When importing issues, all mandatory fields must have values or the upload fails.
+Click the icon to open a file dialog and select your CSV; records are validated and shown on screen, with passing records highlighted in green and error records in amber, and a status column explains each validation result."
+"Reviewing and uploading bulk import records","After validating a file in Jira Assistant (JA), you can fix any errors and re-upload. Individual records can be selected for import, and records with validation issues are unselected by default.
+Click the Import button to upload the selected records; each record's status is then updated. For newly created records, the issue key is auto-filled, and you can export the data afterward for reference.
+This staged validate-then-import flow helps ensure clean data before it reaches Jira."
+"Creating sub-tasks or issues across multiple parents/projects on import","When importing issues in Jira Assistant (JA), you can provide comma-separated values in the parent column to create the same sub-task under multiple parent tickets, or comma-separated values in the project column to create the same issues under multiple projects.
+You cannot use both at once; multiple values are allowed in either the parent field or the project field, but not both together.
+This makes it quick to fan out sub-tasks or issues across many parents or projects with Jira Assistant."
+"Imported worklogs missing in Jira after bulk import","Worklogs imported via the Jira Assistant (JA) bulk import are not always uploaded to Jira immediately; it depends on your settings, so first check the 'Worklog [Pending Upload]' gadget for any worklogs awaiting upload.
+If there are no pending worklogs, a timezone mismatch between your machine and Jira may have placed the worklog on a different date or time, or Jira indexing may be out of date.
+Re-indexing Jira can resolve missing imported worklogs; this is more common on self-hosted Jira than on Jira Cloud."
+"Exporting data from Jira Assistant","Jira Assistant (JA) lets you export data from any report or gadget table to CSV, Excel and PDF formats using the export icon at the top right corner of the report or gadget.
+This applies to the Worklog Report, Estimate vs Actual, Say-Do-Ratio, Pivot Report and custom reports; for the Say-Do-Ratio Report, charts export to PDF only.
+Exporting makes it easy to share Jira Assistant data or analyze it further in spreadsheet tools."
+"Groupable grids and grid features in Jira Assistant","Grids in Jira Assistant (JA) are groupable: you can group data by one or more columns simply by dragging those columns into the 'Group by' area above the grid.
+All grids keep a fixed header and support column sorting while scrolling, making large datasets easier to read.
+Clicking a Jira ticket number in any grid opens that ticket directly in Jira."
+"Worklog rounding when opened in Excel after export","Jira Assistant (JA) does not round worklog values by default. If exported worklog time appears rounded when opened in Microsoft Excel, it is usually Excel's cell formatting rounding the displayed value.
+Check the cell formatting options in Excel to disable rounding for those cells.
+If you still believe Jira Assistant is rounding the data, contact the developer with example data to investigate."

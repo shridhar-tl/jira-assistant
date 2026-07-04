@@ -1,0 +1,19 @@
+.dashboard-gadgets {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 2px;
+    align-items: flex-start;
+    width: 100%;
+}
+
+.dashboard-container {
+    .tab-content {
+        max-height: calc(100% - 35px);
+    }
+
+    .eui-tab-page {
+        padding: 0;
+    }
+}

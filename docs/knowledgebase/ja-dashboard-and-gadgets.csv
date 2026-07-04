@@ -1,0 +1,41 @@
+title,content
+"Dashboard module in Jira Assistant","Jira Assistant (JA) provides a customizable dashboard where you can add gadgets to gather key data insights.
+You can create dashboards beyond the default one by clicking the icon at the top right corner of the dashboard page and selecting 'Create Dashboard', which creates a new dashboard with a default name.
+You can rename a dashboard by clicking the name header label near the top left and saving the change, and you can also change its icon from there.
+To delete a dashboard, select the icon at the top right corner and choose 'Delete Dashboard'; deletion is irreversible and does not prompt for confirmation."
+"Inbuilt gadgets available in Jira Assistant","Jira Assistant (JA) ships with several inbuilt dashboard gadgets:
+My Open Tickets - tickets assigned to you, with quick worklog add and bookmarking.
+Bookmarks - your bookmarked tickets, with easy adding of multiple tickets.
+Logged Work [Daywise] - worklogs summarized by date within a range.
+Worklog [Pending Upload] - worklogs created in the tool awaiting upload to Jira, for final review.
+Logged Work [Ticketwise] - worklogs summarized by ticket within a range.
+My Reports - reports created via Custom Report or Report Builder, with edit/rename/delete/export and import of shared report definitions.
+Current Day Calendar and Current Week Calendar - quick worklog addition.
+Status Wise Time Spent - time spent in each status of a ticket, to aid analysis."
+"Adding custom gadgets to a Jira Assistant dashboard","In Jira Assistant (JA) you can build your own gadget by creating a report with the Custom Report or Report Builder module; once saved, the report appears in the add-gadget popup and can be added to any dashboard.
+You can add existing inbuilt gadgets and your custom report/report-builder outputs as gadgets, adjust each gadget's size and appearance, and export data from gadget tables in CSV, Excel or PDF.
+This makes the Jira Assistant dashboard flexible enough to show almost any data you need."
+"Customizing inbuilt gadgets in Jira Assistant","Each gadget in Jira Assistant (JA) supports some level of customization. Open a gadget's settings by clicking its wrench icon, and check the Advanced settings page for additional options to tweak gadget behavior.
+For deeper customization beyond what the built-in options allow, build the view you want using Custom Report or Report Builder and add it as a gadget.
+This way Jira Assistant lets you tailor most gadgets to your needs."
+"Changing tickets shown in the My Open Tickets gadget","The 'My Open Tickets' gadget in Jira Assistant (JA) uses a JQL query to fetch its list of tickets. If you want a different list, or if some Jira statuses were renamed, you can change the query.
+Go to Settings > Advanced and edit the JQL next to the 'Open tickets JQL' label. The default JQL is read-only for reference, but you can edit the instance-specific JQL.
+After updating, the gadget will fetch tickets based on your customized query in Jira Assistant."
+"Bookmarking tickets in Jira Assistant","Jira Assistant (JA) includes a Bookmarks gadget where you can keep frequently used tickets. Add tickets using the plus icon in the gadget, which lets you bookmark multiple tickets easily.
+Bookmarked tickets are convenient for quickly adding worklogs or revisiting issues.
+The Bookmarks gadget can be added to any dashboard in Jira Assistant from the add-gadget popup."
+"Switching between tabbed and grid dashboard layouts","Jira Assistant (JA) lets you switch a dashboard between tabbed layout and grid layout. Click the icon at the top right corner of the dashboard and select 'Show in Tabs' to toggle between the two layouts.
+In grid layout you can rearrange gadgets by dragging and dropping them by their header to change their order.
+Quick View dashboard popups always use a tabbed layout regardless of the dashboard's layout setting."
+"Viewing gadgets in full screen in Jira Assistant","In Jira Assistant (JA) you can expand any gadget to full screen for a better view. Click the expand icon present on the gadget to view it in full-screen mode.
+This is helpful when a gadget contains a large table or report that is hard to read in its normal size.
+Full-screen mode is available across the gadgets in Jira Assistant."
+"Setting a dashboard as Quick View in Jira Assistant","Jira Assistant (JA) lets you set a dashboard as the Quick View page so it appears as a popover when you click the JA icon. Click the icon at the top right corner of the dashboard and select 'Set as Quick View'.
+You must also enable Quick View under Settings > General > Menu options by selecting 'Show quickview dashboard' and choosing the dashboard.
+The Quick View always uses a tabbed layout and shows all the dashboard's gadgets for immediate insight without navigating away."
+"Rearranging gadgets on a Jira Assistant dashboard","Jira Assistant (JA) allows you to rearrange gadgets on a dashboard. In grid layout, drag and drop a gadget by its header to change its position.
+You can also resize and restyle gadgets, and add or remove gadgets from the add-gadget popup.
+This lets you arrange your Jira Assistant dashboard to match how you work."
+"Gadgets that Jira Assistant Cloud app adds to the Jira dashboard","The Jira Assistant (JA) Cloud app can add dedicated gadgets directly to the native Jira dashboard: 'Team Daywise Worklog', 'Worklog Barchart', and 'Date wise worklog'.
+When the JA Cloud app is installed, these gadgets appear in the Gadgets list on your Jira Cloud dashboard.
+This capability is available only with the Jira Assistant Cloud app and not with the JA extension or JA Web versions."

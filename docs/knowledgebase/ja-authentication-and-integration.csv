@@ -1,0 +1,43 @@
+title,content
+"Authentication methods supported by Jira Assistant","Jira Assistant (JA) supports three authentication methods to suit different security needs.
+Single-click integration (browser session based) uses your browser's existing authenticated Jira session, so no credentials are entered or stored; it works only with the browser extension and requires you to be logged in to Jira in the same browser.
+OAuth with Jira uses a one-time consent and an API token, avoiding stored credentials; it is supported for Jira Cloud only, stores the token in browser cache, and does not support the Sprint Report.
+Basic authentication uses a username and password or API key; it works with both Cloud and Data Center but is the least secure because the encoded credentials are stored in the browser cache, and is recommended only when other methods are not feasible."
+"Single-click authentication in Jira Assistant","Single-click integration is the most secure way to use Jira Assistant (JA) because it relies on the browser's already-authenticated Jira session, so only authorized users can access it.
+Advantages: no credentials are needed or stored, and access is quick and seamless without keeping the Jira tab open.
+Limitations: it works only when the browser extension is installed, and you must be logged in to Jira in the same browser each time you use Jira Assistant.
+Because no credentials are stored anywhere, this option avoids the security risks of credential storage."
+"How to integrate Jira Assistant with Jira","Integrating Jira Assistant (JA) with Jira is straightforward. After installing the extension, authenticate with Jira in your browser, then click the Jira Assistant icon in the browser toolbar.
+A popover appears pre-populated with the current Jira tab's URL; clicking the 'Integrate' button completes integration without entering any credentials, because Jira Assistant uses the browser's existing Jira authentication.
+Whether the integration page opens as a popover or a separate tab, and whether the Jira URL is auto-filled, depends on the permissions the browser grants to the extension and can vary by browser and version."
+"Switching between authentication options in Jira Assistant","The way to change authentication in Jira Assistant (JA) depends on the edition and Jira type.
+The Jira Cloud app supports only OAuth, so other methods cannot be used there.
+For extension and web users, click the user profile name in the top right corner of Jira Assistant and choose Logout; this returns you to the default integration page.
+For extension users, the default page offers browser-session (single-click) integration, and the configuration icon in the top right corner reveals OAuth and credentials-based options. For web users, you can integrate with the extension (if installed) or use OAuth or credentials directly."
+"Permissions Jira Assistant needs for integration","Jira Assistant (JA) needs access to your Jira instance to establish integration, and it uses the authentication already established by your browser rather than asking for separate credentials, which improves security and simplifies setup.
+From JA v2.51 onward, Chrome users no longer need the broad 'access to all sites' permission; Jira Assistant can integrate with any Jira instance without it.
+Jira Assistant does not store your credentials; it connects to Jira using your browser's established authentication."
+"Granting permission to fix Permission denied to access this URL","If Jira Assistant (JA) shows 'Permission denied to access this URL', the extension lacks permission for your Jira URL and you can grant it manually from your browser's extension details page.
+Open the extension details page by right-clicking the extension icon and choosing 'Manage extension', then edit Site access or Permissions depending on your browser.
+In Chrome there is an even simpler option: right-click the JA icon and change permission under the 'This can read and change site data' menu. GitHub issue #343 explains this with screenshots."
+"Fixing 401 Unauthenticated errors in Jira Assistant","If Jira Assistant (JA) keeps showing 401 Unauthenticated errors, first make sure you are logged in to Jira from the same browser.
+If the error persists, click 'Grant permission' on the 401 page in Jira Assistant, because sometimes JA's access to Jira is revoked, which causes this error. GitHub issue #214 has more details.
+If you are still unable to authenticate even though you are logged in to Jira, contact the developer with a screenshot of the error or the console details."
+"Fixing network errors during Jira integration","When integrating Jira Assistant (JA) and seeing network errors, ensure you are logged in to Jira from your browser and that you use the correct URL format with http:// or https://.
+Provide the Jira base path, not a page URL: for example use https://jira.yourcompany.com and not https://jira.yourcompany.com/browse.
+Incorrect URLs are a common cause of network errors during integration with Jira Assistant."
+"Fixing CORS errors during Jira integration","If Jira Assistant (JA) shows CORS errors during integration, make sure you are authenticated with Jira in the same browser window, and upgrade your browser if it is outdated.
+The exact cause of the CORS issue is not always reproducible; if it persists, contact the developer for further support.
+CORS errors are most common when using the Web version of Jira Assistant with a self-hosted or Data Center Jira instance, which can be resolved by installing the extension or whitelisting the JA Web URL in Jira."
+"Basic authentication integration errors in Jira Assistant","If basic authentication (username and password or API key) fails in Jira Assistant (JA), the cause depends on the edition.
+With the Web version against a Data Center or self-hosted Jira, basic auth may fail because your Jira instance rejects requests from an unknown URL (a CORS error appears in the console); the fix is to use the extension or have your Jira admin whitelist the JA Web URL.
+With the extension, basic auth should work unless the Jira URL is wrong or the username/password/API key is incorrect; check the console for error details to investigate further."
+"Using Jira Assistant Web with self-hosted or Data Center Jira","By default Jira does not accept requests from arbitrary URLs due to its CORS policy, so using the Jira Assistant (JA) Web version with an internal Jira instance can fail even though Jira authenticates the request, with the browser reporting a CORS issue.
+To resolve this, add the JA Web URL to the allowed/whitelist list in your Jira instance; refer to Atlassian documentation on how to whitelist a URL.
+Alternatively, use the Jira Assistant browser extension, which is not subject to this CORS restriction."
+"Changing the Jira URL in Jira Assistant after a 401 page","Jira Assistant (JA) does not currently support changing the Jira URL directly from the 401 page, but you can change it from the options/global settings page.
+For the browser extension, right-click the JA icon to open the options page; for the Web version, open the global settings page directly. From there you can update the Jira integration URL.
+If you still cannot resolve a changed-URL 401 situation, contact the developer for further support."
+"Sprint Report limitations with OAuth in Jira Assistant","The Sprint Report in Jira Assistant (JA) does not work with OAuth integration on JA Web, due to a limitation in OAuth support for that specific Jira API.
+The Sprint Report is also not available in the Jira Cloud app and with OAuth in general for the same reason.
+Because the Sprint Report already covers most needs and is less frequently used, a new universally compatible report is being considered to replace it over time."

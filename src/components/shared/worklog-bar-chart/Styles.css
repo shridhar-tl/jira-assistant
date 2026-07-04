@@ -1,0 +1,11 @@
+.worklog-bar-chart-gadget {
+    position: relative;
+    height: 100%;
+    padding: 12px;
+    min-height: 280px;
+}
+
+.worklog-bar-chart-gadget canvas {
+    position: relative;
+    height: 100% !important;
+}

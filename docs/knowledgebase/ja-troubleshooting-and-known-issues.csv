@@ -1,0 +1,43 @@
+title,content
+"Jira Assistant opens with a blank page or crashes","If Jira Assistant (JA) will not open and shows a blank page, press F12 and check the console for the error, then contact the developer with a screenshot of it.
+If you have no custom reports or pending worklogs stored, you can also clear the IndexedDB storage named 'JiraAssist' from the browser dev tools, which resets the tool.
+Ensure you are on the latest version of Jira Assistant before troubleshooting further."
+"Doing a clean start of Jira Assistant without reinstalling","All Jira Assistant (JA) settings, including integration information, are stored in the browser's IndexedDB storage named 'JiraAssist'.
+Deleting the 'JiraAssist' IndexedDB database makes Jira Assistant behave like a fresh installation, without needing to reinstall the extension.
+Make sure you are using the latest version of Jira Assistant, and remember this clears stored settings and any pending worklogs."
+"Recovering unuploaded worklogs after a system crash","Jira Assistant (JA) stores data only in your browser cache and never outside it, so worklogs that were created but not yet uploaded to Jira cannot be recovered if the cache is lost in a crash.
+If you can get the same OS and browser running again, the extension's cache may still be intact and your data may reappear, but this depends entirely on your local disk and browser cache state.
+To avoid this in future, enable automatic upload so worklogs go to Jira on creation."
+"Worklogs added earlier are missing in Jira Assistant","If worklogs you added earlier are missing, first confirm they were actually uploaded to Jira; worklogs created in Jira Assistant (JA) must be uploaded, and unuploaded ones can be lost on a cache reset. Enabling automatic upload in General settings prevents this.
+Check directly in Jira (not in JA) and review the ticket's history, which records added or deleted worklogs and their times.
+If worklogs exist in Jira but not in JA, it is likely a Jira indexing issue that re-indexing should fix; if nothing appears in the ticket history, they were likely never uploaded."
+"Worklogs visible in Jira but not shown in Jira Assistant","Sometimes worklogs or issues appear in Jira but not in Jira Assistant (JA) reports because Jira's API does not return them when Jira is not properly indexed.
+This is usually resolved by re-indexing Jira or resolves on its own after some time; ask your Jira admin when Jira was last indexed.
+Also confirm the timezone in Jira matches your local timezone so worklogs are not placed on a different date in JA reports."
+"Worklogs shown on the wrong date in the Worklog Report","If worklogs added in Jira appear on a different date (±1 day) in the Jira Assistant (JA) Worklog Report, it is usually a timezone difference between Jira and your local system.
+Jira Assistant uses your local timezone by default and formats data accordingly, which can shift the apparent date.
+Keep Jira and your local timezone in sync, and set per-user/group timezones in User Groups, to resolve the discrepancy."
+"No project configured error when pushing a worklog to Jira","If Jira Assistant (JA) shows a message like 'no project configured' when creating or pushing a worklog, it is usually because a third-party Jira add-on has added extra mandatory fields to worklogs.
+Jira Assistant only sends the default set of worklog fields Jira supports, so if your Jira requires additional mandatory fields, the upload can fail and JA cannot be used to create those worklogs.
+You can still generate Worklog and other reports in Jira Assistant even in this situation."
+"Google Calendar integration not working in Jira Assistant","Google Calendar integration in Jira Assistant (JA) is not operational because it depends on Google's app verification process, which has remained pending despite multiple applications since 2018 (tracked as #155).
+Outlook Calendar integration works fine and can be used to auto-generate meeting worklogs in the meantime.
+This will be enabled if and when Google's verification completes."
+"Autocomplete suggestions not appearing in Jira Assistant","Sometimes autocomplete suggestions do not appear in Jira Assistant (JA) due to a z-index issue that arises when popups are opened repeatedly, causing the autocomplete to hide behind other windows (tracked as #303).
+Refreshing the page is a quick temporary fix that restores the suggestions.
+This is a known issue and improvements are made as they are addressed."
+"Worklog calendar fails to load for some Jira Cloud users","Some users migrating from Jira Data Center to Cloud experience the Jira Assistant (JA) worklog calendar timing out or returning 500 errors (tracked as #346).
+A suggested workaround is to append 'ORDER BY updatedDate DESC' to the JQL; JA v2.59 added a 'Worklog JQL suffix' field under the Worklog tab in General settings to make this easy.
+This setting can also help filter or order the issues pulled for worklogs."
+"Dark mode readability issues in Jira Assistant","Some users may encounter readability issues in dark mode in Jira Assistant (JA).
+These are recorded and addressed as they arise, with fixes included in upcoming releases.
+You can toggle between dark and light mode using the adjust icon in the Jira Assistant header."
+"Why Jira Assistant may have bugs and how to help","Jira Assistant (JA) is built and maintained by a single developer, so thorough testing before every release is difficult, and some issues may slip through.
+An automation suite covers regression of the most-used features, but keeping it current takes significant effort, so the project relies on users to report issues and be patient while they are fixed.
+Using the Web version of Jira Assistant helps surface issues earlier in the release process and keeps the extension more stable, since fixes can be deployed and verified quickly."
+"How worklog syncing works between Jira Assistant and Jira","When you add a worklog or bulk import worklogs in Jira Assistant (JA), they are not uploaded to Jira automatically unless you enabled auto-upload; this lets you validate worklogs before syncing.
+Upload pending worklogs from the 'Worklog [Pending Upload]' gadget on the dashboard or from the Worklog Calendar page.
+Aside from this deliberate hold-for-review behavior, there are no other sync issues; missing worklogs are usually due to timezone settings or Jira indexing rather than a sync problem."
+"Planned but not yet prioritized features in Jira Assistant","Several Jira Assistant (JA) capabilities are planned but not yet prioritized. Adding worklogs from the list and grid views of the calendar is not yet supported. Accessing bookmarked tickets directly in the worklog popup is planned but not prioritized.
+A sprint capacity planning module using a Gantt chart is in passive development, intended to factor in available resources and holidays pulled from the Confluence calendar.
+The Worklog Report does not auto-refresh when new worklogs are added; refresh it manually with a single click, as auto-refresh was deprioritized due to report generation complexity."

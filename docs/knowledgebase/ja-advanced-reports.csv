@@ -1,0 +1,45 @@
+title,content
+"Pivot Report in Jira Assistant","The Pivot Report Designer in Jira Assistant (JA) creates highly customized reports by transforming and summarizing data from a JQL query into a tabular format, automatically aggregating, sorting, counting and averaging based on your configuration.
+You define row groups and column groups, apply filters, and sort as needed.
+For best performance, include essential restrictions in the JQL up front so only relevant issues are processed, then refine further with filters."
+"Configuring fields in the Jira Assistant Pivot Report","In the Jira Assistant (JA) Pivot Report, the fields panel has three tabs - Native, Custom and Derived - giving access to Jira fields directly.
+Fields chosen for pivoting are grouped and shown as columns; you can drag additional fields beneath column groups to create subfield grouping, and for non-grouped subfields you must pick an aggregation function or only the first value shows. You can place totals at the start or end of groups.
+Row fields appear as individual cells in rows, grouping issues by specific fields while keeping each issue distinct in its own row, with overall totals at designated points."
+"Comparison operators in Pivot Report filters","Filters in the Jira Assistant (JA) Pivot Report support SQL-like comparison operators, similar to a WHERE clause.
+= (equal), != or <> (not equal): e.g. Priority = 'High', Status != 'Closed'.
+in: value in a list, e.g. Assignee in ('User1','User2').
+between: range for numeric or datetime fields, e.g. DueDate between '2023-01-01' and '2023-03-31'.
+>, <, >=, <=: threshold comparisons, e.g. StoryPoints > 5, ResolutionDate <= '2023-08-15'.
+like: substring match on string fields, e.g. Summary like '%bug%'."
+"Pivot Report filter functions overview and parameters()","The Jira Assistant (JA) Pivot Report filters support feature-rich functions usable with appropriate field types (these are not for use in JQL).
+currentUser() returns the active user, useful for filtering by the logged-in person.
+parameters(paramName) lets you make a report dynamic by prompting for a value at generation time; the report detects the parameter's data type automatically, so you do not modify filters each run. Example: assignee = parameters(\"Assignee list\") or worklog.author in (parameters(\"User List\"))."
+"Aggregate functions in Pivot Report filters","The Jira Assistant (JA) Pivot Report filters provide aggregate functions over arrays of values.
+sum(values): total of numeric or timespent values, e.g. timespent > sum(worklog.timespent).
+avg(values): average of numeric or timespent values, e.g. avg(timeOriginalEstimate) > 120.
+min(values): smallest of numeric, timespent, date or datetime values, e.g. min(dueDate) > startDate(parameters(\"Due date range\")).
+max(values): largest of such values, e.g. max(dueDate) < endDate(parameters(\"Due date range\")).
+first(values) and last(values) return the first and last element of an array, e.g. first(key), last(key)."
+"Date and time functions in Pivot Report filters","The Jira Assistant (JA) Pivot Report filters include date/time helper functions.
+as_date(value, format?) converts a value to a date using an optional format, e.g. dueDate >= as_date(\"10/15/2023\",\"MM/DD/YYYY\").
+today(value?) returns the current date adjustable by an offset, e.g. created >= today(\"-10d\"); todayEOD(value?) is the same at end of day; now(value?) includes the time, e.g. dueDate between today(\"-10d\") and now(\"+1w\").
+date_diff(date1,date2,unit?) gives the difference between two datetimes in a unit (default milliseconds), e.g. date_diff(created, min(worklog.created), \"d\").
+startDate(daterange) and endDate(daterange) extract the start and end of a date-range parameter."
+"Reopening a saved Pivot Report in Jira Assistant","In Jira Assistant (JA), a saved Pivot Report cannot currently be reopened from within the Pivot Report screen itself.
+To reopen it, go to the 'My Reports' gadget on your dashboard, find the report and click its edit icon, which loads the Pivot Report again. Add the 'My Reports' gadget first if it is not present.
+This is a temporary workaround until an in-report option to pick saved reports is added to Jira Assistant."
+"Custom Report module in Jira Assistant","The Custom Report module in Jira Assistant (JA) lets you generate a simple report by filtering data with JQL and choosing which columns to display.
+You can format the displayed data using predefined formats and group the results by one or more columns.
+Once saved, a Custom Report appears in the 'My Reports' gadget and the add-gadget popup, so it can be added to a dashboard as a gadget."
+"Report Builder module in Jira Assistant","The Report Builder in Jira Assistant (JA) is for users with some technical knowledge to build their own simple-to-advanced reports.
+It supports input parameters with various data types, validation on those inputs, running one or more JQL queries with the inputs to fetch Jira data, processing that data, and displaying it as a report.
+You can drag and drop UI components like Table, Images and Charts; the Table component supports column and row grouping; and you can add custom menus to the grid like the built-in gadgets have. A sample YouTube video demonstrates building simple reports."
+"Using expressions in Custom Report and Report Builder","Expressions in the Jira Assistant (JA) Custom Report and Report Builder are essentially JavaScript code, with the current row's data available in a Field object.
+You can use most built-in JavaScript functions and operators, for example Field.assignee.name, Field.summary, parseInt(Field.timespent), and the JavaScript Math class for calculations.
+This lets you derive and format columns flexibly within Jira Assistant reports."
+"Using charts in the Jira Assistant Report Builder","The Charts component in the Jira Assistant (JA) Report Builder is based on Chart.js, so you can refer to the official Chart.js documentation for how to pass data and properties.
+Dedicated samples or documentation for charts are not yet available, and because this is not a widely used feature it is currently low priority.
+For most reporting needs, the Table component and expressions in Report Builder cover common requirements in Jira Assistant."
+"Building your own gadget with reports in Jira Assistant","In Jira Assistant (JA) you can build your own dashboard gadget by creating a report with the Custom Report or Report Builder module.
+After saving the report, it becomes available in the add-gadget popup, where you can add it to any dashboard as a gadget.
+This is the recommended way to get customized data views in Jira Assistant beyond what the inbuilt gadgets offer."

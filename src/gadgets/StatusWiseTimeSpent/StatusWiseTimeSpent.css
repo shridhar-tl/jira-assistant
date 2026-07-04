@@ -1,0 +1,66 @@
+.statuswise-ts-table {
+    height: 100%;
+
+    th {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        background: var(--bg-secondary);
+        border-bottom: 2px solid var(--border-color);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.025em;
+        font-size: 0.75rem;
+        padding: 0.75rem;
+        white-space: nowrap;
+
+        &:hover {
+            background: var(--bg-hover);
+            cursor: pointer;
+        }
+    }
+
+    td {
+        border-bottom: 1px solid var(--border-color);
+        padding: 0.75rem;
+        font-size: 0.875rem;
+        vertical-align: middle;
+    }
+
+    tr {
+        transition: background-color 0.15s ease-in-out;
+
+        &:hover {
+            background: var(--bg-hover);
+        }
+
+        &:last-child td {
+            border-bottom: none;
+        }
+    }
+
+    td:first-child,
+    th:first-child {
+        position: sticky;
+        left: 0;
+        z-index: 5;
+        background: var(--bg-primary);
+    }
+
+    tr:hover td:first-child,
+    th:hover {
+        background: var(--bg-hover);
+    }
+}
+
+.status-wise-ts-gadget {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+
+    .no-jql {
+        padding: 1rem;
+        text-align: center;
+        color: var(--text-secondary);
+    }
+}

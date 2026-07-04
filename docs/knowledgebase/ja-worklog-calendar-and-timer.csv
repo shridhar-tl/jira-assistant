@@ -1,0 +1,45 @@
+title,content
+"Worklog Calendar module in Jira Assistant","Jira Assistant (JA) includes an integrated worklog calendar that makes managing worklogs easy. It can be viewed in Month, Week and Day modes, with navigation between modes using the navigation keys.
+The calendar shows daily meeting entries and lets you generate a worklog for a meeting by clicking an icon next to it; you can set ticket numbers in the 'Default meeting tickets' setting to automate this.
+Worklogs can be created, edited and deleted directly on the calendar page, whether they are uploaded or still pending.
+A daily summary of logged hours is shown, color-highlighted to indicate over- or under-logging based on your thresholds, and you can customize entry colors from the configuration icon at the top right corner of the calendar."
+"Copying worklogs in the Jira Assistant calendar","In Jira Assistant (JA) you can copy worklogs in the calendar two ways. Right-click a worklog entry and choose the copy menu, which opens the worklog popup where you can set the target date, time and details before saving.
+The quicker way is to hold the Alt key and drag-and-drop the worklog to the date or time where you want the copy.
+You can also move a worklog simply by dragging and dropping it to a different date or time on the calendar."
+"Uploading pending worklogs from the Jira Assistant calendar","Newly created worklogs in Jira Assistant (JA) are not uploaded to Jira automatically by default; they stay in the tool so you can verify them first. This behavior can be changed in settings.
+To upload a single pending worklog, right-click it on the calendar and select 'Upload worklog'. To upload all pending worklogs for the current view period, click the appropriate icon at the top right corner of the calendar.
+Pending worklogs awaiting upload can also be reviewed in the 'Worklog [Pending Upload]' gadget."
+"Customizing colors in the Jira Assistant worklog calendar","The Jira Assistant (JA) worklog calendar supports fixed colors for different types of entries; for example worklogs can use one color and meeting entries another. Configure these from the calendar settings via the icon at the top right corner of the calendar.
+The calendar does not currently support changing color based on the ticket number; it only supports fixed colors per entry type.
+If you would like color-by-ticket, the developer welcomes details on how you expect Jira Assistant to map colors to tickets so it can be prioritized."
+"Worklog calendar shows only your own worklogs","The worklog calendar in Jira Assistant (JA) shows worklogs created by the current user only; it does not display other users' worklogs, so there is no manager view in the calendar.
+The calendar is best suited to a single person's data, as multiple users' worklogs would clutter the view.
+To view a team's worklogs, use the Worklog Report in Jira Assistant, which can pull worklogs for multiple users and visualize them per day at user or ticket level, with filtering and grouping."
+"Adding worklogs from calendar list and grid views","Jira Assistant (JA) currently does not support adding worklogs from some of the calendar's list and grid views; this works from the standard calendar views.
+The team is aware of this limitation and has classified it as low priority for a future update.
+For now, add worklogs from the supported calendar views or via the 'Add worklog' dialog in Jira Assistant."
+"Worklog Timer (time tracker) in Jira Assistant","Jira Assistant (JA) includes a Worklog Timer / time tracker to record time and turn it into worklogs accurately. Its behavior is configured under Settings > General > Time tracker tab.
+Minimum time spent (HH:MM) sets the minimum duration needed to create a worklog; stopping below it creates nothing. Round tracked time applies rounding rules (for example rounding 47 minutes to 50 minutes or to the nearest hour) to standardize entries.
+The timer can pause when the system is locked and resume on unlock, and can pause when the system is idle (based on the browser's idle settings).
+The pause-on-lock, pause-on-idle, attach-in-Jira and show-timer-in-Jira options are available only in the browser extension, not in the Web or Cloud app versions."
+"Showing or hiding the timer inside Jira and Confluence","Jira Assistant (JA) can attach timer controls directly into Jira so you can start, pause and stop the timer from your sprint, kanban board, or individual issues; enable 'Attach tracker functionality within Jira' in the Time tracker tab.
+'Show timer in Jira' displays the timer in the bottom-right corner of Jira and Confluence pages; if it is distracting you can turn it off.
+'Delay attaching functionality' sets a delay in seconds before the timer attaches to Jira pages, which helps when pages load slowly. These options apply to the browser extension only."
+"Hiding the worklog timer from Jira and Confluence","To hide the worklog timer and timer controls from Jira and Confluence in Jira Assistant (JA), disable the 'Attach tracker functionality within Jira' option in Settings > General > Time tracker tab.
+You can alternatively keep it attached but turn off 'Show timer in Jira' to just hide the visible timer in the bottom-right corner.
+These options let you streamline the interface when you do not want the Jira Assistant timer visible."
+"Worklog timer not appearing on the Jira dashboard","In some Jira versions the Jira Assistant (JA) extension's time tracker does not appear on the Jira Dashboard because Jira changed its dashboard DOM structure.
+Time tracking can still be managed from within Jira Assistant or on individual Jira issue pages even when the dashboard timer is unavailable.
+A permanent fix is under consideration, subject to technical feasibility."
+"Cannot hide the timer for specific projects in the Cloud app","The Jira Assistant (JA) Cloud app is built on the Atlassian Forge platform, which currently does not allow showing or hiding options based on specific projects or settings.
+Because of this, there is no way to hide the 'Worklog timer' for only certain projects when using the Cloud app.
+If Atlassian later extends Forge to support such options, Jira Assistant will prioritize this use case."
+"Making worklog comments optional in Jira Assistant","On the worklog popup in Jira Assistant (JA), the comment is mandatory by default, which is why nothing happens or the Save button appears blocked when the comment is empty or too short.
+To change this, go to Settings > General > Worklog tab and edit 'Min length for worklog comments' to set the minimum characters required.
+Setting this value to 0 makes the worklog comment a non-mandatory field in Jira Assistant."
+"Logging work on closed tickets in Jira Assistant","By default Jira Assistant (JA) does not allow adding worklogs on closed tickets. To enable it, go to Settings > General > Worklog tab and check 'Worklog for closed tickets'.
+This lets you add worklogs on resolved or closed tickets, giving more flexibility in capturing work.
+This option works only if your Jira instance is configured to allow logging work on closed tickets."
+"Ticket suggestions list in Jira Assistant","Many fields in Jira Assistant (JA), such as 'Add Worklog' and settings, show a ticket suggestion dropdown populated by a JQL query, and the list may be cached after the first retrieval.
+If only tickets assigned to you appear, or not all expected tickets are listed, change the query under Settings > Advanced next to the 'Ticket suggestions JQL' label. The default JQL is read-only, but you can edit the instance-specific JQL.
+You can also type the full ticket number and select it even if it is not in the suggestions."

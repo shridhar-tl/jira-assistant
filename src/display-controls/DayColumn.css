@@ -1,0 +1,26 @@
+div.scroll-table-container .scroll-table thead tr th.week-head,
+div.scroll-table-container .scroll-table thead tr th.day-head {
+    min-width: 35px;
+    text-align: center;
+}
+
+div.scroll-table-container .scroll-table thead tr th.week-head {
+    color: #2e6c99;
+}
+
+div.scroll-table-container .scroll-table thead tr th.day-head {
+    color: #498b4b;
+}
+
+div.scroll-table-container .scroll-table thead tr th.day-head .day-name {
+    font-size: 13px;
+    color: rgb(118, 118, 207);
+}
+
+div.scroll-table-container .scroll-table thead tr th.day-head.holiday {
+    color: red;
+}
+
+div.scroll-table-container .scroll-table thead tr th.day-head.holiday .day-name {
+    color: red;
+}

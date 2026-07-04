@@ -1,0 +1,48 @@
+title,content
+"General settings in Jira Assistant","The General settings page in Jira Assistant (JA) has multiple options organized into five tabs, each with explanatory text, and individual modules and gadgets also have their own settings.
+The General tab lets you set the default date and time format used throughout the tool, the displayed hour range (00:00 to 23:00) for the calendar view, your working hours and working days (highlighted in gadgets, reports and the calendar), and the start day of the week.
+These general options shape how dates, times and the calendar appear across Jira Assistant."
+"Worklog tab settings in Jira Assistant","The Worklog tab in Jira Assistant (JA) General settings tailors worklog behavior.
+Min and Max hours to log (HH:mm) act as visual indicators in gadgets and reports. Default time spent pre-populates new worklog entries. 'Enable auto upload by default' uploads worklogs to Jira automatically on creation instead of holding them for review.
+'Notify users on worklog' controls default notification behavior. 'Allow logging work on closed tickets' overrides the default block on closed tickets. 'Min length for worklog comments' sets the required comment length (0 makes comments optional). 'Worklog JQL suffix' appends custom JQL when pulling worklogs to filter projects/issues or add an order-by clause."
+"Default Values tab settings in Jira Assistant","The Default Values tab in Jira Assistant (JA) lets you preset key fields so they are available across all modules.
+Projects: maintain your relevant projects so they are readily available in reports without re-selecting each time. Agile boards: preselect the boards used for sprint reporting.
+Story Points field: choose the custom Jira field used for story points; if story-point features are disabled, this field is likely unset, though JA tries to auto-select it on first visit. Epic name field: choose the field for epic name to enable epic-related features."
+"Meeting tab settings and calendar integration in Jira Assistant","The Meeting tab in Jira Assistant (JA) General settings integrates your Outlook or Google Calendar with JA for automated worklog generation and to launch meeting URLs automatically.
+The configurations in this tab are self-explanatory and let you map meetings to worklogs, helped by the 'Default meeting ticket' setting in the Worklog tab.
+This integration streamlines time tracking for recurring meetings in Jira Assistant."
+"Menu Option tab and JA icon click behavior","The Menu Option tab in Jira Assistant (JA) configures what happens when you click the JA browser extension icon; it applies to the browser extension only, not the Web or Cloud app.
+Option 1 - Show Menus (default): choose which menus appear when you click the icon, including a frequently used module for quick navigation.
+Option 2 - Auto Launch: skip the menu and open a chosen module directly (for example the Worklog Calendar) on a single click.
+Option 3 - Show Quick-view Dashboard: show a chosen dashboard as a popover with all its gadgets in a tabbed layout for immediate insight."
+"Advanced settings in Jira Assistant","The Advanced settings page in Jira Assistant (JA) offers granular control over technical behavior and should be changed with caution, as incorrect values can cause instability. Most changes take effect the next time you use JA or after pressing F5.
+It uses a grid where rows are configuration options and columns are individual instances; some default-value changes affect all instances. It shows the integration date, Jira Server URL (base path only), Jira User ID and Email ID (used for display in reports).
+It also exposes customizable JQL queries and notification/tracking toggles."
+"Customizable JQL queries in Advanced settings","Jira Assistant (JA) Advanced settings expose JQL queries used by various parts of the tool, so you can adjust them if defaults do not fit.
+'Open Tickets JQL' drives the 'My Open Tickets' gadget. 'Ticket Suggestions JQL' drives the ticket suggestion dropdowns used in Add Worklog, Settings and elsewhere (results may be cached). 'Jira Updates JQL' fetches issues modified since you last viewed them.
+The default JQL for each is read-only for reference, but you can edit the instance-specific JQL in Jira Assistant."
+"Notification and tracking options in Advanced settings","Jira Assistant (JA) Advanced settings include several notification and tracking toggles.
+'Disable Jira Issue Updates' turns off notifications about changes to Jira tickets you are involved in (available from v1.2). 'Enable tracking user actions (anonymous)' and 'Enable tracking exceptions (anonymous)' send anonymous usage and error reports with no personal data, helping improve the tool.
+'Disable Notifications from Developer' hides developer messages about issues and upcoming features, though keeping it on is recommended."
+"Backing up settings with export and import in Jira Assistant","Jira Assistant (JA) supports exporting settings so you can restore them after reinstalling. Do this from the 'Integrate' screen by clicking the instance name in the top right corner of Jira Assistant.
+Export/import settings is a backup mechanism, not a sharing mechanism: settings exported from one account (one Jira login) can only be imported back into that same account, because it is tied to your profile.
+To share with others, export User Groups or reports separately, which are designed to be shared."
+"Settings are not synced across reinstalls in Jira Assistant","Jira Assistant (JA) does not sync settings to any external location. Even though browsers like Chrome offer settings sync across reinstalls, that sync is not suitable for JA's data.
+Use the Backup (export settings) feature to save your configuration and restore it after reinstalling.
+This is tracked as a known limitation; see GitHub issue #67 for more details."
+"User Groups in Jira Assistant","User Groups in Jira Assistant (JA) let you assign Jira users to a named group that is used internally to simplify report generation by selecting a group instead of individual users.
+Create or edit groups under Settings > User Groups; there is a default group containing only you, which you can rename and expand, or add a new group with '+ Add group'. Search for users, select one or more, click the add icon, and click 'Save Changes'.
+You can set a group-level timezone (and override it per user) and a per-user cost-per-hour used by the Cost report. You can also map an existing Jira group directly instead of building one in JA."
+"User Groups limitations in Jira Assistant","Jira Assistant (JA) User Groups have a few limitations.
+Mapping a Jira group directly requires Jira Admin permission; without it, Jira returns a 401 error when JA tries to pull the group's members, so non-admins should create a JA-internal group instead.
+Inactive users do not appear in user search (a Jira API behavior); as a workaround, type the inactive user's full username and press Enter to add them.
+When migrating between Jira instances (for example Server to Cloud), JA User Groups cannot be ported because Cloud stores profiles differently."
+"Sharing User Groups between Jira Assistant users","In Jira Assistant (JA) you can share a User Group with other users by exporting settings with only the user groups selected, which produces a .jab file.
+Share this .jab file with anyone you want to give the groups to, and they can import it.
+Unlike full settings (which are account-specific backups), User Groups and reports are designed to be exported and shared in Jira Assistant."
+"Configuring timezone per user in Jira Assistant","The Worklog Report in Jira Assistant (JA) pulls data in the current user's local timezone by default, so users in different timezones can show date/time differences.
+To fix this, set a timezone for individual users or groups in the User Groups screen, and choose the appropriate timezone option in the report and settings.
+Setting the correct timezone resolves worklogs appearing on the wrong date in Jira Assistant reports."
+"Changing working days and week start in Jira Assistant","To change your working days in Jira Assistant (JA), go to Settings > General > General tab and edit the working days option; you can also set working hours and the start day of the week there.
+Working days and hours are highlighted across gadgets, reports and the worklog calendar to improve visibility.
+These settings help Jira Assistant reflect your actual schedule when showing logged time."

@@ -1,0 +1,237 @@
+.bulk-import-worklog-page {
+    height: calc(100vh - 50px);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* ── Header ─────────────────────────────────────────────────────────── */
+.page-header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 1rem 2rem;
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2rem;
+    max-width: 1800px;
+    margin: 0 auto;
+}
+
+.header-left {
+    flex: 1;
+}
+
+.page-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0 0 0.2rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.page-title .fa {
+    color: var(--primary);
+}
+
+.page-subtitle {
+    color: var(--text-secondary);
+    margin: 0;
+    font-size: 0.875rem;
+}
+
+.header-actions {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+}
+
+/* ── Table content (when data is loaded) ────────────────────────────── */
+.import-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: var(--background);
+}
+
+.table-container {
+    flex: 1;
+    overflow: hidden;
+}
+
+/* ── Footer action bar ──────────────────────────────────────────────── */
+.action-bar {
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    padding: 0.75rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+}
+
+.action-bar-left,
+.action-bar-right {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+/* ── Empty state two-column layout ──────────────────────────────────── */
+
+/*
+ * .empty-state-wrapper is the single scrollable region when no file is loaded.
+ * It is a flex child of the page and fills all remaining space.
+ * .empty-state-layout is purely a grid — no overflow so there are no
+ * per-panel independent scrollbars at any screen size.
+ */
+.empty-state-wrapper {
+    flex: 1;
+    overflow: auto;
+    min-height: 0;
+}
+
+.empty-state-layout {
+    display: grid;
+    grid-template-columns: 1fr 1.4fr;
+    align-items: start;
+    min-height: 100%;
+}
+
+/* Left — upload panel */
+.upload-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    border-right: 1px solid var(--border);
+    background: var(--surface);
+    gap: 1rem;
+    padding: 2.5rem 2rem;
+    /* stretch to fill available height so the divider line reaches the bottom */
+    align-self: stretch;
+}
+
+.upload-panel-icon {
+    font-size: 4rem;
+    color: var(--primary);
+    opacity: 0.25;
+    line-height: 1;
+}
+
+.upload-panel-title {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.upload-panel-desc {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    max-width: 340px;
+    margin: 0;
+    line-height: 1.6;
+}
+
+.upload-panel-actions {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.upload-drop-hint {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    border: 1px dashed var(--border);
+    border-radius: 0.5rem;
+    padding: 0.45rem 1rem;
+    margin-top: 0.25rem;
+}
+
+/* Right — how-to panel (retains original details/summary blue card style) */
+.howto-panel {
+    padding: 2rem 2rem;
+}
+
+/* ── Row status highlights ───────────────────────────────────────────── */
+.row-error {
+    background-color: rgba(239, 68, 68, 0.08) !important;
+}
+
+/* ── Responsive ──────────────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+    .header-content {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .header-actions {
+        justify-content: flex-start;
+    }
+
+    .action-bar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .action-bar-left,
+    .action-bar-right {
+        justify-content: flex-start;
+        flex-wrap: wrap;
+    }
+
+    .empty-state-layout {
+        grid-template-columns: 1fr;
+        min-height: unset;
+    }
+
+    .upload-panel {
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+        align-self: auto;
+        padding: 2rem 1.5rem;
+    }
+
+    .howto-panel {
+        padding: 1.5rem;
+    }
+}
+
+@media (max-width: 640px) {
+    .page-header {
+        padding: 0.75rem 1rem;
+    }
+
+    .page-title {
+        font-size: 1.25rem;
+    }
+
+    .header-actions {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .header-actions button {
+        width: 100%;
+    }
+
+    .upload-panel-actions {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .upload-panel-actions button {
+        width: 100%;
+    }
+}

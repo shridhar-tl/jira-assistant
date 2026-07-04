@@ -1,0 +1,9 @@
+allowBuilds:
+  '@firebase/util': false
+  '@parcel/watcher': false
+  core-js: false
+  esbuild: false
+  iframe-resizer: false
+  protobufjs: false
+  unrs-resolver: false
+minimumReleaseAge: 0

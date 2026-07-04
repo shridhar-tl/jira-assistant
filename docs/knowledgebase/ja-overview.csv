@@ -1,0 +1,38 @@
+title,content
+"Jira Assistant high-level overview and complete list of features and modules","Jira Assistant (JA) is a free productivity tool for Jira users that helps with worklog tracking, time tracking and rich reporting. It works as a browser extension, a hosted web app, and an app installed inside Jira Cloud. Jira Assistant supports Jira Cloud, Server and Data Center.
+Main modules in Jira Assistant: Dashboard with gadgets, Worklog Calendar, Worklog Timer (time tracker), Planning Poker, Bulk Import of issues and worklogs, User Groups, and Settings.
+Reports available in Jira Assistant: Worklog (Time sheet) Report, Sprint Report, Estimate vs Actual Report, Say-Do-Ratio Report, Pivot Report, and Custom Report.
+Other capabilities: build your own gadgets and reports with Custom Report and Report Builder, export any grid to CSV/Excel/PDF, integrate with Outlook calendar to auto-generate meeting worklogs, group users for reporting, and integrate/switch between multiple Jira instances.
+Jira Assistant is available for Chrome, Firefox, Edge and Opera, plus a web version usable in any browser, and a Jira Cloud app."
+"What is Jira Assistant and who develops it","Jira Assistant (JA) is a productivity tool developed by Shridhar in 2016 to quickly add worklogs and pull reports from Jira. Jira Assistant supports Jira Cloud, Server and Data Center versions.
+Jira Assistant is available as a browser extension, a web version, and a Jira Cloud app (Atlassian Forge based) that installs directly inside a Jira Cloud instance.
+The official website for Jira Assistant is https://jiraassistant.com and the hosted web version is at https://app.jiraassistant.com.
+For questions, users can post in discussions; for bugs, users can report an issue with screenshots and console errors. The developer can also be reached by email at shridhar.tl@gmail.com."
+"Key features and benefits of Jira Assistant","Jira Assistant (JA) key features: integrate and switch between multiple Jira servers/accounts effortlessly; create customized dashboards, gadgets and layouts; rearrange gadgets via drag-and-drop; add existing or custom gadgets; manage worklogs easily with drag-and-drop and copy; bulk import worklogs and issues via CSV uploads; generate built-in reports with extensive customization; create personalized reports and share their definitions; auto-generate worklogs for meetings via calendar integration; categorize users into groups for targeted reporting; customize what happens when the JA icon is clicked; and personalize the tool from the settings page.
+Highlights: a worklog calendar that makes adding and cloning worklogs simple, a fully configurable worklog report, and simple integration that needs no admin permissions."
+"Who benefits from Jira Assistant and how","Jira Assistant (JA) is suitable for any organization and all roles. For managers and product owners it provides comprehensive Worklog, Sprint and Estimate vs Actual reports, custom reports with grouping and expressions, status-wise time-spent gadgets, bulk import of issues, and built-in Planning Poker for agile estimation.
+For associates it provides an intuitive timer for accurate worklog generation, a calendar view to edit and view worklogs, bulk worklog import from CSV, automatic meeting worklogs through Outlook calendar integration, drag-and-drop to copy/move/resize worklogs, and personalized gadgets built with custom reports.
+For organizations Jira Assistant is free for commercial use, collects/stores no data from your Jira instance, works with both Jira Cloud and Data Center, supports multiple Jira instances, can be installed as a Jira Cloud app, offers several authentication options, and supports self-hosting."
+"How to install Jira Assistant and where to get it","Jira Assistant (JA) can be installed in minutes. Install the browser extension for Chrome, Firefox, Edge or Opera from their web stores, use the web version with no installation, or install the Jira Cloud app from the Atlassian Marketplace.
+Chrome: https://chrome.google.com/webstore/detail/jira-assistant/momjbjbjpbcbnepbgkkiaofkgimihbii
+Firefox: https://addons.mozilla.org/en-US/firefox/addon/jira-assistant
+Edge: https://microsoftedge.microsoft.com/addons/detail/aoenpdbabcjnjbjpegeenodfknllmaoi
+Opera: https://addons.opera.com/en/extensions/details/jira-assistant
+Web version (no install, any browser): https://app.jiraassistant.com
+Jira Cloud app: https://marketplace.atlassian.com/apps/1221570
+A Windows desktop app for Jira Assistant is planned and coming soon."
+"Is Jira Assistant free and is there a paid version","Jira Assistant (JA) is completely free to use for both personal and commercial/official purposes, with no licensing cost. There is no PRO, premium or paid version as of date.
+Jira Assistant began in 2016 as a simple utility for adding worklogs and pulling reports, and its motive is not to generate revenue. Maintaining stability across browser updates and Jira changes requires considerable ongoing effort.
+For full usage terms see the license page at https://jiraassistant.com/license-terms."
+"Which browsers and Jira versions does Jira Assistant support","Jira Assistant (JA) is available as a browser extension for Chrome, Firefox, Edge and Opera, and as a web version that works in any modern browser. It is known to work in Vivaldi but Vivaldi is not officially supported.
+For Chrome, Jira Assistant requires Chrome version 102 or above; older Chrome versions should be upgraded.
+Jira Assistant works with Jira Cloud, Server and Data Center. OAuth authentication is supported only with Jira Cloud; for OAuth on Data Center, users should contact the developer.
+Jira Assistant can also be installed as a Cloud app inside a Jira Cloud instance so the whole organization can use it."
+"Miscellaneous features in Jira Assistant","Jira Assistant (JA) includes several convenience features across its modules. Any data grid can be exported to CSV, Excel or PDF.
+Grids are groupable, letting you group data by one or more columns via drag-and-drop, and all grids keep a fixed header and column sorting while scrolling.
+Clicking a Jira ticket number anywhere in Jira Assistant opens that ticket directly in Jira.
+Jira Assistant offers a dark mode and light mode toggle, multi-instance switching from the header, Jira ticket update notifications, and developer notifications about updates and known issues.
+YouTube video playlists are available to learn the various features and the report builder."
+"Planning Poker in Jira Assistant","Jira Assistant (JA) includes a built-in Planning Poker module for collaborative agile estimation. A facilitator creates a room with a room name and chooses a scoring scheme: Fibonacci, Short Fibonacci, or T-Shirt sizes.
+Team members join the room with their name to vote on story points together in real time, and results can be revealed once everyone has voted.
+Planning Poker gives teams out-of-the-box support for estimation without needing a separate tool, and is accessible from the Jira Assistant menu."

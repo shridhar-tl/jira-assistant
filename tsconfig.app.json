@@ -1,0 +1,57 @@
+{
+    "compilerOptions": {
+        "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
+        "target": "ES2022",
+        "useDefineForClassFields": true,
+        "lib": ["ES2022", "DOM", "DOM.Iterable"],
+        "module": "ESNext",
+        "types": ["vite/client"],
+        "skipLibCheck": true,
+
+        /* Bundler mode */
+        "moduleResolution": "bundler",
+        "allowImportingTsExtensions": true,
+        "verbatimModuleSyntax": false,
+        "moduleDetection": "force",
+        "noEmit": true,
+        "jsx": "react-jsx",
+
+        /* Linting */
+        "strict": true,
+        "noUnusedLocals": false,
+        "noUnusedParameters": false,
+        "erasableSyntaxOnly": false,
+        "noFallthroughCasesInSwitch": true,
+        "noUncheckedSideEffectImports": true,
+
+        /* Path Aliases */
+        "paths": {
+            "@/*": ["./src/*"],
+            "@services": ["./src/services"],
+            "@services/*": ["./src/services/*"],
+            "@utils": ["./src/utils"],
+            "@utils/*": ["./src/utils/*"],
+            "@components": ["./src/components"],
+            "@components/*": ["./src/components/*"],
+            "@pages": ["./src/pages"],
+            "@pages/*": ["./src/pages/*"],
+            "@stores": ["./src/stores"],
+            "@stores/*": ["./src/stores/*"],
+            "@types": ["./src/types"],
+            "@types/*": ["./src/types/*"],
+            "@hooks": ["./src/hooks"],
+            "@hooks/*": ["./src/hooks/*"],
+            "@constants": ["./src/constants"],
+            "@constants/*": ["./src/constants/*"],
+            "@layouts": ["./src/layouts"],
+            "@layouts/*": ["./src/layouts/*"],
+            "@dialogs": ["./src/dialogs"],
+            "@dialogs/*": ["./src/dialogs/*"],
+            "@controls": ["./src/controls"],
+            "@controls/*": ["./src/controls/*"],
+            "@assets": ["./src/assets"],
+            "@assets/*": ["./src/assets/*"]
+        }
+    },
+    "include": ["src", "src/vite-env.d.ts"]
+}

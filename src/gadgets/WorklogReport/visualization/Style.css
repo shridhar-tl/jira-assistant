@@ -1,0 +1,54 @@
+.worklog-visualization-tab {
+    padding: 1.25rem;
+    overflow-y: auto;
+    height: 100%;
+}
+
+.group-wise-charts {
+    margin-bottom: 1.5rem;
+    border: 1px solid var(--border-primary);
+    border-radius: 10px;
+    padding: 1.25rem;
+    background-color: var(--bg-primary);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+}
+
+.group-chart-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border-primary);
+}
+
+.group-chart-header h3 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    flex: 1;
+}
+
+.chart-count {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-primary);
+    border-radius: 9999px;
+    padding: 2px 10px;
+}
+
+.chart-container {
+    height: 380px;
+    position: relative;
+}
+
+.chart-loading {
+    height: 380px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+    font-size: 1.5rem;
+}

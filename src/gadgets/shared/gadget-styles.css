@@ -1,0 +1,291 @@
+body.fs-layout {
+    overflow: hidden;
+}
+
+.page-container {
+    width: 100%;
+    height: calc(100vh - 48px);
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+}
+
+.page-container .gadget {
+    display: flex;
+    flex-direction: column;
+}
+
+.page-container .gadget > .p-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.page-container .gadget.docked > .p-panel > .p-panel-content,
+.page-container .gadget.full-height > .p-panel > .p-panel-content,
+.page-container .gadget.full-screen > .p-panel > .p-panel-content {
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.page-container .gadget.docked > .p-panel > .p-panel-content > *,
+.page-container .gadget.full-height > .p-panel > .p-panel-content > *,
+.page-container .gadget.full-screen > .p-panel > .p-panel-content > * {
+    flex: 1;
+    min-height: 0;
+}
+
+/* Gadget base */
+.gadget {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+.gadget > .p-panel {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+}
+
+.gadget .gadget-header {
+    padding: 6px 8px;
+    height: 32px;
+    cursor: default;
+    flex-shrink: 0;
+}
+
+.gadget .gadget-header.movable {
+    cursor: move;
+}
+
+/* Width classes */
+@media screen and (min-width: 1200px) {
+    .gadget.half-width {
+        width: calc(50% - 3px);
+    }
+}
+
+@media screen and (max-width: 1199px) {
+    .gadget.half-width {
+        width: 100%;
+    }
+}
+
+.gadget.full-width {
+    width: 100%;
+}
+
+/* Height classes - half-height */
+.gadget.half-height {
+    height: calc(50vh - 56px);
+}
+
+.gadget.half-height > .p-panel > .p-panel-content {
+    height: calc(50vh - 97px);
+    padding: 0;
+}
+
+/* Height classes - full-height (not docked) */
+.gadget.full-height:not(.docked) {
+    height: calc(100vh - 94px);
+}
+
+.gadget.full-height:not(.docked) > .p-panel > .p-panel-content {
+    height: calc(100vh - 143px);
+    padding: 0;
+}
+
+/* Height classes - full-height docked */
+.gadget.full-height.docked {
+    height: calc(100vh - 52px);
+}
+
+.gadget.full-height.docked .p-panel-header {
+    border-top: none;
+}
+
+.gadget.full-height.docked > .p-panel > .p-panel-content {
+    height: calc(100vh - 100px);
+    padding: 0;
+}
+
+/* Full screen mode */
+.gadget.full-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1050;
+    width: 100vw !important;
+    height: 100vh !important;
+    margin: 0 !important;
+}
+
+.gadget.full-screen .p-panel-header {
+    border-top: none;
+}
+
+.gadget.full-screen > .p-panel > .p-panel-content {
+    height: calc(100vh - 42px);
+    padding: 0;
+}
+
+/* Panel structure */
+.p-panel {
+    border: 1px solid var(--gadget-border, var(--border-primary));
+    border-radius: 8px;
+    background: var(--bg-primary);
+    overflow: hidden;
+    min-height: 0;
+}
+
+.gadget .p-panel-header {
+    border-top: 3px solid var(--gadget-accent, #2563eb);
+    padding: 6px 10px;
+    background-color: var(--gadget-header-bg, var(--bg-secondary));
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--gadget-border, var(--border-primary));
+    flex-shrink: 0;
+}
+
+.gadget .p-panel-header .float-end {
+    margin-top: -3px;
+}
+
+.gadget .p-panel-content {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    min-height: 0;
+    overflow: hidden;
+}
+
+.gadget .p-panel-content table {
+    width: 100%;
+    table-layout: auto;
+}
+
+.gadget .p-panel-content table tbody td {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 300px;
+}
+
+.gadget .p-panel-content table thead th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background-color: var(--bg-tertiary);
+}
+
+.gadget .p-panel-content .table-wrapper,
+.gadget .p-panel-content .datatable-wrapper {
+    overflow: auto;
+    max-width: 100%;
+    flex: 1;
+    min-height: 0;
+}
+
+/* Report viewer inside gadgets */
+.gadget .report-viewer {
+    height: 100%;
+}
+
+.gadget .report-viewer .report-items {
+    height: 100%;
+}
+
+.gadget .report-viewer .report-items .report-item {
+    max-height: 100%;
+}
+
+/* Generic panel styles (outside gadgets) */
+.p-panel-header {
+    background: var(--gadget-header-bg, var(--bg-secondary));
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--gadget-border, var(--border-primary));
+}
+
+.p-panel-content {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    padding: 0.5rem;
+}
+
+/* Ensure text colors work in both themes */
+.p-panel-header .text-secondary,
+.text-secondary {
+    color: var(--text-secondary, #64748b);
+}
+
+/* Gadget header icon buttons — inherit theme text color */
+.gadget .p-panel-header button {
+    color: var(--text-primary);
+}
+
+.gadget .p-panel-header button:hover:not(:disabled) {
+    background-color: var(--bg-hover);
+    color: var(--text-primary);
+}
+
+.gadget .p-panel-header button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* FA icons inside gadget header buttons always follow text color */
+.gadget .p-panel-header button .fa {
+    color: inherit;
+}
+
+/* Loading overlay */
+.gadget .loading-overlay {
+    background-color: rgba(0, 0, 0, 0.3);
+}
+
+.mode-dark .gadget .loading-overlay {
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.fa.icon-hint {
+    font-size: 22px;
+    float: left;
+    margin-top: 3px;
+    margin-right: 5px;
+    color: #f59e0b;
+    cursor: help;
+}
+
+/* Hint tooltip list */
+ul.gadget-hint {
+    margin: 0;
+    padding-left: 20px;
+    list-style: disc;
+    font-size: 13px;
+    line-height: 1.6;
+    max-width: 360px;
+}
+
+.pad-22 {
+    padding: 22px;
+}
+
+.clearfix::after {
+    content: '';
+    display: table;
+    clear: both;
+}
+
+.float-start {
+    float: left;
+}
+
+.float-end {
+    float: right;
+}

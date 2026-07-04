@@ -1,0 +1,218 @@
+import { ContactUsUrl } from '@/constants';
+import { getUserName } from '@/utils';
+
+import type { AppSetting } from '@types';
+
+import { SystemUserId } from '../constants/common';
+import { SettingsCategory } from '../constants/settings';
+import config from '../customize';
+
+import type StorageService from './storage-service';
+
+function clearEnd(str: string, char: string): string {
+    while (str.endsWith(char)) {
+        str = str.substring(0, str.length - 1);
+    }
+    return str;
+}
+
+export default class UserService {
+    static dependencies = ['StorageService'];
+
+    private $storage: StorageService;
+
+    constructor($storage: StorageService) {
+        this.$storage = $storage;
+    }
+
+    getUser(userId: number): Promise<any> {
+        return this.$storage.getUser(userId);
+    }
+
+    getAllUsers(): Promise<any[]> {
+        return this.$storage.getAllUsers();
+    }
+
+    async saveGlobalSettings(users: any[]): Promise<void> {
+        const settingsArr: any[] = [];
+        const changeSetting = (sett: any, user: any, prop: string, retain?: boolean, category?: string) => {
+            const item: any = {
+                userId: user.id,
+                category: category || SettingsCategory.Advanced,
+                name: prop,
+                value: sett[prop],
+            };
+            settingsArr.push(item);
+
+            if (!item.value && !retain) {
+                delete item.value;
+            }
+        };
+
+        await Promise.all(
+            users.map(async (u: any) => {
+                const intgUser = u.id > SystemUserId;
+                if (intgUser && u.deleted) {
+                    await this.$storage.deleteAllSettingsWithUserId(u.id);
+                    await this.$storage.deleteUser(u.id);
+                    return;
+                }
+
+                let user = await this.getUser(u.id);
+                user = { ...user };
+
+                user.jiraUrl = u.jiraUrl;
+                user.userId = u.userId;
+                user.email = u.email;
+
+                changeSetting(u, user, 'openTicketsJQL');
+                changeSetting(u, user, 'suggestionJQL');
+                changeSetting(u, user, 'disableJiraUpdates');
+                changeSetting(u, user, 'jiraUpdatesJQL');
+                if (!intgUser) {
+                    changeSetting(u, user, 'enableAnalyticsLogging', true);
+                    changeSetting(u, user, 'enableExceptionLogging', true);
+                    changeSetting(u, user, 'disableDevNotification');
+                    changeSetting(u, user, 'useWebVersion', false, SettingsCategory.System);
+                }
+
+                await this.$storage.addOrUpdateUser(user);
+            }),
+        );
+
+        await this.$storage.bulkPutSettings(settingsArr);
+    }
+
+    async getUsersList(): Promise<any[]> {
+        const users = (await this.$storage.getAllUsers()).filter((u: any) => u.id !== 1);
+        return users.map((u: any) => ({ id: u.id, email: u.email, jiraUrl: u.jiraUrl, apiUrl: u.apiUrl, userId: u.userId }));
+    }
+
+    async getUserDetails(userId: number): Promise<any> {
+        const currentUser = await this.getUser(userId);
+
+        if (!currentUser) {
+            return currentUser;
+        }
+
+        const feedbackUrl = `${ContactUsUrl}?name={0}&email={1}&javersion={2}&browser={3}&entry.326955045&entry.1696159737&entry.485428648={0}&entry.879531967={1}&entry.1426640786={2}&entry.972533768={3}`;
+        currentUser.jiraUrl = clearEnd(currentUser.jiraUrl.toString(), '/');
+        if (currentUser.apiUrl) {
+            currentUser.apiUrl = clearEnd(currentUser.apiUrl.toString(), '/');
+        }
+
+        const sessionUser: any = {
+            jiraUser: {},
+            userId: currentUser.id,
+            name: currentUser.userId,
+            accountId: currentUser.accountId,
+            emailAddress: currentUser.email,
+            jiraUrl: currentUser.jiraUrl,
+            profileUrl: `${currentUser.jiraUrl}/secure/ViewProfile.jspa`,
+            feedbackUrl: `${feedbackUrl}&emb=true`,
+        };
+
+        if (currentUser.apiUrl) {
+            sessionUser.apiUrl = currentUser.apiUrl;
+        }
+
+        const jiraUrlLower = currentUser.jiraUrl.toLowerCase();
+
+        if (jiraUrlLower.indexOf('pearson') >= 0 || jiraUrlLower.indexOf('emoneyadv') >= 0 || config.modules.contribute === false) {
+            sessionUser.noDonations = true;
+            sessionUser.hideDonateMenu = true;
+        } else {
+            delete sessionUser.noDonations;
+        }
+
+        return sessionUser;
+    }
+
+    async getUserFromDB(root: string, name: string, email?: string): Promise<any> {
+        let user = await this.$storage.getUserWithNameAndJiraUrl(name, root);
+
+        if (!user && email) {
+            user = await this.$storage.getUserWithEmailAndJiraUrl(email, root);
+        }
+
+        return user;
+    }
+
+    async createUser(profile: any, root: string, options?: any): Promise<number> {
+        const userId = getUserName(profile);
+        const { emailAddress, accountId } = profile;
+        const optIsObj = options && typeof options === 'object';
+        const apiUrl = !optIsObj ? options : undefined;
+
+        if (!optIsObj) {
+            options = undefined;
+        }
+
+        console.log('About to check if user exists in db before creation:', root, userId, emailAddress);
+
+        let user = await this.getUserFromDB(root, userId!, emailAddress);
+        if (!user) {
+            user = {
+                jiraUrl: root,
+                accountId,
+                userId,
+                email: emailAddress,
+                lastLogin: new Date(),
+                dateCreated: new Date(),
+                ...options,
+            };
+
+            if (apiUrl) {
+                user.authType = 'O';
+                user.apiUrl = apiUrl;
+            }
+
+            console.log('User does not exist. About to create new user', user);
+            const id = await this.$storage.addUser(user);
+            console.log('User created with id:', id);
+
+            const defaultSettings: AppSetting[] = [
+                { userId: id, category: SettingsCategory.General, name: 'dateFormat', value: 'dd-MMM-yyyy', _ts: 2 },
+                { userId: id, category: SettingsCategory.General, name: 'timeFormat', value: ' hh:mm:ss tt', _ts: 2 },
+                { userId: id, category: SettingsCategory.General, name: 'minHours', value: 8, _ts: 2 },
+                { userId: id, category: SettingsCategory.General, name: 'maxHours', value: 8, _ts: 2 },
+                { userId: id, category: SettingsCategory.General, name: 'startOfDay', value: '09:00', _ts: 2 },
+                { userId: id, category: SettingsCategory.General, name: 'endOfDay', value: '17:00', _ts: 2 },
+                { userId: id, category: SettingsCategory.General, name: 'startOfWeek', value: 1, _ts: 2 },
+                { userId: SystemUserId, category: SettingsCategory.System, name: 'CurrentUserId', value: id, _ts: 2 },
+            ];
+
+            await this.$storage.bulkPutSettings(defaultSettings, false);
+
+            console.log('Settings added for user');
+
+            return id;
+        } else {
+            console.log('User already exists in DB. About to update it');
+
+            user.jiraUrl = root;
+            user.userId = userId;
+            user.email = emailAddress;
+            user.lastLogin = new Date();
+
+            if (apiUrl) {
+                user.authType = 'O';
+                user.apiUrl = apiUrl;
+            } else if (options) {
+                user.authType = options.authType;
+                user.uid = options.uid;
+                user.pwd = options.pwd;
+                delete user.apiUrl;
+            } else {
+                delete user.apiUrl;
+                delete user.authType;
+                delete user.uid;
+                delete user.pwd;
+            }
+
+            await this.$storage.addOrUpdateUser(user);
+
+            return user.id;
+        }
+    }
+}

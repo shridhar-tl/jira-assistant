@@ -1,0 +1,43 @@
+name: Build Electron App
+
+on:
+  push:
+    branches: [ ja-app ]
+  pull_request:
+    branches: [ ja-app ]
+
+jobs:
+  release:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js 16.x
+      uses: actions/setup-node@v1
+      with:
+        node-version: 16.x
+
+    - run: npm install electron@latest electron-builder@latest --save-dev
+
+    - name: Build/release Electron app
+      uses: samuelmeuli/action-electron-builder@v1
+      with:
+        github_token: ${{ secrets.github_token }}
+
+        # If the commit is tagged with a version (e.g. "v1.0.0"),
+        # release the app after building
+        release: ${{ startsWith(github.ref, 'refs/tags/v') }}
+
+    - name: Extract version
+      id: extract_version
+      uses: Saionaro/extract-package-version@v1.0.6
+      
+    - name: Save build package
+      uses: actions/upload-artifact@v2
+      with:
+        name: JA_App_${{ steps.extract_version.outputs.version }}_${{ matrix.os }}
+        path: dist/

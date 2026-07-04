@@ -1,0 +1,226 @@
+.calendar-view {
+    height: 100%;
+    max-height: calc(100vh - 50px);
+    display: flex;
+    flex-direction: column;
+}
+
+.calendar-container {
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+}
+
+/* Entry content styles */
+.cal-entry-content {
+    overflow: hidden;
+}
+
+.cal-entry-content .cal-entry-title {
+    margin-top: 5px;
+    font-size: 15px;
+    margin-bottom: 16px;
+    max-height: 80px;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.cal-entry-content .cal-entry-title.short-desc {
+    max-height: 40px;
+    -webkit-line-clamp: 2;
+}
+
+.cal-entry-content .cal-entry-subtitle {
+    margin-top: 5px;
+    font-style: italic;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    max-height: 100px;
+    -webkit-line-clamp: 6;
+    -webkit-box-orient: vertical;
+}
+
+.cal-entry-content .cal-entry-subtitle.short-desc {
+    max-height: 50px;
+    -webkit-line-clamp: 3;
+}
+
+.cal-entry-content .fa-ellipsis-v,
+.cal-entry-content .fa-refresh {
+    font-size: 16px;
+    padding-left: 4px;
+    padding-right: 4px;
+    color: #fff;
+    cursor: pointer;
+}
+
+.cal-entry-content .fa:hover {
+    color: #228b22;
+}
+
+.cal-entry-content .fa-clock {
+    font-size: 13px;
+    margin-left: 3px;
+    margin-top: 3px;
+    cursor: pointer;
+}
+
+.cal-entry-time .cal-entry-hour {
+    font-size: 12px;
+    margin-left: 8px;
+    padding: 1px 4px;
+    color: var(--text-primary);
+    background: var(--bg-primary);
+    opacity: 0.85;
+    display: inline-block;
+    border-radius: 3px;
+}
+
+.cal-daygrid-content {
+    font-size: 12px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.cal-list-content {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+    overflow: hidden;
+}
+
+.cal-list-content .cal-list-title {
+    font-size: 13px;
+}
+
+/* Meeting details overlay */
+.event-details {
+    min-width: 400px;
+    max-width: 600px;
+}
+
+.event-details .header {
+    padding: 10px;
+    min-height: 60px;
+    max-height: 100px;
+}
+
+.event-details .header .controls {
+    float: right;
+}
+
+.event-details .header .title {
+    padding-top: 10px;
+    font-size: 25px;
+    padding-left: 15px;
+    color: var(--text-primary);
+}
+
+.event-details .body {
+    max-height: calc(100vh - 200px);
+    overflow-y: auto;
+}
+
+.event-details .body .detail {
+    padding: 5px;
+    width: 100%;
+    display: block;
+    margin-bottom: 10px;
+}
+
+.event-details .body .detail .title {
+    font-size: 20px;
+    width: 35px;
+    display: inline-block;
+    vertical-align: top;
+    color: var(--text-primary);
+}
+
+.event-details .body .detail .info {
+    font-size: 14px;
+    display: inline-block;
+    width: calc(100% - 43px);
+    color: var(--text-primary);
+}
+
+.event-details .body .detail .info span {
+    display: block;
+}
+
+.event-details .body .detail .info span.info {
+    font-size: 12px;
+    color: var(--text-tertiary);
+}
+
+.event-details .body .detail .info .icon {
+    float: right;
+}
+
+.event-details .body .detail .attendees {
+    padding-left: 40px;
+}
+
+.event-details .body .detail .attendees .attendee {
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border-primary);
+}
+
+.event-details .body .detail .attendees .attendee:last-child {
+    border-bottom: none;
+}
+
+.event-details .body .detail .attendees .attendee .name {
+    font-size: 12px;
+    display: block;
+    color: var(--text-primary);
+}
+
+.event-details .body .detail .attendees .attendee .email {
+    font-size: 11px;
+    color: var(--text-tertiary);
+    display: block;
+}
+
+/* Worklog options */
+.worklog-options {
+    float: right;
+}
+
+.worklog-options .fa {
+    font-size: 16px;
+    margin-left: 5px;
+    cursor: pointer;
+}
+
+/* Toolbar */
+.info-badge {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+}
+
+.info-badge .badge-count {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    font-size: 10px;
+    font-weight: 600;
+    z-index: 10;
+    background-color: var(--warning);
+    color: var(--text-dark, #1a1a1a);
+    border-radius: 9999px;
+    padding: 0 5px;
+    min-width: 16px;
+    height: 16px;
+    line-height: 16px;
+    text-align: center;
+    pointer-events: none;
+}
+
+.cal-view-dropdown {
+    width: 120px;
+}

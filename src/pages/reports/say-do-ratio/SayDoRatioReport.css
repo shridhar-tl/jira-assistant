@@ -1,0 +1,103 @@
+.say-do-report {
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+}
+
+.say-do-report-gadget .gadget .p-panel-content {
+    overflow-y: auto;
+}
+
+/* Sidebar - collapses by shrinking width, rendered on right */
+.say-do-sidebar-container {
+    flex: 0 0 auto;
+    overflow: hidden;
+    border-left: 2px solid #ebecf0;
+    align-self: stretch;
+}
+
+.mode-dark .say-do-sidebar-container {
+    border-left-color: #374151;
+}
+
+.say-do-sidebar-container.open {
+    width: 500px;
+    transition: width 500ms 50ms;
+}
+
+.say-do-sidebar-container.closed {
+    width: 0;
+    border-left-width: 0;
+    transition:
+        width 500ms 50ms,
+        border-left-width 500ms 50ms;
+}
+
+.say-do-sidebar-block {
+    width: 500px;
+    height: 100%;
+    overflow-y: auto;
+}
+
+.say-do-sidebar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 15px;
+    background-color: #4a90d9;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    color: white;
+}
+
+.mode-dark .say-do-sidebar-header {
+    background-color: #1e3a5f;
+}
+
+.say-do-sidebar-title {
+    font-weight: 600;
+    font-size: 14px;
+    margin: 0;
+    color: white;
+}
+
+.say-do-sidebar-content {
+    height: calc(100% - 60px);
+    position: relative;
+    overflow-y: auto;
+}
+
+/* Sprint info cell */
+.sprint-info-cell {
+    position: relative;
+}
+
+.sprint-info-cell .fa-info-circle {
+    transition: opacity 0.2s;
+}
+
+.sprint-info-cell:hover .fa-info-circle {
+    opacity: 1 !important;
+}
+
+.sprint-info-cell.selected {
+    font-weight: bold;
+}
+
+.sprint-info-cell.selected .fa-info-circle {
+    color: #22c55e;
+    opacity: 1 !important;
+}
+
+/* Log indicator styles */
+.log-indi-cntr {
+    text-align: center;
+}
+
+/* No background highlight on hover for certain rows */
+.no-log-bg-hl tr:hover {
+    background-color: inherit !important;
+}

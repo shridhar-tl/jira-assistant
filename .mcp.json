@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "fluxo-ui": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "fluxo-ui-mcp"
+      ],
+      "env": {}
+    }
+  }
+}

@@ -1,0 +1,52 @@
+title,content
+"Installation options offered by Jira Assistant","Jira Assistant (JA) offers three ways to use it: the Browser Extension, the hosted Web version, and the Jira Cloud app.
+The Browser Extension installs from each browser's web store, downloads quickly because it is compact, supports all authentication methods, offers Quick View access to dashboards, works offline after install, and needs no admin privileges. It must be installed individually per user and may not be officially supported in some Chromium browsers like Vivaldi.
+The Jira Cloud app installs inside Jira Cloud, stores authentication securely, needs no per-user installation, and becomes available to everyone in the Jira instance once installed.
+The Web version needs no installation and runs in any browser.
+A Windows desktop app for Jira Assistant is planned and coming soon."
+"Where to install Jira Assistant from (store links)","Jira Assistant (JA) can be installed from the following locations.
+Chrome: https://chrome.google.com/webstore/detail/jira-assistant/momjbjbjpbcbnepbgkkiaofkgimihbii
+Firefox: https://addons.mozilla.org/en-US/firefox/addon/jira-assistant
+Edge: https://microsoftedge.microsoft.com/addons/detail/aoenpdbabcjnjbjpegeenodfknllmaoi
+Opera: https://addons.opera.com/en/extensions/details/jira-assistant
+Web version (no install): https://app.jiraassistant.com
+Jira Cloud app: https://marketplace.atlassian.com/apps/1221570
+For Firefox, a self-distributed package is also available if the add-on cannot be found in the store.
+Extensions for other browsers are not yet available, but the Web version works in any browser; if demand grows, more browser extensions may be released."
+"Which Jira Assistant version suits me","To choose a Jira Assistant (JA) edition: pick the Browser Extension if you want offline use and the most secure single-click authentication without storing credentials, and you do not need Jira admin rights.
+Pick the Web version if you do not want to install anything; it is available at https://app.jiraassistant.com and does not require your Jira instance to be exposed on the internet.
+Pick the Jira Cloud app if you use Jira Cloud and want everyone in your organization to access Jira Assistant from within Jira; the Cloud app uses OAuth internally and stores no credentials.
+The most secure setup is using the Web version integrated with the extension and single-click authentication."
+"Browsers supported by Jira Assistant","Jira Assistant (JA) is available as a browser extension for Chrome, Firefox, Edge and Opera, and these are the officially supported browsers.
+The Web version of Jira Assistant works in any modern browser including Chrome, Firefox, Edge and more.
+Vivaldi is known to work well but is not officially supported. A few users run Jira Assistant on other browsers with minor workarounds.
+Jira Assistant can also be installed as an app within Jira Cloud so all employees in the organization can use it."
+"Marketplace name JAssistant for Jira Assistant","In the Atlassian Marketplace, Jira Assistant is listed under a different name, JAssistant, because Atlassian does not allow extension names containing its product name.
+The Jira Cloud app of Jira Assistant can be installed from the Atlassian Marketplace at https://marketplace.atlassian.com/apps/1221570 and users can add a rating or review on the marketplace listing.
+Rating and reviewing Jira Assistant on the respective stores helps it reach a wider audience and motivates continued improvements."
+"Purpose of the Jira Assistant Web version","The Web version of Jira Assistant (JA Web) was introduced to support beta testing and to deliver quicker fixes for major bugs, since builds can be deployed immediately without store approval delays.
+JA Web gives users access to the next version of Jira Assistant every day, and lets people who cannot install the app still use JA through OAuth integration with Jira.
+It can run standalone, storing its data in the browser cache, or alongside the extension where it acts as an always-updated front end while the extension handles data and authentication.
+JA Web is ideal for users who do not want anything installed and for existing extension users who want the latest features before they are published."
+"Difference between Jira Assistant extension and web version","The Jira Assistant (JA) extension and Web version share the same code, so functionality and data handling are consistent.
+When JA Web is integrated with the extension, it does not independently store or transmit data; it relies on the extension and exchanges data through a secure post-message API, keeping data handling and presentation separate.
+Benefits of the Web version: it can run standalone with its own settings or just integrate with the extension to use the latest features while the extension handles authentication and data; it gets swift bug fixes; updates are immediate; and it is accessible anywhere with internet.
+Limitation: without the extension, JA Web does not support quick single-click integration, and because builds publish on every change, the Web version can occasionally be briefly unstable."
+"Switching between Jira Assistant Web and extension","With Jira Assistant (JA), you can switch between the Web version and the extension at any time without losing configuration or data. To switch, click 'Web' in the top right corner of the page.
+If JA Web crashes and you cannot switch back, open the extension options page: in Chrome, right-click the JA icon and choose 'Options'; in Firefox, go to 'Manage Extension' then the 'Options' tab.
+When integrated, all settings stay stored in the extension and the Web version simply communicates with the extension to display the data."
+"Where Jira Assistant Web stores its data","Similar to the extension, the Web version of Jira Assistant (JA Web) stores its data in your browser cache only. JA Web is a static site and does not use any server-side or cloud-based storage.
+When JA Web is integrated with the extension, it does not store its own data; the extension holds the data and settings, and JA Web only displays it.
+This means no Jira data leaves your browser when using Jira Assistant Web."
+"Connecting Jira Assistant to multiple Jira instances","Jira Assistant (JA) lets you integrate with more than one Jira instance and switch between them easily. After authenticating with a Jira instance in your browser, you can switch instances by clicking the Jira domain name shown in the header.
+To add another instance, click the profile icon in the top right corner of Jira Assistant and choose 'Integrate with new instance' under the 'Switch Instance' header, then follow the integration steps.
+This makes Jira Assistant convenient for users who work across several Jira servers or accounts."
+"Self-hosting the Jira Assistant Web version","The Web version of Jira Assistant (JA Web) is a static website, so organizations can self-host it internally instead of installing the extension for every user.
+Self-hosting is useful when you prefer an internal deployment or when using JA Web with a self-hosted/Data Center Jira instance, and it can be set up with minimal configuration changes based on how Jira Assistant integrates with your Jira instance.
+For OAuth on Data Center instances, self-hosting with a custom implementation is required; contact the developer for assistance."
+"Why a browser extension cannot run scheduled or background jobs","Jira Assistant (JA) is a front-end-only tool with no backend that has access to your Jira instance, so it cannot run scheduled actions such as automatically generating and emailing a report on a daily basis.
+Browser extensions are not meant for background task processing and cannot be relied upon for it, as such tasks could fail and cause problems.
+Jira Assistant does have minimal backend APIs used only for Planning Poker and OAuth token exchange; these do not have access to any Jira data and do not know which Jira instances you connect to."
+"Updating the Jira Assistant browser extension","The Jira Assistant (JA) extension is updated by each browser's web store, and approval times differ: some stores approve within hours while others can take a week or more. Updates are sometimes rolled out in phases to a percentage of users at a time.
+If your Chrome extension seems stuck on an old version, you can open chrome://extensions and click update to immediately update Jira Assistant, or wait for the automatic phased rollout.
+Browser-specific fixes or major refactors may be published to one browser first for testing, so not all browsers always receive updates at the same time. The Web version of Jira Assistant always receives fixes fastest."

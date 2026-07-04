@@ -1,0 +1,44 @@
+name: Build & Deploy JA
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ package ]
+  pull_request:
+    branches: [ package ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    env:
+      CI: ""
+
+    strategy:
+      matrix:
+        node-version: [18.x]
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - run: npm install --force
+    - run: npm run build-web
+    - run: git config --global user.name 'GitHub Web Deploy CI'
+    - run: git config --global user.email 'shridhar.tl@gmail.com'
+    - run: git remote set-url origin https://shridhar-tl:${{ secrets.COMMIT_KEY }}@github.com/${{ github.repository }}
+    - run: npm run deploy-web
+    - run: npm run build
+    - run: git push origin --delete  ja-extn
+    - run: npm run publish-extn
+    - name: Extract version
+      id: extract_version
+      uses: Saionaro/extract-package-version@v1.0.6
+      
+    - name: Save build package
+      uses: actions/upload-artifact@v4
+      with:
+        name: JA_Build_${{ steps.extract_version.outputs.version }}
+        path: build/

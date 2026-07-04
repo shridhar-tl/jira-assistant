@@ -1,0 +1,23 @@
+.scroll-table-container table.pivot-group-table {
+    width: 100%;
+    min-width: 100%;
+}
+
+.scroll-table-container table.pivot-group-table thead th,
+.scroll-table-container table.pivot-group-table thead td,
+.scroll-table-container table.pivot-group-table tbody th,
+.scroll-table-container table.pivot-group-table tbody td,
+.scroll-table-container table.pivot-group-table tfoot th,
+.scroll-table-container table.pivot-group-table tfoot td {
+    border: 1px solid var(--border-primary);
+    padding: 6px 10px;
+    vertical-align: middle;
+}
+
+.scroll-table-container table.pivot-group-table thead th,
+.scroll-table-container table.pivot-group-table thead td {
+    text-align: center;
+    text-transform: none;
+    letter-spacing: normal;
+    font-size: 13px;
+}

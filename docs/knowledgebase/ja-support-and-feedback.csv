@@ -1,0 +1,40 @@
+title,content
+"Getting support for Jira Assistant","Jira Assistant (JA) is developed and maintained by a single developer, so responses may not always be immediate due to the volume of requests and other priorities.
+For questions, post in GitHub Discussions at https://github.com/shridhar-tl/jira-assistant/discussions. To report a bug, raise an issue with details, screenshots and any console errors at https://github.com/shridhar-tl/jira-assistant/issues. The developer can also be emailed at shridhar.tl@gmail.com.
+Always include exact information about the problem and screenshots so it can be investigated. Note that not every issue can be resolved, and some may be deprioritized."
+"How quickly issues are resolved in Jira Assistant","Jira Assistant (JA) is a free tool maintained by one developer, so support timing varies. Most blocking issues are typically resolved within the weekend of the current week.
+Providing precise details, screenshots and console errors when reporting greatly improves the chance and speed of a fix.
+New feature requests are prioritized based on popularity, and customizations specific to a single user's edge case are generally not prioritized."
+"Requesting new features in Jira Assistant","You can request a new feature for Jira Assistant (JA) by raising a ticket on the issue tracker with a detailed description; prioritization depends on developer availability and how broadly useful the feature is.
+If you urgently need a feature and are willing to make a one-time contribution for it, you can contact the developer by email after raising the ticket to discuss prioritization.
+Features must be generic and useful to all users; requests useful only to a specific user are generally not added to Jira Assistant."
+"Paying to prioritize a feature in Jira Assistant","Jira Assistant (JA) is free and has no paid tier, but you can sometimes get a specific feature prioritized if you are willing to pay for its development.
+Prioritization still depends on the developer's availability and how useful the feature is to other users; very specific or edge-case requests may not be prioritized soon.
+If you want a Web, mobile, desktop or browser extension built, you can contact the developer by email with detailed requirements to discuss further."
+"Release schedule of Jira Assistant","There is no fixed interval for Jira Assistant (JA) releases; they usually happen on weekends, but major fixes can be released any day.
+For planned feature releases, you will typically see a notification inside Jira Assistant with the expected publish date.
+The Web version always has the latest build and acts as a preview of new features and fixes, so use JA Web if you want to stay most up to date."
+"Why extension updates differ across browsers","Jira Assistant (JA) updates are usually submitted to all browser stores at the same time, but each store's approval time differs - some approve within hours, others take a week or more.
+Updates may also be rejected during review due to a library vulnerability, which can delay a new build, and some updates roll out in phases so you may need to wait your turn or update manually from your browser's extensions page.
+Browser-specific fixes or major refactors may be published to one browser first for testing. The Web version of Jira Assistant always receives fixes fastest."
+"How many people use Jira Assistant","Based on web store analytics, more than 100,000 individual users use the Jira Assistant (JA) browser extensions across various browsers, and the JA Cloud app is installed in around 500+ Jira instances.
+The number of people using the Web version and the Cloud app for everyday use is unknown because no analytics capture that.
+Jira Assistant also maintains a high end-user rating across the stores."
+"Roadmap and version history of Jira Assistant","To see upcoming features and fixes for Jira Assistant (JA), check the issue tracker and the Version History page, linked from the More menu on the Jira Assistant website.
+The Version History page lists what was implemented in each version along with upcoming versions and expected release dates.
+The Web version always carries the latest build, so it previews new features and fixes before they reach the extensions."
+"Jira Assistant has no ads","Jira Assistant (JA) does not display advertisements and has no plans to ever do so.
+JA was built to help users, and showing ads would inconvenience them, so it will never be implemented.
+Jira Assistant will continue to be free and ad-free."
+"Holiday and leave configuration in Jira Assistant","Jira Assistant (JA) does not currently support configuring public holidays or leaves/time-off officially; by default only weekends are treated as non-working days.
+Holiday API integration is a planned feature tracked as #26 and may be incorporated into the upcoming Planning module; you can follow that issue and add your feedback.
+For accurate worklog dates and times in the meantime, make sure Jira is configured with your correct local timezone, since Jira Assistant uses your local timezone by default."
+"Marking all notifications as read in Jira Assistant","Because of how notifications are derived in Jira Assistant (JA) from changes in Jira since your last interaction, there is currently no way to mark all notifications as read at once.
+Opening a Jira ticket stops its related notifications from being pulled again, so the only way to clear a notification is to open the individual ticket.
+Better options may come in the future; this is tracked as issue #156. Comment-change notifications are also not yet triggered (issue #16)."
+"Can Jira Assistant write user stories for me","Jira Assistant (JA) does not currently have any feature that writes user stories on your behalf; its primary purpose is reporting, with some minimal planning features and the ability to import stories and worklogs.
+More functionality is being planned for the future, and details are available on the issue tracker.
+If you have a specific requirement, raise a new ticket so it can be prioritized based on popularity."
+"Contacting the developer for custom work","Jira Assistant (JA) is maintained by an independent developer, who may find it hard to accommodate individual calls or screen-sharing sessions.
+The recommended way to get help is to raise a support ticket on the issue tracker or use the discussions forum, including full details and screenshots.
+If you want a custom Web, mobile, desktop or browser extension built and are willing to pay, you can email the developer at shridhar.tl@gmail.com with detailed requirements."

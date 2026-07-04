@@ -1,0 +1,197 @@
+div.src-editable-grid-container {
+    overflow-x: auto;
+    overflow-y: auto;
+    width: 100%;
+}
+
+div.src-editable-grid-container table.src-editable-grid {
+    outline: none;
+    border: 1px solid #e6e6e6;
+    border-top: 0px;
+    font-size: 13px;
+    user-select: none;
+}
+
+div.src-editable-grid-container table.src-editable-grid td,
+div.src-editable-grid-container table.src-editable-grid th {
+    padding: 4px;
+    border: 1px solid #e6e6e6;
+    cursor: cell;
+    overflow: hidden;
+    white-space: nowrap;
+    max-width: 800px;
+}
+
+div.src-editable-grid-container table.src-editable-grid td input,
+div.src-editable-grid-container table.src-editable-grid th input,
+div.src-editable-grid-container table.src-editable-grid td input:focus,
+div.src-editable-grid-container table.src-editable-grid th input:focus {
+    outline: none;
+    box-shadow: none;
+    font-size: inherit;
+    font-family: inherit;
+    line-height: inherit;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    border: 0px;
+}
+
+div.src-editable-grid-container table.src-editable-grid tbody tr td.selected,
+div.src-editable-grid-container table.src-editable-grid thead tr th.selected,
+div.src-editable-grid-container table.src-editable-grid tfoot tr td.selected {
+    background-color: #deedf8;
+}
+
+div.src-editable-grid-container table.src-editable-grid tbody tr td.selected.sel-start,
+div.src-editable-grid-container table.src-editable-grid thead tr th.selected.sel-start,
+div.src-editable-grid-container table.src-editable-grid tfoot tr td.selected.sel-start {
+    background-color: #fff;
+}
+
+div.src-editable-grid-container table.src-editable-grid tbody tr td.selected div.cell-repeater,
+div.src-editable-grid-container table.src-editable-grid thead tr th.selected div.cell-repeater,
+div.src-editable-grid-container table.src-editable-grid tfoot tr td.selected div.cell-repeater {
+    position: relative;
+    float: right;
+    height: 6px;
+    width: 6px;
+    right: -8px;
+    cursor: crosshair;
+    background-color: #2587d1;
+    bottom: -13px;
+}
+
+div.src-editable-grid-container table.src-editable-grid tbody tr td.selected div.cell-repeater.with-data,
+div.src-editable-grid-container table.src-editable-grid thead tr th.selected div.cell-repeater.with-data,
+div.src-editable-grid-container table.src-editable-grid tfoot tr td.selected div.cell-repeater.with-data {
+    bottom: -21px;
+}
+
+div.src-editable-grid-container table.src-editable-grid tbody tr td.sel-top,
+div.src-editable-grid-container table.src-editable-grid thead tr th.sel-top,
+div.src-editable-grid-container table.src-editable-grid tfoot tr td.sel-top {
+    border-top-color: #2587d1;
+}
+
+div.src-editable-grid-container table.src-editable-grid tbody tr td.sel-right,
+div.src-editable-grid-container table.src-editable-grid thead tr th.sel-right,
+div.src-editable-grid-container table.src-editable-grid tfoot tr td.sel-right {
+    border-right-color: #2587d1;
+}
+
+div.src-editable-grid-container table.src-editable-grid tbody tr td.sel-bottom,
+div.src-editable-grid-container table.src-editable-grid thead tr th.sel-bottom,
+div.src-editable-grid-container table.src-editable-grid tfoot tr td.sel-bottom {
+    border-bottom-color: #2587d1;
+}
+
+div.src-editable-grid-container table.src-editable-grid tbody tr td.sel-left,
+div.src-editable-grid-container table.src-editable-grid thead tr th.sel-left,
+div.src-editable-grid-container table.src-editable-grid tfoot tr td.sel-left {
+    border-left-color: #2587d1;
+}
+
+div.src-editable-grid-container table.src-editable-grid tbody tr td.copy-top,
+div.src-editable-grid-container table.src-editable-grid thead tr th.copy-top,
+div.src-editable-grid-container table.src-editable-grid tfoot tr td.copy-top {
+    border-top: 1px dashed #2587d1;
+}
+
+div.src-editable-grid-container table.src-editable-grid tbody tr td.copy-right,
+div.src-editable-grid-container table.src-editable-grid thead tr th.copy-right,
+div.src-editable-grid-container table.src-editable-grid tfoot tr td.copy-right {
+    border-right: 1px dashed #2587d1;
+}
+
+div.src-editable-grid-container table.src-editable-grid tbody tr td.copy-bottom,
+div.src-editable-grid-container table.src-editable-grid thead tr th.copy-bottom,
+div.src-editable-grid-container table.src-editable-grid tfoot tr td.copy-bottom {
+    border-bottom: 1px dashed #2587d1;
+}
+
+div.src-editable-grid-container table.src-editable-grid tbody tr td.copy-left,
+div.src-editable-grid-container table.src-editable-grid thead tr th.copy-left,
+div.src-editable-grid-container table.src-editable-grid tfoot tr td.copy-left {
+    border-left: 1px dashed #2587d1;
+}
+
+div.src-editable-grid-container table.src-editable-grid .src-status-cell {
+    background-color: #f4f5f8;
+    color: #5d5c5c;
+    width: 32px;
+    text-align: center;
+    position: sticky;
+    left: 0;
+    z-index: 10;
+}
+
+div.src-editable-grid-container table.src-editable-grid thead tr th {
+    color: #5d5c5c;
+    background-color: #f4f5f8;
+    height: 30px;
+    width: 140px;
+    min-width: 100px;
+    padding-right: 4px;
+    padding-left: 4px;
+    border-top-width: 2px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+div.src-editable-grid-container table.src-editable-grid thead tr th.src-status-cell {
+    z-index: 11;
+    min-width: 28px;
+}
+
+div.src-editable-grid-container table.src-editable-grid thead tr th div.h-resizer-r,
+div.src-editable-grid-container table.src-editable-grid thead tr th div.h-resizer-l {
+    width: 3px;
+    height: 100%;
+    cursor: col-resize;
+}
+
+div.src-editable-grid-container table.src-editable-grid thead tr th div.h-resizer-r:hover,
+div.src-editable-grid-container table.src-editable-grid thead tr th div.h-resizer-l:hover {
+    background-color: #deedf8;
+}
+
+div.src-editable-grid-container table.src-editable-grid thead tr th div.h-resizer-l {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+div.src-editable-grid-container table.src-editable-grid thead tr th div.h-resizer-r {
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+
+div.src-editable-grid-container table.src-editable-grid tbody tr td {
+    color: #0a0a0a;
+    background-color: #fff;
+    height: 30px;
+    max-height: 30px;
+    overflow: hidden;
+}
+
+div.src-editable-grid-container table.src-editable-grid tfoot tr td {
+    color: #5d5c5c;
+    height: 30px;
+    width: 140px;
+}
+
+div.src-editable-grid-container input.string-editor,
+div.src-editable-grid-container input.string-editor:focus {
+    outline: none;
+    box-shadow: none;
+    font-size: inherit;
+    font-family: inherit;
+    line-height: inherit;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    border: 0px;
+}

@@ -1,0 +1,31 @@
+title,content
+"What data Jira Assistant stores and where","Jira Assistant (JA) stores all its data only in your browser's local storage and never sends your information outside your browser.
+The data it stores includes settings, the Jira URL, and Jira profile details such as your email/user id. If you use credential-based authentication, the credentials you provide are also stored in the browser cache. It also stores the schema of any Custom Report or Report Builder report you create.
+No sensitive content from your Jira issues is stored. More details are in the privacy policy at https://www.jiraassistant.com/privacy-policy"
+"Is data encrypted and is Jira Assistant safe to use","Jira Assistant (JA) keeps all data in your browser's local storage in an unencrypted format, but it never stores or sends any of your information outside your browser, and it does not store credentials or other sensitive information beyond what authentication requires.
+Because nothing leaves the browser, there are no known security concerns about the stored data.
+To learn what kind of data is stored, see the privacy policy at https://www.jiraassistant.com/privacy-policy"
+"Does Jira Assistant collect or transmit my data","Jira Assistant (JA) stores all your data in your browser local storage only and does not send any of your information to external servers or cloud storage.
+No credentials or other sensitive information is transmitted or stored externally. Jira Assistant has no backend that accesses your Jira instance.
+For full details, visit the privacy policy at https://www.jiraassistant.com/privacy-policy"
+"Anonymous analytics and exception tracking in Jira Assistant","Jira Assistant (JA) can optionally send anonymous usage analytics and exception reports to help the developer understand which features are used and to fix errors quickly; no personal information is captured.
+You can enable or disable 'Enable tracking user actions (anonymous, Google Analytics)' and 'Enable tracking exceptions (anonymous)' from the Advanced settings page in Jira Assistant.
+These options are described further in the Jira Assistant privacy policy."
+"Security of the Jira Assistant Cloud app","The Cloud version of Jira Assistant (JAssistant) is designed to be highly secure compared to the extension and web versions. It uses OAuth exclusively for authentication and authorization, following security best practices.
+Jira Assistant has no server-side implementation; all processing happens in the user's browser, which eliminates injection-related risks.
+Some basic information such as email addresses and worklogs may be stored in the browser cache, but this data is not sensitive and poses no significant security risk. Atlassian also frequently scans the libraries used in its ecosystem."
+"History of security vulnerabilities in Jira Assistant","To date there have been no reported security vulnerabilities in Jira Assistant (JAssistant) itself. There have been occasional vulnerabilities reported in some third-party libraries it uses.
+The developer monitors updates from multiple sources including the Chrome and Firefox stores, GitHub and Atlassian. When a library vulnerability is reported, the first step is to update to the latest library version, which usually resolves it.
+If updating is insufficient, the developer switches to an alternative library or removes the vulnerable code while keeping only what Jira Assistant needs, thereby mitigating the issue."
+"How Jira Assistant keeps its components up to date","The third-party components used by Jira Assistant (JAssistant) are updated with every new version published, and library updates are prioritized based on the severity of any reported vulnerability.
+The developer stays informed about vulnerabilities in dependencies by regularly monitoring multiple sources, evaluates each issue's impact, and typically resolves it by updating the affected library to its latest version.
+This proactive approach keeps Jira Assistant secure and current with the latest fixes."
+"Security impact of dependency vulnerabilities on your Jira Cloud","Atlassian frequently scans all libraries used in its ecosystem, and the Jira Assistant (JAssistant) developer receives continuous vulnerability reports. If a vulnerability affects runtime operation, the app is updated and redeployed immediately.
+Some vulnerabilities are build-time only and may be false positives within the developer's control, so they may not need immediate action.
+The Cloud version of Jira Assistant is especially secure: it uses OAuth only, has no server-side code, and processes everything in the browser, so injection risks are eliminated and only non-sensitive data like email and worklogs may be cached."
+"Does Jira Assistant use dynamic code injection","Jira Assistant (JAssistant) does not use dynamic code injection during build or deployment, so there is no risk of code being maliciously modified at build or deploy time.
+All libraries integrated into Jira Assistant are reputable and widely used with millions of weekly downloads.
+While the browser extension and web version may include some additional libraries for extra features, these do not apply to the Jira Assistant Cloud app, which can be trusted to be free of dynamically included code."
+"Does Jira Assistant use outdated vulnerable libraries","Jira Assistant (JAssistant) does not use old versions of components known to contain security vulnerabilities; all libraries are updated to their latest versions with each release.
+There may be a few exceptions for specific libraries, but these are not outdated and have no known reported vulnerabilities.
+This commitment to up-to-date, secure libraries keeps Jira Assistant operating safely and efficiently."

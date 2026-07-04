@@ -1,0 +1,49 @@
+title,content
+"Reports available in Jira Assistant","Jira Assistant (JA) helps users generate various reports easily. Inbuilt reports include the Worklog (Time sheet) Report, Sprint Report, Estimate vs Actual Report, and Say-Do-Ratio Report.
+Beyond the inbuilt reports, you can build your own using the Custom Report or Report Builder modules, and there is also a Pivot Report for advanced summarization.
+Any report can be exported to CSV, Excel and PDF from the icon at the top right corner of the report, and report definitions you create can be shared with other users."
+"Worklog (Time sheet) Report in Jira Assistant","The Worklog Report pulls worklog details from Jira and generates a report; it is the most used and liked feature of Jira Assistant (JA).
+To use it, choose a date (or click refresh to load), and pick users by clicking the users icon; if a user list exists in 'User groups', it is used automatically.
+Open report settings to set the log hour format, log breakup (sum same-ticket same-day worklogs or show separately), report timezone, whether estimate columns show, and a JQL filter to restrict by project, issue type or status.
+Configure each user's and group's timezone correctly in User Groups and settings so times display accurately."
+"Worklog Report tabs and views in Jira Assistant","The Worklog Report in Jira Assistant (JA) presents data across several tabs.
+Grouped [User daywise] shows worklog data nested by user groups, users and tickets as rows, with dates from the selected range as columns; you can click a ticket/date cell to add a worklog quickly.
+Summary [User project wise] shows total hours grouped by user group and user as rows, and project and issue type as columns.
+Flat (Groupable) shows all worklogs in a flat, sortable table that can be grouped by one or more columns via drag-and-drop into the 'Group by' area.
+The report can be exported to CSV, Excel and PDF."
+"Adding columns or custom fields to the Worklog Report","The Worklog Report in Jira Assistant (JA) supports adding any Jira native or custom columns. Click the configure icon at the top right corner of the report and open the 'Field list' tab, then select the fields you want shown.
+To show a parent ticket's summary instead of just its link, select the 'Parent' field in the Field list and check the box below it.
+Some fields may be hidden because their type is unsuitable for the report, or because you lack permission to pull them or they are managed by another Jira plugin; contact the developer if an expected field is missing."
+"Why issue summary is truncated in the Worklog Report","In the Worklog Report of Jira Assistant (JA), the issue summary is truncated to make room for additional data, a decision based on years of user feedback to avoid excessive scrolling.
+You can still see the full summary by hovering over a row, which shows the complete text as a tooltip.
+If you would prefer a different behavior, you can share feedback with the developer or on the issue tracker so it can be prioritized."
+"Cost / Billing report in Jira Assistant","Jira Assistant (JA) can generate a Cost report from the Worklog Report. It is disabled by default.
+To enable it, first add an hourly cost for individual users on the User Groups screen, then turn on 'Show Cost Report' in the Worklog Report settings and regenerate the report.
+A 'Cost Report' tab then appears with the cost data. If the tab does not appear, ensure the cost-per-hour values in User Groups are valid and check the console for errors."
+"Tracking billable vs non-billable hours in Jira Assistant","Jira Assistant (JA) does not have a direct billable/non-billable feature, but you can achieve it with a workaround.
+Add labels to the issues that do not require billing, then apply a JQL filter in the Worklog Report to exclude those labeled issues.
+This lets you separate billable from non-billable work in Jira Assistant reports without a dedicated feature."
+"Estimate vs Actual Report in Jira Assistant","The Estimate vs Actual Report in Jira Assistant (JA) compares estimated effort against actual effort for projects and individual Jira issues, helping teams evaluate performance. The output is a dynamic bar chart per user showing estimated and actual effort side by side.
+Actual effort is calculated from worklogs within the selected date range. You can estimate by time or by story points, and when using story points you enter an 'Hours per Story Point' value for conversion.
+Inputs include user list (auto-populated from User Groups), date range, projects, tickets list, and estimate type; either projects or tickets is mandatory. Click Generate to produce the chart in the Chart tab."
+"Say-Do-Ratio Report in Jira Assistant","The Say-Do-Ratio Report was added in Jira Assistant (JA) v2.59 to summarize sprint achievements and track progress sprint over sprint.
+Configure it via the edit icon: select sprint boards, the number of completed sprints to display (minimum 3), the number of sprints used for velocity (3 to 9; 7 matches Jira's default), and whether non-working days count toward cycle time. Click Generate Report; large selections take longer to fetch.
+The report shows a table with Board Name, Velocity (with percentage change), Say-Do Ratio, Cycle Time and per-sprint columns, plus individual charts per board. It supports export to Excel, PDF and CSV (charts export to PDF only)."
+"Say-Do-Ratio Report works best on Jira Cloud","The Say-Do-Ratio Report in Jira Assistant (JA) is designed for Jira Cloud and performs best when installed as the JA Cloud app; standalone or Data Center Jira users may find many functions unavailable.
+It needs access to change logs via a new Jira API still in preview, currently available only to Jira Cloud users; if you see warnings that change logs cannot be retrieved, this is usually why, and the API is rolling out region by region.
+To handle stories removed mid-sprint, the JA Cloud app stores the sprint's starting issue list as a source of truth, so accuracy is best for upcoming sprints; extension and web users have greater limitations here."
+"Sprint Report in Jira Assistant","Jira Assistant (JA) includes a Sprint Report among its inbuilt reports.
+The Sprint Report is not available when using OAuth authentication, the Web version with OAuth, or the Jira Cloud app, due to API limitations.
+Because the Sprint Report already provides most needed functionality and is used less frequently, a new universally compatible report is being considered to eventually replace it. The 'Exclude hours logged out of sprint' option in its Worklog Detail page is currently not functional."
+"User list selection is not saved in reports","In any report in Jira Assistant (JA), the user-list popup does not save changes permanently; the list resets when you reload the page.
+This is intentional: to generate a report for only a few users, simply remove the others from the popup and generate; on reload, your saved users/groups return.
+To save users permanently, add them in Settings > User groups. Because of this, no separate per-report user selection is needed in Jira Assistant."
+"Old Worklog Report deprecation in Jira Assistant","The original Worklog Report in Jira Assistant (JA) is being deprecated now that a new Worklog Report includes all of its functionality plus more.
+There is no fixed date yet for removing the old report, and ample prior notice will be given before it is removed.
+Users are advised to switch to the new Worklog Report and report any issues so they can be resolved before the old report is removed."
+"Story Point option disabled in reports","If the Story Point option is disabled in the Worklog Report or Estimate vs Actual Report of Jira Assistant (JA), it is because Story Points is a custom field and your Jira instance may use a different field for it.
+Configure the correct field under Settings > General > Default values tab; the 'Story point' field is auto-filled with a default when you open that page.
+Once a valid field is selected, return to the report and the Story Point option will be enabled."
+"Scheduling or emailing reports automatically in Jira Assistant","Jira Assistant (JA) is a front-end-only tool with no backend access to Jira, so it cannot automatically schedule report generation or email reports on a recurring basis.
+Browser extensions are not suited to background processing, and there are no plans to add automatic report emailing.
+There is also no public API to do this, since neither Jira Assistant nor JA Web has a backend that can access your Jira instance."
