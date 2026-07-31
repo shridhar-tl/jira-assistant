@@ -1,10 +1,11 @@
-import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+
+import { useWorklogStore } from '@/stores/worklog-store';
 
 import { ChangeTracker } from '@components';
 
 import { GadgetActionType } from '@constants';
 
-import { WorklogContext } from '../common/context';
 import WorklogBarChart from '../components/shared/worklog-bar-chart';
 import DateRangePicker from '../controls/DateRangePicker';
 
@@ -13,7 +14,7 @@ import { GadgetTitle } from './constants';
 
 function WorklogBarChartGadget(props: BaseGadgetProps) {
     const [lastUpdated, setLastUpdated] = useState<Date | undefined>(undefined);
-    const worklogContext = useContext(WorklogContext) as any;
+    const { timerEntry, needReload } = useWorklogStore();
 
     const gadgetHook = useBaseGadget(props, {
         title: GadgetTitle.WorklogBarChart,
@@ -67,11 +68,7 @@ function WorklogBarChartGadget(props: BaseGadgetProps) {
             customActions={customActions}
         >
             <WorklogBarChart lastUpdated={lastUpdated} settings={settingsRef.current} setLoader={setIsLoading} />
-            <ChangeTracker
-                key={worklogContext?.timerEntry?.key}
-                enabled={!gadgetHook.isLoading && worklogContext?.needReload}
-                onChange={refreshData}
-            />
+            <ChangeTracker key={timerEntry?.key} enabled={!gadgetHook.isLoading && needReload} onChange={refreshData} />
         </GadgetContainer>
     );
 }
