@@ -9,6 +9,7 @@ import { TabPage, TabView } from '@components';
 
 import DefaultValuesTab from './DefaultValuesTab';
 import GeneralTab from './GeneralTab';
+import HolidaysTab from './HolidaysTab';
 import MeetingsTab from './MeetingsTab';
 import MenuOptionsTab from './MenuOptionsTab';
 import TimeTrackerTab from './TimeTrackerTab';
@@ -88,6 +89,11 @@ export default function GeneralSettings() {
                         <TabPage header="Worklog">
                             <div className="p-4">
                                 <WorklogTab settings={settings} isAtlasCloud={isAtlasCloud} onSave={saveSetting} />
+                            </div>
+                        </TabPage>
+                        <TabPage header="Holidays">
+                            <div className="p-4">
+                                <HolidaysTab settings={settings} onSave={saveSetting} />
                             </div>
                         </TabPage>
                         <TabPage header="Default Values">

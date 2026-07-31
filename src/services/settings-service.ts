@@ -1,4 +1,13 @@
-import { SystemUserId, dateFormats, timeFormats, DefaultWorkingDays, DefaultStartOfDay, DefaultEndOfDay } from '@/constants';
+import {
+    SystemUserId,
+    dateFormats,
+    timeFormats,
+    DefaultWorkingDays,
+    DefaultStartOfDay,
+    DefaultEndOfDay,
+    DefaultMinHours,
+    DefaultMaxHours,
+} from '@/constants';
 
 import { SettingsCategory } from '@types';
 
@@ -6,10 +15,11 @@ import type StorageService from './storage-service';
 
 const settingsDefaultValues: Record<string, any> = {
     workingDays: DefaultWorkingDays,
+    holidays: [],
     dateFormat: dateFormats[0],
     timeFormat: timeFormats[0],
-    minHours: 8,
-    maxHours: 8,
+    minHours: DefaultMinHours,
+    maxHours: DefaultMaxHours,
     commentLength: 5,
     startOfDay: DefaultStartOfDay,
     endOfDay: DefaultEndOfDay,
