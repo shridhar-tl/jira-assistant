@@ -41,14 +41,23 @@ export const sett_page_calendar = {
 
 export const sett_page_reports_UserDayWise = { logFormat: '1', breakupMode: '1', groupMode: '1' };
 
+// Work-schedule defaults. These are the single source of truth: both commonSettings
+// below and SettingsService.settingsDefaultValues read them, so no other place may
+// hardcode competing work-hour values. Declared before first use.
+export const DefaultWorkingDays = [1, 2, 3, 4, 5];
+export const DefaultStartOfDay = '10:00';
+export const DefaultEndOfDay = '19:00';
+export const DefaultMinHours = 8;
+export const DefaultMaxHours = 8;
+
 export const commonSettings = {
     [SettingsCategory.General]: {
         dateFormat: 'dd-MMM-yyyy',
         timeFormat: ' hh:mm:ss tt',
-        minHours: 8,
-        maxHours: 8,
-        startOfDay: '09:00',
-        endOfDay: '17:00',
+        minHours: DefaultMinHours,
+        maxHours: DefaultMaxHours,
+        startOfDay: DefaultStartOfDay,
+        endOfDay: DefaultEndOfDay,
         startOfWeek: 1,
     },
     [SettingsCategory.System]: {
@@ -96,10 +105,6 @@ export const momentizedDateFormats: Record<string, string> = {
 };
 
 export const timeFormats = [' HH:mm:ss', ' hh:mm:ss tt', ' HH.mm.ss', ' hh.mm.ss tt'];
-
-export const DefaultWorkingDays = [1, 2, 3, 4, 5];
-export const DefaultStartOfDay = '10:00';
-export const DefaultEndOfDay = '19:00';
 
 export const TINY_DAY_NAMES = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
 export const SHORT_DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
