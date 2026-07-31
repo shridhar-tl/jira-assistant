@@ -1,4 +1,6 @@
-import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+
+import { useWorklogStore } from '@/stores/worklog-store';
 
 import { inject } from '@services';
 
@@ -6,7 +8,6 @@ import { Button, ChangeTracker, Checkbox, showContextMenu } from '@components';
 
 import { GadgetActionType } from '@constants';
 
-import { WorklogContext } from '../common/context';
 import { Column, NoDataRow, ScrollableTable, TBody, THead } from '../components/shared/ScrollableTable';
 import Link from '../controls/Link';
 import { Dialog } from '../dialogs/CommonDialog';
@@ -36,7 +37,7 @@ export default function PendingWorklog(props: BaseGadgetProps) {
     const [selAllChk, setSelAllChk] = useState(true);
     const selectedItemRef = useRef<PendingWorklogItem | null>(null);
 
-    const worklogContext = useContext(WorklogContext) as any;
+    const { timerEntry, needReload } = useWorklogStore();
 
     const gadgetHook = useBaseGadget(props, {
         title: GadgetTitle.PendingWorklog,
@@ -236,11 +237,7 @@ export default function PendingWorklog(props: BaseGadgetProps) {
                 </TBody>
                 <NoDataRow span={7}>No worklog pending to be uploaded!</NoDataRow>
             </ScrollableTable>
-            <ChangeTracker
-                key={worklogContext?.timerEntry?.key}
-                enabled={!gadgetHook.isLoading && worklogContext?.needReload}
-                onChange={refreshData}
-            />
+            <ChangeTracker key={timerEntry?.key} enabled={!gadgetHook.isLoading && needReload} onChange={refreshData} />
         </GadgetContainer>
     );
 }
