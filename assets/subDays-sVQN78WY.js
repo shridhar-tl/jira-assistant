@@ -1,1 +1,0 @@
-import{X as e}from"./index.web-CHqi3Xh8.js";function t(t,n,r){return e(t,-n,r)}export{t};

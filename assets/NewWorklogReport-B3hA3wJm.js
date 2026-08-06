@@ -1,1 +1,0 @@
-import{t as e}from"./vendor-react-DUVq_3mI.js";import{t}from"./gadgets-CNTUzmgp.js";var n=e();function r(){return(0,n.jsx)(t,{isGadget:!1})}export{r as default};
