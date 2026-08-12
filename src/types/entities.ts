@@ -45,6 +45,7 @@ export interface SessionUser {
     endOfDay?: string;
     startOfWeek?: number;
     workingDays?: number[];
+    holidays?: NonWorkingDay[];
     commentLength?: number;
     dashboards?: Dashboard[];
     openTicketsJQL?: string;
@@ -388,6 +389,19 @@ export enum SettingsCategory {
     PageSettings = 'PSET',
 }
 
+/**
+ * A single non-working day. Public holidays and personal leave are stored the
+ * same way; only the type differs so they can be told apart in reports.
+ */
+export interface NonWorkingDay {
+    /** Date in yyyy-MM-dd form so it survives JSON round-trips without timezone drift */
+    date: string;
+    name?: string;
+    type: 'holiday' | 'leave';
+    /** Half days still expect some logged time; full days expect none */
+    isHalfDay?: boolean;
+}
+
 export interface GeneralSettings {
     dateFormat: string;
     timeFormat: string;
@@ -398,6 +412,7 @@ export interface GeneralSettings {
     endOfDay: string;
     startOfWeek: number;
     workingDays: number[];
+    holidays?: NonWorkingDay[];
     dataStore?: string;
     OLBT?: string;
     skin?: string;
