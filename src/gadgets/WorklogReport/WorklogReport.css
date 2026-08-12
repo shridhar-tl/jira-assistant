@@ -10,26 +10,27 @@
 }
 
 .worklog-report {
-    .tabview {
-        height: 100%;
-        display: flex;
-        flex-direction: column;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
 
-        .tab-content {
-            flex: 1;
+    .eui-tab-view {
+        flex: 1;
+        min-height: 0;
+
+        .eui-tab-content {
             overflow: hidden;
             display: flex;
             flex-direction: column;
 
-            .tabpanel {
-                flex: 1;
+            .eui-tab-page {
                 overflow: hidden;
                 display: flex;
                 flex-direction: column;
 
                 & > * {
                     flex: 1;
-                    overflow: hidden;
+                    min-height: 0;
                 }
             }
         }
@@ -41,7 +42,6 @@
 
     .scroll-table-container {
         overflow: auto;
-        height: 100%;
         width: 100%;
         max-width: 100%;
 
