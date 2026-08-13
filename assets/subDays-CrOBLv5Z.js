@@ -1,0 +1,1 @@
+import{X as e}from"./index.web-Bi7Bd_FU.js";function t(t,n,r){return e(t,-n,r)}export{t};
