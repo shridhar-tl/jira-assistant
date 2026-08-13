@@ -43,7 +43,7 @@ export default class OutlookOAuthService {
         try {
             console.log('Outlook: Trying to generate access token');
             result = await this.$request.execute(
-                'GET',
+                'POST',
                 outlookTokenExchangeUrl,
                 null,
                 authCode

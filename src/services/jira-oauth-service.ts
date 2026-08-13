@@ -71,7 +71,7 @@ export default class JiraAuthService {
 
         try {
             result = await this.$request.execute(
-                'GET',
+                'POST',
                 jaJiraTokenExchangeUrl,
                 null,
                 authCode
