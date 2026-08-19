@@ -1,0 +1,1 @@
+import{X as e}from"./index.web-BpHVZwf0.js";function t(t,n,r){return e(t,-n,r)}export{t};
