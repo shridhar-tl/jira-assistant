@@ -16,15 +16,15 @@ jobs:
 
     steps:
     - uses: actions/checkout@v7
-    - name: Use Node.js 22.x
-      uses: actions/setup-node@v6
+    - name: Use Node.js 24.x
+      uses: actions/setup-node@v7
       with:
-        node-version: 22.x
+        node-version: 24.x
 
     - run: npm install electron@latest electron-builder@latest --save-dev
 
     - name: Build/release Electron app
-      uses: samuelmeuli/action-electron-builder@v1
+      uses: samuelmeuli/action-electron-builder@v1.6.0
       with:
         github_token: ${{ secrets.github_token }}
 
