@@ -1,4 +1,6 @@
-import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+
+import { useWorklogStore } from '@/stores/worklog-store';
 
 import { inject } from '@services';
 
@@ -6,7 +8,6 @@ import { Button, Checkbox, showContextMenu } from '@components';
 
 import { GadgetActionType } from '@constants';
 
-import { WorklogContext } from '../common/context';
 import { Column, NoDataRow, ScrollableTable, TBody, THead } from '../components/shared/ScrollableTable';
 import { Image } from '../controls';
 import Link from '../controls/Link';
@@ -45,7 +46,7 @@ export default function MyBookmarks(props: BaseGadgetProps) {
     const [showAddPopup, setShowAddPopup] = useState(false);
     const selectedTicketRef = useRef<BookmarkItem | null>(null);
 
-    const worklogContext = useContext(WorklogContext) as any;
+    const { getElapsedTimeInSecs, startTimer, pauseTimer, resumeTimer, stopTimer } = useWorklogStore();
 
     const gadgetHook = useBaseGadget(props, {
         title: GadgetTitle.Bookmarks,
@@ -159,28 +160,47 @@ export default function MyBookmarks(props: BaseGadgetProps) {
 
             const menus = [...contextMenu];
 
-            try {
-                const result = worklogContext?.getElapsedTimeInSecs?.();
-                const isCurTicket = result?.key === b.ticketNo;
-                const isRunning = result?.isRunning;
+            const result = getElapsedTimeInSecs();
+            const isCurTicket = result?.key === b.ticketNo;
 
-                if (!isCurTicket) {
-                    menus.push({ label: 'Start timer', icon: 'fa fa-play', command: () => worklogContext.startTimer(b.ticketNo) });
+            if (!isCurTicket) {
+                menus.push({
+                    label: 'Start timer',
+                    icon: 'fa fa-play',
+                    command: () => {
+                        startTimer(b.ticketNo);
+                    },
+                });
+            } else {
+                if (result?.isRunning) {
+                    menus.push({
+                        label: 'Pause timer',
+                        icon: 'fa fa-pause',
+                        command: () => {
+                            pauseTimer();
+                        },
+                    });
                 } else {
-                    if (isRunning) {
-                        menus.push({ label: 'Pause timer', icon: 'fa fa-pause', command: worklogContext.pauseTimer });
-                    } else {
-                        menus.push({ label: 'Resume timer', icon: 'fa fa-play', command: worklogContext.resumeTimer });
-                    }
-                    menus.push({ label: 'Stop timer', icon: 'fa fa-stop', command: worklogContext.stopTimer });
+                    menus.push({
+                        label: 'Resume timer',
+                        icon: 'fa fa-play',
+                        command: () => {
+                            resumeTimer();
+                        },
+                    });
                 }
-            } catch {
-                /* Timer context not available */
+                menus.push({
+                    label: 'Stop timer',
+                    icon: 'fa fa-stop',
+                    command: () => {
+                        stopTimer();
+                    },
+                });
             }
 
             showContextMenu(e, menus);
         },
-        [contextMenu, worklogContext],
+        [contextMenu, getElapsedTimeInSecs, startTimer, pauseTimer, resumeTimer, stopTimer],
     );
 
     const hideAddPopup = useCallback(
