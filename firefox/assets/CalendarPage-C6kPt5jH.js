@@ -1,0 +1,1 @@
+import{t as e}from"./vendor-react-Bz8HQYLN.js";import{t}from"./Calendar-BEq1LO98.js";var n=e();function r(){return(0,n.jsx)(`div`,{className:`calendar-page h-full flex flex-col`,children:(0,n.jsx)(t,{isGadget:!1})})}export{r as default};
