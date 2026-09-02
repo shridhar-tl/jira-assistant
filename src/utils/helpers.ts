@@ -63,21 +63,6 @@ export function getOriginFromUrl(url: string | URL): string {
     return origin;
 }
 
-export function getUserAliases(
-    userObj: { name?: string; emailAddress?: string; accountId?: string } | undefined | null,
-    convertToLower = false,
-): string[] {
-    if (!userObj || typeof userObj !== 'object') {
-        return [];
-    }
-
-    const aliases = [userObj.name, userObj.emailAddress, userObj.accountId]
-        .filter((alias): alias is string => !!alias)
-        .map((alias) => (convertToLower ? alias.toLowerCase() : alias));
-
-    return [...new Set(aliases)];
-}
-
 export function getUserName(userObj: { name?: string; emailAddress?: string; accountId?: string }, convertToLower = false): string | null {
     let name: string | null = null;
 

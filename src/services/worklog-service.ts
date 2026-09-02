@@ -6,7 +6,6 @@ import {
     formatDate,
     getEndOfDay,
     getStartOfDay,
-    getUserAliases,
     getUserName,
     groupBy,
     leftJoin,
@@ -74,13 +73,10 @@ export default class WorklogService {
 
         let listForQuery = '';
         let users: string[];
-        let currentUserAliases: string[] = [];
 
         if (!userList || userList.length === 0) {
             listForQuery = 'currentUser()';
-            const { CurrentUser } = this.$session;
-            currentUserAliases = getUserAliases(CurrentUser, true);
-            users = [getUserName(CurrentUser) || ''];
+            users = [getUserName(this.$session.CurrentUser) || ''];
         } else {
             listForQuery = `"${userList.join('", "')}"`;
             users = userList;
@@ -114,12 +110,6 @@ export default class WorklogService {
             report[a.userName] = a;
         });
 
-        if (currentUserAliases.length > 0) {
-            currentUserAliases.forEach((alias) => {
-                report[alias] = arr[0];
-            });
-        }
-
         // Process worklogs
         for (const issue of issues) {
             const fields = issue.fields || {};
@@ -130,10 +120,7 @@ export default class WorklogService {
                 const startedDate = getStartOfDay(startedTime);
 
                 if (startedDate.getTime() >= startDate.getTime() && startedDate.getTime() <= endDate.getTime()) {
-                    const reportUser = getUserAliases(worklog.author, true).reduce<{ logData: any[]; userName: string } | undefined>(
-                        (found, alias) => found || report[alias],
-                        undefined,
-                    );
+                    const reportUser = report[getUserName(worklog.author, true) || ''];
 
                     if (reportUser) {
                         const mins = worklog.timeSpentSeconds / 60;

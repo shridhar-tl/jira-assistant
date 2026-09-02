@@ -2,7 +2,8 @@ import { getHostFromUrl, getUserName, parseIfJson, setStartOfWeek } from '@utils
 
 import type { User } from '@types';
 
-import { DefaultCalendarSettings, DefaultUserDayWiseReportSettings } from '../constants/common';
+import { DefaultUserDayWiseReportSettings } from '../constants/common';
+import { sett_page_calendar } from '../constants/settings';
 
 import type JiraService from './jira-service';
 import type SessionService from './session-service';
@@ -92,7 +93,7 @@ export default class AuthService {
             const settings = await this.$settings.getPageSettings(userId!);
 
             this.$session.pageSettings = {
-                calendar: parseIfJson(settings.page_calendar, DefaultCalendarSettings),
+                calendar: parseIfJson(settings.page_calendar, sett_page_calendar),
                 reports_UserDayWise: parseIfJson(settings.page_reports_UserDayWise, DefaultUserDayWiseReportSettings),
                 reports_WorklogReport: parseIfJson(settings.page_reports_WorklogReport, {}),
                 reports_SayDoRatioReport: parseIfJson(settings.page_reports_SayDoRatioReport, {}),

@@ -25,18 +25,6 @@ export const BuildDateTime =
         ? new Date(parseInt(import.meta.env.VITE_BUILD_DATE))
         : new Date();
 
-export const DefaultCalendarSettings = {
-    showWeekends: true,
-    showWeekNumbers: false,
-    startOfWeek: 0,
-    workingDays: [1, 2, 3, 4, 5],
-    startOfDay: '09:00',
-    endOfDay: '18:00',
-    slotDuration: '00:30:00',
-    minTime: '00:00:00',
-    maxTime: '24:00:00',
-};
-
 export const DefaultUserDayWiseReportSettings = {
     showWeekends: true,
     groupBy: 'date',

@@ -75,7 +75,7 @@ export default function Calendar({
     const pageSettings = $session.pageSettings?.calendar;
 
     const [settings, setSettings] = useState<CalendarSettings>(() => {
-        const s = propSettings || pageSettings || sett_page_calendar;
+        const s = { ...sett_page_calendar, ...(propSettings || pageSettings) };
         return { ...s, viewMode: resolveViewMode(s.viewMode) || 'timeGridWeek' };
     });
 
