@@ -19,6 +19,8 @@ const shouldMinify = isProdMode && !isDebugBuild;
 
 const listenerPort = parseInt(process.env.PORT || '0');
 
+const buildDate = Date.now().toString();
+
 const buildModeMap: Record<string, string> = {
     WEB: 'web',
     APP: 'app',
@@ -175,6 +177,7 @@ async function buildExtnExtraEntry(name: string, entryFile: string) {
         plugins: [buildVariantPlugin()],
         define: {
             'import.meta.env.VITE_BUILD_MODE': JSON.stringify(buildMode),
+            'import.meta.env.VITE_BUILD_DATE': JSON.stringify(buildDate),
         },
         build: {
             outDir: 'dist',
@@ -264,6 +267,9 @@ export default defineConfig({
         extnExtrasBuilder(),
     ],
     resolve: {},
+    define: {
+        'import.meta.env.VITE_BUILD_DATE': JSON.stringify(buildDate),
+    },
     build: {
         outDir: 'dist',
         sourcemap: false,

@@ -20,10 +20,8 @@ export { AnalyticsTrackingId };
 
 export const SystemUserId = 1;
 
-export const BuildDateTime =
-    import.meta.env.MODE === 'production' && import.meta.env.VITE_BUILD_DATE
-        ? new Date(parseInt(import.meta.env.VITE_BUILD_DATE))
-        : new Date();
+const buildDateValue = parseInt(import.meta.env.VITE_BUILD_DATE);
+export const BuildDateTime = isNaN(buildDateValue) ? new Date() : new Date(buildDateValue);
 
 export const DefaultUserDayWiseReportSettings = {
     showWeekends: true,
