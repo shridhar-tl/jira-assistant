@@ -1,4 +1,4 @@
-import { type ElementType } from 'react';
+import { type ElementType, type ReactNode } from 'react';
 
 import BaseControl from './BaseControl';
 import TagsDisplay from './TagsDisplay';
@@ -24,24 +24,34 @@ function UnknownItemDisplay({ value, tag, ...rest }: UnknownItemDisplayProps) {
 
     if (Array.isArray(val)) {
         if (!val.length) return <BaseControl tag={tag} {...rest} />;
-        return getTagRenderer(val[0], val);
+
+        return (
+            <BaseControl tag={tag} {...rest}>
+                {getTagRenderer(val[0], val)}
+            </BaseControl>
+        );
     }
 
-    return getTagRenderer(val, val);
+    return (
+        <BaseControl tag={tag} {...rest}>
+            {getTagRenderer(val, val)}
+        </BaseControl>
+    );
 }
 
-function getTagRenderer(obj: any, value: any) {
+function getTagRenderer(obj: any, value: any): ReactNode {
     if (typeof obj === 'string') {
         return <TagsDisplay value={value} tagProp="" tag="span" />;
     } else if (obj['value']) {
         if (typeof obj['value'] === 'string' && !Array.isArray(value)) {
-            return <>{obj['value']}</>;
+            return obj['value'];
         }
+
         return <TagsDisplay value={value} tagProp="value" tag="span" />;
     } else if (obj['name']) {
         return <TagsDisplay value={value} tagProp="name" tag="span" />;
     } else {
-        return <>{JSON.stringify(obj)}</>;
+        return JSON.stringify(obj);
     }
 }
 

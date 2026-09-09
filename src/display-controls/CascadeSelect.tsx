@@ -18,13 +18,6 @@ interface CascadeSelectProps {
 }
 
 function CascadeSelect({ value, tag, tagProps, className, settings, count, ...rest }: CascadeSelectProps) {
-    const badge =
-        !!count && !!settings?.showGroupCount ? (
-            <span className="ml-2 px-2 py-1 bg-blue-500 text-white text-xs rounded" title={`Total issues in group: ${count}`}>
-                ({count})
-            </span>
-        ) : null;
-
     if (!value) {
         return <BaseControl tag={tag} tagProps={tagProps} className={className} settings={settings} count={count} {...rest} />;
     }
@@ -33,7 +26,7 @@ function CascadeSelect({ value, tag, tagProps, className, settings, count, ...re
 
     return (
         <BaseControl tag={tag} tagProps={tagProps} className={className} settings={settings} count={count} {...rest}>
-            {valueText} - {childText} {badge}
+            {valueText} - {childText}
         </BaseControl>
     );
 }

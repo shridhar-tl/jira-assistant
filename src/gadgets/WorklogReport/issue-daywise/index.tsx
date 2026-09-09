@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 
 import { ScrollableTable } from '../../../components/shared';
-import { getComponentFor } from '../../../display-controls';
+import { getComponentFor, normalizeType } from '../../../display-controls';
 import { useWorklogStore } from '../datastore';
 
 import GroupBody from './GroupBody';
@@ -28,7 +28,8 @@ export default function IssueDayWiseGrid({ boardId, exportSheetName, costView }:
         }
 
         return cols.map((f: any) => {
-            return { ...f, ...getComponentFor(f.type) };
+            const { type = f.type } = normalizeType(f);
+            return { ...f, type, ...getComponentFor(type || f.type) };
         });
     }, [optional, daywiseFields, splitWorklogDays]);
 
