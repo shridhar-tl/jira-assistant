@@ -11,6 +11,30 @@ import type SessionService from '../services/session-service';
 
 const ignoredKeysStrokes = [9, 16, 17, 18, 27, 123];
 const issueKeyTest = /^\b[A-Z][A-Z0-9_]+-[1-9][0-9]*$/gi;
+const issueKeyInUrl = /[A-Z][A-Z0-9_]+-[1-9][0-9]*/i;
+
+/**
+ * When a Jira issue url is pasted (e.g. https://jira.example.com/browse/ABC-123),
+ * extract and return the issue key; any other text is returned unchanged (issue #304)
+ */
+function extractIssueKey(text: string): string {
+    if (!text || (!text.includes('://') && !text.includes('/browse/'))) {
+        return text;
+    }
+
+    const browseMatch = text.match(/\/browse\/([A-Z][A-Z0-9_]+-[1-9][0-9]*)/i);
+    if (browseMatch) {
+        return browseMatch[1].toUpperCase();
+    }
+
+    const paramMatch = text.match(/[?&](?:selectedIssue|issueKey)=([A-Z][A-Z0-9_]+-[1-9][0-9]*)/i);
+    if (paramMatch) {
+        return paramMatch[1].toUpperCase();
+    }
+
+    const anyKey = text.match(issueKeyInUrl);
+    return anyKey ? anyKey[0].toUpperCase() : text;
+}
 
 interface IssueObject {
     id: string;
@@ -80,6 +104,9 @@ export const IssuePicker: React.FC<IssuePickerProps> = React.memo(
         placeholder = 'Enter issue key or summary',
     }) => {
         const timerRef = useRef<{ blurTimer?: ReturnType<typeof setTimeout> }>({});
+        const editContainerRef = useRef<HTMLDivElement>(null);
+        const displayRef = useRef<HTMLDivElement>(null);
+        const pickedByUserRef = useRef(false);
         const [loading, setLoader] = useState(useDisplay && !!value);
         const [issueObj, setIssue] = useState<IssueObject | false>(
             useDisplay && value ? ({ key: typeof value === 'string' ? value : value.key } as IssueObject) : false,
@@ -121,6 +148,32 @@ export const IssuePicker: React.FC<IssuePickerProps> = React.memo(
                 })();
             }
         }, [value]); // eslint-disable-line react-hooks/exhaustive-deps
+
+        // Focus the input as soon as the picker becomes editable. The autoFocus prop
+        // alone is not reliable when the picker is rendered inside a modal (issue #383)
+        useEffect(() => {
+            if (!useDisplay || !editMode) {
+                return;
+            }
+
+            const handle = setTimeout(() => {
+                const input = editContainerRef.current?.querySelector('input');
+                if (input && document.activeElement !== input) {
+                    input.focus();
+                }
+            }, 50);
+
+            return () => clearTimeout(handle);
+        }, [editMode, useDisplay]);
+
+        // After the user picks a ticket, keep keyboard focus in the flow instead of
+        // dropping it when the input is replaced with the display box (issue #319)
+        useEffect(() => {
+            if (useDisplay && !editMode && issueObj && pickedByUserRef.current) {
+                pickedByUserRef.current = false;
+                displayRef.current?.focus();
+            }
+        }, [editMode, issueObj, useDisplay]);
 
         const handleFilter = useCallback(
             async (query: string) => {
@@ -165,6 +218,7 @@ export const IssuePicker: React.FC<IssuePickerProps> = React.memo(
 
                 const selected = e.value;
                 if (selected && typeof selected === 'object' && selected.key) {
+                    pickedByUserRef.current = true;
                     updateIssue(selected);
                     setSuggestions([]);
                     setTimeout(() => setInputValue(''), 0);
@@ -176,7 +230,7 @@ export const IssuePicker: React.FC<IssuePickerProps> = React.memo(
         const handleChange = useCallback((e: any) => {
             const newVal = e.value;
             if (typeof newVal === 'string') {
-                setInputValue(newVal);
+                setInputValue(extractIssueKey(newVal));
             }
         }, []);
 
@@ -219,7 +273,7 @@ export const IssuePicker: React.FC<IssuePickerProps> = React.memo(
 
         if (editMode || !issueObj || !useDisplay) {
             return (
-                <div onBlur={handleBlur}>
+                <div ref={editContainerRef} onBlur={handleBlur}>
                     <Autocomplete
                         value={inputValue}
                         onChange={handleChange}
@@ -240,8 +294,9 @@ export const IssuePicker: React.FC<IssuePickerProps> = React.memo(
 
         return (
             <div
+                ref={displayRef}
                 className={`flex items-center gap-2 px-3 py-2 border border-(--border-color) rounded-lg cursor-pointer transition-colors hover:bg-(--bg-hover) ${disabled ? 'opacity-50 cursor-not-allowed' : ''} ${className}`}
-                tabIndex={tabIndex}
+                tabIndex={tabIndex ?? -1}
                 onClick={disabled ? undefined : () => toggleEdit(true)}
                 onKeyDown={disabled ? undefined : editTicket}
                 data-test-id="issue-key"
