@@ -1,12 +1,11 @@
+import { DefaultWorkingDays } from '@/constants';
+
 import { differenceInDays, formatDate, getDateArray, getUserName, mergeUrl, viewIssueUrl } from '@utils';
 
-import type { JiraUser, User } from '@types';
+import type { JiraUser, NonWorkingDay, User } from '@types';
 
 import type SessionService from './session-service';
 import type UtilsService from './utils-service';
-
-// Default working days: Monday(1) to Friday(5)
-const DefaultWorkingDays = [1, 2, 3, 4, 5];
 
 export interface DayInfo {
     prop: string;
@@ -14,6 +13,8 @@ export interface DayInfo {
     date: Date;
     isHoliday: boolean;
     isFuture: boolean;
+    /** Set when the day is a configured holiday or leave rather than a weekend */
+    nonWorkingDay?: NonWorkingDay;
 }
 
 export default class UserUtilsService {
@@ -42,7 +43,50 @@ export default class UserUtilsService {
     isHoliday = (date: Date): boolean => {
         const weekDay = date.getDay();
         const workingDays = this.$session.CurrentUser?.workingDays || DefaultWorkingDays;
-        return workingDays.indexOf(weekDay) === -1;
+
+        if (workingDays.indexOf(weekDay) === -1) {
+            return true;
+        }
+
+        // A configured holiday or full-day leave makes a working weekday non-working.
+        // Half days stay working days: some logged time is still expected on them.
+        const entry = this.getNonWorkingDay(date);
+        return !!entry && !entry.isHalfDay;
+    };
+
+    /**
+     * Returns the configured holiday / leave entry for a date, if any.
+     * Weekends are not included here: they come from the workingDays mask.
+     */
+    getNonWorkingDay = (date: Date): NonWorkingDay | undefined => {
+        const holidays = this.$session.CurrentUser?.holidays;
+        if (!holidays?.length) {
+            return undefined;
+        }
+
+        const key = formatDate(date, 'yyyy-MM-dd');
+        return holidays.find((h) => h.date === key);
+    };
+
+    /**
+     * Expected hours to be logged on a given date, honouring weekends,
+     * holidays, full-day leave and half days.
+     */
+    getExpectedHours = (date: Date, hoursPerDay?: number): number => {
+        const fullDay = hoursPerDay ?? this.$session.CurrentUser?.minHours ?? 8;
+        const weekDay = date.getDay();
+        const workingDays = this.$session.CurrentUser?.workingDays || DefaultWorkingDays;
+
+        if (workingDays.indexOf(weekDay) === -1) {
+            return 0;
+        }
+
+        const entry = this.getNonWorkingDay(date);
+        if (!entry) {
+            return fullDay;
+        }
+
+        return entry.isHalfDay ? fullDay / 2 : 0;
     };
 
     getProfileImgUrl = (user: User | { jiraUser?: User }): string => {
@@ -159,6 +203,7 @@ export default class UserUtilsService {
             date: d,
             isHoliday: this.isHoliday(d),
             isFuture: d.getTime() > now,
+            nonWorkingDay: this.getNonWorkingDay(d),
         }));
     }
 
