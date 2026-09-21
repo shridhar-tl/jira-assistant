@@ -49,7 +49,7 @@ function GroupRow({ group, index, groupTimezones, userTimezones, hasGroupWithNam
     };
 
     return (
-        <div className="rounded-2xl shadow-sm bg-[--bg-primary] overflow-hidden border-l-[3px] border-blue-500 dark:border-blue-400">
+        <div className="rounded-2xl shadow-sm bg-(--bg-primary) overflow-hidden border-l-[3px] border-blue-500 dark:border-blue-400">
             {/* Group header */}
             <div className="flex items-center gap-2 px-4 py-2.5 bg-gray-50 dark:bg-white/5">
                 <button

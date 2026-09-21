@@ -34,7 +34,7 @@ export default function ItemProperties({ selection }: ItemPropertiesProps) {
 
             <div className="mb-3">
                 <label className="text-sm font-medium">Field name:</label>
-                <div className="mt-1 text-sm text-[--text-secondary]">{item.name}</div>
+                <div className="mt-1 text-sm text-(--text-secondary)">{item.name}</div>
             </div>
 
             <div className="space-y-4">

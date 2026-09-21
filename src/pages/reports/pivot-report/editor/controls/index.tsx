@@ -48,7 +48,7 @@ function Source({ onDone }: SourceProps) {
 
     return (
         <div className="p-4">
-            <p className="mb-4 text-sm text-[--text-secondary]">
+            <p className="mb-4 text-sm text-(--text-secondary)">
                 Select a data source option for retrieving a list of issues. You have the choice of utilizing direct Jira Query Language
                 (JQL) queries or extracting a list of issues based on a specific sprint and subsequently applying a JQL filter to refine the
                 results.
@@ -92,8 +92,8 @@ function Controls() {
     const hasFieldSelected = !!selection?.item;
 
     const fieldConfig = (
-        <div className="flex flex-row h-full min-h-0 border-t border-[--border-primary]">
-            <div className="overflow-y-auto border-r border-[--border-primary]" style={{ width: '320px', minWidth: '320px' }}>
+        <div className="flex flex-row h-full min-h-0 border-t border-(--border-primary)">
+            <div className="overflow-y-auto border-r border-(--border-primary)" style={{ width: '320px', minWidth: '320px' }}>
                 <PivotConfig />
             </div>
             <div className="flex-1 min-w-0 min-h-0">
@@ -104,7 +104,7 @@ function Controls() {
 
     if (hasFieldSelected) {
         return (
-            <Splitter layout="vertical" className="flex-1 border-t border-[--border-primary]">
+            <Splitter layout="vertical" className="flex-1 border-t border-(--border-primary)">
                 <SplitterPanel minSize="20%">
                     {fieldConfig}
                 </SplitterPanel>

@@ -17,6 +17,7 @@ function IssueGlance({ jiraContext }: IssueGlanceProps) {
     const { loadTracker } = useWorklogStore();
 
     useEffect(() => {
+        loadTracker();
         window.addEventListener('focus', loadTracker);
         return () => window.removeEventListener('focus', loadTracker);
     }, [loadTracker]);

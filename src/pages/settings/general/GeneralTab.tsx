@@ -61,13 +61,13 @@ export default function GeneralTab({ settings, userId, noDonations, onSave }: Ge
     };
 
     return (
-        <div className="divide-y divide-[--border-primary]">
+        <div className="divide-y divide-(--border-primary)">
             <div className="pb-5">
-                <div className="text-sm font-semibold text-[--text-primary] mb-1">Date & Time Format</div>
-                <p className="text-xs text-[--text-secondary] mb-3">Choose how dates and times are displayed throughout the application</p>
+                <div className="text-sm font-semibold text-(--text-primary) mb-1">Date & Time Format</div>
+                <p className="text-xs text-(--text-secondary) mb-3">Choose how dates and times are displayed throughout the application</p>
                 <div className="flex gap-3 items-start flex-wrap">
                     <div>
-                        <label className="block text-xs font-medium text-[--text-secondary] mb-1">Date format</label>
+                        <label className="block text-xs font-medium text-(--text-secondary) mb-1">Date format</label>
                         <Dropdown
                             className="w-48"
                             options={dateFormatOptions.map((f) => ({ value: f.format, label: f.text }))}
@@ -76,7 +76,7 @@ export default function GeneralTab({ settings, userId, noDonations, onSave }: Ge
                         />
                     </div>
                     <div>
-                        <label className="block text-xs font-medium text-[--text-secondary] mb-1">Time format</label>
+                        <label className="block text-xs font-medium text-(--text-secondary) mb-1">Time format</label>
                         <Dropdown
                             className="w-44"
                             options={timeFormatOptions.map((f) => ({ value: f.format, label: f.text }))}
@@ -88,13 +88,13 @@ export default function GeneralTab({ settings, userId, noDonations, onSave }: Ge
             </div>
 
             <div className="py-5">
-                <div className="text-sm font-semibold text-[--text-primary] mb-1">Displayed Hours</div>
-                <p className="text-xs text-[--text-secondary] mb-3">
+                <div className="text-sm font-semibold text-(--text-primary) mb-1">Displayed Hours</div>
+                <p className="text-xs text-(--text-secondary) mb-3">
                     Set the visible hours range for your calendar view (24-hour format, 00:00 to 23:00)
                 </p>
                 <div className="flex gap-3 items-center flex-wrap">
                     <div>
-                        <label className="block text-xs font-medium text-[--text-secondary] mb-1">From</label>
+                        <label className="block text-xs font-medium text-(--text-secondary) mb-1">From</label>
                         <MaskedInput
                             mask="99:99"
                             value={settings.startOfDayDisp}
@@ -102,9 +102,9 @@ export default function GeneralTab({ settings, userId, noDonations, onSave }: Ge
                             className="w-28"
                         />
                     </div>
-                    <span className="text-[--text-secondary] mt-5">to</span>
+                    <span className="text-(--text-secondary) mt-5">to</span>
                     <div>
-                        <label className="block text-xs font-medium text-[--text-secondary] mb-1">Until</label>
+                        <label className="block text-xs font-medium text-(--text-secondary) mb-1">Until</label>
                         <MaskedInput
                             mask="99:99"
                             value={settings.endOfDayDisp}
@@ -116,11 +116,11 @@ export default function GeneralTab({ settings, userId, noDonations, onSave }: Ge
             </div>
 
             <div className="py-5">
-                <div className="text-sm font-semibold text-[--text-primary] mb-1">Working Hours</div>
-                <p className="text-xs text-[--text-secondary] mb-3">Define your standard working hours range (24-hour format)</p>
+                <div className="text-sm font-semibold text-(--text-primary) mb-1">Working Hours</div>
+                <p className="text-xs text-(--text-secondary) mb-3">Define your standard working hours range (24-hour format)</p>
                 <div className="flex gap-3 items-center flex-wrap">
                     <div>
-                        <label className="block text-xs font-medium text-[--text-secondary] mb-1">Start</label>
+                        <label className="block text-xs font-medium text-(--text-secondary) mb-1">Start</label>
                         <MaskedInput
                             mask="99:99"
                             value={settings.startOfDay}
@@ -128,9 +128,9 @@ export default function GeneralTab({ settings, userId, noDonations, onSave }: Ge
                             className="w-28"
                         />
                     </div>
-                    <span className="text-[--text-secondary] mt-5">to</span>
+                    <span className="text-(--text-secondary) mt-5">to</span>
                     <div>
-                        <label className="block text-xs font-medium text-[--text-secondary] mb-1">End</label>
+                        <label className="block text-xs font-medium text-(--text-secondary) mb-1">End</label>
                         <MaskedInput
                             mask="99:99"
                             value={settings.endOfDay}
@@ -142,14 +142,14 @@ export default function GeneralTab({ settings, userId, noDonations, onSave }: Ge
             </div>
 
             <div className="py-5">
-                <div className="text-sm font-semibold text-[--text-primary] mb-1">Working Days</div>
-                <p className="text-xs text-[--text-secondary] mb-3">Select the days of the week you typically work</p>
+                <div className="text-sm font-semibold text-(--text-primary) mb-1">Working Days</div>
+                <p className="text-xs text-(--text-secondary) mb-3">Select the days of the week you typically work</p>
                 <WeekDaysSelector value={settings.workingDays} field="workingDays" onChange={onSave} />
             </div>
 
             <div className="py-5">
-                <div className="text-sm font-semibold text-[--text-primary] mb-1">Start of Week</div>
-                <p className="text-xs text-[--text-secondary] mb-3">
+                <div className="text-sm font-semibold text-(--text-primary) mb-1">Start of Week</div>
+                <p className="text-xs text-(--text-secondary) mb-3">
                     Choose which day your week starts on. Default uses your locale setting
                 </p>
                 <Dropdown
@@ -162,8 +162,8 @@ export default function GeneralTab({ settings, userId, noDonations, onSave }: Ge
 
             {!noDonations && (
                 <div className="pt-5">
-                    <div className="text-sm font-semibold text-[--text-primary] mb-1">Donate / Contribute</div>
-                    <p className="text-xs text-[--text-secondary] mb-3">
+                    <div className="text-sm font-semibold text-(--text-primary) mb-1">Donate / Contribute</div>
+                    <p className="text-xs text-(--text-secondary) mb-3">
                         Consider supporting the development of this tool before hiding the donate option
                     </p>
                     <div className="space-y-3">

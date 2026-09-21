@@ -27,15 +27,15 @@ export default function WorklogTab({ settings, isAtlasCloud, onSave }: WorklogTa
     };
 
     return (
-        <div className="divide-y divide-[--border-primary]">
+        <div className="divide-y divide-(--border-primary)">
             <div className="pb-5">
-                <div className="text-sm font-semibold text-[--text-primary] mb-1">Worklog Hours Range</div>
-                <p className="text-xs text-[--text-secondary] mb-3">
+                <div className="text-sm font-semibold text-(--text-primary) mb-1">Worklog Hours Range</div>
+                <p className="text-xs text-(--text-secondary) mb-3">
                     Set the minimum and maximum hours to be logged per day (HH:mm format)
                 </p>
                 <div className="flex gap-3 items-center flex-wrap">
                     <div>
-                        <label className="block text-xs font-medium text-[--text-secondary] mb-1">Min hours</label>
+                        <label className="block text-xs font-medium text-(--text-secondary) mb-1">Min hours</label>
                         <TimePicker
                             value={settings.minHours}
                             field="minHours"
@@ -43,9 +43,9 @@ export default function WorklogTab({ settings, isAtlasCloud, onSave }: WorklogTa
                             placeholder="Choose min hours"
                         />
                     </div>
-                    <span className="text-[--text-secondary] mt-5">to</span>
+                    <span className="text-(--text-secondary) mt-5">to</span>
                     <div>
-                        <label className="block text-xs font-medium text-[--text-secondary] mb-1">Max hours</label>
+                        <label className="block text-xs font-medium text-(--text-secondary) mb-1">Max hours</label>
                         <TimePicker
                             value={settings.maxHours}
                             field="maxHours"
@@ -57,8 +57,8 @@ export default function WorklogTab({ settings, isAtlasCloud, onSave }: WorklogTa
             </div>
 
             <div className="py-5">
-                <div className="text-sm font-semibold text-[--text-primary] mb-1">Default Time Spent</div>
-                <p className="text-xs text-[--text-secondary] mb-3">Default value pre-filled when adding a new worklog entry (HH:mm)</p>
+                <div className="text-sm font-semibold text-(--text-primary) mb-1">Default Time Spent</div>
+                <p className="text-xs text-(--text-secondary) mb-3">Default value pre-filled when adding a new worklog entry (HH:mm)</p>
                 <TimePicker
                     value={settings.defaultTimeSpent || 1}
                     field="defaultTimeSpent"
@@ -67,8 +67,8 @@ export default function WorklogTab({ settings, isAtlasCloud, onSave }: WorklogTa
             </div>
 
             <div className="py-5">
-                <div className="text-sm font-semibold text-[--text-primary] mb-1">Upload Behavior</div>
-                <p className="text-xs text-[--text-secondary] mb-3">Control how worklogs are uploaded to Jira</p>
+                <div className="text-sm font-semibold text-(--text-primary) mb-1">Upload Behavior</div>
+                <p className="text-xs text-(--text-secondary) mb-3">Control how worklogs are uploaded to Jira</p>
                 <div className="space-y-3">
                     <Checkbox
                         checked={settings.autoUpload}
@@ -86,8 +86,8 @@ export default function WorklogTab({ settings, isAtlasCloud, onSave }: WorklogTa
             </div>
 
             <div className="py-5">
-                <div className="text-sm font-semibold text-[--text-primary] mb-1">Closed Tickets</div>
-                <p className="text-xs text-[--text-secondary] mb-3">
+                <div className="text-sm font-semibold text-(--text-primary) mb-1">Closed Tickets</div>
+                <p className="text-xs text-(--text-secondary) mb-3">
                     Allow logging work on closed or resolved tickets (requires Jira server configuration)
                 </p>
                 <Checkbox
@@ -98,8 +98,8 @@ export default function WorklogTab({ settings, isAtlasCloud, onSave }: WorklogTa
             </div>
 
             <div className="py-5">
-                <div className="text-sm font-semibold text-[--text-primary] mb-1">Comment Validation</div>
-                <p className="text-xs text-[--text-secondary] mb-3">Set the minimum number of characters required for worklog comments</p>
+                <div className="text-sm font-semibold text-(--text-primary) mb-1">Comment Validation</div>
+                <p className="text-xs text-(--text-secondary) mb-3">Set the minimum number of characters required for worklog comments</p>
                 <TextInput
                     value={String(settings.commentLength ?? '')}
                     onChange={(e) => saveIntSetting(e.value, 'commentLength')}
@@ -112,17 +112,17 @@ export default function WorklogTab({ settings, isAtlasCloud, onSave }: WorklogTa
 
             {showMeetings && (
                 <div className="py-5">
-                    <div className="text-sm font-semibold text-[--text-primary] mb-1">Meeting Ticket</div>
-                    <p className="text-xs text-[--text-secondary] mb-3">Default ticket(s) for meeting worklogs, separated by commas</p>
+                    <div className="text-sm font-semibold text-(--text-primary) mb-1">Meeting Ticket</div>
+                    <p className="text-xs text-(--text-secondary) mb-3">Default ticket(s) for meeting worklogs, separated by commas</p>
                     <TicketNoInput value={settings.meetingTicket} field="meetingTicket" onChange={onSave} />
                 </div>
             )}
 
             <div className="pt-5">
-                <div className="text-sm font-semibold text-[--text-primary] mb-1">Worklog JQL Suffix</div>
-                <p className="text-xs text-[--text-secondary] mb-3">
+                <div className="text-sm font-semibold text-(--text-primary) mb-1">Worklog JQL Suffix</div>
+                <p className="text-xs text-(--text-secondary) mb-3">
                     Custom JQL appended when pulling worklog issues. For Jira Cloud performance issues, try adding{' '}
-                    <span className="font-mono text-xs bg-[--bg-tertiary] px-1 rounded">ORDER BY updatedDate DESC</span>
+                    <span className="font-mono text-xs bg-(--bg-tertiary) px-1 rounded">ORDER BY updatedDate DESC</span>
                 </p>
                 <TextInput
                     value={settings.worklogJQLSuffix ?? ''}
@@ -131,7 +131,7 @@ export default function WorklogTab({ settings, isAtlasCloud, onSave }: WorklogTa
                     onChange={(e) => onSave(e.value, 'worklogJQLSuffix')}
                     placeholder="e.g. ORDER BY updatedDate DESC"
                 />
-                <p className="text-xs text-[--text-tertiary] mt-2 italic">
+                <p className="text-xs text-(--text-tertiary) mt-2 italic">
                     Only modify this if you understand JQL and its impact on worklog fetching
                 </p>
             </div>

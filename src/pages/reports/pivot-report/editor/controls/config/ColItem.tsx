@@ -103,7 +103,7 @@ function ColItem({ path, item, depth, index, dragProps, removeItem, updateItem }
     return (
         <div
             className={classNames(
-                'border border-[--border-primary] rounded mb-2 transition-colors',
+                'border border-(--border-primary) rounded mb-2 transition-colors',
                 isSelected && 'bg-blue-50 dark:bg-blue-900/20 border-blue-500',
             )}
             onClick={itemSelected}
@@ -131,7 +131,7 @@ function ColItem({ path, item, depth, index, dragProps, removeItem, updateItem }
                     onDrop={addChild}
                     onChange={onSort}
                     placeholder={
-                        <div className="text-sm text-[--text-tertiary] p-2 border border-dashed border-[--border-primary] rounded">
+                        <div className="text-sm text-(--text-tertiary) p-2 border border-dashed border-(--border-primary) rounded">
                             Drag and drop sub group or value field for {item.name}
                         </div>
                     }

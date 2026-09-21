@@ -34,14 +34,14 @@ function SearchBox() {
     const { searchText, setSearchText } = useFieldFilterText();
 
     return (
-        <div className="p-3 border-b border-[--border-primary] relative">
+        <div className="p-3 border-b border-(--border-primary) relative">
             <TextInput
                 value={searchText}
                 placeholder="type here to search for fields..."
                 onChange={(e: ComponentEvent<string>) => setSearchText(e.value)}
                 className="pl-8"
             />
-            <span className="fa fa-search absolute right-6 top-1/2 -translate-y-1/2 text-[--text-tertiary]" />
+            <span className="fa fa-search absolute right-6 top-1/2 -translate-y-1/2 text-(--text-tertiary)" />
         </div>
     );
 }
@@ -66,15 +66,15 @@ function FieldsList({ fields, title }: FieldsListProps) {
     }
 
     return (
-        <div className="p-3 border-b border-[--border-primary]">
+        <div className="p-3 border-b border-(--border-primary)">
             <div className="font-semibold text-sm mb-2">{title}</div>
             <div className="space-y-1">
                 {items.map((field, i) => (
                     <Draggable key={i} containerId="jira-fields" index={i} className="jira-field" itemType="jira-field" item={field}>
-                        <div className="flex items-center justify-between p-2 rounded hover:bg-[--bg-secondary] cursor-move transition-colors border border-transparent hover:border-[--border-primary]">
+                        <div className="flex items-center justify-between p-2 rounded hover:bg-(--bg-secondary) cursor-move transition-colors border border-transparent hover:border-(--border-primary)">
                             <span className="text-sm">{field.name}</span>
                             <button
-                                className="text-[--text-tertiary] hover:text-[--text-primary] transition-colors"
+                                className="text-(--text-tertiary) hover:text-(--text-primary) transition-colors"
                                 onClick={(e) => copyForFilter(e, field)}
                                 title="Click to copy field for query filter"
                             >

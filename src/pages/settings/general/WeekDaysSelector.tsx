@@ -24,18 +24,18 @@ export default function WeekDaysSelector({ field, value: inputValue, onChange }:
     };
 
     return (
-        <div className="inline-flex rounded-lg overflow-hidden border border-[--border-primary]">
+        <div className="inline-flex rounded-lg overflow-hidden border border-(--border-primary)">
             {TINY_DAY_NAMES.map((day, i) => (
                 <button
                     key={day}
                     type="button"
                     className={classNames(
                         'w-10 h-10 text-sm font-medium transition-colors cursor-pointer',
-                        'border-r border-[--border-primary] last:border-r-0',
+                        'border-r border-(--border-primary) last:border-r-0',
                         'focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset',
                         value.includes(i)
                             ? 'bg-primary-500 text-white hover:bg-primary-600'
-                            : 'bg-[--bg-primary] text-[--text-secondary] hover:bg-[--bg-hover]',
+                            : 'bg-(--bg-primary) text-(--text-secondary) hover:bg-(--bg-hover)',
                     )}
                     onClick={() => handleDaySelected(i)}
                 >

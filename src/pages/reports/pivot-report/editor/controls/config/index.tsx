@@ -24,7 +24,7 @@ function FieldsConfig() {
             <strong className="block mb-2 text-sm font-semibold">Report Fields</strong>
             <Sortable
                 placeholder={
-                    <div className="text-sm text-[--text-tertiary] p-4 border border-dashed border-[--border-primary] rounded">
+                    <div className="text-sm text-(--text-tertiary) p-4 border border-dashed border-(--border-primary) rounded">
                         Drag and drop required fields from list to be shown in report
                     </div>
                 }

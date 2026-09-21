@@ -47,7 +47,7 @@ function JQLEditor({ jql, field, plugged, onChange }: JQLEditorProps) {
             )}
             {!isEdit && !!jql && (
                 <div
-                    className="jql-query-text cursor-pointer p-2 rounded border border-[--border-primary] font-mono text-sm"
+                    className="jql-query-text cursor-pointer p-2 rounded border border-(--border-primary) font-mono text-sm"
                     onClick={beginEdit}
                 >
                     {jql}
@@ -55,7 +55,7 @@ function JQLEditor({ jql, field, plugged, onChange }: JQLEditorProps) {
             )}
             {!isEdit && !jql && (
                 <span
-                    className="jql-query-text unavailable cursor-pointer p-2 rounded border border-dashed border-[--border-primary] text-[--text-secondary] text-sm italic"
+                    className="jql-query-text unavailable cursor-pointer p-2 rounded border border-dashed border-(--border-primary) text-(--text-secondary) text-sm italic"
                     onClick={beginEdit}
                 >
                     Provide JQL query text here

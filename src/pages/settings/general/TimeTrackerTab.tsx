@@ -118,10 +118,10 @@ export default function TimeTrackerTab({ onSave }: TimeTrackerTabProps) {
     };
 
     return (
-        <div className="divide-y divide-[--border-primary]">
+        <div className="divide-y divide-(--border-primary)">
             <div className="pb-5">
-                <div className="text-sm font-semibold text-[--text-primary] mb-1">Minimum Time Spent</div>
-                <p className="text-xs text-[--text-secondary] mb-3">
+                <div className="text-sm font-semibold text-(--text-primary) mb-1">Minimum Time Spent</div>
+                <p className="text-xs text-(--text-secondary) mb-3">
                     Tracked sessions shorter than this duration will be ignored (HH:MM format)
                 </p>
                 <TextInput
@@ -134,11 +134,11 @@ export default function TimeTrackerTab({ onSave }: TimeTrackerTabProps) {
             </div>
 
             <div className="py-5">
-                <div className="text-sm font-semibold text-[--text-primary] mb-1">Round Tracked Time</div>
-                <p className="text-xs text-[--text-secondary] mb-3">Automatically round tracked time to the nearest interval</p>
+                <div className="text-sm font-semibold text-(--text-primary) mb-1">Round Tracked Time</div>
+                <p className="text-xs text-(--text-secondary) mb-3">Automatically round tracked time to the nearest interval</p>
                 <div className="flex gap-3 items-start flex-wrap">
                     <div>
-                        <label className="block text-xs font-medium text-[--text-secondary] mb-1">Rounding mode</label>
+                        <label className="block text-xs font-medium text-(--text-secondary) mb-1">Rounding mode</label>
                         <Dropdown
                             className="w-44"
                             options={roundOperation}
@@ -147,7 +147,7 @@ export default function TimeTrackerTab({ onSave }: TimeTrackerTabProps) {
                         />
                     </div>
                     <div>
-                        <label className="block text-xs font-medium text-[--text-secondary] mb-1">Round to</label>
+                        <label className="block text-xs font-medium text-(--text-secondary) mb-1">Round to</label>
                         <Dropdown
                             className="w-36"
                             options={roundList}
@@ -161,26 +161,26 @@ export default function TimeTrackerTab({ onSave }: TimeTrackerTabProps) {
             {isExtnIntg && (
                 <>
                     <div className="py-5">
-                        <div className="text-sm font-semibold text-[--text-primary] mb-1">System Events</div>
-                        <p className="text-xs text-[--text-secondary] mb-3">
+                        <div className="text-sm font-semibold text-(--text-primary) mb-1">System Events</div>
+                        <p className="text-xs text-(--text-secondary) mb-3">
                             Automatically pause and resume the tracker based on system state
                         </p>
                         <div className="space-y-3">
-                            <div className="p-3 rounded-lg border border-[--border-primary]">
+                            <div className="p-3 rounded-lg border border-(--border-primary)">
                                 <Checkbox
                                     checked={trPauseOnLock}
                                     onChange={(e) => saveSettingAndReload(e.value, 'TR_PauseOnLock')}
                                     label="Pause when system is locked"
                                 />
-                                <p className="text-xs text-[--text-secondary] mt-1 ml-6">Timer pauses on lock and resumes on unlock</p>
+                                <p className="text-xs text-(--text-secondary) mt-1 ml-6">Timer pauses on lock and resumes on unlock</p>
                             </div>
-                            <div className="p-3 rounded-lg border border-[--border-primary]">
+                            <div className="p-3 rounded-lg border border-(--border-primary)">
                                 <Checkbox
                                     checked={trPauseOnIdle}
                                     onChange={(e) => saveSettingAndReload(e.value, 'TR_PauseOnIdle')}
                                     label="Pause when system is idle"
                                 />
-                                <p className="text-xs text-[--text-secondary] mt-1 ml-6">
+                                <p className="text-xs text-(--text-secondary) mt-1 ml-6">
                                     Timer pauses during idle state and resumes on activity
                                 </p>
                             </div>
@@ -188,28 +188,28 @@ export default function TimeTrackerTab({ onSave }: TimeTrackerTabProps) {
                     </div>
 
                     <div className="pt-5">
-                        <div className="text-sm font-semibold text-[--text-primary] mb-1">Jira Integration</div>
-                        <p className="text-xs text-[--text-secondary] mb-3">Embed time tracking controls directly within Jira pages</p>
+                        <div className="text-sm font-semibold text-(--text-primary) mb-1">Jira Integration</div>
+                        <p className="text-xs text-(--text-secondary) mb-3">Embed time tracking controls directly within Jira pages</p>
                         <div className="space-y-3">
-                            <div className="p-3 rounded-lg border border-[--border-primary]">
+                            <div className="p-3 rounded-lg border border-(--border-primary)">
                                 <Checkbox
                                     checked={trAttachCs}
                                     onChange={(e) => saveSettingAndReload(e.value, 'TR_AttachCS')}
                                     label="Attach tracker within Jira"
                                 />
-                                <p className="text-xs text-[--text-secondary] mt-1 ml-6">Inject tracking functionality into Jira pages</p>
+                                <p className="text-xs text-(--text-secondary) mt-1 ml-6">Inject tracking functionality into Jira pages</p>
                             </div>
-                            <div className="p-3 rounded-lg border border-[--border-primary]">
+                            <div className="p-3 rounded-lg border border-(--border-primary)">
                                 <Checkbox
                                     checked={trShowTimer}
                                     disabled={!trAttachCs}
                                     onChange={(e) => saveSetting(e.value, 'TR_ShowTimer')}
                                     label="Show running timer in Jira"
                                 />
-                                <p className="text-xs text-[--text-secondary] mt-1 ml-6">Display the active timer within Jira interface</p>
+                                <p className="text-xs text-(--text-secondary) mt-1 ml-6">Display the active timer within Jira interface</p>
                             </div>
                             <div className="flex items-center gap-2 pl-3">
-                                <span className="text-sm text-[--text-primary]">Injection delay:</span>
+                                <span className="text-sm text-(--text-primary)">Injection delay:</span>
                                 <TextInput
                                     value={String(trCsDelay)}
                                     onChange={(e) => saveSetting(Number(e.value), 'TR_CSDelay')}
@@ -220,9 +220,9 @@ export default function TimeTrackerTab({ onSave }: TimeTrackerTabProps) {
                                     step={1}
                                     className="w-16"
                                 />
-                                <span className="text-sm text-[--text-secondary]">seconds</span>
+                                <span className="text-sm text-(--text-secondary)">seconds</span>
                             </div>
-                            <p className="text-xs text-[--text-tertiary] pl-3 italic">
+                            <p className="text-xs text-(--text-tertiary) pl-3 italic">
                                 Increase if Jira is slow and tracker controls don't appear
                             </p>
                         </div>

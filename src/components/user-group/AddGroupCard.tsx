@@ -63,7 +63,7 @@ function AddGroupCard({ onAdd }: AddGroupCardProps) {
     }
 
     return (
-        <div className="rounded-2xl shadow-sm ring-2 ring-blue-400/30 dark:ring-blue-500/30 bg-[--bg-primary] p-4 flex flex-col gap-3">
+        <div className="rounded-2xl shadow-sm ring-2 ring-blue-400/30 dark:ring-blue-500/30 bg-(--bg-primary) p-4 flex flex-col gap-3">
             <div className="flex items-center gap-2 flex-nowrap">
                 {!isJiraGroup ? (
                     <TextInput

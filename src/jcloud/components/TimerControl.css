@@ -1,0 +1,249 @@
+.ja-timer-card {
+    position: relative;
+    overflow: hidden;
+    border-radius: 20px;
+    padding: 18px 16px 16px;
+    color: #fff;
+    background-image: linear-gradient(135deg, #3b82f6 0%, #4f46e5 100%);
+    box-shadow:
+        0 10px 24px -8px rgb(59 130 246 / 0.55),
+        0 2px 6px -2px rgb(15 23 42 / 0.25);
+    transition:
+        background-image 0.35s ease,
+        box-shadow 0.35s ease,
+        transform 0.2s ease;
+}
+
+/* Soft highlight that keeps the flat gradient from looking like a plain rectangle. */
+.ja-timer-card::before {
+    content: '';
+    position: absolute;
+    top: -55%;
+    right: -25%;
+    width: 320px;
+    height: 320px;
+    border-radius: 50%;
+    background-image: radial-gradient(circle, rgb(255 255 255 / 0.22) 0%, rgb(255 255 255 / 0) 65%);
+    pointer-events: none;
+}
+
+.ja-timer-card--paused {
+    background-image: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%);
+    box-shadow:
+        0 10px 24px -8px rgb(234 88 12 / 0.5),
+        0 2px 6px -2px rgb(15 23 42 / 0.25);
+}
+
+.ja-timer-card--idle {
+    background-image: linear-gradient(135deg, #6366f1 0%, #7c3aed 55%, #4338ca 100%);
+    box-shadow:
+        0 10px 24px -8px rgb(99 102 241 / 0.5),
+        0 2px 6px -2px rgb(15 23 42 / 0.25);
+}
+
+.ja-timer-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 9px;
+    border-radius: 999px;
+    border: 1px solid rgb(255 255 255 / 0.26);
+    background-color: rgb(255 255 255 / 0.14);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    backdrop-filter: blur(4px);
+}
+
+.ja-timer-status__dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background-color: currentColor;
+    opacity: 0.85;
+}
+
+.ja-timer-status__dot--pulse {
+    animation: ja-timer-pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes ja-timer-pulse {
+    0%,
+    100% {
+        opacity: 1;
+        box-shadow: 0 0 0 0 rgb(255 255 255 / 0.55);
+    }
+    70% {
+        opacity: 0.7;
+        box-shadow: 0 0 0 6px rgb(255 255 255 / 0);
+    }
+}
+
+.ja-timer-display {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 2px;
+    margin-top: 10px;
+}
+
+.ja-timer-unit {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 72px;
+}
+
+.ja-timer-unit__value {
+    /* Tabular figures keep the digits from shifting as the seconds tick over. */
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: 'tnum' 1;
+    font-size: 52px;
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    text-shadow: 0 2px 10px rgb(15 23 42 / 0.22);
+}
+
+.ja-timer-unit__label {
+    margin-top: 2px;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    opacity: 0.78;
+}
+
+/* The colon sits on the same baseline grid as the digits rather than being centred in the
+   row, so it lines up with the middle of the numerals instead of drifting low. */
+.ja-timer-sep {
+    display: block;
+    font-size: 46px;
+    font-weight: 300;
+    line-height: 1.05;
+    /* Offsets the digit block's slightly taller cap height. */
+    margin-top: -2px;
+    opacity: 0.6;
+}
+
+.ja-timer-sep--blink {
+    animation: ja-timer-blink 1s step-end infinite;
+}
+
+@keyframes ja-timer-blink {
+    50% {
+        opacity: 0.15;
+    }
+}
+
+.ja-timer-actions {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 14px;
+}
+
+.ja-timer-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    min-width: 104px;
+    padding: 8px 18px;
+    border: 1px solid rgb(255 255 255 / 0.3);
+    border-radius: 999px;
+    background-color: rgb(255 255 255 / 0.16);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    backdrop-filter: blur(4px);
+    transition:
+        background-color 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.12s ease,
+        box-shadow 0.2s ease;
+}
+
+.ja-timer-btn:hover {
+    background-color: rgb(255 255 255 / 0.28);
+    border-color: rgb(255 255 255 / 0.5);
+    box-shadow: 0 4px 12px -4px rgb(15 23 42 / 0.4);
+}
+
+.ja-timer-btn:active {
+    transform: translateY(1px);
+}
+
+.ja-timer-btn:focus-visible {
+    outline: 2px solid #fff;
+    outline-offset: 2px;
+}
+
+.ja-timer-btn--primary {
+    background-color: #fff;
+    border-color: #fff;
+    color: #1d4ed8;
+}
+
+.ja-timer-btn--primary:hover {
+    background-color: #fff;
+    border-color: #fff;
+    color: #1e40af;
+}
+
+.ja-timer-card--idle .ja-timer-btn--primary {
+    color: #4338ca;
+}
+
+.ja-timer-card--paused .ja-timer-btn--primary {
+    color: #c2410c;
+}
+
+.ja-timer-btn--warn .fa,
+.ja-timer-btn--danger .fa {
+    font-size: 11px;
+}
+
+.ja-timer-btn--primary .fa {
+    font-size: 11px;
+}
+
+@media (max-width: 380px) {
+    .ja-timer-card {
+        padding: 14px 10px 14px;
+        border-radius: 16px;
+    }
+
+    .ja-timer-unit {
+        min-width: 56px;
+    }
+
+    .ja-timer-unit__value {
+        font-size: 38px;
+    }
+
+    .ja-timer-sep {
+        font-size: 32px;
+        line-height: 1.25;
+    }
+
+    .ja-timer-btn {
+        min-width: 0;
+        flex: 1 1 0;
+        padding: 8px 12px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ja-timer-status__dot--pulse,
+    .ja-timer-sep--blink {
+        animation: none;
+    }
+
+    .ja-timer-card,
+    .ja-timer-btn {
+        transition: none;
+    }
+}

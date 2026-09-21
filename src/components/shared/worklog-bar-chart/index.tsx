@@ -72,7 +72,7 @@ function WorklogBarChart({ lastUpdated, setLoader, settings: { dateRange } }: Ga
     if (!dateRange?.fromDate) {
         return (
             <div className="flex items-center justify-center h-full py-10 px-4">
-                <div className="text-center text-[--text-secondary]">
+                <div className="text-center text-(--text-secondary)">
                     <i className="fa fa-bar-chart text-4xl mb-3 opacity-30 block" />
                     <p className="text-base font-medium">Date range not configured</p>
                     <p className="text-sm mt-1 opacity-75">Configure a date range to visualize worklog data</p>
@@ -84,7 +84,7 @@ function WorklogBarChart({ lastUpdated, setLoader, settings: { dateRange } }: Ga
     if (!data || !data.datasets.length) {
         return (
             <div className="flex items-center justify-center h-full py-10 px-4">
-                <div className="text-center text-[--text-secondary]">
+                <div className="text-center text-(--text-secondary)">
                     <i className="fa fa-bar-chart text-4xl mb-3 opacity-30 block" />
                     <p className="text-base font-medium">No worklog data available</p>
                     <p className="text-sm mt-1 opacity-75">No worklogs found for the selected date range</p>

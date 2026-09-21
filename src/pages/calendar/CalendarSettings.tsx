@@ -80,8 +80,8 @@ export default function CalendarSettings({ settings: initialSettings, onDone, on
 
     const sectionHeader = (icon: string, title: string) => (
         <div className="flex items-center gap-2 mb-3">
-            <span className={`fa ${icon} text-[--color-primary]`} />
-            <h3 className="text-sm font-semibold uppercase tracking-wider text-[--text-secondary]">{title}</h3>
+            <span className={`fa ${icon} text-(--color-primary)`} />
+            <h3 className="text-sm font-semibold uppercase tracking-wider text-(--text-secondary)">{title}</h3>
         </div>
     );
 
@@ -92,7 +92,7 @@ export default function CalendarSettings({ settings: initialSettings, onDone, on
         withBorder: boolean,
     ) => (
         <label
-            className="flex items-start gap-3 px-4 py-3 bg-[--bg-primary] hover:bg-[--bg-secondary] transition-colors cursor-pointer"
+            className="flex items-start gap-3 px-4 py-3 bg-(--bg-primary) hover:bg-(--bg-secondary) transition-colors cursor-pointer"
             style={withBorder ? { borderTop: '1px solid var(--border-primary)' } : undefined}
         >
             <Checkbox
@@ -100,8 +100,8 @@ export default function CalendarSettings({ settings: initialSettings, onDone, on
                 onChange={(val) => setValue(val.value, field)}
             />
             <div>
-                <span className="text-sm font-medium text-[--text-primary]">{label}</span>
-                <p className="text-xs text-[--text-secondary] mt-0.5">{hint}</p>
+                <span className="text-sm font-medium text-(--text-primary)">{label}</span>
+                <p className="text-xs text-(--text-secondary) mt-0.5">{hint}</p>
             </div>
         </label>
     );
@@ -117,12 +117,12 @@ export default function CalendarSettings({ settings: initialSettings, onDone, on
                             {visibleColorFields.map(({ field, label, hint }, idx) => (
                                 <div
                                     key={field}
-                                    className="flex flex-col gap-2 px-4 py-3 bg-[--bg-primary] hover:bg-[--bg-secondary] transition-colors"
+                                    className="flex flex-col gap-2 px-4 py-3 bg-(--bg-primary) hover:bg-(--bg-secondary) transition-colors"
                                     style={idx > 0 ? { borderTop: '1px solid var(--border-primary)' } : undefined}
                                 >
                                     <div>
-                                        <span className="text-sm font-medium text-[--text-primary]">{label}</span>
-                                        <p className="text-xs text-[--text-secondary] mt-0.5">{hint}</p>
+                                        <span className="text-sm font-medium text-(--text-primary)">{label}</span>
+                                        <p className="text-xs text-(--text-secondary) mt-0.5">{hint}</p>
                                     </div>
                                     <ColorPicker
                                         value={settings[field] as string | undefined}
@@ -162,7 +162,7 @@ export default function CalendarSettings({ settings: initialSettings, onDone, on
                     {/* Column 2: Detail Mode */}
                     <section>
                         {sectionHeader('fa-align-left', 'Worklog Entry Detail')}
-                        <div className="rounded-xl overflow-hidden border px-4 py-3 bg-[--bg-primary]" style={borderStyle}>
+                        <div className="rounded-xl overflow-hidden border px-4 py-3 bg-(--bg-primary)" style={borderStyle}>
                             <RadioButtonGroup
                                 items={detailsModeOptions}
                                 value={settings.detailsMode || '1'}
@@ -176,42 +176,42 @@ export default function CalendarSettings({ settings: initialSettings, onDone, on
                     <section className="lg:col-span-2">
                         {sectionHeader('fa-sliders', 'Display Options')}
                         <div className="rounded-xl overflow-hidden border grid grid-cols-1 md:grid-cols-3" style={borderStyle}>
-                            <label className="flex items-start gap-3 px-4 py-3 bg-[--bg-primary] hover:bg-[--bg-secondary] transition-colors cursor-pointer md:border-r" style={{ borderColor: 'var(--border-primary)' }}>
+                            <label className="flex items-start gap-3 px-4 py-3 bg-(--bg-primary) hover:bg-(--bg-secondary) transition-colors cursor-pointer md:border-r" style={{ borderColor: 'var(--border-primary)' }}>
                                 <Checkbox checked={settings.rowBanding || false} onChange={(val) => setValue(val.value, 'rowBanding')} />
                                 <div>
-                                    <span className="text-sm font-medium text-[--text-primary]">Alternate row colors</span>
-                                    <p className="text-xs text-[--text-secondary] mt-0.5">
+                                    <span className="text-sm font-medium text-(--text-primary)">Alternate row colors</span>
+                                    <p className="text-xs text-(--text-secondary) mt-0.5">
                                         Enable banded row coloring on the calendar time grid
                                     </p>
                                 </div>
                             </label>
-                            <label className="flex items-start gap-3 px-4 py-3 bg-[--bg-primary] hover:bg-[--bg-secondary] transition-colors cursor-pointer md:border-r border-t md:border-t-0" style={{ borderColor: 'var(--border-primary)' }}>
+                            <label className="flex items-start gap-3 px-4 py-3 bg-(--bg-primary) hover:bg-(--bg-secondary) transition-colors cursor-pointer md:border-r border-t md:border-t-0" style={{ borderColor: 'var(--border-primary)' }}>
                                 <Checkbox checked={settings.hideWeekends || false} onChange={(val) => setValue(val.value, 'hideWeekends')} />
                                 <div>
                                     <div className="flex items-center gap-1.5">
-                                        <span className="text-sm font-medium text-[--text-primary]">Hide weekends</span>
+                                        <span className="text-sm font-medium text-(--text-primary)">Hide weekends</span>
                                         <span
                                             className="fa fa-exclamation-triangle text-yellow-500 text-xs"
                                             title="Applies after page refresh. Pending worklogs for hidden days will still be uploaded."
                                         />
                                     </div>
-                                    <p className="text-xs text-[--text-secondary] mt-0.5">Hide weekends from the calendar view</p>
+                                    <p className="text-xs text-(--text-secondary) mt-0.5">Hide weekends from the calendar view</p>
                                 </div>
                             </label>
-                            <label className="flex items-start gap-3 px-4 py-3 bg-[--bg-primary] hover:bg-[--bg-secondary] transition-colors cursor-pointer border-t md:border-t-0" style={{ borderColor: 'var(--border-primary)' }}>
+                            <label className="flex items-start gap-3 px-4 py-3 bg-(--bg-primary) hover:bg-(--bg-secondary) transition-colors cursor-pointer border-t md:border-t-0" style={{ borderColor: 'var(--border-primary)' }}>
                                 <Checkbox
                                     checked={settings.readableEvents || false}
                                     onChange={(val) => setValue(val.value, 'readableEvents')}
                                 />
                                 <div>
                                     <div className="flex items-center gap-1.5">
-                                        <span className="text-sm font-medium text-[--text-primary]">Expand small events</span>
+                                        <span className="text-sm font-medium text-(--text-primary)">Expand small events</span>
                                         <span
                                             className="fa fa-exclamation-triangle text-yellow-500 text-xs"
                                             title="May cause small events to overlap. Applies after page refresh."
                                         />
                                     </div>
-                                    <p className="text-xs text-[--text-secondary] mt-0.5">Allow short events to expand in height for readability</p>
+                                    <p className="text-xs text-(--text-secondary) mt-0.5">Allow short events to expand in height for readability</p>
                                 </div>
                             </label>
                         </div>

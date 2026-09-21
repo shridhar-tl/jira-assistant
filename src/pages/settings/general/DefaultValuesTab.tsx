@@ -133,10 +133,10 @@ export default function DefaultValuesTab({ settings, onSave }: DefaultValuesTabP
     };
 
     return (
-        <div className="divide-y divide-[--border-primary]">
+        <div className="divide-y divide-(--border-primary)">
             <div className="pb-5">
-                <div className="text-sm font-semibold text-[--text-primary] mb-1">Projects</div>
-                <p className="text-xs text-[--text-secondary] mb-3">Select the Jira projects you work with most frequently</p>
+                <div className="text-sm font-semibold text-(--text-primary) mb-1">Projects</div>
+                <p className="text-xs text-(--text-secondary) mb-3">Select the Jira projects you work with most frequently</p>
                 <AutocompleteMulti
                     value={settings.projects || []}
                     items={filteredProjects.map((p) => ({ value: p, label: p.name }))}
@@ -149,8 +149,8 @@ export default function DefaultValuesTab({ settings, onSave }: DefaultValuesTabP
             </div>
 
             <div className="py-5">
-                <div className="text-sm font-semibold text-[--text-primary] mb-1">Agile Boards</div>
-                <p className="text-xs text-[--text-secondary] mb-3">Select the Agile boards you want quick access to</p>
+                <div className="text-sm font-semibold text-(--text-primary) mb-1">Agile Boards</div>
+                <p className="text-xs text-(--text-secondary) mb-3">Select the Agile boards you want quick access to</p>
                 <AutocompleteMulti
                     value={settings.rapidViews || []}
                     items={filteredRapidViews.map((r) => ({ value: r, label: r.name }))}
@@ -163,8 +163,8 @@ export default function DefaultValuesTab({ settings, onSave }: DefaultValuesTabP
             </div>
 
             <div className="py-5">
-                <div className="text-sm font-semibold text-[--text-primary] mb-1">Story Points Field</div>
-                <p className="text-xs text-[--text-secondary] mb-3">Map the custom field used for story points in your Jira instance</p>
+                <div className="text-sm font-semibold text-(--text-primary) mb-1">Story Points Field</div>
+                <p className="text-xs text-(--text-secondary) mb-3">Map the custom field used for story points in your Jira instance</p>
                 <Dropdown
                     options={numericFields.map((f) => ({ value: f.id, label: f.name }))}
                     value={settings.storyPointField?.id}
@@ -177,8 +177,8 @@ export default function DefaultValuesTab({ settings, onSave }: DefaultValuesTabP
             </div>
 
             <div className="pt-5">
-                <div className="text-sm font-semibold text-[--text-primary] mb-1">Epic Name Field</div>
-                <p className="text-xs text-[--text-secondary] mb-3">Map the custom field used for epic names in your Jira instance</p>
+                <div className="text-sm font-semibold text-(--text-primary) mb-1">Epic Name Field</div>
+                <p className="text-xs text-(--text-secondary) mb-3">Map the custom field used for epic names in your Jira instance</p>
                 <Dropdown
                     options={stringFields.map((f) => ({ value: f.id, label: f.name }))}
                     value={settings.epicNameField?.id}

@@ -17,13 +17,13 @@ export default function SideBar({ title, onBackClick, show, onHide, children, co
     return (
         <div
             className={classNames(
-                'border-l border-[--border-primary] bg-[--bg-primary] sticky top-0 shrink-0 overflow-hidden transition-all duration-500',
+                'border-l border-(--border-primary) bg-(--bg-primary) sticky top-0 shrink-0 overflow-hidden transition-all duration-500',
                 show ? 'opacity-100' : 'w-0 opacity-0 border-l-0',
             )}
             style={show ? { width: `${width}px`, height: 'calc(100vh - 32px)' } : undefined}
         >
             <div className="flex flex-col" style={{ width: `${width}px`, height: 'calc(100vh - 32px)' }}>
-                <div className={classNames('flex items-center gap-2 px-4 py-2 border-b border-[--border-primary] bg-[--bg-secondary]', onBackClick ? 'pl-2' : '')}>
+                <div className={classNames('flex items-center gap-2 px-4 py-2 border-b border-(--border-primary) bg-(--bg-secondary)', onBackClick ? 'pl-2' : '')}>
                     {onBackClick && (
                         <Button layout="plain" leftIcon={<span className="fa fa-arrow-left" />} onClick={onBackClick} title="Configure data source" />
                     )}

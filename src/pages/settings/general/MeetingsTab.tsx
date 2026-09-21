@@ -133,31 +133,31 @@ export default function MeetingsTab({ settings, userId, removedIntg, onSave, onC
 
     return (
         <div className="space-y-6">
-            <p className="text-sm text-[--text-secondary]">
+            <p className="text-sm text-(--text-secondary)">
                 Integrate external calendars to automatically create worklogs from meeting events
             </p>
 
             {showOutlookCalendar && (
-                <div className="border border-[--border-primary] rounded-lg p-4">
+                <div className="border border-(--border-primary) rounded-lg p-4">
                     <div className="flex items-center gap-2 mb-4">
                         <span className="fa fa-microsoft text-blue-500" />
-                        <h4 className="text-base font-semibold text-[--text-primary]">Outlook Calendar</h4>
+                        <h4 className="text-base font-semibold text-(--text-primary)">Outlook Calendar</h4>
                     </div>
 
-                    <div className="divide-y divide-[--border-primary]">
+                    <div className="divide-y divide-(--border-primary)">
                         <div className="pb-4">
                             <Checkbox
                                 checked={settings.outlookIntegration}
                                 onChange={(e) => enableOIntegration(e.value)}
                                 label="Enable Outlook calendar integration"
                             />
-                            <p className="text-xs text-[--text-secondary] mt-1 ml-6">
+                            <p className="text-xs text-(--text-secondary) mt-1 ml-6">
                                 View and log work from your Outlook calendar meetings
                             </p>
                         </div>
 
                         <div className="pt-4">
-                            <div className="text-xs font-medium text-[--text-secondary] mb-2">Integration Status</div>
+                            <div className="text-xs font-medium text-(--text-secondary) mb-2">Integration Status</div>
                             {!settings.hasOutlookCredentials ? (
                                 <button
                                     onClick={outlookSignIn}
@@ -185,26 +185,26 @@ export default function MeetingsTab({ settings, userId, removedIntg, onSave, onC
             )}
 
             {showGoogleCalendar && (
-                <div className="border border-[--border-primary] rounded-lg p-4">
+                <div className="border border-(--border-primary) rounded-lg p-4">
                     <div className="flex items-center gap-2 mb-4">
                         <span className="fa fa-google text-red-500" />
-                        <h4 className="text-base font-semibold text-[--text-primary]">Google Calendar</h4>
+                        <h4 className="text-base font-semibold text-(--text-primary)">Google Calendar</h4>
                     </div>
 
-                    <div className="divide-y divide-[--border-primary]">
+                    <div className="divide-y divide-(--border-primary)">
                         <div className="pb-4">
                             <Checkbox
                                 checked={settings.googleIntegration}
                                 onChange={(e) => enableGIntegration(e.value)}
                                 label="Enable Google calendar integration"
                             />
-                            <p className="text-xs text-[--text-secondary] mt-1 ml-6">
+                            <p className="text-xs text-(--text-secondary) mt-1 ml-6">
                                 View and log work from your Google calendar meetings
                             </p>
                         </div>
 
                         <div className="pt-4">
-                            <div className="text-xs font-medium text-[--text-secondary] mb-2">Integration Status</div>
+                            <div className="text-xs font-medium text-(--text-secondary) mb-2">Integration Status</div>
                             {!settings.hasGoogleCredentials && !removedIntg && (
                                 <button
                                     onClick={googleSignIn}
@@ -246,13 +246,13 @@ export default function MeetingsTab({ settings, userId, removedIntg, onSave, onC
                 </div>
             )}
 
-            {showGoogleCalendar && <div className="border border-[--border-primary] rounded-lg p-4">
-                <h4 className="text-base font-semibold text-[--text-primary] mb-4">Notification & Launch Settings</h4>
+            {showGoogleCalendar && <div className="border border-(--border-primary) rounded-lg p-4">
+                <h4 className="text-base font-semibold text-(--text-primary) mb-4">Notification & Launch Settings</h4>
 
-                <div className="divide-y divide-[--border-primary]">
+                <div className="divide-y divide-(--border-primary)">
                     <div className="pb-4">
-                        <div className="text-sm font-semibold text-[--text-primary] mb-1">Check for Updates</div>
-                        <p className="text-xs text-[--text-secondary] mb-3">How often to refresh meeting invites for notifications</p>
+                        <div className="text-sm font-semibold text-(--text-primary) mb-1">Check for Updates</div>
+                        <p className="text-xs text-(--text-secondary) mb-3">How often to refresh meeting invites for notifications</p>
                         <Dropdown
                             className="w-48"
                             value={settings.checkUpdates}
@@ -262,8 +262,8 @@ export default function MeetingsTab({ settings, userId, removedIntg, onSave, onC
                     </div>
 
                     <div className="py-4">
-                        <div className="text-sm font-semibold text-[--text-primary] mb-1">Meeting Notification</div>
-                        <p className="text-xs text-[--text-secondary] mb-3">Get notified before upcoming meetings</p>
+                        <div className="text-sm font-semibold text-(--text-primary) mb-1">Meeting Notification</div>
+                        <p className="text-xs text-(--text-secondary) mb-3">Get notified before upcoming meetings</p>
                         <Dropdown
                             className="w-48"
                             value={settings.notifyBefore}
@@ -273,8 +273,8 @@ export default function MeetingsTab({ settings, userId, removedIntg, onSave, onC
                     </div>
 
                     <div className="pt-4">
-                        <div className="text-sm font-semibold text-[--text-primary] mb-1">Auto Launch Meeting</div>
-                        <p className="text-xs text-[--text-secondary] mb-3">Automatically open meeting URL before the scheduled time</p>
+                        <div className="text-sm font-semibold text-(--text-primary) mb-1">Auto Launch Meeting</div>
+                        <p className="text-xs text-(--text-secondary) mb-3">Automatically open meeting URL before the scheduled time</p>
                         <Dropdown
                             className="w-48"
                             value={settings.autoLaunch}

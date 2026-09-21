@@ -31,13 +31,13 @@ export default function RowConfigItem({ item, index, depth, dragProps }: RowConf
     return (
         <div
             className={classNames(
-                'border border-[--border-primary] rounded mb-2 transition-colors cursor-pointer',
+                'border border-(--border-primary) rounded mb-2 transition-colors cursor-pointer',
                 isSelected && 'bg-blue-50 dark:bg-blue-900/20 border-blue-500',
             )}
             onClick={itemSelected}
         >
             <div className="flex items-center gap-2 p-3" ref={dragProps.dragRef}>
-                <span className="fa-solid fa-up-down-left-right text-[--text-tertiary] cursor-move" />
+                <span className="fa-solid fa-up-down-left-right text-(--text-tertiary) cursor-move" />
                 <span className="flex-1 text-sm font-medium">{item.displayText || item.name}</span>
                 <button className="text-red-500 hover:text-red-700 transition-colors" onClick={removeItem} title="Remove field">
                     <span className="fa fa-times" />

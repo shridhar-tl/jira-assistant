@@ -109,13 +109,41 @@ function resolveAlias(source: string): string | null {
     return null;
 }
 
+// HTML entry scripts are authored as root-absolute paths (`/src/main.tsx`). Those never reach
+// the relative/alias branches of the resolver, so the variant for the entry module has to be
+// substituted directly in the HTML before vite picks the entry up.
+function rewriteHtmlEntryVariants(html: string): string {
+    if (!buildVariant) {
+        return html;
+    }
+
+    return html.replace(/(<script\b[^>]*\bsrc=")(\/[^"]+)(")/g, (match, prefix: string, src: string, suffix: string) => {
+        const variantPath = tryVariantPath(path.resolve(__dirname, `.${src}`));
+        if (!variantPath) {
+            return match;
+        }
+
+        const variantSrc = `/${path.relative(__dirname, variantPath).split(path.sep).join('/')}`;
+        return `${prefix}${variantSrc}${suffix}`;
+    });
+}
+
 function buildVariantPlugin(): Plugin {
     return {
         name: 'build-variant-resolver',
         enforce: 'pre',
+        transformIndexHtml: {
+            order: 'pre',
+            handler: rewriteHtmlEntryVariants,
+        },
         async resolveId(source, importer, options) {
             if (!importer || source.startsWith('\0')) {
                 return null;
+            }
+
+            if (source.startsWith('/') && !source.startsWith('//')) {
+                const resolved = path.resolve(__dirname, `.${source}`);
+                return tryVariantPath(resolved);
             }
 
             if (source.startsWith('.')) {
@@ -236,10 +264,13 @@ function extnExtrasBuilder(): Plugin {
 const isPluginBuild = buildMode === 'PLUGIN';
 const isAppBuild = buildMode === 'APP';
 
-export default defineConfig({
+const forgeTunnelHosts = ['localhost', '127.0.0.1', '.atlassian-dev.net', '.atlassian.net'];
+const forgeAllowedOrigins = [/\.atlassian-dev\.net$/, /\.atlassian\.net$/, /^https?:\/\/localhost(:\d+)?$/];
+
+export default defineConfig(({ command }) => ({
     // Forge plugin and Electron app are loaded as static assets from a non-root URL,
     // so emit relative asset paths (./assets/...) instead of absolute ones.
-    base: isPluginBuild || isAppBuild ? './' : '/',
+    base: (isPluginBuild && command === 'build') || isAppBuild ? './' : '/',
     plugins: [
         mkcert({
             hosts: ['local.jiraassistant.com'],
@@ -309,8 +340,11 @@ export default defineConfig({
         if (listenerPort) {
             return {
                 port: listenerPort,
+                strictPort: isPluginBuild,
                 https: false,
                 open: false,
+                allowedHosts: isPluginBuild ? forgeTunnelHosts : undefined,
+                cors: isPluginBuild ? { origin: forgeAllowedOrigins } : undefined,
             };
         }
 
@@ -321,4 +355,4 @@ export default defineConfig({
             allowedHosts: ['local.jiraassistant.com'],
         };
     })(),
-});
+}));

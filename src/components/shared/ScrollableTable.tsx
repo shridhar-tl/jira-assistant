@@ -186,7 +186,7 @@ export function NoDataRow({ span, children }: NoDataRowProps) {
     return (
         <tbody>
             <tr>
-                <td colSpan={span} className="text-center py-8 text-[--text-secondary]">
+                <td colSpan={span} className="text-center py-8 text-(--text-secondary)">
                     {children}
                 </td>
             </tr>

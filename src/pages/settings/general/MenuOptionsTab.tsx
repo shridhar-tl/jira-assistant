@@ -220,33 +220,33 @@ export default function MenuOptionsTab({ settings, onSave }: MenuOptionsTabProps
     };
 
     return (
-        <div className="divide-y divide-[--border-primary]">
+        <div className="divide-y divide-(--border-primary)">
             <div className="pb-5">
-                <p className="text-sm text-[--text-secondary] mb-4">
+                <p className="text-sm text-(--text-secondary) mb-4">
                     Configure what happens when you click the Jira Assistant icon in your browser
                 </p>
 
-                <div className="text-sm font-semibold text-[--text-primary] mb-3">Click Action</div>
+                <div className="text-sm font-semibold text-(--text-primary) mb-3">Click Action</div>
                 <div className="space-y-2">
-                    <label className="flex items-center gap-3 p-3 rounded-lg border border-[--border-primary] cursor-pointer hover:bg-[--bg-hover] transition-colors">
+                    <label className="flex items-center gap-3 p-3 rounded-lg border border-(--border-primary) cursor-pointer hover:bg-(--bg-hover) transition-colors">
                         <RadioButton checked={menuAction === 1} onChange={menuOptionSelected.bind(null, menus)} />
                         <div>
-                            <div className="text-sm font-medium text-[--text-primary]">Show menus</div>
-                            <div className="text-xs text-[--text-secondary]">Display a popup with selected menu items</div>
+                            <div className="text-sm font-medium text-(--text-primary)">Show menus</div>
+                            <div className="text-xs text-(--text-secondary)">Display a popup with selected menu items</div>
                         </div>
                     </label>
-                    <label className="flex items-center gap-3 p-3 rounded-lg border border-[--border-primary] cursor-pointer hover:bg-[--bg-hover] transition-colors">
+                    <label className="flex items-center gap-3 p-3 rounded-lg border border-(--border-primary) cursor-pointer hover:bg-(--bg-hover) transition-colors">
                         <RadioButton checked={menuAction === 2} onChange={autoLaunchOptionSelected} />
                         <div>
-                            <div className="text-sm font-medium text-[--text-primary]">Auto launch page</div>
-                            <div className="text-xs text-[--text-secondary]">Open a specific page directly</div>
+                            <div className="text-sm font-medium text-(--text-primary)">Auto launch page</div>
+                            <div className="text-xs text-(--text-secondary)">Open a specific page directly</div>
                         </div>
                     </label>
-                    <label className="flex items-center gap-3 p-3 rounded-lg border border-[--border-primary] cursor-pointer hover:bg-[--bg-hover] transition-colors">
+                    <label className="flex items-center gap-3 p-3 rounded-lg border border-(--border-primary) cursor-pointer hover:bg-(--bg-hover) transition-colors">
                         <RadioButton checked={menuAction === 3} onChange={quickViewOptionSelected} />
                         <div>
-                            <div className="text-sm font-medium text-[--text-primary]">Quick view dashboard</div>
-                            <div className="text-xs text-[--text-secondary]">Show a dashboard as a compact popup</div>
+                            <div className="text-sm font-medium text-(--text-primary)">Quick view dashboard</div>
+                            <div className="text-xs text-(--text-secondary)">Show a dashboard as a compact popup</div>
                         </div>
                     </label>
                 </div>
@@ -254,8 +254,8 @@ export default function MenuOptionsTab({ settings, onSave }: MenuOptionsTabProps
 
             {menuAction === 1 && (
                 <div className="pt-5">
-                    <div className="text-sm font-semibold text-[--text-primary] mb-1">Visible Menus</div>
-                    <p className="text-xs text-[--text-secondary] mb-3">Select which menu items appear in the popup</p>
+                    <div className="text-sm font-semibold text-(--text-primary) mb-1">Visible Menus</div>
+                    <p className="text-xs text-(--text-secondary) mb-3">Select which menu items appear in the popup</p>
                     <ListBox
                         options={menus.map((m) => ({ id: m.id, label: m.name, value: m }))}
                         multiple={true}
@@ -268,8 +268,8 @@ export default function MenuOptionsTab({ settings, onSave }: MenuOptionsTabProps
 
             {menuAction === 2 && (
                 <div className="pt-5">
-                    <div className="text-sm font-semibold text-[--text-primary] mb-1">Launch Page</div>
-                    <p className="text-xs text-[--text-secondary] mb-3">Choose which page opens when clicking the icon</p>
+                    <div className="text-sm font-semibold text-(--text-primary) mb-1">Launch Page</div>
+                    <p className="text-xs text-(--text-secondary) mb-3">Choose which page opens when clicking the icon</p>
                     <Dropdown
                         options={launchMenus.flatMap((g) => g.items.map((i) => ({ value: i.value, label: i.label })))}
                         value={selectedLaunchPage}
@@ -282,8 +282,8 @@ export default function MenuOptionsTab({ settings, onSave }: MenuOptionsTabProps
 
             {menuAction === 3 && (
                 <div className="pt-5">
-                    <div className="text-sm font-semibold text-[--text-primary] mb-1">Dashboard</div>
-                    <p className="text-xs text-[--text-secondary] mb-3">Choose which dashboard is displayed as quick view</p>
+                    <div className="text-sm font-semibold text-(--text-primary) mb-1">Dashboard</div>
+                    <p className="text-xs text-(--text-secondary) mb-3">Choose which dashboard is displayed as quick view</p>
                     <Dropdown
                         options={dashboardMenus.map((m) => ({ value: m.value, label: m.label }))}
                         value={selectedDashboard}

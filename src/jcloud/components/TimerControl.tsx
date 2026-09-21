@@ -1,8 +1,11 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 
+import classNames from 'classnames';
+
 import { useWorklogStore, getDispTime } from '@/stores/worklog-store';
 
 import InlineTextEditor from './InlineTextEditor';
+import './TimerControl.css';
 
 interface TimerControlProps {
     curIssueKey?: string;
@@ -34,36 +37,37 @@ export default function TimerControl({ curIssueKey }: TimerControlProps) {
     );
 
     return (
-        <div className="px-4">
+        <div className="w-full max-w-125 mx-auto px-3 sm:px-4 pt-4 pb-3">
             <Timer lapse={lapse} issueKey={key} isRunning={isRunning} startNewTimer={handleStartNew} />
-            {!curIssueKey && key && (
-                <div className="px-1 py-0.5 text-2xl whitespace-nowrap overflow-hidden text-ellipsis cursor-pointer">
-                    <span className="font-semibold mr-1">{key}</span>
+            {(!!key || isForCurKey) && (
+                <div className="mt-3 rounded-xl border border-(--border-primary) bg-(--bg-secondary) px-3 py-2.5">
+                    {!curIssueKey && key && (
+                        <div className="flex items-center gap-2 mb-1.5">
+                            <span className="fa fa-ticket text-xs text-(--text-tertiary)" />
+                            <span className="font-semibold text-sm tracking-wide text-(--text-primary) truncate">{key}</span>
+                        </div>
+                    )}
+                    {isForCurKey && (
+                        <InlineTextEditor
+                            value={description}
+                            className="block text-sm leading-snug text-(--text-primary) cursor-pointer hover:text-(--primary-color) transition-colors"
+                            altClassName="block text-sm italic text-(--text-tertiary) cursor-pointer hover:text-(--primary-color) transition-colors"
+                            onChange={descChanged}
+                            placeholder="Click to add a worklog comment"
+                        />
+                    )}
                 </div>
             )}
-            {isForCurKey && (
-                <div className="px-1 py-0.5">
-                    <InlineTextEditor
-                        value={description}
-                        className="block text-xl cursor-pointer max-w-full whitespace-nowrap overflow-hidden text-ellipsis"
-                        altClassName="italic cursor-pointer"
-                        onChange={descChanged}
-                        placeholder="<< click to add worklog comment >>"
-                    />
-                </div>
+            {curIssueKey && (
+                <p className="mt-3 flex gap-2 text-xs leading-relaxed text-(--text-secondary)">
+                    <span className="fa fa-info-circle mt-0.5 shrink-0 text-(--text-tertiary)" />
+                    <span>
+                        {isForCurKey
+                            ? 'Once you stop the timer, a worklog is created and shown in the pending upload gadget of Jira Assistant. You can review, edit and upload it to Jira as you wish.'
+                            : `Use the timer above to start tracking the time you spend on ${curIssueKey}.`}
+                    </span>
+                </p>
             )}
-            {curIssueKey && !isForCurKey && (
-                <span className="block px-6 text-base">
-                    <strong>Note:</strong> Use the timer about to start tracking the time you spend in {curIssueKey}.
-                </span>
-            )}
-            {curIssueKey && isForCurKey && (
-                <span className="block px-6 text-base">
-                    <strong>Note:</strong> Once you stop the timer, worklog would be created and shown in pending upload gadget of Jira
-                    Assistant. You can review/edit and upload it to Jira as you wish.
-                </span>
-            )}
-            {curIssueKey && <div className="h-16" />}
         </div>
     );
 }
@@ -76,10 +80,35 @@ interface TimerProps {
 }
 
 function Timer({ issueKey, lapse, isRunning, startNewTimer }: TimerProps) {
+    const isIdle = !issueKey;
+
     return (
-        <div className="block mx-auto my-4 w-91.25 h-42.5 px-4 rounded-4xl bg-blue-500 shadow-md shadow-blue-400 text-white">
+        <div
+            className={classNames('ja-timer-card', {
+                'ja-timer-card--running': isRunning,
+                'ja-timer-card--paused': !!issueKey && !isRunning,
+                'ja-timer-card--idle': isIdle,
+            })}
+        >
+            <StatusBadge issueKey={issueKey} isRunning={isRunning} />
             <TimeBlockContainer lapse={lapse || 0} isRunning={isRunning || false} />
             <TimerControls isRunning={isRunning} issueKey={issueKey} startNewTimer={startNewTimer} />
+        </div>
+    );
+}
+
+interface StatusBadgeProps {
+    issueKey?: string;
+    isRunning?: boolean;
+}
+
+function StatusBadge({ issueKey, isRunning }: StatusBadgeProps) {
+    const label = !issueKey ? 'Not tracking' : isRunning ? 'Tracking' : 'Paused';
+
+    return (
+        <div className="ja-timer-status">
+            <span className={classNames('ja-timer-status__dot', { 'ja-timer-status__dot--pulse': isRunning })} />
+            {label}
         </div>
     );
 }
@@ -94,27 +123,29 @@ function TimerControls({ issueKey, isRunning, startNewTimer }: TimerControlsProp
     const { resumeTimer, pauseTimer, stopTimer } = useWorklogStore();
 
     return (
-        <div className="flex justify-center mt-4">
+        <div className="ja-timer-actions">
             {!isRunning && (
-                <span
-                    className="fa fa-play inline-block text-4xl cursor-pointer mx-5 text-center text-green-300 hover:text-green-200"
+                <button
+                    type="button"
+                    className="ja-timer-btn ja-timer-btn--primary"
                     onClick={!issueKey ? startNewTimer : resumeTimer}
                     title={!issueKey ? 'Start timer' : 'Resume timer'}
-                />
+                >
+                    <span className="fa fa-play" />
+                    <span>{!issueKey ? 'Start' : 'Resume'}</span>
+                </button>
             )}
             {isRunning && (
-                <span
-                    className="fa fa-pause inline-block text-4xl cursor-pointer mx-5 text-center text-yellow-300 hover:text-yellow-200"
-                    title="Pause timer"
-                    onClick={pauseTimer}
-                />
+                <button type="button" className="ja-timer-btn ja-timer-btn--warn" title="Pause timer" onClick={pauseTimer}>
+                    <span className="fa fa-pause" />
+                    <span>Pause</span>
+                </button>
             )}
             {!!issueKey && (
-                <span
-                    className="fa fa-stop inline-block text-4xl cursor-pointer mx-5 text-center text-red-300 hover:text-red-200"
-                    title="Stop timer"
-                    onClick={stopTimer}
-                />
+                <button type="button" className="ja-timer-btn ja-timer-btn--danger" title="Stop timer" onClick={stopTimer}>
+                    <span className="fa fa-stop" />
+                    <span>Stop</span>
+                </button>
             )}
         </div>
     );
@@ -159,12 +190,12 @@ function TimeBlockContainer({ lapse, isRunning }: TimeBlockContainerProps) {
     const { h, m, s } = timer;
 
     return (
-        <div className="block mx-auto w-auto">
-            <TimeBlock time={h} text="HOURS" />
-            <div className="inline-block align-top text-7xl leading-21 h-21 font-light -mt-2">:</div>
-            <TimeBlock time={m} text="MINUTES" />
-            <div className="inline-block align-top text-7xl leading-21 h-21 font-light -mt-2">:</div>
-            <TimeBlock time={s} text="SECONDS" />
+        <div className="ja-timer-display">
+            <TimeBlock time={h} text="Hours" />
+            <span className={classNames('ja-timer-sep', { 'ja-timer-sep--blink': isRunning })}>:</span>
+            <TimeBlock time={m} text="Minutes" />
+            <span className={classNames('ja-timer-sep', { 'ja-timer-sep--blink': isRunning })}>:</span>
+            <TimeBlock time={s} text="Seconds" />
         </div>
     );
 }
@@ -176,9 +207,9 @@ interface TimeBlockProps {
 
 function TimeBlock({ time, text }: TimeBlockProps) {
     return (
-        <div className="inline-block h-25 w-24.5">
-            <span className="block text-7xl leading-21 h-21 font-semibold">{time}</span>
-            <span className="block text-xs font-bold text-center pt-1">{text}</span>
+        <div className="ja-timer-unit">
+            <span className="ja-timer-unit__value">{time}</span>
+            <span className="ja-timer-unit__label">{text}</span>
         </div>
     );
 }
