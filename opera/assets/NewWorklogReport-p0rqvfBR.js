@@ -1,0 +1,1 @@
+import{t as e}from"./vendor-react-BqBYH7Fo.js";import{t}from"./gadgets-ybzvtsVA.js";var n=e();function r(){return(0,n.jsx)(t,{isGadget:!1})}export{r as default};
