@@ -1,0 +1,77 @@
+body.mode-dark {
+    --bg-primary: var(--ds-surface, #1f1f21);
+    --bg-secondary: var(--ds-surface-raised, #242528);
+    --bg-tertiary: var(--ds-surface-overlay, #2b2c2f);
+    --bg-quaternary: var(--ds-surface-pressed, #3d3f43);
+    --bg-hover: var(--ds-surface-hovered, #2b2c2f);
+    --bg-active: var(--ds-surface-pressed, #3d3f43);
+    --bg-disabled: var(--ds-background-disabled, #bdbdbd0a);
+
+    --text-primary: var(--ds-text, #cecfd2);
+    --text-secondary: var(--ds-text-subtle, #a9abaf);
+    --text-tertiary: var(--ds-text-subtlest, #96999e);
+    --text-disabled: var(--ds-text-disabled, #e5e9f640);
+    --text-inverse: var(--ds-text-inverse, #1f1f21);
+
+    --border-primary: var(--ds-border, #e3e4f21f);
+    --border-secondary: var(--ds-border-input, #7e8188);
+    --border-hover: var(--ds-border-bold, #7e8188);
+    --border-focus: var(--ds-border-focused, #8fb8f6);
+
+    --header-bg: var(--ds-surface, #1f1f21);
+    --header-border: var(--ds-border, #e3e4f21f);
+
+    --sidebar-bg: var(--ds-surface, #1f1f21);
+    --sidebar-border: var(--ds-border, #e3e4f21f);
+    --sidebar-hover: var(--ds-surface-hovered, #2b2c2f);
+    --sidebar-active: var(--ds-background-selected, #1c2b42);
+    --sidebar-active-text: var(--ds-text-selected, #669df1);
+    --sidebar-text: var(--ds-text-subtle, #a9abaf);
+    --sidebar-text-muted: var(--ds-text-subtlest, #96999e);
+    --sidebar-icon: var(--ds-icon-subtle, #a9abaf);
+    --sidebar-icon-active: var(--ds-icon-selected, #669df1);
+    --sidebar-accent: var(--ds-border-selected, #669df1);
+    --sidebar-section: var(--ds-text-subtlest, #96999e);
+
+    --primary-color: var(--ds-link, #669df1);
+    --primary-hover: var(--ds-link-pressed, #8fb8f6);
+    --primary-light: var(--ds-background-selected, #1c2b42);
+
+    --gadget-border: var(--ds-border, #e3e4f21f);
+    --gadget-header-bg: var(--ds-surface-raised, #242528);
+    --gadget-accent: var(--ds-border-brand, #669df1);
+
+    --input-bg: var(--ds-background-input, #242528);
+    --input-border: var(--ds-border-input, #7e8188);
+    --input-focus-border: var(--ds-border-focused, #8fb8f6);
+
+    --border-color: var(--ds-border, #e3e4f21f);
+
+    --eui-bg: var(--ds-surface-raised, #242528);
+    --eui-bg-subtle: var(--ds-surface-sunken, #18191a);
+    --eui-bg-hover: var(--ds-surface-hovered, #2b2c2f);
+
+    --eui-text: var(--ds-text, #cecfd2);
+    --eui-text-muted: var(--ds-text-subtle, #a9abaf);
+    --eui-text-disabled: var(--ds-text-disabled, #e5e9f640);
+
+    --eui-border: var(--ds-border-input, #7e8188);
+    --eui-border-subtle: var(--ds-border, #e3e4f21f);
+
+    --eui-primary-subtle: var(--ds-background-selected, #1c2b42);
+
+    scrollbar-color: var(--ds-border, #e3e4f21f) transparent;
+}
+
+body.mode-dark ::-webkit-scrollbar-thumb {
+    background: var(--ds-border, #e3e4f21f);
+}
+
+body.mode-dark ::-webkit-scrollbar-thumb:hover {
+    background: var(--ds-border-bold, #7e8188);
+}
+
+body:not(.mode-light, .mode-dark),
+body:not(.mode-light, .mode-dark) #root {
+    background-color: #5c5f66;
+}

@@ -39,8 +39,16 @@ export interface RouteConfig {
     requiresAuth?: boolean;
 }
 
+export type ThemeMode = 'light' | 'dark';
+
+export interface ThemeState {
+    theme: ThemeMode;
+    setTheme: (theme: ThemeMode) => void;
+    toggleTheme: () => void;
+}
+
 export interface ThemeConfig {
-    mode: 'light' | 'dark';
+    mode: ThemeMode;
     primaryColor?: string;
 }
 

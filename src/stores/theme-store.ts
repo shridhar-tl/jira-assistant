@@ -1,13 +1,9 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-type Theme = 'light' | 'dark';
+import type { ThemeState } from '@types';
 
-interface ThemeState {
-    theme: Theme;
-    setTheme: (theme: Theme) => void;
-    toggleTheme: () => void;
-}
+import { applyBodyTheme } from './apply-body-theme';
 
 export const useThemeStore = create<ThemeState>()(
     persist(
@@ -15,8 +11,7 @@ export const useThemeStore = create<ThemeState>()(
             theme: 'light',
             setTheme: (theme) => {
                 set({ theme });
-                document.body.classList.remove('mode-light', 'mode-dark');
-                document.body.classList.add(`mode-${theme}`);
+                applyBodyTheme(theme);
             },
             toggleTheme: () => {
                 const newTheme = get().theme === 'light' ? 'dark' : 'light';
@@ -27,8 +22,7 @@ export const useThemeStore = create<ThemeState>()(
             name: 'theme-storage',
             onRehydrateStorage: () => (state) => {
                 if (state) {
-                    document.body.classList.remove('mode-light', 'mode-dark');
-                    document.body.classList.add(`mode-${state.theme}`);
+                    applyBodyTheme(state.theme);
                 }
             },
         },

@@ -24,8 +24,8 @@ const config = {
     },
     features: {
         header: {
-            shareWithOthers: true,
-            themes: true,
+            shareWithOthers: !isPluginBuild,
+            themes: !isPluginBuild,
             youtubeHelp: !isPluginBuild,
             devUpdates: !isPluginBuild,
             jiraUpdates: true,

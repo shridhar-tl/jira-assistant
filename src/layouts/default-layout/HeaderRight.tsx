@@ -18,6 +18,7 @@ const showShareOption = config.features.header.shareWithOthers !== false;
 const allowWebVersion = config.features.common.allowWebVersion !== false;
 const showYoutubeOption = config.features.header.youtubeHelp !== false;
 const showContactUs = config.modules.contactUs !== false;
+const showThemePicker = config.features.header.themes !== false;
 
 interface HeaderRightProps {
     showYoutubeVideo: boolean;
@@ -78,7 +79,7 @@ function HeaderRight(props: HeaderRightProps) {
                         </span>
                     </li>
                 )}
-                <SkinPicker />
+                {showThemePicker && <SkinPicker />}
                 {showShareOption && <ShareWithOthers />}
                 {showContactUs && (
                     <li className="list-none hidden md:block">

@@ -1,6 +1,6 @@
-import jsPDF from 'jspdf';
-
-import autoTable from 'jspdf-autotable';
+import { createFlow, savePdf } from 'fluxo-ui/pdf';
+import type { FlowComposer } from 'fluxo-ui/pdf';
+import { buildPdfFromTable } from 'fluxo-ui/pdf/html';
 import { exportCsv } from '../utils/helpers';
 
 import Exporter, { ExportFormat } from './Exporter';
@@ -42,6 +42,19 @@ function canvasToDataUrlWithBackground(canvas: HTMLCanvasElement, backgroundColo
     ctx.fillRect(0, 0, offscreen.width, offscreen.height);
     ctx.drawImage(canvas, 0, 0);
     return offscreen.toDataURL('image/png');
+}
+
+const pdfMargin = 40;
+const pdfChartGap = 16;
+const pdfStripeColor = '#f1f5f9';
+
+function readExportText(text: string, cell: HTMLTableCellElement): string {
+    const child = cell.querySelector<HTMLElement>('[data-export-data]');
+    return cell.getAttribute('data-export-data') || child?.getAttribute('data-export-data') || text;
+}
+
+function isRowExportable(row: HTMLTableRowElement): boolean {
+    return row.getAttribute('data-export-ignore') !== 'true' && row.parentElement?.getAttribute('data-export-ignore') !== 'true';
 }
 
 export class ExportHelper {
@@ -116,43 +129,39 @@ export class ExportHelper {
         if (!table) return;
 
         const fileName = table.getAttribute('data-export-sheet-name') || this.fileName || 'download';
-        const doc = new jsPDF({
-            orientation: 'landscape',
-            unit: 'px',
-            format: 'a3',
+        const { doc } = buildPdfFromTable(table, {
+            document: {
+                orientation: 'landscape',
+                unit: 'px',
+                format: 'a3',
+                margin: pdfMargin,
+                metadata: { title: fileName },
+            },
+            extract: { includeRow: isRowExportable, transformText: readExportText },
+            grid: { preset: 'lined', palette: { stripeBackground: pdfStripeColor }, overflowColumns: 'shrink' },
         });
-        autoTable(doc, { html: table });
 
         const charts = getExportableCharts(root);
         if (charts.length > 0) {
-            this.addChartsToPdf(doc, charts);
+            this.addChartsToPdf(createFlow(doc, { gap: pdfChartGap }), charts);
         }
 
-        doc.save(`${fileName}.pdf`);
+        savePdf(doc.build(), `${fileName}.pdf`);
     }
 
-    private addChartsToPdf(doc: jsPDF, charts: ChartCanvasInfo[]): void {
-        const pageWidth = doc.internal.pageSize.getWidth();
-        const pageHeight = doc.internal.pageSize.getHeight();
-        const margin = 40;
-        const maxWidth = pageWidth - margin * 2;
-
-        doc.addPage();
-        let currentY = margin;
+    private addChartsToPdf(flow: FlowComposer, charts: ChartCanvasInfo[]): void {
+        flow.breakPage();
 
         for (const { canvas, width, height } of charts) {
             const dataUrl = canvasToDataUrlWithBackground(canvas, '#ffffff');
-            const ratio = Math.min(maxWidth / width, 1);
+            const ratio = Math.min(flow.width / width, 1);
             const imgWidth = width * ratio;
             const imgHeight = height * ratio;
 
-            if (currentY + imgHeight > pageHeight - margin) {
-                doc.addPage();
-                currentY = margin;
-            }
-
-            doc.addImage(dataUrl, 'PNG', margin, currentY, imgWidth, imgHeight);
-            currentY += imgHeight + 16;
+            flow.ensureSpace(imgHeight).custom((doc, y, contentWidth) => {
+                doc.drawImage(dataUrl, { x: doc.margin.left + (contentWidth - imgWidth) / 2, y, width: imgWidth, height: imgHeight });
+                return imgHeight;
+            });
         }
     }
 

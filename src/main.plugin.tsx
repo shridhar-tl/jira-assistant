@@ -7,7 +7,10 @@ import { HashRouter } from 'react-router-dom';
 import { FullContext, view } from '@forge/bridge';
 
 import { BlockLoading } from '@components';
+
 import './index.css';
+import './index.plugin.css';
+import { syncJiraTheme } from './jcloud/jira-theme';
 
 const App = lazy(() => import('./App'));
 
@@ -23,6 +26,7 @@ const fallback = <BlockLoading text="Loading... Please wait..." />;
 
 (async function () {
     const context: FullContext = await view.getContext();
+    await syncJiraTheme(context);
     const { moduleKey, extension } = context;
     const modalId = extension?.modal?.modalId;
 
