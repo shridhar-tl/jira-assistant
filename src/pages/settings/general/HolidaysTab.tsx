@@ -79,12 +79,12 @@ export default function HolidaysTab({ settings, onSave }: HolidaysTabProps) {
     }, [settings.workingDays]);
 
     return (
-        <div className="divide-y divide-[--border-primary]">
+        <div className="divide-y divide-(--border-primary)">
             <div className="pb-5">
-                <div className="text-sm font-semibold text-[--text-primary] mb-1">Holidays &amp; Leave</div>
-                <p className="text-xs text-[--text-secondary] mb-3">
-                    Days listed here are treated as non-working, so worklog reports and the logging compliance gadget will not flag them as
-                    missing time. Mark a day as half day when you are expected to log half of your normal hours.
+                <div className="text-sm font-semibold text-(--text-primary) mb-1">Holidays &amp; Leave</div>
+                <p className="text-xs text-(--text-secondary) mb-3">
+                    Days listed here are treated as non-working, so they are not counted as missing time wherever logged time is compared
+                    with your expected hours. Mark a day as half day when you are expected to log half of your normal hours.
                     {importWeekendsNote && (
                         <>
                             {' '}
@@ -96,7 +96,7 @@ export default function HolidaysTab({ settings, onSave }: HolidaysTabProps) {
 
                 <div className="flex gap-3 items-end flex-wrap mb-4">
                     <div>
-                        <label className="block text-xs font-medium text-[--text-secondary] mb-1">Date</label>
+                        <label className="block text-xs font-medium text-(--text-secondary) mb-1">Date</label>
                         <input
                             type="date"
                             value={newDate}
@@ -105,11 +105,11 @@ export default function HolidaysTab({ settings, onSave }: HolidaysTabProps) {
                         />
                     </div>
                     <div className="flex-1 min-w-40">
-                        <label className="block text-xs font-medium text-[--text-secondary] mb-1">Description (optional)</label>
+                        <label className="block text-xs font-medium text-(--text-secondary) mb-1">Description (optional)</label>
                         <TextInput value={newName} onChange={(e) => setNewName(e.value)} placeholder="e.g. Christmas, Annual leave" />
                     </div>
                     <div>
-                        <label className="block text-xs font-medium text-[--text-secondary] mb-1">Type</label>
+                        <label className="block text-xs font-medium text-(--text-secondary) mb-1">Type</label>
                         <Dropdown
                             className="w-44"
                             options={typeOptions}
@@ -126,7 +126,7 @@ export default function HolidaysTab({ settings, onSave }: HolidaysTabProps) {
                 </div>
 
                 {!sorted.length && (
-                    <div className="text-xs text-[--text-secondary] italic">
+                    <div className="text-xs text-(--text-secondary) italic">
                         No holidays or leave configured yet. Only weekends are excluded from expected working time.
                     </div>
                 )}
