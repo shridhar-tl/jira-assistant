@@ -1,6 +1,7 @@
 export const GadgetTitle = {
     OpenTicket: 'My Open Tickets',
     Bookmarks: 'My Bookmarks',
+    GroupedBookmarks: 'Grouped Bookmarks',
     DateWiseWorklog: 'Daywise Worklog',
     TicketWiseWorklog: 'Ticketwise Worklog',
     PendingWorklog: 'Worklog - [Pending Upload]',

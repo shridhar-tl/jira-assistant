@@ -22,6 +22,13 @@ export const gadgetList: GadgetInfo[] = [
             'The Bookmarks gadget holds a list of bookmarked issues. You can manage your bookmarks directly from this gadget, and please note that the bookmark list is shared across all dashboards.',
     },
     {
+        id: 'groupedBookmarks',
+        icon: 'fa-tags',
+        name: 'Grouped Bookmarks',
+        details:
+            'Your bookmarks with a group of your choice for each one — a project, a client, a theme. Sort by the group and filter to the groups you need; the filter and the sort order are remembered. Uses the same bookmark list as the Bookmarks gadget.',
+    },
+    {
         id: 'dateWiseWorklog',
         icon: 'fa-list-alt',
         name: 'Logged Work - [Daywise]',

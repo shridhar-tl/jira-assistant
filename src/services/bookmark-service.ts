@@ -86,6 +86,18 @@ export default class BookmarkService {
         return this.$settings.getGeneralSetting(this.$session.userId!, 'favTicketList');
     }
 
+    /**
+     * The free-text group of each bookmarked ticket, keyed by issue key. Stored per user
+     * beside the bookmark list, so every Grouped Bookmarks gadget shows the same groups.
+     */
+    async getBookmarkGroups(): Promise<Record<string, string>> {
+        return (await this.$settings.getGeneralSetting(this.$session.userId!, 'bookmarkGroups')) || {};
+    }
+
+    saveBookmarkGroups(groups: Record<string, string>): Promise<void> {
+        return this.$settings.saveGeneralSetting(this.$session.userId!, 'bookmarkGroups', groups);
+    }
+
     async getBookmarkDetails(keys: string[]): Promise<any[]> {
         if (keys && keys.length > 0) {
             try {
