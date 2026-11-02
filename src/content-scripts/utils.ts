@@ -4,8 +4,13 @@ import { processResponse } from '../common/proxy-helper';
 
 import { isCloud, Pages } from './constants';
 
-const win: any = window;
-const chr = win.chrome || win.browser;
+declare const chrome: any;
+declare const browser: any;
+
+// In Firefox content scripts the extension APIs are exposed only as bare globals,
+// not as properties of `window`, so `window.chrome` / `window.browser` are undefined there.
+// Reference the globals directly (with typeof guards) so this works in both Chromium and Firefox.
+export const chr: any = typeof browser !== 'undefined' && browser?.runtime ? browser : typeof chrome !== 'undefined' ? chrome : undefined;
 
 export function executeJASvc(svcName: string, action: string, ...args: any[]) {
     return new Promise((resolve, reject) =>
