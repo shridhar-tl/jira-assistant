@@ -1,5 +1,5 @@
 import { endOfDay, format, formatDistanceToNow, isAfter, isBefore, isSameDay, startOfDay } from 'date-fns';
-import type { CalendarViewMode } from 'fluxo-ui';
+import type { CalendarViewMode, ResolvedCalendarEntry } from 'fluxo-ui';
 
 import type { Meeting, Worklog, WorklogCalendarEntry } from '@types';
 
@@ -21,6 +21,20 @@ export const viewModes: Array<{ value: CalendarViewMode; label: string }> = [
 export function resolveViewMode(mode: string | undefined): CalendarViewMode | undefined {
     if (!mode) return undefined;
     return mode;
+}
+
+function isDailySummaryEntry(entry: ResolvedCalendarEntry): boolean {
+    return (entry.data as unknown as CalendarEvent['data'] | undefined)?.entryType === 3;
+}
+
+export function compareCalendarEntries(a: ResolvedCalendarEntry, b: ResolvedCalendarEntry): number {
+    const summaryDiff = Number(isDailySummaryEntry(b)) - Number(isDailySummaryEntry(a));
+    if (summaryDiff) return summaryDiff;
+
+    const startDiff = a.start.getTime() - b.start.getTime();
+    if (startDiff) return startDiff;
+
+    return b.end.getTime() - b.start.getTime() - (a.end.getTime() - a.start.getTime());
 }
 
 export function isTimeGridView(viewMode: CalendarViewMode): boolean {
@@ -67,7 +81,7 @@ export function snapTimeToGrid(gridMinutes: number, date: Date): Date {
     return newDate;
 }
 
-export function getEventDuration(entry: CalendarEvent): string {
+export function getEventDuration(entry: Pick<CalendarEvent, 'start' | 'end'>): string {
     const start = entry.start instanceof Date ? entry.start : new Date(entry.start);
     const end = entry.end instanceof Date ? entry.end : new Date(entry.end);
     if (start && end) {

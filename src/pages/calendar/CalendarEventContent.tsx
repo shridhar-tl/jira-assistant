@@ -38,9 +38,9 @@ export default function CalendarEventContent({
     const { entryType, logged, diff, sourceObject } = data;
     const { $utils, $session } = useService('UtilsService', 'SessionService');
 
-    const startTime = entry.start instanceof Date ? entry.start : new Date(entry.start);
-    const timeText = $utils.formatDate(startTime, getEntryTimeFormat($session.CurrentUser?.timeFormat));
-    const hourDiff = ` (${$utils.formatTs(getEventDuration(entry as any))})`;
+    const timeFormat = getEntryTimeFormat($session.CurrentUser?.timeFormat);
+    const timeText = `${$utils.formatDate(entry.start, timeFormat)} - ${$utils.formatDate(entry.end, timeFormat)}`;
+    const hourDiff = ` (${$utils.formatTs(getEventDuration(entry))})`;
 
     if (entryType === 3) {
         const timeSpent = $utils.formatSecs(logged!);

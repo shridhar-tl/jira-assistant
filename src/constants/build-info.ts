@@ -7,7 +7,7 @@ const isExtnBuild = !isWebBuild && !isAppBuild && !isPluginBuild;
 const isProdBuild = import.meta.env.PROD;
 const isDevBuild = !isProdBuild;
 
-export const appVersionNo = '3.0.0';
+export const appVersionNo = '3.0.1';
 
 export function redirectToRoute(route?: string): void {
     document.location.href = getRouteUrl(route);

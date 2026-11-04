@@ -26,7 +26,7 @@ import { DefaultEndOfDay, DefaultStartOfDay, DefaultWorkingDays, sett_page_calen
 
 import AddWorklog from '@dialogs/AddWorklog';
 
-import { parseTimeToHours, resolveViewMode } from './calendar-utils';
+import { compareCalendarEntries, parseTimeToHours, resolveViewMode } from './calendar-utils';
 import './Calendar.css';
 import CalendarEventContent from './CalendarEventContent';
 import CalendarSettingsDialog from './CalendarSettings';
@@ -494,6 +494,8 @@ export default function Calendar({
             minEntryHeight: settings.readableEvents ? 40 : 20,
             rowBanding: settings.rowBanding || false,
             fixedWeekCount: false,
+            dayMaxEntries: true,
+            entryOrder: compareCalendarEntries,
             allDayText: 'total',
         };
     }, [currentUser, settings, fullView, zoomIn]);
