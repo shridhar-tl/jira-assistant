@@ -1,25 +1,17 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
-import { FullContext, view } from '@forge/bridge';
-import { format } from 'date-fns';
+import { FullContext } from '@forge/bridge';
+import { format, parseISO } from 'date-fns';
 
-import { DateTimePicker } from '@/controls';
 import { withInitParams } from '@/layouts/initialization/index.plugin';
 import type { Worklog } from '@/types';
 
 import { inject } from '@services';
 
 import withSimpleAuth from '../../../layouts/authorization/simple-auth';
-import { prepareDateRange } from '../../utils';
-
-interface GadgetSettings {
-    dateRange?: {
-        fromDate: string | Date;
-        toDate: string | Date;
-        auto?: boolean;
-    };
-    [key: string]: unknown;
-}
+import DateRangeConfig, { type DateRangeGadgetSettings } from '../../components/DateRangeConfig';
+import GadgetMessage from '../../components/GadgetMessage';
+import { formatSeconds, prepareDateRange } from '../../utils';
 
 interface DayWiseWorklogGadgetProps {
     jiraContext: FullContext;
@@ -30,7 +22,7 @@ function DayWiseWorklogGadget({ jiraContext }: DayWiseWorklogGadgetProps) {
     const isEdit = jiraContext?.extension?.entryPoint === 'edit';
 
     if (isEdit) {
-        return <EditMode settings={settings} />;
+        return <DateRangeConfig settings={settings} />;
     }
 
     return (
@@ -40,55 +32,8 @@ function DayWiseWorklogGadget({ jiraContext }: DayWiseWorklogGadgetProps) {
     );
 }
 
-interface EditModeProps {
-    settings: GadgetSettings;
-}
-
-function EditMode({ settings }: EditModeProps) {
-    const [fromDate, setFromDate] = useState<Date | undefined>(
-        settings.dateRange?.fromDate ? new Date(settings.dateRange.fromDate) : undefined,
-    );
-    const [toDate, setToDate] = useState<Date | undefined>(settings.dateRange?.toDate ? new Date(settings.dateRange.toDate) : undefined);
-
-    const handleFromChange = useCallback(
-        (date: Date) => {
-            setFromDate(date);
-            if (toDate) {
-                view.submit({ ...settings, dateRange: { fromDate: date, toDate } });
-            }
-        },
-        [settings, toDate],
-    );
-
-    const handleToChange = useCallback(
-        (date: Date) => {
-            setToDate(date);
-            if (fromDate) {
-                view.submit({ ...settings, dateRange: { fromDate, toDate: date } });
-            }
-        },
-        [settings, fromDate],
-    );
-
-    return (
-        <div className="h-87.5 p-4">
-            <label className="block font-semibold mb-2">Worklog Date range</label>
-            <div className="flex items-center gap-3">
-                <div className="flex flex-col gap-1">
-                    <label className="text-sm text-gray-600">From</label>
-                    <DateTimePicker value={fromDate} onChange={handleFromChange} />
-                </div>
-                <div className="flex flex-col gap-1">
-                    <label className="text-sm text-gray-600">To</label>
-                    <DateTimePicker value={toDate} onChange={handleToChange} />
-                </div>
-            </div>
-        </div>
-    );
-}
-
 interface WorklogDisplayProps {
-    settings: GadgetSettings;
+    settings: DateRangeGadgetSettings;
 }
 
 function WorklogDisplay({ settings }: WorklogDisplayProps) {
@@ -124,7 +69,7 @@ function WorklogDisplay({ settings }: WorklogDisplayProps) {
     }, []);
 
     if (loading) {
-        return <div className="flex items-center justify-center h-full text-gray-500">Loading worklogs...</div>;
+        return <GadgetMessage icon="fa-spinner" spin text="Loading worklogs..." />;
     }
 
     const groupedWorklogs = worklogs.reduce(
@@ -140,25 +85,40 @@ function WorklogDisplay({ settings }: WorklogDisplayProps) {
     );
 
     if (worklogs.length === 0) {
-        return <div className="text-center p-4 text-gray-500">No worklogs found for the selected date range</div>;
+        return <GadgetMessage icon="fa-calendar-times" text="No worklogs found for the selected date range" />;
     }
 
     return (
-        <div className="p-4 space-y-4">
+        <div className="space-y-3 p-3">
             {Object.entries(groupedWorklogs).map(([date, logs]) => (
-                <div key={date}>
-                    <h3 className="font-semibold text-gray-800 mb-2">{date}</h3>
-                    <div className="space-y-2">
+                <section key={date} className="overflow-hidden rounded-xl border border-(--border-primary) bg-(--bg-secondary)">
+                    <header className="flex items-center justify-between gap-2 border-b border-(--border-primary) px-3 py-2">
+                        <h3 className="flex items-center gap-2 text-sm font-semibold text-(--text-primary)">
+                            <span className="fa fa-calendar-day text-xs text-(--primary-color)" />
+                            {format(parseISO(date), 'EEE, dd MMM yyyy')}
+                        </h3>
+                        <span className="rounded-full bg-(--primary-light) px-2 py-0.5 text-xs font-semibold text-(--primary-color)">
+                            {formatSeconds(logs.reduce((total, log) => total + (log.totalSecs || 0), 0))}
+                        </span>
+                    </header>
+                    <ul className="divide-y divide-(--border-primary)">
                         {logs.map((log) => (
-                            <div key={log.id} className="pl-4 py-1 border-l-2 border-blue-500">
-                                <div className="text-sm">
-                                    <span className="font-semibold">{log.ticketNo}</span> - {log.timeSpent}
+                            <li key={log.id} className="flex items-start gap-3 px-3 py-2">
+                                <div className="min-w-0 flex-1">
+                                    <div className="text-[13px] font-semibold text-(--text-primary)">{log.ticketNo}</div>
+                                    {log.comment && (
+                                        <div className="mt-0.5 line-clamp-2 text-xs text-(--text-secondary)" title={log.comment}>
+                                            {log.comment}
+                                        </div>
+                                    )}
                                 </div>
-                                {log.comment && <div className="text-xs text-gray-500">{log.comment}</div>}
-                            </div>
+                                <span className="shrink-0 rounded-md bg-(--bg-tertiary) px-2 py-0.5 text-xs font-medium tabular-nums text-(--text-secondary)">
+                                    {log.timeSpent}
+                                </span>
+                            </li>
                         ))}
-                    </div>
-                </div>
+                    </ul>
+                </section>
             ))}
         </div>
     );

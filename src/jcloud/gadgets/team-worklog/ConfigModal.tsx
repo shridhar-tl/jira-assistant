@@ -86,11 +86,11 @@ function ConfigModal({ jiraContext }: ConfigModalProps) {
     }, [settings]);
 
     return (
-        <div className="p-8 min-h-137.5 bg-white dark:bg-gray-900">
+        <div className="p-8 min-h-137.5 bg-(--bg-primary) text-(--text-primary)">
             <h3 className="text-xl font-semibold mb-4">Report Configurations</h3>
 
             <div className="space-y-6">
-                <fieldset className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                <fieldset className="border border-(--border-primary) bg-(--bg-secondary) rounded-xl p-4">
                     <legend className="font-semibold px-2">Datasource</legend>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <SelectField
@@ -110,14 +110,14 @@ function ConfigModal({ jiraContext }: ConfigModalProps) {
                                 <label className="block text-sm font-medium mb-1">Date Range</label>
                                 <div className="flex items-center gap-3">
                                     <div className="flex flex-col gap-1">
-                                        <span className="text-xs text-gray-500">From</span>
+                                        <span className="text-xs text-(--text-secondary)">From</span>
                                         <DateTimePicker
                                             value={settings.dateRange?.fromDate ? new Date(settings.dateRange.fromDate) : undefined}
                                             onChange={(d) => setValue('dateRange', { ...settings.dateRange, fromDate: d })}
                                         />
                                     </div>
                                     <div className="flex flex-col gap-1">
-                                        <span className="text-xs text-gray-500">To</span>
+                                        <span className="text-xs text-(--text-secondary)">To</span>
                                         <DateTimePicker
                                             value={settings.dateRange?.toDate ? new Date(settings.dateRange.toDate) : undefined}
                                             onChange={(d) => setValue('dateRange', { ...settings.dateRange, toDate: d })}
@@ -129,7 +129,7 @@ function ConfigModal({ jiraContext }: ConfigModalProps) {
                     </div>
                 </fieldset>
 
-                <fieldset className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                <fieldset className="border border-(--border-primary) bg-(--bg-secondary) rounded-xl p-4">
                     <legend className="font-semibold px-2">Formatting</legend>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <SelectField
@@ -177,15 +177,15 @@ function ConfigModal({ jiraContext }: ConfigModalProps) {
                     </div>
                 </fieldset>
 
-                <fieldset className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                <fieldset className="border border-(--border-primary) bg-(--bg-secondary) rounded-xl p-4">
                     <legend className="font-semibold px-2">JQL Filter</legend>
                     <textarea
                         value={settings.jql || ''}
                         onChange={(e) => setValue('jql', e.target.value)}
-                        className="w-full h-26 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y"
+                        className="w-full h-26 px-3 py-2 border border-(--input-border) rounded-md bg-(--input-bg) text-(--text-primary) focus:outline-none focus:border-(--input-focus-border) focus:ring-2 focus:ring-(--input-focus-ring) resize-y"
                         placeholder="Provide additional JQL filters to be applied while fetching data."
                     />
-                    <span className="text-sm text-gray-500">
+                    <span className="text-sm text-(--text-secondary)">
                         <strong>Note:</strong> Date range and user list filter will be added automatically.
                     </span>
                 </fieldset>
@@ -214,7 +214,7 @@ function SelectField({ label, value, options, onChange }: SelectFieldProps) {
             <select
                 value={value}
                 onChange={(e) => onChange(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-(--input-border) rounded-md bg-(--input-bg) text-(--text-primary) focus:outline-none focus:border-(--input-focus-border) focus:ring-2 focus:ring-(--input-focus-ring)"
             >
                 {options.map((opt) => (
                     <option key={opt.value} value={opt.value}>

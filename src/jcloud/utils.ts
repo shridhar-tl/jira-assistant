@@ -29,3 +29,14 @@ export function getRandomColor(): string {
     const bg = Math.floor(Math.random() * 16777215).toString(16);
     return `#${bg}`;
 }
+
+export function formatSeconds(totalSeconds: number): string {
+    const hours = Math.floor(totalSeconds / 3600);
+    const mins = Math.floor((totalSeconds % 3600) / 60);
+
+    if (!hours) {
+        return `${mins}m`;
+    }
+
+    return mins > 0 ? `${hours}h ${mins}m` : `${hours}h`;
+}

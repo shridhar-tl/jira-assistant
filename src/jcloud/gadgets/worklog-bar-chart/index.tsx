@@ -1,25 +1,17 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
-import { FullContext, view } from '@forge/bridge';
-import { format } from 'date-fns';
+import { FullContext } from '@forge/bridge';
+import { format, parseISO } from 'date-fns';
 
-import { DateTimePicker } from '@/controls';
 import { withInitParams } from '@/layouts/initialization/index.plugin';
 import type { Worklog } from '@/types';
 
 import { inject } from '@services';
 
 import withSimpleAuth from '../../../layouts/authorization/simple-auth';
-import { getRandomColor, prepareDateRange } from '../../utils';
-
-interface GadgetSettings {
-    dateRange?: {
-        fromDate: string | Date;
-        toDate: string | Date;
-        auto?: boolean;
-    };
-    [key: string]: unknown;
-}
+import DateRangeConfig, { type DateRangeGadgetSettings } from '../../components/DateRangeConfig';
+import GadgetMessage from '../../components/GadgetMessage';
+import { formatSeconds, prepareDateRange } from '../../utils';
 
 interface WorklogBarChartProps {
     jiraContext: FullContext;
@@ -30,7 +22,7 @@ function WorklogBarChartGadget({ jiraContext }: WorklogBarChartProps) {
     const isEdit = jiraContext?.extension?.entryPoint === 'edit';
 
     if (isEdit) {
-        return <EditMode settings={settings} />;
+        return <DateRangeConfig settings={settings} />;
     }
 
     return (
@@ -40,61 +32,13 @@ function WorklogBarChartGadget({ jiraContext }: WorklogBarChartProps) {
     );
 }
 
-interface EditModeProps {
-    settings: GadgetSettings;
-}
-
-function EditMode({ settings }: EditModeProps) {
-    const [fromDate, setFromDate] = useState<Date | undefined>(
-        settings.dateRange?.fromDate ? new Date(settings.dateRange.fromDate) : undefined,
-    );
-    const [toDate, setToDate] = useState<Date | undefined>(settings.dateRange?.toDate ? new Date(settings.dateRange.toDate) : undefined);
-
-    const handleFromChange = useCallback(
-        (date: Date) => {
-            setFromDate(date);
-            if (toDate) {
-                view.submit({ ...settings, dateRange: { fromDate: date, toDate } });
-            }
-        },
-        [settings, toDate],
-    );
-
-    const handleToChange = useCallback(
-        (date: Date) => {
-            setToDate(date);
-            if (fromDate) {
-                view.submit({ ...settings, dateRange: { fromDate, toDate: date } });
-            }
-        },
-        [settings, fromDate],
-    );
-
-    return (
-        <div className="h-87.5 p-4">
-            <label className="block font-semibold mb-2">Worklog Date range</label>
-            <div className="flex items-center gap-3">
-                <div className="flex flex-col gap-1">
-                    <label className="text-sm text-gray-600">From</label>
-                    <DateTimePicker value={fromDate} onChange={handleFromChange} />
-                </div>
-                <div className="flex flex-col gap-1">
-                    <label className="text-sm text-gray-600">To</label>
-                    <DateTimePicker value={toDate} onChange={handleToChange} />
-                </div>
-            </div>
-        </div>
-    );
-}
-
 interface ChartDisplayProps {
-    settings: GadgetSettings;
+    settings: DateRangeGadgetSettings;
 }
 
 interface DayData {
     date: string;
     totalSeconds: number;
-    color: string;
 }
 
 function ChartDisplay({ settings }: ChartDisplayProps) {
@@ -133,11 +77,7 @@ function ChartDisplay({ settings }: ChartDisplayProps) {
 
                 const data = Object.entries(grouped)
                     .sort(([a], [b]) => a.localeCompare(b))
-                    .map(([date, totalSeconds]) => ({
-                        date,
-                        totalSeconds,
-                        color: getRandomColor(),
-                    }));
+                    .map(([date, totalSeconds]) => ({ date, totalSeconds }));
 
                 const max = Math.max(...data.map((d) => d.totalSeconds), 1);
                 setMaxSeconds(max);
@@ -151,33 +91,46 @@ function ChartDisplay({ settings }: ChartDisplayProps) {
     }, []);
 
     if (loading) {
-        return <div className="flex items-center justify-center h-full text-gray-500">Loading chart data...</div>;
+        return <GadgetMessage icon="fa-spinner" spin text="Loading chart data..." />;
     }
 
     if (dayData.length === 0) {
-        return <div className="text-center p-4 text-gray-500">No worklogs found for the selected date range</div>;
+        return <GadgetMessage icon="fa-chart-bar" text="No worklogs found for the selected date range" />;
     }
 
+    const totalSeconds = dayData.reduce((total, d) => total + d.totalSeconds, 0);
+
     return (
-        <div className="p-4 h-full flex flex-col">
-            <div className="flex-1 flex items-end gap-1 overflow-x-auto pb-8">
-                {dayData.map(({ date, totalSeconds, color }) => {
-                    const heightPercent = (totalSeconds / maxSeconds) * 100;
-                    const hours = Math.floor(totalSeconds / 3600);
-                    const mins = Math.floor((totalSeconds % 3600) / 60);
+        <div className="flex h-full flex-col p-3">
+            <div className="mb-3 flex flex-wrap items-center gap-2">
+                <span className="rounded-full bg-(--primary-light) px-2.5 py-0.5 text-xs font-semibold text-(--primary-color)">
+                    Total: {formatSeconds(totalSeconds)}
+                </span>
+                <span className="rounded-full bg-(--bg-tertiary) px-2.5 py-0.5 text-xs font-medium text-(--text-secondary)">
+                    {dayData.length} {dayData.length === 1 ? 'day' : 'days'}
+                </span>
+            </div>
+            <div className="flex min-h-0 flex-1 gap-1.5 overflow-x-auto rounded-xl border border-(--border-primary) bg-(--bg-secondary) px-2 pt-2 pb-1">
+                {dayData.map(({ date, totalSeconds: daySeconds }) => {
+                    const heightPercent = (daySeconds / maxSeconds) * 100;
+                    const dispTime = formatSeconds(daySeconds);
+                    const day = parseISO(date);
 
                     return (
-                        <div key={date} className="flex flex-col items-center flex-1 min-w-6">
-                            <div className="text-xs mb-1 font-semibold">
-                                {hours}h{mins > 0 ? `${mins}m` : ''}
+                        <div key={date} className="group flex h-full min-w-9 flex-1 flex-col items-center">
+                            <div className="mb-1 text-[10px] font-semibold whitespace-nowrap tabular-nums text-(--text-secondary)">
+                                {dispTime}
                             </div>
-                            <div
-                                className="w-full rounded-t transition-all"
-                                style={{ height: `${Math.max(heightPercent, 2)}%`, backgroundColor: color, minHeight: '4px' }}
-                                title={`${date}: ${hours}h ${mins}m`}
-                            />
-                            <div className="text-xs mt-1 rotate-45 origin-top-left whitespace-nowrap">
-                                {format(new Date(date), 'MMM dd')}
+                            <div className="flex w-full flex-1 items-end justify-center border-b border-(--border-secondary)">
+                                <div
+                                    className="w-full max-w-8 rounded-t-md bg-blue-500 transition-colors group-hover:bg-blue-600 dark:bg-blue-400 dark:group-hover:bg-blue-300"
+                                    style={{ height: `${Math.max(heightPercent, 2)}%`, minHeight: '4px' }}
+                                    title={`${date}: ${dispTime}`}
+                                />
+                            </div>
+                            <div className="mt-1 text-center text-[10px] leading-tight text-(--text-tertiary)">
+                                <div className="font-semibold text-(--text-secondary)">{format(day, 'dd')}</div>
+                                <div>{format(day, 'MMM')}</div>
                             </div>
                         </div>
                     );

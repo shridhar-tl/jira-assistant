@@ -61,19 +61,28 @@ export default function EditConfig({ settings, onSettingsChange }: EditConfigPro
     }, [settings?.groups, onSettingsChange]);
 
     return (
-        <div className="h-112.5 p-6">
-            <div className="flex items-center gap-3 mb-4">
-                <Button layout="plain" leftIcon={<i className="fa fa-users" />} onClick={showUserGroups}>
-                    User Groups
-                </Button>
-                <Button layout="plain" leftIcon={<i className="fa fa-cogs" />} onClick={showReportSettings}>
-                    Settings
-                </Button>
-            </div>
-            <div className="flex justify-end mt-6">
-                <Button leftIcon={<i className="fa fa-save" />} onClick={saveSettings}>
-                    Done
-                </Button>
+        <div className="h-112.5 p-4">
+            <div className="rounded-xl border border-(--border-primary) bg-(--bg-secondary) p-4">
+                <div className="mb-1 flex items-center gap-2 text-sm font-semibold text-(--text-primary)">
+                    <span className="fa fa-sliders-h text-(--primary-color)" />
+                    Team worklog configuration
+                </div>
+                <p className="mb-4 text-xs text-(--text-secondary)">
+                    Configure the user groups and report settings, then click Done to save the gadget.
+                </p>
+                <div className="flex flex-wrap items-center gap-3">
+                    <Button layout="plain" leftIcon={<i className="fa fa-users" />} onClick={showUserGroups}>
+                        User Groups
+                    </Button>
+                    <Button layout="plain" leftIcon={<i className="fa fa-cogs" />} onClick={showReportSettings}>
+                        Settings
+                    </Button>
+                </div>
+                <div className="mt-6 flex justify-end">
+                    <Button leftIcon={<i className="fa fa-save" />} onClick={saveSettings}>
+                        Done
+                    </Button>
+                </div>
             </div>
         </div>
     );

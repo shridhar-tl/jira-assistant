@@ -53,7 +53,7 @@ export default function InlineTextEditor({ value, placeholder, className, altCla
                 onKeyDown={keyDown}
                 onChange={onValueChange}
                 onBlur={endEdit}
-                className="text-xl w-full border-0 outline-none border-b-2 border-gray-200 bg-transparent"
+                className="w-full border-0 border-b-2 border-(--border-secondary) bg-transparent py-0.5 text-sm text-(--text-primary) outline-none focus:border-(--border-focus)"
             />
         );
     }

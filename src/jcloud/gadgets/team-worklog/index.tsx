@@ -1,6 +1,7 @@
 import { lazy, Suspense, useCallback, useEffect, useState } from 'react';
 
 import { FullContext } from '@forge/bridge';
+import classNames from 'classnames';
 
 import { withInitParams } from '@/layouts/initialization/index.plugin';
 import type { Worklog } from '@/types';
@@ -12,11 +13,16 @@ import { BlockLoading } from '@components';
 import { getUserName } from '@utils';
 
 import withSimpleAuth from '../../../layouts/authorization/simple-auth';
+import GadgetMessage from '../../components/GadgetMessage';
 import { prepareDateRange } from '../../utils';
 
 import type { TeamWorklogSettings } from './EditConfig';
 
 const EditConfig = lazy(() => import('./EditConfig'));
+
+const tableHeaders = ['User', 'Ticket', 'Date', 'Time Spent', 'Comment'];
+const headerCellClass = 'border-b border-(--border-primary) px-3 py-2 text-left text-xs font-semibold uppercase tracking-wide';
+const bodyCellClass = 'border-b border-(--border-primary) px-3 py-2';
 
 interface TeamWorklogGadgetProps {
     jiraContext: FullContext;
@@ -92,12 +98,7 @@ function ReportDisplay({ settings }: ReportDisplayProps) {
     }, []);
 
     if (error) {
-        return (
-            <div className="p-8">
-                <strong>Error: </strong>
-                {error}
-            </div>
-        );
+        return <GadgetMessage icon="fa-exclamation-triangle" variant="error" title="Error" text={error} />;
     }
 
     if (loading) {
@@ -109,7 +110,7 @@ function ReportDisplay({ settings }: ReportDisplayProps) {
     }
 
     if (worklogs.length === 0) {
-        return <div className="p-8">No data returned matching your filter</div>;
+        return <GadgetMessage icon="fa-users" text="No data returned matching your filter" />;
     }
 
     const groupedByUser = worklogs.reduce(
@@ -125,37 +126,47 @@ function ReportDisplay({ settings }: ReportDisplayProps) {
     );
 
     return (
-        <div className="overflow-auto max-h-150">
-            <table className="w-full border-collapse text-sm">
-                <thead className="sticky top-0 bg-white dark:bg-gray-800">
-                    <tr>
-                        <th className="text-left p-2 border-b border-gray-200 font-semibold">User</th>
-                        <th className="text-left p-2 border-b border-gray-200 font-semibold">Ticket</th>
-                        <th className="text-left p-2 border-b border-gray-200 font-semibold">Date</th>
-                        <th className="text-left p-2 border-b border-gray-200 font-semibold">Time Spent</th>
-                        <th className="text-left p-2 border-b border-gray-200 font-semibold">Comment</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {Object.entries(groupedByUser).map(([userKey, { displayName, worklogs: logs }]) =>
-                        logs.map((log, idx) => (
-                            <tr key={`${userKey}-${log.id}-${idx}`} className="hover:bg-gray-50 dark:hover:bg-gray-700">
-                                {idx === 0 && (
-                                    <td className="p-2 border-b border-gray-100 font-semibold align-top" rowSpan={logs.length}>
-                                        {displayName}
+        <div className="max-h-150 overflow-auto p-2">
+            <div className="overflow-hidden rounded-xl border border-(--border-primary)">
+                <table className="w-full border-collapse text-sm">
+                    <thead className="sticky top-0 z-1 bg-(--bg-tertiary) text-(--text-secondary)">
+                        <tr>
+                            {tableHeaders.map((header) => (
+                                <th key={header} className={headerCellClass}>
+                                    {header}
+                                </th>
+                            ))}
+                        </tr>
+                    </thead>
+                    <tbody className="text-(--text-primary)">
+                        {Object.entries(groupedByUser).map(([userKey, { displayName, worklogs: logs }]) =>
+                            logs.map((log, idx) => (
+                                <tr key={`${userKey}-${log.id}-${idx}`} className="transition-colors hover:bg-(--bg-hover)">
+                                    {idx === 0 && (
+                                        <td
+                                            className={classNames(bodyCellClass, 'bg-(--bg-secondary) font-semibold align-top')}
+                                            rowSpan={logs.length}
+                                        >
+                                            {displayName}
+                                        </td>
+                                    )}
+                                    <td className={classNames(bodyCellClass, 'font-medium text-(--primary-color)')}>{log.ticketNo}</td>
+                                    <td className={classNames(bodyCellClass, 'whitespace-nowrap text-(--text-secondary)')}>
+                                        {log.dateStarted ? new Date(log.dateStarted).toLocaleDateString() : ''}
                                     </td>
-                                )}
-                                <td className="p-2 border-b border-gray-100">{log.ticketNo}</td>
-                                <td className="p-2 border-b border-gray-100">
-                                    {log.dateStarted ? new Date(log.dateStarted).toLocaleDateString() : ''}
-                                </td>
-                                <td className="p-2 border-b border-gray-100">{log.timeSpent}</td>
-                                <td className="p-2 border-b border-gray-100 max-w-60 truncate">{log.comment}</td>
-                            </tr>
-                        )),
-                    )}
-                </tbody>
-            </table>
+                                    <td className={classNames(bodyCellClass, 'whitespace-nowrap tabular-nums')}>{log.timeSpent}</td>
+                                    <td
+                                        className={classNames(bodyCellClass, 'max-w-60 truncate text-(--text-secondary)')}
+                                        title={log.comment}
+                                    >
+                                        {log.comment}
+                                    </td>
+                                </tr>
+                            )),
+                        )}
+                    </tbody>
+                </table>
+            </div>
         </div>
     );
 }

@@ -23,16 +23,17 @@ function WorklogTimerGadget() {
     const toggleTickets = useCallback(() => setTicketsDisp(() => !ticketsVisible), [ticketsVisible]);
 
     return (
-        <div className="min-h-75">
+        <div className="min-h-75 px-2 pb-2 sm:px-3">
             {isTimerStarted && <TimerControl />}
             {isTimerStarted && (
-                <div
-                    className="w-full text-center mt-2.5 font-semibold rounded-lg py-0.5 bg-blue-100 cursor-pointer hover:bg-blue-200 transition-colors"
+                <button
+                    type="button"
+                    className="mx-auto flex w-full max-w-125 items-center justify-center gap-1.5 rounded-lg border border-(--border-primary) bg-(--bg-secondary) py-1.5 text-xs font-semibold text-(--text-secondary) cursor-pointer transition-colors hover:bg-(--bg-hover) hover:text-(--primary-color)"
                     onClick={toggleTickets}
                 >
-                    <span className={`fa ${ticketsVisible ? 'fa-caret-up' : 'fa-caret-down'} text-base mr-1`} />
+                    <span className={`fa ${ticketsVisible ? 'fa-chevron-up' : 'fa-chevron-down'} text-[10px]`} />
                     {ticketsVisible ? 'Hide tickets list' : 'Load tickets list'}
-                </div>
+                </button>
             )}
             {ticketsVisible && <IssueListTimer />}
         </div>
