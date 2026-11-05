@@ -11,6 +11,7 @@ import {
     leftJoin,
     orderBy,
     orderByDescending,
+    parseISOString,
     prepareUrlWithQueryString,
     sum,
 } from '@utils';
@@ -579,7 +580,7 @@ export default class WorklogService {
                 }
 
                 const $values = l.values;
-                const logDate = new Date(l.key);
+                const logDate = parseISOString(l.key);
 
                 return {
                     key: l.key,
