@@ -272,11 +272,11 @@
 
     .wl-ticket-detail {
         width: 100%;
+        min-width: 220px;
         max-width: 500px;
         min-height: 20px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
+        white-space: normal;
+        overflow-wrap: anywhere;
         display: block;
         color: var(--text-primary);
 
