@@ -1,13 +1,23 @@
-import { Button } from '@components';
+import type { ImportDateOrder } from '@utils';
+
+import { Button, Dropdown } from '@components';
+
+const dateOrderOptions: { value: ImportDateOrder; label: string }[] = [
+    { value: 'auto', label: 'Date format: Auto detect' },
+    { value: 'dmy', label: 'Date format: DD/MM/YYYY' },
+    { value: 'mdy', label: 'Date format: MM/DD/YYYY' },
+];
 
 interface WorklogPageHeaderProps {
     isLoading: boolean;
+    dateOrder: ImportDateOrder;
+    onDateOrderChange: (order: ImportDateOrder) => void;
     onDownloadTemplate: () => void;
     onUploadClick: () => void;
     fileSelectorProps: React.InputHTMLAttributes<HTMLInputElement> & { ref: React.RefObject<HTMLInputElement | null> };
 }
 
-function WorklogPageHeader({ isLoading, onDownloadTemplate, onUploadClick, fileSelectorProps }: WorklogPageHeaderProps) {
+function WorklogPageHeader({ isLoading, dateOrder, onDateOrderChange, onDownloadTemplate, onUploadClick, fileSelectorProps }: WorklogPageHeaderProps) {
     return (
         <div className="page-header">
             <div className="header-content">
@@ -19,6 +29,13 @@ function WorklogPageHeader({ isLoading, onDownloadTemplate, onUploadClick, fileS
                     <p className="page-subtitle">Import multiple worklogs from a CSV file directly into Jira</p>
                 </div>
                 <div className="header-actions">
+                    <Dropdown
+                        options={dateOrderOptions}
+                        value={dateOrder}
+                        onChange={(e) => onDateOrderChange(e.value as ImportDateOrder)}
+                        className="w-56"
+                        disabled={isLoading}
+                    />
                     <Button
                         variant="info"
                         leftIcon={<i className="fa fa-download" />}

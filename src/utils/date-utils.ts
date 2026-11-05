@@ -6,6 +6,7 @@ import {
     differenceInMinutes,
     endOfDay,
     isValid,
+    parse as dateFnsParse,
     parseISO,
     startOfDay,
 } from 'date-fns';
@@ -491,4 +492,92 @@ export function getWeekGroup(dates: DateItem[]): WeekGroup[] {
             end: endTimestamp.valueOf(),
         };
     });
+}
+
+export type ImportDateOrder = 'auto' | 'dmy' | 'mdy';
+
+export interface ImportDateParseResult {
+    date: Date | null;
+    ambiguous: boolean;
+}
+
+const numericImportDateRegex = /^(\d{1,2})[/.-](\d{1,2})[/.-](\d{4})(?:[ T](\d{1,2}):(\d{2})(?::(\d{2}))?)?$/;
+const isoWithOffsetRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?(?:Z|[+-]\d{2}:?\d{2})$/;
+const importTimeSuffixes = ['', ' HH:mm:ss', ' HH:mm', ' hh:mm:ss a', ' hh:mm a'];
+const importDateBases = [
+    'yyyy-MM-dd',
+    "yyyy-MM-dd'T'HH:mm:ss",
+    "yyyy-MM-dd'T'HH:mm",
+    'yyyy/MM/dd',
+    'dd-MMM-yyyy',
+    'dd/MMM/yyyy',
+    'dd MMM yyyy',
+    'dd-MMM-yy',
+    'dd/MMM/yy',
+    'dd MMM yy',
+    'MMM dd, yyyy',
+];
+const importDateFormats = importDateBases.flatMap((base) => (base.includes("'T'") ? [base] : importTimeSuffixes.map((suffix) => base + suffix)));
+
+function buildLocalDate(year: number, month: number, day: number, hours: number, minutes: number, seconds: number): Date | null {
+    const date = new Date(year, month - 1, day, hours, minutes, seconds);
+    const valid =
+        date.getFullYear() === year &&
+        date.getMonth() === month - 1 &&
+        date.getDate() === day &&
+        hours < 24 &&
+        minutes < 60 &&
+        seconds < 60;
+    return valid ? date : null;
+}
+
+/**
+ * Parse a date typed in an import file without relying on the engine specific Date(string) parsing.
+ * Numeric dd/mm/yyyy and mm/dd/yyyy are ambiguous, so the order has to be supplied (or is detected when only one order is possible).
+ */
+export function parseImportDate(value: string, order: ImportDateOrder = 'auto'): ImportDateParseResult {
+    const text = (value || '').trim();
+    if (!text) {
+        return { date: null, ambiguous: false };
+    }
+
+    const numeric = numericImportDateRegex.exec(text);
+    if (numeric) {
+        const [first, second, year, hours, minutes, seconds] = numeric.slice(1).map((part) => Number(part || 0));
+        let dayFirst: boolean | null = null;
+
+        if (order === 'dmy') {
+            dayFirst = true;
+        } else if (order === 'mdy') {
+            dayFirst = false;
+        } else if (first > 12 && second <= 12) {
+            dayFirst = true;
+        } else if (second > 12 && first <= 12) {
+            dayFirst = false;
+        } else if (first === second) {
+            dayFirst = true;
+        }
+
+        if (dayFirst === null) {
+            return { date: null, ambiguous: true };
+        }
+
+        const date = dayFirst ? buildLocalDate(year, second, first, hours, minutes, seconds) : buildLocalDate(year, first, second, hours, minutes, seconds);
+        return { date, ambiguous: false };
+    }
+
+    if (isoWithOffsetRegex.test(text)) {
+        const date = new Date(text.replace(/([+-]\d{2})(\d{2})$/, '$1:$2'));
+        return { date: isValid(date) ? date : null, ambiguous: false };
+    }
+
+    const reference = new Date();
+    for (const format of importDateFormats) {
+        const date = dateFnsParse(text, format, reference);
+        if (isValid(date)) {
+            return { date, ambiguous: false };
+        }
+    }
+
+    return { date: null, ambiguous: false };
 }

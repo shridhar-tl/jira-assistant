@@ -6,7 +6,7 @@ import { inject } from '@services';
 
 import { Checkbox, Column, NoDataRow, ScrollableTable, TBody, THead, TRow } from '@components';
 
-import { exportCsv, parseTimespent } from '@utils';
+import { exportCsv, parseImportDate, parseTimespent, type ImportDateOrder } from '@utils';
 
 import { fieldMapping, wlStatusError, wlStatusExcluded, wlStatusInvalid, wlStatusWillImport } from './worklog-utils';
 import WorklogActionBar from './WorklogActionBar';
@@ -36,6 +36,8 @@ export default function ImportWorklogPage() {
     const [selectedCount, setSelectedCount] = useState<number | ''>('');
     const [autoUpload, setAutoUpload] = useState(() => $session.CurrentUser.autoUpload || false);
     const [isLoading, setIsLoading] = useState(false);
+    const [dateOrder, setDateOrder] = useState<ImportDateOrder>('auto');
+    const rawRowsRef = useRef<any[] | null>(null);
 
     useEffect(() => {
         $q.on('completed', () => {
@@ -55,7 +57,7 @@ export default function ImportWorklogPage() {
     const getSelectedLogs = useCallback((data: WorklogRow[]) => data.filter((w) => w.selected), []);
 
     const processData = useCallback(
-        (data: any[]) => {
+        (data: any[], order: ImportDateOrder) => {
             const worklogData = data.map((w) => {
                 let { ticketNo = '', startDate = '', timespent = '', comment = '' } = w;
 
@@ -80,9 +82,11 @@ export default function ImportWorklogPage() {
                 if (!startDate) {
                     setError('Log Date is required');
                 } else {
-                    const _startDate = $utils.convertDate(startDate);
-                    if (_startDate instanceof Date) {
+                    const { date: _startDate, ambiguous } = parseImportDate(startDate, order);
+                    if (_startDate) {
                         startDate = _startDate;
+                    } else if (ambiguous) {
+                        setError('Log Date is ambiguous. Select the date format of the file');
                     } else {
                         setError('Log Date is invalid');
                     }
@@ -158,12 +162,23 @@ export default function ImportWorklogPage() {
                     if (!data || !data.length) {
                         $message.warning('No rows found to import', 'No records exists');
                     }
-                    processData(data);
+                    rawRowsRef.current = data;
+                    processData(data, dateOrder);
                 },
             });
         }
         selector.value = '';
-    }, [transformHeader, processData, $message]);
+    }, [transformHeader, processData, $message, dateOrder]);
+
+    const dateOrderChanged = useCallback(
+        (order: ImportDateOrder) => {
+            setDateOrder(order);
+            if (rawRowsRef.current) {
+                processData(rawRowsRef.current, order);
+            }
+        },
+        [processData],
+    );
 
     const uploadWorklog = useCallback(async (log: WorklogRow) => {
         const { ticketNo, startDate, timespent, comment } = log;
@@ -322,6 +337,7 @@ export default function ImportWorklogPage() {
         setWorklogData(null);
         setTicketSummary({});
         setSelectAll(false);
+        rawRowsRef.current = null;
     }, [$q]);
 
     const formatDate = useCallback(
@@ -348,6 +364,8 @@ export default function ImportWorklogPage() {
         <div className="bulk-import-worklog-page">
             <WorklogPageHeader
                 isLoading={isLoading}
+                dateOrder={dateOrder}
+                onDateOrderChange={dateOrderChanged}
                 onDownloadTemplate={downloadTemplate}
                 onUploadClick={() => fileSelectorRef.current?.click()}
                 fileSelectorProps={{ ref: fileSelectorRef, onChange: fileSelected }}
