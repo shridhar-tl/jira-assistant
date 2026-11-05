@@ -2,10 +2,9 @@ import { curOrigin, Pages, regexSet } from './constants';
 import { applyBoardLogic } from './jira-board';
 import { applyIssueLogic } from './jira-issue';
 import { createTimerBox } from './timer-box';
-import { executeJASvc, getPathName, injectCss, injectPollyfill, until } from './utils';
+import { chr, executeJASvc, getPathName, injectCss, injectPollyfill, until } from './utils';
 
 const win: any = window;
-const chr = win.chrome || win.browser;
 
 console.log('Attached JA Functionalities');
 

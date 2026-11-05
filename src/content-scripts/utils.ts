@@ -4,8 +4,11 @@ import { processResponse } from '../common/proxy-helper';
 
 import { isCloud, Pages } from './constants';
 
-const win: any = window;
-const chr = win.chrome || win.browser;
+declare const chrome: any;
+declare const browser: any;
+
+// In Firefox content scripts chrome/browser are globals of the content script sandbox and are not available on window
+export const chr = typeof browser !== 'undefined' && browser.runtime ? browser : chrome;
 
 export function executeJASvc(svcName: string, action: string, ...args: any[]) {
     return new Promise((resolve, reject) =>
