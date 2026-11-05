@@ -88,8 +88,8 @@ export default class JiraService {
 
             return issues;
         } catch (err: any) {
-            if (!nextPageToken) {
-                // Fallback to v2 only for the failure in first call
+            if (!nextPageToken && !this.$session.CurrentUser?.isAtlasCloud) {
+                // Fallback to v2 only for the failure in first call. Jira Cloud has removed the v2 search API, so falling back there would hide the actual error
                 console.error('JQL v3 search failed. Fallback to v2 search', err);
                 return this.searchTicketsFallback_V2(jql, fieldsToUse, undefined, opts);
             }
