@@ -211,7 +211,7 @@ export function useWorklogOperations(setEvents: SetEvents, settings: any, curren
 
                 $message.success('Worklog uploaded successfully!');
                 $analytics.trackEvent('Worklog uploaded: Individual', 'User actions');
-            } catch (error) {
+            } catch (error: any) {
                 console.error('Error uploading worklog:', error);
                 $message.error(error?.message || 'Failed to upload worklog');
             } finally {

@@ -52,7 +52,8 @@ function getUploadErrorMessage(err: any, ticketNo: string): string {
         return `Unable to upload worklog for ${ticketNo}. Look at console for more details`;
     }
 
-    const detail = errorMessages.find(Boolean);
+    const fieldErrors: string[] = Object.values(err?.error?.errors || {});
+    const detail = [...errorMessages, ...fieldErrors].filter(Boolean).join('; ');
     return detail
         ? `Unable to upload worklog for ${ticketNo}: ${detail}`
         : `Unable to upload worklog for ${ticketNo}${status ? ` (HTTP ${status})` : ''}. Look at console for more details`;
@@ -295,7 +296,8 @@ export default class WorklogService {
 
         return uploadRequest.catch((err: any) => {
             console.error(`Error uploading worklog to ${ticketNo}.`, err);
-            return Promise.reject({ ...err, message: getUploadErrorMessage(err, ticketNo) });
+            const errorDetails = err && typeof err === 'object' ? err : {};
+            return Promise.reject({ ...errorDetails, message: getUploadErrorMessage(err, ticketNo) });
         });
     }
 
