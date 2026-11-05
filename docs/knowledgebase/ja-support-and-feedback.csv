@@ -16,7 +16,8 @@ For planned feature releases, you will typically see a notification inside Jira 
 The Web version always has the latest build and acts as a preview of new features and fixes, so use JA Web if you want to stay most up to date."
 "Why extension updates differ across browsers","Jira Assistant (JA) updates are usually submitted to all browser stores at the same time, but each store's approval time differs - some approve within hours, others take a week or more.
 Updates may also be rejected during review due to a library vulnerability, which can delay a new build, and some updates roll out in phases so you may need to wait your turn or update manually from your browser's extensions page.
-Browser-specific fixes or major refactors may be published to one browser first for testing. The Web version of Jira Assistant always receives fixes fastest."
+Browser-specific fixes or major refactors may be published to one browser first for testing. The Web version of Jira Assistant always receives fixes fastest.
+Very minor or browser-specific fixes may reach other browsers only after a month or two, bundled with later additions. Because of store review queues, extensions and desktop apps are published less frequently, mostly for major bug fixes or features."
 "How many people use Jira Assistant","Based on web store analytics, more than 100,000 individual users use the Jira Assistant (JA) browser extensions across various browsers, and the JA Cloud app is installed in around 500+ Jira instances.
 The number of people using the Web version and the Cloud app for everyday use is unknown because no analytics capture that.
 Jira Assistant also maintains a high end-user rating across the stores."
@@ -26,15 +27,19 @@ The Web version always carries the latest build, so it previews new features and
 "Jira Assistant has no ads","Jira Assistant (JA) does not display advertisements and has no plans to ever do so.
 JA was built to help users, and showing ads would inconvenience them, so it will never be implemented.
 Jira Assistant will continue to be free and ad-free."
-"Holiday and leave configuration in Jira Assistant","Jira Assistant (JA) does not currently support configuring public holidays or leaves/time-off officially; by default only weekends are treated as non-working days.
+"Holiday and leave configuration in Jira Assistant","Jira Assistant (JA) does not currently support configuring public holidays or leaves/time-off officially; by default only weekends are treated as non-working days, and there is no option yet to import holidays via an API or calendar.
 Holiday API integration is a planned feature tracked as #26 and may be incorporated into the upcoming Planning module; you can follow that issue and add your feedback.
 For accurate worklog dates and times in the meantime, make sure Jira is configured with your correct local timezone, since Jira Assistant uses your local timezone by default."
 "Marking all notifications as read in Jira Assistant","Because of how notifications are derived in Jira Assistant (JA) from changes in Jira since your last interaction, there is currently no way to mark all notifications as read at once.
 Opening a Jira ticket stops its related notifications from being pulled again, so the only way to clear a notification is to open the individual ticket.
-Better options may come in the future; this is tracked as issue #156. Comment-change notifications are also not yet triggered (issue #16)."
+Better options may come in the future; this is tracked as issue #156. Comment changes also do not trigger notifications yet (issue #16); currently all types of changes are shown, including minor ones, and an option to choose which kinds of changes to be notified about is planned."
 "Can Jira Assistant write user stories for me","Jira Assistant (JA) does not currently have any feature that writes user stories on your behalf; its primary purpose is reporting, with some minimal planning features and the ability to import stories and worklogs.
 More functionality is being planned for the future, and details are available on the issue tracker.
 If you have a specific requirement, raise a new ticket so it can be prioritized based on popularity."
 "Contacting the developer for custom work","Jira Assistant (JA) is maintained by an independent developer, who may find it hard to accommodate individual calls or screen-sharing sessions.
 The recommended way to get help is to raise a support ticket on the issue tracker or use the discussions forum, including full details and screenshots.
 If you want a custom Web, mobile, desktop or browser extension built and are willing to pay, you can email the developer at shridhar.tl@gmail.com with detailed requirements."
+"Donating to Jira Assistant","Jira Assistant (JA) is free and donations are optional; if you find it useful, a donation encourages the developer to keep improving the tool. You can donate using the Donate button at the top right corner of the Jira Assistant website or the JA header in the extension and Web version.
+Some users see 'Donations aren't supported in this organization's country' when trying to donate. This is a known issue reported by multiple users; the root cause is not yet identified and it is not prioritized over other fixes."
+"Hiding or disabling the Donate button in Jira Assistant","In the Jira Assistant (JA) browser extension and Web version, you can hide the Donate button from Settings > General > General tab using the 'Hide Donate button in header' option. The Jira Cloud app does not show a Donate button.
+To hide it for all users in your organization, either self-host Jira Assistant and use the customize file (src/customize.ts; customize.js in older versions) in the source code, which lets you hide or disable JA features, or contact the developer at shridhar.tl@gmail.com."

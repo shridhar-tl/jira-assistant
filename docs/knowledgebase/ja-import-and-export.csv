@@ -1,5 +1,5 @@
 title,content
-"Bulk Import module in Jira Assistant","Jira Assistant (JA) lets you bulk import data into Jira for both Issues and Worklogs by uploading a CSV file with the required columns. A sample template is available for download that lists the necessary columns.
+"Bulk Import module in Jira Assistant","Jira Assistant (JA) lets you bulk import data into Jira for both Issues and Worklogs by uploading a file with the required columns; CSV is the primary format, and Excel (.xlsx) and JSON files are also accepted. A sample template is available for download that lists the necessary columns.
 The worklog import supports only the columns in the sample template, while issue import also allows additional custom columns. When importing issues, all mandatory fields must have values or the upload fails.
 Click the icon to open a file dialog and select your CSV; records are validated and shown on screen, with passing records highlighted in green and error records in amber, and a status column explains each validation result."
 "Reviewing and uploading bulk import records","After validating a file in Jira Assistant (JA), you can fix any errors and re-upload. Individual records can be selected for import, and records with validation issues are unselected by default.

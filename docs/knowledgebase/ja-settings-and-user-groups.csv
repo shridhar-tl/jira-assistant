@@ -4,7 +4,7 @@ The General tab lets you set the default date and time format used throughout th
 These general options shape how dates, times and the calendar appear across Jira Assistant."
 "Worklog tab settings in Jira Assistant","The Worklog tab in Jira Assistant (JA) General settings tailors worklog behavior.
 Min and Max hours to log (HH:mm) act as visual indicators in gadgets and reports. Default time spent pre-populates new worklog entries. 'Enable auto upload by default' uploads worklogs to Jira automatically on creation instead of holding them for review.
-'Notify users on worklog' controls default notification behavior. 'Allow logging work on closed tickets' overrides the default block on closed tickets. 'Min length for worklog comments' sets the required comment length (0 makes comments optional). 'Worklog JQL suffix' appends custom JQL when pulling worklogs to filter projects/issues or add an order-by clause."
+'Notify users on worklog' controls default notification behavior. 'Allow logging work on closed tickets' overrides the default block on closed tickets. 'Min length for worklog comments' sets the required comment length (0 makes comments optional). 'Default meeting ticket for worklog' lists tickets used to create worklogs for meetings from the Outlook or Google Calendar integration. 'Worklog JQL suffix' appends custom JQL when pulling worklogs to filter projects/issues or add an order-by clause."
 "Default Values tab settings in Jira Assistant","The Default Values tab in Jira Assistant (JA) lets you preset key fields so they are available across all modules.
 Projects: maintain your relevant projects so they are readily available in reports without re-selecting each time. Agile boards: preselect the boards used for sprint reporting.
 Story Points field: choose the custom Jira field used for story points; if story-point features are disabled, this field is likely unset, though JA tries to auto-select it on first visit. Epic name field: choose the field for epic name to enable epic-related features."
@@ -14,9 +14,10 @@ This integration streamlines time tracking for recurring meetings in Jira Assist
 "Menu Option tab and JA icon click behavior","The Menu Option tab in Jira Assistant (JA) configures what happens when you click the JA browser extension icon; it applies to the browser extension only, not the Web or Cloud app.
 Option 1 - Show Menus (default): choose which menus appear when you click the icon, including a frequently used module for quick navigation.
 Option 2 - Auto Launch: skip the menu and open a chosen module directly (for example the Worklog Calendar) on a single click.
-Option 3 - Show Quick-view Dashboard: show a chosen dashboard as a popover with all its gadgets in a tabbed layout for immediate insight."
+Option 3 - Show Quick-view Dashboard: show a chosen dashboard as a popover with all its gadgets in a tabbed layout for immediate insight.
+To configure it, go to Settings > General > Menu options tab: choose 'Show menus' and select the pages under 'Menus to Display', choose 'Auto launch' and pick the page to open directly, or choose 'Show quickview dashboard' and pick the dashboard."
 "Advanced settings in Jira Assistant","The Advanced settings page in Jira Assistant (JA) offers granular control over technical behavior and should be changed with caution, as incorrect values can cause instability. Most changes take effect the next time you use JA or after pressing F5.
-It uses a grid where rows are configuration options and columns are individual instances; some default-value changes affect all instances. It shows the integration date, Jira Server URL (base path only), Jira User ID and Email ID (used for display in reports).
+It uses a grid where rows are configuration options and columns are individual instances; some default-value changes affect all instances. 'Integrated On' shows each instance's integration date (older installations may lack an accurate date). 'Jira Server URL' must be the base path for Jira API access, not a specific API or page URL. 'Jira User ID' is used mainly for display in reports and must match your Jira user ID to avoid functionality issues; 'Email ID' serves the same purpose.
 It also exposes customizable JQL queries and notification/tracking toggles."
 "Customizable JQL queries in Advanced settings","Jira Assistant (JA) Advanced settings expose JQL queries used by various parts of the tool, so you can adjust them if defaults do not fit.
 'Open Tickets JQL' drives the 'My Open Tickets' gadget. 'Ticket Suggestions JQL' drives the ticket suggestion dropdowns used in Add Worklog, Settings and elsewhere (results may be cached). 'Jira Updates JQL' fetches issues modified since you last viewed them.
@@ -32,10 +33,11 @@ Use the Backup (export settings) feature to save your configuration and restore 
 This is tracked as a known limitation; see GitHub issue #67 for more details."
 "User Groups in Jira Assistant","User Groups in Jira Assistant (JA) let you assign Jira users to a named group that is used internally to simplify report generation by selecting a group instead of individual users.
 Create or edit groups under Settings > User Groups; there is a default group containing only you, which you can rename and expand, or add a new group with '+ Add group'. Search for users, select one or more, click the add icon, and click 'Save Changes'.
-You can set a group-level timezone (and override it per user) and a per-user cost-per-hour used by the Cost report. You can also map an existing Jira group directly instead of building one in JA."
+You can set a group-level timezone (and override it per user) and a per-user cost-per-hour used by the Cost report. You can also map an existing Jira group directly instead of building one in JA.
+If you cannot find a user while searching, first check whether that user is inactive in Jira."
 "User Groups limitations in Jira Assistant","Jira Assistant (JA) User Groups have a few limitations.
 Mapping a Jira group directly requires Jira Admin permission; without it, Jira returns a 401 error when JA tries to pull the group's members, so non-admins should create a JA-internal group instead.
-Inactive users do not appear in user search (a Jira API behavior); as a workaround, type the inactive user's full username and press Enter to add them.
+Inactive users do not appear in user search because Jira's user search API returns only active users (tracked as #288 and #143, on hold); as a workaround, type the inactive user's full username and press Enter to add them.
 When migrating between Jira instances (for example Server to Cloud), JA User Groups cannot be ported because Cloud stores profiles differently."
 "Sharing User Groups between Jira Assistant users","In Jira Assistant (JA) you can share a User Group with other users by exporting settings with only the user groups selected, which produces a .jab file.
 Share this .jab file with anyone you want to give the groups to, and they can import it.

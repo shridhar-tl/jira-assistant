@@ -2,7 +2,7 @@ title,content
 "Dashboard module in Jira Assistant","Jira Assistant (JA) provides a customizable dashboard where you can add gadgets to gather key data insights.
 You can create dashboards beyond the default one by clicking the icon at the top right corner of the dashboard page and selecting 'Create Dashboard', which creates a new dashboard with a default name.
 You can rename a dashboard by clicking the name header label near the top left and saving the change, and you can also change its icon from there.
-To delete a dashboard, select the icon at the top right corner and choose 'Delete Dashboard'; deletion is irreversible and does not prompt for confirmation."
+To delete a dashboard, click the wrench (settings) icon at the top right corner and choose 'Delete Dashboard'; deletion is irreversible and does not prompt for confirmation."
 "Inbuilt gadgets available in Jira Assistant","Jira Assistant (JA) ships with several inbuilt dashboard gadgets:
 My Open Tickets - tickets assigned to you, with quick worklog add and bookmarking.
 Bookmarks - your bookmarked tickets, with easy adding of multiple tickets.
@@ -24,7 +24,7 @@ After updating, the gadget will fetch tickets based on your customized query in 
 "Bookmarking tickets in Jira Assistant","Jira Assistant (JA) includes a Bookmarks gadget where you can keep frequently used tickets. Add tickets using the plus icon in the gadget, which lets you bookmark multiple tickets easily.
 Bookmarked tickets are convenient for quickly adding worklogs or revisiting issues.
 The Bookmarks gadget can be added to any dashboard in Jira Assistant from the add-gadget popup."
-"Switching between tabbed and grid dashboard layouts","Jira Assistant (JA) lets you switch a dashboard between tabbed layout and grid layout. Click the icon at the top right corner of the dashboard and select 'Show in Tabs' to toggle between the two layouts.
+"Switching between tabbed and grid dashboard layouts","Jira Assistant (JA) lets you switch a dashboard between tabbed layout and grid layout. Click the wrench (settings) icon at the top right corner of the dashboard and select 'Show in Tabs' to toggle between the two layouts.
 In grid layout you can rearrange gadgets by dragging and dropping them by their header to change their order.
 Quick View dashboard popups always use a tabbed layout regardless of the dashboard's layout setting."
 "Viewing gadgets in full screen in Jira Assistant","In Jira Assistant (JA) you can expand any gadget to full screen for a better view. Click the expand icon present on the gadget to view it in full-screen mode.

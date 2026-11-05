@@ -4,8 +4,9 @@ Beyond the inbuilt reports, you can build your own using the Custom Report or Re
 Any report can be exported to CSV, Excel and PDF from the icon at the top right corner of the report, and report definitions you create can be shared with other users."
 "Worklog (Time sheet) Report in Jira Assistant","The Worklog Report pulls worklog details from Jira and generates a report; it is the most used and liked feature of Jira Assistant (JA).
 To use it, choose a date (or click refresh to load), and pick users by clicking the users icon; if a user list exists in 'User groups', it is used automatically.
-Open report settings to set the log hour format, log breakup (sum same-ticket same-day worklogs or show separately), report timezone, whether estimate columns show, and a JQL filter to restrict by project, issue type or status.
-Configure each user's and group's timezone correctly in User Groups and settings so times display accurately."
+Open report settings to set the log hour format, log breakup (sum same-ticket same-day worklogs or show separately), report timezone, whether estimate columns show, and a JQL filter (JQL tab of the settings popup) to add restrictions such as project, issue type or status, since by default all worklogs for the date range and selected users are pulled.
+Configure each user's and group's timezone correctly in User Groups and settings so times display accurately.
+More settings affecting this report are available under Settings > General."
 "Worklog Report tabs and views in Jira Assistant","The Worklog Report in Jira Assistant (JA) presents data across several tabs.
 Grouped [User daywise] shows worklog data nested by user groups, users and tickets as rows, with dates from the selected range as columns; you can click a ticket/date cell to add a worklog quickly.
 Summary [User project wise] shows total hours grouped by user group and user as rows, and project and issue type as columns.
@@ -13,7 +14,7 @@ Flat (Groupable) shows all worklogs in a flat, sortable table that can be groupe
 The report can be exported to CSV, Excel and PDF."
 "Adding columns or custom fields to the Worklog Report","The Worklog Report in Jira Assistant (JA) supports adding any Jira native or custom columns. Click the configure icon at the top right corner of the report and open the 'Field list' tab, then select the fields you want shown.
 To show a parent ticket's summary instead of just its link, select the 'Parent' field in the Field list and check the box below it.
-Some fields may be hidden because their type is unsuitable for the report, or because you lack permission to pull them or they are managed by another Jira plugin; contact the developer if an expected field is missing."
+Some fields may be hidden because their type is unsuitable for the report, or because a Jira administrator restricts them, you lack permission to pull them, or they are managed by a third-party Jira app (tracked as #331); consult your Jira admin, and contact the developer or raise a GitHub ticket if an expected field is still missing."
 "Why issue summary is truncated in the Worklog Report","In the Worklog Report of Jira Assistant (JA), the issue summary is truncated to make room for additional data, a decision based on years of user feedback to avoid excessive scrolling.
 You can still see the full summary by hovering over a row, which shows the complete text as a tooltip.
 If you would prefer a different behavior, you can share feedback with the developer or on the issue tracker so it can be prioritized."
@@ -34,7 +35,7 @@ It needs access to change logs via a new Jira API still in preview, currently av
 To handle stories removed mid-sprint, the JA Cloud app stores the sprint's starting issue list as a source of truth, so accuracy is best for upcoming sprints; extension and web users have greater limitations here."
 "Sprint Report in Jira Assistant","Jira Assistant (JA) includes a Sprint Report among its inbuilt reports.
 The Sprint Report is not available when using OAuth authentication, the Web version with OAuth, or the Jira Cloud app, due to API limitations.
-Because the Sprint Report already provides most needed functionality and is used less frequently, a new universally compatible report is being considered to eventually replace it. The 'Exclude hours logged out of sprint' option in its Worklog Detail page is currently not functional."
+Because the Sprint Report already provides most needed functionality and is used less frequently, a new universally compatible report is being considered to eventually replace it. The 'Exclude hours logged out of sprint' option in its Worklog Detail page is currently not functional (#340), because the Jira API does not return accurate sprint start and end dates with time."
 "User list selection is not saved in reports","In any report in Jira Assistant (JA), the user-list popup does not save changes permanently; the list resets when you reload the page.
 This is intentional: to generate a report for only a few users, simply remove the others from the popup and generate; on reload, your saved users/groups return.
 To save users permanently, add them in Settings > User groups. Because of this, no separate per-report user selection is needed in Jira Assistant."
@@ -46,4 +47,5 @@ Configure the correct field under Settings > General > Default values tab; the '
 Once a valid field is selected, return to the report and the Story Point option will be enabled."
 "Scheduling or emailing reports automatically in Jira Assistant","Jira Assistant (JA) is a front-end-only tool with no backend access to Jira, so it cannot automatically schedule report generation or email reports on a recurring basis.
 Browser extensions are not suited to background processing, and there are no plans to add automatic report emailing.
-There is also no public API to do this, since neither Jira Assistant nor JA Web has a backend that can access your Jira instance."
+There is also no public API to do this, since neither Jira Assistant nor JA Web has a backend that can access your Jira instance.
+For the Jira Cloud app, scheduling might be technically feasible but would incur hosting charges, which is not viable for a free tool."

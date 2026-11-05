@@ -28,7 +28,7 @@ The pause-on-lock, pause-on-idle, attach-in-Jira and show-timer-in-Jira options 
 "Hiding the worklog timer from Jira and Confluence","To hide the worklog timer and timer controls from Jira and Confluence in Jira Assistant (JA), disable the 'Attach tracker functionality within Jira' option in Settings > General > Time tracker tab.
 You can alternatively keep it attached but turn off 'Show timer in Jira' to just hide the visible timer in the bottom-right corner.
 These options let you streamline the interface when you do not want the Jira Assistant timer visible."
-"Worklog timer not appearing on the Jira dashboard","In some Jira versions the Jira Assistant (JA) extension's time tracker does not appear on the Jira Dashboard because Jira changed its dashboard DOM structure.
+"Worklog timer not appearing on the Jira dashboard","In some Jira versions the Jira Assistant (JA) extension's time tracker does not appear on the Jira Dashboard because Jira changed its dashboard DOM structure (tracked as #336).
 Time tracking can still be managed from within Jira Assistant or on individual Jira issue pages even when the dashboard timer is unavailable.
 A permanent fix is under consideration, subject to technical feasibility."
 "Cannot hide the timer for specific projects in the Cloud app","The Jira Assistant (JA) Cloud app is built on the Atlassian Forge platform, which currently does not allow showing or hiding options based on specific projects or settings.

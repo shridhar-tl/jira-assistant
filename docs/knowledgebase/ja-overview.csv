@@ -4,7 +4,7 @@ Main modules in Jira Assistant: Dashboard with gadgets, Worklog Calendar, Worklo
 Reports available in Jira Assistant: Worklog (Time sheet) Report, Sprint Report, Estimate vs Actual Report, Say-Do-Ratio Report, Pivot Report, and Custom Report.
 Other capabilities: build your own gadgets and reports with Custom Report and Report Builder, export any grid to CSV/Excel/PDF, integrate with Outlook calendar to auto-generate meeting worklogs, group users for reporting, and integrate/switch between multiple Jira instances.
 Jira Assistant is available for Chrome, Firefox, Edge and Opera, plus a web version usable in any browser, and a Jira Cloud app."
-"What is Jira Assistant and who develops it","Jira Assistant (JA) is a productivity tool developed by Shridhar in 2016 to quickly add worklogs and pull reports from Jira. Jira Assistant supports Jira Cloud, Server and Data Center versions.
+"What is Jira Assistant and who develops it","Jira Assistant (JA) is a productivity tool developed by Shridhar in 2016 to quickly add worklogs and pull reports from Jira. Jira Assistant supports Jira Cloud, Server and Data Center versions, with continued support expected for future versions.
 Jira Assistant is available as a browser extension, a web version, and a Jira Cloud app (Atlassian Forge based) that installs directly inside a Jira Cloud instance.
 The official website for Jira Assistant is https://jiraassistant.com and the hosted web version is at https://app.jiraassistant.com.
 For questions, users can post in discussions; for bugs, users can report an issue with screenshots and console errors. The developer can also be reached by email at shridhar.tl@gmail.com."
@@ -23,7 +23,8 @@ Jira Cloud app: https://marketplace.atlassian.com/apps/1221570
 A Windows desktop app for Jira Assistant is planned and coming soon."
 "Is Jira Assistant free and is there a paid version","Jira Assistant (JA) is completely free to use for both personal and commercial/official purposes, with no licensing cost. There is no PRO, premium or paid version as of date.
 Jira Assistant began in 2016 as a simple utility for adding worklogs and pulling reports, and its motive is not to generate revenue. Maintaining stability across browser updates and Jira changes requires considerable ongoing effort.
-For full usage terms see the license page at https://jiraassistant.com/license-terms."
+For full usage terms see the license page at https://jiraassistant.com/license-terms.
+Contributions in any form are welcome; if you find JA useful, you can donate using the Donate button at the top right corner of the website."
 "Which browsers and Jira versions does Jira Assistant support","Jira Assistant (JA) is available as a browser extension for Chrome, Firefox, Edge and Opera, and as a web version that works in any modern browser. It is known to work in Vivaldi but Vivaldi is not officially supported.
 For Chrome, Jira Assistant requires Chrome version 102 or above; older Chrome versions should be upgraded.
 Jira Assistant works with Jira Cloud, Server and Data Center. OAuth authentication is supported only with Jira Cloud; for OAuth on Data Center, users should contact the developer.
@@ -35,4 +36,7 @@ Jira Assistant offers a dark mode and light mode toggle, multi-instance switchin
 YouTube video playlists are available to learn the various features and the report builder."
 "Planning Poker in Jira Assistant","Jira Assistant (JA) includes a built-in Planning Poker module for collaborative agile estimation. A facilitator creates a room with a room name and chooses a scoring scheme: Fibonacci, Short Fibonacci, or T-Shirt sizes.
 Team members join the room with their name to vote on story points together in real time, and results can be revealed once everyone has voted.
-Planning Poker gives teams out-of-the-box support for estimation without needing a separate tool, and is accessible from the Jira Assistant menu."
+Planning Poker gives teams out-of-the-box support for estimation without needing a separate tool, and is accessible from the Jira Assistant menu in the extension and Web version; it is not available in the Jira Cloud app."
+"Is Jira Assistant open source, license terms and contributing","Jira Assistant (JA) is open-source, free software for both personal and official (commercial) use, with its source code on GitHub at https://github.com/shridhar-tl/jira-assistant.
+You may customize the code for use within your company, but distributing or selling the software is not permitted. Full terms are at https://jiraassistant.com/license-terms; for any specific use case, contact the developer.
+Developers are welcome to raise a pull request (PR) for a bug fix or a new feature; development guidelines are available under the DEVELOPER menu of the Jira Assistant website."

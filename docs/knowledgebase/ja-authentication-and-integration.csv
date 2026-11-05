@@ -1,7 +1,7 @@
 title,content
 "Authentication methods supported by Jira Assistant","Jira Assistant (JA) supports three authentication methods to suit different security needs.
 Single-click integration (browser session based) uses your browser's existing authenticated Jira session, so no credentials are entered or stored; it works only with the browser extension and requires you to be logged in to Jira in the same browser.
-OAuth with Jira uses a one-time consent and an API token, avoiding stored credentials; it is supported for Jira Cloud only, stores the token in browser cache, and does not support the Sprint Report.
+OAuth with Jira uses a one-time consent and an API token, avoiding stored credentials; it is supported for Jira Cloud only (Data Center instances need a custom solution; contact the developer), stores the auth token in browser cache, and does not support the Sprint Report.
 Basic authentication uses a username and password or API key; it works with both Cloud and Data Center but is the least secure because the encoded credentials are stored in the browser cache, and is recommended only when other methods are not feasible."
 "Single-click authentication in Jira Assistant","Single-click integration is the most secure way to use Jira Assistant (JA) because it relies on the browser's already-authenticated Jira session, so only authorized users can access it.
 Advantages: no credentials are needed or stored, and access is quick and seamless without keeping the Jira tab open.
@@ -13,10 +13,11 @@ Whether the integration page opens as a popover or a separate tab, and whether t
 "Switching between authentication options in Jira Assistant","The way to change authentication in Jira Assistant (JA) depends on the edition and Jira type.
 The Jira Cloud app supports only OAuth, so other methods cannot be used there.
 For extension and web users, click the user profile name in the top right corner of Jira Assistant and choose Logout; this returns you to the default integration page.
-For extension users, the default page offers browser-session (single-click) integration, and the configuration icon in the top right corner reveals OAuth and credentials-based options. For web users, you can integrate with the extension (if installed) or use OAuth or credentials directly."
+For extension users, the default page offers browser-session (single-click) integration, which needs no credentials as long as you are logged in to Jira in the same browser (Jira need not stay open), and the configuration icon in the top right corner reveals OAuth and credentials-based options. For web users, you can integrate with the extension (if installed) or use OAuth or credentials directly; choosing to integrate with the extension shows the extension's default authentication page."
 "Permissions Jira Assistant needs for integration","Jira Assistant (JA) needs access to your Jira instance to establish integration, and it uses the authentication already established by your browser rather than asking for separate credentials, which improves security and simplifies setup.
 From JA v2.51 onward, Chrome users no longer need the broad 'access to all sites' permission; Jira Assistant can integrate with any Jira instance without it.
-Jira Assistant does not store your credentials; it connects to Jira using your browser's established authentication."
+Jira Assistant does not store your credentials; it connects to Jira using your browser's established authentication.
+Besides browser-session integration, Jira Assistant also supports credentials-based basic authentication and OAuth with Jira."
 "Granting permission to fix Permission denied to access this URL","If Jira Assistant (JA) shows 'Permission denied to access this URL', the extension lacks permission for your Jira URL and you can grant it manually from your browser's extension details page.
 Open the extension details page by right-clicking the extension icon and choosing 'Manage extension', then edit Site access or Permissions depending on your browser.
 In Chrome there is an even simpler option: right-click the JA icon and change permission under the 'This can read and change site data' menu. GitHub issue #343 explains this with screenshots."

@@ -1,19 +1,21 @@
 title,content
 "Jira Assistant opens with a blank page or crashes","If Jira Assistant (JA) will not open and shows a blank page, press F12 and check the console for the error, then contact the developer with a screenshot of it.
-If you have no custom reports or pending worklogs stored, you can also clear the IndexedDB storage named 'JiraAssist' from the browser dev tools, which resets the tool.
+If you have no custom reports or pending worklogs stored, you can also delete the IndexedDB database named 'JiraAssist', which resets the tool: on the Jira Assistant page press F12, then in Chrome, Edge or Opera go to Application > Storage > IndexedDB > JiraAssist and click 'Delete database', or in Firefox go to the Storage tab > Indexed DB, right-click JiraAssist and delete it.
 Ensure you are on the latest version of Jira Assistant before troubleshooting further."
 "Doing a clean start of Jira Assistant without reinstalling","All Jira Assistant (JA) settings, including integration information, are stored in the browser's IndexedDB storage named 'JiraAssist'.
-Deleting the 'JiraAssist' IndexedDB database makes Jira Assistant behave like a fresh installation, without needing to reinstall the extension.
+Deleting the 'JiraAssist' IndexedDB database makes Jira Assistant behave like a fresh installation, without needing to reinstall the extension. Delete it from the browser dev tools (F12) on the Jira Assistant page, under Application > IndexedDB in Chrome, Edge or Opera, or under Storage > Indexed DB in Firefox.
 Make sure you are using the latest version of Jira Assistant, and remember this clears stored settings and any pending worklogs."
 "Recovering unuploaded worklogs after a system crash","Jira Assistant (JA) stores data only in your browser cache and never outside it, so worklogs that were created but not yet uploaded to Jira cannot be recovered if the cache is lost in a crash.
 If you can get the same OS and browser running again, the extension's cache may still be intact and your data may reappear, but this depends entirely on your local disk and browser cache state.
 To avoid this in future, enable automatic upload so worklogs go to Jira on creation."
 "Worklogs added earlier are missing in Jira Assistant","If worklogs you added earlier are missing, first confirm they were actually uploaded to Jira; worklogs created in Jira Assistant (JA) must be uploaded, and unuploaded ones can be lost on a cache reset. Enabling automatic upload in General settings prevents this.
 Check directly in Jira (not in JA) and review the ticket's history, which records added or deleted worklogs and their times.
-If worklogs exist in Jira but not in JA, it is likely a Jira indexing issue that re-indexing should fix; if nothing appears in the ticket history, they were likely never uploaded."
+If worklogs exist in Jira but not in JA, it is likely a Jira indexing issue that re-indexing should fix; if nothing appears in the ticket history, they were likely never uploaded.
+If you are new to Jira Assistant, these videos explain the workflow: Using Calendar https://www.youtube.com/watch?v=hJBM5X24sPQ&list=PLxDBQLgpBhsDGppYrDqARYULukk7XFJPV&index=4 and Using Worklog Report https://www.youtube.com/watch?v=WQOHrPBZZiI&list=PLxDBQLgpBhsDGppYrDqARYULukk7XFJPV&index=6"
 "Worklogs visible in Jira but not shown in Jira Assistant","Sometimes worklogs or issues appear in Jira but not in Jira Assistant (JA) reports because Jira's API does not return them when Jira is not properly indexed.
 This is usually resolved by re-indexing Jira or resolves on its own after some time; ask your Jira admin when Jira was last indexed.
-Also confirm the timezone in Jira matches your local timezone so worklogs are not placed on a different date in JA reports."
+Also confirm the timezone in Jira matches your local timezone so worklogs are not placed on a different date in JA reports.
+Also check that the report's query parameters (users, date range and JQL filter) are correct; if the issue persists after re-indexing, contact the developer."
 "Worklogs shown on the wrong date in the Worklog Report","If worklogs added in Jira appear on a different date (±1 day) in the Jira Assistant (JA) Worklog Report, it is usually a timezone difference between Jira and your local system.
 Jira Assistant uses your local timezone by default and formats data accordingly, which can shift the apparent date.
 Keep Jira and your local timezone in sync, and set per-user/group timezones in User Groups, to resolve the discrepancy."
@@ -38,6 +40,6 @@ Using the Web version of Jira Assistant helps surface issues earlier in the rele
 "How worklog syncing works between Jira Assistant and Jira","When you add a worklog or bulk import worklogs in Jira Assistant (JA), they are not uploaded to Jira automatically unless you enabled auto-upload; this lets you validate worklogs before syncing.
 Upload pending worklogs from the 'Worklog [Pending Upload]' gadget on the dashboard or from the Worklog Calendar page.
 Aside from this deliberate hold-for-review behavior, there are no other sync issues; missing worklogs are usually due to timezone settings or Jira indexing rather than a sync problem."
-"Planned but not yet prioritized features in Jira Assistant","Several Jira Assistant (JA) capabilities are planned but not yet prioritized. Adding worklogs from the list and grid views of the calendar is not yet supported. Accessing bookmarked tickets directly in the worklog popup is planned but not prioritized.
-A sprint capacity planning module using a Gantt chart is in passive development, intended to factor in available resources and holidays pulled from the Confluence calendar.
+"Planned but not yet prioritized features in Jira Assistant","Several Jira Assistant (JA) capabilities are planned but not yet prioritized. Adding worklogs from the list and grid views of the calendar is not yet supported. Accessing bookmarked tickets directly in the worklog popup is planned but not prioritized; for now, in the 'Add worklog' dialog, search by text or ticket number from the suggestion list or type the full ticket number.
+A sprint capacity planning module using a Gantt chart is in passive development, intended to factor in available resources, public holidays and leave plans pulled from the Confluence Calendar of the selected workspace. Calendar synchronization options are also planned but not yet prioritized.
 The Worklog Report does not auto-refresh when new worklogs are added; refresh it manually with a single click, as auto-refresh was deprioritized due to report generation complexity."

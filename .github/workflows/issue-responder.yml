@@ -26,30 +26,32 @@ on:
         type: boolean
         default: false
   issues:
-    types: [opened]
+    types: [opened, edited]
   issue_comment:
-    types: [created]
+    types: [created, edited]
   discussion:
-    types: [created]
+    types: [created, edited]
   discussion_comment:
-    types: [created]
+    types: [created, edited]
 
 permissions:
   issues: write
   discussions: write
   statuses: write
 
+concurrency:
+  group: issue-responder-${{ github.event.issue.number || github.event.discussion.number || github.event.inputs.ticket_number }}
+  cancel-in-progress: false
+
 jobs:
   run-script:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.actor != 'github-actions[bot]' && !github.event.issue.pull_request)
     runs-on: ubuntu-latest
+    env:
+      RESP_BASE_PATH: ${{ vars.RESP_BASE_PATH }}
     steps:
-      - name: Check if comment is from bot user
-        run: |
-          if [[ "${{ github.actor }}" == "github-actions[bot]" ]] && [[ "${{ github.event_name }}" != "workflow_dispatch" ]]; then
-            echo "Comment was made by the GitHub Actions bot. Exiting without running the script."
-            exit 0
-          fi
-
       - name: Set up Node.js
         uses: actions/setup-node@v7
         with:
@@ -57,7 +59,7 @@ jobs:
 
       - name: Download script
         run: |
-          curl -o github.mjs https://bot.jiraassistant.com/actions/github/github.mjs
+          curl -fsSL -o github.mjs "${{ vars.RESPONDER_SCRIPT_URL || 'https://chat.utilsware.com/actions/github/github.mjs' }}"
 
       - name: Identify Action
         run: |
@@ -72,49 +74,41 @@ jobs:
             echo "TICKET_NUMBER=${{ github.event.issue.number }}" >> $GITHUB_ENV
           fi
 
-      - name: Retrieve collaborators
-        id: get-collaborators
+      - name: Decide between reply and knowledge update
+        env:
+          AUTHOR_ASSOCIATION: ${{ github.event.comment.author_association || github.event.issue.author_association || github.event.discussion.author_association }}
         run: |
-          if [[ "${{ github.event_name }}" != "workflow_dispatch" ]]; then
-            collaborators=$(curl -s -H "Authorization: token ${{ github.token }}" \
-              "https://api.github.com/repos/${{ github.repository }}/collaborators" | \
-              jq -r '.[].login')
-            echo "${collaborators}" > collaborators.txt
-          fi
-
-      - name: Check if comment is from collaborator
-        run: |
-          if [[ "${{ github.event_name }}" != "workflow_dispatch" ]]; then
-            COMMENT_USER="${{ github.actor }}"
-            if grep -q "$COMMENT_USER" collaborators.txt; then
-              echo "Comment was made by a collaborator."
-              echo "avoidComments=true" >> $GITHUB_ENV
-              node github.mjs --ticket "$TICKET_NUMBER" \
-                    --ticketType "$TICKET_TYPE" \
-                    --repo "${{ github.repository }}" \
-                    --orgId "${{ vars.RESPONDER_ORG_ID }}" \
-                    --botId "${{ vars.RESPONDER_BOT_ID }}" \
-                    --ghToken "${{ github.token }}" \
-                    --authToken "${{ secrets.RESPONDER_TOKEN }}" \
-                    --updateOnly
-              exit 0
+          UPDATE_ONLY=false
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            if [[ "${{ github.event.inputs.updateDocsOnly }}" == "true" ]]; then
+              UPDATE_ONLY=true
             fi
-          elif [[ "${{ github.event_name }}" == "workflow_dispatch" ]] && [[ "${{ github.event.inputs.updateDocsOnly }}" == "true" ]]; then
-            echo "avoidComments=true" >> $GITHUB_ENV
-            node github.mjs --ticket "$TICKET_NUMBER" \
-                  --ticketType "$TICKET_TYPE" \
-                  --repo "${{ github.repository }}" \
-                  --orgId "${{ vars.RESPONDER_ORG_ID }}" \
-                  --botId "${{ vars.RESPONDER_BOT_ID }}" \
-                  --ghToken "${{ github.token }}" \
-                  --authToken "${{ secrets.RESPONDER_TOKEN }}" \
-                  --updateOnly
+          elif [[ "${{ github.event.action }}" == "edited" ]]; then
+            echo "Content was edited. Updating the knowledge base without replying."
+            UPDATE_ONLY=true
+          elif [[ "$AUTHOR_ASSOCIATION" == "OWNER" || "$AUTHOR_ASSOCIATION" == "MEMBER" || "$AUTHOR_ASSOCIATION" == "COLLABORATOR" ]]; then
+            echo "Content was posted by a maintainer ($AUTHOR_ASSOCIATION). Updating the knowledge base without replying."
+            UPDATE_ONLY=true
           fi
+          echo "UPDATE_ONLY=$UPDATE_ONLY" >> $GITHUB_ENV
+
+      - name: Update knowledge base only
+        if: env.UPDATE_ONLY == 'true'
+        run: |
+          node github.mjs --ticket "$TICKET_NUMBER" \
+                --ticketType "$TICKET_TYPE" \
+                --repo "${{ github.repository }}" \
+                --orgId "${{ vars.RESPONDER_ORG_ID }}" \
+                --botId "${{ vars.RESPONDER_BOT_ID }}" \
+                --ghToken "${{ github.token }}" \
+                --authToken "${{ secrets.RESPONDER_TOKEN }}" \
+                --updateOnly
 
       - name: Add comment to ticket
-        if: env.avoidComments != 'true'
+        if: env.UPDATE_ONLY != 'true'
         run: |
-          node github.mjs --testMode "${{ github.event.inputs.avoidUpdate }}" --ticket "$TICKET_NUMBER" \
+          node github.mjs --testMode "${{ github.event.inputs.avoidUpdate || 'false' }}" \
+                  --ticket "$TICKET_NUMBER" \
                   --ticketType "$TICKET_TYPE" \
                   --repo "${{ github.repository }}" \
                   --orgId "${{ vars.RESPONDER_ORG_ID }}" \
