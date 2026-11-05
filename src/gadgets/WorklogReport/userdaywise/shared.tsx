@@ -177,7 +177,7 @@ export function IssueInfo({ issue: t, showParentSummary, hideEstimate, convertSe
                 </Link>{' '}
                 -<span>{t.summary}</span>
             </div>
-            {!hideEstimate && !!(oe || re) && <TicketEstimate est={oe} rem={re} logged={logged} variance={variance} />}
+            {!hideEstimate && !!(oe || re || logged) && <TicketEstimate est={oe} rem={re} logged={logged} variance={variance} />}
         </td>
     );
 }
