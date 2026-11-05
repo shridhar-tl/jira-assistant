@@ -26,6 +26,38 @@ import type TicketService from './ticket-service';
 import type UserUtilsService from './userutils-service';
 import type UtilsService from './utils-service';
 
+const worklogLimitReachedStatus = 413;
+
+function getUploadErrorMessage(err: any, ticketNo: string): string {
+    const status = err?.status;
+    const errorMessages: string[] = err?.error?.errorMessages || [];
+
+    if (status === 400 && errorMessages.some((e: string) => e.includes('non-editable') || e.includes('permission'))) {
+        return `Permission denied to log work on ${ticketNo}`;
+    }
+
+    if (status === worklogLimitReachedStatus) {
+        return `Jira rejected the worklog as the maximum number of worklog entries for ${ticketNo} has been reached. Log the time on a different issue.`;
+    }
+
+    if (status === 401 || status === 403) {
+        return `Permission denied to log work on ${ticketNo}`;
+    }
+
+    if (status === 404) {
+        return `Issue ${ticketNo} was not found or you do not have permission to log work on it`;
+    }
+
+    if (status === 400) {
+        return `Unable to upload worklog for ${ticketNo}. Look at console for more details`;
+    }
+
+    const detail = errorMessages.find(Boolean);
+    return detail
+        ? `Unable to upload worklog for ${ticketNo}: ${detail}`
+        : `Unable to upload worklog for ${ticketNo}${status ? ` (HTTP ${status})` : ''}. Look at console for more details`;
+}
+
 export default class WorklogService {
     static dependencies = [
         'UserUtilsService',
@@ -262,20 +294,8 @@ export default class WorklogService {
         }
 
         return uploadRequest.catch((err: any) => {
-            if (err.status === 400) {
-                console.error(`Error uploading worklog to ${ticketNo}.`, err);
-                const errors = (err.error || {}).errorMessages || [];
-                let message = null;
-
-                if (errors.some((e: string) => e.includes('non-editable') || e.includes('permission'))) {
-                    message = `Permission denied to log work on ${ticketNo}`;
-                } else {
-                    message = `Unable to upload worklog for ${ticketNo}. Look at console for more details`;
-                }
-
-                return Promise.reject({ message });
-            }
-            return Promise.reject(err);
+            console.error(`Error uploading worklog to ${ticketNo}.`, err);
+            return Promise.reject({ ...err, message: getUploadErrorMessage(err, ticketNo) });
         });
     }
 

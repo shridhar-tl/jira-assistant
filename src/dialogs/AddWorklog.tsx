@@ -44,6 +44,8 @@ interface AddWorklogProps {
     onDone?: (result: any) => void;
 }
 
+const SAVE_FAILED_MESSAGE = 'Unable to save the worklog. Look at console for more details';
+
 function getTicketNo(worklog: Partial<Worklog>): string | null {
     if (!worklog || !worklog.ticketNo) {
         return null;
@@ -275,8 +277,8 @@ function AddWorklog({ editTracker, worklog: worklogProp, uploadImmediately: uplo
                     setIsLoading(false);
                     if (typeof e === 'string') {
                         $message.error(e);
-                    } else if (e.message) {
-                        $message.error(e.message);
+                    } else {
+                        $message.error(e?.message || SAVE_FAILED_MESSAGE);
                     }
                 }
             }
