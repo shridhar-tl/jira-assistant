@@ -80,6 +80,8 @@ export const IssuePicker: React.FC<IssuePickerProps> = React.memo(
         placeholder = 'Enter issue key or summary',
     }) => {
         const timerRef = useRef<{ blurTimer?: ReturnType<typeof setTimeout> }>({});
+        const displayRef = useRef<HTMLDivElement>(null);
+        const focusDisplayRef = useRef(false);
         const [loading, setLoader] = useState(useDisplay && !!value);
         const [issueObj, setIssue] = useState<IssueObject | false>(
             useDisplay && value ? ({ key: typeof value === 'string' ? value : value.key } as IssueObject) : false,
@@ -165,12 +167,13 @@ export const IssuePicker: React.FC<IssuePickerProps> = React.memo(
 
                 const selected = e.value;
                 if (selected && typeof selected === 'object' && selected.key) {
+                    focusDisplayRef.current = !!useDisplay;
                     updateIssue(selected);
                     setSuggestions([]);
                     setTimeout(() => setInputValue(''), 0);
                 }
             },
-            [updateIssue],
+            [updateIssue, useDisplay],
         );
 
         const handleChange = useCallback((e: any) => {
@@ -195,6 +198,15 @@ export const IssuePicker: React.FC<IssuePickerProps> = React.memo(
                 updateIssue(issue, selKey);
             }, 600);
         }, [inputValue, $jira, $session, updateIssue]);
+
+        const isDisplayMode = !editMode && !!issueObj && !!useDisplay && !loading;
+
+        useEffect(() => {
+            if (isDisplayMode && focusDisplayRef.current) {
+                focusDisplayRef.current = false;
+                displayRef.current?.focus();
+            }
+        }, [isDisplayMode]);
 
         const editTicket = useCallback((e: React.KeyboardEvent) => {
             if (ignoredKeysStrokes.includes(e.keyCode)) {
@@ -241,6 +253,7 @@ export const IssuePicker: React.FC<IssuePickerProps> = React.memo(
         return (
             <div
                 className={`flex items-center gap-2 px-3 py-2 border border-(--border-color) rounded-lg cursor-pointer transition-colors hover:bg-(--bg-hover) ${disabled ? 'opacity-50 cursor-not-allowed' : ''} ${className}`}
+                ref={displayRef}
                 tabIndex={tabIndex}
                 onClick={disabled ? undefined : () => toggleEdit(true)}
                 onKeyDown={disabled ? undefined : editTicket}
