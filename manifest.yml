@@ -43,6 +43,13 @@ modules:
       resource: main
       edit:
         resource: main
+    - key: ja-time-in-status
+      title: Time in Status
+      description: Shows how long issues spend in each status and highlights the bottleneck in your workflow
+      thumbnail: https://app.jiraassistant.com/assets/icon_48.png
+      resource: main
+      edit:
+        resource: main
   jira:issueGlance:
     - key: ja-issue-glance
       title: Worklog timer

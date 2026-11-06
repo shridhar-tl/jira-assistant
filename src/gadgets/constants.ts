@@ -6,7 +6,7 @@ export const GadgetTitle = {
     PendingWorklog: 'Worklog - [Pending Upload]',
     MyReports: 'My Reports',
     WorklogBarChart: 'Worklog Bar Chart',
-    StatusWiseTimeSpent: 'Status Wise Time Spent',
+    TimeInStatus: 'Time in Status',
     WorklogReport: 'Worklog Report',
     WorkloadHeatmap: 'Workload Heatmap',
 };

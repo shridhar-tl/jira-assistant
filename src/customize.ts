@@ -15,6 +15,7 @@ const config = {
         sprintReport: !isPluginBuild,
         estimateVsActual: true,
         workloadHeatmap: true,
+        timeInStatus: true,
 
         userGroups: true,
         generalSettings: true,

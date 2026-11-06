@@ -1,37 +1,34 @@
-import { useEffect } from 'react';
+import { useMemo } from 'react';
 
-import { Routes, Route, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
-import { usePokerStore } from '@/stores/poker-store';
+import { PokerAppUrl } from '@constants/urls';
 
-import JoinPoker from './JoinPoker';
-import Room from './Room';
+import PokerBridge from './PokerBridge';
 
-function SwitchPage() {
-    const { roomId: paramRoomId } = useParams();
-    const { roomId } = usePokerStore();
-
-    const Component = paramRoomId && roomId ? Room : JoinPoker;
-    return <Component />;
-}
+const iframeAllow = 'clipboard-write; clipboard-read';
 
 interface PokerPageProps {
     hasExtensionSupport?: boolean;
 }
 
 export default function PokerPage({ hasExtensionSupport = false }: PokerPageProps) {
-    const { setState } = usePokerStore();
+    const { roomId } = useParams();
 
-    useEffect(() => {
-        setState({ hasExtensionSupport });
-    }, [hasExtensionSupport, setState]);
+    const src = useMemo(() => {
+        const base = `${PokerAppUrl}${roomId ? `/room/${roomId}` : ''}`;
+        return `${base}?host=ja&jira=${hasExtensionSupport ? '1' : '0'}`;
+    }, [roomId, hasExtensionSupport]);
 
     return (
-        <div className="min-h-screen">
-            <Routes>
-                <Route path=":roomId" element={<SwitchPage />} />
-                <Route path="/" element={<JoinPoker />} />
-            </Routes>
+        <div className="poker-host flex h-full min-h-screen w-full flex-col">
+            {hasExtensionSupport && <PokerBridge />}
+            <iframe
+                src={src}
+                title="Planning Poker"
+                allow={iframeAllow}
+                className="h-full min-h-screen w-full flex-1 border-0"
+            />
         </div>
     );
 }

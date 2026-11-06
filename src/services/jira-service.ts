@@ -1,4 +1,15 @@
-import { mergeUrl, orderBy, parseISOString, prepareUrlWithQueryString, sortBy, stringifyComment, viewIssueUrl, waitFor } from '@utils';
+import {
+    chunk,
+    mergeUrl,
+    orderBy,
+    parseISOString,
+    prepareUrlWithQueryString,
+    runOnQueue,
+    sortBy,
+    stringifyComment,
+    viewIssueUrl,
+    waitFor,
+} from '@utils';
 
 import { ApiUrls, defaultJiraFields, defaultSettings, DummyWLId, isPluginBuild } from '@constants';
 
@@ -15,6 +26,40 @@ export interface JiraUser {
     avatarUrls?: Record<string, string>;
     active?: boolean;
 }
+
+export interface JiraChangeItem {
+    field: string;
+    fieldId?: string;
+    from?: string | null;
+    fromString?: string | null;
+    to?: string | null;
+    toString?: string | null;
+}
+
+export interface JiraChangeHistory {
+    id: string;
+    created: string | number;
+    items: JiraChangeItem[];
+}
+
+interface BulkChangelogResponse {
+    issueChangeLogs?: { issueId: string; changeHistories?: JiraChangeHistory[] }[];
+    nextPageToken?: string;
+}
+
+interface PagedChangelogResponse {
+    values?: JiraChangeHistory[];
+    total?: number;
+    isLast?: boolean;
+}
+
+interface IssueWithChangelogResponse {
+    changelog?: { histories?: JiraChangeHistory[]; total?: number };
+}
+
+const bulkChangelogIssueLimit = 1000;
+const bulkChangelogPageSize = 1000;
+const issueChangelogPageSize = 100;
 
 export default class JiraService {
     static dependencies = ['AjaxService', 'CacheService', 'MessageService', 'SessionService'];
@@ -667,7 +712,7 @@ export default class JiraService {
                 const sprints: Record<number, any[]> = {};
                 const total = sprintIds.length;
                 let completed = 0;
-                await this.runOnQueue(sprintIds, 3, async (id: number) => {
+                await runOnQueue(sprintIds, 3, async (id: number) => {
                     sprints[id] = await worker(id, progress);
                     completed++;
                     progress((completed * 100) / total);
@@ -881,7 +926,7 @@ export default class JiraService {
             (iss) => !iss.fields?.worklog || iss.fields?.worklog?.worklogs?.length < iss.fields?.worklog?.total,
         );
 
-        await this.runOnQueue(issuesToFill, 3, async (issue: any) => {
+        await runOnQueue(issuesToFill, 3, async (issue: any) => {
             const res = await this.getWorklogs(issue.key, startDate, endDate);
             console.log(`Success fetching worklog for ${issue.key}`);
 
@@ -895,15 +940,11 @@ export default class JiraService {
 
     async getBulkIssueChangelogs(issueIdsOrKeys: string[], fieldIds?: string[]): Promise<Record<string, any[]>> {
         try {
-            const { issueChangeLogs } = await this.$ajax.post(ApiUrls.bulkIssueChangelogs, {
-                maxResults: 10000,
-                issueIdsOrKeys,
-                fieldIds,
-            });
+            const changeHistories = await this.getBulkChangeHistories(issueIdsOrKeys, fieldIds);
 
-            return issueChangeLogs.reduce((obj: any, item: any) => {
-                obj[item.issueId] = orderBy(item.changeHistories, (ch: any) => ch.created).flatMap(({ items, ...ch }: any) =>
-                    items.map((i: any) => ({ ...ch, ...i })),
+            return Object.entries(changeHistories).reduce((obj: Record<string, any[]>, [issueId, histories]) => {
+                obj[issueId] = orderBy(histories, (ch: JiraChangeHistory) => ch.created).flatMap(({ items, ...ch }) =>
+                    items.map((i) => ({ ...ch, ...i })),
                 );
                 return obj;
             }, {});
@@ -911,6 +952,74 @@ export default class JiraService {
             console.error('Unable to fetch changelogs for tickets: ', err);
             return {};
         }
+    }
+
+    /**
+     * Fetches the change histories of multiple issues using the bulk changelog API (available only in Jira Cloud).
+     * Result is keyed by issue id. Errors are not handled here so that callers can fallback to other APIs.
+     */
+    async getBulkChangeHistories(issueIdsOrKeys: string[], fieldIds?: string[]): Promise<Record<string, JiraChangeHistory[]>> {
+        const result: Record<string, JiraChangeHistory[]> = {};
+        const seenHistories = new Set<string>();
+
+        for (const issues of chunk(issueIdsOrKeys, bulkChangelogIssueLimit)) {
+            let nextPageToken: string | undefined;
+
+            do {
+                const response: BulkChangelogResponse = await this.$ajax.post(ApiUrls.bulkIssueChangelogs, {
+                    maxResults: bulkChangelogPageSize,
+                    issueIdsOrKeys: issues,
+                    fieldIds,
+                    nextPageToken,
+                });
+
+                for (const { issueId, changeHistories = [] } of response.issueChangeLogs || []) {
+                    const histories = result[issueId] || (result[issueId] = []);
+
+                    for (const history of changeHistories) {
+                        const historyKey = `${issueId}_${history.id}`;
+                        if (!seenHistories.has(historyKey)) {
+                            seenHistories.add(historyKey);
+                            histories.push(history);
+                        }
+                    }
+                }
+
+                nextPageToken = response.nextPageToken || undefined;
+            } while (nextPageToken);
+        }
+
+        return result;
+    }
+
+    /**
+     * Fetches the complete change history of a single issue.
+     * Jira Data Center returns the full changelog when expanded unless an admin has limited the response size,
+     * in which case (and always in Jira Cloud) the paginated changelog API is used.
+     */
+    async getIssueChangeHistories(issueKey: string): Promise<JiraChangeHistory[]> {
+        if (!this.$session.CurrentUser?.isAtlasCloud) {
+            const { changelog } = await this.$ajax.get<IssueWithChangelogResponse>(ApiUrls.issueWithChangelog, issueKey);
+            const histories = changelog?.histories || [];
+
+            if (!changelog?.total || histories.length >= changelog.total) {
+                return histories;
+            }
+        }
+
+        const histories: JiraChangeHistory[] = [];
+        let startAt = 0;
+        let isLast = false;
+
+        while (!isLast) {
+            const page = await this.$ajax.get<PagedChangelogResponse>(ApiUrls.issueChangelog, issueKey, startAt, issueChangelogPageSize);
+            const values = page.values || [];
+            histories.push(...values);
+            startAt += values.length;
+            isLast = !values.length || page.isLast === true || (typeof page.total === 'number' && startAt >= page.total);
+        }
+
+        return histories;
     }
 
     fillWL(issue: any, startDate?: Date, endDate?: Date): Promise<boolean> {
@@ -1010,35 +1119,5 @@ export default class JiraService {
 
     getWorklog(worklogId: number, ticketNo: string): Promise<any> {
         return this.$ajax.get(ApiUrls.individualWorklog, ticketNo, worklogId);
-    }
-
-    private runOnQueue<T>(items: T[], concurrent: number, execute: (item: T) => Promise<void>): Promise<void> {
-        return new Promise((resolve, reject) => {
-            let running = 0;
-            let index = 0;
-
-            const processNext = async () => {
-                if (index >= items.length && running === 0) {
-                    resolve();
-                    return;
-                }
-
-                while (running < concurrent && index < items.length) {
-                    const item = items[index++];
-                    running++;
-
-                    execute(item)
-                        .then(() => {
-                            running--;
-                            processNext();
-                        })
-                        .catch((err) => {
-                            reject(err);
-                        });
-                }
-            };
-
-            processNext();
-        });
     }
 }

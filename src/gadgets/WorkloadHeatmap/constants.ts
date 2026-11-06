@@ -54,3 +54,10 @@ export const jqlRequiredMessage = 'Provide the JQL to select the issues to be in
 export const boardRequiredMessage = 'Select the board whose active sprint should be used as the date range.';
 
 export const noActiveSprintMessage = 'The selected board has no active sprint. Showing the current week instead.';
+
+export const howItWorks = [
+    'Remaining estimate (or original estimate when remaining is not set) of each issue is spread evenly across the working days between its start date and due date.',
+    'When only a due date is available, the work is planned backwards from the due date using the configured lead time (or estimate ÷ daily capacity).',
+    'Work is only planned from today onwards. Remaining work of overdue issues is placed on today.',
+    'Each cell compares the planned hours against the daily capacity from your worklog settings.',
+];

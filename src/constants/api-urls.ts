@@ -59,6 +59,8 @@ export const ApiUrls = {
 
     // Changelog API
     bulkIssueChangelogs: '~/rest/api/3/changelog/bulkfetch',
+    issueChangelog: '~/rest/api/2/issue/{0}/changelog?startAt={1}&maxResults={2}',
+    issueWithChangelog: '~/rest/api/2/issue/{0}?fields=created&expand=changelog',
 
     // External OAuth URLs
     googleLogoutUrl: 'https://accounts.google.com/o/oauth2/revoke?token={0}',

@@ -1,9 +1,19 @@
 import { parseISO, startOfDay } from 'date-fns';
 
 import type { UserGroup } from '@/types';
+import { chunk } from '@/utils';
 
 import { inject } from '@services';
 import type { JiraUser } from '@services/jira-service';
+
+import {
+    escapeJqlValue,
+    getGroupUsersJqlValues,
+    getJiraUserId,
+    getUserAvatarUrl,
+    resolveUserGroups,
+    stripOrderBy,
+} from '../shared/jira-query-utils';
 
 import { assigneeChunkSize, baseIssueFields, defaultIssueFilterJql, defaultStartDateFieldName, ungroupedAssigneesName } from './constants';
 import type { HeatmapDataset, HeatmapFilterOptions, HeatmapGroup, HeatmapIssue, HeatmapUser, WorkloadHeatmapSettings } from './types';
@@ -46,26 +56,12 @@ export interface DateFieldOption {
     name: string;
 }
 
-const orderByPattern = /\border\s+by\b[\s\S]*$/i;
-
-function getUserId(user: JiraUser & { key?: string }): string {
-    return user.accountId || user.name || user.key || '';
-}
-
 function toHeatmapUser(user: JiraUser): HeatmapUser {
     return {
-        id: getUserId(user),
-        displayName: user.displayName || getUserId(user),
-        avatarUrl: user.avatarUrls?.['24x24'] || user.avatarUrls?.['32x32'],
+        id: getJiraUserId(user),
+        displayName: user.displayName || getJiraUserId(user),
+        avatarUrl: getUserAvatarUrl(user),
     };
-}
-
-function escapeJqlValue(value: string): string {
-    return `"${value.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"`;
-}
-
-function stripOrderBy(jql: string): string {
-    return jql.replace(orderByPattern, '').trim();
 }
 
 function parseDateValue(value: unknown): Date | null {
@@ -104,14 +100,6 @@ function mapIssue(issue: JiraIssue, startDateField: string): HeatmapIssue | null
         startDate: startDateField ? parseDateValue(fields[startDateField]) : null,
         dueDate: parseDateValue(fields.duedate),
     };
-}
-
-function chunk<T>(items: T[], size: number): T[][] {
-    const result: T[][] = [];
-    for (let i = 0; i < items.length; i += size) {
-        result.push(items.slice(i, i + size));
-    }
-    return result;
 }
 
 function toHeatmapGroups(groups: UserGroup[]): HeatmapGroup[] {
@@ -173,26 +161,10 @@ async function resolveStartDateField(configuredField: string): Promise<string> {
     return dateFields.find((f) => f.name.toLowerCase() === defaultStartDateFieldName)?.id || '';
 }
 
-async function resolveUserGroups(reportGroups: UserGroup[] | null): Promise<UserGroup[]> {
-    const { $usergroup } = inject('UserGroupService');
-    if (!reportGroups) {
-        return ((await $usergroup.getUserGroups()) as UserGroup[]) || [];
-    }
-
-    const groups = reportGroups.map((g) => ({ ...g, users: [...(g.users || [])] }));
-    await $usergroup.fillJiraGroupMembers(groups.filter((g) => g.isJiraGroup));
-    return groups;
-}
-
 async function searchIssues(jql: string, fields: string[], startDateField: string): Promise<HeatmapIssue[]> {
     const { $jira } = inject('JiraService');
     const issues = (await $jira.searchTickets(jql, fields)) as JiraIssue[];
     return issues.map((issue) => mapIssue(issue, startDateField)).filter((issue): issue is HeatmapIssue => !!issue);
-}
-
-function getUserJqlValue(user: JiraUser): string {
-    const { $session } = inject('SessionService');
-    return ($session.CurrentUser?.isAtlasCloud ? user.accountId : user.name) || getUserId(user);
 }
 
 export async function loadHeatmapDataset(settings: WorkloadHeatmapSettings): Promise<HeatmapDataset> {
@@ -212,24 +184,15 @@ export async function loadHeatmapDataset(settings: WorkloadHeatmapSettings): Pro
     }
 
     const groups = toHeatmapGroups(allGroups).filter((g) => g.users.length);
+    const jqlValues = getGroupUsersJqlValues(allGroups);
 
-    const jqlValues = new Map<string, string>();
-    for (const group of allGroups) {
-        for (const user of group.users || []) {
-            const value = getUserJqlValue(user);
-            if (value) {
-                jqlValues.set(getUserId(user), value);
-            }
-        }
-    }
-
-    if (!jqlValues.size) {
+    if (!jqlValues.length) {
         return { groups, issues: [] };
     }
 
     const filterJql = additionalJql ? `${defaultIssueFilterJql} AND (${additionalJql})` : defaultIssueFilterJql;
     const results = await Promise.all(
-        chunk([...jqlValues.values()], assigneeChunkSize).map((values) =>
+        chunk(jqlValues, assigneeChunkSize).map((values) =>
             searchIssues(`assignee in (${values.map(escapeJqlValue).join(', ')}) AND ${filterJql}`, fields, startDateField),
         ),
     );

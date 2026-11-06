@@ -1,3 +1,7 @@
+import { Button } from '@components';
+
+import { GadgetAlert } from '../shared';
+
 import FilterSummary from './FilterSummary';
 import HeatmapGrid from './HeatmapGrid';
 import HeatmapLegend from './HeatmapLegend';
@@ -12,7 +16,6 @@ interface WorkloadHeatmapViewProps {
     settings: WorkloadHeatmapSettings;
     state: WorkloadHeatmapState;
     onSettingsChange: (changes: Partial<WorkloadHeatmapSettings>) => void;
-    onConfigure?: () => void;
 }
 
 const clearedFilters: Partial<WorkloadHeatmapSettings> = { projects: [], issueTypes: [], includeSubtasks: true };
@@ -22,36 +25,25 @@ const noGroupsMessage =
     'None of the selected user groups have members. Add members to the groups under Settings → User groups or choose different groups.';
 const noIssuesMessage = 'No unresolved issues assigned to the selected people were found.';
 
-export default function WorkloadHeatmapView({ settings, state, onSettingsChange, onConfigure }: WorkloadHeatmapViewProps) {
-    const { model, rangeWarning, error, isConfigured } = state;
+export default function WorkloadHeatmapView({ settings, state, onSettingsChange }: WorkloadHeatmapViewProps) {
+    const { model, rangeWarning, error, isConfigured, reload } = state;
 
     const renderBody = () => {
         if (!isConfigured) {
-            return (
-                <WorkloadHeatmapInfo
-                    title="Configure the heatmap"
-                    message={notConfiguredMessage}
-                    actionLabel={onConfigure ? 'Configure' : undefined}
-                    onAction={onConfigure}
-                />
-            );
+            return <WorkloadHeatmapInfo note={notConfiguredMessage} />;
         }
         if (error) {
-            return <WorkloadHeatmapInfo icon="fa-exclamation-triangle" title="Failed to load data" message={error} />;
+            return (
+                <GadgetAlert action={<Button label="Retry" size="sm" layout="outlined" leftIcon={<i className="fa fa-refresh" />} onClick={reload} />}>
+                    {error}
+                </GadgetAlert>
+            );
         }
         if (!model) {
             return null;
         }
         if (!model.groups.length) {
-            return (
-                <WorkloadHeatmapInfo
-                    icon="fa-users"
-                    title="Nobody to show"
-                    message={settings.scopeMode === 'jql' ? noIssuesMessage : noGroupsMessage}
-                    actionLabel={onConfigure ? 'Configure' : undefined}
-                    onAction={onConfigure}
-                />
-            );
+            return <WorkloadHeatmapInfo note={settings.scopeMode === 'jql' ? noIssuesMessage : noGroupsMessage} />;
         }
         return (
             <>
@@ -69,9 +61,9 @@ export default function WorkloadHeatmapView({ settings, state, onSettingsChange,
         <div className="workload-heatmap flex h-full min-h-0 flex-col">
             {isConfigured && <FilterSummary settings={settings} onClear={() => onSettingsChange(clearedFilters)} />}
             {rangeWarning && (
-                <div className="shrink-0 border-b border-amber-300 bg-amber-50 px-3 py-1.5 text-xs text-amber-800 dark:border-amber-700 dark:bg-amber-900/30 dark:text-amber-300">
+                <GadgetAlert variant="warning" className="m-2 shrink-0">
                     {rangeWarning}
-                </div>
+                </GadgetAlert>
             )}
             {renderBody()}
         </div>

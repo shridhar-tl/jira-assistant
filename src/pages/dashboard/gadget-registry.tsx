@@ -8,8 +8,8 @@ import {
     MyOpenTickets,
     MyReports,
     PendingWorklog,
-    StatusWiseTimeSpent,
     TicketWiseWorklog,
+    TimeInStatusGadget,
     WorklogBarChartGadget,
     WorklogReport,
     WorkloadHeatmapGadget,
@@ -32,7 +32,7 @@ export function getGadgetComponent(gadgetName: string, opts: string[] = []): Gad
         pendingWL: () => ({ Component: PendingWorklog, props: { title: GadgetTitle.PendingWorklog } }),
         myFilters: () => ({ Component: MyReports, props: { title: GadgetTitle.MyReports } }),
         worklogBarChart: () => ({ Component: WorklogBarChartGadget, props: { title: GadgetTitle.WorklogBarChart } }),
-        sWiseTSpent: () => ({ Component: StatusWiseTimeSpent, props: { title: GadgetTitle.StatusWiseTimeSpent } }),
+        sWiseTSpent: () => ({ Component: TimeInStatusGadget, props: { title: GadgetTitle.TimeInStatus } }),
         teamWorklogReport: () => ({ Component: WorklogReport, props: { title: GadgetTitle.WorklogReport } }),
         workloadHeatmap: () => ({ Component: WorkloadHeatmapGadget, props: { title: GadgetTitle.WorkloadHeatmap } }),
 

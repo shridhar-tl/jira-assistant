@@ -7,6 +7,12 @@ import { DateRangePicker as FluxoDateRangePicker } from '@components';
 
 export type { DateSelectedCallbackArg };
 
+export interface QuickDateRange {
+    value: string;
+    label: string;
+    range: [Date, Date];
+}
+
 export interface DateRangeValue {
     fromDate: Date;
     toDate: Date;
@@ -15,6 +21,7 @@ export interface DateRangeValue {
 
 interface DateRangePickerProps {
     value?: [Date, Date] | DateRangeValue;
+    ranges?: QuickDateRange[];
     onChange?: (e: DateSelectedCallbackArg) => void;
     onClose?: () => void;
     disabled?: boolean;
@@ -29,7 +36,7 @@ interface DateRangePickerProps {
 
 export const labelText = ['This month', 'One month', 'Prev month', 'This week', 'Last 7 days', 'Prev week', 'Prev 2 weeks', 'Last 14 days'];
 
-function buildRanges() {
+function buildRanges(): QuickDateRange[] {
     const now = new Date();
     return [
         { value: 'this_month', label: 'This month', range: [startOfMonth(now), endOfMonth(now)] as [Date, Date] },
@@ -65,12 +72,12 @@ function normalizePickerValue(value?: [Date, Date] | DateRangeValue): [Date, Dat
     return undefined;
 }
 
-export default function DateRangePicker({ value, onChange, ...rest }: DateRangePickerProps) {
+export default function DateRangePicker({ value, ranges, onChange, ...rest }: DateRangePickerProps) {
     return (
         <FluxoDateRangePicker
             {...rest}
             value={normalizePickerValue(value) as any}
-            ranges={buildRanges()}
+            ranges={ranges ?? buildRanges()}
             onChange={onChange ?? (() => {})}
         />
     );

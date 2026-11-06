@@ -4,7 +4,7 @@ import { EventCategory } from '@/constants';
 
 import { UUID } from '@utils/uuid';
 
-import type { AppSetting, Event, SavedFilter, User, Worklog } from '@types';
+import type { AppSetting, Event, IssueStatusHistory, SavedFilter, User, Worklog } from '@types';
 import { SettingsCategory } from '@types';
 
 import { SystemUserId } from '../constants/common';
@@ -18,6 +18,7 @@ class DatabaseService extends Dexie {
     appSettings!: Table<AppSetting>;
     worklogs!: Table<Worklog, number>;
     events!: Table<Event, number>;
+    issueStatusHistories!: Table<IssueStatusHistory, [number, string]>;
 
     private $analytics: AnalyticsService;
     private $message: MessageService;
@@ -63,6 +64,10 @@ class DatabaseService extends Dexie {
             appSettings: '[userId+category+name],[userId+category]',
             worklogs: '++id,createdBy,isUploaded,dateStarted,worklogId,ticketNo',
             events: '++id,createdBy,name,ticketNo,startTime,isEnabled,source,sourceId',
+        });
+
+        this.version(3).stores({
+            issueStatusHistories: '[userId+issueKey],userId',
         });
 
         this.open().catch((error) => {

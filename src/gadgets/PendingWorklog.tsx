@@ -16,6 +16,7 @@ import { formatTs, getRowStatus } from '../services/utils-service';
 
 import { GadgetContainer, dashboardEventEmitter, useBaseGadget, type BaseGadgetProps } from './BaseGadget';
 import { GadgetTitle } from './constants';
+import { GadgetAlert } from './shared';
 
 interface PendingWorklogItem {
     id: number;
@@ -219,13 +220,11 @@ export default function PendingWorklog(props: BaseGadgetProps) {
     return (
         <GadgetContainer {...props} gadgetHook={gadgetHook} refreshData={refreshData} customActions={customActions} hint={hint}>
             {loadError && (
-                <div className="m-3 flex flex-col items-start gap-2 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700 sm:flex-row sm:items-center sm:justify-between dark:border-red-800 dark:bg-red-900/20 dark:text-red-300">
-                    <span>
-                        <i className="fa fa-exclamation-triangle me-2" />
-                        {loadError}
-                    </span>
-                    <Button label="Retry" size="sm" layout="outlined" leftIcon={<i className="fa fa-refresh" />} onClick={refreshData} />
-                </div>
+                <GadgetAlert
+                    action={<Button label="Retry" size="sm" layout="outlined" leftIcon={<i className="fa fa-refresh" />} onClick={refreshData} />}
+                >
+                    {loadError}
+                </GadgetAlert>
             )}
             <ScrollableTable dataset={worklogs} exportSheetName="Pending worklogs">
                 <THead>

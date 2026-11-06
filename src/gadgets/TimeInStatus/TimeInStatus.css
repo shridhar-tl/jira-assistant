@@ -1,0 +1,37 @@
+.time-in-status {
+    --tis-todo-1: #9ca3af;
+    --tis-todo-2: #6b7280;
+    --tis-todo-3: #cbd5e1;
+    --tis-wip-1: #2a78d6;
+    --tis-wip-2: #eb6834;
+    --tis-wip-3: #1baf7a;
+    --tis-wip-4: #eda100;
+    --tis-wip-5: #e87ba4;
+    --tis-wip-6: #6250d6;
+    --tis-wip-7: #e34948;
+    --tis-done-1: #008300;
+    --tis-done-2: #5aa85a;
+    --tis-overflow: #a8a29e;
+    --tis-gap: var(--bg-primary);
+}
+
+.mode-dark .time-in-status,
+.dark-theme .time-in-status {
+    --tis-todo-1: #6b7280;
+    --tis-todo-2: #9ca3af;
+    --tis-todo-3: #4b5563;
+    --tis-wip-1: #3987e5;
+    --tis-wip-2: #d95926;
+    --tis-wip-3: #199e70;
+    --tis-wip-4: #c98500;
+    --tis-wip-5: #d55181;
+    --tis-wip-6: #9085e9;
+    --tis-wip-7: #e66767;
+    --tis-done-1: #008300;
+    --tis-done-2: #3f8f4f;
+    --tis-overflow: #78716c;
+}
+
+.time-in-status .tis-segment + .tis-segment {
+    border-left: 2px solid var(--tis-gap);
+}

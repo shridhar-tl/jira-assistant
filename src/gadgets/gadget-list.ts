@@ -97,9 +97,10 @@ export const gadgetList: GadgetInfo[] = [
     },
     {
         id: 'sWiseTSpent',
-        icon: 'fa-list-alt',
-        name: 'Status Wise Time Spent',
-        details: 'The Status Wise Time Spent gadget provides a summary of time spent on each ticket, organized by individual status.',
+        icon: 'fa-hourglass-half',
+        name: 'Time in Status',
+        details:
+            'This gadget shows how long issues spend in each status, highlights the status where work gets stuck the most, and reports the lead time and cycle time. You can drill down into the full status history of every issue.',
     },
     {
         id: 'workloadHeatmap',

@@ -54,6 +54,7 @@ export default class UserService {
                 const intgUser = u.id > SystemUserId;
                 if (intgUser && u.deleted) {
                     await this.$storage.deleteAllSettingsWithUserId(u.id);
+                    await this.$storage.deleteIssueStatusHistoriesByUserId(u.id);
                     await this.$storage.deleteUser(u.id);
                     return;
                 }

@@ -54,6 +54,7 @@ const {
     estimateVsActual,
     pivotReport,
     workloadHeatmap,
+    timeInStatus,
     sayDoRatioReport,
 
     // Settings
@@ -63,7 +64,7 @@ const {
 
     // Menu groups
     activitiesGroup = calendar || importWorklog || importIssues || planningPoker,
-    reportsGroup = worklogReport || workloadHeatmap || sayDoRatioReport || sprintReport || pivotReport || estimateVsActual,
+    reportsGroup = worklogReport || workloadHeatmap || timeInStatus || sayDoRatioReport || sprintReport || pivotReport || estimateVsActual,
     settingsGroup = userGroups || generalSettings || advancedSettings,
 } = config.modules as any;
 
@@ -132,6 +133,16 @@ const navigation: MenuSection[] = [
                 id: 'R-WH',
                 url: '/reports/workload-heatmap',
                 icon: 'fa fa-th',
+                badge: {
+                    variant: 'success',
+                    text: 'NEW',
+                },
+            },
+            timeInStatus && {
+                name: 'Time in Status',
+                id: 'R-TIS',
+                url: '/reports/time-in-status',
+                icon: 'fa fa-hourglass-half',
                 badge: {
                     variant: 'success',
                     text: 'NEW',

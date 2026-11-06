@@ -1,4 +1,4 @@
-import type { AppSetting, SavedFilter, SettingsCategory, User, Worklog } from '@types';
+import type { AppSetting, IssueStatusHistory, SavedFilter, SettingsCategory, User, Worklog } from '@types';
 
 import type DatabaseService from './database-service';
 
@@ -7,7 +7,8 @@ export default class StorageService {
         'getPendingWorklogByUserId,getWorklogsWithIds,getSingleWorklogWithId,getWorklogsBetween,filterWorklogs,addOrUpdateWorklog,' +
         'addWorklog,deleteWorklog,getReportsWithIds,getReportsByUserId,getSingleReportById,filterReports,getReportByNameForValidation,addOrUpdateReport,addReport,' +
         'deleteReportsWithIds,getAllUsers,getUser,getUserWithNameAndJiraUrl,getUserWithEmailAndJiraUrl,filterUsers,addUser,addOrUpdateUser,deleteUser,' +
-        'filterSettings,getSetting,addOrUpdateSetting,bulkPutSettings,deleteSetting,deleteAllSettingsWithUserId';
+        'filterSettings,getSetting,addOrUpdateSetting,bulkPutSettings,deleteSetting,deleteAllSettingsWithUserId,' +
+        'getIssueStatusHistories,bulkPutIssueStatusHistories,deleteIssueStatusHistoriesByUserId';
 
     static dependencies = ['DatabaseService'];
 
@@ -178,6 +179,26 @@ export default class StorageService {
 
     async deleteAllSettingsWithUserId(userId: number): Promise<number> {
         return await this.$db.appSettings.where('userId').equals(userId).delete();
+    }
+
+    getIssueStatusHistories(userId: number, issueKeys: string[]): Promise<IssueStatusHistory[]> {
+        if (!issueKeys.length) {
+            return Promise.resolve([]);
+        }
+        return this.$db.issueStatusHistories
+            .where('[userId+issueKey]')
+            .anyOf(issueKeys.map((key) => [userId, key]))
+            .toArray();
+    }
+
+    async bulkPutIssueStatusHistories(histories: IssueStatusHistory[]): Promise<void> {
+        if (histories.length) {
+            await this.$db.issueStatusHistories.bulkPut(histories);
+        }
+    }
+
+    deleteIssueStatusHistoriesByUserId(userId: number): Promise<number> {
+        return this.$db.issueStatusHistories.where('userId').equals(userId).delete();
     }
 }
 

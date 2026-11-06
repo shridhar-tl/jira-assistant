@@ -17,6 +17,8 @@ const EstimateActualComponent = config.modules.estimateVsActual && React.lazy(()
 const SprintReportComponent = config.modules.sprintReport && React.lazy(() => import('./pages/reports/sprint-report/SprintReport'));
 const WorkloadHeatmapComponent =
     config.modules.workloadHeatmap && React.lazy(() => import('./pages/reports/workload-heatmap/WorkloadHeatmapReport'));
+const TimeInStatusComponent =
+    config.modules.timeInStatus && React.lazy(() => import('./pages/reports/time-in-status/TimeInStatusReport'));
 const NewWorklogReportComponent =
     config.modules.worklogReport && React.lazy(() => import('./pages/reports/worklog-report/NewWorklogReport'));
 
@@ -57,6 +59,10 @@ const sessionBasedRoute: RouteItem[] = [
     WorkloadHeatmapComponent && {
         path: '/reports/workload-heatmap',
         component: WorkloadHeatmapComponent,
+    },
+    TimeInStatusComponent && {
+        path: '/reports/time-in-status',
+        component: TimeInStatusComponent,
     },
     PivotReportComponent && {
         path: '/reports/pivot',

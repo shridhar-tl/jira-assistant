@@ -370,3 +370,47 @@ export function addDistinctRange<T, R = T>(array: T[], items: T[], clause?: Clau
     }
     return result;
 }
+
+export function chunk<T>(items: T[], size: number): T[][] {
+    const result: T[][] = [];
+    for (let i = 0; i < items.length; i += size) {
+        result.push(items.slice(i, i + size));
+    }
+    return result;
+}
+
+export function runOnQueue<T>(items: T[], concurrent: number, execute: (item: T) => Promise<void>): Promise<void> {
+    return new Promise((resolve, reject) => {
+        let running = 0;
+        let index = 0;
+        let failed = false;
+
+        const processNext = () => {
+            if (failed) {
+                return;
+            }
+
+            if (index >= items.length && running === 0) {
+                resolve();
+                return;
+            }
+
+            while (running < concurrent && index < items.length) {
+                const item = items[index++];
+                running++;
+
+                execute(item)
+                    .then(() => {
+                        running--;
+                        processNext();
+                    })
+                    .catch((err: unknown) => {
+                        failed = true;
+                        reject(err);
+                    });
+            }
+        };
+
+        processNext();
+    });
+}

@@ -9,12 +9,21 @@ import { GadgetActionType } from '@constants';
 
 import { GadgetContainer, useBaseGadget, type BaseGadgetProps } from './BaseGadget';
 import { GadgetTitle } from './constants';
+import { howItWorks } from './WorkloadHeatmap/constants';
 import PeriodNavigator from './WorkloadHeatmap/PeriodNavigator';
 import SettingsDialog from './WorkloadHeatmap/SettingsDialog';
 import { getPageSettings, normalizeSettings, savePageSettings } from './WorkloadHeatmap/settings';
 import type { WorkloadHeatmapSettings } from './WorkloadHeatmap/types';
 import useWorkloadHeatmap from './WorkloadHeatmap/useWorkloadHeatmap';
 import WorkloadHeatmapView from './WorkloadHeatmap/WorkloadHeatmapView';
+
+const hint = (
+    <ul className="gadget-hint">
+        {howItWorks.map((text) => (
+            <li key={text}>{text}</li>
+        ))}
+    </ul>
+);
 
 function getInitialSettings({ isGadget, settings }: BaseGadgetProps): WorkloadHeatmapSettings {
     return isGadget === false ? getPageSettings() : normalizeSettings(settings?.heatmapSettings);
@@ -101,8 +110,8 @@ export default function WorkloadHeatmapGadget(props: BaseGadgetProps) {
     );
 
     return (
-        <GadgetContainer {...props} gadgetHook={gadgetHook} customActions={customActions} refreshData={reload}>
-            <WorkloadHeatmapView settings={settings} state={state} onSettingsChange={handleSettingsChange} onConfigure={openSettings} />
+        <GadgetContainer {...props} gadgetHook={gadgetHook} customActions={customActions} refreshData={reload} hint={hint}>
+            <WorkloadHeatmapView settings={settings} state={state} onSettingsChange={handleSettingsChange} />
             {showSettings && <SettingsDialog settings={settings} onSave={handleSettingsSaved} onHide={hideSettings} />}
             {showGroups && <GroupEditor groups={settings.userGroups ?? undefined} onHide={handleGroupsHide} />}
         </GadgetContainer>

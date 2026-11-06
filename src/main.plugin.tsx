@@ -21,6 +21,7 @@ const WorklogBarChartGadget = lazy(() => import('./jcloud/gadgets/worklog-bar-ch
 const WorklogTimerGadget = lazy(() => import('./jcloud/gadgets/worklog-timer'));
 const TeamWorklogGadget = lazy(() => import('./jcloud/gadgets/team-worklog'));
 const WorkloadHeatmapWidget = lazy(() => import('./jcloud/gadgets/workload-heatmap'));
+const TimeInStatusWidget = lazy(() => import('./jcloud/gadgets/time-in-status'));
 const IssueGlance = lazy(() => import('./jcloud/issue-glance'));
 
 const fallback = <BlockLoading text="Loading... Please wait..." />;
@@ -61,6 +62,8 @@ const fallback = <BlockLoading text="Loading... Please wait..." />;
         render(<TeamWorklogGadget jiraContext={context} />);
     } else if (moduleKey === 'ja-workload-heatmap') {
         render(<WorkloadHeatmapWidget jiraContext={context} />);
+    } else if (moduleKey === 'ja-time-in-status') {
+        render(<TimeInStatusWidget jiraContext={context} />);
     } else if (moduleKey === 'ja-issue-glance') {
         render(<IssueGlance jiraContext={context} />);
     } else {

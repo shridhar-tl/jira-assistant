@@ -372,6 +372,23 @@ export interface DashboardGadget {
     [key: string]: any;
 }
 
+export interface StatusTransition {
+    at: number;
+    fromId: string;
+    from: string;
+    toId: string;
+    to: string;
+}
+
+export interface IssueStatusHistory {
+    userId: number;
+    issueKey: string;
+    issueId: string;
+    updated: string;
+    transitions: StatusTransition[];
+    fetchedAt: number;
+}
+
 export interface AppSetting {
     userId: number;
     category: SettingsCategory[keyof SettingsCategory];

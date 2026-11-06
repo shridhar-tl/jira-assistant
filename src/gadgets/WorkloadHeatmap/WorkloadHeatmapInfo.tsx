@@ -1,34 +1,29 @@
-import { Button } from '@components';
+import type { ReactNode } from 'react';
+
+import { ReportInfoNote, ReportInfoSection } from '../shared';
+
+import { howItWorks } from './constants';
 
 interface WorkloadHeatmapInfoProps {
-    title: string;
-    message: string;
-    icon?: string;
-    actionLabel?: string;
-    onAction?: () => void;
+    note?: ReactNode;
 }
 
-const howItWorks = [
-    'Remaining estimate (or original estimate when remaining is not set) of each issue is spread evenly across the working days between its start date and due date.',
-    'When only a due date is available, the work is planned backwards from the due date using the configured lead time (or estimate ÷ daily capacity).',
-    'Work is only planned from today onwards. Remaining work of overdue issues is placed on today.',
-    'Each cell compares the planned hours against the daily capacity from your worklog settings.',
+const howToUseItems = [
+    <>
+        Click the <i className="fa fa-users" /> icon to choose the users and groups whose workload should be shown.
+    </>,
+    <>
+        Click the <i className="fa fa-cogs" /> settings icon to use a custom JQL instead, change the date range or the work week.
+    </>,
+    'Hover on any cell to see the issues planned for that person on that day.',
+    ...howItWorks,
 ];
 
-export default function WorkloadHeatmapInfo({ title, message, icon = 'fa-th', actionLabel, onAction }: WorkloadHeatmapInfoProps) {
+export default function WorkloadHeatmapInfo({ note }: WorkloadHeatmapInfoProps) {
     return (
-        <div className="flex min-h-0 flex-1 flex-col items-center gap-4 overflow-auto px-4 py-10 text-center">
-            <span className={`fa ${icon} text-3xl text-(--text-tertiary)`} />
-            <div className="max-w-xl">
-                <div className="text-base font-semibold text-(--text-primary)">{title}</div>
-                <p className="mt-1 text-sm text-(--text-secondary)">{message}</p>
-            </div>
-            {actionLabel && onAction && <Button label={actionLabel} leftIcon={<i className="fa fa-cogs" />} onClick={onAction} />}
-            <ul className="max-w-xl list-disc space-y-1 ps-5 text-left text-xs text-(--text-secondary)">
-                {howItWorks.map((text) => (
-                    <li key={text}>{text}</li>
-                ))}
-            </ul>
+        <div className="min-h-0 flex-1 overflow-auto p-6 space-y-4">
+            {note && <ReportInfoNote>{note}</ReportInfoNote>}
+            <ReportInfoSection title="How to Use" icon="fa-info-circle" items={howToUseItems} defaultOpen />
         </div>
     );
 }
