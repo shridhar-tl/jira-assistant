@@ -101,4 +101,11 @@ export const gadgetList: GadgetInfo[] = [
         name: 'Status Wise Time Spent',
         details: 'The Status Wise Time Spent gadget provides a summary of time spent on each ticket, organized by individual status.',
     },
+    {
+        id: 'workloadHeatmap',
+        icon: 'fa-th',
+        name: 'Workload Heatmap',
+        details:
+            'This gadget shows how much estimated work is planned for each member of your user groups on every day, compared against their daily capacity, so that overloaded people stand out at a glance.',
+    },
 ];

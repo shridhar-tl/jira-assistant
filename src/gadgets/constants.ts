@@ -8,4 +8,5 @@ export const GadgetTitle = {
     WorklogBarChart: 'Worklog Bar Chart',
     StatusWiseTimeSpent: 'Status Wise Time Spent',
     WorklogReport: 'Worklog Report',
+    WorkloadHeatmap: 'Workload Heatmap',
 };

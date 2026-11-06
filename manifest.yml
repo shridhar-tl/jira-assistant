@@ -35,6 +35,14 @@ modules:
       resource: main
       edit:
         resource: main
+  dashboards:widget:
+    - key: ja-workload-heatmap
+      title: Workload Heatmap
+      description: Shows the estimated work planned for each team member per day against their daily capacity
+      thumbnail: https://app.jiraassistant.com/assets/icon_48.png
+      resource: main
+      edit:
+        resource: main
   jira:issueGlance:
     - key: ja-issue-glance
       title: Worklog timer

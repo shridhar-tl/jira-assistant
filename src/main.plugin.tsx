@@ -20,6 +20,7 @@ const DayWiseWorklogGadget = lazy(() => import('./jcloud/gadgets/date-wise-workl
 const WorklogBarChartGadget = lazy(() => import('./jcloud/gadgets/worklog-bar-chart'));
 const WorklogTimerGadget = lazy(() => import('./jcloud/gadgets/worklog-timer'));
 const TeamWorklogGadget = lazy(() => import('./jcloud/gadgets/team-worklog'));
+const WorkloadHeatmapWidget = lazy(() => import('./jcloud/gadgets/workload-heatmap'));
 const IssueGlance = lazy(() => import('./jcloud/issue-glance'));
 
 const fallback = <BlockLoading text="Loading... Please wait..." />;
@@ -58,6 +59,8 @@ const fallback = <BlockLoading text="Loading... Please wait..." />;
         render(<WorklogTimerGadget />); // It appears like jiraContext is not required here as props. need to validate.
     } else if (moduleKey === 'ja-team-worklog') {
         render(<TeamWorklogGadget jiraContext={context} />);
+    } else if (moduleKey === 'ja-workload-heatmap') {
+        render(<WorkloadHeatmapWidget jiraContext={context} />);
     } else if (moduleKey === 'ja-issue-glance') {
         render(<IssueGlance jiraContext={context} />);
     } else {

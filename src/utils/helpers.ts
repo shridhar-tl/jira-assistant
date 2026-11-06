@@ -403,3 +403,54 @@ export function clearEnd(str: string, char: string): string {
 
     return str;
 }
+
+interface ErrorLike {
+    message?: unknown;
+    response?: unknown;
+    status?: unknown;
+    error?: unknown;
+    errorMessages?: unknown;
+    errors?: unknown;
+}
+
+function readErrorMessage(value: unknown, depth: number): string | null {
+    if (!value || depth > 3) {
+        return null;
+    }
+    if (typeof value === 'string') {
+        return value;
+    }
+    if (typeof value !== 'object') {
+        return null;
+    }
+
+    const err = value as ErrorLike;
+    if (Array.isArray(err.errorMessages) && err.errorMessages.length) {
+        return err.errorMessages.filter((m) => typeof m === 'string').join(' ') || null;
+    }
+    if (err.errors && typeof err.errors === 'object') {
+        const fieldErrors = Object.values(err.errors).filter((m): m is string => typeof m === 'string');
+        if (fieldErrors.length) {
+            return fieldErrors.join(' ');
+        }
+    }
+    if (typeof err.message === 'string' && err.message) {
+        return err.message;
+    }
+
+    const nested = readErrorMessage(err.error, depth + 1);
+    if (nested) {
+        return nested;
+    }
+    if (typeof err.response === 'string' && err.response) {
+        return err.response;
+    }
+    if (typeof err.status === 'number' && err.status > 0) {
+        return `Server response was ${err.status}`;
+    }
+    return null;
+}
+
+export function getErrorMessage(err: unknown, fallback: string): string {
+    return readErrorMessage(err, 0) || fallback;
+}

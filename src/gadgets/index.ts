@@ -9,3 +9,4 @@ export { default as StatusWiseTimeSpent } from './StatusWiseTimeSpent';
 export { default as TicketWiseWorklog } from './TicketWiseWorklog';
 export { default as WorklogBarChartGadget } from './WorklogBarChartGadget';
 export { WorklogReport } from './WorklogReport';
+export { default as WorkloadHeatmapGadget } from './WorkloadHeatmapGadget';

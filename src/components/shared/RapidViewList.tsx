@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { inject } from '@services';
 
-import { AutocompleteMulti, SelectButton } from '@components';
+import { Autocomplete, AutocompleteMulti } from '@components';
 
 export interface RapidView {
     id: number;
@@ -38,7 +38,7 @@ export default function RapidViewList({ value, onChange, multiple = false, place
     }, []);
 
     if (multiple) {
-        const selectedIds = (value as RapidView[] || []).map((v) => v.id);
+        const selectedIds = ((value as RapidView[]) || []).map((v) => v.id);
 
         return (
             <AutocompleteMulti
@@ -55,14 +55,58 @@ export default function RapidViewList({ value, onChange, multiple = false, place
     }
 
     return (
-        <SelectButton
-            items={rapidViews.map((r) => ({ label: r.name, value: r.id.toString() }))}
-            value={(value as RapidView)?.id.toString() || ''}
-            onChange={(e: any) => {
-                const selected = rapidViews.find((r) => r.id.toString() === e);
-                onChange(selected || null);
-            }}
+        <SingleRapidViewSelect
+            rapidViews={rapidViews}
+            value={value as RapidView | null}
+            onChange={onChange}
+            placeholder={placeholder}
             disabled={isLoading || rapidViews.length === 0}
+        />
+    );
+}
+
+const maxSuggestions = 50;
+
+interface SingleRapidViewSelectProps {
+    rapidViews: RapidView[];
+    value: RapidView | null;
+    onChange: (value: RapidView | null) => void;
+    placeholder?: string;
+    disabled: boolean;
+}
+
+function SingleRapidViewSelect({ rapidViews, value, onChange, placeholder, disabled }: SingleRapidViewSelectProps) {
+    const [query, setQuery] = useState(value?.name || '');
+
+    useEffect(() => {
+        setQuery(value?.name || '');
+    }, [value?.id, value?.name]);
+
+    const items = useMemo(() => {
+        const search = query.trim().toLowerCase();
+        const showAll = !search || query === value?.name;
+        const matches = showAll
+            ? rapidViews
+            : rapidViews.filter((r) => r.name.toLowerCase().includes(search) || r.id.toString().startsWith(search));
+        return matches.slice(0, maxSuggestions).map((r) => ({ label: r.name, value: r.id }));
+    }, [rapidViews, query, value?.name]);
+
+    return (
+        <Autocomplete
+            items={items}
+            value={query}
+            selectedValue={value?.id}
+            onChange={(e) => {
+                setQuery(e.value);
+                if (!e.value) {
+                    onChange(null);
+                }
+            }}
+            onSelect={(e) => onChange(rapidViews.find((r) => r.id === e.value) || null)}
+            minLength={0}
+            placeholder={placeholder || 'Start typing the board name here'}
+            readonly={disabled}
+            emptyMessage="No matching boards"
         />
     );
 }

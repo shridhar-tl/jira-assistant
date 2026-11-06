@@ -14,6 +14,7 @@ const config = {
         sayDoRatioReport: true,
         sprintReport: !isPluginBuild,
         estimateVsActual: true,
+        workloadHeatmap: true,
 
         userGroups: true,
         generalSettings: true,

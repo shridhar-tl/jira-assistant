@@ -4,6 +4,8 @@ import { inject } from '@services';
 
 import { Button, ChangeTracker, Checkbox, showContextMenu } from '@components';
 
+import { getErrorMessage } from '@utils';
+
 import { GadgetActionType } from '@constants';
 
 import { WorklogContext } from '../common/context';
@@ -31,10 +33,21 @@ interface PendingWorklogItem {
     copy?: boolean;
 }
 
+interface PendingWorklogEntry extends Omit<PendingWorklogItem, 'ticketUrl' | 'displayDate' | 'selected' | 'rowClass'> {
+    status?: string;
+}
+
+const loadErrorMessage = 'Unable to fetch the worklogs pending to be uploaded.';
+const uploadErrorMessage = 'Unable to upload the selected worklogs.';
+const deleteErrorMessage = 'Unable to delete the selected worklogs.';
+
 export default function PendingWorklog(props: BaseGadgetProps) {
     const [worklogs, setWorklogs] = useState<PendingWorklogItem[]>([]);
     const [selAllChk, setSelAllChk] = useState(true);
+    const [loadError, setLoadError] = useState<string | null>(null);
     const selectedItemRef = useRef<PendingWorklogItem | null>(null);
+    const selAllChkRef = useRef(selAllChk);
+    selAllChkRef.current = selAllChk;
 
     const worklogContext = useContext(WorklogContext) as any;
 
@@ -45,24 +58,29 @@ export default function PendingWorklog(props: BaseGadgetProps) {
     const { setIsLoading, performAction, addWorklog } = gadgetHook;
     const { $worklog, $userutils, $message } = inject('WorklogService', 'UserUtilsService', 'MessageService');
 
-    const refreshData = useCallback(() => {
+    const refreshData = useCallback(async () => {
         setIsLoading(true);
-
-        return $worklog.getPendingWorklogs().then((result: any[]) => {
-            setSelAllChk((selAllChk) => {
-                result.forEach((w) => {
-                    w.ticketUrl = $userutils.getTicketUrl(w.ticketNo);
-                    w.rowClass = getRowStatus(w);
-                    w.displayDate = $userutils.formatDateTime(w.dateStarted);
-                    w.selected = selAllChk;
-                    w.timeSpent = formatTs(w.overrideTimeSpent || w.timeSpent);
-                });
-                return selAllChk;
-            });
-            setWorklogs(result);
+        try {
+            const result: PendingWorklogEntry[] = await $worklog.getPendingWorklogs();
+            const selected = selAllChkRef.current;
+            setWorklogs(
+                result.map((w) => ({
+                    ...w,
+                    ticketUrl: $userutils.getTicketUrl(w.ticketNo) || '',
+                    rowClass: getRowStatus(w),
+                    displayDate: $userutils.formatDateTime(w.dateStarted),
+                    selected,
+                    timeSpent: formatTs(w.overrideTimeSpent || w.timeSpent),
+                })),
+            );
+            setLoadError(null);
+        } catch (err: unknown) {
+            console.error('Failed to load pending worklogs:', err);
+            setLoadError(getErrorMessage(err, loadErrorMessage));
+        } finally {
             setIsLoading(false);
-        });
-    }, []);
+        }
+    }, [$worklog, $userutils, setIsLoading]);
 
     useEffect(() => {
         refreshData();
@@ -116,13 +134,11 @@ export default function PendingWorklog(props: BaseGadgetProps) {
 
             setIsLoading(true);
             try {
-                const result = await $worklog.uploadWorklogs(ids);
-                setWorklogs(result);
+                await $worklog.uploadWorklogs(ids);
                 performAction(GadgetActionType.WorklogModified);
-            } catch (err: any) {
-                if (err.message || err.response) {
-                    $message.error(err.message || err.response);
-                }
+            } catch (err: unknown) {
+                console.error('Failed to upload worklogs:', err);
+                $message.error(getErrorMessage(err, uploadErrorMessage), 'Upload failed');
             } finally {
                 refreshData();
             }
@@ -141,12 +157,17 @@ export default function PendingWorklog(props: BaseGadgetProps) {
                 return;
             }
 
-            Dialog.confirmDelete('Are you sure to delete the selected worklog(s)?', 'Confirm delete worklog(s)').then(() => {
+            Dialog.confirmDelete('Are you sure to delete the selected worklog(s)?', 'Confirm delete worklog(s)').then(async () => {
                 setIsLoading(true);
-                $worklog.deleteWorklogs(ids).then(() => {
-                    refreshData();
+                try {
+                    await $worklog.deleteWorklogs(ids);
                     performAction(GadgetActionType.DeletedWorklog);
-                });
+                } catch (err: unknown) {
+                    console.error('Failed to delete worklogs:', err);
+                    $message.error(getErrorMessage(err, deleteErrorMessage), 'Delete failed');
+                } finally {
+                    await refreshData();
+                }
             });
         },
         [worklogs, $worklog, $message, setIsLoading, refreshData, performAction],
@@ -197,6 +218,15 @@ export default function PendingWorklog(props: BaseGadgetProps) {
 
     return (
         <GadgetContainer {...props} gadgetHook={gadgetHook} refreshData={refreshData} customActions={customActions} hint={hint}>
+            {loadError && (
+                <div className="m-3 flex flex-col items-start gap-2 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700 sm:flex-row sm:items-center sm:justify-between dark:border-red-800 dark:bg-red-900/20 dark:text-red-300">
+                    <span>
+                        <i className="fa fa-exclamation-triangle me-2" />
+                        {loadError}
+                    </span>
+                    <Button label="Retry" size="sm" layout="outlined" leftIcon={<i className="fa fa-refresh" />} onClick={refreshData} />
+                </div>
+            )}
             <ScrollableTable dataset={worklogs} exportSheetName="Pending worklogs">
                 <THead>
                     <tr>

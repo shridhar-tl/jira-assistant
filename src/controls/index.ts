@@ -7,3 +7,4 @@ export { default as Image } from './Image';
 export { default as Link } from './Link';
 export { MultiValueText } from './MultiValueText';
 export { default as TimePicker } from './TimePicker';
+export { default as WeekDaysSelector } from './WeekDaysSelector';

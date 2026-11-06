@@ -15,6 +15,8 @@ const PivotReportComponent = config.modules.pivotReport && React.lazy(() => impo
 const SayDoRatioReportComponent = config.modules.sayDoRatioReport && React.lazy(() => import('./pages/reports/say-do-ratio'));
 const EstimateActualComponent = config.modules.estimateVsActual && React.lazy(() => import('./pages/reports/estimate-actual'));
 const SprintReportComponent = config.modules.sprintReport && React.lazy(() => import('./pages/reports/sprint-report/SprintReport'));
+const WorkloadHeatmapComponent =
+    config.modules.workloadHeatmap && React.lazy(() => import('./pages/reports/workload-heatmap/WorkloadHeatmapReport'));
 const NewWorklogReportComponent =
     config.modules.worklogReport && React.lazy(() => import('./pages/reports/worklog-report/NewWorklogReport'));
 
@@ -51,6 +53,10 @@ const sessionBasedRoute: RouteItem[] = [
     NewWorklogReportComponent && {
         path: '/reports/worklog',
         component: NewWorklogReportComponent,
+    },
+    WorkloadHeatmapComponent && {
+        path: '/reports/workload-heatmap',
+        component: WorkloadHeatmapComponent,
     },
     PivotReportComponent && {
         path: '/reports/pivot',

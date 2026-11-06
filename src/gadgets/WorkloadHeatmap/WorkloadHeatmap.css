@@ -1,0 +1,59 @@
+.workload-heatmap {
+    --heat-good: #90ee90;
+    --heat-less: #fafad2;
+    --heat-high: #ffa07a;
+    --heat-critical: #f87171;
+    --heat-text: #1e293b;
+    --heat-today: #2563eb;
+}
+
+.mode-dark .workload-heatmap,
+.dark-theme .workload-heatmap {
+    --heat-good: #3f8f4f;
+    --heat-less: #7a7442;
+    --heat-high: #b5643f;
+    --heat-critical: #b03a3a;
+    --heat-text: #f8fafc;
+    --heat-today: #93c5fd;
+}
+
+.workload-heatmap .heat-cell.log-good,
+.workload-heatmap .heat-swatch.log-good {
+    background-color: var(--heat-good);
+    color: var(--heat-text);
+}
+
+.workload-heatmap .heat-cell.log-less,
+.workload-heatmap .heat-swatch.log-less {
+    background-color: var(--heat-less);
+    color: var(--heat-text);
+}
+
+.workload-heatmap .heat-cell.log-high,
+.workload-heatmap .heat-swatch.log-high {
+    background-color: var(--heat-high);
+    color: var(--heat-text);
+}
+
+.workload-heatmap .heat-cell.log-critical,
+.workload-heatmap .heat-swatch.log-critical {
+    background-color: var(--heat-critical);
+    color: var(--heat-text);
+}
+
+.workload-heatmap .heat-cell.heat-past {
+    opacity: 0.45;
+}
+
+.workload-heatmap .heat-today {
+    box-shadow:
+        inset 2px 0 0 var(--heat-today),
+        inset -2px 0 0 var(--heat-today);
+}
+
+.workload-heatmap th.heat-today {
+    box-shadow:
+        inset 2px 0 0 var(--heat-today),
+        inset -2px 0 0 var(--heat-today),
+        inset 0 3px 0 var(--heat-today);
+}

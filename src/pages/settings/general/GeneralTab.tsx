@@ -9,7 +9,7 @@ import { setStartOfWeek } from '@utils/helpers';
 import { isWebBuild } from '@constants';
 import { dateFormats, timeFormats } from '@constants/settings';
 
-import WeekDaysSelector from './WeekDaysSelector';
+import { WeekDaysSelector } from '@/controls';
 
 const weekDaysArray = [
     { val: 0, label: 'Default' },
