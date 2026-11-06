@@ -250,7 +250,7 @@ export default class JiraService {
             return result;
         }
 
-        result = await this.$ajax.get(ApiUrls.getCustomFields);
+        result = (await this.$ajax.get(ApiUrls.getCustomFields)).map((f: any) => (f.key ? f : { ...f, key: f.id }));
 
         // Add custom "Issue Age" field
         const createdFieldIndex = result.findIndex((f: any) => f.id === 'created');
