@@ -36,6 +36,7 @@ export const ApiUrls = {
     getGroupMembers: '~/rest/api/2/group/member?maxResults={1}&includeInactiveUsers=true&groupId={0}',
     getUserDetails: '~/rest/api/2/user?username={0}',
     mySelf: '~/rest/api/2/myself',
+    serverInfo: '~/rest/api/2/serverInfo',
 
     // Field APIs
     getCustomFields: '~/rest/api/2/field',

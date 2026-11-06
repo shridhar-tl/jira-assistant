@@ -35,6 +35,7 @@ interface IssueColumn {
 
 const statusColumnPrefix = 'status_';
 const columnOptions = optionalIssueColumns.map(({ id, label }) => ({ value: id, label }));
+const toolbarControlClass = 'w-52 shrink-0';
 const headClass = 'px-2 py-1.5 text-left text-xs font-semibold text-(--text-primary) border-b border-(--border-primary) bg-(--bg-secondary)';
 
 function UserCell({ user }: { user: IssueUser | null }) {
@@ -248,31 +249,34 @@ export default function IssueTimelineTable({ model, settings, onSettingsChange, 
     return (
         <div className="flex min-h-0 flex-1 flex-col gap-2">
             <div className="flex shrink-0 flex-wrap items-center gap-2">
-                <TextInput
-                    value={searchText}
-                    onChange={(e) => setSearchText(e.value ?? '')}
-                    placeholder="Search issues"
-                    leftIcon={<i className="fa fa-search" />}
-                    clearable
-                    className="w-full sm:w-56"
-                />
-                <Multiselect
-                    options={currentStatusOptions}
-                    value={statusFilter}
-                    onChange={(e) => setStatusFilter((e.value as string[]) || [])}
-                    placeholder="All current statuses"
-                    searchable
-                    className="w-full sm:w-56"
-                    ariaLabel="Filter by current status"
-                />
-                <Multiselect
-                    options={columnOptions}
-                    value={displayColumns}
-                    onChange={(e) => onSettingsChange({ displayColumns: (e.value as string[]) || [] })}
-                    placeholder="Choose columns"
-                    className="w-full sm:w-56"
-                    ariaLabel="Columns to display"
-                />
+                <div className={toolbarControlClass}>
+                    <TextInput
+                        value={searchText}
+                        onChange={(e) => setSearchText(e.value ?? '')}
+                        placeholder="Search issues"
+                        leftIcon={<i className="fa fa-search" />}
+                        clearable
+                    />
+                </div>
+                <div className={toolbarControlClass}>
+                    <Multiselect
+                        options={currentStatusOptions}
+                        value={statusFilter}
+                        onChange={(e) => setStatusFilter((e.value as string[]) || [])}
+                        placeholder="All current statuses"
+                        searchable
+                        ariaLabel="Filter by current status"
+                    />
+                </div>
+                <div className={toolbarControlClass}>
+                    <Multiselect
+                        options={columnOptions}
+                        value={displayColumns}
+                        onChange={(e) => onSettingsChange({ displayColumns: (e.value as string[]) || [] })}
+                        placeholder="Choose columns"
+                        ariaLabel="Columns to display"
+                    />
+                </div>
                 {displayColumns.includes('timeline') && (
                     <SelectButton
                         items={timelineScaleOptions}

@@ -5,6 +5,7 @@ import classNames from 'classnames';
 
 import { Button, hideTooltip, Loading, showContextMenu, showTooltip } from '@components';
 
+import GadgetLoadingText from './GadgetLoadingText';
 import type { BaseGadgetConfig, BaseGadgetProps } from './types';
 import type { useBaseGadget } from './useBaseGadget';
 
@@ -18,6 +19,7 @@ interface GadgetContainerProps extends BaseGadgetProps {
     hint?: React.ReactNode;
     refreshData?: () => void;
     loadingProgress?: number;
+    loadingText?: string | null;
 }
 
 export function GadgetContainer({
@@ -30,6 +32,7 @@ export function GadgetContainer({
     hint,
     refreshData,
     loadingProgress,
+    loadingText,
     tabLayout,
     tabHeaderSlot,
     draggableHandle,
@@ -149,10 +152,11 @@ export function GadgetContainer({
                 <div className="p-panel-content relative">
                     {isLoading && typeof loadingProgress !== 'number' && (
                         <div
-                            className="absolute inset-0 z-10 flex items-center justify-center"
+                            className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3"
                             style={{ backgroundColor: 'rgba(0,0,0,0.25)', backdropFilter: 'blur(2px)' }}
                         >
                             <Loading size="lg" />
+                            {loadingText && <GadgetLoadingText text={loadingText} />}
                         </div>
                     )}
                     {isLoading && typeof loadingProgress === 'number' && (
@@ -175,6 +179,7 @@ export function GadgetContainer({
                                     {Math.round(loadingProgress)}%
                                 </span>
                             </div>
+                            {loadingText && <GadgetLoadingText text={loadingText} />}
                         </div>
                     )}
                     {children}

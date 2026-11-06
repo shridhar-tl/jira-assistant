@@ -109,7 +109,14 @@ export default function TimeInStatusGadget(props: BaseGadgetProps) {
     );
 
     return (
-        <GadgetContainer {...props} gadgetHook={gadgetHook} customActions={customActions} refreshData={reload} hint={hint}>
+        <GadgetContainer
+            {...props}
+            gadgetHook={gadgetHook}
+            customActions={customActions}
+            refreshData={reload}
+            hint={hint}
+            loadingText={state.loadingText}
+        >
             <TimeInStatusView
                 settings={settings}
                 state={state}

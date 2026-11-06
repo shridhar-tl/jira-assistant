@@ -10,6 +10,34 @@ import type SessionService from './session-service';
 import type SettingsService from './settings-service';
 import type UserService from './user-service';
 
+const pageSettingsPrefix = 'page_';
+const atlassianCloudHostSuffix = '.atlassian.net';
+const cloudDeploymentType = 'Cloud';
+
+const defaultPageSettings: Record<string, object> = {
+    calendar: sett_page_calendar,
+    reports_UserDayWise: DefaultUserDayWiseReportSettings,
+    reports_WorklogReport: {},
+    reports_SayDoRatioReport: {},
+};
+
+/**
+ * Settings of every page are stored with a "page_" prefix. All of them are loaded so that
+ * settings of any report are restored without having to be registered here.
+ */
+function getPageSettingsMap(storedSettings: Record<string, unknown>): Record<string, unknown> {
+    const result: Record<string, unknown> = { ...defaultPageSettings };
+
+    for (const [name, value] of Object.entries(storedSettings)) {
+        if (name.startsWith(pageSettingsPrefix)) {
+            const pageName = name.substring(pageSettingsPrefix.length);
+            result[pageName] = parseIfJson(value, defaultPageSettings[pageName] ?? null);
+        }
+    }
+
+    return result;
+}
+
 export default class AuthService {
     static dependencies = ['UserService', 'SettingsService', 'SessionService', 'JiraService'];
 
@@ -25,6 +53,23 @@ export default class AuthService {
         this.$settings = $settings;
         this.$session = $session;
         this.$jira = $jira;
+    }
+
+    /**
+     * Jira Cloud sites can be on a custom domain. So deployment type of the instance is used
+     * when the host is not an Atlassian domain.
+     */
+    private async isCloudInstance(): Promise<boolean> {
+        if (getHostFromUrl(this.$session.rootUrl).endsWith(atlassianCloudHostSuffix)) {
+            return true;
+        }
+
+        try {
+            return (await this.$jira.getDeploymentType()) === cloudDeploymentType;
+        } catch (err) {
+            console.warn('Unable to identify the deployment type of Jira. It would be treated as Jira Data Center.', err);
+            return false;
+        }
     }
 
     async getUserDetails(userId?: number): Promise<User> {
@@ -78,7 +123,7 @@ export default class AuthService {
                 this.$session.apiRootUrl = (userDetails.apiUrl || '').toString();
             }
 
-            (userDetails as any).isAtlasCloud = getHostFromUrl(this.$session.rootUrl).endsWith('.atlassian.net');
+            (userDetails as any).isAtlasCloud = await this.isCloudInstance();
 
             if (useProfile) {
                 const jiraUser = await this.$jira.getCurrentUser();
@@ -92,12 +137,7 @@ export default class AuthService {
 
             const settings = await this.$settings.getPageSettings(userId!);
 
-            this.$session.pageSettings = {
-                calendar: parseIfJson(settings.page_calendar, sett_page_calendar),
-                reports_UserDayWise: parseIfJson(settings.page_reports_UserDayWise, DefaultUserDayWiseReportSettings),
-                reports_WorklogReport: parseIfJson(settings.page_reports_WorklogReport, {}),
-                reports_SayDoRatioReport: parseIfJson(settings.page_reports_SayDoRatioReport, {}),
-            };
+            this.$session.pageSettings = getPageSettingsMap(settings);
 
             const lastVisited = await this.$settings.get('LV');
 

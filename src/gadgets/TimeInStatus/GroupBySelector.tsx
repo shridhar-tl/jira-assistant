@@ -26,15 +26,17 @@ function GroupBySelector({ value, onChange, className }: GroupBySelectorProps) {
     }, []);
 
     return (
-        <Dropdown
-            options={options}
-            value={value}
-            onChange={(e) => onChange((e.value as string) || 'none')}
-            loading={isLoading}
-            searchable
-            placeholder="Group by"
-            className={className}
-        />
+        <div className={className}>
+            <Dropdown
+                options={options}
+                value={value}
+                onChange={(e) => onChange((e.value as string) || 'none')}
+                loading={isLoading}
+                searchable
+                placeholder="Group by"
+                ariaLabel="Group by"
+            />
+        </div>
     );
 }
 

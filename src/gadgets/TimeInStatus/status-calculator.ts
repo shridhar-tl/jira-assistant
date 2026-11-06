@@ -216,15 +216,16 @@ function buildGroupSummary(name: string, issues: IssueStatusMetrics[], orderedSt
 function orderStatuses(statuses: StatusInfo[], issues: IssueStatusMetrics[]): StatusInfo[] {
     const entryOffsets = new Map<string, { sum: number; count: number }>();
 
-    for (const { issue, segments } of issues) {
+    // Position of the first visit is used instead of the time so that the workflow order is not skewed by the age of issues
+    for (const { segments } of issues) {
         const seen = new Set<string>();
         for (const segment of segments) {
             if (!seen.has(segment.statusId)) {
-                seen.add(segment.statusId);
                 const entry = entryOffsets.get(segment.statusId) || { sum: 0, count: 0 };
-                entry.sum += segment.start - issue.created;
+                entry.sum += seen.size;
                 entry.count++;
                 entryOffsets.set(segment.statusId, entry);
+                seen.add(segment.statusId);
             }
         }
     }

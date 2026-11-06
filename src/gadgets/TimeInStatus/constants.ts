@@ -108,10 +108,10 @@ export const partialHistoryMessage =
     'The complete status history could not be fetched for the following issues. Their numbers may be based on partial history:';
 
 export const fallbackHistoryMessage =
-    'The bulk changelog API of Jira Cloud is not available for this site. History of issues with many changes was fetched one issue at a time.';
+    'The bulk changelog API of Jira Cloud is not available for this site. History of the issues with many changes was fetched one issue at a time.';
 
 export const dcGuardMessage =
-    'Jira Data Center does not offer a bulk changelog API, so the history of every issue has to be fetched separately. Narrow the JQL to keep the report fast, or run it anyway.';
+    'Jira Data Center does not offer a bulk changelog API, so fetching the history of many issues is slow and may need a separate request for each issue. Narrow the JQL to keep the report fast, or run it anyway.';
 
 export const howItWorks = [
     'Time spent in each status is calculated from the status changes recorded in the history of every issue, starting from its created date.',

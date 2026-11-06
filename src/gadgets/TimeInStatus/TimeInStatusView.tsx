@@ -43,7 +43,7 @@ export default function TimeInStatusView({
     bottleneckOnly,
 }: TimeInStatusViewProps) {
     const [activeStatus, setActiveStatus] = useState<ActiveStatus | null>(null);
-    const { model, dataset, guard, error, isConfigured, loadingText, runAnyway, reload } = state;
+    const { model, dataset, guard, error, isConfigured, runAnyway, reload } = state;
     const view: ViewType = bottleneckOnly ? 'bottleneck' : settings.view;
 
     const openIssues = useCallback<OpenStatusIssues>((target, stats, groupName) => setActiveStatus({ target, stats, groupName }), []);
@@ -62,10 +62,7 @@ export default function TimeInStatusView({
                     {error}
                 </GadgetAlert>
             ) : (
-                <div className="flex flex-1 items-center justify-center gap-2 p-8 text-sm text-(--text-secondary)">
-                    <i className="fa fa-spinner fa-spin" />
-                    {loadingText || 'Loading...'}
-                </div>
+                <div className="min-h-40 flex-1" />
             );
         }
         if (!model.issues.length) {
@@ -90,7 +87,7 @@ export default function TimeInStatusView({
                         <GroupBySelector
                             value={settings.groupBy}
                             onChange={(groupBy) => onSettingsChange({ groupBy })}
-                            className="w-full sm:w-52"
+                            className="w-48 shrink-0"
                         />
                     )}
                     <span className="ms-auto text-[11px] text-(--text-secondary)" title="Status history is cached on this device">

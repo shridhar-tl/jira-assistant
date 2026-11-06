@@ -19,6 +19,11 @@ export interface HistoryPlan {
     stale: TisIssue[];
 }
 
+interface EmbeddedHistories {
+    transitions: Record<string, StatusTransition[]>;
+    overflowing: TisIssue[];
+}
+
 export interface FetchedHistories {
     transitions: Record<string, StatusTransition[]>;
     partialIssueKeys: string[];
@@ -109,27 +114,34 @@ async function searchWithEmbeddedChangelog(keys: string[]): Promise<EmbeddedChan
     return issues as EmbeddedChangelogIssue[];
 }
 
-async function fetchIssueByIssue(issues: TisIssue[]): Promise<FetchedHistories> {
-    const { $jira } = inject('JiraService');
+/**
+ * Search results carry only a limited number of history entries for each issue in Jira Cloud.
+ * Issues having more history than what is embedded are returned as overflowing.
+ */
+async function fetchEmbeddedHistories(issues: TisIssue[]): Promise<EmbeddedHistories> {
     const transitions: Record<string, StatusTransition[]> = {};
-    const partialIssueKeys: string[] = [];
-    const overflowing: EmbeddedChangelogIssue[] = [];
+    const overflowing: TisIssue[] = [];
+    const issueMap = new Map(issues.map((i) => [i.key, i]));
 
-    for (const keys of chunk(
-        issues.map((i) => i.key),
-        issueKeyChunkSize,
-    )) {
-        const results = await searchWithEmbeddedChangelog(keys);
-        for (const result of results) {
+    for (const keys of chunk([...issueMap.keys()], issueKeyChunkSize)) {
+        for (const result of await searchWithEmbeddedChangelog(keys)) {
             const histories = result.changelog?.histories || [];
+            const issue = issueMap.get(result.key);
             transitions[result.key] = toTransitions(histories);
-            if ((result.changelog?.total ?? 0) > histories.length) {
-                overflowing.push(result);
+            if (issue && (result.changelog?.total ?? 0) > histories.length) {
+                overflowing.push(issue);
             }
         }
     }
 
-    await runOnQueue(overflowing, historyFetchConcurrency, async ({ key }) => {
+    return { transitions, overflowing };
+}
+
+async function fetchIssueByIssue(issues: TisIssue[], transitions: Record<string, StatusTransition[]>): Promise<string[]> {
+    const { $jira } = inject('JiraService');
+    const partialIssueKeys: string[] = [];
+
+    await runOnQueue(issues, historyFetchConcurrency, async ({ key }) => {
         try {
             transitions[key] = toTransitions(await $jira.getIssueChangeHistories(key));
         } catch (err) {
@@ -137,6 +149,56 @@ async function fetchIssueByIssue(issues: TisIssue[]): Promise<FetchedHistories> 
             partialIssueKeys.push(key);
         }
     });
+
+    return partialIssueKeys;
+}
+
+async function fetchUsingBulkApi(issues: TisIssue[], transitions: Record<string, StatusTransition[]>): Promise<string[]> {
+    const { $jira } = inject('JiraService');
+    // Field filter is not used as Jira does not match the history items recorded without fieldId (e.g. older or imported data)
+    const historiesById = await $jira.getBulkChangeHistories(issues.map((i) => i.id));
+    const partialIssueKeys: string[] = [];
+
+    for (const issue of issues) {
+        const histories = historiesById[issue.id];
+        if (histories) {
+            transitions[issue.key] = toTransitions(histories);
+        } else {
+            partialIssueKeys.push(issue.key);
+        }
+    }
+
+    return partialIssueKeys;
+}
+
+/**
+ * History of all the issues is fetched along with the search results. Only for the issues having more history than
+ * what is embedded, the bulk changelog API of Jira Cloud is used, so that it takes only a few calls for the whole report.
+ * As the bulk API is experimental, failures are handled by fetching the history of those few issues one by one.
+ * Jira Data Center does not have any bulk API and so the individual approach is used directly.
+ */
+export async function fetchStatusHistories(issues: TisIssue[], isCloud: boolean): Promise<FetchedHistories> {
+    if (!issues.length) {
+        return { transitions: {}, partialIssueKeys: [], usedFallback: false };
+    }
+
+    const { transitions, overflowing } = await fetchEmbeddedHistories(issues);
+    const partialIssueKeys: string[] = [];
+    let usedFallback = false;
+
+    if (overflowing.length) {
+        if (isCloud) {
+            try {
+                partialIssueKeys.push(...(await fetchUsingBulkApi(overflowing, transitions)));
+            } catch (err) {
+                console.warn('Bulk changelog API failed. Falling back to fetch the history of overflowing issues individually.', err);
+                usedFallback = true;
+                partialIssueKeys.push(...(await fetchIssueByIssue(overflowing, transitions)));
+            }
+        } else {
+            partialIssueKeys.push(...(await fetchIssueByIssue(overflowing, transitions)));
+        }
+    }
 
     for (const issue of issues) {
         if (!transitions[issue.key]) {
@@ -146,46 +208,7 @@ async function fetchIssueByIssue(issues: TisIssue[]): Promise<FetchedHistories> 
         }
     }
 
-    return { transitions, partialIssueKeys, usedFallback: false };
-}
-
-async function fetchUsingBulkApi(issues: TisIssue[]): Promise<FetchedHistories> {
-    const { $jira } = inject('JiraService');
-    // Field filter is not used as Jira does not match the history items recorded without fieldId (e.g. older or imported data)
-    const historiesById = await $jira.getBulkChangeHistories(issues.map((i) => i.id));
-
-    const transitions: Record<string, StatusTransition[]> = {};
-    for (const issue of issues) {
-        transitions[issue.key] = toTransitions(historiesById[issue.id] || []);
-    }
-
-    return { transitions, partialIssueKeys: [], usedFallback: false };
-}
-
-/**
- * Jira Cloud offers a bulk changelog API to fetch the history of many issues in a few calls.
- * As it is an experimental API, failures are handled by falling back to embedded changelog in search results
- * and fetching individually only for issues having more history than what is embedded.
- * Jira Data Center does not have any bulk API and so the individual approach is used directly.
- */
-export async function fetchStatusHistories(issues: TisIssue[], isCloud: boolean): Promise<FetchedHistories> {
-    if (!issues.length) {
-        return { transitions: {}, partialIssueKeys: [], usedFallback: false };
-    }
-
-    let fetched: FetchedHistories;
-
-    if (isCloud) {
-        try {
-            fetched = await fetchUsingBulkApi(issues);
-        } catch (err) {
-            console.warn('Bulk changelog API failed. Falling back to fetch the history from search results.', err);
-            fetched = { ...(await fetchIssueByIssue(issues)), usedFallback: true };
-        }
-    } else {
-        fetched = await fetchIssueByIssue(issues);
-    }
-
+    const fetched: FetchedHistories = { transitions, partialIssueKeys, usedFallback };
     await saveToCache(issues, fetched);
     return fetched;
 }

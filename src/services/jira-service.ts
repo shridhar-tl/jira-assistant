@@ -1,5 +1,6 @@
 import {
     chunk,
+    getHostFromUrl,
     mergeUrl,
     orderBy,
     parseISOString,
@@ -53,6 +54,10 @@ interface PagedChangelogResponse {
     isLast?: boolean;
 }
 
+interface ServerInfoResponse {
+    deploymentType?: string;
+}
+
 interface IssueWithChangelogResponse {
     changelog?: { histories?: JiraChangeHistory[]; total?: number };
 }
@@ -60,6 +65,8 @@ interface IssueWithChangelogResponse {
 const bulkChangelogIssueLimit = 1000;
 const bulkChangelogPageSize = 1000;
 const issueChangelogPageSize = 100;
+const deploymentTypeCacheDays = 7;
+const unknownDeploymentType = 'Unknown';
 
 export default class JiraService {
     static dependencies = ['AjaxService', 'CacheService', 'MessageService', 'SessionService'];
@@ -1091,6 +1098,23 @@ export default class JiraService {
         }
         return Promise.reject(e);
     };
+
+    /**
+     * Returns the deployment type of the Jira instance ("Cloud", "Server" or "DataCenter").
+     * Value is cached per host as it rarely changes.
+     */
+    async getDeploymentType(): Promise<string> {
+        const cacheKey = `jiraDeploymentType_${getHostFromUrl(this.$session.rootUrl)}`;
+        let deploymentType: string | null = this.$jaCache.get(cacheKey);
+
+        if (!deploymentType) {
+            const serverInfo = await this.$ajax.get<ServerInfoResponse>(ApiUrls.serverInfo);
+            deploymentType = serverInfo?.deploymentType || unknownDeploymentType;
+            this.$jaCache.set(cacheKey, deploymentType, deploymentTypeCacheDays);
+        }
+
+        return deploymentType;
+    }
 
     getCurrentUser(): Promise<JiraUser> {
         return this.$ajax.get(ApiUrls.mySelf).then(null, this.jiraErrorHandler);

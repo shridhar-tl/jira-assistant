@@ -2,6 +2,7 @@ import { lazy, Suspense, useCallback, useState } from 'react';
 
 import { FullContext } from '@forge/bridge';
 
+import { GadgetLoadingText } from '@/gadgets/shared';
 import DateRangeSelector from '@/gadgets/TimeInStatus/DateRangeSelector';
 import { normalizeSettings } from '@/gadgets/TimeInStatus/settings';
 import TimeInStatusView from '@/gadgets/TimeInStatus/TimeInStatusView';
@@ -58,8 +59,9 @@ function TimeInStatusWidgetDisplay({ initialSettings }: TimeInStatusWidgetDispla
         <div className="relative flex h-150 flex-col">
             <TooltipManager />
             {state.isLoading && (
-                <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/20 backdrop-blur-[2px]">
+                <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 bg-black/20 backdrop-blur-[2px]">
                     <Loading size="lg" />
+                    {state.loadingText && <GadgetLoadingText text={state.loadingText} />}
                 </div>
             )}
             {state.isConfigured && (
