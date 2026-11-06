@@ -22,16 +22,6 @@ class BaseProxyService {
                 return executeService(svcName, m, args);
             };
         });
-
-        this._executeSvc = function (m: string) {
-            return function (...args: any[]) {
-                return executeService(svcName, m, args);
-            };
-        };
-    }
-
-    protected _executeSvc(method: string): (...args: any[]) => any {
-        return (...args: any[]) => executeService(this.svcName, method, args);
     }
 }
 
@@ -63,9 +53,4 @@ export class StorageProxyService extends BaseProxyService {
     constructor() {
         super('StorageService', StorageService.availableMethods);
     }
-
-    // This function should be removed once this code is released for extension users
-    getPendingWorklogByUserId = async (userId: any): Promise<any[]> => {
-        return await this._executeSvc('getPendingWorlogByUserId')(userId);
-    };
 }
