@@ -1,0 +1,1 @@
+import{n as e}from"./gadgets-BNamvcHG.js";import{t}from"./vendor-react-DldfpTV5.js";var n=t();function r(){return(0,n.jsx)(e,{isGadget:!1})}export{r as default};
