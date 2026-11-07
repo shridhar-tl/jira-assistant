@@ -8,6 +8,7 @@ export {
     Button,
     Checkbox,
     Chips,
+    ConfirmPopoverManager,
     DateRangePicker,
     Dropdown,
     FieldLabel,

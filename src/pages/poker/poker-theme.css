@@ -1,0 +1,13 @@
+body.mode-dark {
+    --pk-bg: var(--bg-primary);
+    --pk-surface: var(--bg-secondary);
+    --pk-surface-raised: var(--bg-tertiary);
+    --pk-surface-sunken: var(--ds-surface-sunken, #18191a);
+    --pk-border: var(--border-primary);
+    --pk-border-strong: var(--border-secondary);
+    --pk-text: var(--text-primary);
+    --pk-text-muted: var(--text-secondary);
+    --pk-text-subtle: var(--text-tertiary);
+    --pk-accent-soft: var(--primary-light);
+    --pk-accent-text: var(--primary-color);
+}

@@ -29,4 +29,3 @@ export function getJiraCloudOAuthAuthorizeUrl(state: any) {
 
 export const outlookRedirectUrl = `${JAApiBasePath}/oauth/outlook`;
 export const outlookTokenExchangeUrl = `${JAApiBasePath}/oauth/outlook/token`;
-export const pokerTokenExchangeUrl = `${JAApiBasePath}/oauth/poker/token`;

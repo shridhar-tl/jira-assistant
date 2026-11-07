@@ -2,6 +2,9 @@ import React from 'react';
 
 import config from './customize';
 
+// Compared inline (not via build-info) so the bundler drops the page from builds that have no poker route.
+const hasPokerRoute = import.meta.env.VITE_BUILD_MODE === 'WEB' || import.meta.env.VITE_BUILD_MODE === 'PLUGIN';
+
 // Core
 const DashboardComponent = config.modules.dashboards && React.lazy(() => import('./pages/dashboard/Dashboard'));
 const CalendarViewComponent = config.modules.calendar && React.lazy(() => import('./pages/calendar/CalendarPage'));
@@ -26,6 +29,9 @@ const NewWorklogReportComponent =
 const GeneralSettingsComponent = config.modules.generalSettings && React.lazy(() => import('./pages/settings/general/GeneralSettings'));
 const UserGroupsComponent = config.modules.userGroups && React.lazy(() => import('./components/user-group/UserGroup'));
 const GlobalSettings = config.modules.advancedSettings && React.lazy(() => import('./pages/settings/global/GlobalSettings'));
+
+// Activities
+const PokerComponent = hasPokerRoute && config.modules.planningPoker && React.lazy(() => import('./pages/poker/PokerPage'));
 
 // Other
 const FeedbackViewComponent = config.modules.contactUs && React.lazy(() => import('./pages/feedback/FeedbackPage'));
@@ -91,6 +97,10 @@ const sessionBasedRoute: RouteItem[] = [
     BulkImportIssueComponent && {
         path: '/import/issue',
         component: BulkImportIssueComponent,
+    },
+    PokerComponent && {
+        path: '/poker/*',
+        component: PokerComponent,
     },
     GeneralSettingsComponent && {
         path: '/settings/general',

@@ -1,7 +1,7 @@
 import type { ComponentType } from 'react';
 import { memo, useCallback, useEffect, useState } from 'react';
 
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router';
 
 import { getExtnLaunchUrl, validateIfWebApp } from '@/common/proxy';
 import { redirectToRoute } from '@/constants';
@@ -10,6 +10,8 @@ import registerServices from '@services/index-register';
 import { inject, registerDepnServices } from '@services/index.web';
 
 import { BlockLoading } from '@components';
+
+import { isPokerPath } from '@pages/poker/constants';
 
 import { getCurrentQueryParams } from '@utils';
 
@@ -72,15 +74,7 @@ async function initializeApp(location: ReturnType<typeof useLocation>, navigate:
         registerDepnServices(authType || '1');
     }
 
-    const result = await validateIfExtnReadyForUse(location.pathname, navigate);
-
-    if (result.extnUnavailable || !result.isExtnValid) {
-        if (location.pathname.includes('/poker')) {
-            registerDepnServices('2');
-        }
-    }
-
-    return result;
+    return validateIfExtnReadyForUse(location.pathname, navigate);
 }
 
 async function processJiraCloudOAuth(code: string, state: any): Promise<void> {
@@ -148,10 +142,8 @@ async function validateIfExtnReadyForUse(pathname: string, navigate: ReturnType<
         }
     }
 
-    if (!authType || (authType === '1' && !newState.authReady)) {
-        if (!pathname?.startsWith('/poker')) {
-            navigate('/integrate');
-        }
+    if ((!authType || (authType === '1' && !newState.authReady)) && !isPokerPath(pathname)) {
+        navigate('/integrate');
     }
 
     return newState;

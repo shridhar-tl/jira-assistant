@@ -4,7 +4,7 @@ import path from 'path';
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import { fluxoUiSource } from 'fluxo-ui/vite-plugin';
-import { defineConfig, build as viteBuild, type Plugin } from 'vite';
+import { defineConfig, loadEnv, build as viteBuild, type Plugin } from 'vite';
 import { createHtmlPlugin } from 'vite-plugin-html';
 import mkcert from 'vite-plugin-mkcert';
 import svgr from 'vite-plugin-svgr';
@@ -261,6 +261,49 @@ function extnExtrasBuilder(): Plugin {
     };
 }
 
+function resolveLocalPokerRoot(envPath: string | undefined): string | null {
+    const root = envPath ? path.resolve(__dirname, envPath) : null;
+    return root && fs.existsSync(path.join(root, 'src/embed/index.ts')) ? root : null;
+}
+
+// With a local poker checkout, `planning-poker/*` resolves to its source; otherwise to the built package in node_modules.
+function pokerSource(): Plugin {
+    return {
+        name: 'poker-source',
+        config(_userConfig, env) {
+            const fileEnv = loadEnv(env.mode, process.cwd(), ['POKER_']);
+            const root = resolveLocalPokerRoot(fileEnv['POKER_SOURCE_PATH'] || process.env['POKER_SOURCE_PATH']);
+            if (!root) {
+                return;
+            }
+
+            const localModules = path.resolve(__dirname, 'node_modules');
+            const shared = ['react', 'react-dom', 'react-router', 'classnames'].reduce<Record<string, string>>((map, dep) => {
+                const dir = path.resolve(localModules, dep);
+                if (fs.existsSync(dir)) map[dep] = dir;
+                return map;
+            }, {});
+
+            const pokerAliases = [
+                { find: /^planning-poker\/ui$/, replacement: path.resolve(root, 'src/embed/index.ts') },
+                { find: /^planning-poker\/standalone$/, replacement: path.resolve(root, 'src/standalone/index.ts') },
+                { find: /^planning-poker\/contracts$/, replacement: path.resolve(root, 'src/contracts/index.ts') },
+                { find: /^planning-poker\/engine$/, replacement: path.resolve(root, 'engine/index.ts') },
+                { find: /^planning-poker\/shared\/(.*)$/, replacement: `${path.resolve(root, 'shared')}/$1` },
+                { find: /^planning-poker\/styles\.css$/, replacement: path.resolve(root, 'src/styles/index.scss') },
+            ];
+
+            return {
+                resolve: {
+                    alias: [...pokerAliases, ...Object.entries(shared).map(([find, replacement]) => ({ find, replacement }))],
+                    dedupe: ['react', 'react-dom', 'react-router', 'fluxo-ui'],
+                },
+                server: { fs: { allow: [__dirname, root] } },
+            };
+        },
+    };
+}
+
 const isPluginBuild = buildMode === 'PLUGIN';
 const isAppBuild = buildMode === 'APP';
 
@@ -276,6 +319,7 @@ export default defineConfig(({ command }) => ({
             hosts: ['local.jiraassistant.com'],
         }),
         fluxoUiSource({ sourcePath: '../../fluxo-ui/src' }),
+        pokerSource(),
         buildVariantPlugin(),
         react(),
         tailwindcss(),
@@ -317,7 +361,7 @@ export default defineConfig(({ command }) => ({
                     if (
                         id.includes('node_modules/react-dom/') ||
                         id.includes('node_modules/react/') ||
-                        id.includes('node_modules/react-router-dom/')
+                        id.includes('node_modules/react-router/')
                     ) {
                         return 'vendor-react';
                     }
@@ -351,7 +395,7 @@ export default defineConfig(({ command }) => ({
         return {
             host: 'local.jiraassistant.com', // Set the dev server host
             port: 443,
-            open: 'https://local.jiraassistant.com',
+            open: buildMode === 'WEB' ? 'https://local.jiraassistant.com' : false,
             allowedHosts: ['local.jiraassistant.com'],
         };
     })(),

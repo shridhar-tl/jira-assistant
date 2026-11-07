@@ -7,7 +7,7 @@ const config = {
         calendar: true,
         importWorklog: true,
         importIssues: true,
-        planningPoker: !isPluginBuild,
+        planningPoker: true,
 
         worklogReport: true,
         pivotReport: true,

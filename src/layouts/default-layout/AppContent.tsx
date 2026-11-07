@@ -1,6 +1,6 @@
 import { Suspense, memo } from 'react';
 
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes } from 'react-router';
 
 import { DragDropProvider } from 'fluxo-ui';
 

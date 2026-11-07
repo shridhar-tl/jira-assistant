@@ -1,6 +1,6 @@
 import { memo } from 'react';
 
-import { NavLink } from 'react-router-dom';
+import { NavLink } from 'react-router';
 
 import { isAppBuild, isPluginBuild } from '@/constants/build-info';
 import { Icons } from '@/constants/icons';

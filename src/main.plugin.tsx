@@ -2,12 +2,13 @@ import { lazy, StrictMode, Suspense } from 'react';
 
 import { createRoot } from 'react-dom/client';
 
-import { HashRouter } from 'react-router-dom';
+import { HashRouter } from 'react-router';
 
 import { FullContext, view } from '@forge/bridge';
 
 import { BlockLoading } from '@components';
 
+import { applyPokerDeepLink } from './pages/poker/deep-link.plugin';
 import './index.css';
 import './index.plugin.css';
 import { syncJiraTheme } from './jcloud/jira-theme';
@@ -47,6 +48,7 @@ const fallback = <BlockLoading text="Loading... Please wait..." />;
     } else if (modalId === 'ja-dlg-wl-report-config') {
         render(<WLReportConfig jiraContext={context} />);
     } else if (moduleKey === 'jira-assistant-app') {
+        await applyPokerDeepLink();
         render(
             <HashRouter>
                 <App jiraContext={context} /> {/* It appears like jiraContext is not required here as props. need to validate. */}

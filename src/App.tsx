@@ -1,12 +1,12 @@
 import 'moment-timezone/builds/moment-timezone-with-data.min.js';
 
-import { ContextMenuManager, TooltipManager } from 'fluxo-ui';
+import { ContextMenuManager } from 'fluxo-ui';
 
 import { isPluginBuild } from '@/constants/build-info';
 
 import { inject } from '@services';
 
-import { ErrorBoundary } from '@components';
+import { ConfirmPopoverManager, ErrorBoundary, TooltipManager } from '@components';
 
 import { withAuthInfo } from './layouts/authorization';
 import { withInitParams } from './layouts/initialization';
@@ -33,6 +33,7 @@ function App({ authTypeChosen, switchUser, authInfo, initValue }: AppProps) {
             {!isPluginBuild && <UrlWatcher onChange={onRouteChanged} />}
             <ContextMenuManager />
             <TooltipManager />
+            <ConfirmPopoverManager />
             <RootContext
                 initValue={initValue}
                 authInfo={authInfo}

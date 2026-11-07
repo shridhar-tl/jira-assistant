@@ -1,3 +1,5 @@
+import { JAWebPokerLaunchUrl } from './urls';
+
 export interface MenuItem {
     name: string;
     id: string;
@@ -66,8 +68,9 @@ export const navigation: MenuSection[] = [
             {
                 name: 'Poker',
                 id: 'PLP',
-                url: '/poker',
+                url: JAWebPokerLaunchUrl,
                 icon: 'fa fa-gamepad',
+                external: true,
             },
         ],
     },

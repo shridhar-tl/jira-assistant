@@ -4,6 +4,8 @@
 interface ImportMetaEnv {
     readonly VITE_BUILD_MODE: string;
     readonly VITE_BUILD_DATE: string;
+    readonly VITE_POKER_API_URL?: string;
+    readonly VITE_POKER_WS_URL?: string;
 }
 
 interface ImportMeta {

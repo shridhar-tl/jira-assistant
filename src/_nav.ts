@@ -1,6 +1,7 @@
-import { getRouteUrl, isExtnBuild, isPluginBuild, isWebBuild } from './constants/build-info';
-import { JAWebRootUrl } from './constants/urls';
+import { isAppBuild, isExtnBuild } from './constants/build-info';
+import { JAWebPokerLaunchUrl } from './constants/urls';
 import config from './customize';
+
 export interface MenuItem {
     name: string;
     id: string;
@@ -63,7 +64,7 @@ const {
     advancedSettings,
 
     // Menu groups
-    activitiesGroup = calendar || importWorklog || importIssues || planningPoker,
+    activitiesGroup = calendar || importWorklog || importIssues || (planningPoker && !isAppBuild),
     reportsGroup = worklogReport || workloadHeatmap || timeInStatus || sayDoRatioReport || sprintReport || pivotReport || estimateVsActual,
     settingsGroup = userGroups || generalSettings || advancedSettings,
 } = config.modules as any;
@@ -109,13 +110,14 @@ const navigation: MenuSection[] = [
                     text: 'BETA',
                 },
             },
-            planningPoker && {
-                name: 'Poker',
-                id: 'PLP',
-                external: !isPluginBuild,
-                url: isExtnBuild ? `${JAWebRootUrl}/poker` : getRouteUrl(isWebBuild ? '/../poker' : '/poker'),
-                icon: 'fa fa-gamepad',
-            },
+            planningPoker &&
+                !isAppBuild && {
+                    name: 'Poker',
+                    id: 'PLP',
+                    external: isExtnBuild,
+                    url: isExtnBuild ? JAWebPokerLaunchUrl : '/poker',
+                    icon: 'fa fa-gamepad',
+                },
         ].filter(Boolean),
     },
     reportsGroup && {

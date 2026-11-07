@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 
 import { inject } from '@services';
 

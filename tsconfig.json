@@ -2,6 +2,13 @@
     "files": [],
     "references": [{ "path": "./tsconfig.app.json" }, { "path": "./tsconfig.node.json" }],
     "compilerOptions": {
+        "target": "ES2022",
+        "lib": ["ES2022"],
+        "module": "ESNext",
+        "moduleResolution": "bundler",
+        "esModuleInterop": true,
+        "skipLibCheck": true,
+        "strict": true,
         "baseUrl": ".",
         "paths": {
             "@/*": ["./src/*"],
@@ -28,7 +35,9 @@
             "@controls": ["./src/controls"],
             "@controls/*": ["./src/controls/*"],
             "@assets": ["./src/assets"],
-            "@assets/*": ["./src/assets/*"]
+            "@assets/*": ["./src/assets/*"],
+            "planning-poker/engine": ["../../poker/engine/index.ts"],
+            "planning-poker/shared/*": ["../../poker/shared/*"]
         }
     }
 }

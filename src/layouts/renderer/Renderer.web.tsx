@@ -1,6 +1,6 @@
 import { lazy } from 'react';
 
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes } from 'react-router';
 
 import type { RendererProps } from './types';
 
@@ -9,7 +9,7 @@ const AuthenticatePage = lazy(() => import('@pages/authenticate/AuthenticatePage
 const IntegratePage = lazy(() => import('@pages/integrate/IntegratePage'));
 const BasicAuthPage = lazy(() => import('@pages/authenticate/BasicAuthPage'));
 const OptionsPage = lazy(() => import('@pages/settings/global/GlobalSettings'));
-const PokerPage = lazy(() => import('@pages/poker/PokerPage'));
+const GuestPokerPage = lazy(() => import('@pages/poker/GuestPokerPage'));
 
 export default function Renderer({ initValue, authInfo, authTypeChosen, contextProps }: RendererProps) {
     const isExtnValid = initValue?.isExtnValid ?? false;
@@ -34,7 +34,7 @@ export default function Renderer({ initValue, authInfo, authTypeChosen, contextP
             <Route path="/integrate/basic" element={<BasicAuthPage setAuthType={authTypeChosen} />} />
             <Route path="/integrate/basic/:store" element={<BasicAuthPage setAuthType={authTypeChosen} />} />
             <Route path="/options" element={<OptionsPage />} />
-            <Route path="/poker/*" element={<PokerPage hasExtensionSupport={isExtnValid} />} />
+            {!userId && <Route path="/poker/*" element={<GuestPokerPage />} />}
             {!!authType && !!userId && <Route path="/:userId/*" element={<DefaultLayout key={userId} />} />}
         </Routes>
     );

@@ -50,7 +50,19 @@
             "@controls": ["./src/controls"],
             "@controls/*": ["./src/controls/*"],
             "@assets": ["./src/assets"],
-            "@assets/*": ["./src/assets/*"]
+            "@assets/*": ["./src/assets/*"],
+            "planning-poker/ui": ["../../poker/src/embed/index.ts"],
+            "planning-poker/standalone": ["../../poker/src/standalone/index.ts"],
+            "planning-poker/contracts": ["../../poker/src/contracts/index.ts"],
+            "planning-poker/engine": ["../../poker/engine/index.ts"],
+            "planning-poker/shared/*": ["../../poker/shared/*"],
+            "react": ["./node_modules/@types/react"],
+            "react/*": ["./node_modules/@types/react/*"],
+            "react-dom": ["./node_modules/@types/react-dom"],
+            "react-dom/*": ["./node_modules/@types/react-dom/*"],
+            "react-router": ["./node_modules/react-router"],
+            "fluxo-ui": ["./node_modules/fluxo-ui"],
+            "fluxo-ui/*": ["./node_modules/fluxo-ui/*"]
         }
     },
     "include": ["src", "src/vite-env.d.ts"]

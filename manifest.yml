@@ -109,7 +109,142 @@ permissions:
 app:
   id: ari:cloud:ecosystem::app/3864d3bc-aad3-4650-ac35-e15af61fd92d
   runtime:
-    name: nodejs22.x
+    name: nodejs24.x
+  storage:
+    entities:
+      - name: poker-room
+        attributes:
+          roomId:
+            type: string
+          roomName:
+            type: string
+          scoreType:
+            type: integer
+          moderatorId:
+            type: string
+          moderatorKey:
+            type: string
+          currentIssueId:
+            type: string
+          issues:
+            type: any
+          settings:
+            type: any
+          access:
+            type: any
+          listed:
+            type: string
+          memberCount:
+            type: integer
+          created:
+            type: string
+          lastActivity:
+            type: float
+          lastActivityIso:
+            type: string
+          refreshedMs:
+            type: float
+          ver:
+            type: integer
+        indexes:
+          - name: by-listed
+            partition:
+              - listed
+            range:
+              - lastActivity
+      - name: poker-counter
+        attributes:
+          roomId:
+            type: string
+          revision:
+            type: integer
+      - name: poker-participant
+        attributes:
+          kind:
+            type: string
+          roomId:
+            type: string
+          memberKey:
+            type: string
+          ownerKey:
+            type: string
+          status:
+            type: string
+          roomGroup:
+            type: string
+          name:
+            type: string
+          email:
+            type: string
+          avatarId:
+            type: any
+          avatarUrl:
+            type: string
+          createdAt:
+            type: string
+          createdMs:
+            type: float
+          sid:
+            type: string
+          role:
+            type: string
+          joinedAt:
+            type: string
+          lastSeenAt:
+            type: string
+          lastSeenMs:
+            type: float
+          votedIssueIds:
+            type: any
+          requestId:
+            type: string
+          reason:
+            type: string
+          invitedBy:
+            type: string
+          members:
+            type: any
+          ver:
+            type: integer
+        indexes:
+          - name: by-room-group
+            partition:
+              - roomGroup
+            range:
+              - createdMs
+          - name: by-person
+            partition:
+              - memberKey
+            range:
+              - createdMs
+      - name: poker-vote
+        attributes:
+          kind:
+            type: string
+          roomId:
+            type: string
+          issueId:
+            type: string
+          sid:
+            type: string
+          value:
+            type: any
+          reveal:
+            type: boolean
+          createdAt:
+            type: string
+          revealedAt:
+            type: string
+          average:
+            type: float
+          maxVote:
+            type: float
+          finalScore:
+            type: any
+          syncedScore:
+            type: any
+          values:
+            type: any
 remotes:
   - key: mso-account
     baseUrl: https://login.microsoftonline.com

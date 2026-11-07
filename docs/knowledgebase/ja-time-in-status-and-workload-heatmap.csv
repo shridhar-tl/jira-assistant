@@ -1,0 +1,139 @@
+title,content
+"Time in Status report in Jira Assistant","The Time in Status report in Jira Assistant (JA) shows how long issues spend in each Jira status, highlights the bottleneck status, and reports lead time and cycle time per issue and per group.
+Available as: report page (menu Reports > Time in Status, URL path /reports/time-in-status, marked NEW), dashboard gadget 'Time in Status' (Add gadget in any JA dashboard), and Jira Cloud dashboard widget 'Time in Status' from the JA Forge app.
+Two views: Bottlenecks (per status statistics) and Issues (per issue status timeline). Data comes from the status change history (changelog) of every issue."
+"Status Wise Time Spent gadget replaced by Time in Status","In Jira Assistant (JA) the older 'Status Wise Time Spent' gadget is replaced by the 'Time in Status' gadget.
+Existing dashboards keep working: the gadget is upgraded in place and its saved JQL and sort order are migrated. Migrated gadgets open in the Issues view with period 'All time' and all columns shown, matching the old behaviour.
+New capabilities over the old gadget: Bottlenecks view, lead time, cycle time, grouping, period filter, working-hours-only calculation, status timeline, user group scope and local caching of status history."
+"Configuring issues for the Time in Status report","Open settings using the settings (cogs) icon in the Jira Assistant (JA) Time in Status report header. Section 'Data source', option 'Issues to include':
+Custom JQL (default): JQL is mandatory. All issues matching the JQL and the selected period are included. Example: project = ABC AND issuetype in (Story, Bug). ORDER BY in the JQL is ignored.
+User groups: issues assigned to members of the chosen user groups are included. An optional 'Additional JQL filter' narrows them further, e.g. project in (ABC, XYZ).
+Users and groups are chosen with the users icon in the report header (or 'Manage' button in Jira Cloud widget settings). When none are chosen, the user groups saved under Settings > User Groups are used.
+Message 'Provide the JQL to select the issues to be included in the report.' means Custom JQL mode is selected with an empty JQL."
+"Period / date range in Time in Status report","The period selector is in the header of the Jira Assistant (JA) Time in Status report. Presets: Last 30 days, Last 90 days (default), Last 6 months, Last 12 months, This year, All time. A custom from-to date range can also be picked.
+Included issues: issues that were open at any time within the period, i.e. created on or before the period end AND (not in a Done category status, OR resolved on or after the period start, OR in a Done status without resolution and updated on or after the period start).
+Presets are relative and move with the current date each time the report is opened. 'All time' applies no date restriction.
+Durations are not clipped to the period: the full history of each included issue is measured."
+"Bottlenecks view in Time in Status report","The Bottlenecks view of the Jira Assistant (JA) Time in Status report has one row per status with columns: Status, Category (To Do / In Progress / Done), Currently in (issues currently in that status), Issues (issues that spent time in that status), Average time, Median, Max (longest time by a single issue), Total.
+Average, median, max and total are computed over the issues that visited the status. Time from repeated visits to the same status by an issue is added together.
+The bottleneck is the In Progress category status with the highest average time; it is highlighted in the table and shown in the Bottleneck summary card. To Do and Done statuses are never marked as bottleneck.
+Clicking a status row opens a popup listing its issues sorted by time spent (longest first), tagged 'Currently here' or 'Partial history' where applicable."
+"Grouping in Time in Status report","In the Bottlenecks view of the Jira Assistant (JA) Time in Status report, use the 'Group by' dropdown to split the status statistics into collapsible groups.
+Options: No grouping (default), Project, Issue type, Assignee, User group, plus any native or custom Jira field (single or multi value, select, user, labels, components, versions, number etc.). Date, datetime, time tracking, attachment, worklog, comment, votes, watches, summary and description fields are not offered.
+Issues with multiple values (e.g. labels, components) or users in multiple user groups are counted in each matching group.
+Issues without a value go to '(None)'. Unassigned issues show as 'Unassigned' when grouped by Assignee. Assignees not in any chosen user group go to 'Other assignees' when grouped by User group."
+"Summary cards in Time in Status report","The Jira Assistant (JA) Time in Status report shows summary cards above both views:
+Issues: total issues, with counts in progress and resolved.
+Lead time (median): median time from creation to resolution of resolved issues, with average.
+Cycle time (median): median time from first move into an In Progress category status until resolution, with average.
+Bottleneck: In Progress status with the highest average time per issue. Shows 'No in progress statuses' when none exists. Lead/cycle time cards show 'No resolved issues' when no issue is resolved."
+"Issues view in Time in Status report","The Issues view of the Jira Assistant (JA) Time in Status report lists one row per issue with issue key and summary plus selectable columns.
+Available columns: Project, Issue type, Status, Assignee, Reporter, Created, Parent, Epic, Story points, Original estimate, Σ Original estimate, Remaining estimate, Σ Remaining estimate, Lead time, Cycle time, In current status, Status timeline, Time per status (one column per status).
+Default columns: Status, Assignee, Lead time, Cycle time, In current status, Status timeline, Time per status.
+Tools: 'Search issues' text search, filter by current status, 'Choose columns', click column header to sort, timeline scale Proportional or Calendar. Column selection, sort and timeline scale are saved with the report settings.
+Clicking an issue key opens it in Jira; worklog can be added from the issue key menu. Epic and Story points columns need the Epic and Story point fields mapped in JA settings."
+"Status timeline in Time in Status report","The Status timeline column in the Jira Assistant (JA) Time in Status Issues view draws each issue's status history as a coloured bar, one segment per status visit; hover a segment to see status, start, end and duration.
+Scale 'Proportional': each bar fills the full width, segment widths are proportional to time in each status of that issue.
+Scale 'Calendar': all bars share a common time axis from the oldest issue creation date to now, so issues can be compared by date.
+Colours follow status category: grey shades for To Do, distinct colours (blue, orange, teal, amber, pink, purple, red) for In Progress, green shades for Done. A legend below the table maps colours to statuses."
+"How time in status, lead time and cycle time are calculated in Jira Assistant","Calculation rules of the Jira Assistant (JA) Time in Status report:
+Time in a status: from the moment the issue entered the status until it left, using the status changes in the issue history, starting at the issue created date. The initial status is the 'from' status of the first transition (or the current status if never transitioned). Repeated visits are summed.
+Current status: counted until now for unresolved issues. For issues in a Done category status, time stops at the resolution date.
+Lead time: created date to resolution date. Only for resolved issues.
+Cycle time: first entry into an In Progress category status to resolution date. Only for resolved issues that went through an In Progress status; empty otherwise.
+WIP age (shown in the Cycle time column for unresolved issues): first entry into In Progress until now.
+In current status: time since the issue entered its current status; empty for resolved issues.
+Resolved date: Jira resolution date; if a Done status issue has no resolution date, the last move into a Done status is used.
+Statuses are classified by Jira status category (To Do, In Progress, Done), so the report works across different workflows. Statuses are ordered by category then by typical workflow position. Statuses deleted from Jira still appear by name from history."
+"Count only working hours in Time in Status report","Setting 'Count only working hours' (section 'Time calculation' in Jira Assistant (JA) Time in Status settings) excludes non-working days and hours from every duration (time in status, lead time, cycle time, WIP age).
+Working days come from Settings > General > Working Days. Working hours come from Settings > General > Working Hours (Start and End, 24-hour). Invalid or missing hours fall back to 09:00 to 17:00. Missing working days fall back to the default work week.
+When enabled, 'd' (days) in durations means working days of the configured length (e.g. 8h), not 24h. A briefcase icon (tooltip 'Only working hours are counted') in the report toolbar indicates working-hours mode.
+Working time is of the logged-in JA user and applied in the browser's local time for all issues. Holidays and leaves are not considered. Default: off (calendar time, 1d = 24h)."
+"Duration format in Time in Status report","Durations in the Jira Assistant (JA) Time in Status report are shown as: '< 1m', 'Nm' (minutes), 'Nh Nm' (under one day), 'Nd Nh' (one day or more), and only 'Nd' when 100 days or more.
+A day is 24 hours by default, or one working day length when 'Count only working hours' is enabled.
+In exported data, durations are written as decimal days with 2 decimals."
+"Status history caching in Time in Status report","Jira Assistant (JA) caches the status history of each issue in the browser's local database (IndexedDB) on the current device, per JA user.
+A cached history is reused only when the issue's 'updated' timestamp in Jira is unchanged; updated issues are fetched again. The toolbar shows 'X of Y from cache' when the cache was used.
+Cache is not shared across devices or browsers. It is removed when the Jira instance/user is removed from JA. Issues with partial history are not cached.
+Use the refresh icon in the report header to reload; only changed issues are fetched again."
+"How Time in Status fetches issue history from Jira Cloud","On Jira Cloud, Jira Assistant (JA) Time in Status first fetches issue history embedded in the search results (100 issues per request). For issues with more history than Jira embeds, it uses the Jira Cloud bulk changelog API, needing only a few calls for the whole report.
+If the bulk changelog API is unavailable for the site, history of those issues is fetched one issue at a time (6 in parallel) and a warning is shown: 'The bulk changelog API of Jira Cloud is not available for this site. History of the issues with many changes was fetched one issue at a time.' The results are still complete.
+Custom domain Jira Cloud sites are detected as Cloud using the Jira server info deployment type."
+"Time in Status report on Jira Data Center / Server","Jira Data Center and Server have no bulk changelog API, so Jira Assistant (JA) Time in Status may fetch history issue by issue for issues whose full history is not embedded in search results, which is slow for large queries.
+Setting 'Confirm before fetching history of more than' (section 'Jira Data Center', shown only for Data Center/Server): default 200 issues, allowed 1 to 5000. Counted only for issues not already in the local cache.
+When exceeded, the report shows a 'Large query' note with the matching issue count and cached count and a button 'Fetch N issues anyway'. Narrow the JQL or period, or click the button to proceed. After the first run, later runs are fast because unchanged issues come from cache."
+"Partial history warning in Time in Status report","Warning 'The complete status history could not be fetched for the following issues. Their numbers may be based on partial history:' in Jira Assistant (JA) Time in Status lists issue keys whose full status history could not be fetched.
+Causes: history request failed for that issue, issue moved or deleted after the search, missing permission to view the issue history, or network/rate limit errors.
+Effect: durations of those issues may be inaccurate. Such issues show a warning icon in the Issues view and a 'Partial history' tag in status issue lists. They are not cached, so the next refresh retries them. The warning can be dismissed with its close button."
+"Settings persistence in Time in Status and Workload Heatmap","In Jira Assistant (JA), Time in Status and Workload Heatmap settings are saved automatically on every change.
+Report page (menu Reports): saved per JA user. Users/groups picked with the users icon on the report page are used for the current session only and are not saved; next time the saved user groups from Settings > User Groups are used. Manage permanent groups under Settings > User Groups.
+Dashboard gadget: saved with that gadget instance, including chosen users/groups, so several gadgets with different settings can be on one dashboard.
+Jira Cloud dashboard widget: saved in the widget configuration via the widget's Edit option."
+"Time in Status Jira Cloud dashboard widget","The Jira Assistant (JA) Forge app adds a 'Time in Status' widget to Jira Cloud dashboards: 'Shows how long issues spend in each status and highlights the bottleneck in your workflow'.
+Configure via the widget Edit option using the same settings form (data source, JQL, user groups via 'Manage', working hours). Saving fails with an error if Custom JQL is selected without JQL.
+The widget shows only the Bottlenecks view with summary cards, group by and a period selector. The Issues view is available in the JA report page and JA dashboard gadget."
+"Exporting Time in Status report","The Jira Assistant (JA) Time in Status report and gadget can be exported from the menu (three lines) icon in the report/gadget header: Export to CSV, Export to Excel, Export to PDF. Bottlenecks table is exported as sheet 'Time in status' and the Issues table as sheet 'Time in status - issues'. Durations are exported as decimal days."
+"Troubleshooting Time in Status report","Common Jira Assistant (JA) Time in Status issues:
+'No issues matched the configured scope. Change the JQL, user groups or the period in settings.': JQL returns nothing for the period, chosen groups have no members, or group members have no assigned issues. Try period 'All time' and verify the JQL in Jira.
+'Unable to fetch the issues and their history from Jira. Verify the configured JQL and try again.': invalid JQL, no permission, or network error. Click Retry.
+Cycle time empty: issue never entered an In Progress category status or is not resolved.
+Lead time empty: issue is not resolved.
+Unexpected large values: issue reopened or long-lived; check status timeline. Enable 'Count only working hours' to exclude nights and weekends.
+A status shows in wrong category: category comes from the Jira status category set by the Jira admin.
+Slow on Data Center: narrow JQL/period; subsequent runs use cache.
+Numbers off for some issues: check partial history warning."
+"Workload Heatmap report in Jira Assistant","The Workload Heatmap (workload / capacity heatmap) in Jira Assistant (JA) shows how much estimated work is planned for each team member on every day against their daily capacity, so overloaded and free people stand out.
+Rows: team members grouped by user group. Columns: days of the selected period. Each cell shows load % of capacity and planned hours, coloured by load level.
+Available as: report page (menu Reports > Workload Heatmap, URL path /reports/workload-heatmap, marked NEW), dashboard gadget 'Workload Heatmap', and Jira Cloud dashboard widget 'Workload Heatmap' from the JA Forge app.
+It plans future work from estimates and dates; it does not use logged worklogs. For logged time use the Worklog Report. No Jira Premium / Advanced Roadmaps needed; works across all projects."
+"Choosing issues and people for Workload Heatmap","Workload Heatmap settings (cogs icon) in Jira Assistant (JA), section 'Data source', option 'Issues to include':
+User groups (default): unresolved issues (resolution = Unresolved AND statusCategory != Done) assigned to members of the chosen user groups. Optional 'Additional JQL filter', e.g. project in (ABC, XYZ). Members without issues still show with 0%.
+Custom JQL: all assigned issues matching the JQL (no automatic unresolved filter; add resolution = Unresolved yourself). Assignees are grouped by the chosen user groups; others are listed under 'Other assignees'. Only people with matching issues are shown.
+Choose users/groups with the users icon in the header; when none are chosen the user groups from Settings > User Groups are used. Unassigned issues are never included.
+Message 'None of the selected user groups have members...' means groups are empty; add members under Settings > User Groups."
+"Period and navigation in Workload Heatmap","Workload Heatmap 'Date range' setting in Jira Assistant (JA), section 'Period': Week, 2 Weeks (default) or Sprint.
+Week / 2 Weeks start on the configured start of week and begin with the current week. Use the next arrow to move to future periods and the previous arrow to come back; past periods are not available. Clicking the period label returns to the current period.
+Sprint: select a 'Sprint board'; the board's active sprint dates are shown with the sprint name. If the board has no active sprint, the current week is shown with message 'The selected board has no active sprint. Showing the current week instead.' Sprint mode requires a board."
+"How Workload Heatmap spreads estimates across days","Workload Heatmap planning rules in Jira Assistant (JA):
+Estimate used: Remaining estimate; Original estimate when remaining is not set. Issues with zero remaining are skipped. Each issue's own estimate is used (not Σ/aggregate of subtasks).
+Start date and due date set: estimate spread evenly across working days from start to due date. If start is after due, all work is placed on the due date.
+Only due date: work planned backwards from due date for the default lead time (working days). If lead time is 0, days = estimate ÷ daily capacity, rounded up (min 1).
+Only start date: work planned forward from start date for the same number of days.
+Neither date: issue is 'unscheduled' and excluded from hours. No estimate: issue is 'unestimated' and excluded from hours.
+Work is planned only from today onwards: if the span started in the past, the full remaining estimate is spread from today to the due date. Overdue issues (due date before today) have all remaining work placed on today (or next working day) and are marked overdue.
+Only work-week days receive work. Past days show no load."
+"Capacity and load levels in Workload Heatmap","Daily capacity in Jira Assistant (JA) Workload Heatmap = 'Max hours' from Settings > General > Worklog > Worklog Hours Range (default 8h) per person per working day. Non-working days and past days have zero capacity. Capacity is the same for every person; holidays, leaves and part-time capacity are not considered.
+Load % = planned hours ÷ capacity. Colours (legend below grid):
+No load: 0h planned.
+Under 80%: under-utilised.
+80% - 100%: good.
+Over capacity: above 100% up to 150%.
+Above 150%: critical (also when work lands on a day with zero capacity).
+Legend shows 'Daily capacity: Nh per person'."
+"Reading the Workload Heatmap grid","Jira Assistant (JA) Workload Heatmap grid layout:
+'Team member' column with avatar and name, grouped under user group header rows that show group totals per day. Last column shows each row's total load % for the period. 'Team total' row at the bottom sums all people (a person in several groups is counted once in Team total).
+Cell: load % and planned hours; empty working days show 0%; non-working days are shaded; today is highlighted; past days are dimmed.
+Hover or click a cell: popup lists issues planned for that person that day with hours for that day, planned span (start - end), 'Overdue' tag, and note 'span estimated from due date' when dates were derived from lead time. Hover summary cells to see 'X planned of Y capacity'.
+Badges '+N unestimated' and '+N unscheduled' next to a person open lists of their issues excluded from hours.
+Export: menu (three lines) icon in the header > Export to CSV / Excel / PDF."
+"Unestimated and unscheduled issues in Workload Heatmap","In Jira Assistant (JA) Workload Heatmap:
+'+N unestimated': assigned issues without original or remaining estimate. They are excluded from hour totals. Add an original or remaining estimate in Jira to include them.
+'+N unscheduled': issues with an estimate but neither due date nor start date, so they cannot be placed on the calendar and are excluded from hour totals. Set a due date (or start date) to include them.
+Click the badge to see the issue list with links to Jira."
+"Start date field and lead time in Workload Heatmap","Section 'Planning' of Jira Assistant (JA) Workload Heatmap settings:
+'Start date field': any Jira custom date or datetime field. When not selected (Auto detect), the custom field named 'Start date' is used if it exists; otherwise only due date is used.
+'Default lead time (working days)': 0 to 90, default 0. Used for issues having only a due date (or only a start date). 0 means derive days from estimate ÷ daily capacity.
+'Work week': days of week that receive planned work. Defaults to Settings > General > Working Days; can be changed per report/gadget."
+"Filters in Workload Heatmap","Section 'Filters' of Jira Assistant (JA) Workload Heatmap settings: 'Projects' (multi select, default all), 'Issue types' (multi select, default all), 'Include subtasks' (default on).
+Filters apply instantly without refetching from Jira. Active filters are summarised above the grid (e.g. 'Projects: ABC', 'Subtasks excluded') with a 'Clear filters' button.
+If a parent and its subtasks both carry their own estimates, turn off 'Include subtasks' or filter issue types to avoid counting the same work twice."
+"Workload Heatmap Jira Cloud dashboard widget","The Jira Assistant (JA) Forge app adds a 'Workload Heatmap' widget to Jira Cloud dashboards: 'Shows the estimated work planned for each team member per day against their daily capacity'.
+Configure via the widget Edit option with the same settings form (data source, user groups via 'Manage', JQL, filters, period, planning). The widget shows the heatmap with period navigation."
+"Troubleshooting Workload Heatmap","Common Jira Assistant (JA) Workload Heatmap issues:
+Person shows 0% though they have work: issues have no estimate (see unestimated badge), no due/start date (unscheduled badge), are resolved or in a Done status, fall outside the period, or are excluded by Projects/Issue types/subtask filters or the additional JQL.
+'No unresolved issues assigned to the selected people were found.': no open issues for chosen people; check groups and JQL.
+'Provide the JQL to select the issues to be included in the heatmap.': Custom JQL selected with empty JQL.
+'Select the board whose active sprint should be used as the date range.': Sprint range without a board.
+Load looks too high: remaining estimates outdated, overdue work piled on today, parent and subtask both estimated, or short lead time. Update estimates/due dates in Jira or set a default lead time.
+Capacity wrong: change Max hours under Settings > General > Worklog.
+Start date not used: select the correct field in 'Start date field'."

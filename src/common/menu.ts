@@ -1,6 +1,8 @@
 import { JAWebRootUrl } from '../constants/urls';
 import injectServices, { inject } from '../services/index-menu';
 
+const absoluteUrlPattern = /^https?:\/\//i;
+
 interface MenuConfig {
     action?: number;
     menus?: Array<{ name: string; url: string }>;
@@ -45,7 +47,7 @@ interface MenuConfig {
         }
 
         function openUrl(url: string): void {
-            url = `${indexPageUrl}${switched ? '' : '#'}${url}`;
+            url = absoluteUrlPattern.test(url) ? url : `${indexPageUrl}${switched ? '' : '#'}${url}`;
             const handleError = () => false;
 
             hasTabAccess()

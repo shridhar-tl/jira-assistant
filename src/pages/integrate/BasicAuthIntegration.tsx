@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 
-import { useParams } from 'react-router-dom';
+import { useParams } from 'react-router';
 
 import { executeService } from '@/common/proxy';
 import { isExtnBuild, redirectToRoute } from '@/constants/build-info';

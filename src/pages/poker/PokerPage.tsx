@@ -1,34 +1,50 @@
-import { useMemo } from 'react';
+import { useEffect, useState } from 'react';
 
-import { useParams } from 'react-router-dom';
+import { useParams } from 'react-router';
 
-import { PokerAppUrl } from '@constants/urls';
+import type { ServiceContainer } from 'fluxo-ui/services';
 
-import PokerBridge from './PokerBridge';
+import { BlockLoading } from '@components';
 
-const iframeAllow = 'clipboard-write; clipboard-read';
+import { pokerBasePath } from './constants';
+import createPokerHostContainer from './create-container';
+import PokerView from './PokerView';
 
-interface PokerPageProps {
-    hasExtensionSupport?: boolean;
-}
+const startFailureMessage = 'Planning poker could not start. Please reload the page.';
 
-export default function PokerPage({ hasExtensionSupport = false }: PokerPageProps) {
-    const { roomId } = useParams();
+export default function PokerPage() {
+    const { userId } = useParams();
+    const [container, setContainer] = useState<ServiceContainer | null>(null);
+    const [failure, setFailure] = useState<string | null>(null);
 
-    const src = useMemo(() => {
-        const base = `${PokerAppUrl}${roomId ? `/room/${roomId}` : ''}`;
-        return `${base}?host=ja&jira=${hasExtensionSupport ? '1' : '0'}`;
-    }, [roomId, hasExtensionSupport]);
+    useEffect(() => {
+        let active = true;
 
-    return (
-        <div className="poker-host flex h-full min-h-screen w-full flex-col">
-            {hasExtensionSupport && <PokerBridge />}
-            <iframe
-                src={src}
-                title="Planning Poker"
-                allow={iframeAllow}
-                className="h-full min-h-screen w-full flex-1 border-0"
-            />
-        </div>
-    );
+        createPokerHostContainer()
+            .then((created) => {
+                if (active) {
+                    setContainer(created);
+                }
+            })
+            .catch((error) => {
+                console.error('Planning poker could not start', error);
+                if (active) {
+                    setFailure(startFailureMessage);
+                }
+            });
+
+        return () => {
+            active = false;
+        };
+    }, []);
+
+    if (failure) {
+        return <div className="p-6 text-(--text-primary)">{failure}</div>;
+    }
+
+    if (container === null) {
+        return <BlockLoading text="Loading planning poker..." />;
+    }
+
+    return <PokerView container={container} basePath={`/${userId}${pokerBasePath}`} className="h-[calc(100vh-3rem)]" />;
 }

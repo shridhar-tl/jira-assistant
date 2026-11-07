@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router';
 
 import { isExtnBuild, isWebBuild } from '@/constants/build-info';
 import { JAWebLaunchUrl } from '@/constants/urls';

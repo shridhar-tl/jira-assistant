@@ -1,7 +1,7 @@
 import type { ComponentType } from 'react';
 import { memo, useCallback, useEffect, useState } from 'react';
 
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router';
 
 import { isWebBuild } from '@/constants/build-info';
 import { clearInstances } from '@/services/injector';
@@ -10,9 +10,10 @@ import { inject } from '@services';
 
 import { BlockLoading } from '@components/Loading';
 
+import { isPokerPath } from '@pages/poker/constants';
+
 import { UnauthorizedPage } from '../../pages/p401';
 
-const bgAuthRoutes = ['poker'];
 const nonAuthPages = ['integrate', 'options'];
 
 interface AuthInfo {
@@ -49,23 +50,24 @@ export function withAuthInfo<P extends WithAuthInfoProps>(Component: ComponentTy
         );
 
         const userId = getUserIdFromPathOrSession(pathname);
-        const bgAuth = needsBackgroundAuth(pathname);
-        const shouldAuth = !bgAuth && webAuthTypeReady() && (!!userId || needsAuth(pathname));
+        const shouldAuth = webAuthTypeReady() && (!!userId || needsAuth(pathname));
+        // A shared poker link opens as a guest when Jira Assistant is not integrated.
+        const allowsGuest = isWebBuild && isPokerPath(pathname);
 
         const tryAuthorize = useCallback(() => {
-            if (shouldAuth || bgAuth) {
-                authenticateUser(userId, authInfo, pathname, !bgAuth && navigate).then((result) => {
+            if (shouldAuth) {
+                authenticateUser(userId, authInfo, pathname, navigate).then((result) => {
                     if (result !== undefined) {
                         setAuthInfo(result);
                         console.log('JA: Auth result:', result);
 
-                        if (!bgAuth && result.needIntegration && !pathname.startsWith('/integrate')) {
+                        if (result.needIntegration && !allowsGuest && !pathname.startsWith('/integrate')) {
                             navigate('/integrate');
                         }
                     }
                 });
             }
-        }, [userId, shouldAuth, bgAuth, authInfo, pathname, navigate]);
+        }, [userId, shouldAuth, allowsGuest, authInfo, pathname, navigate]);
 
         useEffect(tryAuthorize, [userId, shouldAuth]);
 
@@ -78,7 +80,7 @@ export function withAuthInfo<P extends WithAuthInfoProps>(Component: ComponentTy
         if (shouldAuth) {
             if (!authInfo) {
                 return <BlockLoading text="Authorizing... Please wait..." />;
-            } else if (!authInfo.authenticated && !authInfo.needIntegration) {
+            } else if (!authInfo.authenticated && !authInfo.needIntegration && !allowsGuest) {
                 return (
                     <UnauthorizedPage
                         jiraUrl={authInfo.jiraUrl}
@@ -101,7 +103,7 @@ async function authenticateUser(
     userIdFromPath: number | null,
     authInfo: AuthInfo | false,
     pathname: string,
-    navigate: ReturnType<typeof useNavigate> | false,
+    navigate: ReturnType<typeof useNavigate>,
 ): Promise<AuthInfo | undefined> {
     const { $auth, $session, $settings } = inject('AuthService', 'SessionService', 'SettingsService');
 
@@ -127,12 +129,10 @@ async function authenticateUser(
             console.log('JA: User is authenticated');
             const userId = $session.userId || null;
 
-            if (navigate) {
-                if (!userIdFromPath && userId) {
-                    navigate(`/${userId}${pathname}`);
-                } else if (userIdFromPath && userId) {
-                    await $settings.set('CurrentUserId', userId);
-                }
+            if (!userIdFromPath && userId) {
+                navigate(`/${userId}${pathname}`);
+            } else if (userIdFromPath && userId) {
+                await $settings.set('CurrentUserId', userId);
             }
 
             console.log('JA: Authenticated jira url:', jiraUrl, userId);
@@ -171,10 +171,6 @@ function webAuthTypeReady(): boolean {
 
 function needsAuth(pathname: string): boolean {
     return !isInList(pathname, nonAuthPages);
-}
-
-function needsBackgroundAuth(pathname: string): boolean {
-    return isInList(pathname, bgAuthRoutes);
 }
 
 function isInList(pathname: string, list: string[]): boolean {

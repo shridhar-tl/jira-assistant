@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 
 import defaultNavigation, { getDashboardMenu, type MenuItem, type MenuSection } from '@/_nav';
 import { SnackbarManager } from '@/components';

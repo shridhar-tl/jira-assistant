@@ -34,6 +34,7 @@ export const ATLASSIAN_MARKETPLACE_URL = 'https://marketplace.atlassian.com/apps
 export const JAWebRootUrl = 'https://app.jiraassistant.com';
 
 export const JAWebLaunchUrl = `${JAWebRootUrl}?authType=1`;
+export const JAWebPokerLaunchUrl = `${JAWebRootUrl}/poker?authType=1`;
 
 export const JAApiBasePath = `${WebSiteUrl}/api`;
 
