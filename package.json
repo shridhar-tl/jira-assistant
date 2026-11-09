@@ -52,7 +52,7 @@
         "espree": "^11.2.0",
         "exceljs": "^4.4.0",
         "firebase": "^13.2.0",
-        "fluxo-ui": "^0.5.3",
+        "fluxo-ui": "^0.5.4",
         "js-sql-parser": "^1.6.0",
         "moment": "^2.31.0",
         "moment-timezone": "^0.6.6",
