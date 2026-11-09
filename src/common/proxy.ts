@@ -14,6 +14,9 @@ const extensionId = {
     opera: 'eldbfdnolaccbfiffkefkahicdpjjgfk',
 } as const;
 
+// The extension opens the web app with ?authType=1 so the page uses the extension's Jira integration.
+export const isExtnLaunch = isWebBuild && new URLSearchParams(window.location.search).get('authType') === '1';
+
 const extnId = extensionId[BROWSER_NAME as keyof typeof extensionId];
 const chr = typeof chrome !== 'undefined' ? chrome : typeof browser !== 'undefined' ? browser : {};
 

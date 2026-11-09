@@ -1,6 +1,6 @@
 import { FF_STORE_URL } from '../constants/urls';
 
-import BrowserBase from './browser-base';
+import BrowserBase, { type PermissionObj } from './browser-base';
 
 declare const chrome: any;
 declare const browser: any;
@@ -38,6 +38,22 @@ export default class FirefoxBrowserService extends BrowserBase {
                 }
             });
         });
+    }
+
+    hasPermission(permissions: PermissionObj): Promise<boolean> {
+        return this.browser.permissions.contains(permissions);
+    }
+
+    async requestPermission(permissions: string[] | null, ...urls: string[]): Promise<boolean> {
+        const pObj = this.getPermissionObj(permissions ?? undefined, ...urls);
+
+        // Firefox allows permissions.request only synchronously within a user input handler.
+        // Hence it is invoked before any await and falls back to contains when not triggered by user.
+        try {
+            return await this.browser.permissions.request(pObj);
+        } catch {
+            return this.hasPermission(pObj);
+        }
     }
 
     async registerContentScripts(id: string, js: string[], matches: string[]): Promise<void> {

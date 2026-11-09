@@ -7,7 +7,7 @@ function getOriginFromUrl(url: string): string {
     }
 }
 
-interface PermissionObj {
+export interface PermissionObj {
     permissions: string[];
     origins?: string[];
 }

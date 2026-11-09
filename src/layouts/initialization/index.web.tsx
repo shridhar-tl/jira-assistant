@@ -3,7 +3,7 @@ import { memo, useCallback, useEffect, useState } from 'react';
 
 import { useLocation, useNavigate } from 'react-router';
 
-import { getExtnLaunchUrl, validateIfWebApp } from '@/common/proxy';
+import { getExtnLaunchUrl, isExtnLaunch, validateIfWebApp } from '@/common/proxy';
 import { redirectToRoute } from '@/constants';
 
 import registerServices from '@services/index-register';
@@ -70,7 +70,7 @@ async function initializeApp(location: ReturnType<typeof useLocation>, navigate:
         await processOutlookOAuth(code, state);
         return {};
     } else {
-        const authType = localStorage.getItem('authType');
+        const authType = isExtnLaunch ? '1' : localStorage.getItem('authType');
         registerDepnServices(authType || '1');
     }
 
@@ -128,21 +128,21 @@ async function processOutlookOAuth(code: string, state: any): Promise<void> {
     window.close();
 }
 
-const extnAuth = document.location.href.indexOf('?authType=1') > 0;
-
 async function validateIfExtnReadyForUse(pathname: string, navigate: ReturnType<typeof useNavigate>): Promise<InitValue> {
-    let authType = localStorage.getItem('authType');
-    const newState: InitValue = { authType: authType || undefined };
+    const authType = isExtnLaunch ? '1' : localStorage.getItem('authType');
+    const newState: InitValue = {};
 
     if (((authType || '1') === '1' || pathname.startsWith('/integrate')) && (await validateIfWebApp(newState))) {
-        if (extnAuth && !authType && newState.authReady) {
+        if (isExtnLaunch && newState.authReady) {
             localStorage.setItem('authType', '1');
-            newState.authType = '1';
-            authType = '1';
         }
     }
 
-    if ((!authType || (authType === '1' && !newState.authReady)) && !isPokerPath(pathname)) {
+    newState.authType = localStorage.getItem('authType') || undefined;
+
+    // A shared poker link opens as a guest, but a launch from the extension must use its integration.
+    const allowsGuest = !isExtnLaunch && isPokerPath(pathname);
+    if ((!authType || (authType === '1' && !newState.authReady)) && !allowsGuest) {
         navigate('/integrate');
     }
 

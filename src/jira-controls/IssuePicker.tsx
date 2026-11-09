@@ -170,7 +170,7 @@ export const IssuePicker: React.FC<IssuePickerProps> = React.memo(
                     focusDisplayRef.current = !!useDisplay;
                     updateIssue(selected);
                     setSuggestions([]);
-                    setTimeout(() => setInputValue(''), 0);
+                    setInputValue('');
                 }
             },
             [updateIssue, useDisplay],

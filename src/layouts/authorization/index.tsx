@@ -3,6 +3,7 @@ import { memo, useCallback, useEffect, useState } from 'react';
 
 import { useLocation, useNavigate } from 'react-router';
 
+import { isExtnLaunch } from '@/common/proxy';
 import { isWebBuild } from '@/constants/build-info';
 import { clearInstances } from '@/services/injector';
 
@@ -51,8 +52,8 @@ export function withAuthInfo<P extends WithAuthInfoProps>(Component: ComponentTy
 
         const userId = getUserIdFromPathOrSession(pathname);
         const shouldAuth = webAuthTypeReady() && (!!userId || needsAuth(pathname));
-        // A shared poker link opens as a guest when Jira Assistant is not integrated.
-        const allowsGuest = isWebBuild && isPokerPath(pathname);
+        // A shared poker link opens as a guest when Jira Assistant is not integrated, unless the extension launched it.
+        const allowsGuest = isWebBuild && !isExtnLaunch && isPokerPath(pathname);
 
         const tryAuthorize = useCallback(() => {
             if (shouldAuth) {
