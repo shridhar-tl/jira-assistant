@@ -7,7 +7,7 @@ import { inject } from '@services';
 import { loadErrorMessage } from './constants';
 import { getStatusList, searchReportIssues, type IssueSearchResult } from './data-loader';
 import { fetchStatusHistories, planHistoryFetch, type HistoryPlan } from './history-loader';
-import { getDataSettingsKey, getWorkingTimeSettings, isScopeConfigured } from './settings';
+import { getDataSettingsKey, getWorkingTimeSettings, isPeriodSelected, isScopeConfigured } from './settings';
 import { buildTimeInStatusModel } from './status-calculator';
 import type { PendingGuard, StatusInfo, TimeInStatusDataset, TimeInStatusModel, TimeInStatusSettings } from './types';
 
@@ -19,6 +19,7 @@ export interface TimeInStatusState {
     loadingText: string | null;
     error: string | null;
     isConfigured: boolean;
+    isPeriodSelected: boolean;
     reload: () => void;
     runAnyway: () => void;
 }
@@ -66,6 +67,7 @@ export default function useTimeInStatus(settings: TimeInStatusSettings): TimeInS
     const pendingRef = useRef<PendingLoad | null>(null);
 
     const isConfigured = isScopeConfigured(settings);
+    const hasPeriod = isPeriodSelected(settings);
     const dataKey = getDataSettingsKey(settings);
 
     const finishLoad = useCallback(async (requestId: number, pending: PendingLoad) => {
@@ -102,8 +104,11 @@ export default function useTimeInStatus(settings: TimeInStatusSettings): TimeInS
         pendingRef.current = null;
         setGuard(null);
 
-        if (!isScopeConfigured(settingsRef.current)) {
+        if (!isScopeConfigured(settingsRef.current) || !isPeriodSelected(settingsRef.current)) {
+            ++requestIdRef.current;
             setDataset(null);
+            setError(null);
+            setLoadingText(null);
             return;
         }
 
@@ -154,6 +159,7 @@ export default function useTimeInStatus(settings: TimeInStatusSettings): TimeInS
         loadingText,
         error,
         isConfigured,
+        isPeriodSelected: hasPeriod,
         reload,
         runAnyway,
     };

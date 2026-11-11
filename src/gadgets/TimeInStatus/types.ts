@@ -1,6 +1,10 @@
 import type { StatusTransition, UserGroup } from '@/types';
 
+import type { AgileBoard, SprintSelectionMap } from '@components/shared/sprint-selector';
+
 export type TimeInStatusScopeMode = 'jql' | 'groups';
+
+export type TimeInStatusPeriodMode = 'dateRange' | 'sprint';
 
 export type TimeInStatusView = 'bottleneck' | 'issues';
 
@@ -20,7 +24,10 @@ export interface TimeInStatusSettings {
     scopeMode: TimeInStatusScopeMode;
     jql: string;
     userGroups: UserGroup[] | null;
+    periodMode: TimeInStatusPeriodMode;
     dateRange: TimeInStatusDateRange;
+    sprintBoards: AgileBoard[];
+    sprintSelection: SprintSelectionMap;
     view: TimeInStatusView;
     groupBy: string;
     timelineScale: TimelineScale;

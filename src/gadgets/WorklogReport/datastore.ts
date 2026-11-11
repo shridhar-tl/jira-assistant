@@ -1,5 +1,7 @@
 import { endOfMonth, isToday, startOfMonth } from 'date-fns';
 
+import type { AgileBoard, SprintSelectionMap } from '@components/shared/sprint-selector';
+
 import createStore from '../../common/store';
 import { inject } from '../../services';
 
@@ -35,8 +37,8 @@ const initialData = {
 
     disableAddingWL: false, // To disable adding worklog from report
 
-    selSprints: {} as any, // user input {[boardId]: {selected:true, range:0, custom:{ [sprintId]:true }}}
-    sprintBoards: [] as any[], // user selected sprint boards
+    selSprints: {} as SprintSelectionMap, // user input {[boardId]: {selected:true, range:0, custom:{ [sprintId]:true }}}
+    sprintBoards: [] as AgileBoard[], // user selected sprint boards
     sprintList: {} as any,
     allSprints: {} as any,
 

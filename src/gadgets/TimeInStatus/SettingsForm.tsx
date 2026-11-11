@@ -6,13 +6,23 @@ import JQLEditor from '@/jira-controls/JQLEditor';
 
 import { inject } from '@services';
 
-import { Button, InputSwitch, NumericInput, RadioButtonGroup } from '@components';
+import {
+    Button,
+    createBoardSelection,
+    InputSwitch,
+    NumericInput,
+    RadioButtonGroup,
+    RapidViewList,
+    SelectButton,
+    type SprintSelectionMap,
+} from '@components';
+import type { RapidView } from '@components/shared/RapidViewList';
 
 import { SHORT_DAY_NAMES } from '@constants/settings';
 
-import { maxDcIssueLimit, scopeModeOptions } from './constants';
+import { maxDcIssueLimit, periodModeOptions, scopeModeOptions, sprintBoardRequiredMessage } from './constants';
 import { getWorkingTimeSettings } from './settings';
-import type { TimeInStatusScopeMode, TimeInStatusSettings } from './types';
+import type { TimeInStatusPeriodMode, TimeInStatusScopeMode, TimeInStatusSettings } from './types';
 
 interface SettingsFormProps {
     settings: TimeInStatusSettings;
@@ -64,6 +74,23 @@ function getGroupsSummary(settings: TimeInStatusSettings): string {
     return `${userGroups.length} group(s) with ${userCount} user(s) are chosen for this report.`;
 }
 
+function toSprintBoardChanges(settings: TimeInStatusSettings, value: RapidView | RapidView[] | null): Partial<TimeInStatusSettings> {
+    const boards = (Array.isArray(value) ? value : value ? [value] : []).map(({ id, name }) => ({ id, name }));
+    const knownBoardIds = new Set(settings.sprintBoards.map((b) => b.id));
+    const sprintSelection: SprintSelectionMap = {};
+
+    boards.forEach((board) => {
+        const existing = settings.sprintSelection[board.id];
+        if (existing) {
+            sprintSelection[board.id] = createBoardSelection(board, existing);
+        } else if (!knownBoardIds.has(board.id)) {
+            sprintSelection[board.id] = { ...createBoardSelection(board), selected: true };
+        }
+    });
+
+    return { sprintBoards: boards, sprintSelection };
+}
+
 function isDataCenter(): boolean {
     const { $session } = inject('SessionService');
     return !$session.CurrentUser?.isAtlasCloud;
@@ -71,6 +98,7 @@ function isDataCenter(): boolean {
 
 export default function SettingsForm({ settings, onChange, onManageGroups }: SettingsFormProps) {
     const isGroupScope = settings.scopeMode === 'groups';
+    const isSprintPeriod = settings.periodMode === 'sprint';
 
     return (
         <div className="flex flex-col gap-5">
@@ -112,6 +140,40 @@ export default function SettingsForm({ settings, onChange, onManageGroups }: Set
                     <JQLEditor jql={settings.jql} onChange={(jql) => onChange({ jql })} />
                 </div>
             </Field>
+
+            <SectionTitle>Period</SectionTitle>
+            <Field
+                label="Report based on"
+                helpText={
+                    isSprintPeriod
+                        ? 'Issues that are part of the sprints chosen from the header are included.'
+                        : 'Issues that were open at any time within the date range chosen from the header are included.'
+                }
+            >
+                <SelectButton
+                    items={periodModeOptions}
+                    value={settings.periodMode}
+                    onChange={(e) => onChange({ periodMode: e.value as TimeInStatusPeriodMode })}
+                    variant="segmented"
+                    ariaLabel="Report based on"
+                />
+            </Field>
+            {isSprintPeriod && (
+                <Field
+                    label="Agile boards"
+                    error={settings.sprintBoards.length ? null : sprintBoardRequiredMessage}
+                    helpText="Sprints of these boards are listed for selection in the header."
+                    fullWidth
+                >
+                    <div className="w-full">
+                        <RapidViewList
+                            value={settings.sprintBoards}
+                            onChange={(value) => onChange(toSprintBoardChanges(settings, value))}
+                            multiple
+                        />
+                    </div>
+                </Field>
+            )}
 
             <SectionTitle>Time calculation</SectionTitle>
             <InputSwitch

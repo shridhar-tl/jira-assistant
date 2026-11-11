@@ -10,11 +10,11 @@ import { GadgetActionType } from '@constants';
 import { GadgetContainer, useBaseGadget, type BaseGadgetProps } from './BaseGadget';
 import { GadgetTitle } from './constants';
 import { howItWorks } from './TimeInStatus/constants';
-import DateRangeSelector from './TimeInStatus/DateRangeSelector';
+import PeriodSelector from './TimeInStatus/PeriodSelector';
 import SettingsDialog from './TimeInStatus/SettingsDialog';
 import { getPageSettings, normalizeSettings, savePageSettings } from './TimeInStatus/settings';
 import TimeInStatusView from './TimeInStatus/TimeInStatusView';
-import type { StoredTimeInStatusSettings, TimeInStatusDateRange, TimeInStatusSettings } from './TimeInStatus/types';
+import type { StoredTimeInStatusSettings, TimeInStatusSettings } from './TimeInStatus/types';
 import useTimeInStatus from './TimeInStatus/useTimeInStatus';
 
 const hint = (
@@ -75,11 +75,6 @@ export default function TimeInStatusGadget(props: BaseGadgetProps) {
         [applySettings],
     );
 
-    const handleDateRangeChange = useCallback(
-        (dateRange: TimeInStatusDateRange) => handleSettingsChange({ dateRange }),
-        [handleSettingsChange],
-    );
-
     const openSettings = useCallback(() => setShowSettings(true), []);
     const hideSettings = useCallback(() => setShowSettings(false), []);
     const openGroups = useCallback(() => setShowGroups(true), []);
@@ -96,7 +91,7 @@ export default function TimeInStatusGadget(props: BaseGadgetProps) {
 
     const customActions = (
         <>
-            {state.isConfigured && <DateRangeSelector value={settings.dateRange} onChange={handleDateRangeChange} />}
+            {state.isConfigured && <PeriodSelector settings={settings} onChange={handleSettingsChange} />}
             <Button
                 layout="plain"
                 leftIcon={<i className="fa fa-users" />}

@@ -3,10 +3,10 @@ import { lazy, Suspense, useCallback, useState } from 'react';
 import { FullContext } from '@forge/bridge';
 
 import { GadgetLoadingText } from '@/gadgets/shared';
-import DateRangeSelector from '@/gadgets/TimeInStatus/DateRangeSelector';
+import PeriodSelector from '@/gadgets/TimeInStatus/PeriodSelector';
 import { normalizeSettings } from '@/gadgets/TimeInStatus/settings';
 import TimeInStatusView from '@/gadgets/TimeInStatus/TimeInStatusView';
-import type { StoredTimeInStatusSettings, TimeInStatusDateRange, TimeInStatusSettings } from '@/gadgets/TimeInStatus/types';
+import type { StoredTimeInStatusSettings, TimeInStatusSettings } from '@/gadgets/TimeInStatus/types';
 import useTimeInStatus from '@/gadgets/TimeInStatus/useTimeInStatus';
 import { withInitParams } from '@/layouts/initialization/index.plugin';
 
@@ -51,10 +51,6 @@ function TimeInStatusWidgetDisplay({ initialSettings }: TimeInStatusWidgetDispla
         setSettings((prev) => ({ ...prev, ...changes }));
     }, []);
 
-    const handleDateRangeChange = useCallback((dateRange: TimeInStatusDateRange) => {
-        setSettings((prev) => ({ ...prev, dateRange }));
-    }, []);
-
     return (
         <div className="relative flex h-150 flex-col">
             <TooltipManager />
@@ -66,7 +62,7 @@ function TimeInStatusWidgetDisplay({ initialSettings }: TimeInStatusWidgetDispla
             )}
             {state.isConfigured && (
                 <div className="flex shrink-0 justify-end border-b border-(--border-primary) px-2 py-1">
-                    <DateRangeSelector value={settings.dateRange} onChange={handleDateRangeChange} />
+                    <PeriodSelector settings={settings} onChange={handleSettingsChange} />
                 </div>
             )}
             <div className="min-h-0 flex-1">

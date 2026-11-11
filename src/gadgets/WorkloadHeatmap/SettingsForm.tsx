@@ -37,6 +37,8 @@ interface FieldProps {
 
 const emptyFilterOptions: HeatmapFilterOptions = { projects: [], issueTypes: [] };
 
+const sprintRangeHint = 'The active sprint is shown by default. Other open sprints can be chosen from the header.';
+
 const groupsHint = 'Use the users icon in the gadget header to choose the users and groups for this report.';
 
 function SectionTitle({ children }: { children: ReactNode }) {
@@ -92,7 +94,9 @@ export default function SettingsForm({ settings, onChange, onManageGroups }: Set
 
     const handleBoardChange = (value: RapidView | RapidView[] | null) => {
         const board = Array.isArray(value) ? value[0] || null : value;
-        onChange({ board: board ? { id: board.id, name: board.name } : null });
+        if (board?.id !== settings.board?.id) {
+            onChange({ board: board ? { id: board.id, name: board.name } : null, sprintId: null });
+        }
     };
 
     return (
@@ -181,7 +185,7 @@ export default function SettingsForm({ settings, onChange, onManageGroups }: Set
 
             <SectionTitle>Period</SectionTitle>
             <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-                <Field label="Date range" helpText={isSprintRange ? 'The active sprint of the selected board is shown.' : undefined}>
+                <Field label="Date range" helpText={isSprintRange ? sprintRangeHint : undefined}>
                     <SelectButton
                         items={rangeModeOptions}
                         value={settings.rangeMode}
@@ -198,6 +202,13 @@ export default function SettingsForm({ settings, onChange, onManageGroups }: Set
                     </Field>
                 )}
             </div>
+            {isSprintRange && (
+                <InputSwitch
+                    checked={settings.sprintIssuesOnly}
+                    onChange={(e) => onChange({ sprintIssuesOnly: e.value })}
+                    label="Include only the issues in the sprint"
+                />
+            )}
 
             <SectionTitle>Planning</SectionTitle>
             <Field label="Work week" helpText="Estimates are spread only across these days of the week.">

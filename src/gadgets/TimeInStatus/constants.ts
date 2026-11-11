@@ -1,4 +1,11 @@
-import type { BuiltInGroupBy, StatusCategory, TimeInStatusScopeMode, TimeInStatusView, TimelineScale } from './types';
+import type {
+    BuiltInGroupBy,
+    StatusCategory,
+    TimeInStatusPeriodMode,
+    TimeInStatusScopeMode,
+    TimeInStatusView,
+    TimelineScale,
+} from './types';
 
 export const timeInStatusPageSettingsKey = 'reports_TimeInStatus';
 
@@ -38,6 +45,11 @@ export const baseIssueFields = [
 export const scopeModeOptions: { value: TimeInStatusScopeMode; label: string }[] = [
     { value: 'jql', label: 'Custom JQL' },
     { value: 'groups', label: 'User groups' },
+];
+
+export const periodModeOptions: { value: TimeInStatusPeriodMode; label: string }[] = [
+    { value: 'dateRange', label: 'Date range' },
+    { value: 'sprint', label: 'Sprints' },
 ];
 
 export const viewOptions: { value: TimeInStatusView; label: string }[] = [
@@ -100,6 +112,12 @@ export const defaultDisplayColumns = ['status', 'assignee', 'leadTime', 'cycleTi
 
 export const jqlRequiredMessage = 'Provide the JQL to select the issues to be included in the report.';
 
+export const sprintBoardRequiredMessage = 'Select at least one agile board to choose the sprints from.';
+
+export const sprintSelectionRequiredMessage = 'Choose the sprints from the header to view the report.';
+
+export const noSprintBoardsMessage = 'No agile boards are configured. Click the settings icon to choose one or more agile boards.';
+
 export const dateRangeHint = 'Issues that were open at any time within this period are included';
 
 export const loadErrorMessage = 'Unable to fetch the issues and their history from Jira. Verify the configured JQL and try again.';
@@ -117,6 +135,6 @@ export const howItWorks = [
     'Time spent in each status is calculated from the status changes recorded in the history of every issue, starting from its created date.',
     'Lead time is measured from the created date until the issue is resolved. Cycle time is measured from the first move into an "In Progress" category status until the issue is resolved.',
     'Statuses are classified using their Jira status category (To Do, In Progress, Done), so the report works across different workflows.',
-    'Issues that were open at any time within the selected period are included. Choose the period from the header.',
+    'Issues that were open at any time within the selected period, or that are part of the selected sprints, are included. Choose the period or the sprints from the header.',
     'Status history is cached on this device and is fetched again only for issues updated since the last run.',
 ];

@@ -1,9 +1,15 @@
 import moment from 'moment';
 
+import { pickSelectedSprints, type AgileSprint, type SprintSelectionMap } from '@components/shared/sprint-selector';
+
 import { inject } from '../../services/injector';
 
 import { generateUserDayWiseData, getEpicDetails, getUserWiseWorklog } from './userdaywise/utils_group';
 import { generateFlatWorklogData, getFieldsToFetch } from './utils';
+
+interface ReportSprint extends AgileSprint {
+    settings?: { fromDate: Date; toDate: Date };
+}
 
 function getUserName(user: any, includeEmail?: boolean): string {
     if (!user) return '';
@@ -29,7 +35,7 @@ export function generateSprintReport(setState: any, getState: any) {
         try {
             setState({ loadingData: true, reportLoaded: false });
 
-            const allSprints = await $jira.getRapidSprintList(selBoards, true);
+            const allSprints = (await $jira.getRapidSprintList(selBoards, true)) as Record<string, ReportSprint[]>;
 
             for (const boardId of selBoards) {
                 const sprintsList = getSprintsSelected(boardId, sel, allSprints);
@@ -222,22 +228,8 @@ function getCollectiveUsers(totalUsersList: any[], sprints: any[], newState: any
     };
 }
 
-function getSprintsSelected(boardId: string, boards: any, allSprints: any) {
-    const { range, custom } = boards[boardId];
-    const sprintList = allSprints[boardId]?.sort((a: any, b: any) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime());
-
-    switch (range) {
-        case -1:
-            return sprintList.filter((s: any) => custom[s.id]).reverse();
-        case 0:
-            return [sprintList[0]].filter(Boolean);
-        case 1: {
-            const lastSprint = sprintList[0];
-            return [lastSprint.completeDate ? lastSprint : sprintList[1]].filter(Boolean);
-        }
-        default:
-            return sprintList.slice(0, range).reverse();
-    }
+function getSprintsSelected(boardId: string, boards: SprintSelectionMap, allSprints: Record<string, ReportSprint[]>) {
+    return pickSelectedSprints(boards[boardId], allSprints[boardId]);
 }
 
 async function pullIssuesFromSprint(sprintId: number, worklogStartDate: Date, worklogEndDate: Date, state: any) {

@@ -10,7 +10,7 @@ import { GadgetActionType } from '@constants';
 import { GadgetContainer, useBaseGadget, type BaseGadgetProps } from './BaseGadget';
 import { GadgetTitle } from './constants';
 import { howItWorks } from './WorkloadHeatmap/constants';
-import PeriodNavigator from './WorkloadHeatmap/PeriodNavigator';
+import HeatmapPeriodControls from './WorkloadHeatmap/HeatmapPeriodControls';
 import SettingsDialog from './WorkloadHeatmap/SettingsDialog';
 import { getPageSettings, normalizeSettings, savePageSettings } from './WorkloadHeatmap/settings';
 import type { WorkloadHeatmapSettings } from './WorkloadHeatmap/types';
@@ -90,14 +90,7 @@ export default function WorkloadHeatmapGadget(props: BaseGadgetProps) {
 
     const customActions = (
         <>
-            {state.isConfigured && (
-                <PeriodNavigator
-                    range={state.range}
-                    offset={state.offset}
-                    canNavigate={state.canNavigate}
-                    onOffsetChange={state.setOffset}
-                />
-            )}
+            {state.isConfigured && <HeatmapPeriodControls settings={settings} state={state} onSettingsChange={handleSettingsChange} />}
             <Button
                 layout="plain"
                 leftIcon={<i className="fa fa-users" />}

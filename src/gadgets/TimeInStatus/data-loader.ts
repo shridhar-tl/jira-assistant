@@ -5,6 +5,8 @@ import { chunk } from '@/utils';
 import { inject } from '@services';
 import type { JiraUser } from '@services/jira-service';
 
+import { resolveSelectedSprints } from '@components/shared/sprint-selector';
+
 import {
     escapeJqlValue,
     getGroupUsersJqlValues,
@@ -190,14 +192,31 @@ function toMemberships(groups: UserGroup[]): GroupMembership[] {
     return groups.map((g) => ({ name: g.name, userIds: (g.users || []).map(getJiraUserId).filter(Boolean) }));
 }
 
+/**
+ * Returns undefined when the period cannot match any issue, i.e. when none of the selected sprints are available.
+ */
+async function getPeriodJql(settings: TimeInStatusSettings): Promise<string | null | undefined> {
+    if (settings.periodMode !== 'sprint') {
+        return getDateRangeJql(settings.dateRange);
+    }
+    const sprints = await resolveSelectedSprints(settings.sprintSelection);
+    return sprints.length ? `sprint in (${sprints.map((s) => s.id).join(', ')})` : undefined;
+}
+
 export async function searchReportIssues(settings: TimeInStatusSettings): Promise<IssueSearchResult> {
     const fieldSettings = getFieldSettings(getGroupFieldId(settings.groupBy));
     const fieldsToFetch = getFieldsToFetch(fieldSettings);
     const userJql = stripOrderBy(settings.jql);
-    const periodJql = getDateRangeJql(settings.dateRange);
     const needsGroups = settings.scopeMode === 'groups' || settings.groupBy === 'userGroup';
-    const groups = needsGroups ? await resolveUserGroups(settings.userGroups) : [];
+    const [periodJql, groups] = await Promise.all([
+        getPeriodJql(settings),
+        needsGroups ? resolveUserGroups(settings.userGroups) : [],
+    ]);
     const userGroups = toMemberships(groups);
+
+    if (periodJql === undefined) {
+        return { issues: [], userGroups };
+    }
 
     if (settings.scopeMode === 'jql') {
         const issues = userJql ? await searchJql(joinJql([userJql, periodJql]), fieldsToFetch, fieldSettings) : [];

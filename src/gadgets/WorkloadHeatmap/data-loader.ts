@@ -167,19 +167,20 @@ async function searchIssues(jql: string, fields: string[], startDateField: strin
     return issues.map((issue) => mapIssue(issue, startDateField)).filter((issue): issue is HeatmapIssue => !!issue);
 }
 
-export async function loadHeatmapDataset(settings: WorkloadHeatmapSettings): Promise<HeatmapDataset> {
+export async function loadHeatmapDataset(settings: WorkloadHeatmapSettings, sprintId: number | null): Promise<HeatmapDataset> {
     const [allGroups, startDateField] = await Promise.all([
         resolveUserGroups(settings.userGroups),
         resolveStartDateField(settings.startDateField),
     ]);
     const fields = startDateField ? [...baseIssueFields, startDateField] : baseIssueFields;
     const additionalJql = stripOrderBy(settings.jql);
+    const sprintJql = sprintId ? ` AND sprint = ${sprintId}` : '';
 
     if (settings.scopeMode === 'jql') {
         if (!additionalJql) {
             return { groups: [], issues: [] };
         }
-        const issues = await searchIssues(`(${additionalJql}) AND assignee is not EMPTY`, fields, startDateField);
+        const issues = await searchIssues(`(${additionalJql}) AND assignee is not EMPTY${sprintJql}`, fields, startDateField);
         return { groups: groupAssignees(issues, toHeatmapGroups(allGroups)), issues };
     }
 
@@ -193,7 +194,7 @@ export async function loadHeatmapDataset(settings: WorkloadHeatmapSettings): Pro
     const filterJql = additionalJql ? `${defaultIssueFilterJql} AND (${additionalJql})` : defaultIssueFilterJql;
     const results = await Promise.all(
         chunk(jqlValues, assigneeChunkSize).map((values) =>
-            searchIssues(`assignee in (${values.map(escapeJqlValue).join(', ')}) AND ${filterJql}`, fields, startDateField),
+            searchIssues(`assignee in (${values.map(escapeJqlValue).join(', ')}) AND ${filterJql}${sprintJql}`, fields, startDateField),
         ),
     );
 

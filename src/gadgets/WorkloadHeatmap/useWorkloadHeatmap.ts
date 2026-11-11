@@ -31,6 +31,26 @@ export interface WorkloadHeatmapState {
     reload: () => void;
 }
 
+const pendingSprintKey = 'pending';
+
+function getRangeInputKey({ rangeMode, board, sprintId }: WorkloadHeatmapSettings, offset: number): string {
+    return rangeMode === 'sprint' ? `sprint:${board?.id}:${sprintId ?? ''}` : `${rangeMode}:${offset}`;
+}
+
+/**
+ * Issues are filtered by the sprint only after the sprint to be shown is resolved.
+ * An empty key means the issues are not filtered by any sprint.
+ */
+function getSprintFilterKey(settings: WorkloadHeatmapSettings, rangeState: RangeState | null): string {
+    if (settings.rangeMode !== 'sprint' || !settings.sprintIssuesOnly) {
+        return '';
+    }
+    if (!rangeState) {
+        return pendingSprintKey;
+    }
+    return String(rangeState.range.sprintId ?? '');
+}
+
 const loadErrorMessage = 'Unable to fetch the issues from Jira. Verify the configured JQL and user groups and try again.';
 
 function getCapacityPerDay(): number {
@@ -50,15 +70,19 @@ export default function useWorkloadHeatmap(settings: WorkloadHeatmapSettings): W
     const settingsRef = useRef(settings);
     settingsRef.current = settings;
     const requestIdRef = useRef(0);
+    const rangeInputKeyRef = useRef<string | null>(null);
 
     const isConfigured = isScopeConfigured(settings);
     const dataKey = getDataSettingsKey(settings);
     const offset = navigation.mode === settings.rangeMode ? navigation.offset : 0;
-    const boardId = settings.board?.id;
+    const rangeInputKey = getRangeInputKey(settings, offset);
+    const sprintFilterKey = getSprintFilterKey(settings, rangeState);
 
     useEffect(() => {
         if (!isScopeConfigured(settingsRef.current)) {
+            ++requestIdRef.current;
             setDataset(null);
+            setIsLoading(false);
             return;
         }
 
@@ -66,7 +90,11 @@ export default function useWorkloadHeatmap(settings: WorkloadHeatmapSettings): W
         setIsLoading(true);
         setError(null);
 
-        loadHeatmapDataset(settingsRef.current)
+        if (sprintFilterKey === pendingSprintKey) {
+            return;
+        }
+
+        loadHeatmapDataset(settingsRef.current, sprintFilterKey ? Number(sprintFilterKey) : null)
             .then((result) => {
                 if (requestId === requestIdRef.current) {
                     setDataset(result);
@@ -84,13 +112,20 @@ export default function useWorkloadHeatmap(settings: WorkloadHeatmapSettings): W
                     setIsLoading(false);
                 }
             });
-    }, [dataKey, reloadVersion]);
+    }, [dataKey, sprintFilterKey, reloadVersion]);
 
     useEffect(() => {
         let cancelled = false;
-        const { rangeMode, board } = settingsRef.current;
+        const { rangeMode, board, sprintId } = settingsRef.current;
 
-        resolveDateRange(rangeMode, board, offset)
+        if (rangeInputKeyRef.current !== rangeInputKey) {
+            rangeInputKeyRef.current = rangeInputKey;
+            if (getSprintFilterKey(settingsRef.current, null)) {
+                setRangeState(null);
+            }
+        }
+
+        resolveDateRange(rangeMode, board, sprintId, offset)
             .then((result) => {
                 if (!cancelled) {
                     setRangeState(result);
@@ -106,7 +141,7 @@ export default function useWorkloadHeatmap(settings: WorkloadHeatmapSettings): W
         return () => {
             cancelled = true;
         };
-    }, [settings.rangeMode, boardId, offset, reloadVersion]);
+    }, [rangeInputKey, offset, reloadVersion]);
 
     const model = useMemo(
         () => (dataset && rangeState ? buildHeatmapModel(dataset, settings, rangeState.range, getCapacityPerDay()) : null),

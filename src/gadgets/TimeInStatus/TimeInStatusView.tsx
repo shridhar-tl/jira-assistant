@@ -5,7 +5,7 @@ import { Button, OverlayPanel, SelectButton } from '@components';
 import { GadgetAlert } from '../shared';
 
 import BottleneckTable, { type OpenStatusIssues } from './BottleneckTable';
-import { jqlRequiredMessage, viewOptions } from './constants';
+import { jqlRequiredMessage, sprintSelectionRequiredMessage, viewOptions } from './constants';
 import GroupBySelector from './GroupBySelector';
 import IssueTimelineTable from './IssueTimelineTable';
 import LargeQueryGuard from './LargeQueryGuard';
@@ -33,7 +33,7 @@ interface ActiveStatus {
     groupName: string | null;
 }
 
-const noIssuesMessage = 'No issues matched the configured scope. Change the JQL, user groups or the period in settings.';
+const noIssuesMessage = 'No issues matched the configured scope. Change the JQL, user groups, the period or the sprints selected.';
 
 export default function TimeInStatusView({
     settings,
@@ -43,7 +43,7 @@ export default function TimeInStatusView({
     bottleneckOnly,
 }: TimeInStatusViewProps) {
     const [activeStatus, setActiveStatus] = useState<ActiveStatus | null>(null);
-    const { model, dataset, guard, error, isConfigured, runAnyway, reload } = state;
+    const { model, dataset, guard, error, isConfigured, isPeriodSelected, runAnyway, reload } = state;
     const view: ViewType = bottleneckOnly ? 'bottleneck' : settings.view;
 
     const openIssues = useCallback<OpenStatusIssues>((target, stats, groupName) => setActiveStatus({ target, stats, groupName }), []);
@@ -52,6 +52,9 @@ export default function TimeInStatusView({
     const renderBody = () => {
         if (!isConfigured) {
             return <TimeInStatusInfo note={jqlRequiredMessage} />;
+        }
+        if (!isPeriodSelected) {
+            return <TimeInStatusInfo note={sprintSelectionRequiredMessage} />;
         }
         if (guard) {
             return <LargeQueryGuard guard={guard} onRunAnyway={runAnyway} />;

@@ -1,5 +1,12 @@
 import { inject } from '@services';
 
+import {
+    cleanSprintSelection,
+    getSelectedBoardIds,
+    getSprintSelectionKey,
+    type AgileBoard,
+} from '@components/shared/sprint-selector';
+
 import { DefaultWorkingDays } from '@constants';
 
 import { parseTimeToMinutes, timePattern } from './business-time';
@@ -10,6 +17,7 @@ import {
     fieldGroupPrefix,
     jqlRequiredMessage,
     maxDcIssueLimit,
+    sprintBoardRequiredMessage,
     optionalIssueColumns,
     timeInStatusPageSettingsKey,
 } from './constants';
@@ -22,12 +30,29 @@ function toTimeValue(value: string | undefined, fallback: string): string {
     return value && timePattern.test(value) ? value : fallback;
 }
 
+function toBoards(value: unknown): AgileBoard[] {
+    if (!Array.isArray(value)) {
+        return [];
+    }
+    return value
+        .filter((b): b is AgileBoard => !!b && typeof b === 'object' && !!(b as AgileBoard).id)
+        .map(({ id, name }) => ({ id: Number(id), name: String(name || id) }));
+}
+
+function getDefaultBoards(): AgileBoard[] {
+    const { $session } = inject('SessionService');
+    return toBoards($session.CurrentUser?.rapidViews);
+}
+
 export function getDefaultSettings(): TimeInStatusSettings {
     return {
         scopeMode: 'jql',
         jql: '',
         userGroups: null,
+        periodMode: 'dateRange',
         dateRange: defaultDateRange,
+        sprintBoards: getDefaultBoards(),
+        sprintSelection: {},
         view: 'bottleneck',
         groupBy: 'none',
         timelineScale: 'relative',
@@ -93,6 +118,14 @@ export function normalizeSettings(stored?: StoredTimeInStatusSettings | null): T
         settings.displayColumns = defaults.displayColumns;
     }
     settings.dateRange = normalizeDateRange(settings.dateRange);
+    if (settings.periodMode !== 'sprint') {
+        settings.periodMode = 'dateRange';
+    }
+    settings.sprintBoards = toBoards(settings.sprintBoards);
+    settings.sprintSelection =
+        settings.sprintSelection && typeof settings.sprintSelection === 'object'
+            ? cleanSprintSelection(settings.sprintSelection, settings.sprintBoards)
+            : {};
     settings.dcIssueLimit = Math.min(maxDcIssueLimit, Math.max(1, Math.floor(Number(settings.dcIssueLimit) || defaultDcIssueLimit)));
     settings.workingHoursOnly = !!settings.workingHoursOnly;
     settings.isDesc = !!settings.isDesc;
@@ -114,8 +147,22 @@ export function isScopeConfigured(settings: TimeInStatusSettings): boolean {
     return settings.scopeMode === 'groups' || !!settings.jql.trim();
 }
 
+export function isPeriodSelected(settings: TimeInStatusSettings): boolean {
+    return settings.periodMode !== 'sprint' || getSelectedBoardIds(settings.sprintSelection).length > 0;
+}
+
 export function getSettingsError(settings: TimeInStatusSettings): string | null {
-    return isScopeConfigured(settings) ? null : jqlRequiredMessage;
+    if (!isScopeConfigured(settings)) {
+        return jqlRequiredMessage;
+    }
+    if (settings.periodMode === 'sprint' && !settings.sprintBoards.length) {
+        return sprintBoardRequiredMessage;
+    }
+    return null;
+}
+
+function getPeriodKey({ periodMode, dateRange, sprintSelection }: TimeInStatusSettings): string {
+    return periodMode === 'sprint' ? `sprint:${getSprintSelectionKey(sprintSelection)}` : getDateRangeKey(dateRange);
 }
 
 /**
@@ -145,8 +192,15 @@ export function getGroupFieldId(groupBy: string): string | null {
 }
 
 export function getDataSettingsKey(settings: TimeInStatusSettings): string {
-    const { scopeMode, userGroups, jql, dateRange, groupBy } = settings;
+    const { scopeMode, userGroups, jql, groupBy } = settings;
     const needsGroups = scopeMode === 'groups' || groupBy === 'userGroup';
     const groups = needsGroups ? userGroups?.map((g) => [g.name, g.id, (g.users || []).map((u) => u.accountId || u.name)]) : null;
-    return JSON.stringify({ scopeMode, needsGroups, groups, jql: jql.trim(), period: getDateRangeKey(dateRange), groupField: getGroupFieldId(groupBy) });
+    return JSON.stringify({
+        scopeMode,
+        needsGroups,
+        groups,
+        jql: jql.trim(),
+        period: getPeriodKey(settings),
+        groupField: getGroupFieldId(groupBy),
+    });
 }

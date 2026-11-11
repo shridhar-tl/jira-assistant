@@ -15,6 +15,8 @@ export function getDefaultSettings(): WorkloadHeatmapSettings {
         jql: '',
         rangeMode: 'twoWeeks',
         board: null,
+        sprintId: null,
+        sprintIssuesOnly: true,
         workingDays: workingDays?.length ? [...workingDays] : [...DefaultWorkingDays],
         startDateField: '',
         leadTimeDays: 0,
@@ -31,6 +33,13 @@ export function normalizeSettings(stored?: Partial<WorkloadHeatmapSettings> | nu
     }
 
     const settings: WorkloadHeatmapSettings = { ...defaults, ...stored };
+
+    // Sprint range of older versions only used the dates of the active sprint without filtering the issues
+    if (stored.sprintIssuesOnly === undefined && stored.rangeMode === 'sprint') {
+        settings.sprintIssuesOnly = false;
+    }
+    settings.sprintIssuesOnly = !!settings.sprintIssuesOnly;
+    settings.sprintId = typeof settings.sprintId === 'number' && settings.sprintId > 0 ? settings.sprintId : null;
 
     if (!Array.isArray(settings.userGroups)) {
         settings.userGroups = null;

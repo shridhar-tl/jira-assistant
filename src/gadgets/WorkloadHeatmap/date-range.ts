@@ -1,19 +1,13 @@
 import { addDays, format, isSameYear, startOfDay, startOfWeek } from 'date-fns';
 
-import { inject } from '@services';
-
 import { getStartOfWeek } from '@utils';
 
-import { noActiveSprintMessage } from './constants';
+import { getBoardSprints, getSprintState, type AgileSprint } from '@components/shared/sprint-selector';
+
+import { noActiveSprintMessage, openSprintStates, sprintNotPlannedMessage, sprintUnavailableMessage } from './constants';
 import type { HeatmapBoard, HeatmapDateRange, HeatmapRangeMode } from './types';
 
-interface JiraSprint {
-    id: number;
-    name: string;
-    state: string;
-    startDate?: Date;
-    endDate?: Date;
-}
+type PlannedSprint = AgileSprint & { startDate: Date; endDate: Date };
 
 export interface ResolvedRange {
     range: HeatmapDateRange;
@@ -32,25 +26,56 @@ export function getCalendarRange(rangeMode: Exclude<HeatmapRangeMode, 'sprint'>,
     return { fromDate, toDate, label: formatRangeLabel(fromDate, toDate) };
 }
 
-async function getActiveSprint(board: HeatmapBoard): Promise<JiraSprint | undefined> {
-    const { $jira } = inject('JiraService');
-    const sprints = (await $jira.getRapidSprintList([board.id], { state: 'active' })) as JiraSprint[];
-    return sprints.find((s) => s.state === 'active' && s.startDate && s.endDate);
+export async function getOpenSprints(boardId: number): Promise<AgileSprint[]> {
+    const sprints = await getBoardSprints([boardId], openSprintStates);
+    return sprints[boardId] || [];
 }
 
-export async function resolveDateRange(rangeMode: HeatmapRangeMode, board: HeatmapBoard | null, offset: number): Promise<ResolvedRange> {
+function isPlanned(sprint: AgileSprint | undefined): sprint is PlannedSprint {
+    return !!sprint?.startDate && !!sprint.endDate;
+}
+
+function toSprintRange(sprint: PlannedSprint, warning?: string): ResolvedRange {
+    const fromDate = startOfDay(sprint.startDate);
+    const toDate = startOfDay(sprint.endDate);
+    return {
+        range: { fromDate, toDate, label: formatRangeLabel(fromDate, toDate), sprintId: sprint.id, sprintName: sprint.name },
+        warning,
+    };
+}
+
+export async function resolveDateRange(
+    rangeMode: HeatmapRangeMode,
+    board: HeatmapBoard | null,
+    sprintId: number | null,
+    offset: number,
+): Promise<ResolvedRange> {
     if (rangeMode !== 'sprint') {
         return { range: getCalendarRange(rangeMode, offset) };
     }
 
-    const sprint = board ? await getActiveSprint(board) : undefined;
-    if (!sprint?.startDate || !sprint.endDate) {
+    const sprints = board ? await getOpenSprints(board.id) : [];
+    const activeSprint = sprints.find((s): s is PlannedSprint => getSprintState(s) === 'active' && isPlanned(s));
+
+    if (sprintId) {
+        const sprint = sprints.find((s) => s.id === sprintId);
+        if (isPlanned(sprint)) {
+            return toSprintRange(sprint);
+        }
+        if (sprint) {
+            return {
+                range: { ...getCalendarRange('week', 0), sprintId: sprint.id, sprintName: sprint.name },
+                warning: sprintNotPlannedMessage,
+            };
+        }
+        if (activeSprint) {
+            return toSprintRange(activeSprint, sprintUnavailableMessage);
+        }
+    }
+
+    if (!activeSprint) {
         return { range: getCalendarRange('week', 0), warning: noActiveSprintMessage };
     }
 
-    const fromDate = startOfDay(sprint.startDate);
-    const toDate = startOfDay(sprint.endDate);
-    return {
-        range: { fromDate, toDate, label: formatRangeLabel(fromDate, toDate), sprintName: sprint.name },
-    };
+    return toSprintRange(activeSprint);
 }

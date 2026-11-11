@@ -3,7 +3,7 @@ import { lazy, Suspense, useCallback, useState } from 'react';
 import { FullContext } from '@forge/bridge';
 
 import useWorkloadHeatmap from '@/gadgets/WorkloadHeatmap/useWorkloadHeatmap';
-import PeriodNavigator from '@/gadgets/WorkloadHeatmap/PeriodNavigator';
+import HeatmapPeriodControls from '@/gadgets/WorkloadHeatmap/HeatmapPeriodControls';
 import { normalizeSettings } from '@/gadgets/WorkloadHeatmap/settings';
 import type { WorkloadHeatmapSettings } from '@/gadgets/WorkloadHeatmap/types';
 import WorkloadHeatmapView from '@/gadgets/WorkloadHeatmap/WorkloadHeatmapView';
@@ -60,12 +60,7 @@ function HeatmapWidgetDisplay({ initialSettings }: HeatmapWidgetDisplayProps) {
             )}
             {state.isConfigured && (
                 <div className="flex shrink-0 justify-end border-b border-(--border-primary) px-2 py-1">
-                    <PeriodNavigator
-                        range={state.range}
-                        offset={state.offset}
-                        canNavigate={state.canNavigate}
-                        onOffsetChange={state.setOffset}
-                    />
+                    <HeatmapPeriodControls settings={settings} state={state} onSettingsChange={handleSettingsChange} />
                 </div>
             )}
             <div className="min-h-0 flex-1">

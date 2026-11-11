@@ -17,6 +17,8 @@ export interface WorkloadHeatmapSettings {
     jql: string;
     rangeMode: HeatmapRangeMode;
     board: HeatmapBoard | null;
+    sprintId: number | null;
+    sprintIssuesOnly: boolean;
     workingDays: number[];
     startDateField: string;
     leadTimeDays: number;
@@ -62,6 +64,7 @@ export interface HeatmapDateRange {
     fromDate: Date;
     toDate: Date;
     label: string;
+    sprintId?: number;
     sprintName?: string;
 }
 
