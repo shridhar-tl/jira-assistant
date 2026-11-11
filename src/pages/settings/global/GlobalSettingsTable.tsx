@@ -30,6 +30,7 @@ interface UserSettings {
     enableAnalyticsLogging?: boolean;
     enableExceptionLogging?: boolean;
     disableDevNotification?: boolean;
+    allowLocalJAOrigin?: boolean;
     [key: string]: any;
 }
 
@@ -39,11 +40,12 @@ interface GlobalSettingsTableProps {
     formatDate: (date: Date) => string;
     setValue: (value: any, field: string, user: UserSettings) => void;
     toggleDelete: (user: UserSettings) => void;
+    isExtnConnected: boolean;
 }
 
 export type { UserSettings };
 
-export default function GlobalSettingsTable({ users, intgUsers, formatDate, setValue, toggleDelete }: GlobalSettingsTableProps) {
+export default function GlobalSettingsTable({ users, intgUsers, formatDate, setValue, toggleDelete, isExtnConnected }: GlobalSettingsTableProps) {
     return (
         <div className="rounded-lg overflow-hidden bg-(--bg-primary) border border-(--border-primary) shadow-(--shadow-sm)">
             <div className="overflow-x-auto">
@@ -237,6 +239,21 @@ export default function GlobalSettingsTable({ users, intgUsers, formatDate, setV
                                         onChange={(e) => setValue(e.value, 'disableDevNotification', users[0])}
                                         label="Disable important notifications from the developer"
                                     />
+                                </td>
+                            </SettingsRow>
+                        )}
+
+                        {isExtnConnected && !!users[0] && (
+                            <SettingsRow label="Local development site">
+                                <td colSpan={intgUsers.length + 1} className="p-3">
+                                    <Checkbox
+                                        checked={users[0].allowLocalJAOrigin === true}
+                                        onChange={(e) => setValue(e.value, 'allowLocalJAOrigin', users[0])}
+                                        label="Allow https://local.jiraassistant.com to use this extension"
+                                    />
+                                    <p className="text-xs text-(--text-secondary) mt-1 ml-6">
+                                        Only for developers running Jira Assistant locally. Keep this turned off otherwise.
+                                    </p>
                                 </td>
                             </SettingsRow>
                         )}

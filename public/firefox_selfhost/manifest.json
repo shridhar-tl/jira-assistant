@@ -2,7 +2,7 @@
     "manifest_version": 2,
     "name": "Jira Assistant: Worklog, Sprint report, etc",
     "short_name": "Jira Assist",
-    "version": "3.0.1",
+    "version": "3.0.2",
     "updateURL": "https://raw.githubusercontent.com/shridhar-tl/jira-assistant/master/release/firefox/update_manifest.json",
     "updateLink": "https://github.com/shridhar-tl/jira-assistant/raw/master/release/firefox/JiraAssist_Latest.xpi",
     "applications": {
@@ -28,7 +28,7 @@
     },
     "content_scripts": [
         {
-            "matches": ["https://*.jiraassistant.com/*", "http://local.jiraassistant.com/*"],
+            "matches": ["https://*.jiraassistant.com/*"],
             "js": ["content.js"],
             "run_at": "document_start"
         }

@@ -75,6 +75,7 @@ export default class UserService {
                     changeSetting(u, user, 'enableExceptionLogging', true);
                     changeSetting(u, user, 'disableDevNotification');
                     changeSetting(u, user, 'useWebVersion', false, SettingsCategory.System);
+                    changeSetting(u, user, 'allowLocalJAOrigin', false, SettingsCategory.System);
                 }
 
                 await this.$storage.addOrUpdateUser(user);

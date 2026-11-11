@@ -1,4 +1,5 @@
 import { buildMode, isWebBuild, outlookRedirectUrl } from '@/constants';
+import { isTrustedJAOrigin } from '@/common/trusted-origin';
 import { prepareUrlWithQueryString } from '@/utils';
 
 import type AjaxRequestService from './ajax-request-service';
@@ -74,7 +75,7 @@ export default class OutlookCalendar extends OutlookCalendarBase {
 
             const url = prepareUrlWithQueryString(authEndPoint, authParams);
             const handler = (event: MessageEvent) => {
-                if (!event.origin?.endsWith('.jiraassistant.com')) {
+                if (!isTrustedJAOrigin(event.origin)) {
                     return;
                 }
                 const data = event.data;

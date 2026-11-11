@@ -1,5 +1,8 @@
 import { useCallback, useEffect, useState } from 'react';
 
+import { executeService } from '@/common/proxy';
+import { isExtnBuild, isWebBuild } from '@/constants/build-info';
+
 import { Dialog } from '@dialogs';
 
 import { inject } from '@services';
@@ -13,6 +16,9 @@ import { useSettingsStore } from '@stores';
 import { SettingsCategory } from '@constants/settings';
 
 import GlobalSettingsTable, { type UserSettings } from './GlobalSettingsTable';
+
+const isExtnConnected = isExtnBuild || (isWebBuild && localStorage.getItem('authType') === '1');
+const extnReloadFailedMessage = 'Settings are saved, but the extension could not be refreshed. Restart the browser for all the changes to take effect.';
 
 export default function GlobalSettings() {
     const [users, setUsers] = useState<UserSettings[]>([]);
@@ -34,6 +40,7 @@ export default function GlobalSettings() {
         );
 
         allUsers[0].useWebVersion = await $settings.get('useWebVersion');
+        allUsers[0].allowLocalJAOrigin = await $settings.get('allowLocalJAOrigin');
 
         setUsers(allUsers);
         setIntgUsers(allUsers.slice(1));
@@ -81,6 +88,16 @@ export default function GlobalSettings() {
             $message.success('Settings saved successfully. Some changes will reflect only after you refresh the page.');
         } catch {
             $message.error('Failed to save settings. Please try again.');
+            return;
+        }
+
+        if (isExtnConnected) {
+            try {
+                await executeService('SELF', 'RELOAD', [], $message);
+            } catch (err) {
+                $message.warning(extnReloadFailedMessage);
+                console.error('Error reloading extension settings:', err);
+            }
         }
     };
 
@@ -123,6 +140,7 @@ export default function GlobalSettings() {
                     formatDate={formatLastLogin}
                     setValue={setValue}
                     toggleDelete={toggleDelete}
+                    isExtnConnected={isExtnConnected}
                 />
 
                 <div className="mt-3 p-3 rounded-lg border border-(--border-primary) bg-(--bg-primary) shadow-(--shadow-sm)">

@@ -37,9 +37,7 @@ export default class AjaxRequestService {
     constructor($browser: AppBrowserService) {
         this.$browser = $browser;
 
-        const headerObj: Record<string, string> = {
-            'Content-Type': 'application/json',
-        };
+        const headerObj: Record<string, string> = {};
 
         // Jira has issue with some user agent. Hence always customize it for Firefox
         if (browser.isFirefox || browser.isEdge) {
@@ -77,7 +75,7 @@ export default class AjaxRequestService {
         }
 
         const headers = { ...this.httpOptions.headers, ...remainingHeaders };
-        if (json !== false) {
+        if (body !== undefined && json !== false) {
             headers['Content-Type'] = 'application/json';
         }
 

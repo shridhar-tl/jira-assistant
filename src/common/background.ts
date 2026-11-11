@@ -4,21 +4,11 @@ import injectServices, { inject, serviceObjectMap } from '../services/index-back
 
 import './extensions';
 import { convertToStorableValue, convertToUsableValue } from './storage-helpers';
+import { type ExtnMessageRequest, type ExtnMessageSender, isMessageAllowed } from './message-access';
+import { getSenderOrigin } from './trusted-origin';
 
 declare const chrome: any;
 declare const browser: any;
-
-interface MessageRequest {
-    svcName: string;
-    action: string;
-    args?: any[];
-}
-
-interface MessageSender {
-    origin?: string;
-    url?: string;
-    tab?: any;
-}
 
 interface MessageResponse {
     success?: any;
@@ -27,49 +17,83 @@ interface MessageResponse {
 }
 
 interface RequestDetails {
-    sender: MessageSender;
-    message: MessageRequest;
+    sender: ExtnMessageSender;
+    message: ExtnMessageRequest;
     response?: MessageResponse;
     sent?: boolean;
 }
 
-const svcAllowedFromUnknownPage = ['SELF', 'WorklogTimerService', 'SettingsService'];
-
 injectServices();
 const services: any = {};
 inject(services, 'AjaxRequestService', 'AppBrowserService', 'StorageService', 'SettingsService', 'MessageService', 'WorklogTimerService');
+const ownExtnId: string = chrome.runtime.id;
+const ownExtnOrigin = (chrome.runtime.getURL('/') as string).replace(/\/$/, '');
+const accessDeniedMessage = 'Access denied';
+let allowLocalOrigin = false;
+let accessSettingsLoading: Promise<void> = Promise.resolve();
 startListening();
 
 function startListening(): void {
-    chrome.runtime.onMessageExternal.addListener(onRequestReceived);
+    chrome.runtime.onMessageExternal.addListener(onExternalRequestReceived);
     if (typeof browser !== 'undefined' && browser.runtime) {
-        browser.runtime.onMessage.addListener(onRequestReceived);
+        browser.runtime.onMessage.addListener(onInternalRequestReceived);
     } else {
-        chrome.runtime.onMessage.addListener(onRequestReceived);
+        chrome.runtime.onMessage.addListener(onInternalRequestReceived);
     }
+    accessSettingsLoading = loadAccessSettings();
     loadSettings();
     console.log('Started listening for incomming requests', new Date());
 }
 
-function onRequestReceived(message: MessageRequest, sender: MessageSender, sendResponse: (response: MessageResponse) => void): boolean {
+function onExternalRequestReceived(message: ExtnMessageRequest, sender: ExtnMessageSender, sendResponse: (response: MessageResponse) => void): boolean {
+    return onRequestReceived(message, sender, sendResponse, true);
+}
+
+function onInternalRequestReceived(message: ExtnMessageRequest, sender: ExtnMessageSender, sendResponse: (response: MessageResponse) => void): boolean {
+    return onRequestReceived(message, sender, sendResponse, false);
+}
+
+function onRequestReceived(
+    message: ExtnMessageRequest,
+    sender: ExtnMessageSender,
+    sendResponse: (response: MessageResponse) => void,
+    isExternal: boolean,
+): boolean {
     const reqDetails: RequestDetails = { sender, message };
     log('Received request from ', reqDetails);
-    let origin = sender.origin;
-    if (!origin && sender.url) {
-        origin = new URL(sender.url).origin;
-    }
-    origin = origin!.toLowerCase();
-    if (!origin.endsWith('.jiraassistant.com') && !svcAllowedFromUnknownPage.includes(message.svcName)) {
-        log('Denied to serve request from unknown origin: ', message, sender.origin);
-        return false;
-    }
-
-    executeCommand(message, sendResponse, reqDetails);
+    serveRequest(message, sender, sendResponse, isExternal, reqDetails);
     return true;
 }
 
+async function serveRequest(
+    message: ExtnMessageRequest,
+    sender: ExtnMessageSender,
+    sendResponse: (response: MessageResponse) => void,
+    isExternal: boolean,
+    reqDetails: RequestDetails,
+): Promise<void> {
+    await accessSettingsLoading;
+
+    if (!isMessageAllowed(message, sender, { isExternal, ownId: ownExtnId, ownOrigin: ownExtnOrigin, allowLocalOrigin })) {
+        log('Denied to serve request from unknown origin: ', message, getSenderOrigin(sender));
+        sendResponse({ error: convertToStorableValue({ message: accessDeniedMessage }), messages: [] });
+        return;
+    }
+
+    await executeCommand(message, sendResponse, reqDetails);
+}
+
+async function loadAccessSettings(): Promise<void> {
+    try {
+        allowLocalOrigin = (await services.$settings.get('allowLocalJAOrigin')) === true;
+    } catch (err) {
+        allowLocalOrigin = false;
+        error('Unable to load access settings', err);
+    }
+}
+
 async function executeCommand(
-    message: MessageRequest,
+    message: ExtnMessageRequest,
     sendResponse: (response: MessageResponse) => void,
     logDetails: RequestDetails,
 ): Promise<void> {
@@ -94,6 +118,8 @@ async function executeCommand(
                     break;
 
                 case 'RELOAD':
+                    accessSettingsLoading = loadAccessSettings();
+                    await accessSettingsLoading;
                     loadSettings();
                     break;
 
