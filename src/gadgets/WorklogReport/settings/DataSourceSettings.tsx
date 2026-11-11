@@ -201,6 +201,7 @@ const SprintAdditionalOptions = memo(function SprintAdditionalOptions({
                             { value: '2', label: 'Consider end of day as end date' },
                             { value: '3', label: 'Consider end of previous day as end date' },
                             { value: '4', label: 'Use start of next sprint (if available)' },
+                            { value: '5', label: 'Use planned end date of sprint instead of actual completion' },
                         ]}
                     />
                 </>

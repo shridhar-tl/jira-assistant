@@ -1,6 +1,6 @@
 import moment from 'moment-timezone';
 
-import { getDateRange } from '@/utils';
+import { type DateItem, getDateRange, getWeekGroup } from '@/utils';
 
 import { inject } from '../../../services/injector';
 import { getProjectKeys, getUniqueUsersFromGroup } from '../utils';
@@ -157,35 +157,8 @@ export function getUserWiseWorklog(
     };
 }
 
-export function getWeekHeader(dates: any[]) {
-    const grouped: any = {};
-    dates.forEach((d) => {
-        const key = `${d.month}_${d.week}`;
-        if (!grouped[key]) {
-            grouped[key] = [];
-        }
-        grouped[key].push(d);
-    });
-
-    return Object.values(grouped).map((values: any) => {
-        const days = values.length;
-        let display;
-        const first = values[0];
-        const last = values[days - 1];
-        const { week, dispFormat } = first;
-
-        if (days > 4) {
-            display = `${dispFormat}, ${first.dateNum} to ${last.dateNum} (W-${week})`;
-        } else if (days > 3) {
-            display = `${dispFormat}, ${first.dateNum}-${last.dateNum}`;
-        } else if (days > 2) {
-            display = `${dispFormat.split(' ')[0]} (W-${week})`;
-        } else {
-            display = dispFormat.split(' ')[0];
-        }
-
-        return { display, days };
-    });
+export function getWeekHeader(dates: DateItem[]) {
+    return getWeekGroup(dates).map(({ display, days }) => ({ display, days }));
 }
 
 export function generateUserDayWiseData(data: any, groups: any[], pageSettings: any) {

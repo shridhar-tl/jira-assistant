@@ -426,7 +426,7 @@ export function getDaysDiffForDateRange(fromDate: Date, toDate: Date, workingDay
     return totalDays || 0;
 }
 
-interface DateItem {
+export interface DateItem {
     month: number;
     week: number;
     dispFormat: string;
@@ -434,30 +434,33 @@ interface DateItem {
     date: Date | string;
 }
 
-interface WeekGroup {
+export interface WeekGroup<T extends DateItem = DateItem> {
     display: string;
     days: number;
-    values: DateItem[];
+    values: T[];
     start: number;
     end: number;
 }
 
-export function getWeekGroup(dates: DateItem[]): WeekGroup[] {
-    // Group by month_week
-    const grouped = dates.reduce(
-        (acc, d) => {
-            const key = `${d.month}_${d.week}`;
-            if (!acc[key]) {
-                acc[key] = [];
-            }
-            acc[key].push(d);
-            return acc;
-        },
-        {} as Record<string, DateItem[]>,
-    );
+function groupConsecutiveWeeks<T extends DateItem>(dates: T[]): T[][] {
+    const groups: T[][] = [];
+    let previous: T | undefined;
 
-    // Map each group to the result format
-    return Object.values(grouped).map((values) => {
+    for (const d of dates) {
+        const current = groups[groups.length - 1];
+        if (current && previous && previous.month === d.month && previous.week === d.week) {
+            current.push(d);
+        } else {
+            groups.push([d]);
+        }
+        previous = d;
+    }
+
+    return groups;
+}
+
+export function getWeekGroup<T extends DateItem>(dates: T[]): WeekGroup<T>[] {
+    return groupConsecutiveWeeks(dates).map((values) => {
         const days = values.length;
         let display = '';
 

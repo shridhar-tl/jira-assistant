@@ -597,7 +597,7 @@ export default class JiraService {
 
                     // Assign prev and next sprint start & end dates
                     let prevSprint: any = null;
-                    sprints.forEach((cur: any) => {
+                    [...sprints].reverse().forEach((cur: any) => {
                         const prevEndDate = prevSprint?.completeDate || prevSprint?.endDate;
                         if (prevEndDate) {
                             cur.previousSprintEnd = prevEndDate;

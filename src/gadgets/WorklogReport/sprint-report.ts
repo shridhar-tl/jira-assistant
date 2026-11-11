@@ -44,7 +44,7 @@ export function generateSprintReport(setState: any, getState: any) {
                 for (const sprint of sprintsList) {
                     const { id, startDate, endDate, completeDate = endDate, previousSprintEnd, nextSprintStart } = sprint;
                     const fromDate = moment(startDate),
-                        toDate = moment(completeDate);
+                        toDate = moment(sprintEndRounding === '5' ? endDate : completeDate);
 
                     const settings: any = {
                         fromDate: fromDate.toDate(),
