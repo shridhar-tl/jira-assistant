@@ -1,1 +1,0 @@
-import{i as e}from"./gadgets-BsXkX71n.js";import{t}from"./vendor-react-DANpOOHp.js";var n=t();function r(){return(0,n.jsx)(e,{isGadget:!1})}export{r as default};
