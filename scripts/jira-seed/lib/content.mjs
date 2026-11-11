@@ -1,0 +1,320 @@
+export const components = [
+    { name: 'Web App', productFacing: true, description: 'Customer facing web storefront' },
+    { name: 'Mobile App', productFacing: true, description: 'iOS and Android apps' },
+    { name: 'API', productFacing: true, description: 'Public and internal REST APIs' },
+    { name: 'Payments', productFacing: true, description: 'Payment gateway integrations and billing' },
+    { name: 'Notifications', productFacing: true, description: 'Email, SMS and push notifications' },
+    { name: 'Admin Portal', productFacing: true, description: 'Back office tools for operations team' },
+    { name: 'Data & Reporting', description: 'Analytics pipelines and reports' },
+    { name: 'Infrastructure', description: 'CI/CD, hosting and monitoring' },
+];
+
+export const epics = [
+    {
+        name: 'Checkout revamp',
+        components: ['Web App', 'Payments'],
+        labels: ['frontend', 'conversion'],
+        stories: [
+            'Single page checkout layout',
+            'Guest checkout without account creation',
+            'Address autocomplete using postal lookup',
+            'Show order summary sticky panel on checkout',
+            'Apply multiple coupon codes in one order',
+            'Persist cart across devices for logged in users',
+            'Estimated delivery date on checkout',
+            'Save card for future purchases',
+            'Inline validation for payment form',
+            'Checkout analytics funnel events',
+            'Split payment between gift card and card',
+        ],
+    },
+    {
+        name: 'UPI and wallet payments',
+        components: ['Payments', 'API'],
+        labels: ['backend', 'payments'],
+        stories: [
+            'Integrate UPI collect flow',
+            'Support UPI intent on mobile web',
+            'Wallet top up with saved instruments',
+            'Refund to original payment method',
+            'Payment retry for failed transactions',
+            'Reconcile settlements with gateway reports',
+            'Webhook signature verification for gateway callbacks',
+            'Payment status polling fallback',
+            'Show payment failure reasons to customers',
+        ],
+    },
+    {
+        name: 'Search relevance',
+        components: ['API', 'Web App'],
+        labels: ['search', 'backend'],
+        stories: [
+            'Typo tolerant product search',
+            'Search suggestions with recent searches',
+            'Boost in-stock products in results',
+            'Faceted filters for brand and price',
+            'Synonym dictionary management',
+            'Search results analytics dashboard',
+            'Sort by popularity and rating',
+            'Zero results page with recommendations',
+            'Index product updates in near real time',
+        ],
+    },
+    {
+        name: 'Customer self service',
+        components: ['Web App', 'Mobile App'],
+        labels: ['frontend', 'customer-experience'],
+        stories: [
+            'Order tracking timeline',
+            'Cancel order before dispatch',
+            'Initiate return with pickup slot selection',
+            'Download invoices from order history',
+            'Update communication preferences',
+            'Raise support ticket from order page',
+            'Reorder previous purchases in one click',
+            'Manage saved addresses',
+        ],
+    },
+    {
+        name: 'Notification centre',
+        components: ['Notifications', 'Mobile App'],
+        labels: ['backend', 'notifications'],
+        stories: [
+            'In-app notification inbox',
+            'Push notification for order dispatch',
+            'SMS fallback when push delivery fails',
+            'Quiet hours for promotional notifications',
+            'Template editor for transactional emails',
+            'Track email open and click rates',
+            'Batch digest of price drop alerts',
+            'Unsubscribe link handling per category',
+        ],
+    },
+    {
+        name: 'Admin order management',
+        components: ['Admin Portal', 'API'],
+        labels: ['admin', 'operations'],
+        stories: [
+            'Bulk update order status',
+            'Assign orders to fulfilment centres',
+            'Fraud review queue for risky orders',
+            'Manual refund with approval workflow',
+            'Order notes visible to support agents',
+            'Export orders with custom columns',
+            'Role based access for admin users',
+            'Audit trail for order changes',
+            'SLA breach alerts for pending orders',
+        ],
+    },
+    {
+        name: 'Loyalty programme',
+        components: ['Web App', 'API', 'Mobile App'],
+        labels: ['loyalty', 'growth'],
+        stories: [
+            'Earn points on every purchase',
+            'Redeem points during checkout',
+            'Tier based benefits page',
+            'Points expiry reminders',
+            'Referral rewards for new customers',
+            'Birthday bonus points',
+            'Loyalty points ledger API',
+            'Admin adjustment of loyalty points',
+        ],
+    },
+    {
+        name: 'Reporting and insights',
+        components: ['Data & Reporting', 'Admin Portal'],
+        labels: ['analytics', 'reporting'],
+        stories: [
+            'Daily sales report by category',
+            'Cohort retention dashboard',
+            'Inventory ageing report',
+            'Scheduled report emails',
+            'Return reasons breakdown',
+            'Marketing campaign attribution report',
+            'Export reports to Excel',
+            'Near real time revenue tile',
+        ],
+    },
+    {
+        name: 'Mobile app performance',
+        components: ['Mobile App', 'API'],
+        labels: ['mobile', 'performance'],
+        stories: [
+            'Reduce cold start time on Android',
+            'Image lazy loading on listing screens',
+            'Offline cart support',
+            'Paginate order history API',
+            'Cache product details for repeat visits',
+            'Crash free sessions dashboard',
+            'Compress API responses',
+            'Prefetch next page of results',
+        ],
+    },
+    {
+        name: 'Platform reliability',
+        components: ['Infrastructure', 'API'],
+        labels: ['devops', 'reliability'],
+        stories: [
+            'Blue green deployment for API',
+            'Autoscaling rules for peak sale traffic',
+            'Centralised structured logging',
+            'Synthetic monitoring for checkout',
+            'Database read replica for reports',
+            'Rate limiting on public endpoints',
+            'Disaster recovery runbook automation',
+            'Alert routing by service ownership',
+        ],
+    },
+    {
+        name: 'Accessibility compliance',
+        components: ['Web App', 'Mobile App'],
+        labels: ['accessibility', 'frontend'],
+        stories: [
+            'Keyboard navigation for product listing',
+            'Screen reader labels on checkout form',
+            'Colour contrast fixes for buttons',
+            'Focus management in modal dialogs',
+            'Accessible error messages',
+            'Reduce motion setting support',
+        ],
+    },
+    {
+        name: 'Seller onboarding',
+        components: ['Admin Portal', 'API'],
+        labels: ['sellers', 'backend'],
+        stories: [
+            'Seller registration with KYC upload',
+            'GST number validation',
+            'Bulk product upload via CSV',
+            'Seller payout schedule settings',
+            'Seller performance scorecard',
+            'Commission rules per category',
+            'Seller support chat',
+        ],
+    },
+];
+
+export const genericStories = [
+    'Improve empty state messaging',
+    'Add feature flag for gradual rollout',
+    'Capture analytics events for new flow',
+    'Localise new screens for Hindi',
+    'Handle slow network gracefully',
+    'Add server side pagination',
+    'Remember last used filters',
+];
+
+export const bugTemplates = [
+    'Incorrect total shown after applying coupon',
+    'Page crashes when list is empty',
+    'Duplicate order created on double click',
+    'Layout breaks on small screens',
+    'Stale data after pull to refresh',
+    'Session timeout does not redirect to login',
+    'Sorting ignores case',
+    'Export misses the last row',
+    'Tooltip hidden behind dialog',
+    'Date picker accepts past dates',
+    'Memory leak when switching tabs',
+    'Wrong currency symbol in summary',
+    'Filter resets on page reload',
+    'Slow query on large datasets',
+    'Push notification opens wrong screen',
+    'Timezone shift in order timestamps',
+    'Search returns out of stock items first',
+    'Email template shows raw placeholders',
+    'Refund status not updated after webhook',
+    'Spinner never stops on network error',
+];
+
+export const prodBugTemplates = [
+    'Payments failing for a subset of cards',
+    'Checkout page returning 500 during sale',
+    'Orders stuck in pending state',
+    'Customers not receiving OTP SMS',
+    'Admin portal login loop after deploy',
+];
+
+export const taskTemplates = {
+    dev: [
+        'Upgrade framework dependencies',
+        'Refactor data access layer',
+        'Clean up deprecated feature flags',
+        'Document public endpoints',
+        'Improve API error logging',
+        'Add monitoring dashboards',
+        'Rotate API keys and secrets',
+        'Migrate scheduled jobs to queue workers',
+        'Remove unused database columns',
+    ],
+    qa: [
+        'Automate regression suite',
+        'Write end to end tests',
+        'Prepare test data set',
+        'Performance test critical flows',
+        'Cross browser test pass',
+        'Update test cases for new flow',
+        'Exploratory testing session',
+    ],
+};
+
+export const spikeTemplates = [
+    'Spike: evaluate options for',
+    'Spike: proof of concept for',
+    'Spike: investigate approach for',
+];
+
+export const subtaskTemplates = {
+    dev: ['Backend implementation', 'API contract changes', 'Database migration'],
+    dev2: ['UI implementation', 'Mobile screens', 'Frontend validations'],
+    qa: ['Test case preparation and testing', 'Functional testing', 'Regression testing'],
+};
+
+export const descriptions = {
+    story: [
+        'As a customer I want this so that I can complete my purchase faster.\nAcceptance criteria agreed with product during refinement.',
+        'Designs are attached in the design file. Keep the change behind the feature flag until sign off.',
+        'Acceptance: works for logged in and guest users, covered by automated tests.',
+        'Requested by the business team after the last release review.',
+    ],
+    bug: [
+        'Steps to reproduce:\n1. Login as customer\n2. Follow the flow\n3. Observe the issue\nExpected: works as designed.',
+        'Reported by customer support. Happens intermittently, mostly on mobile web.',
+        'Found during regression testing of the release candidate.',
+    ],
+    task: ['Technical housekeeping item identified in the last retrospective.', 'Needed before the next major release.'],
+};
+
+export const worklogComments = {
+    dev: ['Implementation', 'Implemented core changes', 'UI changes and wiring', 'Unit tests', 'Addressed review comments', 'Analysis and design', 'Integration with API', 'Refactoring and cleanup', 'Fixed edge cases'],
+    bugfix: ['Investigated root cause', 'Reproduced the issue locally', 'Fix and regression test', 'Debugging with logs'],
+    review: ['Code review', 'Peer review and feedback', 'Review follow up discussion'],
+    qa: ['Functional testing', 'Test case execution', 'Regression testing', 'Verified fix', 'Retesting after fixes', 'Test data setup'],
+    task: ['Working on task', 'Configuration changes', 'Testing and verification', 'Documentation'],
+    investigate: ['Investigation', 'Tried to reproduce', 'Analysis'],
+};
+
+export const comments = {
+    blocked: ['Blocked waiting for API contract from the payments team.', 'Waiting on design clarification, flagged for the stand-up.', 'Blocked by environment issue in staging.'],
+    unblocked: ['Unblocked now, continuing with the implementation.', 'Got the clarification, resuming work.'],
+    readyForQa: ['Deployed to QA environment, ready for testing.', 'PR merged, please verify on staging.'],
+    reopened: ['Reopening: still reproducible on Android 13.', 'Reopening: edge case with zero quantity fails.'],
+    cannotReproduce: ['Unable to reproduce on latest build, closing. Please reopen with logs if it happens again.'],
+    duplicate: ['Duplicate of an existing bug, closing this one.'],
+    wontDo: ['Product decided to drop this for now, closing.', 'No longer needed after the redesign.'],
+    descoped: ['Moving out of the sprint due to priority change.', 'Descoped in mid-sprint review to make room for the production issue.'],
+    reestimated: ['Re-estimated after discovering additional work in the API layer.', 'Scope reduced after discussion, updated the estimate.'],
+    carried: ['Could not finish this sprint, carrying over.'],
+    general: ['Discussed in refinement, approach looks good.', 'Added notes from the call with product.', 'Please check the attached logs.'],
+};
+
+export const sprintGoals = {
+    steady: (epics) => `Deliver ${epics.join(' and ')} increments`,
+    stabilisation: () => 'Stabilise the release candidate and burn down open bugs',
+    overcommitted: (epics) => `Push ${epics.join(', ')} features ahead of the release`,
+    light: () => 'Tech debt, upgrades and buffer for support',
+    release: (epics) => `Release readiness for ${epics.join(' and ')}`,
+    research: (epics) => `Discovery and spikes for ${epics.join(' and ')}`,
+    holiday: () => 'Reduced capacity sprint: support and small improvements',
+};

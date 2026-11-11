@@ -1,0 +1,34 @@
+{
+    "seed": 20251103,
+    "utcOffset": "+05:30",
+    "silenceNotifications": true,
+    "project": {
+        "key": "JSD",
+        "name": "JA Sprint Demo",
+        "create": true
+    },
+    "workflow": {
+        "create": true
+    },
+    "sprint": {
+        "namePrefix": "Sprint",
+        "lengthWeeks": 2,
+        "startWeekday": 1,
+        "endWeekday": 5,
+        "pastMonths": 12,
+        "futureMonths": 6,
+        "startTime": ["11:00", "12:30"],
+        "endTime": ["17:00", "19:30"],
+        "allowedWindow": ["11:00", "20:00"]
+    },
+    "releases": {
+        "firstVersion": "2.4.0",
+        "sprintsPerRelease": 2
+    },
+    "holidays": ["2025-12-25", "2026-01-01", "2026-01-26", "2026-08-15", "2026-10-02"],
+    "users": [
+        { "email": "lead@example.com", "tokenEnv": "JIRA_API_TOKEN", "role": "lead" },
+        { "email": "developer@example.com", "tokenEnv": "JIRA_API_TOKEN2", "role": "dev" },
+        { "email": "tester@example.com", "tokenEnv": "JIRA_API_TOKEN3", "role": "qa" }
+    ]
+}
