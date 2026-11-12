@@ -61,7 +61,7 @@ class SaveReportDialog extends BaseDialog<SaveReportDialogProps, SaveReportDialo
         const { newQueryName, copyQuery } = this.state;
 
         return this.renderBase(
-            <div className="p-4">
+            <div>
                 <label className="block mb-2 font-semibold text-gray-700 dark:text-gray-300">Report Name</label>
                 <div className="mb-3">
                     <TextInput value={newQueryName} onChange={this.nameChanged} className="w-full" placeholder="Enter report name" />

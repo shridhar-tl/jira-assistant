@@ -280,9 +280,12 @@ body.mode-dark ::-webkit-scrollbar-thumb:hover {
     background: #475569;
 }
 
+* {
+    scrollbar-width: thin;
+}
+
 body {
     scrollbar-color: #cbd5e1 transparent;
-    scrollbar-width: thin;
 
     &.mode-dark {
         scrollbar-color: #334155 transparent;

@@ -63,11 +63,8 @@ class BaseDialog<P extends BaseDialogProps = BaseDialogProps, S extends BaseDial
         }
 
         return (
-            <Modal isOpen={showDialog} onClose={this.onHide} title={title} style={this.style} className={this.className}>
-                <div className="flex flex-col gap-4">
-                    {children}
-                    {footer && <div className="flex justify-end gap-2 pt-4 border-t border-(--border-color)">{footer}</div>}
-                </div>
+            <Modal isOpen={showDialog} onClose={this.onHide} title={title} style={this.style} className={this.className} footer={footer}>
+                {children}
             </Modal>
         );
     }

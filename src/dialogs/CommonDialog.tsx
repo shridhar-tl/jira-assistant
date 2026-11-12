@@ -64,7 +64,7 @@ class CommonDialog extends BaseDialog<any, DialogState> {
     render() {
         const { body } = this;
 
-        return this.renderBase(<div className="p-6">{this.parseMarkupString(body || '')}</div>);
+        return this.renderBase(this.parseMarkupString(body || ''));
     }
 }
 

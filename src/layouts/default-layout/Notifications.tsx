@@ -115,15 +115,13 @@ export default function Notifications({ notifications }: NotificationsProps) {
                     ref={panelRef}
                     className="absolute right-0 top-full mt-1 w-96 rounded-lg z-50 overflow-hidden bg-(--bg-primary) border border-(--border-primary) shadow-(--shadow-xl)"
                 >
-                    <div className="p-4">
-                        <div className="text-center font-semibold text-sm mb-3 text-primary">
-                            You have {unread || total} {unread ? 'unread' : ''} messages
-                        </div>
-                        <div className="max-h-96 overflow-y-auto space-y-2">
-                            {list.map((msg, i) => (
-                                <Message key={i} message={msg} onOpen={readMessage} onRead={markRead} cut={$utils.cut} />
-                            ))}
-                        </div>
+                    <div className="px-4 pt-4 pb-3 text-center font-semibold text-sm text-primary">
+                        You have {unread || total} {unread ? 'unread' : ''} messages
+                    </div>
+                    <div className="max-h-96 overflow-y-auto px-4 pb-4 space-y-2">
+                        {list.map((msg, i) => (
+                            <Message key={i} message={msg} onOpen={readMessage} onRead={markRead} cut={$utils.cut} />
+                        ))}
                     </div>
                 </div>
             )}
