@@ -133,9 +133,12 @@ async function validateIfExtnReadyForUse(pathname: string, navigate: ReturnType<
 
     newState.authType = localStorage.getItem('authType') || undefined;
 
+    // An integrated user is shown why the extension refuses this site instead of being sent to integrate again.
+    const extnAccessDenied = newState.authType === '1' && !!newState.extnAccessDeniedReason;
+
     // A shared poker link opens as a guest, but a launch from the extension must use its integration.
     const allowsGuest = !isExtnLaunch && isPokerPath(pathname);
-    if ((!authType || (authType === '1' && !newState.authReady)) && !allowsGuest) {
+    if ((!authType || (authType === '1' && !newState.authReady && !extnAccessDenied)) && !allowsGuest) {
         navigate('/integrate');
     }
 

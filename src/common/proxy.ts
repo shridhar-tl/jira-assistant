@@ -20,6 +20,16 @@ const extensionId = {
 export const isExtnLaunch = isWebBuild && new URLSearchParams(window.location.search).get('authType') === '1';
 
 const extnId = extensionId[BROWSER_NAME as keyof typeof extensionId];
+
+type ExtnAccessDeniedListener = (reason: string) => void;
+const accessDeniedListeners = new Set<ExtnAccessDeniedListener>();
+
+export function onExtnAccessDenied(listener: ExtnAccessDeniedListener): () => void {
+    accessDeniedListeners.add(listener);
+    return () => {
+        accessDeniedListeners.delete(listener);
+    };
+}
 const chr = typeof chrome !== 'undefined' ? chrome : typeof browser !== 'undefined' ? browser : {};
 
 function hasInjection(): boolean {
@@ -62,6 +72,9 @@ export function executeService(svcName: string, action: string, args?: any[], $m
 
     return request.catch((err: unknown) => {
         console.error(`JA: Extension request ${svcName}.${action} failed:`, err);
+        if (isExtnAccessDenied(err)) {
+            accessDeniedListeners.forEach((listener) => listener(err.message));
+        }
         throw err;
     });
 }

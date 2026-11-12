@@ -3,7 +3,7 @@ import { memo, useCallback, useEffect, useState } from 'react';
 
 import { useLocation, useNavigate } from 'react-router';
 
-import { isExtnLaunch } from '@/common/proxy';
+import { isExtnLaunch, onExtnAccessDenied } from '@/common/proxy';
 import { isWebBuild } from '@/constants/build-info';
 import { clearInstances } from '@/services/injector';
 
@@ -73,6 +73,18 @@ export function withAuthInfo<P extends WithAuthInfoProps>(Component: ComponentTy
         }, [userId, shouldAuth, allowsGuest, authInfo, pathname, navigate]);
 
         useEffect(tryAuthorize, [userId, shouldAuth]);
+
+        useEffect(() => {
+            if (!shouldAuth) {
+                return;
+            }
+            return onExtnAccessDenied((reason) => {
+                const { $session } = inject('SessionService');
+                $session.authenticated = false;
+                $session.extnAccessDeniedReason = reason;
+                setAuthInfo({ authenticated: false, jiraUrl: $session.rootUrl, extnAccessDeniedReason: reason });
+            });
+        }, [shouldAuth]);
 
         useEffect(() => {
             if ((!rawPathname || rawPathname === '/') && authInfo && authInfo.authenticated && authInfo.userId) {
