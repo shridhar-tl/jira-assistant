@@ -41,7 +41,7 @@
         "persistent": true,
         "scripts": ["background.js"]
     },
-    "web_accessible_resources": ["index.html", "api-pollyfill.js", "/assets/*", "/jira_cs.js", "/jira.css"],
+    "web_accessible_resources": ["index.html", "api-pollyfill.js", "/assets/*", "/jira_cs.js", "/jira_cs.css"],
     "commands": {
         "open-ja-dashboard": {
             "suggested_key": {

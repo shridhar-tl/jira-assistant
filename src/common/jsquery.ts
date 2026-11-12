@@ -1,4 +1,4 @@
-class JSQuery {
+export class JSQuery {
     elements: Element[];
     element: Element | null;
     length: number;

@@ -191,7 +191,10 @@ export default class ChromeBrowserService extends BrowserBase {
             });
             this.clientPort = port;
             port.postMessage('keep-alive');
-            port.onDisconnect.addListener(() => setTimeout(() => this.connectAndKeepAlive(onChange), 20000));
+            port.onDisconnect.addListener(() => {
+                void chrome.runtime.lastError;
+                setTimeout(() => this.connectAndKeepAlive(onChange), 20000);
+            });
             console.log('Keeping SW alive', new Date());
         } catch (err) {
             console.log('Unable to keep-alive', err);

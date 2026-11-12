@@ -1,6 +1,6 @@
-import $ from '../common/jsquery';
+import $, { type JSQuery } from '../common/jsquery';
 
-import { icons, isCloud, Pages } from './constants';
+import { icons } from './constants';
 import { executeJASvc, getIconHtml } from './utils';
 
 interface Settings {
@@ -12,35 +12,33 @@ interface Settings {
 
 export function addTimerControls(
     currentPage: string,
-    controls: any,
+    controls: JSQuery,
     issueKey: string,
     settings: Settings,
     issueId: string,
     triggerFunc: (e: Event) => void,
 ) {
-    const convert = currentPage !== Pages.Board || !isCloud;
+    if (!controls.length) {
+        return;
+    }
+
     if (issueKey === settings.timerKey) {
         if (settings.timerStarted) {
-            convertTooltip(convert, controls.append(getIconHtml(issueKey, issueId, 'PAUSE', icons.pause, currentPage)).click(triggerFunc));
+            appendControl(controls, getIconHtml(issueKey, issueId, 'PAUSE', icons.pause, currentPage), triggerFunc);
         } else {
-            convertTooltip(
-                convert,
-                controls.append(getIconHtml(issueKey, issueId, 'RESUME', icons.resume, currentPage)).click(triggerFunc),
-            );
+            appendControl(controls, getIconHtml(issueKey, issueId, 'RESUME', icons.resume, currentPage), triggerFunc);
         }
-        convertTooltip(convert, controls.append(getIconHtml(issueKey, issueId, 'STOP', icons.stop, currentPage)).click(triggerFunc));
+        appendControl(controls, getIconHtml(issueKey, issueId, 'STOP', icons.stop, currentPage), triggerFunc);
     } else {
-        convertTooltip(convert, controls.append(getIconHtml(issueKey, issueId, 'START', icons.start, currentPage)).click(triggerFunc));
+        appendControl(controls, getIconHtml(issueKey, issueId, 'START', icons.start, currentPage), triggerFunc);
     }
 }
 
-function convertTooltip(convert: boolean, el: any) {
-    if (!convert) {
-        return;
-    }
-    el = el.find('div.ja-icon[data-tooltip');
-    if (el.length) {
-        el.attr('title', el.attr('data-tooltip'));
+function appendControl(controls: JSQuery, html: string, triggerFunc: (e: Event) => void) {
+    const el = controls.append(html).click(triggerFunc);
+    const icon = el.find('div.ja-icon[data-tooltip]');
+    if (icon.length) {
+        icon.attr('title', icon.attr('data-tooltip') as string);
     }
 }
 

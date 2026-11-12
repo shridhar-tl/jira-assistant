@@ -1,8 +1,10 @@
+import './jira.css';
+
 import { curOrigin, Pages, regexSet } from './constants';
 import { applyBoardLogic } from './jira-board';
 import { applyIssueLogic } from './jira-issue';
 import { createTimerBox } from './timer-box';
-import { chr, executeJASvc, getPathName, injectCss, injectPollyfill, until } from './utils';
+import { chr, executeJASvc, getPathName, injectCss, injectPollyfill, isExtnContextValid, until } from './utils';
 
 const win: any = window;
 
@@ -23,13 +25,27 @@ let currentPage: string | undefined;
 let applying = false;
 let settings: Settings = {};
 
+function detachIfOrphaned(): boolean {
+    if (isExtnContextValid()) {
+        return false;
+    }
+    win.removeEventListener('ja-locationchange', loadLocationInfo);
+    win.removeEventListener('focus', refreshSettings);
+    return true;
+}
+
 function loadLocationInfo() {
+    if (detachIfOrphaned()) {
+        return;
+    }
     const curPathname = getPathName();
 
     if (regexSet.board.test(curPathname)) {
         currentPage = Pages.Board;
     } else if (regexSet.issue.test(curPathname)) {
         currentPage = Pages.Issue;
+    } else {
+        currentPage = undefined;
     }
 
     console.log('JA: Current page code:-', currentPage);
@@ -58,8 +74,8 @@ async function applyModifications(firstTime?: boolean, noPull?: boolean) {
         await until(settings.attachDelay || 2000);
     }
 
+    await applyBoardLogic(currentPage, settings, !!firstTime, applyModifications);
     if (currentPage) {
-        await applyBoardLogic(currentPage, settings, !!firstTime, applyModifications);
         applyIssueLogic(currentPage, settings, !!firstTime, applyModifications);
         createTimerBox(settings, applyModifications);
     }
@@ -69,6 +85,9 @@ async function applyModifications(firstTime?: boolean, noPull?: boolean) {
 }
 
 async function refreshSettings(noTrigger?: boolean) {
+    if (detachIfOrphaned()) {
+        return;
+    }
     const newSett = (await executeJASvc('SELF', 'GET_CS_SETTINGS', curOrigin)) as Settings;
     if (shouldUpdate(newSett)) {
         console.log('JA: About to apply changes');
@@ -118,12 +137,17 @@ function connectAndKeepAlive(onChange?: (noTrigger: boolean) => void) {
                 onChange(false);
             }
         });
-        port.onDisconnect.addListener(() =>
+        port.onDisconnect.addListener(() => {
+            void chr.runtime.lastError;
+            if (detachIfOrphaned()) {
+                clientPort = null;
+                return;
+            }
             setTimeout(async () => {
                 await refreshSettings(false);
                 connectAndKeepAlive(onChange);
-            }, waitBeforeNextTry),
-        );
+            }, waitBeforeNextTry);
+        });
         retryCount = 0;
         console.log('JA: keep-alive connected');
     } catch (err) {

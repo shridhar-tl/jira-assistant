@@ -23,7 +23,7 @@ export const curOrigin = document.location.origin;
 export const isCloud = curOrigin.endsWith('.atlassian.net');
 
 const cloudRegexSet = {
-    board: /^\/jira\/software\/c\/projects\/([A-Z0-9-]+)\/boards\/(\d+)/i,
+    board: /^\/jira\/software\/(?:c\/)?projects\/([A-Z0-9_-]+)\/boards\/(\d+)/i,
     issue: /browse\/([A-Z0-9]+-\d+)[/?]?.*$/i,
 };
 

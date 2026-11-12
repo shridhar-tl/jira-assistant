@@ -54,3 +54,21 @@ div.ja-timer-ctl .ja-icon-close {
 .ja-dcv.ja-issue-tmr-ctl {
     margin-top: 12px;
 }
+
+.ja-board-tmr-ctl {
+    position: relative;
+    pointer-events: auto;
+    display: inline-flex;
+    align-items: center;
+}
+
+.ja-board-tmr-ctl .ja-issue-el {
+    display: inline-flex;
+    cursor: pointer;
+}
+
+.ja-board-tmr-ctl .ja-icon {
+    display: inline-flex;
+    cursor: pointer;
+    margin: 0 2px;
+}

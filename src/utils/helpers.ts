@@ -389,7 +389,7 @@ export function setStartOfWeek(startOfWeek: number): void {
         startOfWeek = 1;
     }
     weekStartsOn = ((startOfWeek - 1) % 7) as 0 | 1 | 2 | 3 | 4 | 5 | 6;
-    moment.locale(moment.locale(), { week: { dow: startOfWeek - 1 } });
+    moment.updateLocale(moment.locale(), { week: { dow: startOfWeek - 1 } });
 }
 
 export function getStartOfWeek(): 0 | 1 | 2 | 3 | 4 | 5 | 6 {

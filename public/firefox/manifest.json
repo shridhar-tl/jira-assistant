@@ -42,7 +42,7 @@
         "persistent": true,
         "scripts": ["background.js"]
     },
-    "web_accessible_resources": ["api-pollyfill.js", "index.html", "/assets/*", "/jira_cs.js", "/jira.css"],
+    "web_accessible_resources": ["api-pollyfill.js", "index.html", "/assets/*", "/jira_cs.js", "/jira_cs.css"],
     "content_security_policy": "script-src 'self' ; object-src 'self'; frame-src https://www.youtube.com;",
     "permissions": ["activeTab", "identity", "https://*.atlassian.net/", "idle", "scripting"],
     "optional_permissions": ["tabs", "http://*/", "https://*/"],

@@ -10,6 +10,10 @@ declare const browser: any;
 // In Firefox content scripts chrome/browser are globals of the content script sandbox and are not available on window
 export const chr = typeof browser !== 'undefined' && browser.runtime ? browser : chrome;
 
+export function isExtnContextValid(): boolean {
+    return !!chr?.runtime?.id;
+}
+
 export function executeJASvc(svcName: string, action: string, ...args: any[]) {
     return new Promise((resolve, reject) =>
         chr.runtime.sendMessage({ svcName, action, args }).then((res: any) => processResponse(res, {} as any, resolve, reject), reject),
@@ -31,7 +35,7 @@ export async function waitAndGet(selector: string, timeout = 5000) {
 }
 
 export function getIconHtml(issueKey: string, issueId: string, jaAction: string, icon: string, curPage: string) {
-    const css = curPage === Pages.Board ? (isCloud ? 'ghx-field' : 'margin-x-3') : '';
+    const css = curPage === Pages.Board && !isCloud ? 'margin-x-3' : '';
     return `<span class="${css} ja-ctl-el ja-issue-el" data-issue-key="${issueKey}" data-ja-action="${jaAction}" data-issue-id="${issueId}" style="cursor:pointer">${icon}</span>`;
 }
 
@@ -50,7 +54,7 @@ export function injectPollyfill() {
 }
 
 export function injectCss() {
-    $(document.head).append(`<link rel="stylesheet" href="${chr.runtime.getURL('jira.css')}" media="all">`);
+    $(document.head).append(`<link rel="stylesheet" href="${chr.runtime.getURL('jira_cs.css')}" media="all">`);
 }
 
 export function clearEnd(s: string, str: string) {

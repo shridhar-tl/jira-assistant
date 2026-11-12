@@ -41,7 +41,7 @@
             "matches": ["https://*.jiraassistant.com/*"]
         },
         {
-            "resources": ["api-pollyfill.js", "/assets/*", "/jira_cs.js", "/jira.css"],
+            "resources": ["api-pollyfill.js", "/assets/*", "/jira_cs.js", "/jira_cs.css"],
             "matches": ["<all_urls>"]
         }
     ],

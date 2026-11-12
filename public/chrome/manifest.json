@@ -41,7 +41,7 @@
             "matches": ["https://*.jiraassistant.com/*"]
         },
         {
-            "resources": ["api-pollyfill.js", "/assets/*", "/jira_cs.js", "/jira.css"],
+            "resources": ["api-pollyfill.js", "/assets/*", "/jira_cs.js", "/jira_cs.css"],
             "matches": ["<all_urls>"]
         }
     ],
@@ -54,7 +54,7 @@
     },
     "offline_enabled": true,
     "permissions": ["activeTab", "tabs", "idle", "scripting"],
-    "optional_permissions": ["unlimitedStorage", "identity"],
+    "optional_permissions": ["identity"],
     "host_permissions": ["https://*.atlassian.net/"],
     "optional_host_permissions": ["http://*/", "https://*/"],
     "author": "Shridhar",

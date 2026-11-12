@@ -10,7 +10,7 @@ const resolveBuildPath = (...relativePath) => path.resolve(BUILD_DIR, ...relativ
 const browsersList = ['chrome', 'edge', 'opera', 'firefox', 'firefox_selfhost'];
 
 // Files at the dist root that are extension-only and should not ship with web/app/plugin builds.
-const extensionOnlyRootFiles = ['api-pollyfill.js', 'content.js', 'menu.html', 'jira.css', 'background.js', 'jira_cs.js'];
+const extensionOnlyRootFiles = ['api-pollyfill.js', 'content.js', 'menu.html', 'background.js', 'jira_cs.js', 'jira_cs.css'];
 
 const buildMode = process.env.VITE_BUILD_MODE;
 console.log(`Build mode set to: ${buildMode}`);
