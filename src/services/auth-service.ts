@@ -1,3 +1,5 @@
+import { isExtnAccessDenied } from '@/common/proxy-helper';
+
 import { getHostFromUrl, getUserName, parseIfJson, setStartOfWeek } from '@utils/helpers';
 
 import type { User } from '@types';
@@ -77,7 +79,11 @@ export default class AuthService {
             if (!userId) {
                 userId = await this.$session.getCurrentUserId();
             }
-        } catch {
+        } catch (err) {
+            if (isExtnAccessDenied(err)) {
+                throw err;
+            }
+            console.error('JA: Unable to identify the current user. Integration is required.', err);
             return Promise.reject({ needIntegration: true });
         }
 
@@ -100,6 +106,7 @@ export default class AuthService {
 
     private async runAuthenticate(userId?: number, useProfile = true): Promise<boolean> {
         let userDetails: any;
+        this.$session.extnAccessDeniedReason = undefined;
 
         try {
             userDetails = await this.getUserDetails(userId);
@@ -156,6 +163,13 @@ export default class AuthService {
             this.$session.authenticated = true;
         } catch (res: any) {
             this.$session.authenticated = false;
+            console.error('JA: Authentication failed:', res);
+
+            if (isExtnAccessDenied(res)) {
+                this.$session.needIntegration = false;
+                this.$session.extnAccessDeniedReason = res.message;
+                return false;
+            }
 
             if (res?.status === 401) {
                 return false;

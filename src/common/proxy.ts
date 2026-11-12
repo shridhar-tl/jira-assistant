@@ -1,7 +1,9 @@
 import { isAppBuild, isPluginBuild, isWebBuild } from '../constants/build-info';
+import { SystemUserId } from '../constants/common';
+import { SettingsCategory } from '../constants/settings';
 import browserInfo, { BROWSER_NAME } from '../utils/browsers';
 
-import { processResponse } from './proxy-helper';
+import { isExtnAccessDenied, processResponse } from './proxy-helper';
 import { convertToStorableValue } from './storage-helpers';
 
 declare const chrome: any;
@@ -32,8 +34,18 @@ export function executeService(svcName: string, action: string, args?: any[], $m
     if (!isAppBuild && !isPluginBuild && args) {
         args = convertToStorableValue(args) as any;
     }
-    return new Promise((resolve, reject) => {
-        const responder = isAppBuild || isPluginBuild ? resolve : (response: any) => processResponse(response, $message, resolve, reject);
+    const request = new Promise((resolve, reject) => {
+        const responder =
+            isAppBuild || isPluginBuild
+                ? resolve
+                : (response: any) => {
+                      if (response === undefined || response === null) {
+                          const lastError = chr.runtime?.lastError?.message;
+                          reject(new Error(lastError ? `No response from extension: ${lastError}` : 'No response from extension'));
+                          return;
+                      }
+                      processResponse(response, $message, resolve, reject);
+                  };
 
         try {
             if (injected) {
@@ -44,18 +56,23 @@ export function executeService(svcName: string, action: string, args?: any[], $m
                 chr.runtime.sendMessage(extnId, { svcName, action, args }, responder);
             }
         } catch (err) {
-            console.error('Extension response error:', err);
             reject(err);
         }
     });
+
+    return request.catch((err: unknown) => {
+        console.error(`JA: Extension request ${svcName}.${action} failed:`, err);
+        throw err;
+    });
 }
 
-interface WebAppState {
+export interface WebAppState {
     extnUnavailable?: boolean;
     isExtnValid?: boolean;
     extnVersion?: number;
     needIntegration?: boolean;
     authReady?: boolean;
+    extnAccessDeniedReason?: string;
 }
 
 export async function validateIfWebApp(state: WebAppState): Promise<WebAppState | false> {
@@ -72,11 +89,18 @@ export async function validateIfWebApp(state: WebAppState): Promise<WebAppState 
             state.extnVersion = version;
             state.extnUnavailable = !version || !(version >= 2.38);
             state.isExtnValid = version >= 2.38;
-            const isIntegrated = await executeService('SELF', 'IS_INTEGRATED');
+            // Reads the integrated user the same way authentication does, so that the extension
+            // reports an access denial for this site here instead of failing later during authentication.
+            const userSetting = await executeService('StorageService', 'getSetting', [SystemUserId, SettingsCategory.System, 'CurrentUserId']);
+            const isIntegrated = userSetting?.value > 0;
             state.needIntegration = !isIntegrated;
             state.authReady = state.isExtnValid && isIntegrated;
         } catch (err) {
-            console.error('Webapp validation error:', err);
+            if (isExtnAccessDenied(err)) {
+                state.extnAccessDeniedReason = err.message;
+                state.authReady = false;
+            }
+            console.error('JA: Webapp validation error:', err);
         }
 
         return state;

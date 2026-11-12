@@ -10,6 +10,8 @@ const messages: Record<string, string> = {
     ready: 'Required version of extension is already installed and ready to use. Select this option to connect with Jira Assistant extension and use the latest features and bug fixes.',
 };
 
+const accessDeniedMessage = 'Jira Assistant extension is installed, but it has refused to serve this site. Allow access in the extension and refresh this page.';
+
 function getMessageKey(extnUnavailable: boolean, isExtnValid: boolean, needIntegration: boolean): string {
     if (extnUnavailable) return 'unavailable';
     if (!isExtnValid) return 'outdated';
@@ -17,10 +19,21 @@ function getMessageKey(extnUnavailable: boolean, isExtnValid: boolean, needInteg
     return 'ready';
 }
 
-function ExtensionMessage({ extnUnavailable, isExtnValid, needIntegration }: Omit<ExtensionState, 'loading'>) {
+function ExtensionMessage({ extnUnavailable, isExtnValid, needIntegration, extnAccessDeniedReason }: Omit<ExtensionState, 'loading'>) {
+    if (extnAccessDeniedReason && !extnUnavailable) {
+        return (
+            <div className="text-[13px] leading-relaxed" data-testid="extn-access-denied">
+                <p className="text-(--text-secondary)">{accessDeniedMessage}</p>
+                <p className="mt-2 rounded-md border border-red-200 bg-red-50 px-2.5 py-1.5 text-red-700 break-words dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-300">
+                    {extnAccessDeniedReason}
+                </p>
+            </div>
+        );
+    }
+
     const key = getMessageKey(extnUnavailable, isExtnValid, needIntegration);
 
-    return <p className="text-[13px] text-[var(--text-secondary)] leading-relaxed">{messages[key]}</p>;
+    return <p className="text-[13px] text-(--text-secondary) leading-relaxed">{messages[key]}</p>;
 }
 
 export default ExtensionMessage;

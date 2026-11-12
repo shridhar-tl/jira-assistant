@@ -3,8 +3,9 @@ import { SettingsCategory } from '../constants/settings';
 import injectServices, { inject, serviceObjectMap } from '../services/index-background';
 
 import './extensions';
-import { convertToStorableValue, convertToUsableValue } from './storage-helpers';
-import { type ExtnMessageRequest, type ExtnMessageSender, isMessageAllowed } from './message-access';
+import { convertToStorableValue } from './storage-helpers';
+import { type ExtnMessageRequest, type ExtnMessageSender, getAccessDenialReason, parseRequest } from './message-access';
+import { type ExtnAccessDeniedError, extnAccessDeniedCode } from './proxy-helper';
 import { getSenderOrigin } from './trusted-origin';
 
 declare const chrome: any;
@@ -18,7 +19,7 @@ interface MessageResponse {
 
 interface RequestDetails {
     sender: ExtnMessageSender;
-    message: ExtnMessageRequest;
+    message: unknown;
     response?: MessageResponse;
     sent?: boolean;
 }
@@ -45,16 +46,16 @@ function startListening(): void {
     console.log('Started listening for incomming requests', new Date());
 }
 
-function onExternalRequestReceived(message: ExtnMessageRequest, sender: ExtnMessageSender, sendResponse: (response: MessageResponse) => void): boolean {
+function onExternalRequestReceived(message: unknown, sender: ExtnMessageSender, sendResponse: (response: MessageResponse) => void): boolean {
     return onRequestReceived(message, sender, sendResponse, true);
 }
 
-function onInternalRequestReceived(message: ExtnMessageRequest, sender: ExtnMessageSender, sendResponse: (response: MessageResponse) => void): boolean {
+function onInternalRequestReceived(message: unknown, sender: ExtnMessageSender, sendResponse: (response: MessageResponse) => void): boolean {
     return onRequestReceived(message, sender, sendResponse, false);
 }
 
 function onRequestReceived(
-    message: ExtnMessageRequest,
+    message: unknown,
     sender: ExtnMessageSender,
     sendResponse: (response: MessageResponse) => void,
     isExternal: boolean,
@@ -66,7 +67,7 @@ function onRequestReceived(
 }
 
 async function serveRequest(
-    message: ExtnMessageRequest,
+    message: unknown,
     sender: ExtnMessageSender,
     sendResponse: (response: MessageResponse) => void,
     isExternal: boolean,
@@ -74,13 +75,31 @@ async function serveRequest(
 ): Promise<void> {
     await accessSettingsLoading;
 
-    if (!isMessageAllowed(message, sender, { isExternal, ownId: ownExtnId, ownOrigin: ownExtnOrigin, allowLocalOrigin })) {
-        log('Denied to serve request from unknown origin: ', message, getSenderOrigin(sender));
-        sendResponse({ error: convertToStorableValue({ message: accessDeniedMessage }), messages: [] });
+    const parsed = parseRequest(message);
+    if (parsed.error !== undefined) {
+        denyRequest(parsed.error, message, sender, isExternal, sendResponse);
         return;
     }
 
-    await executeCommand(message, sendResponse, reqDetails);
+    const denialReason = getAccessDenialReason(parsed.request, sender, { isExternal, ownId: ownExtnId, ownOrigin: ownExtnOrigin, allowLocalOrigin });
+    if (denialReason) {
+        denyRequest(denialReason, message, sender, isExternal, sendResponse);
+        return;
+    }
+
+    await executeCommand(parsed.request, sendResponse, reqDetails);
+}
+
+function denyRequest(
+    reason: string,
+    message: unknown,
+    sender: ExtnMessageSender,
+    isExternal: boolean,
+    sendResponse: (response: MessageResponse) => void,
+): void {
+    const deniedError: ExtnAccessDeniedError = { code: extnAccessDeniedCode, message: `${accessDeniedMessage}: ${reason}` };
+    error(`JA: ${deniedError.message}`, { isExternal, senderOrigin: getSenderOrigin(sender), sender, message });
+    sendResponse({ error: convertToStorableValue(deniedError), messages: [] });
 }
 
 async function loadAccessSettings(): Promise<void> {
@@ -99,11 +118,9 @@ async function executeCommand(
 ): Promise<void> {
     const response: MessageResponse = { messages: [] };
     logDetails.response = response;
+    const { svcName, action, args } = message;
 
     try {
-        const { svcName, action } = message;
-        const convertedArgs = message.args ? convertToUsableValue(message.args) : null;
-        const args = Array.isArray(convertedArgs) ? convertedArgs : [];
 
         if (svcName === 'SELF') {
             switch (action) {
@@ -123,16 +140,25 @@ async function executeCommand(
                     loadSettings();
                     break;
 
-                case 'GET_CS_SETTINGS':
-                    response.success = await getContentSettings(args[0]);
+                case 'GET_CS_SETTINGS': {
+                    const [basePath] = args;
+                    if (typeof basePath !== 'string') {
+                        throw new Error('GET_CS_SETTINGS requires Jira base url as string');
+                    }
+                    response.success = await getContentSettings(basePath);
                     break;
+                }
 
                 default:
                     throw new Error(`Unsupported command: ${action}`);
             }
         } else {
-            const serviceName = (serviceObjectMap as any)[svcName];
-            const { $message, [serviceName]: $service } = services;
+            const serviceName = Object.hasOwn(serviceObjectMap, svcName) ? serviceObjectMap[svcName as keyof typeof serviceObjectMap] : undefined;
+            const $service = serviceName ? services[serviceName] : undefined;
+            if (typeof $service?.[action] !== 'function') {
+                throw new Error(`Unsupported service action: ${svcName}.${action}`);
+            }
+            const { $message } = services;
 
             $message.onNewMessage((msg: any) => response.messages.push(msg));
 
@@ -141,7 +167,7 @@ async function executeCommand(
     } catch (ex: any) {
         const { message, status, statusText, error: err } = ex;
         response.error = convertToStorableValue({ message, status, statusText, error: err });
-        error(ex);
+        error(`JA: Failed to execute ${svcName}.${action}:`, ex, logDetails);
     }
 
     sendResponse(response);

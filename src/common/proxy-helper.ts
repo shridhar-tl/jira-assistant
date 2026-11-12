@@ -1,5 +1,16 @@
 import { convertToUsableValue } from './storage-helpers';
 
+export const extnAccessDeniedCode = 'EXTN_ACCESS_DENIED';
+
+export interface ExtnAccessDeniedError {
+    code: typeof extnAccessDeniedCode;
+    message: string;
+}
+
+export function isExtnAccessDenied(err: unknown): err is ExtnAccessDeniedError {
+    return !!err && typeof err === 'object' && (err as Partial<ExtnAccessDeniedError>).code === extnAccessDeniedCode;
+}
+
 interface ProxyResponse {
     success?: any;
     error?: any;

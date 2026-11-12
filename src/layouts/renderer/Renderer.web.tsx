@@ -26,6 +26,7 @@ export default function Renderer({ initValue, authInfo, authTypeChosen, contextP
                         isExtnValid={isExtnValid}
                         extnUnavailable={extnUnavailable}
                         needIntegration={initValue?.needIntegration}
+                        extnAccessDeniedReason={initValue?.extnAccessDeniedReason}
                         onAuthTypeChosen={authTypeChosen}
                     />
                 }

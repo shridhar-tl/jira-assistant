@@ -30,6 +30,7 @@ export default function AuthenticatePage({
     isExtnValid: propExtnValid,
     extnUnavailable: propExtnUnavailable,
     needIntegration: propNeedIntegration,
+    extnAccessDeniedReason: propExtnAccessDeniedReason,
     onAuthTypeChosen,
 }: AuthenticatePageProps) {
     const navigate = useNavigate();
@@ -39,11 +40,12 @@ export default function AuthenticatePage({
         extnUnavailable: propExtnUnavailable ?? true,
         isExtnValid: propExtnValid ?? false,
         needIntegration: propNeedIntegration ?? false,
+        extnAccessDeniedReason: propExtnAccessDeniedReason,
         loading: !hasRendererProps,
     });
 
     useEffect(() => {
-        if (hasRendererProps || !isWebBuild) {
+        if (!isWebBuild) {
             setExtnState((prev) => ({ ...prev, loading: false }));
             return;
         }
@@ -61,10 +63,12 @@ export default function AuthenticatePage({
                         extnUnavailable: result.extnUnavailable ?? true,
                         isExtnValid: result.isExtnValid ?? false,
                         needIntegration: result.needIntegration ?? false,
+                        extnAccessDeniedReason: result.extnAccessDeniedReason,
                         loading: false,
                     });
 
-                    if (result.authReady) {
+                    // When the state is already validated during initialization, the user has chosen to come here to switch the integration.
+                    if (result.authReady && !hasRendererProps) {
                         if (onAuthTypeChosen) {
                             onAuthTypeChosen('1');
                         } else {
@@ -107,7 +111,7 @@ export default function AuthenticatePage({
         });
     }, []);
 
-    const allowExtn = !extnState.extnUnavailable && extnState.isExtnValid;
+    const allowExtn = !extnState.extnUnavailable && extnState.isExtnValid && !extnState.extnAccessDeniedReason;
 
     const extensionBadge = extnState.extnUnavailable ? (
         <button
@@ -168,6 +172,7 @@ export default function AuthenticatePage({
                                         extnUnavailable={extnState.extnUnavailable}
                                         isExtnValid={extnState.isExtnValid}
                                         needIntegration={extnState.needIntegration}
+                                        extnAccessDeniedReason={extnState.extnAccessDeniedReason}
                                     />
                                 </AuthTypeCard>
                             )}

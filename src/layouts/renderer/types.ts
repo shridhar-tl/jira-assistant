@@ -12,6 +12,7 @@ export interface InitValue {
     extnVersion?: number;
     needIntegration?: boolean;
     authReady?: boolean;
+    extnAccessDeniedReason?: string;
 }
 
 export interface AppContextValue {

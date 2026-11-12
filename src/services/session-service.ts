@@ -15,6 +15,7 @@ export default class SessionService {
     apiRootUrl = '';
     authenticated = false;
     needIntegration = false;
+    extnAccessDeniedReason?: string;
     pageSettings: Record<string, any> = {};
     isQuickView = false;
 
@@ -50,6 +51,7 @@ export default class SessionService {
         this.apiRootUrl = '';
         this.authenticated = false;
         this.needIntegration = false;
+        this.extnAccessDeniedReason = undefined;
         this.pageSettings = {};
         this.isQuickView = false;
     }

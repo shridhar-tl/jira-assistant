@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 
 import { executeService } from '@/common/proxy';
+import { isExtnAccessDenied } from '@/common/proxy-helper';
 import { ApiUrls } from '@/constants/api-urls';
 import { buildMode, isExtnBuild, isWebBuild, redirectToRoute } from '@/constants/build-info';
 import { getJiraCloudOAuthAuthorizeUrl } from '@/constants/oauth';
@@ -80,12 +81,8 @@ function CookieIntegration({ setAuthType }: CookieIntegrationProps) {
         return -1;
     }, [services]);
 
-    const tryIntegrate = useCallback(
-        async (root: string) => {
-            setJiraUrl(root);
-            services.$session.rootUrl = root;
-            setIsLoading(true);
-
+    const integrateWith = useCallback(
+        async (root: string, retryWith: (root: string) => void) => {
             const hasPermission = await services.$jaBrowserExtn.requestPermission(null, root);
             services.$session.userId = undefined;
 
@@ -94,10 +91,17 @@ function CookieIntegration({ setAuthType }: CookieIntegrationProps) {
                 try {
                     const userId = await services.$user.createUser(data, root);
                     await openDashboard(userId);
-                } catch {
+                } catch (err) {
+                    if (isExtnAccessDenied(err)) {
+                        throw err;
+                    }
+                    console.error('JA: Unable to save the integration:', err);
                     handleDBError();
                 }
             } catch (response: any) {
+                if (isExtnAccessDenied(response)) {
+                    throw response;
+                }
                 const res = response || {};
                 if (res.status === 401) {
                     services.$message.warning('You are not authenticated with Jira to integrate.', 'Unauthorized');
@@ -109,7 +113,7 @@ function CookieIntegration({ setAuthType }: CookieIntegrationProps) {
                             `"${root}" is not a valid Jira Api base path. Would you like to try with "${cleanOrigin}" instead?`,
                             'Change URL',
                         ).then(() => {
-                            tryIntegrate(cleanOrigin);
+                            retryWith(cleanOrigin);
                         });
                     } else if (!hasPermission) {
                         const msg = isWebBuild
@@ -120,11 +124,31 @@ function CookieIntegration({ setAuthType }: CookieIntegrationProps) {
                         services.$message.error('This is not a valid Jira server url or the server does not respond.', 'Unknown server');
                     }
                 }
+            }
+        },
+        [services, openDashboard, handleDBError],
+    );
+
+    const tryIntegrate = useCallback(
+        async (root: string) => {
+            setJiraUrl(root);
+            services.$session.rootUrl = root;
+            setIsLoading(true);
+
+            try {
+                await integrateWith(root, tryIntegrate);
+            } catch (err) {
+                if (isExtnAccessDenied(err)) {
+                    services.$message.error(err.message, 'Extension access denied');
+                } else {
+                    console.error('JA: Integration failed:', err);
+                    services.$message.error('Unable to integrate with Jira. Check browser console for more details.', 'Integration failed');
+                }
             } finally {
                 setIsLoading(false);
             }
         },
-        [services, openDashboard, handleDBError],
+        [services, integrateWith],
     );
 
     const integrate = useCallback(() => {

@@ -1,9 +1,10 @@
+import { convertToUsableValue } from './storage-helpers';
 import { getSenderOrigin, isHttpsOriginOfDomain, isJAWebAppOrigin, isTrustedJAOrigin } from './trusted-origin';
 
 export interface ExtnMessageRequest {
     svcName: string;
     action: string;
-    args?: unknown[];
+    args: unknown[];
 }
 
 export interface ExtnMessageSender {
@@ -55,12 +56,40 @@ function isAllowedForExternalPage(message: ExtnMessageRequest, senderOrigin: str
     );
 }
 
-function isValidRequest(message: unknown): message is ExtnMessageRequest {
+export type RequestParseResult = { request: ExtnMessageRequest; error?: undefined } | { request?: undefined; error: string };
+
+// Web pages send args serialized by convertToStorableValue, while content scripts send them as a plain array.
+function decodeArgs(args: unknown): unknown[] | string {
+    if (args === undefined || args === null) {
+        return [];
+    }
+    if (Array.isArray(args)) {
+        return args;
+    }
+    if (typeof args !== 'string') {
+        return `args must be an array or a serialized array, but received ${typeof args}`;
+    }
+    try {
+        const decoded: unknown = convertToUsableValue(args);
+        return Array.isArray(decoded) ? decoded : `serialized args must contain an array, but contained ${typeof decoded}`;
+    } catch (err) {
+        return `unable to parse serialized args: ${err instanceof Error ? err.message : String(err)}`;
+    }
+}
+
+export function parseRequest(message: unknown): RequestParseResult {
     if (!message || typeof message !== 'object') {
-        return false;
+        return { error: `request must be an object, but received ${message === null ? 'null' : typeof message}` };
     }
     const { svcName, action, args } = message as Record<string, unknown>;
-    return typeof svcName === 'string' && typeof action === 'string' && (args === undefined || args === null || Array.isArray(args));
+    if (typeof svcName !== 'string' || typeof action !== 'string') {
+        return { error: 'request must have svcName and action as string' };
+    }
+    const decodedArgs = decodeArgs(args);
+    if (typeof decodedArgs === 'string') {
+        return { error: decodedArgs };
+    }
+    return { request: { svcName, action, args: decodedArgs } };
 }
 
 function isOwnExtensionPage(sender: ExtnMessageSender, ownOrigin: string): boolean {
@@ -73,35 +102,43 @@ function isAllowedForContentScript(message: ExtnMessageRequest, senderOrigin: st
     if (!actionRule) {
         return false;
     }
-    return actionRule === true || actionRule(message.args || [], senderOrigin);
+    return actionRule === true || actionRule(message.args, senderOrigin);
 }
 
-export function isMessageAllowed(message: unknown, sender: ExtnMessageSender, context: MessageAccessContext): boolean {
+/**
+ * Returns the reason for denying the request, or null when the request is allowed.
+ */
+export function getAccessDenialReason(message: ExtnMessageRequest, sender: ExtnMessageSender, context: MessageAccessContext): string | null {
     const { isExternal, ownId, ownOrigin, allowLocalOrigin } = context;
-    if (!isValidRequest(message)) {
-        return false;
-    }
-
     const senderOrigin = getSenderOrigin(sender);
     if (!senderOrigin) {
-        return false;
+        return 'origin of the sender could not be identified';
     }
 
     if (isExternal) {
-        return !sender.id && isAllowedForExternalPage(message, senderOrigin, allowLocalOrigin);
+        if (sender.id) {
+            return `external request from extension "${sender.id}" is not allowed`;
+        }
+        if (isAllowedForExternalPage(message, senderOrigin, allowLocalOrigin)) {
+            return null;
+        }
+        if (!allowLocalOrigin && isJAWebAppOrigin(senderOrigin, true)) {
+            return `${senderOrigin} is not allowed. Enable "Local development site" in global settings of the extension`;
+        }
+        return `${message.svcName}.${message.action} is not allowed for ${senderOrigin}`;
     }
 
     if (sender.id !== ownId) {
-        return false;
+        return `request from extension "${sender.id}" is not allowed`;
     }
 
     if (isOwnExtensionPage(sender, ownOrigin) || isJAWebAppOrigin(senderOrigin, allowLocalOrigin)) {
-        return true;
+        return null;
     }
 
     if (isTrustedJAOrigin(senderOrigin)) {
-        return jaSiteServices.includes(message.svcName);
+        return jaSiteServices.includes(message.svcName) ? null : `${message.svcName}.${message.action} is not allowed for ${senderOrigin}`;
     }
 
-    return isAllowedForContentScript(message, senderOrigin);
+    return isAllowedForContentScript(message, senderOrigin) ? null : `${message.svcName}.${message.action} is not allowed for content script of ${senderOrigin}`;
 }

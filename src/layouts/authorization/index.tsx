@@ -14,6 +14,7 @@ import { BlockLoading } from '@components/Loading';
 import { isPokerPath } from '@pages/poker/constants';
 
 import { UnauthorizedPage } from '../../pages/p401';
+import ExtensionAccessDeniedPage from '../../pages/p403/ExtensionAccessDeniedPage';
 
 const nonAuthPages = ['integrate', 'options'];
 
@@ -22,6 +23,7 @@ interface AuthInfo {
     jiraUrl?: string;
     userId?: number | null;
     needIntegration?: boolean;
+    extnAccessDeniedReason?: string;
 }
 
 interface WithAuthInfoProps {
@@ -81,6 +83,17 @@ export function withAuthInfo<P extends WithAuthInfoProps>(Component: ComponentTy
         if (shouldAuth) {
             if (!authInfo) {
                 return <BlockLoading text="Authorizing... Please wait..." />;
+            } else if (!authInfo.authenticated && authInfo.extnAccessDeniedReason && !allowsGuest) {
+                return (
+                    <ExtensionAccessDeniedPage
+                        reason={authInfo.extnAccessDeniedReason}
+                        validate={() => {
+                            setAuthInfo(false);
+                            tryAuthorize();
+                        }}
+                        chooseIntegration={() => navigate('/integrate')}
+                    />
+                );
             } else if (!authInfo.authenticated && !authInfo.needIntegration && !allowsGuest) {
                 return (
                     <UnauthorizedPage
@@ -139,11 +152,11 @@ async function authenticateUser(
             console.log('JA: Authenticated jira url:', jiraUrl, userId);
             return { authenticated, jiraUrl, userId };
         }
-        return { authenticated, jiraUrl, needIntegration: $session.needIntegration };
+        return { authenticated, jiraUrl, needIntegration: $session.needIntegration, extnAccessDeniedReason: $session.extnAccessDeniedReason };
     } catch (err) {
         console.error('JA: Authentication failed with following error:', err);
-        const { needIntegration, rootUrl: jiraUrl } = $session;
-        return { authenticated: false, needIntegration, jiraUrl };
+        const { needIntegration, rootUrl: jiraUrl, extnAccessDeniedReason } = $session;
+        return { authenticated: false, needIntegration, jiraUrl, extnAccessDeniedReason };
     }
 }
 

@@ -22,6 +22,61 @@ interface Notification {
     browsers?: string[];
 }
 
+export type MessageDate = string | number | null;
+
+export interface UpdateDescription {
+    id?: number;
+    text: string;
+}
+
+interface UpdateInfoBase<TDate> {
+    version: string | number;
+    title?: string;
+    isBeta?: boolean;
+    availableNow?: boolean;
+    date?: TDate;
+    publishDate?: TDate;
+    expectedOn?: TDate;
+    timestamp?: TDate;
+    whatsnew: Array<string | UpdateDescription>;
+    bugs?: Array<string | UpdateDescription>;
+}
+
+export type UpdateInfo = UpdateInfoBase<number | undefined>;
+
+interface MessagesPayloadBase<TDate> {
+    timestamp?: TDate;
+    live_versions?: Record<string, number>;
+    updates_info?: Array<UpdateInfoBase<TDate>>;
+    notifications?: Record<string, Notification>;
+}
+
+type RawMessagesPayload = MessagesPayloadBase<MessageDate | undefined>;
+type MessagesPayload = MessagesPayloadBase<number | undefined>;
+
+function toEpoch(value: MessageDate | undefined): number | undefined {
+    if (value === null || value === undefined || value === '') {
+        return undefined;
+    }
+
+    const time = new Date(value).getTime();
+    return isNaN(time) ? undefined : time;
+}
+
+function normalizeMessages(data: RawMessagesPayload): MessagesPayload {
+    return {
+        ...data,
+        timestamp: toEpoch(data.timestamp),
+        updates_info: data.updates_info?.map((u) => ({
+            ...u,
+            date: toEpoch(u.date),
+            publishDate: toEpoch(u.publishDate),
+            expectedOn: toEpoch(u.expectedOn),
+            timestamp: toEpoch(u.timestamp),
+        })),
+    };
+}
+
 export default class NotificationService {
     static dependencies = ['AjaxRequestService', 'CacheService', 'SettingsService', 'UserUtilsService'];
 
@@ -40,7 +95,7 @@ export default class NotificationService {
     }
 
     async getNotifications(): Promise<any> {
-        const { updates_info, live_versions, notifications } = await this.fetchNotifications();
+        const { updates_info = [], live_versions, notifications } = await this.fetchNotifications();
 
         if (!notifications) {
             return { count: 0, list: [] };
@@ -100,12 +155,12 @@ export default class NotificationService {
             const version = live_versions?.[BROWSER_NAME];
             let isBeta = true;
             if (version && this.version < version) {
-                const versionInfo = updates_info.filter((u: any) => u.version === version)[0];
+                const versionInfo = updates_info.find((u) => u.version === version);
                 if (versionInfo) {
                     versionInfo.availableNow = true;
                     isBeta = versionInfo.isBeta !== false;
                 } else {
-                    const date = new Date().getTime();
+                    const date = Date.now();
                     updates_info.splice(0, 0, {
                         availableNow: true,
                         version,
@@ -128,7 +183,7 @@ export default class NotificationService {
         };
     }
 
-    async getVersionNotification(updates_info: any[]): Promise<Notification | undefined> {
+    async getVersionNotification(updates_info: UpdateInfo[]): Promise<Notification | undefined> {
         if (updates_info && Array.isArray(updates_info) && updates_info.length) {
             const lastReadVersion = (await this.$settings.get('readVersion')) || { version: 0, timestamp: 0 };
 
@@ -138,14 +193,14 @@ export default class NotificationService {
                 let message = `You have ${whatsnew.length} new updates added in this version. Click to know what is new...`;
                 let title = `Whats new in Jira Assistant v${version}`;
 
-                if (version > this.version) {
+                if (Number(version) > this.version) {
                     let publishMessage = 'is available now to update';
-                    const now = new Date().getTime();
+                    const now = Date.now();
 
-                    if (!publishDate || (publishDate as number) < now) {
+                    if (!publishDate || publishDate < now) {
                         const exptDate =
-                            expectedOn && (expectedOn as number) > now
-                                ? `on ${this.$userutils.formatDate(new Date(expectedOn as number), 'dd-MMM-yyyy')} approximately`
+                            expectedOn && expectedOn > now
+                                ? `on ${this.$userutils.formatDate(new Date(expectedOn), 'dd-MMM-yyyy')} approximately`
                                 : 'soon';
                         publishMessage = `will be published ${exptDate}`;
                     }
@@ -178,22 +233,22 @@ export default class NotificationService {
         return notis.unread;
     }
 
-    async fetchNotifications(): Promise<any> {
-        let data = this.$cache.get('messages');
+    async fetchNotifications(): Promise<MessagesPayload> {
+        const data: RawMessagesPayload | null = this.$cache.get('messages');
 
         if (!data) {
-            data = await this.$request.execute('GET', messagesUrl, null, { withCredentials: false });
+            const response: RawMessagesPayload | null = await this.$request.execute('GET', messagesUrl, null, { withCredentials: false });
 
-            if (data) {
-                this.$cache.set('messages', data, moment().add(4, 'hours').toDate());
+            if (response) {
+                this.$cache.set('messages', response, moment().add(4, 'hours').toDate());
             }
 
-            return data;
+            return normalizeMessages(response || {});
         }
 
         return new Promise((success) => {
             setTimeout(() => {
-                success(data);
+                success(normalizeMessages(data));
             }, 500);
         });
     }

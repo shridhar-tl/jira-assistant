@@ -6,6 +6,8 @@ import { Icons } from '@/constants/icons';
 
 import { inject } from '@services';
 
+import type { UpdateInfo } from '@/services/notification-service';
+
 import { TextParser } from '@components';
 
 import UpdatesInfo from './UpdatesInfo';
@@ -20,7 +22,7 @@ interface NotificationMessage {
 }
 
 interface NotificationsState {
-    updates_info?: any[];
+    updates_info?: UpdateInfo[];
     list: NotificationMessage[];
     total: number;
     unread: number;

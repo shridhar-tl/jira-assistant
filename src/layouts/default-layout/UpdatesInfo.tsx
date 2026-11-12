@@ -2,20 +2,7 @@ import { Link } from '@/controls';
 
 import { inject } from '@services';
 
-interface UpdateDescription {
-    id?: number;
-    text: string;
-}
-
-interface UpdateInfo {
-    version: string;
-    publishDate?: string;
-    expectedOn?: string;
-    availableNow?: boolean;
-    isBeta?: boolean;
-    whatsnew: Array<string | UpdateDescription>;
-    bugs?: Array<string | UpdateDescription>;
-}
+import type { UpdateDescription, UpdateInfo } from '@/services/notification-service';
 
 interface UpdatesInfoProps {
     updates: UpdateInfo[];

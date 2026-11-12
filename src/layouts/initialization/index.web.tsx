@@ -15,14 +15,7 @@ import { isPokerPath } from '@pages/poker/constants';
 
 import { getCurrentQueryParams } from '@utils';
 
-interface InitValue {
-    authType?: string;
-    extnUnavailable?: boolean;
-    isExtnValid?: boolean;
-    extnVersion?: number;
-    needIntegration?: boolean;
-    authReady?: boolean;
-}
+import type { InitValue } from '../renderer/types';
 
 interface WebInitProps {
     initValue?: InitValue;
