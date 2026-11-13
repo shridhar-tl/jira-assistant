@@ -28,14 +28,14 @@ export default function IssueListTimer() {
     const { key, isRunning } = curState || {};
 
     return (
-        <div className="mt-3">
-            <div className="mb-2 flex items-center justify-between px-1">
+        <div className="mt-3 widget:flex widget:min-h-60 widget:flex-1 widget:flex-col widget:first:mt-0">
+            <div className="mb-2 flex shrink-0 items-center justify-between px-1">
                 <span className="text-[11px] font-semibold uppercase tracking-wider text-(--text-tertiary)">Recent tickets</span>
                 <span className="rounded-full bg-(--bg-tertiary) px-2 py-0.5 text-[11px] font-semibold text-(--text-secondary)">
                     {ticketsList.length}
                 </span>
             </div>
-            <ul className="flex max-h-100 flex-col gap-1.5 overflow-y-auto pr-1">
+            <ul className="flex max-h-100 flex-col gap-1.5 overflow-y-auto pr-1 widget:max-h-none widget:min-h-0 widget:flex-1">
                 {ticketsList.map((t) => (
                     <TicketItem
                         key={t.key}

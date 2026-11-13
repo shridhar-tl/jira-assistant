@@ -75,3 +75,10 @@ body:not(.mode-light, .mode-dark),
 body:not(.mode-light, .mode-dark) #root {
     background-color: #5c5f66;
 }
+
+html.ja-widget-host,
+html.ja-widget-host body,
+html.ja-widget-host #root {
+    height: var(--ja-widget-height, 100%);
+    overflow: hidden;
+}

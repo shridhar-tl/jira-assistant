@@ -39,7 +39,7 @@ function TeamWorklogGadget({ jiraContext }: DashboardItemProps) {
     }
 
     return (
-        <div className="h-160 max-h-175">
+        <div className="h-160 max-h-175 widget:h-full widget:max-h-none">
             <ReportDisplay settings={settings} />
         </div>
     );
@@ -114,7 +114,7 @@ function ReportDisplay({ settings }: ReportDisplayProps) {
     );
 
     return (
-        <div className="max-h-150 overflow-auto p-2">
+        <div className="max-h-150 overflow-auto p-2 widget:h-full widget:max-h-none widget:p-0">
             <div className="overflow-hidden rounded-xl border border-(--border-primary)">
                 <table className="w-full border-collapse text-sm">
                     <thead className="sticky top-0 z-1 bg-(--bg-tertiary) text-(--text-secondary)">

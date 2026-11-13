@@ -21,7 +21,7 @@ const howToUseItems = [
 
 export default function WorkloadHeatmapInfo({ note }: WorkloadHeatmapInfoProps) {
     return (
-        <div className="min-h-0 flex-1 overflow-auto p-6 space-y-4">
+        <div className="min-h-0 flex-1 overflow-auto p-6 space-y-4 widget:p-0">
             {note && <ReportInfoNote>{note}</ReportInfoNote>}
             <ReportInfoSection title="How to Use" icon="fa-info-circle" items={howToUseItems} defaultOpen />
         </div>

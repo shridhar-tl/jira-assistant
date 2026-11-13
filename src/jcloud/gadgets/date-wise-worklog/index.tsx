@@ -21,7 +21,7 @@ function DayWiseWorklogGadget({ jiraContext }: DashboardItemProps) {
     }
 
     return (
-        <div className="h-87.5 max-h-125 overflow-y-auto">
+        <div className="h-87.5 max-h-125 overflow-y-auto widget:h-full widget:max-h-none">
             <WorklogDisplay settings={settings} />
         </div>
     );
@@ -84,7 +84,7 @@ function WorklogDisplay({ settings }: WorklogDisplayProps) {
     }
 
     return (
-        <div className="space-y-3 p-3">
+        <div className="space-y-3 p-3 widget:p-0">
             {Object.entries(groupedWorklogs).map(([date, logs]) => (
                 <section key={date} className="overflow-hidden rounded-xl border border-(--border-primary) bg-(--bg-secondary)">
                     <header className="flex items-center justify-between gap-2 border-b border-(--border-primary) px-3 py-2">

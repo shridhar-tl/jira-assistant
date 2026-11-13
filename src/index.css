@@ -6,6 +6,7 @@
 @import '@fortawesome/fontawesome-free/css/brands.css';
 
 @custom-variant dark (&:is(.dark-theme, .dark-theme *, .mode-dark, .mode-dark *));
+@custom-variant widget (&:where(.ja-widget-host *));
 
 @import 'fluxo-ui/styles';
 

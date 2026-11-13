@@ -1,4 +1,5 @@
-import type { FullContext } from '@forge/bridge';
+import { type FullContext, view } from '@forge/bridge';
+import type { Layout } from '@forge/dashboards-bridge';
 
 export type DashboardHostType = 'gadget' | 'widget';
 
@@ -16,6 +17,8 @@ export const dashboardModuleKeys = {
 } as const;
 
 const widgetModuleKeys = new Set<string>(Object.values(dashboardModuleKeys).map((keys) => keys.widget));
+const widgetHostClass = 'ja-widget-host';
+const widgetHeightVar = '--ja-widget-height';
 
 export function getDashboardHostType(jiraContext: FullContext): DashboardHostType {
     return widgetModuleKeys.has(jiraContext?.moduleKey) ? 'widget' : 'gadget';
@@ -29,4 +32,30 @@ export function getDashboardItemConfig<T extends object>(jiraContext: FullContex
     const extension = jiraContext?.extension;
     const config = getDashboardHostType(jiraContext) === 'widget' ? extension?.config : extension?.gadgetConfiguration;
     return (config || {}) as Partial<T>;
+}
+
+function applyWidgetLayout(jiraContext: FullContext): void {
+    const height = (jiraContext?.extension?.layout as Partial<Layout> | undefined)?.height;
+    const rootStyle = document.documentElement.style;
+    if (height) {
+        rootStyle.setProperty(widgetHeightVar, `${height}px`);
+    } else {
+        rootStyle.removeProperty(widgetHeightVar);
+    }
+}
+
+function refreshWidgetLayout(): void {
+    view.getContext()
+        .then(applyWidgetLayout)
+        .catch((err: unknown) => console.error('Failed to refresh widget layout:', err));
+}
+
+export function setupDashboardHost(jiraContext: FullContext): void {
+    if (getDashboardHostType(jiraContext) !== 'widget' || isDashboardItemEdit(jiraContext)) {
+        return;
+    }
+
+    document.documentElement.classList.add(widgetHostClass);
+    applyWidgetLayout(jiraContext);
+    window.addEventListener('resize', refreshWidgetLayout);
 }

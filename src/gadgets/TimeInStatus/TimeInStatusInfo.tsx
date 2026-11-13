@@ -39,7 +39,7 @@ const whatsNewItems = [
 
 export default function TimeInStatusInfo({ note, noteTitle }: TimeInStatusInfoProps) {
     return (
-        <div className="min-h-0 flex-1 overflow-auto p-6 space-y-4">
+        <div className="min-h-0 flex-1 overflow-auto p-6 space-y-4 widget:p-0">
             {note && <ReportInfoNote title={noteTitle}>{note}</ReportInfoNote>}
             <ReportInfoSection title="How to Use" icon="fa-info-circle" items={howToUseItems} defaultOpen />
             <ReportInfoSection title="What's New" icon="fa-star" variant="new" items={whatsNewItems} />

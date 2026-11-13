@@ -8,7 +8,7 @@ import { FullContext, view } from '@forge/bridge';
 
 import { BlockLoading } from '@components';
 
-import { dashboardModuleKeys, type DashboardItemProps } from './jcloud/dashboard-host';
+import { dashboardModuleKeys, type DashboardItemProps, setupDashboardHost } from './jcloud/dashboard-host';
 import { applyPokerDeepLink } from './pages/poker/deep-link.plugin';
 import './index.css';
 import './index.plugin.css';
@@ -70,6 +70,7 @@ const dashboardItems: Record<string, LazyExoticComponent<ComponentType<Dashboard
         );
     } else if (dashboardItems[moduleKey]) {
         const DashboardItem = dashboardItems[moduleKey];
+        setupDashboardHost(context);
         render(<DashboardItem jiraContext={context} />);
     } else if (moduleKey === 'ja-issue-glance') {
         render(<IssueGlance jiraContext={context} />);

@@ -44,7 +44,7 @@ function TimeInStatusWidgetDisplay({ initialSettings }: TimeInStatusWidgetDispla
     }, []);
 
     return (
-        <div className="relative flex h-150 flex-col">
+        <div className="relative flex h-150 flex-col widget:h-full">
             <TooltipManager />
             {state.isLoading && (
                 <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 bg-black/20 backdrop-blur-[2px]">

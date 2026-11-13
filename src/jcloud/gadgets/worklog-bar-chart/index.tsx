@@ -21,7 +21,7 @@ function WorklogBarChartGadget({ jiraContext }: DashboardItemProps) {
     }
 
     return (
-        <div className="h-100">
+        <div className="h-100 widget:h-full">
             <ChartDisplay settings={settings} />
         </div>
     );
@@ -96,7 +96,7 @@ function ChartDisplay({ settings }: ChartDisplayProps) {
     const totalSeconds = dayData.reduce((total, d) => total + d.totalSeconds, 0);
 
     return (
-        <div className="flex h-full flex-col p-3">
+        <div className="flex h-full flex-col p-3 widget:p-0">
             <div className="mb-3 flex flex-wrap items-center gap-2">
                 <span className="rounded-full bg-(--primary-light) px-2.5 py-0.5 text-xs font-semibold text-(--primary-color)">
                     Total: {formatSeconds(totalSeconds)}

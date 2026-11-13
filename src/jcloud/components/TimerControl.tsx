@@ -37,7 +37,7 @@ export default function TimerControl({ curIssueKey }: TimerControlProps) {
     );
 
     return (
-        <div className="w-full max-w-125 mx-auto px-3 sm:px-4 pt-4 pb-3">
+        <div className="mx-auto w-full max-w-125 shrink-0 px-3 pt-4 pb-3 sm:px-4 widget:max-w-none widget:px-0 widget:pt-0">
             <Timer lapse={lapse} issueKey={key} isRunning={isRunning} startNewTimer={handleStartNew} />
             {(!!key || isForCurKey) && (
                 <div className="mt-3 rounded-xl border border-(--border-primary) bg-(--bg-secondary) px-3 py-2.5">
