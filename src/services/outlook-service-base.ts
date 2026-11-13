@@ -1,6 +1,8 @@
-import moment from 'moment';
+import moment from 'moment-timezone';
 
 import { EventCategory } from '@/constants';
+
+import type { Meeting, MeetingCalendarEntry, MeetingDateTime } from '@types';
 
 import type AnalyticsService from './analytics-service';
 import type MessageService from './message-service';
@@ -14,6 +16,17 @@ const calendarUrl = `${apiBasePath}/calendar/calendarView?startDateTime={0}&endD
 //const eventsListUrl = `${apiBasePath}calendar/events?$top=200&$expand=&$filter=&$orderby=&$select=`;
 //const groupEventsListUrl = `${apiBasePath}/calendarGroup/calendars/{0}/events`;
 
+type ScheduledMeeting = Meeting & Required<Pick<Meeting, 'start' | 'end'>>;
+
+function isScheduled(meeting: Meeting): meeting is ScheduledMeeting {
+    return !!meeting.start?.dateTime && !!meeting.end?.dateTime;
+}
+
+// Graph returns dateTime as wall clock time of timeZone (UTC by default) without offset
+function parseGraphDateTime({ dateTime, timeZone }: MeetingDateTime): Date {
+    return timeZone ? moment.tz(dateTime, timeZone).toDate() : new Date(dateTime);
+}
+
 export default class OutlookCalendarBase {
     protected $analytics: AnalyticsService;
     protected $message: MessageService;
@@ -23,7 +36,7 @@ export default class OutlookCalendarBase {
         this.$message = $message;
     }
 
-    async getEvents(startDate?: Date, endDate?: Date, options?: any): Promise<any[]> {
+    async getEvents(startDate?: Date, endDate?: Date, options?: any): Promise<MeetingCalendarEntry[]> {
         options = options || {};
 
         if (!startDate) {
@@ -43,31 +56,29 @@ export default class OutlookCalendarBase {
             const result = await this.fetchEvents(eventsUrl);
             this.$analytics.trackEvent('Outlook - fetched data', EventCategory.DataFetch);
 
-            const events = result.value.map((e: any) => {
-                let startDateTime = e.start.dateTime;
-                let endDateTime = e.end.dateTime;
+            const events = (result.value as Meeting[]).filter(isScheduled).map((e): MeetingCalendarEntry => {
+                const start = parseGraphDateTime(e.start);
+                const end = parseGraphDateTime(e.end);
 
-                if (e.start.dateTime) {
-                    startDateTime = new Date(e.start.dateTime);
-                }
+                const sourceObject: Meeting = {
+                    ...e,
+                    start: { dateTime: start.toISOString() },
+                    end: { dateTime: end.toISOString() },
+                    source: 'outlook',
+                };
 
-                if (e.end.dateTime) {
-                    endDateTime = new Date(e.end.dateTime);
-                }
-
-                const obj = {
+                return {
                     id: e.id,
-                    start: startDateTime,
-                    end: endDateTime,
+                    start,
+                    end,
                     title: e.subject,
                     url: e.onlineMeetingUrl,
                     entryType: 2,
-                    sourceObject: e,
+                    sourceObject,
                     source: 'outlook',
                     editable: false,
-                    allDay: e.isAllDay,
+                    allDay: !!e.isAllDay,
                 };
-                return obj;
             });
 
             return events;

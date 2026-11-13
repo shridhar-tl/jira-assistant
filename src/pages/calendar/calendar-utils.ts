@@ -1,7 +1,7 @@
 import { endOfDay, format, formatDistanceToNow, isAfter, isBefore, isSameDay, startOfDay } from 'date-fns';
 import type { CalendarViewMode, ResolvedCalendarEntry } from 'fluxo-ui';
 
-import type { Meeting, Worklog, WorklogCalendarEntry } from '@types';
+import type { MeetingCalendarEntry, Worklog, WorklogCalendarEntry } from '@types';
 
 import type { CalendarEvent, CalendarInfoEvent } from './types';
 
@@ -110,20 +110,18 @@ export function createWorklogEvent(entry: WorklogCalendarEntry, settings: any): 
     };
 }
 
-export function createMeetingEvent(meeting: Meeting, settings: any): CalendarEvent {
-    const start = meeting.start?.dateTime ? new Date(meeting.start.dateTime) : new Date();
-    const end = meeting.end?.dateTime ? new Date(meeting.end.dateTime) : new Date(start.getTime() + 3600000);
-
+export function createMeetingEvent(meeting: MeetingCalendarEntry, settings: any): CalendarEvent {
     return {
         id: meeting.id,
-        title: meeting.subject || meeting.summary || 'Meeting',
-        start,
-        end,
+        title: meeting.title || 'Meeting',
+        start: meeting.start,
+        end: meeting.end,
+        allDay: meeting.allDay,
         entryType: 2,
         data: {
             entryType: 2,
-            sourceObject: meeting,
-            source: meeting.source || 'outlook',
+            sourceObject: meeting.sourceObject,
+            source: meeting.source,
         },
         color: settings.eventColor || '#51b749',
         borderColor: settings.eventColor || '#51b749',

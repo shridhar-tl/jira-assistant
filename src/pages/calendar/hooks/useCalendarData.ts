@@ -4,7 +4,7 @@ import { endOfDay, startOfDay } from 'date-fns';
 
 import { useService } from '@/services/injector';
 
-import type { Meeting, Worklog, WorklogCalendarEntry } from '@types';
+import type { MeetingCalendarEntry, Worklog, WorklogCalendarEntry } from '@types';
 
 import { createInfoEvent, createMeetingEvent, createWorklogEvent, filterEvents, groupWorklogsByDate } from '../calendar-utils';
 import type { CalendarEvent, CalendarSettings } from '../types';
@@ -66,13 +66,13 @@ export function useCalendarData(settings: CalendarSettings, currentUser: any) {
 
                 const results = await Promise.all(requests);
                 const worklogs = results[0] as WorklogCalendarEntry[];
-                const meetings: Meeting[] = [];
+                const meetings: MeetingCalendarEntry[] = [];
 
                 if (results[1]) meetings.push(...results[1]);
                 if (results[2]) meetings.push(...results[2]);
 
                 const worklogEvents = worklogs.map((wl) => createWorklogEvent(wl, settings));
-                const meetingEvents = meetings.map((m: any) => createMeetingEvent(m, settings));
+                const meetingEvents = meetings.map((m) => createMeetingEvent(m, settings));
 
                 const groupedWorklogs = groupWorklogsByDate(worklogs);
                 const infoEvents: CalendarEvent[] = [];

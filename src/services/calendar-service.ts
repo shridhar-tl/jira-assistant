@@ -1,5 +1,7 @@
 import { formatDate } from '@utils';
 
+import type { MeetingCalendarEntry } from '@types';
+
 import type AjaxRequestService from './ajax-request-service';
 import type AnalyticsService from './analytics-service';
 import type AppBrowserService from './app-browser-service';
@@ -50,7 +52,7 @@ export default class CalendarService {
         }
     }
 
-    async getEvents(startDate: Date, endDate: Date, options?: { calendar?: string; maxResults?: number }): Promise<any[]> {
+    async getEvents(startDate: Date, endDate: Date, options?: { calendar?: string; maxResults?: number }): Promise<MeetingCalendarEntry[]> {
         const opts = options || {};
 
         const calendarUrl =
@@ -74,15 +76,15 @@ export default class CalendarService {
 
                 this.$analytics.trackEvent('Fetch calendar data', '', '', 0);
 
-                return data.items.map((e: any) => {
-                    const obj: any = {
+                return data.items.map((e: any): MeetingCalendarEntry => {
+                    const obj: MeetingCalendarEntry = {
                         id: e.id,
                         start: e.start.dateTime ? new Date(e.start.dateTime) : new Date(formatDate(new Date(e.start.date), 'yyyy-MM-dd')),
                         end: e.end.dateTime ? new Date(e.end.dateTime) : new Date(formatDate(new Date(e.end.date), 'yyyy-MM-dd')),
                         title: e.summary,
                         url: e.hangoutLink,
                         entryType: 2,
-                        sourceObject: e,
+                        sourceObject: { ...e, source: 'google' },
                         source: 'google',
                         editable: false,
                         allDay: !e.start.dateTime,

@@ -545,6 +545,11 @@ export interface Bookmark {
     _ts?: number;
 }
 
+export interface MeetingDateTime {
+    dateTime: string;
+    timeZone?: string;
+}
+
 export interface Meeting {
     id: string;
     subject?: string;
@@ -554,14 +559,9 @@ export interface Meeting {
     webLink?: string;
     location?: string | { displayName: string };
     source?: 'google' | 'outlook';
-    start?: {
-        dateTime: string;
-        timeZone?: string;
-    };
-    end?: {
-        dateTime: string;
-        timeZone?: string;
-    };
+    start?: MeetingDateTime;
+    end?: MeetingDateTime;
+    isAllDay?: boolean;
     creator?: {
         email: string;
         displayName?: string;
@@ -589,4 +589,17 @@ export interface Meeting {
     hangoutLink?: string;
     onlineMeetingUrl?: string;
     bodyPreview?: string;
+}
+
+export interface MeetingCalendarEntry {
+    id: string;
+    start: Date;
+    end: Date;
+    title?: string;
+    url?: string;
+    entryType: 2;
+    sourceObject: Meeting;
+    source: 'google' | 'outlook';
+    editable: false;
+    allDay: boolean;
 }
