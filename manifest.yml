@@ -36,6 +36,34 @@ modules:
       edit:
         resource: main
   dashboards:widget:
+    - key: ja-date-wise-worklog-widget
+      title: Date wise worklog
+      description: Lists the worklog details on daily basis for selected time period
+      thumbnail: https://www.jiraassistant.com/images/gadgets/date-wise-worklog.png
+      resource: main
+      edit:
+        resource: main
+    - key: ja-worklog-timer-widget
+      title: Worklog timer
+      description: A simple timer control to capture time spent on a ticket
+      thumbnail: https://www.jiraassistant.com/images/gadgets/worklog-timer.png
+      resource: main
+      edit:
+        resource: main
+    - key: ja-worklog-barchart-widget
+      title: Worklog Bar Chart
+      description: Lets you visualize worklog plotted for individual issues via bar chart
+      thumbnail: https://www.jiraassistant.com/images/gadgets/worklog-barchart.png
+      resource: main
+      edit:
+        resource: main
+    - key: ja-team-worklog-widget
+      title: Team Daywise Worklog
+      description: Lets you visualize worklog for individual user based on sprint or date range
+      thumbnail: https://www.jiraassistant.com/images/gadgets/teamwise-worklog.png
+      resource: main
+      edit:
+        resource: main
     - key: ja-workload-heatmap
       title: Workload Heatmap
       description: Shows the estimated work planned for each team member per day against their daily capacity

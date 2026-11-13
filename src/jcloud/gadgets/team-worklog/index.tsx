@@ -1,6 +1,5 @@
-import { lazy, Suspense, useCallback, useEffect, useState } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
 
-import { FullContext } from '@forge/bridge';
 import classNames from 'classnames';
 
 import { withInitParams } from '@/layouts/initialization/index.plugin';
@@ -14,6 +13,7 @@ import { getUserName } from '@utils';
 
 import withSimpleAuth from '../../../layouts/authorization/simple-auth';
 import GadgetMessage from '../../components/GadgetMessage';
+import { type DashboardItemProps, getDashboardHostType, getDashboardItemConfig, isDashboardItemEdit } from '../../dashboard-host';
 import { prepareDateRange } from '../../utils';
 
 import type { TeamWorklogSettings } from './EditConfig';
@@ -24,28 +24,16 @@ const tableHeaders = ['User', 'Ticket', 'Date', 'Time Spent', 'Comment'];
 const headerCellClass = 'border-b border-(--border-primary) px-3 py-2 text-left text-xs font-semibold uppercase tracking-wide';
 const bodyCellClass = 'border-b border-(--border-primary) px-3 py-2';
 
-interface TeamWorklogGadgetProps {
-    jiraContext: FullContext;
-}
-
-function TeamWorklogGadget({ jiraContext }: TeamWorklogGadgetProps) {
-    const gadgetConfig = jiraContext?.extension?.gadgetConfiguration || {};
-    const initialSettings: TeamWorklogSettings = {
-        ...gadgetConfig,
+function TeamWorklogGadget({ jiraContext }: DashboardItemProps) {
+    const settings: TeamWorklogSettings = {
+        ...getDashboardItemConfig<TeamWorklogSettings>(jiraContext),
         disableAddingWL: true,
     };
 
-    const [settings, setSettings] = useState<TeamWorklogSettings>(initialSettings);
-    const isEdit = jiraContext?.extension?.entryPoint === 'edit';
-
-    const handleSettingsChange = useCallback((newSettings: Partial<TeamWorklogSettings>) => {
-        setSettings((prev) => ({ ...prev, ...newSettings }));
-    }, []);
-
-    if (isEdit) {
+    if (isDashboardItemEdit(jiraContext)) {
         return (
             <Suspense fallback={<BlockLoading text="Loading..." />}>
-                <EditConfig settings={settings} onSettingsChange={handleSettingsChange} />
+                <EditConfig hostType={getDashboardHostType(jiraContext)} settings={settings} />
             </Suspense>
         );
     }

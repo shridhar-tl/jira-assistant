@@ -1,4 +1,4 @@
-import { lazy, StrictMode, Suspense } from 'react';
+import { type ComponentType, lazy, type LazyExoticComponent, StrictMode, Suspense } from 'react';
 
 import { createRoot } from 'react-dom/client';
 
@@ -8,6 +8,7 @@ import { FullContext, view } from '@forge/bridge';
 
 import { BlockLoading } from '@components';
 
+import { dashboardModuleKeys, type DashboardItemProps } from './jcloud/dashboard-host';
 import { applyPokerDeepLink } from './pages/poker/deep-link.plugin';
 import './index.css';
 import './index.plugin.css';
@@ -26,6 +27,19 @@ const TimeInStatusWidget = lazy(() => import('./jcloud/gadgets/time-in-status'))
 const IssueGlance = lazy(() => import('./jcloud/issue-glance'));
 
 const fallback = <BlockLoading text="Loading... Please wait..." />;
+
+const dashboardItems: Record<string, LazyExoticComponent<ComponentType<DashboardItemProps>>> = {
+    [dashboardModuleKeys.dateWiseWorklog.gadget]: DayWiseWorklogGadget,
+    [dashboardModuleKeys.dateWiseWorklog.widget]: DayWiseWorklogGadget,
+    [dashboardModuleKeys.worklogTimer.gadget]: WorklogTimerGadget,
+    [dashboardModuleKeys.worklogTimer.widget]: WorklogTimerGadget,
+    [dashboardModuleKeys.worklogBarChart.gadget]: WorklogBarChartGadget,
+    [dashboardModuleKeys.worklogBarChart.widget]: WorklogBarChartGadget,
+    [dashboardModuleKeys.teamWorklog.gadget]: TeamWorklogGadget,
+    [dashboardModuleKeys.teamWorklog.widget]: TeamWorklogGadget,
+    [dashboardModuleKeys.workloadHeatmap.widget]: WorkloadHeatmapWidget,
+    [dashboardModuleKeys.timeInStatus.widget]: TimeInStatusWidget,
+};
 
 (async function () {
     const context: FullContext = await view.getContext();
@@ -54,18 +68,9 @@ const fallback = <BlockLoading text="Loading... Please wait..." />;
                 <App jiraContext={context} /> {/* It appears like jiraContext is not required here as props. need to validate. */}
             </HashRouter>,
         );
-    } else if (moduleKey === 'ja-date-wise-worklog') {
-        render(<DayWiseWorklogGadget jiraContext={context} />);
-    } else if (moduleKey === 'ja-worklog-barchart') {
-        render(<WorklogBarChartGadget jiraContext={context} />);
-    } else if (moduleKey === 'ja-worklog-timer') {
-        render(<WorklogTimerGadget />); // It appears like jiraContext is not required here as props. need to validate.
-    } else if (moduleKey === 'ja-team-worklog') {
-        render(<TeamWorklogGadget jiraContext={context} />);
-    } else if (moduleKey === 'ja-workload-heatmap') {
-        render(<WorkloadHeatmapWidget jiraContext={context} />);
-    } else if (moduleKey === 'ja-time-in-status') {
-        render(<TimeInStatusWidget jiraContext={context} />);
+    } else if (dashboardItems[moduleKey]) {
+        const DashboardItem = dashboardItems[moduleKey];
+        render(<DashboardItem jiraContext={context} />);
     } else if (moduleKey === 'ja-issue-glance') {
         render(<IssueGlance jiraContext={context} />);
     } else {

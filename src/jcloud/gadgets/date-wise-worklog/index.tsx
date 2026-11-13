@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 
-import { FullContext } from '@forge/bridge';
 import { format, parseISO } from 'date-fns';
 
 import { withInitParams } from '@/layouts/initialization/index.plugin';
@@ -11,18 +10,14 @@ import { inject } from '@services';
 import withSimpleAuth from '../../../layouts/authorization/simple-auth';
 import DateRangeConfig, { type DateRangeGadgetSettings } from '../../components/DateRangeConfig';
 import GadgetMessage from '../../components/GadgetMessage';
+import { type DashboardItemProps, getDashboardHostType, getDashboardItemConfig, isDashboardItemEdit } from '../../dashboard-host';
 import { formatSeconds, prepareDateRange } from '../../utils';
 
-interface DayWiseWorklogGadgetProps {
-    jiraContext: FullContext;
-}
+function DayWiseWorklogGadget({ jiraContext }: DashboardItemProps) {
+    const settings = getDashboardItemConfig<DateRangeGadgetSettings>(jiraContext);
 
-function DayWiseWorklogGadget({ jiraContext }: DayWiseWorklogGadgetProps) {
-    const settings = jiraContext?.extension?.gadgetConfiguration || {};
-    const isEdit = jiraContext?.extension?.entryPoint === 'edit';
-
-    if (isEdit) {
-        return <DateRangeConfig settings={settings} />;
+    if (isDashboardItemEdit(jiraContext)) {
+        return <DateRangeConfig hostType={getDashboardHostType(jiraContext)} settings={settings} />;
     }
 
     return (

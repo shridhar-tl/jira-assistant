@@ -5,9 +5,19 @@ import { useWorklogStore } from '@/stores/worklog-store';
 
 import withSimpleAuth from '../../../layouts/authorization/simple-auth';
 import IssueListTimer from '../../components/IssueListTimer';
+import NoSettingsConfig from '../../components/NoSettingsConfig';
 import TimerControl from '../../components/TimerControl';
+import { type DashboardItemProps, getDashboardHostType, isDashboardItemEdit } from '../../dashboard-host';
 
-function WorklogTimerGadget() {
+function WorklogTimerGadget({ jiraContext }: DashboardItemProps) {
+    if (isDashboardItemEdit(jiraContext)) {
+        return <NoSettingsConfig hostType={getDashboardHostType(jiraContext)} />;
+    }
+
+    return <WorklogTimer />;
+}
+
+function WorklogTimer() {
     const { curState, loadTracker } = useWorklogStore();
     const isTimerStarted = !!curState?.key;
     const [showTickets, setTicketsDisp] = useState<boolean | null>(null);

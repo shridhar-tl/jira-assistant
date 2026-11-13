@@ -86,7 +86,7 @@ function TicketItem({ isCurrent, isRunning, ticket, startTimer, resumeTimer, pau
     return (
         <li
             className={classNames(
-                'group relative flex items-center gap-3 overflow-hidden rounded-lg border py-2 pr-2 pl-3 transition-colors',
+                'group relative flex shrink-0 items-center gap-3 overflow-hidden rounded-lg border py-2 pr-2 pl-3 transition-colors',
                 {
                     'border-(--border-primary) bg-(--bg-secondary) hover:border-(--border-secondary) hover:bg-(--bg-hover)': !isCurrent,
                     'border-emerald-500/40 bg-emerald-500/8': isActive,

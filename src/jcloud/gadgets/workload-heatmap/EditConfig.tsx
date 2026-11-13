@@ -1,7 +1,6 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback } from 'react';
 
 import { Modal } from '@forge/bridge';
-import { widgetEdit, type WidgetConfig } from '@forge/dashboards-bridge';
 
 import { getSettingsError, normalizeSettings } from '@/gadgets/WorkloadHeatmap/settings';
 import SettingsForm from '@/gadgets/WorkloadHeatmap/SettingsForm';
@@ -9,6 +8,7 @@ import type { WorkloadHeatmapSettings } from '@/gadgets/WorkloadHeatmap/types';
 import type { UserGroup } from '@/types';
 
 import GadgetMessage from '../../components/GadgetMessage';
+import useDashboardItemConfig from '../../useDashboardItemConfig';
 
 interface EditConfigProps {
     settings: WorkloadHeatmapSettings;
@@ -18,53 +18,31 @@ interface UserGroupModalResult {
     userGroups?: UserGroup[];
 }
 
-function toWidgetConfig(settings: WorkloadHeatmapSettings): WidgetConfig {
-    return { ...settings };
-}
-
 export default function EditConfig({ settings: initialSettings }: EditConfigProps) {
-    const [settings, setSettings] = useState(initialSettings);
-    const [saveError, setSaveError] = useState<string | null>(null);
-    const settingsRef = useRef(initialSettings);
-
-    useEffect(() => {
-        widgetEdit.onProductSave(async () => {
-            const current = normalizeSettings(settingsRef.current);
-            const error = getSettingsError(current);
-            if (error) {
-                throw new Error(error);
-            }
-            return toWidgetConfig(current);
-        });
-
-        widgetEdit.onSaveError((error) => setSaveError(error.message));
-    }, []);
-
-    const handleChange = useCallback((changes: Partial<WorkloadHeatmapSettings>) => {
-        const updated = { ...settingsRef.current, ...changes };
-        settingsRef.current = updated;
-        setSettings(updated);
-        setSaveError(null);
-        widgetEdit.updateConfig(toWidgetConfig(updated)).catch((err: unknown) => console.error('Failed to update widget config:', err));
-    }, []);
+    const { settings, saveError, update } = useDashboardItemConfig({
+        hostType: 'widget',
+        initialSettings,
+        prepare: normalizeSettings,
+        validate: getSettingsError,
+    });
 
     const manageGroups = useCallback(() => {
         const modal = new Modal({
             onClose: (result?: UserGroupModalResult) => {
                 if (result?.userGroups) {
-                    handleChange({ userGroups: result.userGroups });
+                    update({ userGroups: result.userGroups });
                 }
             },
             size: 'max',
-            context: { modalId: 'ja-dlg-user-groups', groups: settingsRef.current.userGroups ?? undefined },
+            context: { modalId: 'ja-dlg-user-groups', groups: settings.userGroups ?? undefined },
         });
         modal.open();
-    }, [handleChange]);
+    }, [settings.userGroups, update]);
 
     return (
         <div className="p-4">
             {saveError && <GadgetMessage icon="fa-exclamation-triangle" variant="error" title="Unable to save" text={saveError} />}
-            <SettingsForm settings={settings} onChange={handleChange} onManageGroups={manageGroups} />
+            <SettingsForm settings={settings} onChange={update} onManageGroups={manageGroups} />
         </div>
     );
 }

@@ -1,7 +1,5 @@
 import { lazy, Suspense, useCallback, useState } from 'react';
 
-import { FullContext } from '@forge/bridge';
-
 import useWorkloadHeatmap from '@/gadgets/WorkloadHeatmap/useWorkloadHeatmap';
 import HeatmapPeriodControls from '@/gadgets/WorkloadHeatmap/HeatmapPeriodControls';
 import { normalizeSettings } from '@/gadgets/WorkloadHeatmap/settings';
@@ -12,22 +10,16 @@ import { withInitParams } from '@/layouts/initialization/index.plugin';
 import { BlockLoading, Loading, TooltipManager } from '@components';
 
 import withSimpleAuth from '../../../layouts/authorization/simple-auth';
+import { type DashboardItemProps, getDashboardItemConfig, isDashboardItemEdit } from '../../dashboard-host';
 
 const EditConfig = lazy(() => import('./EditConfig'));
 
-interface WorkloadHeatmapWidgetProps {
-    jiraContext: FullContext;
+function getStoredSettings(jiraContext: DashboardItemProps['jiraContext']): WorkloadHeatmapSettings {
+    return normalizeSettings(getDashboardItemConfig<WorkloadHeatmapSettings>(jiraContext));
 }
 
-function getStoredSettings(jiraContext: FullContext): WorkloadHeatmapSettings {
-    const extension = jiraContext?.extension;
-    return normalizeSettings(extension?.config || extension?.gadgetConfiguration);
-}
-
-function WorkloadHeatmapWidget({ jiraContext }: WorkloadHeatmapWidgetProps) {
-    const isEdit = jiraContext?.extension?.entryPoint === 'edit';
-
-    if (isEdit) {
+function WorkloadHeatmapWidget({ jiraContext }: DashboardItemProps) {
+    if (isDashboardItemEdit(jiraContext)) {
         return (
             <Suspense fallback={<BlockLoading text="Loading..." />}>
                 <EditConfig settings={getStoredSettings(jiraContext)} />

@@ -1,7 +1,5 @@
 import { lazy, Suspense, useCallback, useState } from 'react';
 
-import { FullContext } from '@forge/bridge';
-
 import { GadgetLoadingText } from '@/gadgets/shared';
 import PeriodSelector from '@/gadgets/TimeInStatus/PeriodSelector';
 import { normalizeSettings } from '@/gadgets/TimeInStatus/settings';
@@ -13,22 +11,16 @@ import { withInitParams } from '@/layouts/initialization/index.plugin';
 import { BlockLoading, Loading, TooltipManager } from '@components';
 
 import withSimpleAuth from '../../../layouts/authorization/simple-auth';
+import { type DashboardItemProps, getDashboardItemConfig, isDashboardItemEdit } from '../../dashboard-host';
 
 const EditConfig = lazy(() => import('./EditConfig'));
 
-interface TimeInStatusWidgetProps {
-    jiraContext: FullContext;
+function getStoredSettings(jiraContext: DashboardItemProps['jiraContext']): TimeInStatusSettings {
+    return normalizeSettings(getDashboardItemConfig<StoredTimeInStatusSettings>(jiraContext));
 }
 
-function getStoredSettings(jiraContext: FullContext): TimeInStatusSettings {
-    const extension = jiraContext?.extension;
-    return normalizeSettings((extension?.config || extension?.gadgetConfiguration) as StoredTimeInStatusSettings | undefined);
-}
-
-function TimeInStatusWidget({ jiraContext }: TimeInStatusWidgetProps) {
-    const isEdit = jiraContext?.extension?.entryPoint === 'edit';
-
-    if (isEdit) {
+function TimeInStatusWidget({ jiraContext }: DashboardItemProps) {
+    if (isDashboardItemEdit(jiraContext)) {
         return (
             <Suspense fallback={<BlockLoading text="Loading..." />}>
                 <EditConfig settings={getStoredSettings(jiraContext)} />
