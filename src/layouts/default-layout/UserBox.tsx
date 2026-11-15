@@ -1,4 +1,6 @@
-import { memo, useCallback, useContext, useEffect, useRef, useState } from 'react';
+import { memo, useCallback, useContext, useEffect, useId, useRef, useState } from 'react';
+
+import { BrightSunIcon, NightLightIcon } from 'fluxo-ui/icons';
 
 import { AppContext } from '@/common/context';
 import { isWebBuild } from '@/constants/build-info';
@@ -7,16 +9,24 @@ import { Link } from '@/controls';
 
 import { inject } from '@services';
 
+import { InputSwitch, type ComponentEvent } from '@components';
+
+import { useTheme } from '@hooks';
+
 import { getHostFromUrl } from '@utils/helpers';
 
 import BackupImporter from './BackupImporter';
 import ExportSettings from './ExportSettings';
 
+const menuItemClassName =
+    'w-full cursor-pointer flex items-center gap-2.5 px-2.5 py-2 text-[13px] rounded-md transition-colors text-left text-(--text-primary) hover:bg-(--bg-hover) no-underline';
+
 interface UserBoxProps {
     onLogout: (e: React.MouseEvent) => void;
+    showThemeToggle: boolean;
 }
 
-function UserBox({ onLogout }: UserBoxProps) {
+function UserBox({ onLogout, showThemeToggle }: UserBoxProps) {
     const [users, setUsers] = useState<any[]>([]);
     const [showPanel, setShowPanel] = useState(false);
     const [showSettingPopup, setShowSettings] = useState(false);
@@ -75,7 +85,7 @@ function UserBox({ onLogout }: UserBoxProps) {
             {showPanel && (
                 <div
                     ref={panelRef}
-                    className="absolute right-2 top-full mt-2 w-80 rounded-xl z-50 overflow-hidden bg-(--bg-primary) border border-(--border-primary) shadow-(--shadow-xl)"
+                    className="absolute right-2 top-full mt-2 w-[min(20rem,calc(100vw-1rem))] max-h-[calc(100dvh-4rem)] overflow-y-auto overflow-x-hidden rounded-xl z-50 bg-(--bg-primary) border border-(--border-primary) shadow-(--shadow-xl)"
                 >
                     <BackupImporter>
                         {(importSettings) => (
@@ -85,6 +95,7 @@ function UserBox({ onLogout }: UserBoxProps) {
                                 showSettings={showSettings}
                                 importSettings={importSettings}
                                 onLogout={onLogout}
+                                showThemeToggle={showThemeToggle}
                             />
                         )}
                     </BackupImporter>
@@ -112,9 +123,10 @@ interface ProfileOptionsProps {
     showSettings: () => void;
     importSettings: () => void;
     onLogout: (e: React.MouseEvent) => void;
+    showThemeToggle: boolean;
 }
 
-function ProfileOptions({ user, users, showSettings, importSettings, onLogout }: ProfileOptionsProps) {
+function ProfileOptions({ user, users, showSettings, importSettings, onLogout, showThemeToggle }: ProfileOptionsProps) {
     const context = useContext(AppContext) as any;
 
     const switchUser = useCallback(
@@ -187,6 +199,7 @@ function ProfileOptions({ user, users, showSettings, importSettings, onLogout }:
             <div className="border-t border-(--border-primary) py-1.5">
                 <SectionHeader>Settings</SectionHeader>
                 <div className="px-1.5">
+                    {showThemeToggle && <ThemeToggleItem />}
                     <MenuItem icon="fa-upload" label="Import Settings" onClick={importSettings} />
                     <MenuItem icon="fa-download" label="Export Settings" onClick={showSettings} />
                 </div>
@@ -221,9 +234,24 @@ interface MenuItemProps {
     as?: 'button' | 'a';
 }
 
+function ThemeToggleItem() {
+    const { isDark, setTheme } = useTheme();
+    const switchId = useId();
+
+    const changeTheme = useCallback((e: ComponentEvent<boolean>) => setTheme(e.value ? 'dark' : 'light'), [setTheme]);
+
+    return (
+        <label htmlFor={switchId} className={`${menuItemClassName} select-none`}>
+            <span className="w-4 flex items-center justify-center shrink-0 text-(--text-tertiary)">
+                {isDark ? <NightLightIcon className="size-3.5" /> : <BrightSunIcon className="size-3.5" />}
+            </span>
+            <span className="truncate flex-1">Dark mode</span>
+            <InputSwitch id={switchId} checked={isDark} onChange={changeTheme} onLabel="" offLabel="" size="sm" ariaLabel="Dark mode" />
+        </label>
+    );
+}
+
 function MenuItem({ icon, label, title, onClick, href, dataUserId, as = 'button' }: MenuItemProps) {
-    const className =
-        'w-full cursor-pointer flex items-center gap-2.5 px-2.5 py-2 text-[13px] rounded-md transition-colors text-left text-(--text-primary) hover:bg-(--bg-hover) no-underline';
     const inner = (
         <>
             <span className={`fa ${icon} w-4 text-center text-[12px] text-(--text-tertiary)`} />
@@ -233,14 +261,14 @@ function MenuItem({ icon, label, title, onClick, href, dataUserId, as = 'button'
 
     if (as === 'a' && href) {
         return (
-            <a className={className} href={href} title={title}>
+            <a className={menuItemClassName} href={href} title={title}>
                 {inner}
             </a>
         );
     }
 
     return (
-        <button className={className} data-user-id={dataUserId} onClick={onClick} title={title}>
+        <button className={menuItemClassName} data-user-id={dataUserId} onClick={onClick} title={title}>
             {inner}
         </button>
     );

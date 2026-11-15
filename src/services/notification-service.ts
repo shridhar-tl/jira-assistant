@@ -1,7 +1,7 @@
 import moment from 'moment';
 
 import { BROWSER_NAME } from '@/common/browsers';
-import { AppVersionNo, isWebBuild, messagesUrl } from '@/constants';
+import { AppVersionNo, isPluginBuild, isWebBuild, messagesUrl } from '@/constants';
 
 import type AjaxRequestService from './ajax-request-service';
 import type CacheService from './cache-service';
@@ -17,7 +17,7 @@ interface Notification {
     module?: string;
     read?: boolean;
     important?: boolean;
-    version?: any;
+    version?: string | number;
     timestamp?: number;
     browsers?: string[];
 }
@@ -63,6 +63,24 @@ function toEpoch(value: MessageDate | undefined): number | undefined {
     return isNaN(time) ? undefined : time;
 }
 
+const liveVersionKey = isPluginBuild ? 'cloudApp' : BROWSER_NAME;
+
+// Versions are published either as numbers (2.59, 3.01) or as dotted strings ("3.0.1").
+// Dotted versions map to the numeric form by collapsing everything after the major part: "3.0.1" => 3.01
+export function versionToNumber(version: string | number | undefined | null): number {
+    if (typeof version === 'number') {
+        return version;
+    }
+
+    if (!version) {
+        return 0;
+    }
+
+    const [major, ...rest] = version.trim().split('.');
+    const value = parseFloat(rest.length ? `${major}.${rest.join('')}` : major);
+    return isNaN(value) ? 0 : value;
+}
+
 function normalizeMessages(data: RawMessagesPayload): MessagesPayload {
     return {
         ...data,
@@ -95,11 +113,7 @@ export default class NotificationService {
     }
 
     async getNotifications(): Promise<any> {
-        const { updates_info = [], live_versions, notifications } = await this.fetchNotifications();
-
-        if (!notifications) {
-            return { count: 0, list: [] };
-        }
+        const { updates_info = [], live_versions, notifications = {} } = await this.fetchNotifications();
 
         let processedNotifications = this.$cache.get('processed_notifications') || [];
 
@@ -121,13 +135,13 @@ export default class NotificationService {
 
                 if (version) {
                     let comparer = '=';
-                    let ver = 0;
+                    let ver: number;
 
-                    if (isNaN(version)) {
+                    if (typeof version === 'string' && ['=', '>', '<'].includes(version[0])) {
                         comparer = version[0];
-                        ver = parseFloat(version.substring(1));
+                        ver = versionToNumber(version.substring(1));
                     } else {
-                        ver = parseFloat(version);
+                        ver = versionToNumber(version);
                     }
 
                     if (
@@ -152,20 +166,21 @@ export default class NotificationService {
 
         let updatesAvailable;
         if (!isWebBuild) {
-            const version = live_versions?.[BROWSER_NAME];
-            let isBeta = true;
-            if (version && this.version < version) {
-                const versionInfo = updates_info.find((u) => u.version === version);
+            const liveVersion = versionToNumber(live_versions?.[liveVersionKey]);
+            if (liveVersion && this.version < liveVersion) {
+                let version: string | number = liveVersion;
+                let isBeta = true;
+                const versionInfo = updates_info.find((u) => versionToNumber(u.version) === liveVersion);
                 if (versionInfo) {
                     versionInfo.availableNow = true;
                     isBeta = versionInfo.isBeta !== false;
+                    version = versionInfo.version;
                 } else {
-                    const date = Date.now();
                     updates_info.splice(0, 0, {
                         availableNow: true,
                         version,
                         isBeta,
-                        date,
+                        date: Date.now(),
                         bugs: [],
                         whatsnew: ['Information not available yet'],
                     });
@@ -189,15 +204,17 @@ export default class NotificationService {
 
             const { version, timestamp, whatsnew, publishDate, expectedOn } = updates_info[0];
 
-            if (lastReadVersion.version < version || (lastReadVersion.timestamp || 0) < (timestamp || 0)) {
+            const versionNo = versionToNumber(version);
+
+            if (versionToNumber(lastReadVersion.version) < versionNo || (lastReadVersion.timestamp || 0) < (timestamp || 0)) {
                 let message = `You have ${whatsnew.length} new updates added in this version. Click to know what is new...`;
                 let title = `Whats new in Jira Assistant v${version}`;
 
-                if (Number(version) > this.version) {
+                if (versionNo > this.version) {
                     let publishMessage = 'is available now to update';
                     const now = Date.now();
 
-                    if (!publishDate || publishDate < now) {
+                    if (!publishDate || publishDate > now) {
                         const exptDate =
                             expectedOn && expectedOn > now
                                 ? `on ${this.$userutils.formatDate(new Date(expectedOn), 'dd-MMM-yyyy')} approximately`

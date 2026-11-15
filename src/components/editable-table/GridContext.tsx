@@ -8,6 +8,7 @@ export interface GridContextType {
     endEdit: (value: any, rowIndex: number, cellIndex: number) => void;
     repeatSelectedCells: () => void;
     beginResize: (index: number, e: React.MouseEvent) => void;
+    getCellValue: (row: object, field: string) => unknown;
 }
 
 const GridContext = React.createContext<GridContextType>({} as GridContextType);

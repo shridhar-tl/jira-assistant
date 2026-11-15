@@ -61,7 +61,7 @@ function GridCellBase({
             return;
         }
         setEditing(true);
-        setNewValue(data?.[column.field] || '');
+        setNewValue((data && context.getCellValue(data, column.field)) || '');
         context.beginEdit(rowIndex, index);
     }, [editable, data, column.field, context, rowIndex, index]);
 
@@ -77,9 +77,9 @@ function GridCellBase({
                 return template(column, data, index, rowIndex, modProps);
             }
 
-            return formatDataForDisplay(data?.[column.field]);
+            return formatDataForDisplay(data && context.getCellValue(data, column.field));
         },
-        [customDisplayControl, column, cellType, data, index, rowIndex],
+        [customDisplayControl, column, cellType, data, index, rowIndex, context],
     );
 
     const getEditor = useCallback((): React.ReactNode => {
@@ -112,14 +112,11 @@ function GridCellBase({
         );
     }, [column, cellType, data, rowIndex, index, setNewValueHandler, cancelEdit, setFocus, newValue, endEdit]);
 
-    const onMouseDown = useCallback(
-        (e: React.MouseEvent) => editable() && context.beginSelect(rowIndex, index),
-        [editable, context, rowIndex, index],
-    );
+    const onMouseDown = useCallback(() => editable() && context.beginSelect(rowIndex, index), [editable, context, rowIndex, index]);
 
-    const onMouseUp = useCallback((e: React.MouseEvent) => context.endSelect(rowIndex, index), [context, rowIndex, index]);
+    const onMouseUp = useCallback(() => context.endSelect(rowIndex, index), [context, rowIndex, index]);
 
-    const onMouseOver = useCallback((e: React.MouseEvent) => context.onSelecting(rowIndex, index), [context, rowIndex, index]);
+    const onMouseOver = useCallback(() => context.onSelecting(rowIndex, index), [context, rowIndex, index]);
 
     const onRepeaterDoubleClick = useCallback(
         (e: React.MouseEvent) => {

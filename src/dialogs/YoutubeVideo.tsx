@@ -1,5 +1,7 @@
 import { useCallback, useRef, useState } from 'react';
 
+import { createPortal } from 'react-dom';
+
 import { inject } from '@services';
 
 import { EventCategory } from '../constants/settings';
@@ -101,7 +103,7 @@ export default function YoutubeVideo({ onHide }: YoutubeVideoProps) {
     const hasNext = index + 1 < activeList.length;
     const currentVideo = activeList[index];
 
-    return (
+    return createPortal(
         <div
             ref={overlayRef}
             className="fixed inset-0 z-9999 flex items-center justify-center bg-black/85 backdrop-blur-sm"
@@ -250,6 +252,7 @@ export default function YoutubeVideo({ onHide }: YoutubeVideoProps) {
                     </button>
                 </div>
             </div>
-        </div>
+        </div>,
+        document.body,
     );
 }

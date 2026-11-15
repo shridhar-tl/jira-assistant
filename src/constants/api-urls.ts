@@ -16,11 +16,14 @@ export const ApiUrls = {
     createIssue: '~/rest/api/2/issue/',
     individualIssue: '~/rest/api/2/issue/{0}',
     cloneIssue: '~/rest/internal/2/issue/{0}/clone',
-    bulkImportIssue: '~/rest/api/2/issue/bulk',
+    issueTransitions: '~/rest/api/2/issue/{0}/transitions',
+    issueComment: '~/rest/api/2/issue/{0}/comment',
     taskStatus: '~/rest/api/3/task/{0}',
 
     // Issue Metadata APIs
-    getProjectImportMetadata: '~/rest/api/2/issue/createmeta?expand=projects.issuetypes.fields&projectKeys=',
+    createMetaIssueTypes: '~/rest/api/2/issue/createmeta/{0}/issuetypes',
+    createMetaFields: '~/rest/api/2/issue/createmeta/{0}/issuetypes/{1}',
+    createMetaLegacy: '~/rest/api/2/issue/createmeta?expand=projects.issuetypes.fields&projectKeys={0}',
     getProjectStatuses: '~/rest/api/2/project/{0}/statuses',
     getJiraStatuses: '~/rest/api/2/status',
     getIssueMetadata: '~/rest/api/2/issue/{0}/editmeta',

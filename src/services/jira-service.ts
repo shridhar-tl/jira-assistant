@@ -14,6 +14,8 @@ import {
 
 import { ApiUrls, defaultJiraFields, defaultSettings, DummyWLId, isPluginBuild } from '@constants';
 
+import type { JiraCreateIssueType, JiraFieldMeta, JiraFieldMetaMap, JiraTransition } from '@types';
+
 import type AjaxService from './ajax-service';
 import type CacheService from './cache-service';
 import type MessageService from './message-service';
@@ -66,6 +68,54 @@ const bulkChangelogIssueLimit = 1000;
 const bulkChangelogPageSize = 1000;
 const issueChangelogPageSize = 100;
 const deploymentTypeCacheDays = 7;
+const createMetaPageSize = 200;
+const cloneStatusPollInterval = 1250;
+const cloneStatusMaxAttempts = 8;
+
+interface CreateMetaPage<T> {
+    values?: T[];
+    issueTypes?: T[];
+    fields?: T[];
+    total?: number;
+    isLast?: boolean;
+}
+
+type RawFieldMeta = Omit<JiraFieldMeta, 'key'> & { key?: string; fieldId?: string };
+
+interface RawTransition extends Omit<JiraTransition, 'fields'> {
+    fields?: Record<string, RawFieldMeta>;
+}
+
+interface LegacyCreateMetaResponse {
+    projects?: { key: string; issuetypes: (JiraCreateIssueType & { fields?: Record<string, RawFieldMeta> })[] }[];
+}
+
+// Older Jira versions do not return "key" in field metadata and the paged createmeta API returns "fieldId" instead
+function normalizeFieldMeta(field: RawFieldMeta, fallbackKey?: string): JiraFieldMeta {
+    const { fieldId, key, ...rest } = field;
+    return { ...rest, key: key || fieldId || fallbackKey || '' };
+}
+
+function normalizeFieldMetaList(fields: RawFieldMeta[]): JiraFieldMetaMap {
+    return fields.reduce<JiraFieldMetaMap>((map, field) => {
+        const meta = normalizeFieldMeta(field);
+        if (meta.key) {
+            map[meta.key] = meta;
+        }
+        return map;
+    }, {});
+}
+
+function normalizeFieldMetaMap(fields?: Record<string, RawFieldMeta>): JiraFieldMetaMap {
+    if (!fields) {
+        return {};
+    }
+
+    return Object.keys(fields).reduce<JiraFieldMetaMap>((map, key) => {
+        map[key] = normalizeFieldMeta(fields[key], key);
+        return map;
+    }, {});
+}
 const unknownDeploymentType = 'Unknown';
 
 export default class JiraService {
@@ -399,51 +449,6 @@ export default class JiraService {
         });
     }
 
-    getProjectImportMetadata(projects: string | string[]): Promise<any> {
-        let onlyOne = false;
-        let projectList: string[];
-
-        if (typeof projects === 'string') {
-            projectList = [projects];
-            onlyOne = true;
-        } else {
-            projectList = projects;
-        }
-
-        projectList = projectList.map((p: any) => p.toUpperCase());
-
-        return new Promise((resolve, reject) => {
-            let result: any = {};
-            const projectsToPull: string[] = [];
-
-            projectList.forEach((p: any) => {
-                const project = this.$jaCache.session.get(`projectMetadata_${p}`);
-                if (project) {
-                    result[p] = project;
-                } else {
-                    projectsToPull.push(p);
-                }
-            });
-
-            if (projectsToPull.length === 0) {
-                resolve(onlyOne ? result[projectList[0]] : result);
-            } else {
-                this.$ajax.get(ApiUrls.getProjectImportMetadata + encodeURIComponent(projectsToPull.join(','))).then((metadata: any) => {
-                    result = metadata.projects.reduce((r: any, prj: any) => {
-                        prj.issuetypesObj = prj.issuetypes.reduce((types: any, type: any) => {
-                            types[type.name.toLowerCase().replace(/ /g, '-')] = type;
-                            return types;
-                        }, {});
-                        r[prj.key] = prj;
-                        return r;
-                    }, {});
-
-                    resolve(onlyOne ? result[projectList[0]] : result);
-                }, reject);
-            }
-        });
-    }
-
     async getProjectStatuses(projects: string | string[]): Promise<any> {
         let onlyOne = false;
         let projectList: string[];
@@ -486,32 +491,153 @@ export default class JiraService {
         return statuses;
     }
 
-    async getIssueMetadata(issuekey: string): Promise<any> {
-        let value = await this.$jaCache.session.getPromise(`issueMetadata_${issuekey}`);
-        if (value) {
-            return value;
+    /**
+     * Returns the issue types which the current user can create in the project, or null when the project does not exist
+     * or the user cannot create issues in it. Uses the paged createmeta API (Jira Cloud and Data Center 8.4+) and falls back
+     * to the legacy expand based createmeta API which is the only option in older Jira versions.
+     */
+    async getCreateMetaIssueTypes(project: string): Promise<JiraCreateIssueType[] | null> {
+        const projectKey = project.toUpperCase();
+        const cacheKey = `createMetaTypes_${projectKey}`;
+        const cached = this.$jaCache.session.get(cacheKey) as JiraCreateIssueType[] | null;
+        if (cached) {
+            return cached;
         }
 
-        value = await this.$ajax.get(ApiUrls.getIssueMetadata, issuekey);
-        this.$jaCache.session.set(`issueMetadata_${issuekey}`, value);
+        let issueTypes: JiraCreateIssueType[] | null;
+        try {
+            issueTypes = await this.getCreateMetaPages<JiraCreateIssueType>(ApiUrls.createMetaIssueTypes, 'issueTypes', [projectKey]);
+        } catch (err) {
+            console.warn('Paged createmeta API failed. Falling back to legacy createmeta API.', err);
+            issueTypes = await this.loadLegacyCreateMeta(projectKey);
+        }
 
-        return value;
+        if (issueTypes) {
+            this.$jaCache.session.set(cacheKey, issueTypes);
+        }
+
+        return issueTypes;
+    }
+
+    async getCreateMetaFields(project: string, issueTypeId: string): Promise<JiraFieldMetaMap> {
+        const projectKey = project.toUpperCase();
+        const cacheKey = `createMetaFields_${projectKey}_${issueTypeId}`;
+        const cached = this.$jaCache.session.get(cacheKey) as JiraFieldMetaMap | null;
+        if (cached) {
+            return cached;
+        }
+
+        let fields: JiraFieldMetaMap;
+        try {
+            const list = await this.getCreateMetaPages<RawFieldMeta>(ApiUrls.createMetaFields, 'fields', [projectKey, issueTypeId]);
+            fields = normalizeFieldMetaList(list);
+        } catch (err) {
+            console.warn('Paged createmeta API failed. Falling back to legacy createmeta API.', err);
+            await this.loadLegacyCreateMeta(projectKey);
+            fields = (this.$jaCache.session.get(cacheKey) as JiraFieldMetaMap | null) || {};
+        }
+
+        this.$jaCache.session.set(cacheKey, fields);
+        return fields;
+    }
+
+    // Jira Cloud returns the list under "issueTypes" / "fields" whereas Data Center returns it under "values"
+    private async getCreateMetaPages<T>(url: string, listKey: 'issueTypes' | 'fields', params: string[]): Promise<T[]> {
+        const encodedParams = params.map((p) => encodeURIComponent(p));
+        const result: T[] = [];
+        let startAt = 0;
+
+        for (;;) {
+            const page = await this.$ajax.get<CreateMetaPage<T>>(
+                `${url}?startAt=${startAt}&maxResults=${createMetaPageSize}`,
+                ...encodedParams,
+            );
+            const items = page[listKey] || page.values || [];
+            result.push(...items);
+            startAt += items.length;
+
+            const reachedTotal = typeof page.total === 'number' && startAt >= page.total;
+            const isPagingUnknown = page.isLast === undefined && page.total === undefined;
+            if (!items.length || page.isLast || reachedTotal || isPagingUnknown) {
+                return result;
+            }
+        }
+    }
+
+    private async loadLegacyCreateMeta(projectKey: string): Promise<JiraCreateIssueType[] | null> {
+        let response: LegacyCreateMetaResponse;
+        try {
+            response = await this.$ajax.get<LegacyCreateMetaResponse>(ApiUrls.createMetaLegacy, encodeURIComponent(projectKey));
+        } catch (err) {
+            console.error('Unable to load create metadata for project', projectKey, err);
+            return null;
+        }
+
+        const project = response.projects?.find((p) => p.key.toUpperCase() === projectKey);
+        if (!project) {
+            return null;
+        }
+
+        return project.issuetypes.map(({ fields, ...issueType }) => {
+            this.$jaCache.session.set(`createMetaFields_${projectKey}_${issueType.id}`, normalizeFieldMetaMap(fields));
+            return issueType;
+        });
+    }
+
+    async getIssueEditMeta(issuekey: string): Promise<JiraFieldMetaMap> {
+        const value = await this.$ajax.get<{ fields?: Record<string, RawFieldMeta> }>(
+            ApiUrls.getIssueMetadata,
+            encodeURIComponent(issuekey),
+        );
+        return normalizeFieldMetaMap(value.fields);
+    }
+
+    async getIssueTransitions(issuekey: string): Promise<JiraTransition[]> {
+        const result = await this.$ajax.get<{ transitions?: RawTransition[] }>(
+            `${ApiUrls.issueTransitions}?expand=transitions.fields`,
+            encodeURIComponent(issuekey),
+        );
+
+        return (result.transitions || []).map(({ fields, ...transition }) => ({ ...transition, fields: normalizeFieldMetaMap(fields) }));
+    }
+
+    transitionIssue(issuekey: string, transitionId: string, fields?: Record<string, unknown>): Promise<unknown> {
+        const body: { transition: { id: string }; fields?: Record<string, unknown> } = { transition: { id: transitionId } };
+        if (fields && Object.keys(fields).length) {
+            body.fields = fields;
+        }
+        return this.$ajax.post(ApiUrls.issueTransitions, body, encodeURIComponent(issuekey));
+    }
+
+    addComment(issuekey: string, body: string): Promise<unknown> {
+        return this.$ajax.post(ApiUrls.issueComment, { body }, encodeURIComponent(issuekey));
+    }
+
+    getIssue<T = unknown>(issuekey: string, fields: string[]): Promise<T> {
+        const fieldsQuery = encodeURIComponent(fields.join(','));
+        return this.$ajax.get<T>(`${ApiUrls.individualIssue}?fields=${fieldsQuery}`, encodeURIComponent(issuekey));
     }
 
     createIssue(issue: any): Promise<any> {
         return this.$ajax.post(ApiUrls.createIssue, { fields: issue });
     }
 
+    // Uses the Jira Cloud internal clone API. This API is not available in Jira Data Center.
     async cloneIssue(key: string, summary: string, fields?: any): Promise<any> {
         const task = await this.$ajax.post(ApiUrls.cloneIssue, { includeAttachments: true, summary, optionalFields: fields || {} }, key);
 
         if (task.taskId) {
-            await waitFor(1250);
-            const result = await this.$ajax.get(ApiUrls.taskStatus, task.taskId);
-            if (result.progress === 100 && result.result?.issueId) {
-                const issue = await this.$ajax.get(`${ApiUrls.individualIssue}?fields=key`, result.result?.issueId);
-                if (issue) {
-                    return issue;
+            for (let attempt = 0; attempt < cloneStatusMaxAttempts; attempt++) {
+                await waitFor(cloneStatusPollInterval);
+                const result = await this.$ajax.get(ApiUrls.taskStatus, task.taskId);
+                if (result.progress === 100 && result.result?.issueId) {
+                    const issue = await this.$ajax.get(`${ApiUrls.individualIssue}?fields=key`, result.result?.issueId);
+                    if (issue) {
+                        return issue;
+                    }
+                }
+                if (result.status === 'FAILED' || result.status === 'CANCELLED' || result.status === 'DEAD') {
+                    break;
                 }
             }
         }
@@ -519,12 +645,9 @@ export default class JiraService {
         return task;
     }
 
-    deleteIssue(issuekey: string): Promise<any> {
-        return this.$ajax.delete(ApiUrls.individualIssue, issuekey);
-    }
-
-    bulkImportIssues(issueUpdates: any[]): Promise<any> {
-        return this.$ajax.post(ApiUrls.bulkImportIssue, { issueUpdates });
+    deleteIssue(issuekey: string, deleteSubtasks?: boolean): Promise<any> {
+        const url = deleteSubtasks ? `${ApiUrls.individualIssue}?deleteSubtasks=true` : ApiUrls.individualIssue;
+        return this.$ajax.delete(url, issuekey);
     }
 
     updateIssue(key: string, issue: any): Promise<any> {

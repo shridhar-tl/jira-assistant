@@ -1,5 +1,3 @@
-import React from 'react';
-
 import GridCellBase from './GridCellBase';
 import { GridCellProps } from './types';
 

@@ -10,6 +10,10 @@ import { clone } from './utils';
 
 const defaultColumnWidth = 140;
 
+function isCellEditable(column: GridColumn): boolean {
+    return column.editable !== false && column.cellEditable !== false;
+}
+
 interface EditableGridState {
     startRow: number;
     startCell: number;
@@ -40,6 +44,8 @@ function EditableGrid({
     className,
     onChange,
     onHeaderChange,
+    getCellValue,
+    setCellValue,
 }: EditableGridProps) {
     const [state, setState] = useState<EditableGridState>({ startRow: 0, startCell: 0, endRow: 0, endCell: 0 });
     const resizingColumnRef = useRef<number | undefined>(undefined);
@@ -71,7 +77,7 @@ function EditableGrid({
         [rows, columns, onChange],
     );
 
-    const handleDocumentMouseUp = useCallback((e: MouseEvent) => {
+    const handleDocumentMouseUp = useCallback(() => {
         resizingColumnRef.current = undefined;
         pageXRef.current = undefined;
     }, []);
@@ -86,17 +92,35 @@ function EditableGrid({
         };
     }, [handleDocumentMouseMove, handleDocumentMouseUp]);
 
-    const repeatRowData = useCallback((rowsData: any[], columnsData: GridColumn[], start: number, end: number, cell: number) => {
-        const { field } = columnsData[cell];
+    const readCell = useCallback(
+        (row: object, field: string): unknown => (getCellValue ? getCellValue(row, field) : (row as Record<string, unknown>)?.[field]),
+        [getCellValue],
+    );
 
-        for (let i = end + 1, j = start; i < rowsData.length; i++) {
-            rowsData[i] = { ...rowsData[i], [field]: clone(rowsData[j++][field]) };
+    const writeCell = useCallback(
+        (row: object, field: string, value: unknown): object =>
+            setCellValue ? setCellValue(row, field, value) : { ...row, [field]: value },
+        [setCellValue],
+    );
 
-            if (j > end) {
-                j = start;
-            } // If data cloned till last selected row, start from beginning
-        }
-    }, []);
+    const repeatRowData = useCallback(
+        (rowsData: any[], columnsData: GridColumn[], start: number, end: number, cell: number) => {
+            const column = columnsData[cell];
+            if (!isCellEditable(column)) {
+                return;
+            }
+
+            const { field } = column;
+            for (let i = end + 1, j = start; i < rowsData.length; i++) {
+                rowsData[i] = writeCell(rowsData[i], field, clone(readCell(rowsData[j++], field)));
+
+                if (j > end) {
+                    j = start;
+                } // If data cloned till last selected row, start from beginning
+            }
+        },
+        [readCell, writeCell],
+    );
 
     const getOrderedSelection = useCallback(
         (stateOrCopied?: EditableGridState | EditableGridState['copied']) => {
@@ -152,12 +176,7 @@ function EditableGrid({
                     }
                 } else if (rowIndex >= 0) {
                     const newRows = [...rows];
-
-                    const row = { ...newRows[rowIndex] };
-                    newRows[rowIndex] = row;
-
-                    const cell = columns[cellIndex];
-                    row[cell.field] = value;
+                    newRows[rowIndex] = writeCell(newRows[rowIndex], columns[cellIndex].field, value);
 
                     if (onChange) {
                         onChange(newRows, columns, rowIndex, cellIndex);
@@ -189,8 +208,9 @@ function EditableGrid({
                 pageXRef.current = e.pageX;
                 colWidthRef.current = columns[index].width || 140;
             },
+            getCellValue: readCell,
         }),
-        [rows, columns, onChange, onHeaderChange, getOrderedSelection, repeatRowData],
+        [rows, columns, onChange, onHeaderChange, getOrderedSelection, repeatRowData, writeCell, readCell],
     );
 
     const clearSelectedCells = useCallback(
@@ -199,13 +219,12 @@ function EditableGrid({
 
             const { rowStart, rowEnd, cellStart, cellEnd } = getOrderedSelection();
 
-            for (let ri = rowStart; ri <= rowEnd; ri++) {
-                const row = { ...newRows[ri] };
-                newRows[ri] = row;
-
+            for (let ri = Math.max(rowStart, 0); ri <= rowEnd && ri < newRows.length; ri++) {
                 for (let ci = cellStart; ci <= cellEnd; ci++) {
-                    const { field } = columnsData[ci];
-                    delete row[field];
+                    const column = columnsData[ci];
+                    if (isCellEditable(column)) {
+                        newRows[ri] = writeCell(newRows[ri], column.field, undefined);
+                    }
                 }
             }
 
@@ -213,7 +232,7 @@ function EditableGrid({
                 onChange(newRows, columnsData);
             }
         },
-        [getOrderedSelection, onChange],
+        [getOrderedSelection, onChange, writeCell],
     );
 
     const initCopyCells = useCallback((cut?: boolean) => {
@@ -231,17 +250,15 @@ function EditableGrid({
                 endCell = columnsData.length - 1;
             }
 
-            const pasteCols = columnsData.slice(startCell, endCell + 1).map((c) => c.field);
+            const pasteCols = columnsData.slice(startCell, endCell + 1);
             let endRow = startRow;
 
-            for (let i = 0; i < copiedRows.length; i++, endRow++) {
-                const row = { ...rowsData[endRow] };
-                rowsData[endRow] = row;
+            for (let i = 0; i < copiedRows.length && endRow < rowsData.length; i++, endRow++) {
                 const copiedRow = copiedRows[i];
-                for (let j = 0; j < copiedRow.length; j++) {
-                    const field = pasteCols[j];
-                    const value = copiedRow[j];
-                    row[field] = value;
+                for (let j = 0; j < copiedRow.length && j < pasteCols.length; j++) {
+                    if (isCellEditable(pasteCols[j])) {
+                        rowsData[endRow] = writeCell(rowsData[endRow], pasteCols[j].field, copiedRow[j]);
+                    }
                 }
             }
 
@@ -249,15 +266,16 @@ function EditableGrid({
                 onChange(rowsData, columnsData);
             }
 
+            const lastPastedRow = endRow - 1;
             setState((prev) => {
-                const newState: Partial<EditableGridState> = { ...prev, startRow, startCell, endRow, endCell };
+                const newState: Partial<EditableGridState> = { ...prev, startRow, startCell, endRow: lastPastedRow, endCell };
                 if (prev.copied?.cut) {
                     newState.copied = undefined;
                 }
                 return newState as EditableGridState;
             });
         },
-        [getOrderedSelection, onChange],
+        [getOrderedSelection, onChange, writeCell],
     );
 
     const beginPaste = useCallback(() => {
@@ -269,48 +287,30 @@ function EditableGrid({
 
         const { rowStart, cellStart, rowEnd, cellEnd } = getOrderedSelection(state.copied);
 
-        // If any of the selected cell is non editable, then paste operation is not allowed
-        for (let i = cellStart; i <= cellEnd; i++) {
-            const { editable, headerEditable, cellEditable, footerEditable } = columns[i];
-            if (!editable) {
-                return;
-            }
-            if (!headerEditable && cellStart === -1) {
-                return;
-            }
-            if (!footerEditable && (cellStart === rows.length || cellEnd === rows.length)) {
-                return;
-            }
-            if (!cellEditable && ((cellStart >= 0 && cellStart < rows.length) || (cellEnd >= 0 && cellEnd < rows.length))) {
-                return;
-            }
+        if (rowStart < 0 || rowEnd >= rows.length) {
+            return;
         }
 
         const { cut } = state.copied;
         const copiedRows: any[][] = [];
 
         for (let i = rowStart; i <= rowEnd; i++) {
-            let row = newRows[i];
-            if (cut) {
-                row = { ...row };
-                newRows[i] = row;
-            }
             const copiedCells: any[] = [];
             for (let j = cellStart; j <= cellEnd; j++) {
-                const { field } = columns[j];
-                let value = row[field];
-                if (cut) {
-                    delete row[field];
+                const column = columns[j];
+                const value = readCell(newRows[i], column.field);
+                if (cut && isCellEditable(column)) {
+                    newRows[i] = writeCell(newRows[i], column.field, undefined);
+                    copiedCells.push(value);
                 } else {
-                    value = clone(value);
+                    copiedCells.push(clone(value));
                 }
-                copiedCells.push(value);
             }
             copiedRows.push(copiedCells);
         }
 
         pasteData(newRows, columns, copiedRows);
-    }, [state.copied, rows, columns, getOrderedSelection, pasteData]);
+    }, [state.copied, rows, columns, getOrderedSelection, pasteData, readCell, writeCell]);
 
     const getSelectionState = useCallback(
         (row: number, cell: number, useCopied?: boolean) => {

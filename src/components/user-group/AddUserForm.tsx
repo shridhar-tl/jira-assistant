@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 
 import type { ComponentEvent } from 'fluxo-ui';
 
@@ -23,20 +23,25 @@ function AddUserForm({ onAddUsers }: AddUserFormProps) {
     const [suggestions, setSuggestions] = useState<UserSuggestion[]>([]);
     const [userCache, setUserCache] = useState<Record<string, JiraUser>>({});
 
-    const searchUsers = async (query: string) => {
-        const results: JiraUser[] = (await $jira.searchUsers(query)) || [];
-        const newCache: Record<string, JiraUser> = { ...userCache };
-        results.forEach((u) => {
-            if (u.accountId) newCache[u.accountId] = u;
-        });
-        setUserCache(newCache);
-        setSuggestions(
-            results.map((u) => ({
-                label: u.displayName || u.emailAddress || u.accountId || '',
-                value: u.accountId || '',
-            })),
-        );
-    };
+    const searchUsers = useCallback(
+        async (query: string) => {
+            const results: JiraUser[] = (await $jira.searchUsers(query)) || [];
+            setUserCache((prev) => {
+                const newCache: Record<string, JiraUser> = { ...prev };
+                results.forEach((u) => {
+                    if (u.accountId) newCache[u.accountId] = u;
+                });
+                return newCache;
+            });
+            setSuggestions(
+                results.map((u) => ({
+                    label: u.displayName || u.emailAddress || u.accountId || '',
+                    value: u.accountId || '',
+                })),
+            );
+        },
+        [$jira],
+    );
 
     const handleAdd = () => {
         if (selectedIds.length === 0) return;

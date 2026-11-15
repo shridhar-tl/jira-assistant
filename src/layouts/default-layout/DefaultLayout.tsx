@@ -108,7 +108,7 @@ export default function DefaultLayout() {
                 <DefaultHeader onLogout={signOut} isQuickView={isQuickView} />
 
                 <div className="pt-12 flex min-h-screen">
-                    {!isQuickView && <NavSideBar menus={menus} />}
+                    {!isQuickView && <NavSideBar menus={menus} userId={userId} />}
 
                     <main
                         className="flex-1 transition-all duration-300 min-h-[calc(100vh-3rem)]"

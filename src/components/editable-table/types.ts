@@ -48,6 +48,8 @@ export interface EditableGridProps {
     getRowHeaderClassName?: (row: any, index: number) => string;
     className?: string;
     tabIndex?: number;
+    getCellValue?(row: object, field: string): unknown;
+    setCellValue?(row: object, field: string, value: unknown): object;
 }
 
 export interface GridCellProps {

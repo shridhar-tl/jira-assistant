@@ -36,7 +36,6 @@ export default function DefaultHeader({ onLogout, isQuickView }: DefaultHeaderPr
     const versionNumber = isWebBuild ? 'WEB' : `v ${AppVersionNo}`;
 
     const [notifications, setNotifications] = useState<any>(null);
-    const [showYoutubeVideo, setShowYoutubeVideo] = useState(false);
 
     useEffect(() => {
         if (!disableNotification) {
@@ -56,9 +55,6 @@ export default function DefaultHeader({ onLogout, isQuickView }: DefaultHeaderPr
             validateTimezone($session, $settings, userId);
         }
     }, [cUser, $session, $settings, userId]);
-
-    const showYoutubeHelp = useCallback(() => setShowYoutubeVideo(true), []);
-    const hideYoutube = useCallback(() => setShowYoutubeVideo(false), []);
 
     const showVersionInfo = useCallback(
         (e: React.MouseEvent) => {
@@ -101,15 +97,11 @@ export default function DefaultHeader({ onLogout, isQuickView }: DefaultHeaderPr
                 <TimerControl />
 
                 <HeaderRight
-                    showYoutubeVideo={showYoutubeVideo}
                     notifications={notifications}
                     onLogout={onLogout}
                     showVersionInfo={showVersionInfo}
                     disableJiraUpdates={disableJiraUpdates}
                     disableNotification={disableNotification}
-                    showYoutubeHelp={showYoutubeHelp}
-                    userId={userId}
-                    hideYoutube={hideYoutube}
                     isQuickView={isQuickView}
                 />
             </div>

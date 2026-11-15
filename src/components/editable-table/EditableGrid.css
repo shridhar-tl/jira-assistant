@@ -6,7 +6,7 @@ div.src-editable-grid-container {
 
 div.src-editable-grid-container table.src-editable-grid {
     outline: none;
-    border: 1px solid #e6e6e6;
+    border: 1px solid var(--border-primary);
     border-top: 0px;
     font-size: 13px;
     user-select: none;
@@ -15,7 +15,7 @@ div.src-editable-grid-container table.src-editable-grid {
 div.src-editable-grid-container table.src-editable-grid td,
 div.src-editable-grid-container table.src-editable-grid th {
     padding: 4px;
-    border: 1px solid #e6e6e6;
+    border: 1px solid var(--border-primary);
     cursor: cell;
     overflow: hidden;
     white-space: nowrap;
@@ -40,13 +40,13 @@ div.src-editable-grid-container table.src-editable-grid th input:focus {
 div.src-editable-grid-container table.src-editable-grid tbody tr td.selected,
 div.src-editable-grid-container table.src-editable-grid thead tr th.selected,
 div.src-editable-grid-container table.src-editable-grid tfoot tr td.selected {
-    background-color: #deedf8;
+    background-color: color-mix(in srgb, var(--color-primary-500) 15%, transparent);
 }
 
 div.src-editable-grid-container table.src-editable-grid tbody tr td.selected.sel-start,
 div.src-editable-grid-container table.src-editable-grid thead tr th.selected.sel-start,
 div.src-editable-grid-container table.src-editable-grid tfoot tr td.selected.sel-start {
-    background-color: #fff;
+    background-color: var(--bg-primary);
 }
 
 div.src-editable-grid-container table.src-editable-grid tbody tr td.selected div.cell-repeater,
@@ -58,7 +58,7 @@ div.src-editable-grid-container table.src-editable-grid tfoot tr td.selected div
     width: 6px;
     right: -8px;
     cursor: crosshair;
-    background-color: #2587d1;
+    background-color: var(--color-primary-600);
     bottom: -13px;
 }
 
@@ -71,54 +71,54 @@ div.src-editable-grid-container table.src-editable-grid tfoot tr td.selected div
 div.src-editable-grid-container table.src-editable-grid tbody tr td.sel-top,
 div.src-editable-grid-container table.src-editable-grid thead tr th.sel-top,
 div.src-editable-grid-container table.src-editable-grid tfoot tr td.sel-top {
-    border-top-color: #2587d1;
+    border-top-color: var(--color-primary-600);
 }
 
 div.src-editable-grid-container table.src-editable-grid tbody tr td.sel-right,
 div.src-editable-grid-container table.src-editable-grid thead tr th.sel-right,
 div.src-editable-grid-container table.src-editable-grid tfoot tr td.sel-right {
-    border-right-color: #2587d1;
+    border-right-color: var(--color-primary-600);
 }
 
 div.src-editable-grid-container table.src-editable-grid tbody tr td.sel-bottom,
 div.src-editable-grid-container table.src-editable-grid thead tr th.sel-bottom,
 div.src-editable-grid-container table.src-editable-grid tfoot tr td.sel-bottom {
-    border-bottom-color: #2587d1;
+    border-bottom-color: var(--color-primary-600);
 }
 
 div.src-editable-grid-container table.src-editable-grid tbody tr td.sel-left,
 div.src-editable-grid-container table.src-editable-grid thead tr th.sel-left,
 div.src-editable-grid-container table.src-editable-grid tfoot tr td.sel-left {
-    border-left-color: #2587d1;
+    border-left-color: var(--color-primary-600);
 }
 
 div.src-editable-grid-container table.src-editable-grid tbody tr td.copy-top,
 div.src-editable-grid-container table.src-editable-grid thead tr th.copy-top,
 div.src-editable-grid-container table.src-editable-grid tfoot tr td.copy-top {
-    border-top: 1px dashed #2587d1;
+    border-top: 1px dashed var(--color-primary-600);
 }
 
 div.src-editable-grid-container table.src-editable-grid tbody tr td.copy-right,
 div.src-editable-grid-container table.src-editable-grid thead tr th.copy-right,
 div.src-editable-grid-container table.src-editable-grid tfoot tr td.copy-right {
-    border-right: 1px dashed #2587d1;
+    border-right: 1px dashed var(--color-primary-600);
 }
 
 div.src-editable-grid-container table.src-editable-grid tbody tr td.copy-bottom,
 div.src-editable-grid-container table.src-editable-grid thead tr th.copy-bottom,
 div.src-editable-grid-container table.src-editable-grid tfoot tr td.copy-bottom {
-    border-bottom: 1px dashed #2587d1;
+    border-bottom: 1px dashed var(--color-primary-600);
 }
 
 div.src-editable-grid-container table.src-editable-grid tbody tr td.copy-left,
 div.src-editable-grid-container table.src-editable-grid thead tr th.copy-left,
 div.src-editable-grid-container table.src-editable-grid tfoot tr td.copy-left {
-    border-left: 1px dashed #2587d1;
+    border-left: 1px dashed var(--color-primary-600);
 }
 
 div.src-editable-grid-container table.src-editable-grid .src-status-cell {
-    background-color: #f4f5f8;
-    color: #5d5c5c;
+    background-color: var(--bg-tertiary);
+    color: var(--text-secondary);
     width: 32px;
     text-align: center;
     position: sticky;
@@ -127,8 +127,8 @@ div.src-editable-grid-container table.src-editable-grid .src-status-cell {
 }
 
 div.src-editable-grid-container table.src-editable-grid thead tr th {
-    color: #5d5c5c;
-    background-color: #f4f5f8;
+    color: var(--text-secondary);
+    background-color: var(--bg-tertiary);
     height: 30px;
     width: 140px;
     min-width: 100px;
@@ -154,7 +154,7 @@ div.src-editable-grid-container table.src-editable-grid thead tr th div.h-resize
 
 div.src-editable-grid-container table.src-editable-grid thead tr th div.h-resizer-r:hover,
 div.src-editable-grid-container table.src-editable-grid thead tr th div.h-resizer-l:hover {
-    background-color: #deedf8;
+    background-color: color-mix(in srgb, var(--color-primary-500) 15%, transparent);
 }
 
 div.src-editable-grid-container table.src-editable-grid thead tr th div.h-resizer-l {
@@ -170,15 +170,15 @@ div.src-editable-grid-container table.src-editable-grid thead tr th div.h-resize
 }
 
 div.src-editable-grid-container table.src-editable-grid tbody tr td {
-    color: #0a0a0a;
-    background-color: #fff;
+    color: var(--text-primary);
+    background-color: var(--bg-primary);
     height: 30px;
     max-height: 30px;
     overflow: hidden;
 }
 
 div.src-editable-grid-container table.src-editable-grid tfoot tr td {
-    color: #5d5c5c;
+    color: var(--text-secondary);
     height: 30px;
     width: 140px;
 }

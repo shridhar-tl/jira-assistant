@@ -105,10 +105,6 @@ const navigation: MenuSection[] = [
                 id: 'IMI',
                 url: '/import/issue',
                 icon: 'fa fa-ticket',
-                badge: {
-                    variant: 'success',
-                    text: 'BETA',
-                },
             },
             planningPoker &&
                 !isAppBuild && {

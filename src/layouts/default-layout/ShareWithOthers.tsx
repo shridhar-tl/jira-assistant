@@ -1,4 +1,4 @@
-import { memo, useState, useMemo, useCallback, useRef, useEffect } from 'react';
+import { memo, useState, useMemo, useCallback } from 'react';
 
 import { EventCategory } from '@/constants/settings';
 import {
@@ -14,103 +14,120 @@ import { Link } from '@/controls';
 
 import { inject } from '@services';
 
-function ShareWithOthers() {
-    const [showPanel, setShowPanel] = useState(false);
-    const panelRef = useRef<HTMLDivElement>(null);
+import { OverlayPanel } from '@components';
 
-    const togglePanel = useCallback((e: React.MouseEvent) => {
-        e.stopPropagation();
-        setShowPanel((prev) => !prev);
-        trackShare();
-    }, []);
+import SidebarFooterAction from './SidebarFooterAction';
 
-    useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            if (panelRef.current && !panelRef.current.contains(event.target as Node)) {
-                setShowPanel(false);
+interface ShareUrls {
+    ratingUrl: string;
+    gMailShare: string;
+    linkedInShare: string;
+    facebookShare: string;
+    twitterShare: string;
+}
+
+interface ShareTarget {
+    urlKey: keyof ShareUrls;
+    label: string;
+    title: string;
+    iconClass: string;
+    badgeClass: string;
+}
+
+const shareTargets: ShareTarget[] = [
+    {
+        urlKey: 'ratingUrl',
+        label: 'Rate',
+        title: 'Rate this tool in web store',
+        iconClass: 'fa fa-star text-amber-500',
+        badgeClass: 'bg-amber-100 group-hover:bg-amber-200',
+    },
+    {
+        urlKey: 'gMailShare',
+        label: 'Gmail',
+        title: 'Share with Gmail',
+        iconClass: 'fa fa-envelope text-red-500',
+        badgeClass: 'bg-red-100 group-hover:bg-red-200',
+    },
+    {
+        urlKey: 'linkedInShare',
+        label: 'LinkedIn',
+        title: 'Share with LinkedIn',
+        iconClass: 'fa-brands fa-linkedin text-blue-700',
+        badgeClass: 'bg-blue-100 group-hover:bg-blue-200',
+    },
+    {
+        urlKey: 'facebookShare',
+        label: 'Facebook',
+        title: 'Share with Facebook',
+        iconClass: 'fa-brands fa-facebook text-blue-600',
+        badgeClass: 'bg-blue-100 group-hover:bg-blue-200',
+    },
+    {
+        urlKey: 'twitterShare',
+        label: 'Twitter',
+        title: 'Share with Twitter / X',
+        iconClass: 'fa-brands fa-x-twitter text-sky-500',
+        badgeClass: 'bg-sky-100 group-hover:bg-sky-200',
+    },
+];
+
+interface ShareWithOthersProps {
+    isHidden: boolean;
+    onToggle: (isOpen: boolean) => void;
+}
+
+function ShareWithOthers({ isHidden, onToggle }: ShareWithOthersProps) {
+    const [anchor, setAnchor] = useState<HTMLElement | null>(null);
+    const urls = useMemo(getUrls, []);
+    const isOpen = !!anchor;
+
+    const closePanel = useCallback(() => {
+        setAnchor(null);
+        onToggle(false);
+    }, [onToggle]);
+
+    const togglePanel = useCallback(
+        (e: React.MouseEvent<HTMLButtonElement>) => {
+            if (isOpen) {
+                closePanel();
+                return;
             }
-        };
-
-        if (showPanel) {
-            document.addEventListener('mousedown', handleClickOutside);
-        }
-        return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, [showPanel]);
-
-    const { ratingUrl, gMailShare, linkedInShare, facebookShare, twitterShare } = useMemo(getUrls, []);
+            trackShare();
+            setAnchor(e.currentTarget);
+            onToggle(true);
+        },
+        [isOpen, closePanel, onToggle],
+    );
 
     return (
-        <li className="nav-item relative list-none hidden md:block">
-            <span
-                className="cursor-pointer w-9 h-9 flex items-center justify-center rounded-lg transition-colors text-(--text-secondary) hover:bg-(--bg-hover) hover:text-(--text-primary)"
+        <>
+            <SidebarFooterAction
+                icon="fa-solid fa-share-nodes"
+                label="Rate & share"
+                isActive={isOpen}
+                isHidden={isHidden}
                 onClick={togglePanel}
-                title="Click to rate or share Jira Assistant"
-            >
-                <i className="fa fa-share-alt text-sm" />
-            </span>
-            {showPanel && (
-                <div
-                    ref={panelRef}
-                    className="absolute right-0 top-full mt-1 w-72 rounded-xl z-50 overflow-hidden bg-(--bg-primary) border border-(--border-primary) shadow-(--shadow-xl)"
-                >
-                    <div className="px-4 pt-4 pb-1 text-center font-semibold text-xs uppercase tracking-wider text-(--text-tertiary)">
-                        Rate &amp; Share
-                    </div>
-                    <div className="p-4 grid grid-cols-5 gap-2">
+                hasPopup
+            />
+            <OverlayPanel isOpen={isOpen} target={anchor} onClose={closePanel} title="Rate & Share" placement="topLeft" width="20rem">
+                <div className="grid grid-cols-5 gap-1 sm:gap-2">
+                    {shareTargets.map((target) => (
                         <Link
-                            href={ratingUrl}
-                            className="flex flex-col items-center gap-1.5 p-2 rounded-lg hover:bg-(--bg-hover) transition-colors no-underline group"
-                            title="Rate this tool in web store"
+                            key={target.urlKey}
+                            href={urls[target.urlKey]}
+                            className="flex flex-col items-center gap-1.5 p-2 rounded-lg hover:bg-(--bg-hover) transition-colors no-underline group cursor-pointer"
+                            title={target.title}
                         >
-                            <span className="w-9 h-9 rounded-full bg-amber-100 flex items-center justify-center group-hover:bg-amber-200 transition-colors">
-                                <i className="fa fa-star text-amber-500 text-base" />
+                            <span className={`w-9 h-9 rounded-full flex items-center justify-center transition-colors ${target.badgeClass}`}>
+                                <i className={`${target.iconClass} text-base`} />
                             </span>
-                            <span className="text-[10px] text-(--text-secondary) leading-tight text-center">Rate</span>
+                            <span className="text-[10px] text-(--text-secondary) leading-tight text-center">{target.label}</span>
                         </Link>
-                        <Link
-                            href={gMailShare}
-                            className="flex flex-col items-center gap-1.5 p-2 rounded-lg hover:bg-(--bg-hover) transition-colors no-underline group"
-                            title="Share with Gmail"
-                        >
-                            <span className="w-9 h-9 rounded-full bg-red-100 flex items-center justify-center group-hover:bg-red-200 transition-colors">
-                                <i className="fa fa-envelope text-red-500 text-base" />
-                            </span>
-                            <span className="text-[10px] text-(--text-secondary) leading-tight text-center">Gmail</span>
-                        </Link>
-                        <Link
-                            href={linkedInShare}
-                            className="flex flex-col items-center gap-1.5 p-2 rounded-lg hover:bg-(--bg-hover) transition-colors no-underline group"
-                            title="Share with LinkedIn"
-                        >
-                            <span className="w-9 h-9 rounded-full bg-blue-100 flex items-center justify-center group-hover:bg-blue-200 transition-colors">
-                                <i className="fa-brands fa-linkedin text-blue-700 text-base" />
-                            </span>
-                            <span className="text-[10px] text-(--text-secondary) leading-tight text-center">LinkedIn</span>
-                        </Link>
-                        <Link
-                            href={facebookShare}
-                            className="flex flex-col items-center gap-1.5 p-2 rounded-lg hover:bg-(--bg-hover) transition-colors no-underline group"
-                            title="Share with Facebook"
-                        >
-                            <span className="w-9 h-9 rounded-full bg-blue-100 flex items-center justify-center group-hover:bg-blue-200 transition-colors">
-                                <i className="fa-brands fa-facebook text-blue-600 text-base" />
-                            </span>
-                            <span className="text-[10px] text-(--text-secondary) leading-tight text-center">Facebook</span>
-                        </Link>
-                        <Link
-                            href={twitterShare}
-                            className="flex flex-col items-center gap-1.5 p-2 rounded-lg hover:bg-(--bg-hover) transition-colors no-underline group"
-                            title="Share with Twitter / X"
-                        >
-                            <span className="w-9 h-9 rounded-full bg-sky-100 flex items-center justify-center group-hover:bg-sky-200 transition-colors">
-                                <i className="fa-brands fa-x-twitter text-sky-500 text-base" />
-                            </span>
-                            <span className="text-[10px] text-(--text-secondary) leading-tight text-center">Twitter</span>
-                        </Link>
-                    </div>
+                    ))}
                 </div>
-            )}
-        </li>
+            </OverlayPanel>
+        </>
     );
 }
 
@@ -121,7 +138,7 @@ function trackShare() {
     $analytics.trackEvent('Share option viewed', EventCategory.HeaderActions);
 }
 
-function getUrls() {
+function getUrls(): ShareUrls {
     const { $jaBrowserExtn } = inject('AppBrowserService');
 
     const ratingUrl = $jaBrowserExtn.getStoreUrl(true);
