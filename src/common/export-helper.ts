@@ -80,6 +80,14 @@ export class ExportHelper {
         return this.element;
     }
 
+    private getPrimaryTable(root: Element): HTMLTableElement | null {
+        if (root instanceof HTMLTableElement && root.classList.contains('exportable')) {
+            return root;
+        }
+        const tables = Array.from(root.querySelectorAll<HTMLTableElement>('table.exportable'));
+        return tables.find(isVisible) || tables[0] || null;
+    }
+
     exportToXlsx(): void {
         const root = this.getElement();
         if (!root) return;
@@ -102,13 +110,7 @@ export class ExportHelper {
         const root = this.getElement();
         if (!root) return;
 
-        let table: HTMLTableElement | null = null;
-        if (root instanceof HTMLTableElement && root.classList.contains('exportable')) {
-            table = root;
-        } else {
-            table = root.querySelector<HTMLTableElement>('table.exportable');
-        }
-
+        const table = this.getPrimaryTable(root);
         if (!table) return;
 
         const sheetName = table.getAttribute('data-export-sheet-name') || this.fileName || 'download';
@@ -119,13 +121,7 @@ export class ExportHelper {
         const root = this.getElement();
         if (!root) return;
 
-        let table: HTMLTableElement | null = null;
-        if (root instanceof HTMLTableElement && root.classList.contains('exportable')) {
-            table = root;
-        } else {
-            table = root.querySelector<HTMLTableElement>('table.exportable');
-        }
-
+        const table = this.getPrimaryTable(root);
         if (!table) return;
 
         const fileName = table.getAttribute('data-export-sheet-name') || this.fileName || 'download';

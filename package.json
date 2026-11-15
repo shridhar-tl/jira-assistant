@@ -51,7 +51,7 @@
         "dexie": "^4.4.7",
         "espree": "^11.2.0",
         "exceljs": "^4.4.0",
-        "fluxo-ui": "^0.5.4",
+        "fluxo-ui": "^0.5.5",
         "js-sql-parser": "^1.6.0",
         "moment": "^2.31.0",
         "moment-timezone": "^0.6.6",
@@ -75,7 +75,7 @@
         "@vitejs/plugin-react": "^6.3.0",
         "concurrently": "^10.0.7",
         "cross-env": "^10.1.0",
-        "eslint": "^10.14.0",
+        "eslint": "^10.15.0",
         "eslint-plugin-import-x": "^4.18.1",
         "eslint-plugin-react": "^7.37.5",
         "eslint-plugin-react-hooks": "^7.1.1",
@@ -90,7 +90,7 @@
         "vite-plugin-html": "^3.2.2",
         "vite-plugin-mkcert": "^2.1.0",
         "vite-plugin-svgr": "^5.2.0",
-        "vite-plugin-webfont-dl": "^3.14.0",
+        "vite-plugin-webfont-dl": "^3.14.1",
         "wait-on": "^9.5.1"
     },
     "pnpm": {

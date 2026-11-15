@@ -88,7 +88,7 @@ function ReportData({ boardId, onSettingsChanged }: ReportDataProps) {
     }
 
     return (
-        <TabView className="no-padding">
+        <TabView className="no-padding" preMount>
             <TabPage header="Grouped - [User daywise]" className="no-padding">
                 <GroupedDataGrid exportSheetName="Grouped - [User daywise]" boardId={boardId} />
             </TabPage>
