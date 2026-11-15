@@ -2,6 +2,7 @@ import { asUser } from '@forge/api';
 import { kvs } from '@forge/kvs';
 import Resolver from '@forge/resolver';
 
+import { registerPlannerResolvers } from './pages/planning/forge/planner-resolvers';
 import { registerPokerResolvers } from './pages/poker/forge/server';
 
 type StorageValue = string | number | boolean | Record<string, any> | any[];
@@ -58,5 +59,6 @@ resolver.define('GetMSOEvents', async (req) => {
 });
 
 registerPokerResolvers(resolver);
+registerPlannerResolvers(resolver);
 
 export const handler = resolver.getDefinitions();

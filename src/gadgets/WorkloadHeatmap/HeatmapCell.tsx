@@ -33,7 +33,16 @@ function HeatmapCell({ day, load, userName }: HeatmapCellProps) {
             onMouseEnter={showDetails}
             onMouseLeave={scheduleClose}
             onClick={showDetails}
+            title={load.absenceTitle}
         >
+            {load.absence && (
+                <i
+                    className={classNames('fa float-right text-[9px]', load.absence === 'holiday' ? 'fa-flag text-violet-500' : 'fa-plane text-sky-500', {
+                        'opacity-60': load.absence === 'partial',
+                    })}
+                    aria-label={load.absenceTitle}
+                />
+            )}
             {hasLoad ? (
                 <div className="flex flex-col leading-tight">
                     <span className="text-[13px] font-semibold tabular-nums">{formatPercent(load.percent)}</span>

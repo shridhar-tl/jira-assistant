@@ -9,7 +9,7 @@ interface HeatmapLegendProps {
 
 export default function HeatmapLegend({ capacityPerDay }: HeatmapLegendProps) {
     return (
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[11px] text-(--text-secondary)">
+        <div className="workload-heatmap flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[11px] text-(--text-secondary)">
             {loadLevelLegend.map(({ level, label }) => (
                 <span key={level} className="inline-flex items-center gap-1.5">
                     <span

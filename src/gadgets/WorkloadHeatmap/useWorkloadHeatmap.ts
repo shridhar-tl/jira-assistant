@@ -1,12 +1,14 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
+import { loadHeatmapSchedule } from '@/pages/planning/shared/heatmap-schedule';
+
 import { inject } from '@services';
 
 import { loadHeatmapDataset } from './data-loader';
 import { getCalendarRange, resolveDateRange } from './date-range';
 import { buildHeatmapModel } from './load-calculator';
 import { getDataSettingsKey, isScopeConfigured } from './settings';
-import type { HeatmapDataset, HeatmapDateRange, HeatmapModel, HeatmapRangeMode, WorkloadHeatmapSettings } from './types';
+import type { HeatmapDataset, HeatmapDateRange, HeatmapModel, HeatmapRangeMode, HeatmapSchedule, WorkloadHeatmapSettings } from './types';
 
 interface RangeNavigation {
     mode: HeatmapRangeMode;
@@ -66,6 +68,7 @@ export default function useWorkloadHeatmap(settings: WorkloadHeatmapSettings): W
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [reloadVersion, setReloadVersion] = useState(0);
+    const [schedule, setSchedule] = useState<HeatmapSchedule | null>(null);
 
     const settingsRef = useRef(settings);
     settingsRef.current = settings;
@@ -143,9 +146,31 @@ export default function useWorkloadHeatmap(settings: WorkloadHeatmapSettings): W
         };
     }, [rangeInputKey, offset, reloadVersion]);
 
+    const scheduleBoardId = settings.rangeMode === 'sprint' ? settings.board?.id || null : null;
+    const scheduleRange = rangeState?.range;
+    useEffect(() => {
+        if (!scheduleBoardId || !dataset || !scheduleRange) {
+            setSchedule(null);
+            return;
+        }
+        let cancelled = false;
+        const users = [...new Map(dataset.groups.flatMap((g) => g.users).map((u) => [u.id, u])).values()];
+        loadHeatmapSchedule(scheduleBoardId, users, scheduleRange.fromDate, scheduleRange.toDate)
+            .then((result) => !cancelled && setSchedule(result))
+            .catch((err: unknown) => {
+                console.error('Failed to load the people schedule of the board:', err);
+                if (!cancelled) {
+                    setSchedule(null);
+                }
+            });
+        return () => {
+            cancelled = true;
+        };
+    }, [scheduleBoardId, dataset, scheduleRange?.fromDate.getTime(), scheduleRange?.toDate.getTime()]);
+
     const model = useMemo(
-        () => (dataset && rangeState ? buildHeatmapModel(dataset, settings, rangeState.range, getCapacityPerDay()) : null),
-        [dataset, rangeState, settings],
+        () => (dataset && rangeState ? buildHeatmapModel(dataset, settings, rangeState.range, getCapacityPerDay(), new Date(), schedule || undefined) : null),
+        [dataset, rangeState, settings, schedule],
     );
 
     const setOffset = useCallback(

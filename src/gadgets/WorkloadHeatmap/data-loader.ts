@@ -15,6 +15,8 @@ import {
     stripOrderBy,
 } from '../shared/jira-query-utils';
 
+import { parseDateKey, readSegments } from '@/pages/planning/shared/segments';
+
 import { assigneeChunkSize, baseIssueFields, defaultIssueFilterJql, defaultStartDateFieldName, ungroupedAssigneesName } from './constants';
 import type { HeatmapDataset, HeatmapFilterOptions, HeatmapGroup, HeatmapIssue, HeatmapUser, WorkloadHeatmapSettings } from './types';
 
@@ -33,7 +35,11 @@ interface JiraIssueFields {
 interface JiraIssue {
     key: string;
     fields: JiraIssueFields;
+    properties?: Record<string, unknown>;
 }
+
+const segmentsProperty = 'ja_planner_tasks';
+const unassignedUser: HeatmapUser = { id: '', displayName: 'Unassigned' };
 
 interface JiraFieldInfo {
     id: string;
@@ -78,7 +84,8 @@ function parseSeconds(value: number | null | undefined): number | null {
 
 function mapIssue(issue: JiraIssue, startDateField: string): HeatmapIssue | null {
     const { fields } = issue;
-    if (!fields.assignee) {
+    const { segments } = readSegments(issue.properties?.[segmentsProperty]);
+    if (!fields.assignee && !segments.length) {
         return null;
     }
 
@@ -88,7 +95,7 @@ function mapIssue(issue: JiraIssue, startDateField: string): HeatmapIssue | null
         key: issue.key,
         summary: fields.summary || '',
         url: $userutils.getTicketUrl(issue.key),
-        assignee: toHeatmapUser(fields.assignee),
+        assignee: fields.assignee ? toHeatmapUser(fields.assignee) : unassignedUser,
         projectKey: fields.project?.key || '',
         projectName: fields.project?.name || '',
         issueType: fields.issuetype?.name || '',
@@ -99,6 +106,9 @@ function mapIssue(issue: JiraIssue, startDateField: string): HeatmapIssue | null
         remainingEstimate: parseSeconds(fields.timeestimate),
         startDate: startDateField ? parseDateValue(fields[startDateField]) : null,
         dueDate: parseDateValue(fields.duedate),
+        segments: segments.length
+            ? segments.map((s) => ({ start: parseDateKey(s.start), end: parseDateKey(s.end), people: s.people.map(({ id, allocation }) => ({ id, allocation })) }))
+            : undefined,
     };
 }
 
@@ -118,7 +128,9 @@ function toHeatmapGroups(groups: UserGroup[]): HeatmapGroup[] {
 function groupAssignees(issues: HeatmapIssue[], groups: HeatmapGroup[]): HeatmapGroup[] {
     const assignees = new Map<string, HeatmapUser>();
     for (const issue of issues) {
-        assignees.set(issue.assignee.id, issue.assignee);
+        if (issue.assignee.id) {
+            assignees.set(issue.assignee.id, issue.assignee);
+        }
     }
 
     const groupedIds = new Set<string>();
@@ -163,7 +175,7 @@ async function resolveStartDateField(configuredField: string): Promise<string> {
 
 async function searchIssues(jql: string, fields: string[], startDateField: string): Promise<HeatmapIssue[]> {
     const { $jira } = inject('JiraService');
-    const issues = (await $jira.searchTickets(jql, fields)) as JiraIssue[];
+    const issues = (await $jira.searchTickets(jql, fields, undefined, { properties: [segmentsProperty] })) as JiraIssue[];
     return issues.map((issue) => mapIssue(issue, startDateField)).filter((issue): issue is HeatmapIssue => !!issue);
 }
 

@@ -5,6 +5,7 @@ import { format, parse } from 'date-fns';
 interface DateTimePickerProps {
     value?: Date | string;
     onChange?: (date: Date) => void;
+    onClear?: () => void;
     showTime?: boolean;
     className?: string;
     disabled?: boolean;
@@ -14,6 +15,7 @@ interface DateTimePickerProps {
 export const DateTimePicker: React.FC<DateTimePickerProps> = ({
     value,
     onChange,
+    onClear,
     showTime = false,
     className = '',
     disabled = false,
@@ -37,6 +39,10 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const newValue = e.target.value;
         if (!newValue) {
+            if (onClear) {
+                onClear();
+                return;
+            }
             onChange?.(new Date());
             return;
         }

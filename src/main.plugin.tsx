@@ -24,6 +24,7 @@ const WorklogTimerGadget = lazy(() => import('./jcloud/gadgets/worklog-timer'));
 const TeamWorklogGadget = lazy(() => import('./jcloud/gadgets/team-worklog'));
 const WorkloadHeatmapWidget = lazy(() => import('./jcloud/gadgets/workload-heatmap'));
 const TimeInStatusWidget = lazy(() => import('./jcloud/gadgets/time-in-status'));
+const SprintCapacityWidget = lazy(() => import('./jcloud/gadgets/sprint-capacity'));
 const IssueGlance = lazy(() => import('./jcloud/issue-glance'));
 
 const fallback = <BlockLoading text="Loading... Please wait..." />;
@@ -39,6 +40,7 @@ const dashboardItems: Record<string, LazyExoticComponent<ComponentType<Dashboard
     [dashboardModuleKeys.teamWorklog.widget]: TeamWorklogGadget,
     [dashboardModuleKeys.workloadHeatmap.widget]: WorkloadHeatmapWidget,
     [dashboardModuleKeys.timeInStatus.widget]: TimeInStatusWidget,
+    [dashboardModuleKeys.sprintCapacity.widget]: SprintCapacityWidget,
 };
 
 (async function () {
@@ -61,6 +63,16 @@ const dashboardItems: Record<string, LazyExoticComponent<ComponentType<Dashboard
         render(<UserGroups jiraContext={context} />);
     } else if (modalId === 'ja-dlg-wl-report-config') {
         render(<WLReportConfig jiraContext={context} />);
+    } else if (moduleKey === 'ja-project-planner') {
+        const projectKey = (extension as { project?: { key?: string } } | undefined)?.project?.key;
+        if (projectKey && (window.location.hash === '' || window.location.hash === '#' || window.location.hash === '#/')) {
+            window.location.replace(`#/planning/project/${encodeURIComponent(projectKey)}`);
+        }
+        render(
+            <HashRouter>
+                <App jiraContext={context} />
+            </HashRouter>,
+        );
     } else if (moduleKey === 'jira-assistant-app') {
         await applyPokerDeepLink();
         render(

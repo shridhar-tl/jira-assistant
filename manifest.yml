@@ -7,6 +7,14 @@ modules:
       title: Jira Assistant
       icon: https://app.jiraassistant.com/assets/icon_48.png
       layout: blank
+  jira:projectPage:
+    - key: ja-project-planner
+      resource: main
+      resolver:
+        function: resolver
+      title: Sprint Planner
+      icon: https://app.jiraassistant.com/assets/icon_24.png
+      layout: blank
   jira:dashboardGadget:
     - key: ja-date-wise-worklog
       title: Date wise worklog
@@ -71,6 +79,13 @@ modules:
       resource: main
       edit:
         resource: main
+    - key: ja-sprint-capacity
+      title: Sprint Capacity
+      description: Shows the commitment of each team's active sprint against its capacity, with leave and holidays taken into account
+      thumbnail: https://app.jiraassistant.com/assets/icon_48.png
+      resource: main
+      edit:
+        resource: main
     - key: ja-time-in-status
       title: Time in Status
       description: Shows how long issues spend in each status and highlights the bottleneck in your workflow
@@ -93,9 +108,15 @@ modules:
       filter:
         ignoreSelf: true
         onError: RECEIVE_AND_LOG
+  scheduledTrigger:
+    - key: planner-leave-cleanup-trigger
+      function: planner-leave-cleanup
+      interval: day
   function:
     - key: sprint-started-handler
       handler: jcloud-events.onSprintAction
+    - key: planner-leave-cleanup
+      handler: jcloud-events.onPlannerLeaveCleanup
     - key: resolver
       handler: jcloud.handler
       providers:
@@ -134,12 +155,40 @@ permissions:
     - read:issue.changelog:jira
     - write:jira-work
     - write:sprint:jira-software
+    - write:board-scope.admin:jira-software
 app:
   id: ari:cloud:ecosystem::app/3864d3bc-aad3-4650-ac35-e15af61fd92d
   runtime:
     name: nodejs24.x
   storage:
     entities:
+      - name: planner-leave
+        attributes:
+          boardKey:
+            type: string
+          sourceKey:
+            type: string
+          startDate:
+            type: string
+          endDate:
+            type: string
+          entry:
+            type: any
+        indexes:
+          - name: by-board
+            partition:
+              - boardKey
+            range:
+              - endDate
+          - name: by-source
+            partition:
+              - boardKey
+              - sourceKey
+            range:
+              - endDate
+          - name: by-end
+            range:
+              - endDate
       - name: poker-room
         attributes:
           roomId:

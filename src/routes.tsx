@@ -30,6 +30,13 @@ const GeneralSettingsComponent = config.modules.generalSettings && React.lazy(()
 const UserGroupsComponent = config.modules.userGroups && React.lazy(() => import('./components/user-group/UserGroup'));
 const GlobalSettings = config.modules.advancedSettings && React.lazy(() => import('./pages/settings/global/GlobalSettings'));
 
+// Planning
+const SprintPlannerComponent = config.modules.sprintPlanner && React.lazy(() => import('./pages/planning/sprint-planner/SprintPlannerPage'));
+const ProjectPlannerComponent = config.modules.sprintPlanner && React.lazy(() => import('./pages/planning/sprint-planner/ProjectPlannerRedirect'));
+// Program planning uses Forge storage, so the page is only bundled into the Forge app.
+const hasPiPlannerRoute = import.meta.env.VITE_BUILD_MODE === 'PLUGIN';
+const PiPlannerComponent = hasPiPlannerRoute && config.modules.piPlanner && React.lazy(() => import('./pages/planning/pi-planner/PiPlannerPage'));
+
 // Activities
 const PokerComponent = hasPokerRoute && config.modules.planningPoker && React.lazy(() => import('./pages/poker/PokerPage'));
 
@@ -97,6 +104,18 @@ const sessionBasedRoute: RouteItem[] = [
     BulkImportIssueComponent && {
         path: '/import/issue',
         component: BulkImportIssueComponent,
+    },
+    SprintPlannerComponent && {
+        path: '/planning/sprint-planner/:boardIds?/:view?',
+        component: SprintPlannerComponent,
+    },
+    ProjectPlannerComponent && {
+        path: '/planning/project/:projectKey',
+        component: ProjectPlannerComponent,
+    },
+    PiPlannerComponent && {
+        path: '/planning/pi-planner/:piId?/:view?',
+        component: PiPlannerComponent,
     },
     PokerComponent && {
         path: '/poker/*',

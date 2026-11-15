@@ -1,0 +1,9 @@
+.sprint-planner-board .eui-kanban-card {
+    border: 0;
+    background: transparent;
+    overflow: visible;
+}
+
+.sprint-planner-board .eui-kanban-column-header {
+    align-items: stretch;
+}

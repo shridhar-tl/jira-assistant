@@ -8,6 +8,8 @@ const config = {
         importWorklog: true,
         importIssues: true,
         planningPoker: true,
+        sprintPlanner: true,
+        piPlanner: isPluginBuild,
 
         worklogReport: true,
         pivotReport: true,

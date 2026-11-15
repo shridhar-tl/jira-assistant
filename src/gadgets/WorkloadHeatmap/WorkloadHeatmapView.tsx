@@ -1,3 +1,6 @@
+import { getCapacityLevel } from '@/pages/planning/shared/capacity';
+import CapacityBar from '@/pages/planning/shared/components/CapacityBar';
+
 import { Button } from '@components';
 
 import { GadgetAlert } from '../shared';
@@ -47,6 +50,17 @@ export default function WorkloadHeatmapView({ settings, state, onSettingsChange 
         }
         return (
             <>
+                {settings.rangeMode === 'sprint' && model.total.capacity > 0 && (
+                    <div className="shrink-0 border-b border-(--border-primary) px-3 py-2">
+                        <CapacityBar
+                            committed={model.total.seconds / 3600}
+                            capacity={model.total.capacity / 3600}
+                            level={getCapacityLevel(model.total.seconds, model.total.capacity)}
+                            unit="h"
+                            label="Remaining work in the sprint vs capacity of the team"
+                        />
+                    </div>
+                )}
                 <HeatmapOverlay>
                     <HeatmapGrid model={model} />
                 </HeatmapOverlay>

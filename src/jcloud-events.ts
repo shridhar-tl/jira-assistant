@@ -1,5 +1,7 @@
 import { asApp, route } from '@forge/api';
 
+export { onPlannerLeaveCleanup } from './pages/planning/forge/leave-cleanup';
+
 interface SprintEvent {
     eventType: string;
     sprint: {

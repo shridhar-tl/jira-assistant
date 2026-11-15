@@ -37,10 +37,14 @@ body,
     width: 100%;
 }
 
-*,
-::before,
-::after {
-    border-color: var(--border-primary);
+@layer base {
+    *,
+    ::before,
+    ::after,
+    ::backdrop,
+    ::file-selector-button {
+        border-color: var(--border-primary);
+    }
 }
 
 body {

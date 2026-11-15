@@ -14,6 +14,7 @@ export const dashboardModuleKeys = {
     teamWorklog: { gadget: 'ja-team-worklog', widget: 'ja-team-worklog-widget' },
     workloadHeatmap: { widget: 'ja-workload-heatmap' },
     timeInStatus: { widget: 'ja-time-in-status' },
+    sprintCapacity: { widget: 'ja-sprint-capacity' },
 } as const;
 
 const widgetModuleKeys = new Set<string>(Object.values(dashboardModuleKeys).map((keys) => keys.widget));

@@ -2,7 +2,7 @@ import moment from 'moment-timezone';
 
 import { EventCategory } from '@/constants';
 
-import type { Meeting, MeetingCalendarEntry, MeetingDateTime } from '@types';
+import type { CalendarInfo, CalendarLeaveEvent, CalendarShowAs, Meeting, MeetingCalendarEntry, MeetingDateTime } from '@types';
 
 import type AnalyticsService from './analytics-service';
 import type MessageService from './message-service';
@@ -12,6 +12,31 @@ import type MessageService from './message-service';
 
 const apiBasePath = 'https://graph.microsoft.com/v1.0/me/';
 const calendarUrl = `${apiBasePath}/calendar/calendarView?startDateTime={0}&endDateTime={1}&top=100`;
+const calendarListUrl = `${apiBasePath}calendars?$select=id,name&$top=200`;
+const maxLeaveEventPages = 5;
+const leaveEventsUrl = `${apiBasePath}calendars/{0}/calendarView?startDateTime={1}&endDateTime={2}&$top=500&$select=id,subject,start,end,isAllDay,showAs,categories,attendees,organizer`;
+
+interface GraphPerson {
+    emailAddress?: { name?: string; address?: string };
+}
+
+interface GraphLeaveEvent {
+    id: string;
+    subject?: string;
+    start?: MeetingDateTime;
+    end?: MeetingDateTime;
+    isAllDay?: boolean;
+    showAs?: string;
+    categories?: string[];
+    attendees?: GraphPerson[];
+    organizer?: GraphPerson;
+}
+
+const graphShowAsMap: Record<string, CalendarShowAs> = { oof: 'oof', busy: 'busy', tentative: 'tentative', free: 'free', workingElsewhere: 'busy' };
+
+function toCalendarPerson(person?: GraphPerson) {
+    return { email: person?.emailAddress?.address, name: person?.emailAddress?.name };
+}
 //const calendarListUrl = `${apiBasePath}calendars`;
 //const eventsListUrl = `${apiBasePath}calendar/events?$top=200&$expand=&$filter=&$orderby=&$select=`;
 //const groupEventsListUrl = `${apiBasePath}/calendarGroup/calendars/{0}/events`;
@@ -91,6 +116,42 @@ export default class OutlookCalendarBase {
             }
             return [];
         }
+    }
+
+    async getCalendarList(): Promise<CalendarInfo[]> {
+        const result = await this.fetchEvents(calendarListUrl);
+        return ((result?.value || []) as CalendarInfo[]).map(({ id, name }) => ({ id, name }));
+    }
+
+    /** Events of the chosen calendar with the details needed to recognise leave (show as, categories and people). */
+    async getLeaveEvents(calendarId: string, startDate: Date, endDate: Date): Promise<CalendarLeaveEvent[]> {
+        const url = leaveEventsUrl
+            .replace('{0}', encodeURIComponent(calendarId))
+            .replace('{1}', encodeURIComponent(startDate.toISOString()))
+            .replace('{2}', encodeURIComponent(endDate.toISOString()));
+        const events: GraphLeaveEvent[] = [];
+        let nextUrl: string | undefined = url;
+        for (let page = 0; nextUrl && page < maxLeaveEventPages; page++) {
+            const result: { value?: GraphLeaveEvent[]; '@odata.nextLink'?: string } = await this.fetchEvents(nextUrl);
+            events.push(...(result?.value || []));
+            nextUrl = result?.['@odata.nextLink'];
+        }
+
+        return events
+            .filter((e) => e.start?.dateTime && e.end?.dateTime)
+            .map((e) => {
+                const attendees = (e.attendees || []).map(toCalendarPerson).filter((p) => p.email || p.name);
+                return {
+                    id: e.id,
+                    title: e.subject || '',
+                    start: parseGraphDateTime(e.start!),
+                    end: parseGraphDateTime(e.end!),
+                    allDay: !!e.isAllDay,
+                    showAs: graphShowAsMap[e.showAs || ''] || null,
+                    categories: e.categories || [],
+                    people: attendees.length ? attendees : [toCalendarPerson(e.organizer)],
+                };
+            });
     }
 
     protected async fetchEvents(eventsUrl: string): Promise<any> {

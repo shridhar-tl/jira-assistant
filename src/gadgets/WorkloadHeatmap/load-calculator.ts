@@ -1,6 +1,7 @@
-import { addDays, differenceInCalendarDays, eachDayOfInterval, format, isAfter, isBefore, startOfDay } from 'date-fns';
+import { eachDayOfInterval, format, isBefore, startOfDay } from 'date-fns';
 
 import { criticalLoadPercent, underLoadPercent } from './constants';
+import { getPlanParts, spreadPlanByDay, type PlanContext, type PlanSource } from './plan-model';
 import type {
     GroupLoadRow,
     HeatmapDataset,
@@ -8,6 +9,7 @@ import type {
     HeatmapDay,
     HeatmapIssue,
     HeatmapModel,
+    HeatmapSchedule,
     HeatmapUser,
     IssueDayAllocation,
     LoadLevel,
@@ -17,143 +19,25 @@ import type {
     WorkloadHeatmapSettings,
 } from './types';
 
-interface IssueSpan {
-    start: Date;
-    end: Date;
-    isDerived: boolean;
-}
-
-interface CalculationContext {
-    workingDays: Set<number>;
-    capacityPerDay: number;
-    leadTimeDays: number;
-    today: Date;
+interface UserPlan {
+    allocations: Map<string, IssueDayAllocation[]>;
+    unestimated: HeatmapIssue[];
+    unscheduled: HeatmapIssue[];
 }
 
 const dayKeyFormat = 'yyyy-MM-dd';
+const secondsPerHour = 3600;
 
 export function toDayKey(date: Date): string {
     return format(date, dayKeyFormat);
-}
-
-function isWorkingDay(date: Date, workingDays: Set<number>): boolean {
-    return workingDays.has(date.getDay());
-}
-
-function nearestWorkingDay(date: Date, direction: 1 | -1, workingDays: Set<number>): Date {
-    let current = date;
-    for (let i = 0; i < 7; i++) {
-        if (isWorkingDay(current, workingDays)) {
-            return current;
-        }
-        current = addDays(current, direction);
-    }
-    return date;
-}
-
-function shiftWorkingDays(date: Date, count: number, direction: 1 | -1, workingDays: Set<number>): Date {
-    if (!workingDays.size) {
-        return addDays(date, count * direction);
-    }
-
-    let current = date;
-    let remaining = count;
-    while (remaining > 0) {
-        current = addDays(current, direction);
-        if (isWorkingDay(current, workingDays)) {
-            remaining--;
-        }
-    }
-    return current;
-}
-
-function countWorkingDays(start: Date, end: Date, workingDays: Set<number>): number {
-    const totalDays = differenceInCalendarDays(end, start) + 1;
-    if (totalDays <= 0) {
-        return 0;
-    }
-
-    const fullWeeks = Math.floor(totalDays / 7);
-    let count = fullWeeks * workingDays.size;
-    let current = addDays(start, fullWeeks * 7);
-    while (!isAfter(current, end)) {
-        if (isWorkingDay(current, workingDays)) {
-            count++;
-        }
-        current = addDays(current, 1);
-    }
-    return count;
 }
 
 function getRemainingSeconds(issue: HeatmapIssue): number | null {
     return issue.remainingEstimate ?? issue.originalEstimate;
 }
 
-function getLeadDays(remaining: number, ctx: CalculationContext): number {
-    if (ctx.leadTimeDays > 0) {
-        return ctx.leadTimeDays;
-    }
-    return Math.max(1, Math.ceil(remaining / ctx.capacityPerDay));
-}
-
-function getPlannedSpan(issue: HeatmapIssue, remaining: number, ctx: CalculationContext): IssueSpan | null {
-    const { startDate, dueDate } = issue;
-
-    if (startDate && dueDate) {
-        return isAfter(startDate, dueDate)
-            ? { start: dueDate, end: dueDate, isDerived: false }
-            : { start: startDate, end: dueDate, isDerived: false };
-    }
-
-    const leadDays = getLeadDays(remaining, ctx);
-
-    if (dueDate) {
-        const anchor = nearestWorkingDay(dueDate, -1, ctx.workingDays);
-        return { start: shiftWorkingDays(anchor, leadDays - 1, -1, ctx.workingDays), end: dueDate, isDerived: true };
-    }
-
-    if (startDate) {
-        const anchor = nearestWorkingDay(startDate, 1, ctx.workingDays);
-        return { start: startDate, end: shiftWorkingDays(anchor, leadDays - 1, 1, ctx.workingDays), isDerived: true };
-    }
-
-    return null;
-}
-
-function allocateIssue(issue: HeatmapIssue, remaining: number, span: IssueSpan, days: HeatmapDay[], ctx: CalculationContext) {
-    const { today, workingDays } = ctx;
-    const isOverdue = isBefore(span.end, today);
-    const effectiveStart = isOverdue ? nearestWorkingDay(today, 1, workingDays) : isBefore(span.start, today) ? today : span.start;
-    const effectiveEnd = isOverdue ? effectiveStart : span.end;
-
-    const workingDayCount = countWorkingDays(effectiveStart, effectiveEnd, workingDays);
-    const useFallbackDay = workingDayCount === 0;
-    const secondsPerDay = remaining / (useFallbackDay ? 1 : workingDayCount);
-    const fallbackKey = toDayKey(effectiveEnd);
-
-    const allocations: { dayKey: string; allocation: IssueDayAllocation }[] = [];
-
-    for (const day of days) {
-        const inSpan = useFallbackDay
-            ? day.key === fallbackKey
-            : !isBefore(day.date, effectiveStart) && !isAfter(day.date, effectiveEnd) && day.isWorkingDay;
-
-        if (inSpan) {
-            allocations.push({
-                dayKey: day.key,
-                allocation: {
-                    issue,
-                    seconds: secondsPerDay,
-                    spanStart: span.start,
-                    spanEnd: span.end,
-                    isOverdue,
-                    isDerivedSpan: span.isDerived,
-                },
-            });
-        }
-    }
-
-    return allocations;
+function toPlanSource(issue: HeatmapIssue): PlanSource {
+    return { assigneeId: issue.assignee.id || null, startDate: issue.startDate, dueDate: issue.dueDate, segments: issue.segments || [] };
 }
 
 export function getLoadLevel(seconds: number, capacity: number): LoadLevel {
@@ -238,45 +122,71 @@ export function filterIssues(issues: HeatmapIssue[], settings: WorkloadHeatmapSe
     );
 }
 
-function buildUserRow(user: HeatmapUser, issues: HeatmapIssue[], days: HeatmapDay[], ctx: CalculationContext): UserLoadRow {
-    const dayLoads = days.reduce<Record<string, UserDayLoad>>((result, day) => {
-        const capacity = day.isWorkingDay && !day.isPast ? ctx.capacityPerDay : 0;
-        result[day.key] = { seconds: 0, capacity, percent: null, level: 'none', allocations: [] };
-        return result;
-    }, {});
+function getUserPlan(plans: Map<string, UserPlan>, userId: string): UserPlan {
+    let plan = plans.get(userId);
+    if (!plan) {
+        plan = { allocations: new Map(), unestimated: [], unscheduled: [] };
+        plans.set(userId, plan);
+    }
+    return plan;
+}
 
-    const unestimated: HeatmapIssue[] = [];
-    const unscheduled: HeatmapIssue[] = [];
+function planIssues(issues: HeatmapIssue[], dayKeys: Set<string>, ctx: PlanContext): Map<string, UserPlan> {
+    const plans = new Map<string, UserPlan>();
 
     for (const issue of issues) {
+        const source = toPlanSource(issue);
         const remaining = getRemainingSeconds(issue);
+        const owners = source.segments.length ? [...new Set(source.segments.flatMap((s) => s.people.map((p) => p.id)))] : [issue.assignee.id];
+
         if (remaining === null) {
-            unestimated.push(issue);
+            owners.filter(Boolean).forEach((id) => getUserPlan(plans, id).unestimated.push(issue));
             continue;
         }
         if (remaining <= 0) {
             continue;
         }
 
-        const span = getPlannedSpan(issue, remaining, ctx);
-        if (!span) {
-            unscheduled.push(issue);
+        const parts = getPlanParts(source, remaining / secondsPerHour, ctx);
+        if (!parts.length) {
+            if (issue.assignee.id) {
+                getUserPlan(plans, issue.assignee.id).unscheduled.push(issue);
+            }
             continue;
         }
 
-        for (const { dayKey, allocation } of allocateIssue(issue, remaining, span, days, ctx)) {
-            const load = dayLoads[dayKey];
-            load.seconds += allocation.seconds;
-            load.allocations.push(allocation);
+        for (const { personId, date, share, part, isOverdue } of spreadPlanByDay(parts, ctx)) {
+            const dayKey = toDayKey(date);
+            if (!personId || !dayKeys.has(dayKey)) {
+                continue;
+            }
+            const allocations = getUserPlan(plans, personId).allocations;
+            const list = allocations.get(dayKey) || [];
+            list.push({ issue, seconds: remaining * share, spanStart: part.start, spanEnd: part.end, isOverdue, isDerivedSpan: part.isDerived });
+            allocations.set(dayKey, list);
         }
     }
 
-    for (const load of Object.values(dayLoads)) {
-        Object.assign(load, createSummary(load.seconds, load.capacity));
-        load.allocations.sort((a, b) => b.seconds - a.seconds);
-    }
+    return plans;
+}
 
-    return { user, days: dayLoads, total: totalOf(dayLoads), unestimated, unscheduled };
+function buildUserRow(user: HeatmapUser, plan: UserPlan | undefined, days: HeatmapDay[], capacityPerDay: number, schedule?: HeatmapSchedule): UserLoadRow {
+    const dayLoads = days.reduce<Record<string, UserDayLoad>>((result, day) => {
+        const scheduled = schedule?.getDay(user.id, day.date);
+        const isWorkingDay = scheduled ? scheduled.isWorkingDay : day.isWorkingDay;
+        const capacity = isWorkingDay && !day.isPast ? (scheduled ? scheduled.capacitySeconds : capacityPerDay) : 0;
+        const allocations = [...(plan?.allocations.get(day.key) || [])].sort((a, b) => b.seconds - a.seconds);
+        const seconds = allocations.reduce((sum, a) => sum + a.seconds, 0);
+        result[day.key] = {
+            ...createSummary(seconds, capacity),
+            allocations,
+            absence: scheduled?.absence,
+            absenceTitle: scheduled?.absenceTitle,
+        };
+        return result;
+    }, {});
+
+    return { user, days: dayLoads, total: totalOf(dayLoads), unestimated: plan?.unestimated || [], unscheduled: plan?.unscheduled || [] };
 }
 
 export function buildHeatmapModel(
@@ -285,31 +195,31 @@ export function buildHeatmapModel(
     range: HeatmapDateRange,
     capacityPerDay: number,
     now: Date = new Date(),
+    schedule?: HeatmapSchedule,
 ): HeatmapModel {
     const today = startOfDay(now);
-    const ctx: CalculationContext = {
-        workingDays: new Set(settings.workingDays),
-        capacityPerDay,
+    const workingDays = new Set(settings.workingDays);
+    const days = buildDays(range, settings.workingDays, today);
+    const isSprintScope = settings.rangeMode === 'sprint' && settings.sprintIssuesOnly && !!range.sprintId;
+
+    const ctx: PlanContext = {
+        isWorkingDay: (userId, date) => {
+            const scheduled = userId ? schedule?.getDay(userId, date) : null;
+            return scheduled ? scheduled.isWorkingDay : workingDays.has(date.getDay());
+        },
+        fallbackRange: isSprintScope ? { start: range.fromDate, end: range.toDate } : null,
         leadTimeDays: settings.leadTimeDays,
+        hoursPerDay: capacityPerDay / secondsPerHour,
         today,
     };
-    const days = buildDays(range, settings.workingDays, today);
 
-    const issuesByUser = filterIssues(dataset.issues, settings).reduce<Map<string, HeatmapIssue[]>>((result, issue) => {
-        const list = result.get(issue.assignee.id);
-        if (list) {
-            list.push(issue);
-        } else {
-            result.set(issue.assignee.id, [issue]);
-        }
-        return result;
-    }, new Map());
+    const plans = planIssues(filterIssues(dataset.issues, settings), new Set(days.map((d) => d.key)), ctx);
 
     const userRows = new Map<string, UserLoadRow>();
     const getUserRow = (user: HeatmapUser) => {
         let row = userRows.get(user.id);
         if (!row) {
-            row = buildUserRow(user, issuesByUser.get(user.id) || [], days, ctx);
+            row = buildUserRow(user, plans.get(user.id), days, capacityPerDay, schedule);
             userRows.set(user.id, row);
         }
         return row;

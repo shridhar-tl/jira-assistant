@@ -38,6 +38,12 @@ export interface HeatmapGroup {
     users: HeatmapUser[];
 }
 
+export interface HeatmapSegment {
+    start: Date;
+    end: Date;
+    people: { id: string; allocation: number }[];
+}
+
 export interface HeatmapIssue {
     key: string;
     summary: string;
@@ -53,6 +59,7 @@ export interface HeatmapIssue {
     remainingEstimate: number | null;
     startDate: Date | null;
     dueDate: Date | null;
+    segments?: HeatmapSegment[];
 }
 
 export interface HeatmapDataset {
@@ -92,8 +99,12 @@ export interface LoadSummary {
     level: LoadLevel;
 }
 
+export type DayAbsence = 'leave' | 'holiday' | 'partial';
+
 export interface UserDayLoad extends LoadSummary {
     allocations: IssueDayAllocation[];
+    absence?: DayAbsence;
+    absenceTitle?: string;
 }
 
 export interface UserLoadRow {
@@ -109,6 +120,11 @@ export interface GroupLoadRow {
     users: UserLoadRow[];
     days: Record<string, LoadSummary>;
     total: LoadSummary;
+}
+
+/** Capacity and absence of a person on a day, from the people schedule of a team. Null when the person has no schedule. */
+export interface HeatmapSchedule {
+    getDay: (userId: string, date: Date) => { capacitySeconds: number; isWorkingDay: boolean; absence?: DayAbsence; absenceTitle?: string } | null;
 }
 
 export interface HeatmapModel {

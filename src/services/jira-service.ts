@@ -146,6 +146,7 @@ export default class JiraService {
             worklogEndDate?: Date;
             ignoreWarnings?: boolean;
             ignoreErrors?: boolean;
+            properties?: string[];
         },
     ): Promise<any[]> {
         const fieldsToUse = fields || defaultJiraFields;
@@ -160,6 +161,10 @@ export default class JiraService {
 
             if (opts?.expand?.length) {
                 postData.expand = opts.expand;
+            }
+
+            if (opts?.properties?.length) {
+                postData.properties = opts.properties.join(',');
             }
 
             if (nextPageToken) {
@@ -221,6 +226,7 @@ export default class JiraService {
             worklogEndDate?: Date;
             ignoreWarnings?: boolean;
             ignoreErrors?: boolean;
+            properties?: string[];
         },
     ): Promise<any[]> {
         const startAtValue = startAt || 0;
@@ -235,6 +241,10 @@ export default class JiraService {
 
         if (opts?.expand?.length) {
             postData.expand = opts.expand;
+        }
+
+        if (opts?.properties?.length) {
+            postData.properties = opts.properties.join(',');
         }
 
         if (startAtValue > 0) {

@@ -1,0 +1,207 @@
+title,content
+"Sprint Planner in Jira Assistant","The Sprint Planner in Jira Assistant (JA) plans the sprints of one agile board (one team): backlog and sprints, team capacity with leave and holidays, velocity, forecast, sprint health, roadmap, resource timeline and dependencies.
+Menu: Planning > Sprint Planner (marked NEW). URL path /planning/sprint-planner/<boardId>/<view>, so a board and view can be bookmarked or shared.
+Available in the browser extension, the web app, the desktop app and the Jira Cloud Forge app. Works with Jira Cloud and Jira Data Center / Server (latest release).
+Jira is the source of truth: sprint membership, rank, assignee, estimate, start and due dates, parent and issue links are read from and written to Jira directly. JA stores only data Jira has no field for (team settings, leave, planned segments).
+The help button (question mark icon) in the planner toolbar opens a how-to page of every view. The same page shows when no board is chosen."
+"Sprint Planner tabs / views","The Jira Assistant (JA) Sprint Planner has these tabs below the toolbar: Sprint board, Capacity, Leave, Forecast, Health, Roadmap, Resources, Dependencies.
+One load of the board serves all tabs, so switching tabs does not reload data from Jira.
+Kanban boards (no sprints) show only Capacity (by week or month), Leave, Roadmap, Resources and Dependencies. Sprint board, Forecast and Health need sprints and are hidden for kanban boards.
+On a phone the Sprint board tab shows a read-only sprint health summary instead of the drag board.
+The last board and tab are remembered per user and reopened next time."
+"Choosing or switching the board in Sprint Planner","The board switcher is at the top left of the Jira Assistant (JA) Sprint Planner toolbar. It shows the board name, the board type (Scrum, Kanban or Team board) and the project key, with a chevron.
+Click it to open the board list: a search box (board name, project key or board id), a Recent section with the last 5 boards used and an All boards section (up to 100 listed; type to narrow the list).
+Keyboard: arrow up / down to move, Enter to open the board, Esc to close. The reload button in the list footer reloads the board list from Jira (the list is otherwise cached for 24 hours).
+A board is one team: its filter decides which issues are planned and its estimation field is used for estimates.
+The board list is loaded from Jira only when the switcher is opened, not on every planner load."
+"Sprint planner toolbar buttons","Toolbar of the Jira Assistant (JA) Sprint Planner: board switcher, Draft mode switch, Filters, Team, Export (only on Capacity, Forecast, Health and Dependencies tabs), Refresh, Settings (cog icon), Help (question mark icon).
+Filters opens the filter bar. Team opens the team settings dialog (members, schedule and planning, leave calendars).
+Refresh reloads the board from Jira and clears the cached board data (sprints, team settings, leave, metadata).
+The planner also reloads automatically when the browser tab is shown again after more than a minute, unless draft changes are pending.
+Export downloads the tables of the current tab as an Excel (XLSX) file named after the board and tab."
+"Filters in Sprint Planner","The Filters button in the Jira Assistant (JA) Sprint Planner toolbar opens a filter bar that applies to every tab.
+Filters: Assignee, Parent / epic, Label, Component, Issue type, Status, and a text search on issue key or summary. Each dropdown is searchable.
+The Filters button shows the count of active filters. The clear button in the filter bar removes all filters.
+Clicking a parent in the parent (epic) strip highlights all its cards. Clicking a member in the People panel of a sprint column filters by that member."
+"Sprint board tab columns","The Sprint board tab of the Jira Assistant (JA) Sprint Planner has columns for the Backlog (ranked board backlog), the active sprint and all future sprints.
+Closed sprints are optional (Settings > Board > Show closed sprints); the last three closed sprints are shown read only.
+Columns can be collapsed and expanded; the collapsed state is remembered per user.
+The backlog loads the top items by rank (Settings > Board > Backlog items loaded at a time, default 100, range 25 to 500). More are loaded with Load more at the bottom.
+Column header: sprint name, dates, goal, state, issue count, total estimate, unestimated count, a sprint health indicator and a capacity bar (committed vs capacity, coloured under / near / over)."
+"Moving issues between sprints in Sprint Planner","In the Jira Assistant (JA) Sprint Planner Sprint board tab, drag a card to another column to move it to that sprint or to the backlog, or within a column to change its rank. The move and rank are written to Jira immediately (unless draft mode is on).
+Ctrl + click (Cmd + click on Mac) selects several cards to drag together.
+Every card has a menu (... icon) with Move to, Move to top, Move to bottom, Edit and Add dependency, so nothing needs dragging.
+The board updates first and Jira is written in the background. When Jira rejects the change, the card goes back and an error is shown.
+Moves use Jira's bulk endpoints (up to 50 issues per request)."
+"Issue cards in Sprint Planner","Cards in the Jira Assistant (JA) Sprint Planner show the issue key, type icon, summary and, as chosen in Settings > Board > Fields shown on cards: Parent / epic, Priority, Estimate, Assignee, Status, Warning flags, Labels.
+Card density: Detailed (default) or Compact.
+Warning flags: Not estimated, Unassigned, Blocked by an open dependency, Due date is after the sprint end, Flagged.
+Double click a card (or card menu > Edit) to edit assignee, estimate, sprint, start date and due date without leaving the page. The issue key opens the issue in Jira.
+Subtasks: Settings > Board > Subtasks: Roll up into parent (default; subtask estimates add to the parent card) or Own cards."
+"Creating, starting and completing sprints in Sprint Planner","The column menu (vertical dots icon) of a sprint in the Jira Assistant (JA) Sprint Planner can: create a sprint, edit a sprint (name, start date, end date, goal), start a sprint, complete a sprint, create an issue, and set a capacity override for the sprint.
+Complete sprint asks where open issues go (Move open issues to): the next sprint, a new sprint (New sprint name) or the backlog, the same as Jira.
+Actions the user has no Jira permission for are hidden.
+Create issue in a column: Project, Issue type, Summary, and optionally estimate, assignee and parent. When the project needs more required fields, use Full create form / Open full form."
+"Parent / epic strip in Sprint Planner","Above the Sprint board columns of the Jira Assistant (JA) Sprint Planner, the parent (epic) strip shows one bar per epic or parent spanning the sprints that hold its children.
+The bar shows the epic colour, progress (done vs total estimate), and a warning when the parent is due before the last sprint that holds its children. Issues without a parent are grouped as No parent.
+Click a parent bar to highlight all its cards. Drag the divider below the strip to resize it.
+Turn the strip on or off in Settings > Board > Show the parent (epic) strip. Dependency lines between cards: Settings > Dependencies > Show dependency lines between cards."
+"Per person capacity in a sprint column","The footer of each sprint column in the Jira Assistant (JA) Sprint Planner has a People panel listing each team member with committed work vs their own capacity in that sprint.
+Over-allocated members are highlighted. Click a member to filter the board by that person.
+The capacity bar in the column header compares the committed estimate of the sprint with the team capacity, coloured by under, near or over capacity."
+"How capacity is calculated in Sprint Planner","Capacity of a member in the Jira Assistant (JA) Sprint Planner = working days in the sprint x hours per day x allocation % to the team - leave - holidays. Then the sprint capacity override % and the team focus factor % are applied.
+Working days and hours per day come from the member, or the team defaults when the member has none.
+Points capacity = selected velocity x (sprint capacity / normal capacity). Without velocity, hours are converted with Hours per story point.
+Partial-day leave reduces capacity by the hours of that leave. Holidays reduce everyone or only the chosen people.
+The Capacity tab table, the sprint column capacity bars, the forecast and the Sprint Capacity widget all use the same numbers."
+"Capacity tab in Sprint Planner","The Capacity tab of the Jira Assistant (JA) Sprint Planner shows: a summary line (members, focus factor, hours per day, hours per point), a table of members x sprints, a Daily load grid, the Velocity panel and the Leave and holidays panel.
+The table shows per member and per sprint: available hours or points, committed, remaining and utilisation %, with team totals.
+Daily load grid: per person per day load against capacity (same colours as the Workload Heatmap), for the sprint chosen in the dropdown.
+Kanban boards show capacity by week (next 6 weeks) or month (next 3 months), selected with Weeks / Months.
+The table can be exported to Excel with the Export button."
+"Unit of capacity: story points or hours","Planning unit is a team setting in Jira Assistant (JA) Sprint Planner: Team > Schedule & planning > Planning unit: Story points, Hours, or Both.
+Hours per story point converts hours to points when there is no velocity yet, and shows hours next to points.
+When the board estimates in points and capacity is in hours, points are shown against velocity-based capacity and hours against hour capacity. The two are never mixed without the conversion setting.
+Kanban capacity is always shown in hours."
+"Focus factor and capacity override","Focus factor (%) in Jira Assistant (JA) Sprint Planner (Team > Schedule & planning): share of available hours that can be planned. The rest covers meetings, support and unplanned work. Example: 80.
+Capacity override per sprint: sprint column menu > capacity override, field Team capacity for this sprint (%). Example: 50% for a training week. Reset to 100% removes it.
+Overrides are kept for the latest 30 sprints of the board."
+"Velocity in Sprint Planner","The Velocity panel in the Jira Assistant (JA) Sprint Planner Capacity tab lists the last closed sprints with scope at sprint start (committed) and completed scope.
+Velocity choice: Average completed, Average committed, Median completed, Last sprint, or Custom value. The number of closed sprints used can be changed. The choice is saved for the team.
+In the extension and web app, velocity comes from Jira's velocity chart. In the Forge app it comes from closed sprints and the sprint start snapshot (jaSprintStartInfo) written by JA when the sprint started; without a snapshot the committed value is estimated.
+Velocity per closed sprint is cached for 30 days."
+"Team settings dialog in Sprint Planner","The Team button in the Jira Assistant (JA) Sprint Planner opens the team settings of the board, with tabs Members, Schedule & planning, Leave calendars.
+Team settings are shared: everyone who plans with the board sees the same team. They are saved with the board in Jira.
+Before saving, JA checks that nobody else saved the team in the meantime, so a newer copy is never overwritten.
+Limits: 300 members, 300 calendar mappings, 20 calendar sources, capacity overrides of the latest 30 sprints."
+"Team members in Sprint Planner","Team > Members in Jira Assistant (JA) Sprint Planner. Team members come from: Board assignees (default; assignees of the board's sprint issues), JA user group (groups managed under Settings > User groups), or Atlassian team (Jira Cloud; teams set in the Team field of the board's issues; members are the assignees of that team's issues).
+Add a person searches Jira users. Removed people can be added back.
+Per member: Allocation to this team (%) for people shared across teams, Hours per day and Working days. Empty uses the team default."
+"Team schedule and planning settings","Team > Schedule & planning in Jira Assistant (JA) Sprint Planner: Hours per working day (default for members without their own value), Working days (default Monday to Friday), Focus factor (%), Planning unit (Story points / Hours / Both), Hours per story point, Labels for planned segments.
+Labels for planned segments: a list such as Dev, QA, Review; press Enter after each label. The labels are offered when editing a planned segment."
+"Leave tab (leave calendar) in Sprint Planner","The Leave tab of the Jira Assistant (JA) Sprint Planner shows the team's leave and holidays in a calendar. Views in the dropdown: Month, Week, Day, List. On a phone it opens in List.
+Filter by people with the people dropdown (default Everyone); holidays that apply to the chosen people stay visible.
+Icons: plane = leave, flag = holiday, calendar = leave read from a calendar (read only). Each person has a colour; holidays are amber; partial days show the hours.
+Weekend / non-working days of the team are shaded. The week starts on the day set in the user's JA settings."
+"Adding or changing leave in the leave calendar","In the Jira Assistant (JA) Sprint Planner Leave tab: click a day, or press and drag across several days in the Month view, to add leave for those dates. The Add leave button adds leave for today.
+The new entry is for the person chosen in the people filter (when exactly one), otherwise the current user when they are a team member.
+Click a manual entry to edit or delete it. Drag a manual entry to another day in the Month view to move it.
+Click a date number to open that day in the Day view.
+Entries from Outlook, Google, .ics or Confluence calendars open read-only details (who, when, hours, title, calendar). Change them in the calendar, then use Calendars (refresh) to read them again."
+"Leave dialog fields","The leave dialog in Jira Assistant (JA) Sprint Planner (Leave tab or Capacity > Leave and holidays > Add) has: Who (a team member or Holiday (team)), Applies to (for holidays: chosen people, empty = everyone in the team), From, To, Full day switch, Hours off per day (when not full day, 0.5 to 24), Title (up to 80 characters; default Leave or Holiday).
+Holidays for a subset of people are useful for teams across countries.
+Leave and holidays are saved with the board, so every team member sees them and capacity is the same for everyone."
+"Leave and holidays panel in the Capacity tab","The Leave and holidays panel in the Jira Assistant (JA) Sprint Planner Capacity tab lists manual leave of the last 30 days and next 12 months, and calendar leave of the planned sprints, with Who, When, Title and Source (Manual, Outlook, Google, .ics, Confluence).
+Manual entries can be edited and deleted there. Calendar entries are read only.
+Calendar people who are not matched to a team member are listed below the table with a dropdown to map them once. The mapping is kept for the team.
+The panel can be exported with the Capacity tab Export button."
+"Leave calendars (calendar sources) in Sprint Planner","Team > Leave calendars in Jira Assistant (JA) Sprint Planner reads leave and holidays from calendars. Add a calendar source: Outlook calendar, Google calendar, .ics file, Confluence Team Calendar.
+Calendar holds: Leave of each person (applies to the person whose leave it is) or Holidays for the team (applies to everyone, or the people in Holidays apply to).
+Recognition rules: Events that count (keywords in title or category, e.g. leave, vacation, holiday; empty counts every event), Or events shown as (Out of office, Busy, ...), Only all-day events.
+Partial-day events reduce capacity by their overlap with the person's working hours.
+Calendar people are matched to Jira users by email; unmatched people are shown for manual mapping (Calendar people mapped to Jira users)."
+"Which calendar sources work where","Leave calendar source availability in Jira Assistant (JA) Sprint Planner:
+Outlook calendar: Forge app, extension, web app and desktop app (needs the Outlook integration of JA).
+Google calendar: extension, web app and desktop app only. Not available in the Forge app.
+.ics file: every build. Confluence Team Calendar: Jira Data Center / Server only (not on Jira Cloud, and not in the Forge app).
+Atlassian team as member source works on Jira Cloud only."
+"How calendar leave is shared with the team","In Jira Assistant (JA) Sprint Planner a member who can read an Outlook, Google or Confluence calendar reads it live (cached 30 minutes, up to 5 pages of events).
+The matched leave (person, dates, hours, title only; never the whole calendar) is stored with the board, so members who cannot read that calendar see the same leave and the same capacity.
+The stored copy is updated only when the leave changed, at most every 30 minutes per calendar and user. After a permission error the update is skipped for a day.
+Live calendar reading covers the dates of the planned sprints. Outside those dates the Leave tab shows the stored copy.
+Removing a calendar source deletes its stored leave. Errors reading a calendar are shown in a Leave banner at the top of the planner."
+".ics file import for leave","In Jira Assistant (JA) Sprint Planner Team > Leave calendars, add an .ics file source and choose the file. The file is read when the team settings are saved.
+Only matching leave is stored, from 3 months back to 1 year ahead. The source shows the date and the number of entries of the last import.
+Changed recognition rules or people mapping apply only after importing the file again.
+.ics import works in every build (extension, web, desktop, Forge)."
+"How long leave is kept","Jira Assistant (JA) Sprint Planner keeps leave and holidays for about 13 months after they end (400 days); older leave is deleted automatically.
+Extension, web and desktop: leave is stored in Jira board properties, one per quarter (jaPlannerLeave-<year>-Q<n>). Old quarters are deleted at most once a week per board.
+Forge app: leave is stored in the app storage of the Jira site (entity planner-leave); a daily job deletes old rows.
+Only the quarters or dates a view needs are read, so old leave does not slow down the planner.
+Each save is checked before it is sent (valid dates, at most 500 entries per save, size under 32 KB), so invalid data never reaches Jira."
+"Forecast tab in Sprint Planner","The Forecast tab of the Jira Assistant (JA) Sprint Planner places the ranked backlog into the upcoming sprints by capacity and velocity, as a preview only.
+Untick issues to leave them where they are (Leave out of the forecast). Accept moves the accepted issues into the sprints in Jira (one bulk move per sprint). Missing sprints after the last one are created (marked Will be created).
+Number of sprints: Settings > Forecast > Sprints to forecast (1 to 12, default 6).
+Issues that cannot be placed are listed with the reason: Not estimated, Larger than the capacity of any sprint, Beyond the planning horizon, Its blocker is not planned within the horizon.
+Forecast respects dependencies (setting, default on): an issue is not placed before the sprint of its blocker. Not available for kanban boards. Without sprints: Create a sprint first."
+"Health tab in Sprint Planner","The Health tab of the Jira Assistant (JA) Sprint Planner scores each open sprint on: issues not estimated, unassigned issues, issues blocked by an open dependency, issues due after the sprint end, people over capacity, issues carried over from earlier sprints, and scope added or removed since the sprint started.
+Scope change uses the sprint start snapshot in the Forge app (jaSprintStartInfo; not shown for sprints started before the app was installed); in the extension, web and desktop app it comes from Jira's sprint report.
+Planned vs actual compares capacity, committed and remaining estimates with the time logged in the active sprint. Click Load logged time (Reload logged time) to load worklogs on demand.
+Jira returns up to 20 worklogs per issue in a search; issues with more are listed as incomplete.
+The health indicator in each sprint column header opens this tab."
+"Roadmap tab in Sprint Planner","The Roadmap tab of the Jira Assistant (JA) Sprint Planner shows epics with their child issues as bars by start and due date. Zoom: Day, Week, Month, Quarter, Year. The timeline fills the panel width.
+Sprints are shown as bands with short names when the full name does not fit; releases (fix versions with release dates) as markers; a today line.
+Issues without dates use sprint dates or estimate and lead time; such derived bars are faded with a dashed border. Dragging a derived bar writes explicit dates.
+Drag or resize a bar to change start and due dates in Jira. Double click a bar to edit the issue or Plan segments.
+Settings > Roadmap: Hierarchy levels shown (Epic level 1 up to level 4 above it) and Bar colour (Status, Epic, Assignee load)."
+"Start and due date fields used by the planner","Settings > Dates in Jira Assistant (JA) Sprint Planner: Start date field (default: the field named Start date; any date custom field can be chosen), Due date field (default Due date), Lead time for derived dates (working days; 0 derives the duration from the remaining estimate).
+When an issue has no start date the roadmap and load use the sprint dates, or the due date minus the lead time / estimate.
+Keep Jira start / due dates in sync with planned segments (default on): saving segments also sets the issue's start and due date to the outer span of its segments.
+Without a start date field only the due date is changed when a bar is moved, and a warning explains it."
+"Planned segments in Sprint Planner","Planned segments in Jira Assistant (JA) split the work of one issue into date ranges, each with its own people and allocation %, e.g. development by one person then testing by another, or two people at 50%.
+Create: drag on the issue's row in the Roadmap, or double click an issue > Plan segments. Double click a segment to edit, split or delete it. Drag or resize segments to change dates. A segment can have an optional label (Dev, QA, Review; team setting).
+Once an issue has segments they are its plan everywhere: Roadmap, Resources, Capacity, the daily load and the Workload Heatmap. The parent row shows a read-only roll-up.
+Stored on the issue as the Jira issue property ja_planner_tasks, so the extension and the Forge app see the same segments. Segments created by the old JA planner are read and upgraded on the next save."
+"Resources tab (resource timeline) in Sprint Planner","The Resources tab of the Jira Assistant (JA) Sprint Planner has one row per team member with the work planned for them (issues by dates, or their planned segments).
+Drag a bar along the row to reschedule it, or to another person to reassign it. Double click a bar to edit it.
+The Unscheduled list holds issues without dates; drag them onto a person and a day to plan them.
+Below each person a load row shows the daily load % against their capacity, coloured like the Workload Heatmap (under, good, over, critical); a plane icon marks leave. Zoom: Compact, Normal, Wide (Compact shows colour only).
+Turn on the daily load grid for the heatmap view of the same data. Drag the dividers to resize the timeline, the unscheduled list and the load grid."
+"Dependencies in Sprint Planner","Dependencies in Jira Assistant (JA) Sprint Planner are Jira issue links of the type chosen in Settings > Dependencies > Issue link type used for dependencies (default Blocks).
+Add a dependency from the card menu (Add dependency) or the Dependencies tab (Add dependency: issue on this board or any issue key). In the Roadmap, drag from the dot at the end of a bar to another bar; click a line to remove it.
+A conflict (red) means the blocker is planned in the same or a later sprint than the issue it blocks, or in no sprint.
+The Dependencies tab lists all dependencies with filters Conflicts only and Cross-team only, and can be exported.
+Dependency lines on the Sprint board: Settings > Dependencies > Show dependency lines between cards."
+"Draft mode (what-if planning)","Draft mode in the Jira Assistant (JA) Sprint Planner stages moves, edits, planned segments and dependencies without writing to Jira. Turn it on with the Draft mode switch in the toolbar.
+A bar below the toolbar counts the pending changes. Apply writes all of them and reports the result of each; failed changes stay in the draft. Discard restores the board.
+Draft mode cannot be turned off while changes are pending; apply or discard first.
+Settings > Draft mode > Open the planner in draft mode makes it the default (per user; default off)."
+"Planner settings drawer","Settings (cog icon) in the Jira Assistant (JA) Sprint Planner are per user. Sections:
+Board: Subtasks (Roll up into parent / Own cards), Show closed sprints (read only), Card density, Fields shown on cards, Show the parent (epic) strip, Backlog items loaded at a time.
+Dates: Start date field, Due date field, Lead time for derived dates, Keep Jira start / due dates in sync with planned segments.
+Dependencies: Issue link type used for dependencies, Show dependency lines between cards, Forecast respects dependencies. Forecast: Sprints to forecast.
+Roadmap: Hierarchy levels shown, Bar colour. Draft mode: Open the planner in draft mode. Data stored in Jira (extension, web, desktop only): Accept or Withdraw."
+"Where Sprint Planner data is stored","Jira Assistant (JA) Sprint Planner data locations:
+Team settings (members, schedule, focus factor, unit, velocity choice, calendar sources, mappings, overrides, segment labels): Jira board property jaPlannerTeam.
+Leave and holidays: extension / web / desktop: Jira board properties jaPlannerLeave-<year>-Q<n>; Forge app: the app storage of the Jira site.
+Planned segments: Jira issue property ja_planner_tasks. Sprint start snapshot (Forge): sprint property jaSprintStartInfo.
+Personal settings (last board and tab, display options, draft default, collapsed columns, panel sizes): only on the user's machine (IndexedDB of JA).
+Only person ids, dates, hours and short titles are stored for leave; never the calendar itself. Data in Jira properties is visible to anyone who can view the board or issue."
+"Data storage note and Accept button (extension)","In the Jira Assistant (JA) browser extension, web app and desktop app, the Sprint Planner shows a note at the top: Planner data is stored in your Jira. Team settings and leave are saved as board properties, and planned segments as issue properties. Make sure your organization allows this.
+Until Accept is clicked, everything can be viewed, but planner data is not saved; such saves show the message: Nothing was saved. Saving is turned off until you accept the note about storing planner data in Jira.
+Acceptance is saved per user and can be withdrawn in Settings > Data stored in Jira (Withdraw). Accept there as well.
+The Forge app does not show the note, because the app is installed by the organisation."
+"What works before accepting the data storage note","Blocked in the Jira Assistant (JA) extension / web / desktop Sprint Planner until the data storage note is accepted: saving team settings, velocity choice, capacity overrides, calendar person mapping, .ics import; adding, editing, moving or deleting leave; creating, editing or moving planned segments; applying draft segment changes; sharing calendar leave copies (skipped silently).
+Works without accepting: all tabs and views; moving and ranking issues; editing assignee, estimate, sprint and dates; creating, editing, starting and completing sprints; accepting a forecast; dragging issue bars in Roadmap and Resources; creating and removing dependencies; draft mode for these changes; filters, export, refresh and personal settings.
+With sync native dates on, a refused segment save also skips the date update that comes from the segments."
+"Sprint Planner in the Forge app vs the browser extension","Differences of the Jira Assistant (JA) Sprint Planner between the Jira Cloud Forge app and the browser extension / web / desktop app:
+Data storage note: extension only. Forge app saves without asking.
+Leave storage: Forge app keeps leave in the app storage of the Jira site; the extension keeps it in Jira board properties per quarter. A site using both keeps two separate sets of leave.
+Team settings: Forge app saves through the app, so every team member who can see the board can edit the team. Extension saves as the user; Jira lets only board administrators change board properties, so other users see a read-only notice for team settings and leave.
+Calendars: Google calendar and Confluence Team Calendar are not available in the Forge app. Velocity: Forge uses JA's sprint start snapshot; the extension uses Jira's velocity chart."
+"Forge only parts of the planner","Only in the Jira Assistant (JA) Jira Cloud Forge app: Program Planner (PI planning, menu Planning > Program Planner), the Sprint Capacity dashboard widget, the project page entry (Sprint Planner in the project sidebar opens the planner for that project's board), sprint start snapshot for accurate committed scope and scope change, and daily automatic cleanup of old leave.
+Planned segments and team settings use the same Jira properties in both builds, so a team can mix the Forge app and the extension for those.
+The Sprint Planner itself (all tabs) is available in both."
+"Team settings read-only notice","Message in the Jira Assistant (JA) Sprint Planner that team settings are read only: in the browser extension, web app and desktop app, team settings and leave are saved as Jira board properties as the user, and Jira allows that only for users who can administer the board.
+Users who are not board administrators can view everything and plan issues, but cannot save team settings, leave, velocity choice or capacity overrides. A board administrator can save them.
+In the Jira Cloud Forge app every user who can see the board can edit the team."
+"Leave banner errors","A warning starting with Leave: at the top of the Jira Assistant (JA) Sprint Planner lists calendar sources that could not be read, with the reason, e.g. a calendar that needs sign-in again or a missing permission.
+Other team members still see the stored copy of that calendar's leave.
+Use Calendars (refresh) in the Capacity or Leave tab after fixing the calendar integration (Outlook / Google under JA integrations)."
+"Performance of the Sprint Planner","The Jira Assistant (JA) Sprint Planner loads a board with about 3 to 5 Jira requests on a warm load (about 8 on the first load of the day): board configuration, fields and permissions (cached 24 h), sprints and team settings (cached 5 min), one search for sprint issues, one for the top of the backlog, one for parents, stored leave (1 to 2 requests), and one per calendar the user reads live.
+There are no requests per issue, per person or per sprint. Tabs share one load.
+Moves use bulk endpoints in chunks of 50. Field edits are sent per issue in parallel because Jira has no bulk edit for different values.
+Refresh clears the cached data. The board list is cached 24 h, calendar events 30 min, project versions 1 h, velocity 30 days."
+"Sprint Capacity dashboard widget","Sprint Capacity is a Jira Cloud dashboard widget of the Jira Assistant (JA) Forge app. It shows the active sprint's commitment vs capacity per team (board), using the team settings and leave of the Sprint Planner.
+Settings: the boards (teams) to show and Show each member (per member breakdown, default on).
+It makes about one Jira search per team; other data is cached."
+"Workload Heatmap and the Sprint Planner","The Jira Assistant (JA) Workload Heatmap (sprint mode) uses the Sprint Planner's team settings and leave when the board's team was set up in the planner: leave and holidays are shown in the day cells and a capacity bar is shown.
+Planned segments of issues are used by the heatmap load too.
+The planner's Capacity and Resources tabs embed the same daily load grid and legend (No load, Under 80%, 80% to 100%, Over capacity, Above 150%, Today)."
+"Program Planner (PI planning) in Jira Assistant","Program Planner in Jira Assistant (JA) plans a program increment (PI / quarter plan) across several boards (teams). Jira Cloud Forge app only; not in the extension, web or desktop app. Menu: Planning > Program Planner.
+Create a plan with a name, dates and the boards of the teams; sprints of each team are matched by date and can be adjusted; optionally mark the last iteration as IP (innovation and planning). A new plan can copy the teams of an earlier one.
+Program board: rows are teams, columns are iterations. A feature appears in every cell that holds its stories, with count and estimate, against the team's capacity (including .ics leave).
+Drag a feature to a team and iteration to move its not-done stories into that team's sprint after a preview (stories can be unticked; done stories never move). Unplanned features are listed on the right."
+"Program Planner objectives, risks, votes and settings","Jira Assistant (JA) Program Planner (Forge app only) also has: features without stories placed with a rough estimate (removed once stories exist), dependencies with conflicts and a Dependencies view (Conflicts only, Cross-team only, Check other plans), objectives per team and program (committed / uncommitted, planned and actual value 1 to 10, predictability %), risks with owner and ROAM status, confidence votes 1 to 5 with history, milestones and releases, and a Summary view.
+Program settings (cog icon): terminology (SAFe or neutral terms), column alignment (common iterations by date or each team's own sprints), IP iteration, objective and risk storage (JA data or Jira issues of a chosen type), feature issue types, dependency link type, and who can change plans.
+Plans, objectives, risks and votes are stored in the JA app storage of the Jira site. Story moves and dependencies are written to Jira."

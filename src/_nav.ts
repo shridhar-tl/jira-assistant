@@ -48,6 +48,8 @@ const {
     importWorklog,
     importIssues,
     planningPoker,
+    sprintPlanner,
+    piPlanner,
 
     // Reports
     worklogReport,
@@ -64,7 +66,8 @@ const {
     advancedSettings,
 
     // Menu groups
-    activitiesGroup = calendar || importWorklog || importIssues || (planningPoker && !isAppBuild),
+    activitiesGroup = calendar || importWorklog || importIssues,
+    planningGroup = sprintPlanner || piPlanner || (planningPoker && !isAppBuild),
     reportsGroup = worklogReport || workloadHeatmap || timeInStatus || sayDoRatioReport || sprintReport || pivotReport || estimateVsActual,
     settingsGroup = userGroups || generalSettings || advancedSettings,
 } = config.modules as any;
@@ -105,6 +108,32 @@ const navigation: MenuSection[] = [
                 id: 'IMI',
                 url: '/import/issue',
                 icon: 'fa fa-ticket',
+            },
+        ].filter(Boolean),
+    },
+    planningGroup && {
+        title: true,
+        name: 'Planning',
+        items: [
+            sprintPlanner && {
+                name: 'Sprint Planner',
+                id: 'SPR',
+                url: '/planning/sprint-planner',
+                icon: 'fa fa-columns',
+                badge: {
+                    variant: 'success',
+                    text: 'NEW',
+                },
+            },
+            piPlanner && {
+                name: 'Program Planner',
+                id: 'PIP',
+                url: '/planning/pi-planner',
+                icon: 'fa fa-sitemap',
+                badge: {
+                    variant: 'success',
+                    text: 'NEW',
+                },
             },
             planningPoker &&
                 !isAppBuild && {

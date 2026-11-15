@@ -622,3 +622,27 @@ export interface MeetingCalendarEntry {
     editable: false;
     allDay: boolean;
 }
+
+export type CalendarShowAs = 'oof' | 'busy' | 'tentative' | 'free';
+
+export interface CalendarPerson {
+    email?: string;
+    name?: string;
+    id?: string;
+}
+
+export interface CalendarInfo {
+    id: string;
+    name: string;
+}
+
+export interface CalendarLeaveEvent {
+    id: string;
+    title: string;
+    start: Date;
+    end: Date;
+    allDay: boolean;
+    showAs: CalendarShowAs | null;
+    categories: string[];
+    people: CalendarPerson[];
+}
