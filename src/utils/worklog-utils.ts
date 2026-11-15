@@ -2,6 +2,8 @@
  * Worklog utility functions
  */
 
+import type { WorklogRoundingInterval } from '@types';
+
 interface CommentNode {
     type?: string;
     text?: string;
@@ -94,4 +96,12 @@ function extractDescription(content: CommentNode[] | CommentNode | undefined | n
         .filter((line) => line.trim().length > 0)
         .join('\n')
         .trim();
+}
+
+export function roundTimeSpentSecs(totalSecs: number, intervalMins?: WorklogRoundingInterval): number {
+    if (!intervalMins || totalSecs <= 0) {
+        return totalSecs;
+    }
+    const intervalSecs = intervalMins * 60;
+    return Math.max(Math.round(totalSecs / intervalSecs), 1) * intervalSecs;
 }

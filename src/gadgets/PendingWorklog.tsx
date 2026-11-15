@@ -2,6 +2,8 @@ import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'r
 
 import { inject } from '@services';
 
+import { useWorklogMerge } from '@hooks';
+
 import { Button, ChangeTracker, Checkbox, showContextMenu } from '@components';
 
 import { getErrorMessage } from '@utils';
@@ -58,6 +60,7 @@ export default function PendingWorklog(props: BaseGadgetProps) {
 
     const { setIsLoading, performAction, addWorklog } = gadgetHook;
     const { $worklog, $userutils, $message } = inject('WorklogService', 'UserUtilsService', 'MessageService');
+    const { resolveUploadOptions, mergeConfirmation } = useWorklogMerge();
 
     const refreshData = useCallback(async () => {
         setIsLoading(true);
@@ -123,7 +126,7 @@ export default function PendingWorklog(props: BaseGadgetProps) {
     );
 
     const uploadWorklog = useCallback(
-        async (items?: PendingWorklogItem[]) => {
+        async (target: HTMLElement, items?: PendingWorklogItem[]) => {
             if (!items) {
                 items = worklogs.filter((w) => w.selected);
             }
@@ -133,9 +136,14 @@ export default function PendingWorklog(props: BaseGadgetProps) {
                 return;
             }
 
+            const uploadOptions = await resolveUploadOptions(ids, target);
+            if (!uploadOptions) {
+                return;
+            }
+
             setIsLoading(true);
             try {
-                await $worklog.uploadWorklogs(ids);
+                await $worklog.uploadWorklogs(ids, false, uploadOptions);
                 performAction(GadgetActionType.WorklogModified);
             } catch (err: unknown) {
                 console.error('Failed to upload worklogs:', err);
@@ -144,7 +152,7 @@ export default function PendingWorklog(props: BaseGadgetProps) {
                 refreshData();
             }
         },
-        [worklogs, $worklog, $message, setIsLoading, performAction, refreshData],
+        [worklogs, $worklog, $message, setIsLoading, performAction, refreshData, resolveUploadOptions],
     );
 
     const deleteWorklog = useCallback(
@@ -177,11 +185,12 @@ export default function PendingWorklog(props: BaseGadgetProps) {
     const showContext = useCallback(
         (e: React.MouseEvent, b: PendingWorklogItem) => {
             selectedItemRef.current = b;
+            const target = e.currentTarget as HTMLElement;
             showContextMenu(e, [
                 { label: 'Select worklog', icon: 'fa fa-check-square', command: () => selectRowItem(b) },
                 { label: 'Edit worklog', icon: 'fa fa-edit', command: () => editWorklogObj() },
                 { label: 'Copy worklog', icon: 'fa fa-copy', command: () => editWorklogObj(true) },
-                { label: 'Upload worklog', icon: 'fa fa-upload', command: () => uploadWorklog([b]) },
+                { label: 'Upload worklog', icon: 'fa fa-upload', command: () => uploadWorklog(target, [b]) },
                 { label: 'Delete worklog', icon: 'fa fa-trash', command: () => deleteWorklog([b]) },
             ]);
         },
@@ -194,7 +203,7 @@ export default function PendingWorklog(props: BaseGadgetProps) {
                 <Button
                     layout="plain"
                     leftIcon={<i className="fa fa-upload" />}
-                    onClick={() => uploadWorklog()}
+                    onClick={(e) => uploadWorklog(e.currentTarget)}
                     title="Upload selected worklogs"
                     size="sm"
                 />
@@ -270,6 +279,7 @@ export default function PendingWorklog(props: BaseGadgetProps) {
                 enabled={!gadgetHook.isLoading && worklogContext?.needReload}
                 onChange={refreshData}
             />
+            {mergeConfirmation}
         </GadgetContainer>
     );
 }

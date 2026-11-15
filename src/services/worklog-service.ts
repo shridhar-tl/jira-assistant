@@ -13,10 +13,11 @@ import {
     orderByDescending,
     parseISOString,
     prepareUrlWithQueryString,
+    roundTimeSpentSecs,
     sum,
 } from '@utils';
 
-import type { WorklogCalendarEntry } from '@types';
+import type { Worklog, WorklogCalendarEntry, WorklogMergeGroup, WorklogUploadOptions } from '@types';
 
 import type AjaxService from './ajax-service';
 import type JiraService from './jira-service';
@@ -25,8 +26,42 @@ import type StorageService from './storage-service';
 import type TicketService from './ticket-service';
 import type UserUtilsService from './userutils-service';
 import type UtilsService from './utils-service';
+import { formatSecs, getTotalSecs } from './utils-service';
 
 const worklogLimitReachedStatus = 413;
+const mergedDescriptionSeparator = '\n';
+
+function isMergeableWorklog(worklog: Worklog): boolean {
+    return !worklog.isUploaded && !worklog.worklogId && !worklog.parentId;
+}
+
+function getMergedDescription(worklogs: Worklog[]): string {
+    const descriptions = worklogs.map((w) => (w.description || '').trim()).filter(Boolean);
+    return Array.from(new Set(descriptions)).join(mergedDescriptionSeparator);
+}
+
+export function buildWorklogMergePlan(worklogs: Worklog[]): WorklogMergeGroup[] {
+    const groups = groupBy(
+        worklogs.filter(isMergeableWorklog),
+        (wl: Worklog) => `${wl.ticketNo.toUpperCase()}|${formatDate(new Date(wl.dateStarted), 'yyyy-MM-dd')}`,
+    );
+
+    return groups
+        .filter((grp) => grp.values.length > 1)
+        .map((grp) => {
+            const sorted = orderBy(grp.values, (wl: Worklog) => new Date(wl.dateStarted).getTime());
+            const totalSecs = sorted.reduce((total, wl) => total + getTotalSecs(wl), 0);
+
+            return {
+                ticketNo: sorted[0].ticketNo.toUpperCase(),
+                dateStarted: new Date(sorted[0].dateStarted),
+                worklogs: sorted,
+                totalSecs,
+                timeSpent: formatSecs(totalSecs, false, true),
+                description: getMergedDescription(sorted),
+            };
+        });
+}
 
 function getUploadErrorMessage(err: any, ticketNo: string): string {
     const status = err?.status;
@@ -203,8 +238,40 @@ export default class WorklogService {
         return wlList;
     }
 
-    async uploadWorklogs(ids: number[], sameObjects?: boolean): Promise<any> {
+    async getWorklogMergePlan(ids: number[]): Promise<WorklogMergeGroup[]> {
         const worklogs = await this.$storage.getWorklogsWithIds(ids);
+        return buildWorklogMergePlan(worklogs);
+    }
+
+    private async mergeWorklogs(worklogs: Worklog[]): Promise<Worklog[]> {
+        const plan = buildWorklogMergePlan(worklogs);
+        if (!plan.length) {
+            return worklogs;
+        }
+
+        const mergedIds = new Set<number>();
+
+        for (const grp of plan) {
+            const [primary, ...others] = grp.worklogs;
+            primary.dateStarted = grp.dateStarted;
+            primary.timeSpent = grp.timeSpent;
+            primary.description = grp.description;
+            delete primary.overrideTimeSpent;
+
+            await this.$storage.addOrUpdateWorklog(primary);
+            await Promise.all(others.map((wl) => this.$storage.deleteWorklog(wl.id)));
+            others.forEach((wl) => mergedIds.add(wl.id));
+        }
+
+        return worklogs.filter((wl) => !mergedIds.has(wl.id));
+    }
+
+    async uploadWorklogs(ids: number[], sameObjects?: boolean, options?: WorklogUploadOptions): Promise<any> {
+        let worklogs = await this.$storage.getWorklogsWithIds(ids);
+        const merge = options?.merge ?? this.$session.CurrentUser?.worklogMergeMode === 'auto';
+        if (merge) {
+            worklogs = await this.mergeWorklogs(worklogs);
+        }
         const groups = groupBy(worklogs, (wl: any) => wl.ticketNo);
 
         const promises = groups.map((grp) => {
@@ -223,8 +290,17 @@ export default class WorklogService {
         return sameObjects ? worklogs.map((w: any) => this.getWLCalendarEntry(w)) : this.getPendingWorklogs();
     }
 
-    async uploadWorklog(entry: any, opts?: any): Promise<any> {
-        const timeSpent = entry.overrideTimeSpent || entry.timeSpent;
+    getRoundedTimeSpent(timeSpent: string): string {
+        const totalSecs = getTotalSecs(timeSpent);
+        const roundedSecs = roundTimeSpentSecs(totalSecs, this.$session.CurrentUser?.worklogRoundingMins);
+        return roundedSecs === totalSecs ? timeSpent : formatSecs(roundedSecs, false, true);
+    }
+
+    uploadWorklog(entry: any, opts?: any): Promise<any> {
+        return this.uploadWorklogEntry(entry, this.getRoundedTimeSpent(entry.overrideTimeSpent || entry.timeSpent), opts);
+    }
+
+    private async uploadWorklogEntry(entry: any, timeSpent: string, opts?: any): Promise<any> {
 
         const result = await this.upload(entry.ticketNo, entry.dateStarted, timeSpent, entry.description, entry.worklogId, opts);
 
@@ -430,7 +506,7 @@ export default class WorklogService {
         const getCalEntry = () => this.getWLCalendarEntry(wl);
 
         if (wl.worklogId && wl.worklogId > 0) {
-            await this.uploadWorklog(wl);
+            await this.uploadWorklogEntry(wl, wl.overrideTimeSpent || wl.timeSpent);
             return getCalEntry();
         } else {
             await this.$storage.addOrUpdateWorklog(wl);

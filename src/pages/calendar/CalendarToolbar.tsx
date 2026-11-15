@@ -15,7 +15,7 @@ interface CalendarToolbarProps {
     isGadget: boolean;
     onToggleDisplayHours: () => void;
     onToggleZoom: () => void;
-    onUploadAll: () => void;
+    onUploadAll: (target: HTMLElement) => void;
     onRefresh: () => void;
     onSettings: () => void;
     injectedComponents?: ToolbarEndRenderProps | false;
@@ -106,7 +106,7 @@ interface PendingUploadButtonProps {
     pendingWorklogCount: number;
     uploading: boolean;
     isLoading: boolean;
-    onUploadAll: () => void;
+    onUploadAll: (target: HTMLElement) => void;
 }
 
 function PendingUploadButton({ pendingWorklogCount, uploading, isLoading, onUploadAll }: PendingUploadButtonProps) {
@@ -128,7 +128,7 @@ function PendingUploadButton({ pendingWorklogCount, uploading, isLoading, onUplo
                 layout="plain"
                 size="sm"
                 disabled={disabled}
-                onClick={onUploadAll}
+                onClick={(e) => onUploadAll(e.currentTarget)}
                 title={title}
                 className={classNames('relative', hasPending && 'text-amber-600')}
             >

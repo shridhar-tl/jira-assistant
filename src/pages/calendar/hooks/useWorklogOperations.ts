@@ -4,7 +4,7 @@ import { format } from 'date-fns';
 
 import { useService } from '@/services/injector';
 
-import type { Worklog, WorklogCalendarEntry } from '@types';
+import type { Worklog, WorklogCalendarEntry, WorklogUploadOptions } from '@types';
 
 import { createInfoEvent, createWorklogEvent, snapTimeToGrid } from '../calendar-utils';
 import type { CalendarEvent } from '../types';
@@ -222,10 +222,9 @@ export function useWorklogOperations(setEvents: SetEvents, settings: any, curren
     );
 
     const uploadAllWorklogs = useCallback(
-        async (pendingWorklogs: CalendarEvent[]) => {
+        async (worklogIds: number[], uploadOptions: WorklogUploadOptions) => {
             try {
-                const worklogIds = pendingWorklogs.map((e) => (e.data.sourceObject as Worklog).id);
-                await $worklog.uploadWorklogs(worklogIds);
+                await $worklog.uploadWorklogs(worklogIds, false, uploadOptions);
 
                 $message.success(`${worklogIds.length} worklog(s) uploaded successfully!`);
                 $analytics.trackEvent('Worklog uploaded: All', 'User actions');

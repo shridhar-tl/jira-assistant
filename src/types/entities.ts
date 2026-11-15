@@ -34,6 +34,8 @@ export interface SessionUser {
     hideDonateMenu?: boolean;
     allowClosedTickets?: boolean;
     autoUpload?: boolean;
+    worklogMergeMode?: WorklogMergeMode;
+    worklogRoundingMins?: WorklogRoundingInterval;
     defaultTimeSpent?: string;
     minHours?: number;
     maxHours?: number;
@@ -100,6 +102,23 @@ export interface UploadedWorklog {
     totalSecs: number;
     worklogId: number;
     author?: JiraUser;
+}
+
+export type WorklogMergeMode = 'none' | 'auto' | 'confirm';
+
+export type WorklogRoundingInterval = 0 | 5 | 15 | 30 | 60;
+
+export interface WorklogMergeGroup {
+    ticketNo: string;
+    dateStarted: Date;
+    worklogs: Worklog[];
+    totalSecs: number;
+    timeSpent: string;
+    description: string;
+}
+
+export interface WorklogUploadOptions {
+    merge?: boolean;
 }
 
 export interface WorklogCalendarEntry {

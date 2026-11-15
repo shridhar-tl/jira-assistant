@@ -4,6 +4,8 @@ import { subDays } from 'date-fns';
 
 import { inject } from '@services';
 
+import { useWorklogMerge } from '@hooks';
+
 import { showContextMenu } from '@components';
 
 import { GadgetActionType } from '@constants';
@@ -42,6 +44,7 @@ interface TicketWorklogItem {
 export default function TicketWiseWorklog(props: BaseGadgetProps) {
     const [worklogs, setWorklogs] = useState<TicketWorklogItem[]>([]);
     const selectedTicketRef = useRef<TicketWorklogItem | null>(null);
+    const contextTargetRef = useRef<HTMLElement | null>(null);
 
     const gadgetHook = useBaseGadget(props, {
         title: GadgetTitle.TicketWiseWorklog,
@@ -49,6 +52,7 @@ export default function TicketWiseWorklog(props: BaseGadgetProps) {
 
     const { setIsLoading, addWorklog, editWorklog, performAction, settingsRef, saveSettings } = gadgetHook;
     const { $worklog, $userutils, $utils, $message } = inject('WorklogService', 'UserUtilsService', 'UtilsService', 'MessageService');
+    const { resolveUploadOptions, mergeConfirmation } = useWorklogMerge();
 
     const refreshData = useCallback(() => {
         const selDate = settingsRef.current.dateRange;
@@ -87,14 +91,17 @@ export default function TicketWiseWorklog(props: BaseGadgetProps) {
     );
 
     const uploadWorklog = useCallback(async () => {
-        if (!selectedTicketRef.current) return;
+        const target = contextTargetRef.current;
+        if (!selectedTicketRef.current || !target) return;
         const toUpload = selectedTicketRef.current.logData.filter((t) => !t.worklogId).map((t) => t.id);
         if (!toUpload.length) return;
 
+        const uploadOptions = await resolveUploadOptions(toUpload, target);
+        if (!uploadOptions) return;
+
         setIsLoading(true);
         try {
-            await $worklog.uploadWorklogs(toUpload);
-            refreshData();
+            await $worklog.uploadWorklogs(toUpload, false, uploadOptions);
             performAction(GadgetActionType.WorklogModified);
         } catch (err: any) {
             if (err.message) {
@@ -102,8 +109,9 @@ export default function TicketWiseWorklog(props: BaseGadgetProps) {
             }
         } finally {
             setIsLoading(false);
+            refreshData();
         }
-    }, [$worklog, $message, setIsLoading, refreshData, performAction]);
+    }, [$worklog, $message, setIsLoading, refreshData, performAction, resolveUploadOptions]);
 
     const addNewWorklog = useCallback(() => {
         if (!selectedTicketRef.current) return;
@@ -116,6 +124,7 @@ export default function TicketWiseWorklog(props: BaseGadgetProps) {
     const showContext = useCallback(
         (e: React.MouseEvent, b: TicketWorklogItem) => {
             selectedTicketRef.current = b;
+            contextTargetRef.current = e.currentTarget as HTMLElement;
             showContextMenu(e, [
                 { label: 'Upload worklog', icon: 'fa fa-clock', command: uploadWorklog },
                 { label: 'Add worklog', icon: 'fa fa-bookmark', command: addNewWorklog },
@@ -199,6 +208,7 @@ export default function TicketWiseWorklog(props: BaseGadgetProps) {
                 </TBody>
                 <NoDataRow span={8}>No records exist</NoDataRow>
             </ScrollableTable>
+            {mergeConfirmation}
         </GadgetContainer>
     );
 }

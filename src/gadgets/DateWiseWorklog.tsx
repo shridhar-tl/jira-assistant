@@ -4,6 +4,8 @@ import { isToday } from 'date-fns';
 
 import { inject } from '@services';
 
+import { useWorklogMerge } from '@hooks';
+
 import { ChangeTracker, showContextMenu } from '@components';
 
 import { GadgetActionType } from '@constants';
@@ -18,6 +20,7 @@ import { GadgetTitle } from './constants';
 
 function DateWiseWorklog(props: BaseGadgetProps) {
     const selectedDayRef = useRef<DateWiseWorklogItem | null>(null);
+    const contextTargetRef = useRef<HTMLElement | null>(null);
     const [lastUpdated, setLastUpdated] = useState<Date | undefined>(undefined);
 
     const gadgetHook = useBaseGadget(props, {
@@ -27,6 +30,7 @@ function DateWiseWorklog(props: BaseGadgetProps) {
 
     const { setIsLoading, addWorklog, editWorklog, performAction, settingsRef, saveSettings } = gadgetHook;
     const { $worklog, $message } = inject('WorklogService', 'MessageService');
+    const { resolveUploadOptions, mergeConfirmation } = useWorklogMerge();
     const worklogContext = useContext(WorklogContext) as any;
 
     const refreshData = useCallback(() => {
@@ -62,13 +66,17 @@ function DateWiseWorklog(props: BaseGadgetProps) {
     );
 
     const uploadWorklog = useCallback(async () => {
-        if (!selectedDayRef.current) return;
+        const target = contextTargetRef.current;
+        if (!selectedDayRef.current || !target) return;
         const toUpload = selectedDayRef.current.ticketList.filter((t) => !t.worklogId).map((t) => t.id);
         if (!toUpload.length) return;
 
+        const uploadOptions = await resolveUploadOptions(toUpload, target);
+        if (!uploadOptions) return;
+
         setIsLoading(true);
         try {
-            await $worklog.uploadWorklogs(toUpload);
+            await $worklog.uploadWorklogs(toUpload, false, uploadOptions);
             performAction(GadgetActionType.WorklogModified);
         } catch (err: any) {
             if (err.message) {
@@ -78,7 +86,7 @@ function DateWiseWorklog(props: BaseGadgetProps) {
             refreshData();
             setIsLoading(false);
         }
-    }, [$worklog, $message, setIsLoading, refreshData, performAction]);
+    }, [$worklog, $message, setIsLoading, refreshData, performAction, resolveUploadOptions]);
 
     const addNewWorklog = useCallback(() => {
         if (!selectedDayRef.current) return;
@@ -97,6 +105,7 @@ function DateWiseWorklog(props: BaseGadgetProps) {
     const showContext = useCallback(
         (e: React.MouseEvent, b: DateWiseWorklogItem) => {
             selectedDayRef.current = b;
+            contextTargetRef.current = e.currentTarget as HTMLElement;
             showContextMenu(e, [
                 { label: 'Upload worklog', icon: 'fa fa-clock', command: uploadWorklog },
                 { label: 'Add worklog', icon: 'fa fa-bookmark', command: addNewWorklog },
@@ -130,6 +139,7 @@ function DateWiseWorklog(props: BaseGadgetProps) {
                 enabled={!gadgetHook.isLoading && worklogContext?.needReload}
                 onChange={refreshData}
             />
+            {mergeConfirmation}
         </GadgetContainer>
     );
 }

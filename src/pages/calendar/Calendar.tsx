@@ -18,6 +18,8 @@ import { Calendar as FluxoCalendar } from 'fluxo-ui';
 
 import { useService } from '@/services/injector';
 
+import { useWorklogMerge } from '@hooks';
+
 import type { Meeting, Worklog } from '@types';
 
 import { GadgetActionType, type GadgetActionTypeValue } from '@constants';
@@ -96,6 +98,8 @@ export default function Calendar({
         addWorklog,
         editWorklog,
     } = useWorklogOperations(setEvents, settings, currentUser);
+
+    const { resolveUploadOptions, mergeConfirmation } = useWorklogMerge();
 
     const { showMeetingDetails, currentMeetingItem, showMeetingDetailsPopup, hideMeetingDetails } = useMeetingDetails();
 
@@ -370,18 +374,30 @@ export default function Calendar({
         [setEvents, addWorklog, editWorklog, onWorklogChange],
     );
 
-    const handleUploadAll = useCallback(async () => {
-        setUploading(true);
-        const pending = events.filter((e) => e.data.entryType === 1 && !(e.data.sourceObject as Worklog).isUploaded);
+    const handleUploadAll = useCallback(
+        async (target: HTMLElement) => {
+            const worklogIds = events
+                .filter((e) => e.data.entryType === 1 && !(e.data.sourceObject as Worklog).isUploaded)
+                .map((e) => (e.data.sourceObject as Worklog).id);
 
-        const success = await uploadAllWorklogs(pending);
-        setUploading(false);
+            const uploadOptions = await resolveUploadOptions(worklogIds, target);
+            if (!uploadOptions) {
+                return;
+            }
 
-        if (success && dateRangeRef.current) {
-            fetchEvents(dateRangeRef.current.start, dateRangeRef.current.end);
-            onWorklogChange?.(GadgetActionType.WorklogModified);
-        }
-    }, [events, uploadAllWorklogs, fetchEvents, onWorklogChange]);
+            setUploading(true);
+            const success = await uploadAllWorklogs(worklogIds, uploadOptions);
+            setUploading(false);
+
+            if (dateRangeRef.current) {
+                fetchEvents(dateRangeRef.current.start, dateRangeRef.current.end);
+            }
+            if (success) {
+                onWorklogChange?.(GadgetActionType.WorklogModified);
+            }
+        },
+        [events, resolveUploadOptions, uploadAllWorklogs, fetchEvents, onWorklogChange],
+    );
 
     // Custom entry renderer
     const renderEntry = useCallback(
@@ -559,6 +575,8 @@ export default function Calendar({
                     onHide={() => setShowSettingsPopup(false)}
                 />
             )}
+
+            {mergeConfirmation}
 
             {showMeetingDetails && currentMeetingItem && (
                 <div
