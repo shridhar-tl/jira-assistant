@@ -1,0 +1,1 @@
+import{it as e}from"./index.web-CZMr3UjA.js";function t(t,n){return+e(t)>+e(n)}function n(t,n){return+e(t)<+e(n)}export{t as n,n as t};
