@@ -4,7 +4,10 @@ import { useParams } from 'react-router';
 
 import { Sortable } from 'fluxo-ui';
 
+import classNames from 'classnames';
+
 import { GadgetActionType } from '@/constants';
+import { isQuickView as quickView } from '@/constants/build-info';
 
 import { inject } from '@services';
 
@@ -40,7 +43,6 @@ export default function Dashboard() {
     const dashboardIndexRef = useRef(dashboardIndex);
 
     const dashboards: DashboardType[] = $session.CurrentUser?.dashboards || [];
-    const quickView = $session.isQuickView || false;
     const initialBoard = loadBoardAtIndex(dashboards, dashboardIndex);
 
     const [currentBoard, setCurrentBoard] = useState<DashboardType | null>(initialBoard);
@@ -185,7 +187,7 @@ export default function Dashboard() {
             return (
                 <TabView
                     scrollable
-                    className="h-[calc(100vh-102px)]"
+                    className={classNames('dashboard-tabs', quickView ? 'h-[calc(100vh-64px)]' : 'h-[calc(100vh-102px)]')}
                     headerEnd={<div ref={setTabHeaderSlot} className="flex items-center gap-0.5 shrink-0" />}
                 >
                     {widgets.map((widget, index) => renderGadget(widget, index))}

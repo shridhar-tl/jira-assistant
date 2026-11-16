@@ -3,3 +3,4 @@ export * from './uuid';
 export * from './array-utils';
 export * from './worklog-utils';
 export * from './date-utils';
+export * from './jira-profile';

@@ -50,7 +50,7 @@
         "scopes": ["https://www.googleapis.com/auth/calendar.readonly"]
     },
     "content_security_policy": {
-        "extension_pages": "script-src 'self' ; object-src 'self'; frame-src https://www.youtube.com;"
+        "extension_pages": "script-src 'self' ; object-src 'self'; frame-src https://app.jiraassistant.com;"
     },
     "offline_enabled": true,
     "permissions": ["tabs", "identity", "activeTab", "idle", "scripting"],

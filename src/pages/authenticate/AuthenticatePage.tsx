@@ -146,7 +146,7 @@ export default function AuthenticatePage({
 
             <div className="relative w-full max-w-[520px]">
                 <div className="bg-[var(--bg-primary)]/95 backdrop-blur-sm rounded-2xl shadow-[var(--shadow-xl)] overflow-hidden border border-[var(--border-primary)]">
-                    <div className="p-6 sm:p-8">
+                    <div className="p-4 sm:p-8">
                         <div className="flex items-center gap-3 mb-6">
                             <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/25">
                                 <i className="fa fa-bolt text-white text-xl" />

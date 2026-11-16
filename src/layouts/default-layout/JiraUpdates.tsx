@@ -78,13 +78,13 @@ export default function JiraUpdates() {
             {showPanel && (
                 <div
                     ref={panelRef}
-                    className="absolute right-0 top-full mt-1 w-96 rounded-lg z-50 overflow-hidden bg-(--bg-primary) border border-(--border-primary) shadow-(--shadow-xl)"
+                    className="absolute right-0 top-full mt-1 w-96 max-w-[calc(100vw-1rem)] max-h-[calc(100vh-4rem)] flex flex-col rounded-lg z-50 overflow-hidden bg-(--bg-primary) border border-(--border-primary) shadow-(--shadow-xl)"
                 >
-                    <div className="p-4">
-                        <div className="text-center font-semibold text-sm mb-3 text-primary">
+                    <div className="p-4 flex flex-col min-h-0">
+                        <div className="shrink-0 text-center font-semibold text-sm mb-3 text-primary">
                             You have {total} updates on {ticketCount} issues
                         </div>
-                        <div className="max-h-96 overflow-y-auto space-y-2">
+                        <div className="min-h-0 max-h-96 overflow-y-auto space-y-2">
                             {list.map((msg, i) => (
                                 <Message key={i} message={msg} cut={$utils.cut} />
                             ))}

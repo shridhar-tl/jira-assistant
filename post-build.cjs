@@ -12,6 +12,9 @@ const browsersList = ['chrome', 'edge', 'opera', 'firefox', 'firefox_selfhost'];
 // Files at the dist root that are extension-only and should not ship with web/app/plugin builds.
 const extensionOnlyRootFiles = ['api-pollyfill.js', 'content.js', 'menu.html', 'background.js', 'jira_cs.js', 'jira_cs.css'];
 
+// Files at the dist root that are hosted only by the web build (e.g. the video help relay player framed by extension and app builds).
+const webOnlyRootFiles = ['video-player.html'];
+
 const buildMode = process.env.VITE_BUILD_MODE;
 console.log(`Build mode set to: ${buildMode}`);
 
@@ -22,6 +25,7 @@ if (buildMode === 'WEB') {
 } else if (buildMode === 'APP') {
     cleanupForWebApp(false);
     cleanupBrowserFolders();
+    cleanupWebOnlyFiles();
     const { name, version, description, author, bugs, build } = require('./package.json');
 
     if (build) {
@@ -57,7 +61,9 @@ if (buildMode === 'WEB') {
 } else if (buildMode === 'PLUGIN') {
     cleanupForPlugin(false);
     cleanupBrowserFolders();
+    cleanupWebOnlyFiles();
 } else {
+    cleanupWebOnlyFiles();
     movePackages(BUILD_DIR);
 }
 
@@ -216,6 +222,12 @@ function cleanupBrowserFolders() {
 
     // Remove extension-only root files that may have been copied from public/ or produced by the build
     extensionOnlyRootFiles.forEach((file) => {
+        safeUnlink(resolveBuildPath(file));
+    });
+}
+
+function cleanupWebOnlyFiles() {
+    webOnlyRootFiles.forEach((file) => {
         safeUnlink(resolveBuildPath(file));
     });
 }

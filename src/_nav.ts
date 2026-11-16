@@ -122,7 +122,7 @@ const navigation: MenuSection[] = [
                 icon: 'fa fa-columns',
                 badge: {
                     variant: 'success',
-                    text: 'NEW',
+                    text: 'BETA',
                 },
             },
             piPlanner && {
@@ -132,7 +132,7 @@ const navigation: MenuSection[] = [
                 icon: 'fa fa-sitemap',
                 badge: {
                     variant: 'success',
-                    text: 'NEW',
+                    text: 'BETA',
                 },
             },
             planningPoker &&

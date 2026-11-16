@@ -51,7 +51,7 @@
             "description": "Open JiraAssist dashboard page"
         }
     },
-    "content_security_policy": "script-src 'self' ; object-src 'self'; frame-src https://www.youtube.com;",
+    "content_security_policy": "script-src 'self' ; object-src 'self'; frame-src https://app.jiraassistant.com;",
     "permissions": ["tabs", "activeTab", "identity", "https://*.atlassian.net/*", "idle", "scripting"],
     "optional_permissions": ["http://*/", "https://*/"],
     "developer": {

@@ -3,8 +3,11 @@ import { useCallback, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 
 import { inject } from '@services';
+import type AnalyticsService from '@/services/analytics-service';
 
+import { isAppBuild, isExtnBuild } from '../constants/build-info';
 import { EventCategory } from '../constants/settings';
+import { JAWebRootUrl } from '../constants/urls';
 
 interface VideoInfo {
     videoId: string;
@@ -35,9 +38,18 @@ interface YoutubeVideoProps {
     onHide?: () => void;
 }
 
-function getVideoUrl(video: VideoInfo, analytics: any, event?: string): string {
-    analytics?.trackEvent(event || 'Video help viewed', EventCategory.HeaderActions, `Video Help: ${video.module}`);
-    return `https://www.youtube.com/embed/${video.videoId}?rel=0&autoplay=1&showinfo=0&cc_load_policy=1&start=${video.startAt || 0}`;
+const useRelayPlayer = isExtnBuild || isAppBuild;
+const playerPermissions = 'accelerometer; autoplay; clipboard-write; encrypted-media; fullscreen; gyroscope; picture-in-picture; web-share';
+
+function getVideoUrl(video: VideoInfo, analytics: Pick<AnalyticsService, 'trackEvent'>, event?: string): string {
+    analytics.trackEvent(event || 'Video help viewed', EventCategory.HeaderActions, `Video Help: ${video.module}`);
+    const startAt = String(video.startAt || 0);
+
+    if (useRelayPlayer) {
+        return `${JAWebRootUrl}/video-player.html?${new URLSearchParams({ v: video.videoId, start: startAt }).toString()}`;
+    }
+
+    return `https://www.youtube.com/embed/${video.videoId}?${new URLSearchParams({ rel: '0', autoplay: '1', cc_load_policy: '1', start: startAt }).toString()}`;
 }
 
 function buildVideoList(): VideoInfo[] {
@@ -155,6 +167,7 @@ export default function YoutubeVideo({ onHide }: YoutubeVideoProps) {
                                 title="Video Help"
                                 className="w-full h-full"
                                 frameBorder={0}
+                                allow={playerPermissions}
                                 allowFullScreen
                                 referrerPolicy="strict-origin-when-cross-origin"
                             />

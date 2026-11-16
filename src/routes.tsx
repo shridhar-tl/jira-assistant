@@ -44,8 +44,6 @@ const PokerComponent = hasPokerRoute && config.modules.planningPoker && React.la
 const FeedbackViewComponent = config.modules.contactUs && React.lazy(() => import('./pages/feedback/FeedbackPage'));
 const ContributeComponent = config.modules.contribute && React.lazy(() => import('./pages/contribute/ContributePage'));
 
-export const isQuickView = document.location.href.indexOf('?quick=true') > -1;
-
 interface RouteItem {
     path: string;
     component: any;

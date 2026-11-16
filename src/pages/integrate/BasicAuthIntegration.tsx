@@ -6,13 +6,16 @@ import { executeService } from '@/common/proxy';
 import { isExtnBuild, redirectToRoute } from '@/constants/build-info';
 import { ApiTokenHelpPage } from '@/constants/urls';
 import Link from '@/controls/Link';
-import { Dialog } from '@/dialogs';
 import { useService } from '@/services/injector';
-import { clearEnd, getOriginFromUrl } from '@/utils/helpers';
+import { clearEnd } from '@/utils/helpers';
 
 import { registerDepnServices } from '@services';
 
 import { Button, Password, TextInput } from '@components';
+
+import { getJiraUrlError, reportIntegrationFailure } from './integration-helpers';
+
+const unauthorizedMessage = 'You are not authenticated with Jira to integrate. Please verify your credentials.';
 
 interface BasicAuthIntegrationProps {
     setAuthType?: (authType: string) => void;
@@ -65,27 +68,8 @@ function BasicAuthIntegration({ setAuthType }: BasicAuthIntegrationProps) {
             try {
                 const id = await services.$jAuth.integrateWithCred(root, userId, password);
                 await openDashboard(id);
-            } catch (response: any) {
-                const res = response || {};
-                if (res.status === 401) {
-                    services.$message.warning(
-                        'You are not authenticated with Jira to integrate. Please verify your credentials.',
-                        'Unauthorized',
-                    );
-                } else {
-                    const origin = getOriginFromUrl(root);
-                    const cleanOrigin = origin ? clearEnd(origin, '/') : '';
-                    if (cleanOrigin && cleanOrigin !== root) {
-                        Dialog.yesNo(
-                            `"${root}" is not a valid Jira Api base path. Would you like to try with "${cleanOrigin}" instead?`,
-                            'Change URL',
-                        ).then(() => {
-                            tryIntegrate(cleanOrigin);
-                        });
-                    } else {
-                        services.$message.error('This is not a valid Jira server url or the server does not respond.', 'Unknown server');
-                    }
-                }
+            } catch (err) {
+                reportIntegrationFailure(err, { root, $message: services.$message, retryWith: tryIntegrate, unauthorizedMessage });
             } finally {
                 setIsLoading(false);
             }
@@ -95,13 +79,18 @@ function BasicAuthIntegration({ setAuthType }: BasicAuthIntegrationProps) {
 
     const integrate = useCallback(() => {
         const root = clearEnd(clearEnd(jiraUrl.trim(), '/'), '\\');
+        const urlError = getJiraUrlError(root);
+        if (urlError) {
+            services.$message.warning(urlError, 'Invalid url');
+            return;
+        }
         tryIntegrate(root);
-    }, [jiraUrl, tryIntegrate]);
+    }, [jiraUrl, tryIntegrate, services]);
 
     return (
         <>
             <h1 className="text-2xl sm:text-3xl font-bold text-[var(--text-primary)] mb-2">Jira Assistant</h1>
-            <p className="text-[var(--text-secondary)] mb-6">
+            <p className="text-(--text-secondary) mb-4 sm:mb-6">
                 <strong>Integrate</strong> with your Jira account
             </p>
 

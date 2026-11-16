@@ -1,5 +1,5 @@
 import { ContactUsUrl } from '@/constants';
-import { getUserName } from '@/utils';
+import { assertJiraUserProfile, getUserName } from '@/utils';
 
 import type { AppSetting } from '@types';
 
@@ -140,7 +140,9 @@ export default class UserService {
         return user;
     }
 
-    async createUser(profile: any, root: string, options?: any): Promise<number> {
+    async createUser(profile: unknown, root: string, options?: any): Promise<number> {
+        assertJiraUserProfile(profile);
+
         const userId = getUserName(profile);
         const { emailAddress, accountId } = profile;
         const optIsObj = options && typeof options === 'object';

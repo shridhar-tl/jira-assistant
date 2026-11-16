@@ -6,7 +6,7 @@ import { isPluginBuild } from '@/constants/build-info';
 
 import { inject } from '@services';
 
-import { ConfirmPopoverManager, ErrorBoundary, TooltipManager } from '@components';
+import { ConfirmPopoverManager, ErrorBoundary, SnackbarManager, TooltipManager } from '@components';
 
 import { withAuthInfo } from './layouts/authorization';
 import { withInitParams } from './layouts/initialization';
@@ -30,6 +30,7 @@ function App({ authTypeChosen, switchUser, authInfo, initValue }: AppProps) {
     return (
         <ErrorBoundary>
             <MessageBox $message={$message} />
+            <SnackbarManager />
             {!isPluginBuild && <UrlWatcher onChange={onRouteChanged} />}
             <ContextMenuManager />
             <TooltipManager />

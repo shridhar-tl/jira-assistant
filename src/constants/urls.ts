@@ -6,6 +6,7 @@ export function getGitHubIssueUrl(issueNumber: string): string {
 export const WebSiteUrl = 'https://jiraassistant.com';
 export const messagesUrl = `${WebSiteUrl}/messages.json`;
 export const ContactUsUrl = `${WebSiteUrl}/contact-us`;
+export const SetupVideoUrl = 'https://youtu.be/HsWq7cT3Qq0';
 
 export const feedbackUrl = 'https://docs.google.com/forms/d/e/1FAIpQLScJvQtHZI_yZr1xd4Z8TwWgvtFss33hW5nJp4gePCgI2ScNvg/viewform';
 

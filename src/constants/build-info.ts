@@ -6,6 +6,7 @@ const isExtnBuild = !isWebBuild && !isAppBuild && !isPluginBuild;
 
 const isProdBuild = import.meta.env.PROD;
 const isDevBuild = !isProdBuild;
+const isQuickView = document.location.href.indexOf('?quick=true') > -1;
 
 export const appVersionNo = '3.0.2';
 
@@ -22,4 +23,4 @@ export function getRouteUrl(route?: string): string {
     return isWebBuild ? route : `${isPluginBuild ? '' : '/index.html'}${route ? '#' : ''}${route}`;
 }
 
-export { buildMode, isAppBuild, isDevBuild, isExtnBuild, isPluginBuild, isProdBuild, isWebBuild };
+export { buildMode, isAppBuild, isDevBuild, isExtnBuild, isPluginBuild, isProdBuild, isQuickView, isWebBuild };

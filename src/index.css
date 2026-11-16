@@ -47,6 +47,10 @@ body,
     }
 }
 
+body.quick-view {
+    min-width: 400px;
+}
+
 body {
     font-family: var(--font-family);
     line-height: 1.5;

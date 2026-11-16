@@ -17,7 +17,6 @@ export default class SessionService {
     needIntegration = false;
     extnAccessDeniedReason?: string;
     pageSettings: Record<string, any> = {};
-    isQuickView = false;
 
     constructor($settings: SettingsService) {
         this.$settings = $settings;
@@ -53,6 +52,5 @@ export default class SessionService {
         this.needIntegration = false;
         this.extnAccessDeniedReason = undefined;
         this.pageSettings = {};
-        this.isQuickView = false;
     }
 }

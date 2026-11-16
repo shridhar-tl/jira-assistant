@@ -2,10 +2,11 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { useNavigate } from 'react-router';
 
+import classNames from 'classnames';
+
 import defaultNavigation, { getDashboardMenu, type MenuItem, type MenuSection } from '@/_nav';
-import { SnackbarManager } from '@/components';
 import { ContextMenuProvider } from '@/components/shared/ContextMenu';
-import { isWebBuild, redirectToRoute } from '@/constants/build-info';
+import { isQuickView, isWebBuild, redirectToRoute } from '@/constants/build-info';
 import { useWorklogStore } from '@/stores/worklog-store';
 
 import { inject } from '@services';
@@ -15,8 +16,6 @@ import { useNavigationStore } from '@stores';
 import AppContent from './AppContent';
 import DefaultHeader from './DefaultHeader';
 import NavSideBar from './NavSideBar';
-
-const isQuickView = document.location.href.indexOf('?quick=true') > -1;
 
 export default function DefaultLayout() {
     const navigate = useNavigate();
@@ -36,16 +35,11 @@ export default function DefaultLayout() {
     const dashboards = $dashboard.getDashboards();
 
     useEffect(() => {
-        if (isQuickView) {
-            $session.isQuickView = true;
-            document.body.classList.add('quick-view');
-        }
-
         $jaBrowserExtn.connectAndKeepAlive(loadTracker);
         loadTracker();
         window.addEventListener('focus', loadTracker);
 
-        initBody($settings, $session);
+        initBody($settings);
 
         $dashboard.onChange(() => forceUpdate((n: number) => n + 1));
 
@@ -104,14 +98,14 @@ export default function DefaultLayout() {
 
     return (
         <ContextMenuProvider>
-            <div className="app min-h-screen bg-(--bg-secondary)">
+            <div className={classNames('app bg-(--bg-secondary)', isQuickView ? 'w-[720px] h-[500px] overflow-hidden' : 'min-h-screen')}>
                 <DefaultHeader onLogout={signOut} isQuickView={isQuickView} />
 
-                <div className="pt-12 flex min-h-screen">
+                <div className={classNames('pt-12 flex', isQuickView ? 'h-full' : 'min-h-screen')}>
                     {!isQuickView && <NavSideBar menus={menus} userId={userId} />}
 
                     <main
-                        className="flex-1 transition-all duration-300 min-h-[calc(100vh-3rem)]"
+                        className={classNames('flex-1 min-w-0 transition-all duration-300', !isQuickView && 'min-h-[calc(100vh-3rem)]')}
                         style={{
                             marginLeft: isQuickView ? undefined : sidebarWidth,
                             maxWidth: isQuickView ? undefined : `calc(100vw - ${sidebarWidth})`,
@@ -121,16 +115,11 @@ export default function DefaultLayout() {
                     </main>
                 </div>
             </div>
-            <SnackbarManager />
         </ContextMenuProvider>
     );
 }
 
-async function initBody($settings: any, $session: any) {
-    if ($session.isQuickView) {
-        document.body.classList.add('quick-view');
-    }
-
+async function initBody($settings: any) {
     const skinName = (await $settings.get('skin')) || 'skin-blue';
     document.body.classList.add(skinName);
 }

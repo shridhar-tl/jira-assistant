@@ -5,20 +5,25 @@ import { useNavigate } from 'react-router';
 import { executeService } from '@/common/proxy';
 import { isExtnAccessDenied } from '@/common/proxy-helper';
 import { ApiUrls } from '@/constants/api-urls';
-import { buildMode, isExtnBuild, isWebBuild, redirectToRoute } from '@/constants/build-info';
+import { buildMode, isExtnBuild, isQuickView, isWebBuild, redirectToRoute } from '@/constants/build-info';
 import { getJiraCloudOAuthAuthorizeUrl } from '@/constants/oauth';
 import config from '@/customize';
-import { Dialog } from '@/dialogs';
+import BackupImporter from '@/layouts/default-layout/BackupImporter';
 import { useService } from '@/services/injector';
 import { BROWSER_NAME } from '@/utils/browsers';
-import { clearEnd, getOriginFromUrl } from '@/utils/helpers';
+import { clearEnd } from '@/utils/helpers';
+import { assertJiraUserProfile, type JiraUserProfile } from '@/utils/jira-profile';
 
 import { Button, TextInput } from '@components';
 
+import { getJiraUrlError, reportIntegrationFailure } from './integration-helpers';
 import SettingsMenu from './SettingsMenu';
 
-const isQuickView = document.location.href.indexOf('?quick=true') > -1;
 const isFirefox = BROWSER_NAME === 'firefox';
+const unauthorizedMessage = 'You are not authenticated with Jira to integrate. Login to Jira in browser and then retry.';
+const permissionDeniedMessage = isWebBuild
+    ? 'Permission denied to access this Url. Try integrating directly from extension using JA icon or manually grant permission and retry.'
+    : 'Permission denied to access this Url. Manually grant permission and then retry. For more details, visit #214 in GitHub issue tracker.';
 
 function getJiraRootUrl(url: string): string {
     return url.replace(/^(.*\/\/[^/?#]*).*$/, '$1');
@@ -86,44 +91,31 @@ function CookieIntegration({ setAuthType }: CookieIntegrationProps) {
             const hasPermission = await services.$jaBrowserExtn.requestPermission(null, root);
             services.$session.userId = undefined;
 
+            let profile: JiraUserProfile;
             try {
-                const data = await services.$ajax.get(ApiUrls.mySelf);
-                try {
-                    const userId = await services.$user.createUser(data, root);
-                    await openDashboard(userId);
-                } catch (err) {
-                    if (isExtnAccessDenied(err)) {
-                        throw err;
-                    }
-                    console.error('JA: Unable to save the integration:', err);
-                    handleDBError();
+                const response: unknown = await services.$ajax.request('GET', ApiUrls.mySelf, undefined, undefined, true);
+                assertJiraUserProfile(response);
+                profile = response;
+            } catch (err) {
+                reportIntegrationFailure(err, {
+                    root,
+                    $message: services.$message,
+                    retryWith,
+                    unauthorizedMessage,
+                    permissionDeniedMessage: hasPermission ? undefined : permissionDeniedMessage,
+                });
+                return;
+            }
+
+            try {
+                const userId = await services.$user.createUser(profile, root);
+                await openDashboard(userId);
+            } catch (err) {
+                if (isExtnAccessDenied(err)) {
+                    throw err;
                 }
-            } catch (response: any) {
-                if (isExtnAccessDenied(response)) {
-                    throw response;
-                }
-                const res = response || {};
-                if (res.status === 401) {
-                    services.$message.warning('You are not authenticated with Jira to integrate.', 'Unauthorized');
-                } else {
-                    const origin = getOriginFromUrl(root);
-                    const cleanOrigin = origin ? clearEnd(origin, '/') : '';
-                    if (cleanOrigin && cleanOrigin !== root) {
-                        Dialog.yesNo(
-                            `"${root}" is not a valid Jira Api base path. Would you like to try with "${cleanOrigin}" instead?`,
-                            'Change URL',
-                        ).then(() => {
-                            retryWith(cleanOrigin);
-                        });
-                    } else if (!hasPermission) {
-                        const msg = isWebBuild
-                            ? 'Permission denied to access this Url. Try integrating directly from extension using JA icon or manually grant permission and retry.'
-                            : 'Permission denied to access this Url. Manually grant permission and then retry. For more details, visit #214 in GitHub issue tracker.';
-                        services.$message.error(msg, 'Permission Denied');
-                    } else {
-                        services.$message.error('This is not a valid Jira server url or the server does not respond.', 'Unknown server');
-                    }
-                }
+                console.error('JA: Unable to save the integration:', err);
+                handleDBError();
             }
         },
         [services, openDashboard, handleDBError],
@@ -153,8 +145,13 @@ function CookieIntegration({ setAuthType }: CookieIntegrationProps) {
 
     const integrate = useCallback(() => {
         const root = clearEnd(clearEnd(jiraUrl.trim(), '/'), '\\');
+        const urlError = getJiraUrlError(root);
+        if (urlError) {
+            services.$message.warning(urlError, 'Invalid url');
+            return;
+        }
         tryIntegrate(root);
-    }, [jiraUrl, tryIntegrate]);
+    }, [jiraUrl, tryIntegrate, services]);
 
     const useOAuth = useCallback(() => {
         const url = getJiraCloudOAuthAuthorizeUrl({
@@ -171,9 +168,10 @@ function CookieIntegration({ setAuthType }: CookieIntegrationProps) {
     }, [services]);
 
     const handleMenuClick = useCallback(
-        (index: number) => {
+        (index: number, importSettings: () => void) => {
             switch (index) {
-                case 0: // Import Settings - ToDo: Implement backup import
+                case 0: // Import Settings
+                    importSettings();
                     break;
                 case 1: // Options
                     services.$jaBrowserExtn.openTab(isWebBuild ? '/options' : '/index.html#/options');
@@ -189,12 +187,23 @@ function CookieIntegration({ setAuthType }: CookieIntegrationProps) {
         [services, useOAuth, navigate],
     );
 
+    const onSettingsImport = useCallback(() => {
+        if (isWebBuild && setAuthType) {
+            setAuthType('1');
+        } else if (isQuickView) {
+            services.$jaBrowserExtn.openTab('/index.html');
+            window.close();
+        } else {
+            redirectToRoute();
+        }
+    }, [services, setAuthType]);
+
     const showSettingsMenu = !isFirefox || !isQuickView;
     const showOpenInNewTab = isFirefox && isQuickView;
 
     return (
         <>
-            <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center justify-between mb-1 sm:mb-2">
                 <h1 className="text-2xl sm:text-3xl font-bold text-[var(--text-primary)]">Jira Assistant</h1>
                 <div className="flex items-center gap-2">
                     {showOpenInNewTab && (
@@ -206,10 +215,14 @@ function CookieIntegration({ setAuthType }: CookieIntegrationProps) {
                             <i className="fa fa-external-link" />
                         </button>
                     )}
-                    {showSettingsMenu && <SettingsMenu onItemClick={handleMenuClick} />}
+                    {showSettingsMenu && (
+                        <BackupImporter cleanImport onImport={onSettingsImport}>
+                            {(importSettings) => <SettingsMenu onItemClick={(index) => handleMenuClick(index, importSettings)} />}
+                        </BackupImporter>
+                    )}
                 </div>
             </div>
-            <p className="text-[var(--text-secondary)] mb-6">
+            <p className="text-(--text-secondary) mb-4 sm:mb-6">
                 <strong>Integrate</strong> with your Jira account
             </p>
 
@@ -222,7 +235,7 @@ function CookieIntegration({ setAuthType }: CookieIntegrationProps) {
                 />
             </div>
 
-            <p className="text-sm text-[var(--text-secondary)] mb-5">
+            <p className="text-sm text-(--text-secondary) mb-4 sm:mb-5">
                 Login to your Jira in current tab or provide the Url of your Jira server to integrate. Ensure you have already been
                 authenticated in Jira before you click on Integrate button.
             </p>
