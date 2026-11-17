@@ -45,7 +45,7 @@ export default class FirefoxBrowserService extends BrowserBase {
     }
 
     async requestPermission(permissions: string[] | null, ...urls: string[]): Promise<boolean> {
-        const pObj = this.getPermissionObj(permissions ?? undefined, ...urls);
+        const pObj = this.getPermissionObj(permissions, ...urls);
 
         // Firefox allows permissions.request only synchronously within a user input handler.
         // Hence it is invoked before any await and falls back to contains when not triggered by user.

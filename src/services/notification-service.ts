@@ -65,7 +65,7 @@ function toEpoch(value: MessageDate | undefined): number | undefined {
 
 const liveVersionKey = isPluginBuild ? 'cloudApp' : BROWSER_NAME;
 
-// Versions are published either as numbers (2.59, 3.01) or as dotted strings ("3.0.1").
+// Versions are published either as numbers (3.01) or as dotted strings ("3.0.1").
 // Dotted versions map to the numeric form by collapsing everything after the major part: "3.0.1" => 3.01
 export function versionToNumber(version: string | number | undefined | null): number {
     if (typeof version === 'number') {

@@ -1,7 +1,7 @@
 {
     "name": "jira-assistant",
     "type": "module",
-    "version": "3.0.2",
+    "version": "3.0.3",
     "description": "Help to track & upload work done on a Jira Ticket on timely basis and generate Worklog, Sprint and other custom reports",
     "homepage": "/",
     "author": {
@@ -85,7 +85,7 @@
         "sass-embedded": "~1.108.2",
         "tailwindcss": "^4.3.5",
         "typescript": "~7.0.2",
-        "typescript-eslint": "^8.72.2",
+        "typescript-eslint": "^8.73.0",
         "vite": "^8.3.8",
         "vite-plugin-html": "^3.2.2",
         "vite-plugin-mkcert": "^2.1.0",

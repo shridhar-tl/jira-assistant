@@ -22,14 +22,10 @@ class BrowserBase {
         return true;
     }
 
-    getPermissionObj(permissions?: string[], ...urls: string[]): PermissionObj {
-        if (!permissions) {
-            permissions = ['tabs'];
-        }
+    getPermissionObj(permissions?: string[] | null, ...urls: string[]): PermissionObj {
+        const result: PermissionObj = { permissions: permissions ?? ['tabs'] };
 
-        const result: PermissionObj = { permissions };
-
-        if (urls && urls.length) {
+        if (urls.length) {
             result.origins = urls.map(getOriginFromUrl);
         }
 

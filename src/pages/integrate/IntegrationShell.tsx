@@ -10,7 +10,7 @@ interface IntegrationShellProps {
 function IntegrationShell({ children, footer }: IntegrationShellProps) {
     if (isQuickView) {
         return (
-            <div className="bg-(--bg-primary)">
+            <div className="w-[400px] bg-(--bg-primary)">
                 <div className="p-4">{children}</div>
                 {footer}
             </div>
