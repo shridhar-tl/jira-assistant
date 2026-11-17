@@ -21,6 +21,17 @@ export function stripOrderBy(jql: string): string {
     return jql.replace(orderByPattern, '').trim();
 }
 
+export function getOrderByClause(jql: string): string {
+    return jql.match(orderByPattern)?.[0].trim() || '';
+}
+
+export function joinJql(parts: (string | null | undefined)[]): string {
+    return parts
+        .filter((p): p is string => !!p)
+        .map((p) => `(${p})`)
+        .join(' AND ');
+}
+
 export function getUserJqlValue(user: JiraUser): string {
     const { $session } = inject('SessionService');
     return ($session.CurrentUser?.isAtlasCloud ? user.accountId : user.name) || getJiraUserId(user);

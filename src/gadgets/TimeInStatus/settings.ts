@@ -4,6 +4,7 @@ import {
     cleanSprintSelection,
     getSelectedBoardIds,
     getSprintSelectionKey,
+    toAgileBoards,
     type AgileBoard,
 } from '@components/shared/sprint-selector';
 
@@ -30,18 +31,9 @@ function toTimeValue(value: string | undefined, fallback: string): string {
     return value && timePattern.test(value) ? value : fallback;
 }
 
-function toBoards(value: unknown): AgileBoard[] {
-    if (!Array.isArray(value)) {
-        return [];
-    }
-    return value
-        .filter((b): b is AgileBoard => !!b && typeof b === 'object' && !!(b as AgileBoard).id)
-        .map(({ id, name }) => ({ id: Number(id), name: String(name || id) }));
-}
-
 function getDefaultBoards(): AgileBoard[] {
     const { $session } = inject('SessionService');
-    return toBoards($session.CurrentUser?.rapidViews);
+    return toAgileBoards($session.CurrentUser?.rapidViews);
 }
 
 export function getDefaultSettings(): TimeInStatusSettings {
@@ -121,7 +113,7 @@ export function normalizeSettings(stored?: StoredTimeInStatusSettings | null): T
     if (settings.periodMode !== 'sprint') {
         settings.periodMode = 'dateRange';
     }
-    settings.sprintBoards = toBoards(settings.sprintBoards);
+    settings.sprintBoards = toAgileBoards(settings.sprintBoards);
     settings.sprintSelection =
         settings.sprintSelection && typeof settings.sprintSelection === 'object'
             ? cleanSprintSelection(settings.sprintSelection, settings.sprintBoards)

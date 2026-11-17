@@ -35,6 +35,34 @@ export function createBoardSelection(board: AgileBoard, existing?: BoardSprintSe
     };
 }
 
+export function toAgileBoards(value: unknown): AgileBoard[] {
+    if (!Array.isArray(value)) {
+        return [];
+    }
+    return value
+        .filter((b): b is AgileBoard => !!b && typeof b === 'object' && !!(b as AgileBoard).id)
+        .map(({ id, name }) => ({ id: Number(id), name: String(name || id) }));
+}
+
+/**
+ * Retains the selection of the boards which are still available and selects the last sprint of the newly added boards.
+ */
+export function syncBoardSelection(prevBoards: AgileBoard[], prevSelection: SprintSelectionMap, boards: AgileBoard[]): SprintSelectionMap {
+    const knownBoardIds = new Set(prevBoards.map((b) => b.id));
+    const result: SprintSelectionMap = {};
+
+    boards.forEach((board) => {
+        const existing = prevSelection[board.id];
+        if (existing) {
+            result[board.id] = createBoardSelection(board, existing);
+        } else if (!knownBoardIds.has(board.id)) {
+            result[board.id] = { ...createBoardSelection(board), selected: true };
+        }
+    });
+
+    return result;
+}
+
 export function getSelectedBoardIds(selection: SprintSelectionMap | null | undefined): string[] {
     return Object.keys(selection || {}).filter((boardId) => selection?.[boardId]?.selected);
 }
@@ -127,6 +155,14 @@ export async function resolveSelectedSprints(selection: SprintSelectionMap | nul
     });
 
     return [...unique.values()];
+}
+
+/**
+ * Returns undefined when none of the selected sprints are available, as no issues can match such a selection.
+ */
+export async function getSprintFilterJql(selection: SprintSelectionMap | null | undefined): Promise<string | undefined> {
+    const sprints = await resolveSelectedSprints(selection);
+    return sprints.length ? `sprint in (${sprints.map((s) => s.id).join(', ')})` : undefined;
 }
 
 export function getSprintRangeLabel(selection: BoardSprintSelection | undefined): string {

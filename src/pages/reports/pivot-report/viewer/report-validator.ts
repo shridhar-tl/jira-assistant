@@ -1,12 +1,21 @@
+import { getSelectedBoardIds } from '@components/shared/sprint-selector';
+
 import { validateFilterText } from '../editor/controls/config/filter-options/validators';
 import { usePivotConfig, useReportData } from '../store/pivot-config';
+import { sprintDataSource } from '../types';
 import { useFieldsList } from '../utils/fields';
 
 export function isReportDefinitionValid() {
-    const { jql, fields } = usePivotConfig.getState();
+    const { jql, fields, dataSourceType, sprintBoards, sprintSelection } = usePivotConfig.getState();
     const reportErrors: string[] = [];
 
-    if (!jql?.trim()) {
+    if (dataSourceType === sprintDataSource) {
+        if (!sprintBoards.length) {
+            reportErrors.push('Select at least one agile board to pull the issues of its sprints');
+        } else if (!getSelectedBoardIds(sprintSelection).length) {
+            reportErrors.push('Select the sprints to pull the issues from Jira');
+        }
+    } else if (!jql?.trim()) {
         reportErrors.push('JQL is required to pull issues from Jira');
     }
 

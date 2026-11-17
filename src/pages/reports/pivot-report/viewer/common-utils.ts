@@ -4,10 +4,10 @@ import { getPathValue } from '@/utils';
 import { inject } from '@services';
 
 import { valuePropsMap } from '../editor/controls/config/display-options/formatting';
-import { getQueryInfo } from '../store/pivot-config';
+import { getQueryFields } from '../store/pivot-config';
 
-export async function fetchData(scope: any) {
-    const { jql, fields } = getQueryInfo(scope.fields);
+export async function fetchData(jql: string, scope: any) {
+    const fields = getQueryFields(scope.fields);
 
     const { $jira } = inject('JiraService');
     const result = await $jira.searchTickets(jql, fields);

@@ -2,7 +2,7 @@ import { inject } from '@services';
 
 import { notifyReportsListChanged } from '@components/ReportSelectList';
 
-import { getBlankReportDefinition, usePivotConfig, useReportData } from '../store/pivot-config';
+import { getBlankReportDefinition, normalizeReportDefinition, usePivotConfig, useReportData } from '../store/pivot-config';
 import type { PivotReportDefinition } from '../types';
 
 export async function saveReport() {
@@ -60,5 +60,5 @@ export async function loadReport(reportId?: string) {
         return;
     }
 
-    usePivotConfig.setState(report, true);
+    usePivotConfig.setState(normalizeReportDefinition(report), true);
 }

@@ -1,10 +1,15 @@
-import { usePivotConfig, useReportData } from '../store/pivot-config';
+import { getIssueSearchJql, usePivotConfig, useReportData } from '../store/pivot-config';
 import type { ReportData } from '../types';
 
 import { getMaxDepth, processColumns } from './column-utils';
 import { fetchData } from './common-utils';
 import { isReportDefinitionValid } from './report-validator';
 import { generateRowGroupBody, processRowField } from './row-utils';
+
+const noSprintsAvailableMessage =
+    'None of the selected sprints are available in the chosen agile boards. Select different sprints to pull the issues from Jira';
+
+let latestRunId = 0;
 
 export async function generateReport() {
     const scope = isReportDefinitionValid();
@@ -17,9 +22,24 @@ export async function generateReport() {
     }
 
     useReportData.setState({ reportErrors: undefined, isFetching: true });
+    const runId = ++latestRunId;
+    const isStale = () => runId !== latestRunId;
 
     try {
-        const issues = await fetchData(scope);
+        const jql = await getIssueSearchJql();
+        if (isStale()) {
+            return;
+        }
+        if (jql === undefined) {
+            useReportData.setState({ reportErrors: [noSprintsAvailableMessage], isFetching: false, showParameters: false }, true);
+            return;
+        }
+
+        const issues = await fetchData(jql, scope);
+        if (isStale()) {
+            return;
+        }
+
         const reportData: ReportData = {
             header: new Array(getMaxDepth()).fill(null).map(() => []),
             body: [],
@@ -31,6 +51,10 @@ export async function generateReport() {
 
         useReportData.setState({ reportData, isFetching: false, showParameters: false }, true);
     } catch (err: any) {
+        if (isStale()) {
+            return;
+        }
+
         let reportErrors = ['Unknown error occurred while generating report. Look at console log for more details'];
         if (err.status === 400) {
             reportErrors = err.error?.errorMessages || reportErrors;

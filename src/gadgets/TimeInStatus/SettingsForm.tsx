@@ -8,13 +8,12 @@ import { inject } from '@services';
 
 import {
     Button,
-    createBoardSelection,
     InputSwitch,
     NumericInput,
     RadioButtonGroup,
     RapidViewList,
     SelectButton,
-    type SprintSelectionMap,
+    syncBoardSelection,
 } from '@components';
 import type { RapidView } from '@components/shared/RapidViewList';
 
@@ -76,19 +75,10 @@ function getGroupsSummary(settings: TimeInStatusSettings): string {
 
 function toSprintBoardChanges(settings: TimeInStatusSettings, value: RapidView | RapidView[] | null): Partial<TimeInStatusSettings> {
     const boards = (Array.isArray(value) ? value : value ? [value] : []).map(({ id, name }) => ({ id, name }));
-    const knownBoardIds = new Set(settings.sprintBoards.map((b) => b.id));
-    const sprintSelection: SprintSelectionMap = {};
-
-    boards.forEach((board) => {
-        const existing = settings.sprintSelection[board.id];
-        if (existing) {
-            sprintSelection[board.id] = createBoardSelection(board, existing);
-        } else if (!knownBoardIds.has(board.id)) {
-            sprintSelection[board.id] = { ...createBoardSelection(board), selected: true };
-        }
-    });
-
-    return { sprintBoards: boards, sprintSelection };
+    return {
+        sprintBoards: boards,
+        sprintSelection: syncBoardSelection(settings.sprintBoards, settings.sprintSelection, boards),
+    };
 }
 
 function isDataCenter(): boolean {

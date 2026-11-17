@@ -20,7 +20,11 @@ export default function ReportInfo() {
                     <ul className="space-y-2 text-sm text-secondary">
                         <li className="flex gap-2">
                             <i className="fa fa-circle text-[4px] mt-2 text-blue-400 shrink-0" />
-                            <span>Start by providing a JQL query to filter the issues you want to include in the report.</span>
+                            <span>
+                                Start by choosing the issues to include in the report, either using a JQL query or by selecting one or
+                                more sprints from your agile boards. A JQL filter can be applied on top of the selected sprints to
+                                refine the issues further.
+                            </span>
                         </li>
                         <li className="flex gap-2">
                             <i className="fa fa-circle text-[4px] mt-2 text-blue-400 shrink-0" />
@@ -85,12 +89,6 @@ export default function ReportInfo() {
                         <li className="flex gap-2">
                             <i className="fa fa-circle text-[4px] mt-2 text-emerald-400 shrink-0" />
                             <span>Support for parent issues, sub-tasks, and linked issues to explore relationships and dependencies.</span>
-                        </li>
-                        <li className="flex gap-2">
-                            <i className="fa fa-circle text-[4px] mt-2 text-emerald-400 shrink-0" />
-                            <span>
-                                Ability to pull issues based on sprints in addition to JQL queries, for more dynamic reporting.
-                            </span>
                         </li>
                         <li className="flex gap-2">
                             <i className="fa fa-circle text-[4px] mt-2 text-emerald-400 shrink-0" />

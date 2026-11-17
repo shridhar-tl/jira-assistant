@@ -1,8 +1,27 @@
 import { create } from 'zustand';
 
+import { getOrderByClause, joinJql, stripOrderBy } from '@/gadgets/shared/jira-query-utils';
 import { getPathValue } from '@/utils/helpers';
 
-import type { PivotFieldConfig, PivotReportDefinition, ReportParameters } from '../types';
+import { inject } from '@services';
+
+import {
+    cleanSprintSelection,
+    getSprintFilterJql,
+    syncBoardSelection,
+    toAgileBoards,
+    type AgileBoard,
+    type SprintSelectionMap,
+} from '@components/shared/sprint-selector';
+
+import {
+    jqlDataSource,
+    sprintDataSource,
+    type PivotDataSourceType,
+    type PivotFieldConfig,
+    type PivotReportDefinition,
+    type ReportParameters,
+} from '../types';
 
 interface ReportDataState {
     showParameters: boolean;
@@ -93,8 +112,24 @@ export function updateJQL(jql: string) {
     usePivotConfig.setState(() => ({ jql }));
 }
 
-export function updateDataSourceType(type: number) {
-    usePivotConfig.setState(() => ({ dataSourceType: type || 1 }));
+export function updateDataSourceType(dataSourceType: PivotDataSourceType) {
+    const { sprintBoards } = usePivotConfig.getState();
+
+    if (dataSourceType === sprintDataSource && !sprintBoards.length) {
+        usePivotConfig.setState({ dataSourceType, sprintBoards: getDefaultSprintBoards() });
+    } else {
+        usePivotConfig.setState({ dataSourceType });
+    }
+}
+
+export function updateSprintBoards(boards: AgileBoard[]) {
+    const { sprintBoards, sprintSelection } = usePivotConfig.getState();
+
+    usePivotConfig.setState({ sprintBoards: boards, sprintSelection: syncBoardSelection(sprintBoards, sprintSelection, boards) });
+}
+
+export function updateSprintSelection(sprintSelection: SprintSelectionMap) {
+    usePivotConfig.setState({ sprintSelection });
 }
 
 export function getGroupItem(item: PivotFieldConfig) {
@@ -103,22 +138,67 @@ export function getGroupItem(item: PivotFieldConfig) {
     return { id, key, name, schema };
 }
 
-export function getQueryInfo(fieldsMap: Record<string, boolean> = {}) {
-    const { jql, fields } = usePivotConfig.getState();
+export function getQueryFields(fieldsMap: Record<string, boolean> = {}) {
+    const { fields } = usePivotConfig.getState();
 
     mapFieldsList(fieldsMap, fields);
 
-    return { jql, fields: Object.keys(fieldsMap) };
+    return Object.keys(fieldsMap);
+}
+
+/**
+ * Returns the JQL to pull the issues of the report.
+ * Returns undefined when none of the selected sprints are available, as no issues can match such a selection.
+ */
+export async function getIssueSearchJql(): Promise<string | undefined> {
+    const { dataSourceType, jql, sprintSelection } = usePivotConfig.getState();
+    const userJql = jql?.trim() || '';
+
+    if (dataSourceType !== sprintDataSource) {
+        return userJql;
+    }
+
+    const sprintJql = await getSprintFilterJql(sprintSelection);
+    if (!sprintJql) {
+        return undefined;
+    }
+
+    const orderBy = getOrderByClause(userJql);
+    const filterJql = joinJql([sprintJql, stripOrderBy(userJql)]);
+
+    return orderBy ? `${filterJql} ${orderBy}` : filterJql;
 }
 
 export function getBlankReportDefinition(): PivotReportDefinition {
     return {
         queryName: 'New Report',
         reportType: 'pivot',
-        dataSourceType: 1,
+        dataSourceType: jqlDataSource,
         jql: '',
+        sprintBoards: [],
+        sprintSelection: {},
         fields: [],
     };
+}
+
+export function normalizeReportDefinition(report: PivotReportDefinition): PivotReportDefinition {
+    const sprintBoards = toAgileBoards(report.sprintBoards);
+    const sprintSelection = report.sprintSelection && typeof report.sprintSelection === 'object' ? report.sprintSelection : {};
+
+    return {
+        ...getBlankReportDefinition(),
+        ...report,
+        dataSourceType: report.dataSourceType === sprintDataSource ? sprintDataSource : jqlDataSource,
+        jql: typeof report.jql === 'string' ? report.jql : '',
+        sprintBoards,
+        sprintSelection: cleanSprintSelection(sprintSelection, sprintBoards),
+        fields: Array.isArray(report.fields) ? report.fields : [],
+    };
+}
+
+function getDefaultSprintBoards(): AgileBoard[] {
+    const { $session } = inject('SessionService');
+    return toAgileBoards($session.CurrentUser?.rapidViews);
 }
 
 function mapFieldsList(fieldsMap: Record<string, boolean>, items?: PivotFieldConfig[]) {

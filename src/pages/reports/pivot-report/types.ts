@@ -1,9 +1,18 @@
+import type { AgileBoard, SprintSelectionMap } from '@components/shared/sprint-selector';
+
+export const jqlDataSource = 1;
+export const sprintDataSource = 2;
+
+export type PivotDataSourceType = typeof jqlDataSource | typeof sprintDataSource;
+
 export interface PivotReportDefinition {
     id?: number;
     queryName: string;
     reportType: 'pivot';
-    dataSourceType: number;
+    dataSourceType: PivotDataSourceType;
     jql: string;
+    sprintBoards: AgileBoard[];
+    sprintSelection: SprintSelectionMap;
     fields: PivotFieldConfig[];
     parameters?: ReportParameters;
     createdBy?: string;

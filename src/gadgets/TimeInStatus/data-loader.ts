@@ -5,13 +5,14 @@ import { chunk } from '@/utils';
 import { inject } from '@services';
 import type { JiraUser } from '@services/jira-service';
 
-import { resolveSelectedSprints } from '@components/shared/sprint-selector';
+import { getSprintFilterJql } from '@components/shared/sprint-selector';
 
 import {
     escapeJqlValue,
     getGroupUsersJqlValues,
     getJiraUserId,
     getUserAvatarUrl,
+    joinJql,
     resolveUserGroups,
     stripOrderBy,
 } from '../shared/jira-query-utils';
@@ -163,13 +164,6 @@ function mapIssue(issue: JiraIssue, fieldSettings: FieldSettings): TisIssue {
     };
 }
 
-function joinJql(parts: (string | null)[]): string {
-    return parts
-        .filter((p): p is string => !!p)
-        .map((p) => `(${p})`)
-        .join(' AND ');
-}
-
 function getFieldSettings(groupField: string | null): FieldSettings {
     const { $session } = inject('SessionService');
     const user = $session.CurrentUser;
@@ -199,8 +193,7 @@ async function getPeriodJql(settings: TimeInStatusSettings): Promise<string | nu
     if (settings.periodMode !== 'sprint') {
         return getDateRangeJql(settings.dateRange);
     }
-    const sprints = await resolveSelectedSprints(settings.sprintSelection);
-    return sprints.length ? `sprint in (${sprints.map((s) => s.id).join(', ')})` : undefined;
+    return getSprintFilterJql(settings.sprintSelection);
 }
 
 export async function searchReportIssues(settings: TimeInStatusSettings): Promise<IssueSearchResult> {
