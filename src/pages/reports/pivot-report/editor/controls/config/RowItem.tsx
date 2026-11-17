@@ -5,6 +5,8 @@ import classNames from 'classnames';
 import { removeField } from '../../../store/field-actions';
 import { useSelectedItemConfig } from '../../../store/pivot-config';
 
+import { getFieldSummary } from './field-summary';
+
 interface RowConfigItemProps {
     item: any;
     index: number;
@@ -25,22 +27,34 @@ export default function RowConfigItem({ item, index, depth, dragProps }: RowConf
 
     const itemSelected = useCallback(() => selectItem(`fields.${index}`, depth), [index, depth, selectItem]);
 
-    const currentPath = `fields.${index}`;
-    const isSelected = itemPath === currentPath;
+    const isSelected = itemPath === `fields.${index}`;
 
     return (
         <div
             className={classNames(
-                'border border-(--border-primary) rounded mb-2 transition-colors cursor-pointer',
-                isSelected && 'bg-blue-50 dark:bg-blue-900/20 border-blue-500',
+                'mb-2 cursor-pointer rounded-lg border bg-(--bg-primary) shadow-(--shadow-sm) transition-colors',
+                isSelected
+                    ? 'border-(--primary-color) ring-1 ring-(--primary-color)'
+                    : 'border-(--border-primary) hover:border-(--border-hover)',
             )}
             onClick={itemSelected}
         >
-            <div className="flex items-center gap-2 p-3" ref={dragProps.dragRef}>
-                <span className="fa-solid fa-up-down-left-right text-(--text-tertiary) cursor-move" />
-                <span className="flex-1 text-sm font-medium">{item.displayText || item.name}</span>
-                <button className="text-red-500 hover:text-red-700 transition-colors" onClick={removeItem} title="Remove field">
-                    <span className="fa fa-times" />
+            <div className="flex items-center gap-2 px-2.5 py-2" ref={dragProps.dragRef}>
+                <span className="fa fa-grip-vertical cursor-move text-xs text-(--text-tertiary)" title="Drag to reorder" />
+                <span className="fa fa-table-list text-xs text-(--text-secondary)" title="Row field" />
+                <span className="min-w-0 flex-1 truncate text-sm font-medium text-(--text-primary)">{item.displayText || item.name}</span>
+                {!!item.filter?.trim() && <span className="fa fa-filter text-xs text-(--primary-color)" title="Filter applied" />}
+                <span className="shrink-0 rounded-full bg-(--bg-tertiary) px-2 py-0.5 text-[11px] font-medium text-(--text-secondary)">
+                    {getFieldSummary(item, depth)}
+                </span>
+                <button
+                    type="button"
+                    className="flex size-6 shrink-0 cursor-pointer items-center justify-center rounded text-(--text-tertiary) transition-colors hover:bg-(--bg-hover) hover:text-(--color-error)"
+                    onClick={removeItem}
+                    title="Remove field"
+                    aria-label={`Remove ${item.name}`}
+                >
+                    <span className="fa fa-times text-xs" />
                 </button>
             </div>
         </div>

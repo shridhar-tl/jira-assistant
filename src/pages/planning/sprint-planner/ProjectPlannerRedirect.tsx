@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 
 import { useNavigate, useParams } from 'react-router';
 
-import { Loading } from '@components';
+import { BlockLoading } from '@components';
 
 import { getAllBoards } from '../shared/jira-api';
 import type { PlannerBoard } from '../shared/types';
@@ -39,7 +39,7 @@ export default function ProjectPlannerRedirect() {
     }, [projectKey, userId]);
 
     if (!boards) {
-        return <Loading />;
+        return <BlockLoading />;
     }
 
     return (

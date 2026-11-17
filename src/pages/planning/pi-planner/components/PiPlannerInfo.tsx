@@ -79,7 +79,7 @@ export default function PiPlannerInfo({ terms }: PiPlannerInfoProps) {
             <ReportInfoSection title={`${terms.features} without stories`} icon="fa-pencil" items={roughPlanning} />
             <ReportInfoSection title="Dependencies" icon="fa-link" items={dependencies} />
             <ReportInfoSection title={`${terms.objectives}, ${terms.risks.toLowerCase()} and ${terms.confidence.toLowerCase()}`} icon="fa-bullseye" items={objectives} />
-            <ReportInfoSection title="Summary and export" icon="fa-file-text-o" items={summary} />
+            <ReportInfoSection title="Summary and export" icon="fa-file-lines" items={summary} />
             <ReportInfoNote title="Where the data is kept:">
                 {terms.plans}, {terms.objectives.toLowerCase()}, {terms.risks.toLowerCase()} and votes are stored in the Jira Assistant app on this site. Story moves and dependencies
                 are written to Jira.

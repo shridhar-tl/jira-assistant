@@ -17,6 +17,7 @@ import {
 import {
     jqlDataSource,
     sprintDataSource,
+    type DateRangeSelection,
     type PivotDataSourceType,
     type PivotFieldConfig,
     type PivotReportDefinition,
@@ -192,8 +193,29 @@ export function normalizeReportDefinition(report: PivotReportDefinition): PivotR
         jql: typeof report.jql === 'string' ? report.jql : '',
         sprintBoards,
         sprintSelection: cleanSprintSelection(sprintSelection, sprintBoards),
-        fields: Array.isArray(report.fields) ? report.fields : [],
+        fields: Array.isArray(report.fields) ? report.fields.map(normalizeField) : [],
     };
+}
+
+/**
+ * Dates are restored from string as the report definitions imported from file or synced from other storages contain dates serialized as string
+ */
+function normalizeField(field: PivotFieldConfig): PivotFieldConfig {
+    const { subItems } = field;
+    const dateRange = normalizeDateRange(field.dateRange);
+
+    return {
+        ...field,
+        ...(dateRange && { dateRange }),
+        ...(Array.isArray(subItems) && { subItems: subItems.map(normalizeField) }),
+    };
+}
+
+function normalizeDateRange(value: unknown): DateRangeSelection | undefined {
+    const range = Array.isArray(value) ? { fromDate: value[0], toDate: value[1] } : (value as Partial<DateRangeSelection> | undefined);
+    const { fromDate, toDate } = range || {};
+
+    return fromDate && toDate ? { fromDate: new Date(fromDate), toDate: new Date(toDate) } : undefined;
 }
 
 function getDefaultSprintBoards(): AgileBoard[] {
@@ -211,6 +233,10 @@ function mapFieldsList(fieldsMap: Record<string, boolean>, items?: PivotFieldCon
             fieldsMap[f.key.split('.')[0]] = true;
         } else if (f.key) {
             fieldsMap[f.key] = true;
+        }
+
+        if (f.filterField) {
+            fieldsMap[f.filterField.split('.')[0]] = true;
         }
 
         mapFieldsList(fieldsMap, f.subItems);

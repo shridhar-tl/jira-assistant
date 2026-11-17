@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 
 import { stop } from '@/utils';
 
@@ -10,6 +10,35 @@ import { Draggable } from '@controls';
 import { useFieldFilterText } from '../../../store/pivot-config';
 import type { JiraField } from '../../../types';
 import { fillFieldsList, useFieldsList } from '../../../utils/fields';
+import { getFieldType } from '../../../viewer/common-utils';
+
+const typeIcons: Record<string, string> = {
+    user: 'fa-user',
+    date: 'fa-calendar',
+    datetime: 'fa-clock',
+    'date-range': 'fa-calendar-week',
+    ageindays: 'fa-hourglass-half',
+    number: 'fa-hashtag',
+    timespent: 'fa-stopwatch',
+    string: 'fa-font',
+    array: 'fa-list',
+    project: 'fa-folder',
+    parent: 'fa-sitemap',
+    issuekey: 'fa-key',
+    status: 'fa-circle-half-stroke',
+    priority: 'fa-arrow-up-wide-short',
+    issuetype: 'fa-shapes',
+};
+
+const defaultTypeIcon = 'fa-tag';
+
+function getTypeIcon(field: JiraField) {
+    if (field.schema?.isArray && field.schema?.type !== 'user') {
+        return typeIcons[field.schema.type || ''] || typeIcons.array;
+    }
+
+    return typeIcons[getFieldType(field) || ''] || defaultTypeIcon;
+}
 
 export default function FieldsCollection() {
     const fields = useFieldsList(({ fields }) => fields);
@@ -19,9 +48,14 @@ export default function FieldsCollection() {
     }, []);
 
     return (
-        <div className="flex flex-col h-full min-h-0">
+        <div className="flex h-full min-h-0 flex-col">
             <SearchBox />
-            <div className="flex-1 overflow-y-auto min-h-0">
+            <div className="min-h-0 flex-1 overflow-y-auto">
+                {!fields.length && (
+                    <div className="flex items-center gap-2 p-4 text-sm text-(--text-secondary)">
+                        <span className="fa fa-spinner fa-spin" /> Loading fields from Jira...
+                    </div>
+                )}
                 {fields.map((f) => (
                     <FieldsList key={f.label} fields={f.items} title={f.label} />
                 ))}
@@ -34,14 +68,16 @@ function SearchBox() {
     const { searchText, setSearchText } = useFieldFilterText();
 
     return (
-        <div className="p-3 border-b border-(--border-primary) relative">
+        <div className="border-b border-(--border-primary) p-3">
             <TextInput
                 value={searchText}
-                placeholder="type here to search for fields..."
+                placeholder="Search fields..."
                 onChange={(e: ComponentEvent<string>) => setSearchText(e.value)}
-                className="pl-8"
+                onClear={() => setSearchText('')}
+                leftIcon={<span className="fa fa-search text-xs" />}
+                clearable
+                className="w-full"
             />
-            <span className="fa fa-search absolute right-6 top-1/2 -translate-y-1/2 text-(--text-tertiary)" />
         </div>
     );
 }
@@ -55,31 +91,49 @@ function FieldsList({ fields, title }: FieldsListProps) {
     const searchText = useFieldFilterText(({ searchText }) => searchText)
         ?.trim()
         ?.toLowerCase();
-    const [items, setItems] = useState(() => getFilteredFields(fields, searchText));
-
-    useEffect(() => {
-        setItems(getFilteredFields(fields, searchText));
-    }, [searchText, fields]);
+    const items = useMemo(() => getFilteredFields(fields, searchText), [fields, searchText]);
 
     if (!items?.length) {
         return null;
     }
 
     return (
-        <div className="p-3 border-b border-(--border-primary)">
-            <div className="font-semibold text-sm mb-2">{title}</div>
-            <div className="space-y-1">
+        <div className="border-b border-(--border-primary) p-3">
+            <div className="mb-2 flex items-center justify-between text-xs font-semibold uppercase tracking-wide text-(--text-secondary)">
+                <span>{title}</span>
+                <span className="rounded-full bg-(--bg-tertiary) px-2 py-0.5 text-[11px] font-medium normal-case tracking-normal">
+                    {items.length}
+                </span>
+            </div>
+            <div className="space-y-0.5">
                 {items.map((field, i) => (
-                    <Draggable key={i} containerId="jira-fields" index={i} className="jira-field" itemType="jira-field" item={field}>
-                        <div className="flex items-center justify-between p-2 rounded hover:bg-(--bg-secondary) cursor-move transition-colors border border-transparent hover:border-(--border-primary)">
-                            <span className="text-sm">{field.name}</span>
-                            <button
-                                className="text-(--text-tertiary) hover:text-(--text-primary) transition-colors"
-                                onClick={(e) => copyForFilter(e, field)}
-                                title="Click to copy field for query filter"
+                    <Draggable
+                        key={field.id || i}
+                        containerId="jira-fields"
+                        index={i}
+                        className="jira-field"
+                        itemType="jira-field"
+                        item={field}
+                    >
+                        <div className="group flex cursor-move items-center gap-2 rounded-md border border-transparent px-2 py-1.5 transition-colors hover:border-(--border-primary) hover:bg-(--bg-secondary)">
+                            <span className={`fa ${getTypeIcon(field)} w-4 shrink-0 text-center text-xs text-(--text-tertiary)`} />
+                            <span
+                                className="min-w-0 flex-1 truncate text-sm text-(--text-primary)"
+                                title={`${field.name} (${field.key || field.id})`}
                             >
-                                <span className="fa fa-copy" />
-                            </button>
+                                {field.name}
+                            </span>
+                            {field.key && (
+                                <button
+                                    type="button"
+                                    className="flex size-6 shrink-0 cursor-pointer items-center justify-center rounded text-(--text-tertiary) opacity-60 transition hover:bg-(--bg-hover) hover:text-(--text-primary) hover:opacity-100 group-hover:opacity-100"
+                                    onClick={(e) => copyForFilter(e, field)}
+                                    title="Copy field name to use in filter"
+                                    aria-label={`Copy ${field.name} for filter`}
+                                >
+                                    <span className="fa fa-copy text-xs" />
+                                </button>
+                            )}
                         </div>
                     </Draggable>
                 ))}

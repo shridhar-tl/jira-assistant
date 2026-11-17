@@ -1,4 +1,4 @@
-import { isAggregated } from '../utils/format-functions';
+import { getDefaultHeaderText, isAggregated } from '../utils/format-functions';
 
 import { handleRowConfig } from './cell-utils';
 import { getCellProps } from './common-utils';
@@ -21,13 +21,13 @@ export function generateRowGroupBody(result: any, issues: any[]) {
 }
 
 function processRowGroupHeader(row: any, tagProps: any, prevColumn: any) {
-    const { id, key, name, headerText = name, enableGrouping, agrFunc, ...others } = row;
+    const { id, key, name, headerText, enableGrouping, agrFunc, ...others } = row;
 
     const result: any = {
         id,
         key,
         tagProps,
-        headerText: headerText || name,
+        headerText: headerText || getDefaultHeaderText(row),
         cellProps: getCellProps(row),
         ...others,
     };

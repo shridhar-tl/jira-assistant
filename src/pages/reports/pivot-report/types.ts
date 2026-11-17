@@ -34,13 +34,15 @@ export interface PivotFieldConfig {
     format?: string;
     filter?: string;
     subItems?: PivotFieldConfig[];
-    dateRange?: {
-        fromDate: Date;
-        toDate: Date;
-    };
+    dateRange?: DateRangeSelection;
     rangeType?: string;
     filterField?: string;
     useDistinct?: boolean;
+}
+
+export interface DateRangeSelection {
+    fromDate: Date;
+    toDate: Date;
 }
 
 export interface FieldSchema {

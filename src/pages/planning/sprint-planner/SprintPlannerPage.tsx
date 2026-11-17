@@ -6,7 +6,7 @@ import { ExportHelper } from '@/common/export-helper';
 import { GadgetAlert } from '@/gadgets/shared';
 import { phoneMediaQuery, useMediaQuery } from '@/hooks';
 
-import { Button, Loading, Modal } from '@components';
+import { BlockLoading, Button, Modal } from '@components';
 
 import type { PlannerBoard } from '../shared/types';
 import { changeSettings, loadBoard, refreshBoard, toggleDraftMode } from './actions';
@@ -129,7 +129,7 @@ export default function SprintPlannerPage() {
             );
         }
         if (!model) {
-            return <Loading />;
+            return <BlockLoading />;
         }
 
         if (view === 'board') {
@@ -139,7 +139,7 @@ export default function SprintPlannerPage() {
             return <HealthView model={model} />;
         }
         return (
-            <Suspense fallback={<Loading />}>
+            <Suspense fallback={<BlockLoading />}>
                 {view === 'capacity' && <CapacityView model={model} />}
                 {view === 'leave' && <LeaveCalendarView model={model} />}
                 {view === 'forecast' && <ForecastView model={model} />}

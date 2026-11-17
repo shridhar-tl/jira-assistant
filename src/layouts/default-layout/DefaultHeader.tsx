@@ -2,11 +2,14 @@ import { useState, useEffect, useCallback } from 'react';
 
 import { NavLink } from 'react-router';
 
+import classNames from 'classnames';
+
 import { Dialog } from '@dialogs';
 
 import { isWebBuild } from '@/constants/build-info';
 import { AppVersionNo } from '@/constants/common';
 import { SettingsCategory } from '@/constants/settings';
+import type { MenuSection } from '@/constants/navigation';
 import config from '@/customize';
 
 import { inject } from '@services';
@@ -14,6 +17,7 @@ import { inject } from '@services';
 import { Button } from '@components';
 
 import HeaderBrand from './HeaderBrand';
+import HeaderMenu from './HeaderMenu';
 import HeaderRight from './HeaderRight';
 import TimerControl from './TimerControl';
 import UpdatesInfo from './UpdatesInfo';
@@ -23,9 +27,10 @@ const contributeEnabled = !!config.modules.contribute;
 interface DefaultHeaderProps {
     onLogout: (e: React.MouseEvent) => void;
     isQuickView?: boolean;
+    menus?: MenuSection[];
 }
 
-export default function DefaultHeader({ onLogout, isQuickView }: DefaultHeaderProps) {
+export default function DefaultHeader({ onLogout, isQuickView, menus }: DefaultHeaderProps) {
     const { $session, $noti, $settings } = inject('SessionService', 'NotificationService', 'SettingsService');
 
     const cUser = $session.CurrentUser;
@@ -74,7 +79,7 @@ export default function DefaultHeader({ onLogout, isQuickView }: DefaultHeaderPr
 
     return (
         <header className="fixed top-0 left-0 right-0 h-12 z-50 flex items-center justify-between px-4 bg-(--header-bg) border-b border-(--header-border) shadow-(--header-shadow)">
-            <div className="flex items-center gap-3">
+            <div className={classNames('flex items-center gap-3', { 'min-w-0 flex-1': !!menus })}>
                 <HeaderBrand showVersionInfo={showVersionInfo} versionNumber={versionNumber} />
 
                 {showDonateButton && (
@@ -91,9 +96,11 @@ export default function DefaultHeader({ onLogout, isQuickView }: DefaultHeaderPr
                         />
                     </NavLink>
                 )}
+
+                {menus && <HeaderMenu menus={menus} />}
             </div>
 
-            <div className="flex items-center gap-1">
+            <div className={classNames('flex items-center gap-1', { 'shrink-0': !!menus })}>
                 <TimerControl />
 
                 <HeaderRight

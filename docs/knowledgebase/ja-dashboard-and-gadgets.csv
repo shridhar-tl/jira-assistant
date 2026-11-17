@@ -9,7 +9,7 @@ Bookmarks - your bookmarked tickets, with easy adding of multiple tickets.
 Logged Work [Daywise] - worklogs summarized by date within a range.
 Worklog [Pending Upload] - worklogs created in the tool awaiting upload to Jira, for final review.
 Logged Work [Ticketwise] - worklogs summarized by ticket within a range.
-My Reports - reports created via Custom Report or Report Builder, with edit/rename/delete/export and import of shared report definitions.
+My Reports - saved Pivot reports and older Custom Report / Report Builder reports, with edit/rename/delete, export of selected reports as a .jrd file and import of shared report definitions. Only Pivot reports can currently be opened from it.
 Current Day Calendar and Current Week Calendar - quick worklog addition.
 Status Wise Time Spent - time spent in each status of a ticket, to aid analysis."
 "Adding custom gadgets to a Jira Assistant dashboard","In Jira Assistant (JA) you can build your own gadget by creating a report with the Custom Report or Report Builder module; once saved, the report appears in the add-gadget popup and can be added to any dashboard.

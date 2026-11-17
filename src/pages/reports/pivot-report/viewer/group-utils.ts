@@ -1,62 +1,107 @@
 import { groupBy } from '@/utils/array-utils';
 
-import { getGroupByFunction } from './common-utils';
+import type { PivotFieldConfig } from '../types';
 
-export function getIssuesGroupFunction(field: any) {
+import { getGroupByFunction, isArrayField, isEmptyValue, toGroupKey } from './common-utils';
+
+type Issue = Record<string, unknown>;
+type GroupField = Pick<PivotFieldConfig, 'key' | 'schema'>;
+type GroupCallback<T> = (value: unknown, issues: Issue[], key: string) => T;
+
+interface ValueGroup {
+    value: unknown;
+    issues: Issue[];
+}
+
+export function getIssuesGroupFunction(field: GroupField) {
     if (field.schema?.derived) {
         return getIssuesDerivedFieldsGroupFunction(field);
+    } else if (isArrayField(field)) {
+        return getIssuesArrayFieldGroupFunction(field);
     } else {
         return getIssuesNormalFieldGroupFunction(field);
     }
 }
 
-function getIssuesNormalFieldGroupFunction(row: any) {
+function getIssuesNormalFieldGroupFunction(row: GroupField) {
     const groupByFn = getGroupByFunction(row);
 
-    return (issues: any[], callback: (value: any, values: any[], key: any) => any) => {
+    return <T>(issues: Issue[], callback: GroupCallback<T>) => {
         const groups = groupBy(issues, groupByFn);
         return groups.map(({ key, values }) => callback(values[0][row.key], values, key));
     };
 }
 
-function getIssuesDerivedFieldsGroupFunction(row: any) {
-    if (row.key.includes('.')) {
-        const [path, field] = row.key.split('.');
-        const groupByFn = getGroupByFunction({ key: field, schema: row.schema });
+/**
+ * Issues having multiple values in an array field (like labels, components, sprints) are made part of group of every value
+ */
+function getIssuesArrayFieldGroupFunction(row: GroupField) {
+    const { key } = row;
 
-        return (issues: any[], callback: (value: any, values: any[], key: any) => any) => {
-            const resultObj: Record<string, any> = {};
+    return <T>(issues: Issue[], callback: GroupCallback<T>) => {
+        const groups = new Map<string, ValueGroup>();
 
-            for (const issue of issues) {
-                const rootObj = issue[path];
-
-                if (Array.isArray(rootObj)) {
-                    const groups = groupBy(rootObj, groupByFn);
-                    groups.forEach(({ key, values }) => {
-                        let groupedObj = resultObj[key];
-
-                        if (!groupedObj) {
-                            groupedObj = { key, value: values[0][field], issuesMap: {} };
-                            resultObj[key] = groupedObj;
-                        }
-
-                        let groupedIssue = groupedObj.issuesMap[issue.issuekey];
-                        if (!groupedIssue) {
-                            groupedIssue = { ...issue, [path]: values };
-                            groupedObj.issuesMap[issue.issuekey] = groupedIssue;
-                        } else {
-                            const groupedItems = groupedIssue[path];
-                            values.forEach((val: any) => groupedItems.push(val));
-                        }
-                    });
-                } else {
-                    // ToDo: Currently all grouped mappings are array only
-                }
+        for (const issue of issues) {
+            const fieldValue = issue[key];
+            const values: unknown[] = Array.isArray(fieldValue) ? fieldValue : [fieldValue];
+            if (!values.length) {
+                values.push(null);
             }
+            const addedKeys = new Set<string>();
 
-            return Object.values(resultObj).map(({ key, value, issuesMap }) => callback(value, Object.values(issuesMap), key));
-        };
-    } else {
-        // ToDo:
+            for (const value of values) {
+                const groupKey = toGroupKey(value);
+                if (addedKeys.has(groupKey)) {
+                    continue;
+                }
+                addedKeys.add(groupKey);
+
+                let group = groups.get(groupKey);
+                if (!group) {
+                    group = { value: isEmptyValue(value) ? null : [value], issues: [] };
+                    groups.set(groupKey, group);
+                }
+                group.issues.push(issue);
+            }
+        }
+
+        return [...groups.entries()].map(([groupKey, { value, issues }]) => callback(value, issues, groupKey));
+    };
+}
+
+function getIssuesDerivedFieldsGroupFunction(row: GroupField) {
+    if (!row.key.includes('.')) {
+        return getIssuesNormalFieldGroupFunction(row);
     }
+
+    const [path, field] = row.key.split('.');
+    const groupByFn = getGroupByFunction({ key: field, schema: row.schema });
+
+    return <T>(issues: Issue[], callback: GroupCallback<T>) => {
+        const resultObj = new Map<string, { value: unknown; issuesMap: Map<string, Issue> }>();
+
+        for (const issue of issues) {
+            const rootObj = issue[path];
+            const items: Issue[] = Array.isArray(rootObj) ? rootObj : rootObj ? [rootObj] : [];
+
+            groupBy(items, groupByFn).forEach(({ key, values }) => {
+                let groupedObj = resultObj.get(key);
+
+                if (!groupedObj) {
+                    groupedObj = { value: values[0][field], issuesMap: new Map() };
+                    resultObj.set(key, groupedObj);
+                }
+
+                const issueKey = String(issue.issuekey);
+                const groupedIssue = groupedObj.issuesMap.get(issueKey);
+                if (!groupedIssue) {
+                    groupedObj.issuesMap.set(issueKey, { ...issue, [path]: values });
+                } else {
+                    (groupedIssue[path] as Issue[]).push(...values);
+                }
+            });
+        }
+
+        return [...resultObj.entries()].map(([key, { value, issuesMap }]) => callback(value, [...issuesMap.values()], key));
+    };
 }

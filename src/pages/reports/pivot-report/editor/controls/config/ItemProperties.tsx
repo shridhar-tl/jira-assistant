@@ -1,23 +1,45 @@
-import { Button, Checkbox, TextInput } from '@components';
+import classNames from 'classnames';
+
+import { Button, Checkbox, SelectButton, TextInput } from '@components';
+import type { ComponentEvent } from '@components';
 
 import { updateItemByPath } from '../../../store/pivot-config';
+import { getDefaultHeaderText } from '../../../utils/format-functions';
+import { getFieldType } from '../../../viewer/common-utils';
 
 import displayOptionComponent from './display-options';
 import QueryFilter from './filter-options/QueryFilter';
+import PropertyRow from './PropertyRow';
 
 interface ItemPropertiesProps {
     selection: any;
 }
 
+const totalPositionOptions = [
+    { value: 'start', label: 'At start' },
+    { value: 'end', label: 'At end' },
+];
+
+function getPlacementLabel(isRow: boolean, level: number, isGrouped: boolean) {
+    if (isRow) {
+        return isGrouped ? 'Row group' : 'Row value';
+    }
+
+    if (!level) {
+        return 'Column group';
+    }
+
+    return isGrouped ? 'Column sub group' : 'Column value';
+}
+
 export default function ItemProperties({ selection }: ItemPropertiesProps) {
     const { itemPath, item, isRow, level, selectItem } = selection;
-
-    const clearSelection = () => selectItem();
 
     if (!item) {
         return null;
     }
 
+    const clearSelection = () => selectItem();
     const isGrouped = item.enableGrouping || (!isRow && level === 0);
     const DisplayOption = displayOptionComponent[item.schema?.type] || displayOptionComponent['any'];
 
@@ -26,66 +48,84 @@ export default function ItemProperties({ selection }: ItemPropertiesProps) {
     };
 
     return (
-        <div className="h-full overflow-auto p-4">
-            <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold">Field Properties</h3>
-                <Button leftIcon={<span className="fa fa-times" />} onClick={clearSelection} />
+        <div className="flex h-full min-h-0 flex-col">
+            <div className="flex items-center gap-3 border-b border-(--border-primary) bg-(--bg-secondary) px-4 py-2">
+                <span
+                    className={classNames(
+                        'fa flex size-8 shrink-0 items-center justify-center rounded-md bg-(--bg-primary) text-(--primary-color)',
+                        isRow ? 'fa-table-list' : 'fa-table-columns',
+                    )}
+                />
+                <div className="flex min-w-0 flex-1 flex-col">
+                    <h3 className="truncate text-sm font-semibold text-(--text-primary)">{item.name}</h3>
+                    <span className="truncate text-xs text-(--text-secondary)">
+                        {getPlacementLabel(!!isRow, level, isGrouped)} · {getFieldType(item) || 'unknown'} field
+                    </span>
+                </div>
+                <Button
+                    layout="plain"
+                    leftIcon={<span className="fa fa-times" />}
+                    onClick={clearSelection}
+                    title="Close field properties"
+                />
             </div>
 
-            <div className="mb-3">
-                <label className="text-sm font-medium">Field name:</label>
-                <div className="mt-1 text-sm text-(--text-secondary)">{item.name}</div>
-            </div>
-
-            <div className="space-y-4">
-                {!level && (
-                    <Checkbox
-                        checked={item.colGroup}
-                        onChange={({ value }: any) => update({ colGroup: value })}
-                        label="Make this a column group field"
-                    />
-                )}
-                {(isRow || !!level) && (
-                    <Checkbox
-                        checked={item.enableGrouping}
-                        onChange={({ value }: any) => update({ enableGrouping: value })}
-                        label="Enable grouping"
-                    />
-                )}
-                {(isRow || !isGrouped) && (
-                    <div>
-                        <label className="text-sm font-medium">Header text</label>
-                        <TextInput
-                            value={item.headerText}
-                            onChange={({ value }: any) => update({ headerText: value })}
-                            maxLength={35}
-                            placeholder={item.name || 'Custom header text for column'}
-                            className="mt-1"
-                        />
+            <div className="min-h-0 flex-1 overflow-y-auto p-4">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <div className="flex flex-col gap-2 sm:col-span-2">
+                        {!level && (
+                            <Checkbox
+                                checked={!!item.colGroup}
+                                onChange={({ value }: ComponentEvent<boolean>) => update({ colGroup: value })}
+                                label="Show values of this field as columns (pivot)"
+                            />
+                        )}
+                        {(isRow || !!level) && (
+                            <Checkbox
+                                checked={!!item.enableGrouping}
+                                onChange={({ value }: ComponentEvent<boolean>) => update({ enableGrouping: value })}
+                                label="Group the issues by this field"
+                            />
+                        )}
                     </div>
-                )}
 
-                {isGrouped && (
-                    <div className="flex items-center gap-3">
-                        <Checkbox
-                            checked={item.showTotal}
-                            onChange={({ value }: any) => update({ showTotal: value })}
-                            label="Show totals"
-                        />
-                        <Button
-                            className="ml-auto"
-                            disabled={!item.showTotal}
-                            onClick={() => update({ showTotalFirst: !item.showTotalFirst })}
-                            title="Toggle totals position"
-                        >
-                            {item.showTotalFirst ? 'At start' : 'At end'}
-                        </Button>
-                    </div>
-                )}
+                    {(isRow || !isGrouped) && (
+                        <PropertyRow label="Header text">
+                            <TextInput
+                                value={item.headerText || ''}
+                                onChange={({ value }: ComponentEvent<string>) => update({ headerText: value })}
+                                maxLength={35}
+                                placeholder={getDefaultHeaderText(item)}
+                            />
+                        </PropertyRow>
+                    )}
 
-                {DisplayOption && <DisplayOption item={item} isGrouped={isGrouped} isRow={isRow} />}
+                    {DisplayOption && <DisplayOption item={item} isGrouped={isGrouped} isRow={isRow} />}
 
-                {isGrouped && <QueryFilter filterText={item.filter} item={item} isRow={isRow} />}
+                    {isGrouped && !isRow && (
+                        <PropertyRow label="Totals" className="sm:col-span-2">
+                            <div className="flex flex-wrap items-center gap-3">
+                                <Checkbox
+                                    checked={!!item.showTotal}
+                                    onChange={({ value }: ComponentEvent<boolean>) => update({ showTotal: value })}
+                                    label="Show total column"
+                                />
+                                {item.showTotal && (
+                                    <SelectButton
+                                        items={totalPositionOptions}
+                                        value={item.showTotalFirst ? 'start' : 'end'}
+                                        onChange={({ value }: ComponentEvent<string>) => update({ showTotalFirst: value === 'start' })}
+                                        variant="segmented"
+                                        required
+                                        ariaLabel="Position of total column"
+                                    />
+                                )}
+                            </div>
+                        </PropertyRow>
+                    )}
+
+                    {isGrouped && <QueryFilter filterText={item.filter} item={item} isRow={isRow} />}
+                </div>
             </div>
         </div>
     );

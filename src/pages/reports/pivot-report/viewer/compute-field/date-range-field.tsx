@@ -4,7 +4,29 @@ import { DayColumn } from '@/display-controls';
 
 import { inject } from '@services';
 
-import { getDateRange, getWeekGroup } from '@utils/date-utils';
+import { getDateRange, getWeekGroup, type DateRangeItem, type WeekGroup as DateWeekGroup } from '@utils/date-utils';
+
+type Issue = Record<string, any>;
+type TransformFn = ((issues: Issue[]) => Issue[]) | undefined;
+
+interface DateInterval {
+    start: Date | number;
+    end: Date | number;
+}
+
+interface RangeHeader {
+    headerText?: string;
+    value?: unknown;
+    colGroup?: boolean;
+    enableGrouping: boolean;
+    depth: number;
+    tagProps: { colSpan?: number; rowSpan?: number };
+    transformFn: TransformFn;
+    renderer?: { Component: typeof DayColumn };
+    subItems?: unknown;
+}
+
+type WeekGroup = DateWeekGroup<DateRangeItem>;
 
 export function generateDateRangeColumns(
     column: any,
@@ -15,10 +37,26 @@ export function generateDateRangeColumns(
     processColumns: any,
 ) {
     const { dateRange, rangeType = 'days', filterField, showTotal, showTotalFirst, subItems } = column;
+    const { header } = headerOpts;
+    const currentHeader: RangeHeader[] = header[depth];
+    const subHeader: RangeHeader[] = header[depth + 1];
 
-    const dates = getDateRangeArray(dateRange.fromDate, dateRange.toDate);
+    const weeks = getWeekGroup(getDateRangeArray(dateRange.fromDate, dateRange.toDate));
 
-    const totalColumn: any = showTotal && {
+    const addSubColumns = (parent: RangeHeader, items: unknown) => {
+        const [childCount, child] = processColumns(items, headerOpts, issues, depth + 1);
+
+        if (childCount) {
+            parent.tagProps.colSpan = childCount;
+        }
+        parent.subItems = child;
+
+        return childCount || 1;
+    };
+
+    let columnCount = 0;
+
+    const totalColumn: RangeHeader | false = showTotal && {
         headerText: 'Total',
         colGroup: true,
         enableGrouping: true,
@@ -33,79 +71,97 @@ export function generateDateRangeColumns(
         ),
     };
 
-    if (rangeType === 'days') {
-        const weeks = getWeekGroup(dates);
-        const { header } = headerOpts;
-        const currentHeader = header[depth];
-        const datesHeader = header[depth + 1];
-
-        if (totalColumn && showTotalFirst) {
-            currentHeader.push(generateTotalColumn(totalColumn, headerOpts, subItems, depth + 1, issues, processColumns));
+    const addTotalColumn = () => {
+        if (totalColumn) {
+            columnCount += addSubColumns(totalColumn, subItems);
+            currentHeader.push(totalColumn);
         }
+    };
 
-        const groupHeaders = weeks.map((w) => {
-            const weekHeader: any = {
-                headerText: w.display,
-                colGroup: true,
-                enableGrouping: true,
-                depth,
-                tagProps: { colSpan: 0 },
-                transformFn: getDateRangeGroupTransformFn(w, filterField),
-                subItems: [],
-            };
+    if (showTotalFirst) {
+        addTotalColumn();
+    }
 
-            currentHeader.push(weekHeader);
+    const groupHeaders = (
+        rangeType === 'week' ? getMonthGroups(weeks) : weeks.map((w) => ({ display: w.display, start: w.start, end: w.end, weeks: [w] }))
+    ).map((group) => {
+        const groupHeader: RangeHeader = {
+            headerText: group.display,
+            colGroup: true,
+            enableGrouping: true,
+            depth,
+            tagProps: { colSpan: 0 },
+            transformFn: getDateRangeGroupTransformFn(group, filterField),
+        };
 
-            weekHeader.subItems = w.values.map((value: any) => {
-                const dayHeader: any = {
-                    enableGrouping: true,
-                    value,
-                    depth: depth + 1,
-                    tagProps: {},
-                    transformFn: getDateRangeGroupTransformFn(getStartAndEndDateForSubGroup(value), filterField),
-                    renderer: { Component: DayColumn },
-                };
+        currentHeader.push(groupHeader);
 
-                datesHeader.push(dayHeader);
+        const children = rangeType === 'week' ? group.weeks.map(createWeekHeader) : group.weeks[0].values.map(createDayHeader);
 
-                const [childCount, child] = processColumns(subItems, headerOpts, issues, depth + 1);
+        groupHeader.subItems = children.map((child) => {
+            subHeader.push(child);
 
-                if (childCount) {
-                    dayHeader.tagProps.colSpan = childCount;
-                    weekHeader.tagProps.colSpan += childCount;
-                } else {
-                    weekHeader.tagProps.colSpan += 1;
-                }
+            const count = addSubColumns(child, subItems);
+            groupHeader.tagProps.colSpan! += count;
+            columnCount += count;
 
-                dayHeader.subItems = child;
-
-                return dayHeader;
-            });
-
-            return weekHeader;
+            return child;
         });
 
-        if (totalColumn && !showTotalFirst) {
-            currentHeader.push(generateTotalColumn(totalColumn, headerOpts, subItems, depth + 1, issues, processColumns));
+        return groupHeader;
+    });
+
+    if (!showTotalFirst) {
+        addTotalColumn();
+    }
+
+    function createDayHeader(value: DateRangeItem): RangeHeader {
+        return {
+            enableGrouping: true,
+            value,
+            depth: depth + 1,
+            tagProps: {},
+            transformFn: getDateRangeGroupTransformFn(getStartAndEndDateForSubGroup(value), filterField),
+            renderer: { Component: DayColumn },
+        };
+    }
+
+    function createWeekHeader(week: WeekGroup): RangeHeader {
+        const first = week.values[0].dateNum;
+        const last = week.values[week.values.length - 1].dateNum;
+
+        return {
+            headerText: first === last ? `W-${week.values[0].week} (${first})` : `W-${week.values[0].week} (${first} - ${last})`,
+            colGroup: true,
+            enableGrouping: true,
+            depth: depth + 1,
+            tagProps: {},
+            transformFn: getDateRangeGroupTransformFn(week, filterField),
+        };
+    }
+
+    return [columnCount, groupHeaders];
+}
+
+function getMonthGroups(weeks: WeekGroup[]) {
+    const months: { display: string; start: number; end: number; weeks: WeekGroup[] }[] = [];
+
+    weeks.forEach((week) => {
+        const { dispFormat } = week.values[0];
+        const lastMonth = months[months.length - 1];
+
+        if (lastMonth?.display === dispFormat) {
+            lastMonth.weeks.push(week);
+            lastMonth.end = week.end;
+        } else {
+            months.push({ display: dispFormat, start: week.start, end: week.end, weeks: [week] });
         }
+    });
 
-        return [dates.length, groupHeaders];
-    }
+    return months;
 }
 
-function generateTotalColumn(totalColumn: any, headerOpts: any, subItems: any[], depth: number, issues: any[], processColumns: any) {
-    const [childCount, child] = processColumns(subItems, headerOpts, issues, depth);
-
-    if (childCount) {
-        totalColumn.tagProps.colSpan = childCount;
-    }
-
-    totalColumn.subItems = child;
-
-    return totalColumn;
-}
-
-function getStartAndEndDateForSubGroup({ date }: any) {
+function getStartAndEndDateForSubGroup({ date }: { date: Date }): DateInterval {
     const d = new Date(date);
     return {
         start: startOfDay(d),
@@ -113,7 +169,7 @@ function getStartAndEndDateForSubGroup({ date }: any) {
     };
 }
 
-function getDateRangeGroupTransformFn({ start, end }: any, filterField: string) {
+function getDateRangeGroupTransformFn({ start, end }: DateInterval, filterField: string): TransformFn {
     if (!filterField) {
         return;
     }
@@ -121,7 +177,7 @@ function getDateRangeGroupTransformFn({ start, end }: any, filterField: string) 
     if (filterField.includes('.')) {
         const [prop, fieldName] = filterField.split('.');
 
-        return (issues: any[]) =>
+        return (issues: Issue[]) =>
             issues
                 .map((issue) => {
                     let obj = issue[prop];
@@ -150,9 +206,9 @@ function getDateRangeGroupTransformFn({ start, end }: any, filterField: string) 
                         [prop]: obj,
                     };
                 })
-                .filter(Boolean);
+                .filter((issue): issue is Issue => !!issue);
     } else {
-        return (issues: any[]) =>
+        return (issues: Issue[]) =>
             issues.filter((issue) => {
                 const fieldValue = issue[filterField];
 
@@ -168,5 +224,5 @@ function getDateRangeGroupTransformFn({ start, end }: any, filterField: string) 
 function getDateRangeArray(fromDate: Date, toDate: Date) {
     const { $userutils } = inject('UserUtilsService');
 
-    return getDateRange(fromDate, toDate, $userutils.isHoliday);
+    return getDateRange(new Date(fromDate), new Date(toDate), $userutils.isHoliday);
 }

@@ -46,7 +46,7 @@ export default function PiDefinitionDialog({ doc, terms, onSaved, onHide }: PiDe
 
     useEffect(() => {
         if (boardIds.length) {
-            loadTeamSprints(boardIds).then(setSprintLists).catch(console.error);
+            loadTeamSprints(boardIds, true).then(setSprintLists).catch(console.error);
         }
     }, [boardIds.join(',')]);
 
@@ -67,13 +67,28 @@ export default function PiDefinitionDialog({ doc, terms, onSaved, onHide }: PiDe
     };
 
     useEffect(() => {
-        if (!doc && Object.keys(sprintLists).length) {
-            regenerate();
+        if (!Object.keys(sprintLists).length) {
+            return;
         }
+        if (!doc) {
+            regenerate();
+            return;
+        }
+        setTeams((current) =>
+            current.map((t) =>
+                t.sprintIds.length || doc.teams.some((d) => d.boardId === t.boardId)
+                    ? t
+                    : { ...t, sprintIds: matchSprints(sprintLists[t.boardId] || [], toDateKey(start), toDateKey(end)).map((s) => s.id) },
+            ),
+        );
     }, [sprintLists, start.getTime(), end.getTime()]);
 
     const handleTeams = (boards: PlannerBoard[]) => {
-        setTeams(boards.map((b) => teams.find((t) => t.boardId === b.id) || { boardId: b.id, name: b.name, sprintIds: [] }));
+        setTeams(
+            boards.map(
+                (b) => teams.find((t) => t.boardId === b.id) || doc?.teams.find((t) => t.boardId === b.id) || { boardId: b.id, name: b.name, sprintIds: [] },
+            ),
+        );
     };
 
     const applyCopy = (planId: string) => {

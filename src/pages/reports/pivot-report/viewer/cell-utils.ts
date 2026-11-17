@@ -1,5 +1,6 @@
 import { formatValue } from '../utils/format-functions';
 
+import { isEmptyValue, noValueText } from './common-utils';
 import { flattenDerivedFields, getAggregatedDerivedFieldValue } from './compute-field';
 
 export function handleRowConfig(issues: any[], cells: any[]) {
@@ -66,7 +67,7 @@ function handleAggregatedCell(cell: any, issues: any[], cells: any[]) {
 
 function handleRowGroupedCellConfig(cell: any, issues: any[], cells: any[]) {
     return cell.groupFn(issues, (value: any, issues: any[]) => {
-        const result = { ...cell.cellProps, value };
+        const result = isEmptyValue(value) ? { value: noValueText } : { ...cell.cellProps, value };
 
         if (cells.length) {
             result.subRows = handleRowConfig(issues, cells);

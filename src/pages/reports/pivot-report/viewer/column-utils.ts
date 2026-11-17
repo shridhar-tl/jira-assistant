@@ -1,6 +1,9 @@
 import { usePivotConfig } from '../store/pivot-config';
+import type { PivotFieldConfig } from '../types';
 
-import { getCellProps, getGroupKeyComparer, getIssueFilterFunction } from './common-utils';
+import { getDefaultHeaderText } from '../utils/format-functions';
+
+import { getCellProps, getGroupKeyComparer, getIssueFilterFunction, isEmptyValue, noValueText } from './common-utils';
 import { processComputeField } from './compute-field';
 import { getFilterFunction } from './filters';
 import { getIssuesGroupFunction } from './group-utils';
@@ -27,7 +30,7 @@ export function processColumns(columns: any[], headerOpts: any, issues: any[], d
 function processColumn(col: any, headerOpts: any, issues: any[], depth: number, hasSiblings: boolean, processColumns: any): [number, any] {
     const { header } = headerOpts;
     const currentHeader = header[depth];
-    const { key, subItems, name, headerText = name, showTotal, showTotalFirst, ...otherProps } = col;
+    const { key, subItems, name, headerText = getDefaultHeaderText(col), showTotal, showTotalFirst, ...otherProps } = col;
     const cellProps = getCellProps(col);
 
     if (!depth) {
@@ -88,7 +91,7 @@ function processColumn(col: any, headerOpts: any, issues: any[], depth: number, 
             groupFilterFn: getGroupKeyComparer(grpKey),
             issueFilterFn: getIssueFilterFunction(col, grpKey),
             value,
-            ...cellProps,
+            ...(isEmptyValue(value) ? { headerText: noValueText } : cellProps),
             tagProps: {},
         };
 
@@ -119,7 +122,8 @@ function processColumn(col: any, headerOpts: any, issues: any[], depth: number, 
 export function getMaxDepth() {
     const { fields } = usePivotConfig.getState();
     const columns = fields.filter((f) => f.colGroup);
-    return iterateAndFindDepth({ subItems: columns, enableGrouping: true });
+
+    return columns.reduce((maxDepth, column) => Math.max(maxDepth, getColumnDepth(column, 1, false, true)), 1);
 }
 
 function generateTotalColumn(totalColumn: any, headerOpts: any, subItems: any[], depth: number, issues: any[]) {
@@ -136,25 +140,21 @@ function generateTotalColumn(totalColumn: any, headerOpts: any, subItems: any[],
     return childCount || 1;
 }
 
-function iterateAndFindDepth(col: any, hasSibling?: boolean, curDepth = 0, maxDepth = 1): number {
-    const { subItems, enableGrouping, schema = {} } = col;
+/**
+ * Returns the number of header rows needed for the column. Top level columns are displayed in the first row along with the row fields.
+ */
+function getColumnDepth(col: PivotFieldConfig, curDepth: number, occupiesRow: boolean, isTopLevel?: boolean): number {
+    const { subItems, enableGrouping, schema } = col;
+    const depth = curDepth + (occupiesRow ? 1 : 0) + (schema?.computed && schema.depth ? schema.depth : 0);
 
-    if (schema.computed && schema.depth) {
-        curDepth += schema.depth;
-    } else if (enableGrouping || hasSibling) {
-        curDepth += 1;
+    if (!subItems?.length || (!isTopLevel && !enableGrouping)) {
+        return depth;
     }
 
-    if (!subItems?.length) {
-        return maxDepth > curDepth ? maxDepth : curDepth;
-    }
+    const hasSiblings = subItems.length > 1;
 
-    const hasManyChild = subItems.length > 1;
-
-    const newMaxDepth = subItems.reduce(
-        (maxDepth: number, item: any) => iterateAndFindDepth(item, hasManyChild, curDepth, maxDepth),
-        curDepth,
+    return subItems.reduce(
+        (maxDepth, item) => Math.max(maxDepth, getColumnDepth(item, depth, hasSiblings || !!item.enableGrouping)),
+        depth,
     );
-
-    return maxDepth > newMaxDepth ? maxDepth : newMaxDepth;
 }

@@ -264,6 +264,7 @@ export default function IssueTimelineTable({ model, settings, onSettingsChange, 
                         value={statusFilter}
                         onChange={(e) => setStatusFilter((e.value as string[]) || [])}
                         placeholder="All current statuses"
+                        maxVisibleChips={1}
                         searchable
                         ariaLabel="Filter by current status"
                     />
@@ -274,6 +275,7 @@ export default function IssueTimelineTable({ model, settings, onSettingsChange, 
                         value={displayColumns}
                         onChange={(e) => onSettingsChange({ displayColumns: (e.value as string[]) || [] })}
                         placeholder="Choose columns"
+                        maxVisibleChips={1}
                         ariaLabel="Columns to display"
                     />
                 </div>

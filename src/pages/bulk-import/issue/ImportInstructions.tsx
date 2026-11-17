@@ -220,7 +220,7 @@ function ImportInstructions() {
                 </ul>
             </Section>
 
-            <Section title="How to write values" icon="fa-pencil-square-o">
+            <Section title="How to write values" icon="fa-pen-to-square">
                 <RuleList items={valueRules} />
             </Section>
 

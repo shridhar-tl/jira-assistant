@@ -81,7 +81,7 @@ function ObjectiveDialog({ objective, doc, terms, onHide }: { objective: PiObjec
                 <Field label={terms.team}>
                     <Dropdown options={[{ label: terms.program, value: programValue }, ...doc.teams.map((t) => ({ label: t.name, value: String(t.boardId) }))]} value={team} onChange={(e) => setTeam(e.value as string)} />
                 </Field>
-                <InputSwitch label={committed ? terms.committed : terms.uncommitted} checked={committed} onChange={(e) => setCommitted(e.value)} />
+                <InputSwitch label={terms.committed} checked={committed} onChange={(e) => setCommitted(e.value)} />
                 <Field label={`${terms.plannedValue} (1–10)`}>
                     <NumericInput value={planned} min={1} max={10} onChange={(e) => setPlanned(e.value)} />
                 </Field>
@@ -133,7 +133,7 @@ export default function ObjectivesView({ doc, terms, canEdit }: ObjectivesViewPr
                         {groups.flatMap((group) => {
                             const list = doc.objectives.filter((o) => o.teamBoardId === group.id);
                             return list.map((objective, index) => (
-                                <tr key={objective.id} className="border-t border-(--border-secondary) align-top">
+                                <tr key={objective.id} className="border-t border-(--border-secondary) align-baseline">
                                     <td className="px-2 py-1.5 font-medium">{index === 0 ? group.name : ''}</td>
                                     <td className="px-2 py-1.5">
                                         {objective.text}

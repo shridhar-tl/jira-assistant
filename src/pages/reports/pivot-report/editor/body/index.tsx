@@ -1,10 +1,10 @@
-import { DateRangePicker } from 'fluxo-ui';
-
-import { Button, TextInput } from '@components';
+import { Button, DateRangePicker, TextInput } from '@components';
+import type { ComponentEvent } from '@components';
 
 import { DateTimePicker, MultiValueText } from '@controls';
 
 import { updateParameters, usePivotConfig, useReportData } from '../../store/pivot-config';
+import { fromPickerValue, toPickerValue } from '../../utils/date-range';
 import { generateReport } from '../../viewer/generator';
 
 import GroupTable from './group-table';
@@ -12,30 +12,45 @@ import ReportInfo from './ReportInfo';
 
 export default function EditorBody() {
     const hasReportData = useReportData(({ reportData }) => !!reportData);
+    const hasNoRows = useReportData(({ reportData }) => !!reportData && !reportData.body.length);
     const reportErrors = useReportData(({ reportErrors }) => reportErrors);
     const isFetching = useReportData(({ isFetching }) => isFetching);
     const showParameters = useReportData(({ showParameters }) => showParameters);
 
     if (isFetching) {
         return (
-            <div className="p-6">
-                <div className="flex items-center gap-3">
-                    <span className="fa fa-spinner fa-spin text-blue-600" />
-                    <strong>
-                        Please wait while the data is being pulled from Jira. This may take a while depending on the number of issues being
-                        pulled.
-                    </strong>
+            <div className="flex h-full items-center justify-center p-6">
+                <div className="flex max-w-md flex-col items-center gap-3 text-center">
+                    <span className="fa fa-spinner fa-spin text-2xl text-(--primary-color)" />
+                    <strong className="text-sm text-(--text-primary)">Pulling the issues from Jira...</strong>
+                    <span className="text-xs text-(--text-secondary)">
+                        This may take a while depending on the number of issues being pulled.
+                    </span>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="h-full flex flex-col">
+        <div className="flex h-full min-h-0 flex-col">
             {reportErrors && <ReportErrorsSummary errors={reportErrors} />}
             {showParameters && <ReportParameters />}
-            {hasReportData && <GroupTable />}
+            {hasNoRows && !showParameters && <NoIssuesFound />}
+            {hasReportData && !hasNoRows && <GroupTable />}
             {!hasReportData && !showParameters && <ReportInfo />}
+        </div>
+    );
+}
+
+function NoIssuesFound() {
+    return (
+        <div className="flex flex-col items-center gap-2 px-6 py-12 text-center">
+            <span className="fa fa-magnifying-glass text-3xl text-(--text-tertiary)" />
+            <strong className="text-base text-(--text-primary)">No issues found</strong>
+            <span className="max-w-md text-sm text-(--text-secondary)">
+                None of the issues pulled from Jira matched the report definition. Verify the JQL, the selected sprints and the filters used
+                in the fields.
+            </span>
         </div>
     );
 }
@@ -46,14 +61,21 @@ interface ReportErrorsSummaryProps {
 
 function ReportErrorsSummary({ errors }: ReportErrorsSummaryProps) {
     return (
-        <div className="p-6 bg-red-50 dark:bg-red-900/20 border-b border-red-200 dark:border-red-800">
-            <h2 className="text-xl font-semibold mb-2 text-red-800 dark:text-red-200">Report Definition Error</h2>
-            <p className="mb-3 text-sm">The report definition has one or more errors. Please fix it before you try to generate report</p>
-            <ul className="list-disc list-inside space-y-1 text-sm text-red-700 dark:text-red-300">
-                {errors.map((e, i) => (
-                    <li key={i}>{e}</li>
-                ))}
-            </ul>
+        <div className="m-3 rounded-lg border border-(--color-error) bg-(--bg-secondary) p-4 sm:m-4" role="alert">
+            <div className="flex items-start gap-3">
+                <span className="fa fa-circle-exclamation mt-0.5 text-(--color-error)" />
+                <div className="min-w-0 flex-1">
+                    <h2 className="text-sm font-semibold text-(--text-primary)">Unable to generate the report</h2>
+                    <p className="mt-1 text-xs text-(--text-secondary)">Fix the following in the report definition and try again.</p>
+                    <ul className="mt-2 list-disc space-y-1 pl-4 text-sm text-(--text-primary)">
+                        {errors.map((e, i) => (
+                            <li key={i} className="whitespace-pre-wrap break-words">
+                                {e}
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            </div>
         </div>
     );
 }
@@ -68,21 +90,27 @@ function ReportParameters() {
     const keys = Object.keys(parameters);
 
     return (
-        <div className="p-6 bg-blue-50 dark:bg-blue-900/20 border-b border-blue-200 dark:border-blue-800">
-            <strong className="block mb-4">Provide values for missing parameters to generate report:</strong>
-            <div className="space-y-4">
+        <div className="m-3 rounded-lg border border-(--border-primary) bg-(--bg-secondary) p-4 sm:m-4">
+            <div className="mb-4 flex items-center gap-2">
+                <span className="fa fa-list-check text-(--primary-color)" />
+                <strong className="text-sm text-(--text-primary)">Provide values for the report parameters</strong>
+            </div>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 {keys.map((key) => (
-                    <div key={key} className="flex items-center gap-3">
-                        <label className="font-semibold min-w-40">{parameters[key].name}:</label>
-                        <div className="flex-1">
-                            <ParameterControl {...parameters[key]} paramKey={key} />
-                        </div>
-                    </div>
+                    <label key={key} className="flex min-w-0 flex-col gap-1.5">
+                        <span className="text-xs font-semibold text-(--text-secondary)">{parameters[key].name}</span>
+                        <ParameterControl {...parameters[key]} paramKey={key} />
+                    </label>
                 ))}
             </div>
-            <Button leftIcon={<span className="fa fa-refresh" />} onClick={generateReport} className="mt-4">
-                Generate Report
-            </Button>
+            <div className="mt-4 flex sm:justify-end">
+                <Button
+                    leftIcon={<span className="fa fa-play" />}
+                    onClick={generateReport}
+                    className="w-full justify-center sm:w-auto"
+                    label="Generate report"
+                />
+            </div>
         </div>
     );
 }
@@ -94,15 +122,14 @@ interface ParameterControlProps {
     paramKey: string;
 }
 
-function ParameterControl({ type, isArray, name, paramKey }: ParameterControlProps) {
+function ParameterControl({ type, isArray, paramKey }: ParameterControlProps) {
     const parameters = usePivotConfig(({ parameters }) => parameters);
     const value = parameters?.[paramKey]?.value;
 
-    const handleChange = (e: any) => {
-        const newValue = e.value;
+    const setValue = (newValue: unknown) => {
         if (!parameters) return;
         const param = parameters[paramKey];
-        const updated = {
+        updateParameters({
             ...parameters,
             [paramKey]: {
                 name: param?.name || '',
@@ -110,24 +137,23 @@ function ParameterControl({ type, isArray, name, paramKey }: ParameterControlPro
                 isArray: param?.isArray,
                 value: newValue,
             },
-        };
-        updateParameters(updated);
+        });
     };
+
+    const handleChange = (e: ComponentEvent<unknown>) => setValue(e.value);
 
     switch (type) {
         default:
             if (isArray) {
-                return <MultiValueText value={value} onChange={handleChange} />;
+                return <MultiValueText value={value} onChange={setValue} />;
             } else {
                 return <TextInput value={value} onChange={handleChange} />;
             }
         case 'daterange':
-            return <DateRangePicker value={value} onChange={handleChange} />;
+            return <DateRangePicker value={toPickerValue(value)} onChange={(e) => setValue(fromPickerValue(e))} />;
         case 'datetime':
-            return <DateTimePicker value={value} onChange={handleChange} showTime={true} />;
+            return <DateTimePicker value={value} onChange={setValue} showTime={true} />;
         case 'date':
-            return <DateTimePicker value={value} onChange={handleChange} showTime={false} />;
-        case 'usergroup':
-            return <span className="text-blue-600 cursor-pointer">Select users</span>;
+            return <DateTimePicker value={value} onChange={setValue} showTime={false} />;
     }
 }

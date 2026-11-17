@@ -3,6 +3,24 @@
     min-width: 100%;
 }
 
+/* Pivot report can have multiple header rows. Hence the header is made sticky as a whole so that the rows do not overlap while scrolling */
+.scroll-table-container table.pivot-group-table thead {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.scroll-table-container table.pivot-group-table thead th,
+.scroll-table-container table.pivot-group-table thead td {
+    position: static;
+    min-width: 72px;
+    text-align: center;
+    text-transform: none;
+    letter-spacing: normal;
+    font-size: 12px;
+    background-color: var(--bg-tertiary);
+}
+
 .scroll-table-container table.pivot-group-table thead th,
 .scroll-table-container table.pivot-group-table thead td,
 .scroll-table-container table.pivot-group-table tbody th,
@@ -14,10 +32,16 @@
     vertical-align: middle;
 }
 
-.scroll-table-container table.pivot-group-table thead th,
-.scroll-table-container table.pivot-group-table thead td {
-    text-align: center;
-    text-transform: none;
-    letter-spacing: normal;
-    font-size: 13px;
+.scroll-table-container table.pivot-group-table tbody td[rowspan] {
+    vertical-align: top;
+    background-color: var(--bg-secondary);
+    font-weight: 500;
+}
+
+.scroll-table-container table.pivot-group-table tbody tr:nth-child(even) td:not([rowspan]) {
+    background-color: var(--bg-secondary);
+}
+
+.scroll-table-container table.pivot-group-table tbody tr:hover td:not([rowspan]) {
+    background-color: var(--bg-hover);
 }

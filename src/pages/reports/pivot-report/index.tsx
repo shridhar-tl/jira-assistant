@@ -10,7 +10,6 @@ import ReportSelectList from '@components/ReportSelectList';
 
 import EditorBody from './editor/body';
 import EditorControls from './editor/controls';
-import ReportSprintSelector from './editor/ReportSprintSelector';
 import { usePivotConfig, useReportData } from './store/pivot-config';
 import { loadReport } from './utils/common';
 import { generateReport } from './viewer/generator';
@@ -40,7 +39,6 @@ export default function PivotReport() {
     const customActions = (
         <>
             <ReportSelectList reportType="pivot" reportId={reportId} reportPath={`/${userId}/reports/pivot`} />
-            <ReportSprintSelector />
             {hasParams && (
                 <Button
                     layout="plain"

@@ -1,3 +1,6 @@
+import type { PivotFieldConfig } from '../../types';
+import { countValues } from '../common-utils';
+
 import { generateDateRangeColumns } from './date-range-field';
 
 export function processComputeField(column: any, headerOpts: any, issues: any[], depth: number, hasSiblings: boolean, processColumns: any) {
@@ -45,7 +48,7 @@ export function getAggregatedDerivedFieldValue(cell: any, issues: any[]) {
         });
     } else {
         /**
-         * ToDo: Currently no compute field exists without "." in key
+         * ToDo: Currently no compute field exists without '.' in key
          * Need to handle this case if such compute field added
          **/
         throw new Error('Unhandled Error: Error Code:- CF_NO_DOT');
@@ -53,7 +56,7 @@ export function getAggregatedDerivedFieldValue(cell: any, issues: any[]) {
 
     const func = customFunctions[agrFunc];
 
-    return func ? func(array) : aggregateArray(array, agrFunc);
+    return func ? func(array, cell) : aggregateArray(array, agrFunc);
 }
 
 export function flattenDerivedFields(cell: any, issues: any[]) {
@@ -77,19 +80,21 @@ export function flattenDerivedFields(cell: any, issues: any[]) {
         });
     } else {
         /**
-         * ToDo: Currently no compute field exists without "." in key
+         * ToDo: Currently no compute field exists without '.' in key
          * Need to handle this case if such compute field added
          **/
         throw new Error('Unhandled Error: Error Code:- DF_NO_DOT');
     }
 }
 
-const customFunctions: Record<string, (items: any[]) => any> = {
-    count: function (items) {
-        return items.filter((i) => i || i === 0).length;
+type AggregateFunction = (items: unknown[], cell: Pick<PivotFieldConfig, 'useDistinct'>) => unknown;
+
+const customFunctions: Record<string, AggregateFunction> = {
+    count: function (items, cell) {
+        return countValues(items, cell.useDistinct);
     },
     merge: function (items) {
-        return items.join(', ');
+        return items.filter((i) => i || i === 0).join(', ');
     },
     first: function (items) {
         return items[0];
@@ -99,21 +104,52 @@ const customFunctions: Record<string, (items: any[]) => any> = {
     },
 };
 
-export function aggregateArray(values: any[], func: string): any {
-    const filtered = values.filter((v) => v !== null && v !== undefined);
+function toComparableNumber(value: unknown): number {
+    if (typeof value === 'number') {
+        return value;
+    }
+
+    const num = Number(value);
+
+    return isNaN(num) ? new Date(value as string).getTime() : num;
+}
+
+/**
+ * Min and max returns the actual value instead of number so that dates are retained in its own format to be displayed
+ */
+function pickValue(values: unknown[], func: 'min' | 'max') {
+    let result: unknown = null;
+    let resultNum = NaN;
+
+    values.forEach((value) => {
+        const num = toComparableNumber(value);
+        if (isNaN(num)) {
+            return;
+        }
+
+        if (isNaN(resultNum) || (func === 'min' ? num < resultNum : num > resultNum)) {
+            result = value;
+            resultNum = num;
+        }
+    });
+
+    return result;
+}
+
+export function aggregateArray(values: unknown[], func: string): unknown {
+    const filtered = values.filter((v) => v !== null && v !== undefined && v !== '');
 
     if (!filtered.length) return null;
 
     switch (func) {
         case 'sum':
-            return filtered.reduce((sum, val) => sum + (Number(val) || 0), 0);
+            return filtered.reduce<number>((sum, val) => sum + (Number(val) || 0), 0);
         case 'avg':
-            return filtered.reduce((sum, val) => sum + (Number(val) || 0), 0) / filtered.length;
+            return filtered.reduce<number>((sum, val) => sum + (Number(val) || 0), 0) / filtered.length;
         case 'min':
-            return Math.min(...filtered.map((v) => Number(v)));
         case 'max':
-            return Math.max(...filtered.map((v) => Number(v)));
+            return pickValue(filtered, func);
         default:
-            return values[func as any]();
+            return null;
     }
 }

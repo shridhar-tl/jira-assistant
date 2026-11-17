@@ -12,6 +12,7 @@ import SaveReportDialog from '@dialogs/SaveReportDialog';
 
 import { usePivotConfig } from '../../store/pivot-config';
 import { saveReport, saveReportAs } from '../../utils/common';
+import { generateReport } from '../../viewer/generator';
 
 interface ControlButtonsProps {
     reportId?: string;
@@ -49,7 +50,8 @@ export default function ControlButtons({ reportId }: ControlButtonsProps) {
 
     return (
         <>
-            <div className="flex gap-2">
+            <div className="flex items-center gap-1">
+                <Button layout="plain" leftIcon={<span className="fa fa-play" />} onClick={generateReport} title="Generate the report" />
                 {!!reportId && (
                     <Button
                         layout="plain"
@@ -79,17 +81,16 @@ function deleteCurrentReport(onDone: (createdBy: string) => void) {
 
     if (!id) return;
 
-    Dialog.confirmDelete(`Are you sure to delete the report named "${queryName}" permanently?`)
-        .then(() => {
-            const { $report, $message, $analytics } = inject('ReportService', 'MessageService', 'AnalyticsService');
+    Dialog.confirmDelete(`Are you sure to delete the report named "${queryName}" permanently?`).then(() => {
+        const { $report, $message, $analytics } = inject('ReportService', 'MessageService', 'AnalyticsService');
 
-            $report.deleteSavedQuery([id]).then(() => {
-                notifyReportsListChanged();
-                $message.success(`Pivot report "${queryName}" deleted successfully`);
-                $analytics.trackEvent('Pivot Report Deleted', '');
-                if (createdBy) {
-                    onDone(createdBy);
-                }
-            });
+        $report.deleteSavedQuery([id]).then(() => {
+            notifyReportsListChanged();
+            $message.success(`Pivot report "${queryName}" deleted successfully`);
+            $analytics.trackEvent('Pivot Report Deleted', '');
+            if (createdBy) {
+                onDone(createdBy);
+            }
         });
+    });
 }

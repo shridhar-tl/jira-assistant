@@ -21,9 +21,9 @@ export default function ReportInfo() {
                         <li className="flex gap-2">
                             <i className="fa fa-circle text-[4px] mt-2 text-blue-400 shrink-0" />
                             <span>
-                                Start by choosing the issues to include in the report, either using a JQL query or by selecting one or
-                                more sprints from your agile boards. A JQL filter can be applied on top of the selected sprints to
-                                refine the issues further.
+                                Start by choosing the issues to include in the report, either using a JQL query or by selecting one or more
+                                sprints from your agile boards. A JQL filter can be applied on top of the selected sprints to refine the
+                                issues further.
                             </span>
                         </li>
                         <li className="flex gap-2">
@@ -45,7 +45,10 @@ export default function ReportInfo() {
                         </li>
                         <li className="flex gap-2">
                             <i className="fa fa-circle text-[4px] mt-2 text-blue-400 shrink-0" />
-                            <span>Click the preview icon at the top of the report interface to preview your configured report.</span>
+                            <span>
+                                Click the <i className="fa fa-play" /> icon in the report config panel or the refresh icon at the top of the
+                                report to generate the report.
+                            </span>
                         </li>
                         <li className="flex gap-2">
                             <i className="fa fa-circle text-[4px] mt-2 text-blue-400 shrink-0" />

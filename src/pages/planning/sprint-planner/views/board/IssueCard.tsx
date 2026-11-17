@@ -125,7 +125,7 @@ function IssueCard({
                     <span className="flex shrink-0 items-center gap-1 text-[11px]">
                         {issue.flagged && <i className="fa fa-flag text-red-500" title="Flagged" />}
                         {warnings.blocked && <i className="fa fa-ban text-red-500" title="Blocked by an open dependency" />}
-                        {warnings.dueAfterEnd && <i className="fa fa-calendar-times-o text-amber-500" title="Due date is after the sprint end" />}
+                        {warnings.dueAfterEnd && <i className="fa fa-calendar-xmark text-amber-500" title="Due date is after the sprint end" />}
                         {warnings.unestimated && <i className="fa fa-question-circle text-amber-500" title="Not estimated" />}
                         {warnings.unassigned && <i className="fa fa-user-times text-amber-500" title="Unassigned" />}
                     </span>

@@ -194,8 +194,13 @@ function normalizeFields(fields: any[]): JiraField[] {
     return fields
         .filter(filterFields)
         .map((f) => {
-            const { id, key, name, custom } = f;
-            let { schema } = f;
+            const { id, name, custom } = f;
+            let { key, schema } = f;
+
+            // Custom fields of apps (like Forge) have a key different from their id, whereas issue fields are always returned by id
+            if (!key || (custom && id?.startsWith(customFieldIdPrefix))) {
+                key = id;
+            }
 
             if (!schema) {
                 schema = { type: key };
@@ -205,6 +210,8 @@ function normalizeFields(fields: any[]): JiraField[] {
         })
         .sort((a, b) => a.name.localeCompare(b.name));
 }
+
+const customFieldIdPrefix = 'customfield_';
 
 const cleanupKeys = ['worklog', 'comment', 'attachment'];
 function filterFields(f: any) {

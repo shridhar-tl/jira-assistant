@@ -6,7 +6,7 @@ import classNames from 'classnames';
 
 import defaultNavigation, { getDashboardMenu, type MenuItem, type MenuSection } from '@/_nav';
 import { ContextMenuProvider } from '@/components/shared/ContextMenu';
-import { isQuickView, isWebBuild, redirectToRoute } from '@/constants/build-info';
+import { isPluginBuild, isQuickView, isWebBuild, redirectToRoute } from '@/constants/build-info';
 import { useWorklogStore } from '@/stores/worklog-store';
 
 import { inject } from '@services';
@@ -16,6 +16,8 @@ import { useNavigationStore } from '@stores';
 import AppContent from './AppContent';
 import DefaultHeader from './DefaultHeader';
 import NavSideBar from './NavSideBar';
+
+const showHeaderMenu = isPluginBuild;
 
 export default function DefaultLayout() {
     const navigate = useNavigate();
@@ -94,21 +96,22 @@ export default function DefaultLayout() {
         return items;
     }, [userId, dashboards]);
 
+    const showSidebar = !isQuickView && !showHeaderMenu;
     const sidebarWidth = isSidebarCollapsed ? '3.5rem' : '220px';
 
     return (
         <ContextMenuProvider>
             <div className={classNames('app bg-(--bg-secondary)', isQuickView ? 'w-[720px] h-[500px] overflow-hidden' : 'min-h-screen')}>
-                <DefaultHeader onLogout={signOut} isQuickView={isQuickView} />
+                <DefaultHeader onLogout={signOut} isQuickView={isQuickView} menus={showHeaderMenu ? menus : undefined} />
 
                 <div className={classNames('pt-12 flex', isQuickView ? 'h-full' : 'min-h-screen')}>
-                    {!isQuickView && <NavSideBar menus={menus} userId={userId} />}
+                    {showSidebar && <NavSideBar menus={menus} userId={userId} />}
 
                     <main
                         className={classNames('flex-1 min-w-0 transition-all duration-300', !isQuickView && 'min-h-[calc(100vh-3rem)]')}
                         style={{
-                            marginLeft: isQuickView ? undefined : sidebarWidth,
-                            maxWidth: isQuickView ? undefined : `calc(100vw - ${sidebarWidth})`,
+                            marginLeft: showSidebar ? sidebarWidth : undefined,
+                            maxWidth: showSidebar ? `calc(100vw - ${sidebarWidth})` : undefined,
                         }}
                     >
                         <AppContent />

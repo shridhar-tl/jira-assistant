@@ -48,7 +48,7 @@ function validateFilterJson(json: any, scope: any): FilterValidationResult {
 }
 
 function validateExpression(json: any[], result: any) {
-    json.forEach(obj => {
+    json.forEach((obj) => {
         if (!comparers[obj.type as keyof typeof comparers]) {
             throw new Error('Query is incomplete. Missing comparison');
         }
@@ -114,6 +114,7 @@ const expressionType: Record<string, ValidatorFn> = {
     Identifier: validate_Identifier,
     FunctionCall: validate_FunctionCall,
 
+    Prefix: validate_Prefix,
     Number: validate_direct_values,
     String: validate_direct_values,
     Boolean: validate_direct_values,
@@ -180,8 +181,10 @@ function validate_LikePredicate(likeExpr: any, result: any) {
         throw new Error('Only string is supported on right hand side of Like predicate');
     }
 
-    if (!['*', '.', '%', '_'].some(p => value.includes(p))) {
-        throw new Error("The string in right hand side of Like predicate doesn't contain any expressions and would never be met. Either use some expression or use other operators");
+    if (!['*', '.', '%', '_'].some((p) => value.includes(p))) {
+        throw new Error(
+            "The string in right hand side of Like predicate doesn't contain any expressions and would never be met. Either use some expression or use other operators",
+        );
     }
 
     if (value.replace(/[%.*]/g, '').length < 3) {
@@ -231,7 +234,7 @@ function validate_Identifier(obj: any, result: any) {
         throw new Error(`Unknown field ${value}`);
     }
 
-    result.fields[fieldName] = true;
+    result.fields[field.schema?.derived && field.key.includes('.') ? field.key.split('.')[0] : field.key] = true;
 
     return field.schema;
 }
@@ -263,8 +266,11 @@ function validate_FunctionCall(obj: any, result: any, leftPart: any) {
         const cur = parameters[i];
         const passed = params[i];
 
-        if (!passed && !cur.optional) {
-            throw new Error(`Missing arguments for function ${name}`);
+        if (!passed) {
+            if (!cur.optional) {
+                throw new Error(`Missing arguments for function ${name}`);
+            }
+            continue;
         }
 
         const returnType = validateObject(passed, result, cur);
@@ -318,8 +324,24 @@ function validateParametersFunctionArgs(funcName: string, params: any[], result:
             throw new Error(`Parameter ${nameParam.value} is used across incompatible types`);
         }
 
-        result.parameters[nameLCase] = { name: paramNameWithoutQuotes, type: leftPart.type?.type || leftPart.type, isArray: leftPart.isArray || undefined };
+        result.parameters[nameLCase] = {
+            name: paramNameWithoutQuotes,
+            type: leftPart.type?.type || leftPart.type,
+            isArray: leftPart.isArray || undefined,
+        };
     }
+}
+
+const signPrefixes = ['-', '+'];
+
+function validate_Prefix(obj: { prefix: string; value?: { type: string } }) {
+    const { prefix, value } = obj;
+
+    if (!signPrefixes.includes(prefix) || value?.type !== 'Number') {
+        throw new Error(`Usage of "${prefix}" is supported only with numbers`);
+    }
+
+    return { type: 'number' };
 }
 
 function validate_direct_values(obj: any) {
@@ -367,7 +389,9 @@ function convertToComparableType(type: any): any {
         }
     }
 
-    if (!type || type === 'null' || type === 'any') { return true; }
+    if (!type || type === 'null' || type === 'any') {
+        return true;
+    }
 
     if (type === 'string') {
         return type;
@@ -381,7 +405,9 @@ function convertToComparableType(type: any): any {
         type = [type];
     }
 
-    if (type.includes('any')) { return true; }
+    if (type.includes('any')) {
+        return true;
+    }
 
     return type;
 }

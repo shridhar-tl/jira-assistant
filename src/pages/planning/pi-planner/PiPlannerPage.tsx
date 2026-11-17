@@ -7,7 +7,7 @@ import { useNavigate, useParams } from 'react-router';
 import { ExportHelper } from '@/common/export-helper';
 import { GadgetAlert } from '@/gadgets/shared';
 
-import { Button, Loading, Modal } from '@components';
+import { BlockLoading, Button, Modal } from '@components';
 
 import { formatDateRange } from '../shared/format';
 import { getProjectVersions, type ProjectVersion } from '../shared/jira-api';
@@ -37,7 +37,7 @@ const viewIcons: Record<PiView, string> = {
     risks: 'fa fa-exclamation-triangle',
     confidence: 'fa fa-thumbs-up',
     dependencies: 'fa fa-link',
-    summary: 'fa fa-file-text-o',
+    summary: 'fa fa-file-lines',
 };
 const views = Object.keys(viewIcons) as PiView[];
 
@@ -124,7 +124,7 @@ export default function PiPlannerPage() {
             return <GadgetAlert action={<Button label="Retry" size="sm" layout="outlined" onClick={() => reloadPlanData()} />}>{error}</GadgetAlert>;
         }
         if (!doc || !data || !model || !docWithReleases) {
-            return <Loading />;
+            return <BlockLoading />;
         }
         switch (view) {
             case 'objectives':

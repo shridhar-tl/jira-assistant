@@ -9,6 +9,8 @@ import { Sortable } from '@controls';
 import { removeField, updateField } from '../../../store/field-actions';
 import { getGroupItem, useSelectedItemConfig } from '../../../store/pivot-config';
 
+import { getFieldSummary } from './field-summary';
+
 const accept = ['jira-field'];
 const emptyArray: any[] = [];
 
@@ -33,7 +35,10 @@ function ColItem({ path, item, depth, index, dragProps, removeItem, updateItem }
     }, [index, item, updateItem]);
 
     const [isOpen, setIsOpen] = useState(true);
-    const toggleOpen = () => setIsOpen(!isOpen);
+    const toggleOpen = (e: React.MouseEvent) => {
+        stop(e);
+        setIsOpen(!isOpen);
+    };
 
     const addChild = useCallback(({ itemType, item: child }: any, { index: childIndex }: any) => {
         if (itemType === 'jira-field') {
@@ -55,6 +60,7 @@ function ColItem({ path, item, depth, index, dragProps, removeItem, updateItem }
         newItem.subItems.splice(childIndex, 1);
 
         updateItem(newItem, index);
+        useSelectedItemConfig.setState({ itemPath: null });
     }, []);
 
     const handleRemoveItem = useCallback(
@@ -91,39 +97,59 @@ function ColItem({ path, item, depth, index, dragProps, removeItem, updateItem }
     );
 
     const isGrouped = depth === 0 || item.enableGrouping;
-    const iconClassName = classNames('fa', {
-        'cursor-pointer': isGrouped,
-        'fa-angle-down': isGrouped && isOpen,
-        'fa-angle-right': isGrouped && !isOpen,
-        'fa-arrow-right': !isGrouped,
-    });
-
     const isSelected = itemPath === path;
 
     return (
         <div
             className={classNames(
-                'border border-(--border-primary) rounded mb-2 transition-colors',
-                isSelected && 'bg-blue-50 dark:bg-blue-900/20 border-blue-500',
+                'mb-2 rounded-lg border bg-(--bg-primary) shadow-(--shadow-sm) transition-colors',
+                isSelected
+                    ? 'border-(--primary-color) ring-1 ring-(--primary-color)'
+                    : 'border-(--border-primary) hover:border-(--border-hover)',
             )}
             onClick={itemSelected}
         >
-            <div className="flex items-center gap-2 p-3 cursor-pointer" ref={dragProps.dragRef}>
-                {isGrouped && (
-                    <button className="text-blue-600 hover:text-blue-800 transition-colors" title="This field would be pivoted as column">
-                        <span className="fa-solid fa-table-columns" />
+            <div className="flex cursor-pointer items-center gap-2 px-2.5 py-2" ref={dragProps.dragRef}>
+                <span className="fa fa-grip-vertical cursor-move text-xs text-(--text-tertiary)" title="Drag to reorder" />
+                {isGrouped ? (
+                    <button
+                        type="button"
+                        className="flex size-5 shrink-0 cursor-pointer items-center justify-center rounded text-(--text-secondary) hover:bg-(--bg-hover)"
+                        onClick={toggleOpen}
+                        title={isOpen ? 'Collapse' : 'Expand'}
+                        aria-expanded={isOpen}
+                    >
+                        <span className={classNames('fa text-xs', isOpen ? 'fa-angle-down' : 'fa-angle-right')} />
                     </button>
+                ) : (
+                    <span className="fa fa-arrow-turn-up rotate-90 text-xs text-(--text-tertiary)" title="Value shown under the group" />
                 )}
-                <span className={iconClassName} onClick={isGrouped ? toggleOpen : undefined} />
-                <span className="flex-1 text-sm font-medium">{item.displayText || item.name}</span>
-                <button className="text-red-500 hover:text-red-700 transition-colors" onClick={handleRemoveItem} title="Remove field">
-                    <span className="fa fa-times" />
+                <span
+                    className={classNames(
+                        'fa text-xs',
+                        isGrouped ? 'fa-table-columns text-(--primary-color)' : 'fa-hashtag text-(--text-secondary)',
+                    )}
+                    title={isGrouped ? 'Values of this field are shown as columns' : 'Value field'}
+                />
+                <span className="min-w-0 flex-1 truncate text-sm font-medium text-(--text-primary)">{item.displayText || item.name}</span>
+                {!!item.filter?.trim() && <span className="fa fa-filter text-xs text-(--primary-color)" title="Filter applied" />}
+                <span className="shrink-0 rounded-full bg-(--bg-tertiary) px-2 py-0.5 text-[11px] font-medium text-(--text-secondary)">
+                    {getFieldSummary(item, depth)}
+                </span>
+                <button
+                    type="button"
+                    className="flex size-6 shrink-0 cursor-pointer items-center justify-center rounded text-(--text-tertiary) transition-colors hover:bg-(--bg-hover) hover:text-(--color-error)"
+                    onClick={handleRemoveItem}
+                    title="Remove field"
+                    aria-label={`Remove ${item.name}`}
+                >
+                    <span className="fa fa-times text-xs" />
                 </button>
             </div>
             {isOpen && isGrouped && (
                 <Sortable
                     showPlaceholder={true}
-                    className="px-3 pb-3"
+                    className="ml-4 border-l-2 border-(--border-primary) pb-1 pl-3 pr-2.5"
                     provideDragRef
                     items={item.subItems || emptyArray}
                     accept={accept}
@@ -131,8 +157,8 @@ function ColItem({ path, item, depth, index, dragProps, removeItem, updateItem }
                     onDrop={addChild}
                     onChange={onSort}
                     placeholder={
-                        <div className="text-sm text-(--text-tertiary) p-2 border border-dashed border-(--border-primary) rounded">
-                            Drag and drop sub group or value field for {item.name}
+                        <div className="mb-2 rounded-md border border-dashed border-(--border-primary) px-3 py-2 text-xs text-(--text-tertiary)">
+                            Drop a field here to show its value (or a sub group) under {item.name}
                         </div>
                     }
                 >

@@ -77,10 +77,10 @@ function isDraft(): boolean {
     return getState().draft.enabled;
 }
 
-function addDraftChange(change: DraftChange) {
-    const { draft, data } = getState();
+function addDraftChange(change: DraftChange, before: BoardData) {
+    const { draft } = getState();
     usePlannerStore.setState({
-        draft: { ...draft, changes: [...draft.changes, change], snapshot: draft.snapshot || data, results: [] },
+        draft: { ...draft, changes: [...draft.changes, change], snapshot: draft.snapshot || before, results: [] },
     });
 }
 
@@ -295,7 +295,7 @@ export async function moveIssues(keys: string[], toColumn: string, toIndex: numb
 
     const label = `Move ${keys.length > 1 ? `${keys.length} issues` : keys[0]} to ${describeColumn(data, toColumn)}`;
     if (isDraft()) {
-        addDraftChange({ id: createChangeId(), kind: 'move', label, keys, toColumn, rank });
+        addDraftChange({ id: createChangeId(), kind: 'move', label, keys, toColumn, rank }, before);
         return true;
     }
 
@@ -387,7 +387,7 @@ export async function updateIssues(edits: { key: string; edit: IssueEdit }[]): P
     usePlannerStore.setState({ data: updated });
 
     if (isDraft()) {
-        payloads.forEach(({ key, fields }) => addDraftChange({ id: createChangeId(), kind: 'fields', label: `Update ${key}`, key, fields }));
+        payloads.forEach(({ key, fields }) => addDraftChange({ id: createChangeId(), kind: 'fields', label: `Update ${key}`, key, fields }, before));
         return;
     }
 
@@ -438,9 +438,9 @@ export async function saveSegments(key: string, segments: PlannedSegment[]): Pro
 
     const dateEdit: IssueEdit | null = syncDates ? { startDate: span.start, dueDate: span.end } : null;
     if (isDraft()) {
-        addDraftChange({ id: createChangeId(), kind: 'segments', label: `Plan of ${key}`, key, segments });
+        addDraftChange({ id: createChangeId(), kind: 'segments', label: `Plan of ${key}`, key, segments }, data);
         if (dateEdit) {
-            addDraftChange({ id: createChangeId(), kind: 'fields', label: `Dates of ${key}`, key, fields: buildFieldsPayload(issue, dateEdit, data) });
+            addDraftChange({ id: createChangeId(), kind: 'fields', label: `Dates of ${key}`, key, fields: buildFieldsPayload(issue, dateEdit, data) }, data);
         }
         return;
     }
@@ -515,7 +515,7 @@ export async function createDependency(blockerKey: string, dependantKey: string)
             typeName: linkType.name,
             inwardKey,
             outwardKey,
-        });
+        }, before);
         return;
     }
 
@@ -537,7 +537,7 @@ export async function removeDependency(linkId: string, typeName: string, inwardK
     usePlannerStore.setState({ data: updateLinksLocally(data, inwardKey, outwardKey, typeName, true, linkId) });
 
     if (isDraft()) {
-        addDraftChange({ id: createChangeId(), kind: 'link', label: `Remove link ${inwardKey} → ${outwardKey}`, action: 'delete', typeName, inwardKey, outwardKey, linkId });
+        addDraftChange({ id: createChangeId(), kind: 'link', label: `Remove link ${inwardKey} → ${outwardKey}`, action: 'delete', typeName, inwardKey, outwardKey, linkId }, before);
         return;
     }
     try {

@@ -1,6 +1,6 @@
 import moment from 'moment';
 
-import { normalizeTypeWithOptions } from '../../../../../../src/display-controls';
+import { normalizeTypeWithOptions } from '@/display-controls';
 import { parseWhereClause } from '../../editor/controls/config/filter-options/validators';
 import { usePivotConfig } from '../../store/pivot-config';
 import { useFieldsList } from '../../utils/fields';
@@ -58,6 +58,13 @@ function createFilterForObject(json: any, scope: Scope): FilterFn {
     return expressionFunc(json, scope);
 }
 
+type Issue = Record<string, unknown>;
+
+interface PrefixExpression {
+    prefix: string;
+    value: { type: string; value: string };
+}
+
 interface Scope {
     fieldsMap: Record<string, any>;
     parameters: Record<string, any>;
@@ -83,6 +90,7 @@ const expressionType: Record<string, (expr: any, scope: Scope) => FilterFn> = {
     Identifier: handle_Identifier,
     FunctionCall: handle_FunctionCall,
 
+    Prefix: handle_Prefix,
     Number: getHardCodedValues,
     String: getHardCodedValues,
     Boolean: getHardCodedValues,
@@ -130,16 +138,34 @@ function createOperatorFn(operator: string, leftFn: FilterFn, rightFn: FilterFn)
             return (issue: any) => leftFn(issue) !== rightFn(issue);
 
         case '>':
-            return (issue: any) => leftFn(issue) > rightFn(issue);
+            return createRangeComparer(leftFn, rightFn, (a, b) => a > b);
         case '>=':
-            return (issue: any) => leftFn(issue) >= rightFn(issue);
+            return createRangeComparer(leftFn, rightFn, (a, b) => a >= b);
         case '<':
-            return (issue: any) => leftFn(issue) < rightFn(issue);
+            return createRangeComparer(leftFn, rightFn, (a, b) => a < b);
         case '<=':
-            return (issue: any) => leftFn(issue) <= rightFn(issue);
+            return createRangeComparer(leftFn, rightFn, (a, b) => a <= b);
         default:
             return () => false; // This case should never happen, but just a warning fix
     }
+}
+
+function isEmptyOperand(value: unknown) {
+    return value === null || value === undefined || value === '';
+}
+
+type RangeValue = number | string;
+
+/**
+ * Empty values are never considered as lesser or greater than any value
+ */
+function createRangeComparer(leftFn: FilterFn, rightFn: FilterFn, compare: (left: RangeValue, right: RangeValue) => boolean) {
+    return (issue: Issue) => {
+        const left = leftFn(issue);
+        const right = rightFn(issue);
+
+        return !isEmptyOperand(left) && !isEmptyOperand(right) && compare(left, right);
+    };
 }
 
 function createArrayOperatorFn(operator: string, leftFn: FilterFn, rightFn: FilterFn): (issue: any) => any {
@@ -169,7 +195,7 @@ function create_BetweenPredicate(expr: any, scope: Scope): FilterFn {
     return (issue: any) => {
         const fieldValue = leftFieldFn(issue);
 
-        return fieldValue >= leftFn(issue) && fieldValue <= rightFn(issue);
+        return issue && !isEmptyOperand(fieldValue) && fieldValue >= leftFn(issue) && fieldValue <= rightFn(issue) ? issue : undefined;
     };
 }
 
@@ -267,39 +293,74 @@ function validate_LikeExpression(expr: any, scope: Scope, leftFn: FilterFn, hasN
     }
 }
 
+function getFieldName(identifier: string) {
+    const fieldName = identifier.toLowerCase();
+
+    return fieldName.startsWith('`') ? fieldName.substring(1, fieldName.length - 1) : fieldName;
+}
+
 function handle_Identifier(expr: any, scope: Scope): FilterFn {
     const { value: fieldNameExpr } = expr;
-    const fieldName = fieldNameExpr.toLowerCase();
-    const field = scope.fieldsMap[fieldName];
+    const field = scope.fieldsMap[getFieldName(fieldNameExpr)];
+
+    if (!field) {
+        throw new Error(`Unknown field ${fieldNameExpr}`);
+    }
+
     const schema = scope.isLikeComparison ? normalizeTypeForLikeComparison(field) : normalizeTypeForComparison(field);
     const { type, keyField } = schema;
-    const propName = field.key;
-    let converter: any = toComparableCase;
+    const propName: string = field.key;
+    const isDate = type === 'date' || type === 'datetime';
+    const converter: (value: unknown) => unknown = isDate ? convertDateTime : toComparableCase;
 
-    if (type === 'date' || type === 'datetime') {
-        converter = convertDateTime;
+    if (field.schema?.derived && propName.includes('.')) {
+        const [path, prop] = propName.split('.');
+        const fn: FilterFn = (issue: Issue) => {
+            const items = issue?.[path];
+            const values = (Array.isArray(items) ? items : items ? [items] : []).map((item: Issue) => item?.[prop]);
+
+            return toComparableValues(values, keyField, converter);
+        };
+        fn.returnsArrayOfValues = true;
+
+        return fn;
+    }
+
+    if (field.schema?.type === 'array') {
+        const fn: FilterFn = (issue: Issue) => {
+            const values = issue?.[propName];
+
+            return toComparableValues(Array.isArray(values) ? values : [], undefined, converter);
+        };
+        fn.returnsArrayOfValues = true;
+
+        return fn;
     }
 
     if (!keyField) {
         return (issue: any) => converter(issue?.[propName]);
     } else if (Array.isArray(keyField)) {
-        converter = (issue: any) => {
+        const fn: FilterFn = (issue: any) => {
             if (!issue) {
                 return null;
             }
 
             const valObj = issue[propName];
 
-            if (typeof valObj !== 'object') {
-                return valObj;
+            if (valObj === null || valObj === undefined) {
+                return [];
             }
 
-            return keyField.map((k: string) => toComparableCase(valObj[k]) ?? {}); // if the prop value is null then construct empty object so that it doesn't match comparison
+            if (typeof valObj !== 'object') {
+                return [toComparableCase(valObj)];
+            }
+
+            return keyField.map((k: string) => toComparableCase(valObj[k]));
         };
 
-        converter.returnsArrayOfValues = true;
+        fn.returnsArrayOfValues = true;
 
-        return converter;
+        return fn;
     } else if (typeof keyField === 'function') {
         return (issue: any) => {
             const val = issue?.[propName];
@@ -309,6 +370,29 @@ function handle_Identifier(expr: any, scope: Scope): FilterFn {
     } else {
         return (issue: any) => converter(issue?.[propName]?.[keyField]);
     }
+}
+
+const arrayItemProps = ['displayName', 'emailAddress', 'name', 'value', 'key', 'id', 'accountId'];
+
+/**
+ * Converts the list of values to be compared. Objects are compared with any of its known identifying props (like name, value, id etc)
+ */
+function toComparableValues(values: unknown[], keyField: unknown, converter: (value: unknown) => unknown): unknown[] {
+    const props = Array.isArray(keyField) ? keyField : typeof keyField === 'string' ? [keyField] : arrayItemProps;
+
+    return values.flatMap((value) => {
+        if (value === null || value === undefined) {
+            return [];
+        }
+
+        if (typeof value !== 'object') {
+            return [converter(value)];
+        }
+
+        const obj = value as Record<string, unknown>;
+
+        return props.filter((p) => obj[p] !== undefined && obj[p] !== null).map((p) => toComparableCase(obj[p]));
+    });
 }
 
 function toComparableCase(value: any): any {
@@ -355,9 +439,18 @@ function handle_FunctionCall(expr: any, scope: Scope): FilterFn {
             args.map((a: any) => a()),
         );
         const funcResult: FilterFn = () => funcValue;
-        (func as any).isStaticValue = true;
+        funcResult.isStaticValue = true;
         return funcResult;
     }
+}
+
+function handle_Prefix(expr: PrefixExpression): FilterFn {
+    const { prefix, value } = expr;
+    const signedValue = Number(`${prefix}${value.value}`);
+
+    const func: FilterFn = () => signedValue;
+    func.isStaticValue = true;
+    return func;
 }
 
 function getHardCodedValues(expr: any): FilterFn {

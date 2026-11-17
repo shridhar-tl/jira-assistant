@@ -4,7 +4,7 @@ import classNames from 'classnames';
 
 import { inject } from '@services';
 
-import { Button, Loading } from '@components';
+import { BlockLoading, Button } from '@components';
 
 import { gadgetList, type GadgetInfo } from '../../../gadgets/gadget-list';
 
@@ -72,7 +72,7 @@ export function AddGadget({ show, onHide, addedGadgets, addGadget, removeGadget 
                     <Button layout="plain" leftIcon={<i className="fa fa-times" />} onClick={onHide} title="Close" />
                 </div>
                 <div className="px-4 pb-4">
-                    {!gadgets && <Loading />}
+                    {!gadgets && <BlockLoading />}
                     {gadgets?.map((gadget) => (
                         <GadgetItem
                             key={gadget.id}

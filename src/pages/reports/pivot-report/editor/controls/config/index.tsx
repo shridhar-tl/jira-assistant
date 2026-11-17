@@ -6,28 +6,37 @@ import { usePivotConfig } from '../../../store/pivot-config';
 import ColConfigItem from './ColItem';
 import RowConfigItem from './RowItem';
 
+const accept = ['jira-field'];
+
+const emptyFieldsPlaceholder = (
+    <div className="flex flex-col items-center gap-2 rounded-lg border-2 border-dashed border-(--border-primary) px-4 py-8 text-center">
+        <span className="fa fa-hand-pointer text-xl text-(--text-tertiary)" />
+        <span className="text-sm font-medium text-(--text-secondary)">Drag and drop fields here</span>
+        <span className="text-xs text-(--text-tertiary)">
+            Fields are shown as rows by default. Select a field to group by it, aggregate it or show its values as columns.
+        </span>
+    </div>
+);
+
 export default function PivotConfig() {
     return (
-        <div className="p-4">
+        <div className="p-3 sm:p-4">
             <FieldsConfig />
         </div>
     );
 }
-
-const accept = ['jira-field'];
 
 function FieldsConfig() {
     const fields = usePivotConfig(({ fields }) => fields);
 
     return (
         <div>
-            <strong className="block mb-2 text-sm font-semibold">Report Fields</strong>
+            <div className="mb-3 flex items-center justify-between gap-2">
+                <strong className="text-sm font-semibold text-(--text-primary)">Report fields</strong>
+                {!!fields.length && <span className="text-xs text-(--text-tertiary)">Click a field to configure it</span>}
+            </div>
             <Sortable
-                placeholder={
-                    <div className="text-sm text-(--text-tertiary) p-4 border border-dashed border-(--border-primary) rounded">
-                        Drag and drop required fields from list to be shown in report
-                    </div>
-                }
+                placeholder={emptyFieldsPlaceholder}
                 provideDragRef
                 items={fields}
                 accept={accept}

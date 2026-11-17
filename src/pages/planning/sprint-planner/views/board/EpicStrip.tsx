@@ -91,9 +91,9 @@ export default function EpicStrip({ model, columnIds, columnTitles, highlighted,
     return (
         <div className="h-full min-h-0 overflow-auto bg-(--bg-secondary) px-2 py-1.5">
             <div className="grid min-w-max items-center gap-x-1 gap-y-1 text-[11px]" style={{ gridTemplateColumns }}>
-                <div className="sticky left-0 z-10 bg-(--bg-secondary) font-semibold text-(--text-secondary)">Parents</div>
+                <div className="sticky top-0 left-0 z-30 bg-(--bg-secondary) font-semibold shadow-[0_0_0_4px_var(--bg-secondary),1px_0_0_4px_var(--border-primary)] text-(--text-secondary)">Parents</div>
                 {columnIds.map((id) => (
-                    <div key={id} className="truncate text-center font-medium text-(--text-secondary)" title={columnTitles[id]}>
+                    <div key={id} className="sticky top-0 z-20 truncate bg-(--bg-secondary) text-center font-medium text-(--text-secondary) shadow-[0_0_0_4px_var(--bg-secondary)]" title={columnTitles[id]}>
                         {columnTitles[id]}
                     </div>
                 ))}
@@ -104,7 +104,7 @@ export default function EpicStrip({ model, columnIds, columnTitles, highlighted,
                         <div key={row.key} className="contents">
                             <button
                                 type="button"
-                                className={classNames('sticky left-0 z-10 flex min-w-0 cursor-pointer items-center gap-1 bg-(--bg-secondary) text-left', {
+                                className={classNames('sticky left-0 z-10 flex min-w-0 cursor-pointer items-center gap-1 bg-(--bg-secondary) text-left shadow-[0_0_0_4px_var(--bg-secondary),1px_0_0_4px_var(--border-primary)]', {
                                     'font-semibold text-(--color-primary-600)': isHighlighted,
                                 })}
                                 onClick={() => onHighlight(isHighlighted ? null : row.key)}

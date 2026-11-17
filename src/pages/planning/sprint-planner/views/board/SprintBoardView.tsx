@@ -2,8 +2,6 @@ import { useCallback, useMemo, useState, type MouseEvent } from 'react';
 
 import { isAfter } from 'date-fns';
 
-import { useElementHeight } from '@/hooks';
-
 import { KanbanBoard, showContextMenu, type ContextMenuItemInput, type KanbanCardData, type KanbanCardMoveEvent, type KanbanCardReorderEvent, type KanbanColumnData } from '@components';
 
 import { backlogColumnId } from '../../../shared/board-loader';
@@ -42,7 +40,6 @@ type BoardDialog =
     | { kind: 'override'; sprint: PlannerSprint }
     | { kind: 'dependency'; key: string };
 
-const columnChromeHeight = 210;
 const noWarnings: CardWarnings = { unestimated: false, unassigned: false, blocked: false, dueAfterEnd: false };
 
 /** Position in the full column for an index in the filtered list of cards shown. */
@@ -75,7 +72,6 @@ export default function SprintBoardView({ model, onShowHealth }: SprintBoardView
     const [dialog, setDialog] = useState<BoardDialog | null>(null);
     const [expandedBreakdowns, setExpandedBreakdowns] = useState<Set<string>>(new Set());
     const [boardElement, setBoardElement] = useState<HTMLDivElement | null>(null);
-    const boardHeight = useElementHeight(boardElement);
 
     const { permissions } = data;
     const unit = getDisplayUnit(data.team.planningUnit, data.estimateUnit);
@@ -172,7 +168,7 @@ export default function SprintBoardView({ model, onShowHealth }: SprintBoardView
             const items: ContextMenuItemInput[] = [
                 { label: 'Edit…', icon: 'fa fa-pencil', command: () => setDialog({ kind: 'edit', key }) },
                 { label: 'Open in Jira', icon: 'fa fa-external-link', command: () => window.open(issue.url, '_blank', 'noreferrer') },
-                { label: selection.includes(key) ? 'Deselect' : 'Select', icon: 'fa fa-check-square-o', command: () => toggleSelection(key) },
+                { label: selection.includes(key) ? 'Deselect' : 'Select', icon: 'fa fa-square-check', command: () => toggleSelection(key) },
             ];
             if (permissions.scheduleIssues && currentColumn) {
                 items.push(
@@ -214,7 +210,7 @@ export default function SprintBoardView({ model, onShowHealth }: SprintBoardView
             }
             if (!columnId || columnId === backlogColumnId) {
                 if (permissions.manageSprints) {
-                    items.push({ label: 'Create sprint…', icon: 'fa fa-calendar-plus-o', command: () => setDialog({ kind: 'sprint', mode: 'create', sprint: null }) });
+                    items.push({ label: 'Create sprint…', icon: 'fa fa-calendar-plus', command: () => setDialog({ kind: 'sprint', mode: 'create', sprint: null }) });
                 }
             }
             if (items.length) {
@@ -388,7 +384,6 @@ export default function SprintBoardView({ model, onShowHealth }: SprintBoardView
     );
 
     const hasParentRows = settings.showEpicStrip && columnIds.some((id) => (data.columns[id] || []).some((key) => data.issues[key] && !data.issues[key].isSubtask));
-    const maxColumnHeight = boardHeight ? `${Math.max(160, boardHeight - columnChromeHeight)}px` : undefined;
 
     const lastSprint = data.sprints[data.sprints.length - 1] || null;
     const lastRange = lastSprint ? data.sprintRanges.get(lastSprint.id) : undefined;
@@ -420,7 +415,7 @@ export default function SprintBoardView({ model, onShowHealth }: SprintBoardView
                             columns={columns}
                             cards={cards}
                             columnWidth={300}
-                            maxColumnHeight={maxColumnHeight}
+                            fillHeight
                             allowCollapse
                             stickyColumnHeaders
                             draggable={permissions.scheduleIssues}

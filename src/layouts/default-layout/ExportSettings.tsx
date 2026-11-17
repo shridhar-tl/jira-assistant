@@ -83,7 +83,7 @@ export default function ExportSettings({ onDone, onHide }: ExportSettingsProps) 
     const footer = (
         <div className="flex items-center justify-between gap-3 w-full">
             <div className="flex items-center gap-2 text-[12px] text-(--text-secondary) min-w-0">
-                <i className="fa fa-file-archive-o text-(--text-tertiary)" />
+                <i className="fa fa-file-zipper text-(--text-tertiary)" />
                 <span className="truncate">
                     Will download as <span className="font-medium text-(--text-primary)">{fileName}</span>
                 </span>

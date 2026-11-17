@@ -139,10 +139,12 @@ export default function ProgramBoard({ doc, data, model, terms, canEdit }: Progr
                 minMainSize={360}
                 main={
                     <div className="flex h-full min-h-0 min-w-0 flex-col gap-2">
-                        <div className="flex items-center gap-3 text-xs text-(--text-secondary)">
+                        <div className="flex items-center gap-3 pr-2 text-xs text-(--text-secondary)">
                             <span>Drag a {terms.feature.toLowerCase()} to a team and {terms.iteration.toLowerCase()} to move its stories there. Stories not in a sprint are in the last column.</span>
                             <span className="flex-1" />
-                            <InputSwitch label="Dependency lines" checked={showLines} onChange={(e) => setShowLines(e.value)} />
+                            <span className="shrink-0 whitespace-nowrap">
+                                <InputSwitch label="Dependency lines" checked={showLines} onChange={(e) => setShowLines(e.value)} />
+                            </span>
                         </div>
                         <div ref={setContainer} className="relative min-h-0 flex-1 overflow-auto">
                             <div className="inline-flex min-w-full flex-col gap-2">
@@ -219,7 +221,7 @@ export default function ProgramBoard({ doc, data, model, terms, canEdit }: Progr
                                         </span>
                                         {canEdit && (
                                             <button type="button" className="cursor-pointer rounded px-1 text-(--text-tertiary) hover:bg-(--bg-hover)" onClick={() => setMoveTarget({ featureKey: key, boardId: null, columnId: null })} aria-label={`Plan ${key}`}>
-                                                <i className="fa fa-calendar-plus-o" />
+                                                <i className="fa fa-calendar-plus" />
                                             </button>
                                         )}
                                     </div>

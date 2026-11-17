@@ -2,7 +2,7 @@ import { getSelectedBoardIds } from '@components/shared/sprint-selector';
 
 import { validateFilterText } from '../editor/controls/config/filter-options/validators';
 import { usePivotConfig, useReportData } from '../store/pivot-config';
-import { sprintDataSource } from '../types';
+import { sprintDataSource, type PivotFieldConfig } from '../types';
 import { useFieldsList } from '../utils/fields';
 
 export function isReportDefinitionValid() {
@@ -46,6 +46,10 @@ function validateField(field: any, index: number, depth: number, reportErrors: s
 function validateProps(field: any, index: number, depth: number, reportErrors: string[], scope: any, isColGroup?: boolean, path = '') {
     validateCommonProps(field, index, depth, reportErrors, scope, path);
 
+    if (field.schema?.type === dateRangeType) {
+        validateDateRangeField(field, index, reportErrors, path);
+    }
+
     if (isColGroup) {
         validateColumn(field, index, depth, reportErrors, scope, path);
     } else {
@@ -61,6 +65,20 @@ function validateCommonProps(field: any, index: number, depth: number, reportErr
         if (!isValid) {
             reportErrors.push(`Field ${path}"${name}" at position ${index + 1} has error in filter query: (${errorMessage})`);
         }
+    }
+}
+
+const dateRangeType = 'date-range';
+
+function validateDateRangeField(field: PivotFieldConfig, index: number, reportErrors: string[], path: string) {
+    const { name, dateRange, filterField } = field;
+
+    if (!dateRange?.fromDate || !dateRange?.toDate) {
+        reportErrors.push(`Field ${path}"${name}" at position ${index + 1} does not have a date range selected`);
+    }
+
+    if (!filterField) {
+        reportErrors.push(`Field ${path}"${name}" at position ${index + 1} does not have the date field selected to filter the issues`);
     }
 }
 

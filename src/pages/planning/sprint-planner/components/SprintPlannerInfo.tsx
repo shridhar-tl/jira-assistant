@@ -90,7 +90,7 @@ export default function SprintPlannerInfo() {
             <ReportInfoSection title="Health and tracking" icon="fa-heartbeat" items={healthItems} />
             <ReportInfoSection title="Roadmap and planned segments" icon="fa-road" items={roadmapItems} />
             <ReportInfoSection title="Resources" icon="fa-users" items={resourceItems} />
-            <ReportInfoSection title="Draft mode" icon="fa-pencil-square-o" items={draftItems} />
+            <ReportInfoSection title="Draft mode" icon="fa-pen-to-square" items={draftItems} />
             <ReportInfoNote title="Where the data is kept:">
                 Team settings and calendar sources are saved on the board, and planned segments on each issue, so everyone planning with the board sees the same data.
                 {isPluginBuild

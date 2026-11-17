@@ -3,6 +3,8 @@ import type { ComponentEvent } from '@components';
 
 import { updateItemByPath, useSelectedItemConfig } from '../../../../store/pivot-config';
 import { canAllowDistinct, getFunctionsByType } from '../../../../utils/format-functions';
+import { getFieldType } from '../../../../viewer/common-utils';
+import PropertyRow from '../PropertyRow';
 
 import { typeFormatMap } from './formatting';
 
@@ -12,46 +14,50 @@ interface DefaultOptionsProps {
     isRow?: boolean;
 }
 
+const functionHelpText = 'How the values of the issues falling in the group are combined to be displayed in a cell.';
+
 export default function DisplayOption({ item, isGrouped, isRow }: DefaultOptionsProps) {
     const { itemPath } = useSelectedItemConfig();
-    const functions = !isGrouped && getFunctionsByType(item.schema?.type, isRow);
+    const fieldType = getFieldType(item);
+    const functions = !isGrouped && getFunctionsByType(fieldType, isRow);
     const allowDistinct = !isGrouped && canAllowDistinct(item.agrFunc);
 
-    const formatting = typeFormatMap[item.schema?.type || ''];
+    const formatting = typeFormatMap[fieldType || ''];
 
-    const handleFieldChange = (field: string, value: any) => {
+    const handleFieldChange = (field: string, value: unknown) => {
         updateItemByPath({ ...item, [field]: value }, null, { args: { itemPath, isRow } });
     };
 
     return (
-        <div className="space-y-3">
+        <>
             {functions && (
-                <div className="flex items-center gap-3">
-                    <label className="text-sm font-medium min-w-24">Function:</label>
-                    <div className="flex-1">
-                        <Dropdown value={item.agrFunc} onChange={(e: ComponentEvent<string>) => handleFieldChange('agrFunc', e.value)} options={functions} />
-                    </div>
-                </div>
-            )}
-            {allowDistinct && (
-                <div className="flex items-center gap-3">
-                    <Checkbox
-                        checked={item.useDistinct}
-                        onChange={({ value }: any) => handleFieldChange('useDistinct', value)}
-                        label="Use distinct values only"
-                        disabled
+                <PropertyRow label="Aggregation function" helpText={functionHelpText}>
+                    <Dropdown
+                        value={item.agrFunc}
+                        onChange={(e: ComponentEvent<string>) => handleFieldChange('agrFunc', e.value)}
+                        options={functions}
+                        placeholder="First value"
                     />
-                </div>
+                    {allowDistinct && (
+                        <Checkbox
+                            checked={!!item.useDistinct}
+                            onChange={({ value }: ComponentEvent<boolean>) => handleFieldChange('useDistinct', value)}
+                            label="Count distinct values only"
+                        />
+                    )}
+                </PropertyRow>
             )}
 
             {formatting && (
-                <div className="flex items-center gap-3">
-                    <label className="text-sm font-medium min-w-24">Formatting:</label>
-                    <div className="flex-1">
-                        <Dropdown value={item.format} onChange={(e: ComponentEvent<string>) => handleFieldChange('format', e.value)} options={formatting} />
-                    </div>
-                </div>
+                <PropertyRow label="Display format">
+                    <Dropdown
+                        value={item.format}
+                        onChange={(e: ComponentEvent<string>) => handleFieldChange('format', e.value)}
+                        options={formatting}
+                        placeholder="Default"
+                    />
+                </PropertyRow>
             )}
-        </div>
+        </>
     );
 }

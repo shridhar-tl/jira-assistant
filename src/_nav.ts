@@ -180,10 +180,6 @@ const navigation: MenuSection[] = [
                 id: 'R-PR',
                 url: '/reports/pivot',
                 icon: 'fa fa-table',
-                badge: {
-                    variant: 'success',
-                    text: 'BETA',
-                },
             },
             sayDoRatioReport && {
                 name: 'Say-Do Ratio',

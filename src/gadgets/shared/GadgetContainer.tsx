@@ -91,7 +91,7 @@ export function GadgetContainer({
     );
 
     const renderHeader = () => {
-        const headerClassName = classNames('gadget-header flex items-center justify-between', {
+        const headerClassName = classNames('gadget-header flex items-center justify-between gap-2', {
             movable: !!draggableHandle,
         });
 
@@ -102,7 +102,7 @@ export function GadgetContainer({
                 onContextMenu={!isGadget ? undefined : showGadgetContextMenu}
                 onDoubleClick={toggleFullScreen}
             >
-                <div className="flex items-center gap-1 ms-2 font-semibold text-sm truncate">
+                <div className="ms-2 min-w-0 flex-1 truncate text-sm font-semibold" title={typeof title === 'string' ? title : undefined}>
                     {title}
                     {subTitle && <span className="font-normal text-secondary"> - {subTitle}</span>}
                 </div>

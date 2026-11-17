@@ -155,12 +155,11 @@ export const useWorklogStore = create<WorklogState>((set, get) => ({
 
     stopTimer: async () => {
         const { $wltimer } = inject('WorklogTimerService');
-        const result = (await $wltimer.stopTimer()) as WorklogTimer | undefined;
-        const entry = result || null;
+        await $wltimer.stopTimer();
 
         set({
-            timerEntry: entry,
-            curState: getElapseState(entry) || ({} as TimerState),
+            timerEntry: null,
+            curState: {} as TimerState,
             needReload: true,
         });
     },

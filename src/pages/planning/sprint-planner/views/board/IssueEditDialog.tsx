@@ -79,7 +79,7 @@ export default function IssueEditDialog({ issueKey, data, canEdit, canSchedule, 
                 <Button
                     label="Plan segments"
                     layout="plain"
-                    leftIcon={<i className="fa fa-calendar-plus-o" />}
+                    leftIcon={<i className="fa fa-calendar-plus" />}
                     title="Split the work into planned segments with their own dates and people"
                     onClick={() => {
                         onHide();

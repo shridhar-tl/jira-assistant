@@ -141,15 +141,15 @@ export function useBaseGadget(props: BaseGadgetProps, config: BaseGadgetConfig) 
             exportOpts.push({ separator: true });
 
             if (!config.hideCSVExport) {
-                exportOpts.push({ label: 'Export to CSV', icon: 'fa fa-file-text-o', command: () => exportData(ExportFormat.CSV) });
+                exportOpts.push({ label: 'Export to CSV', icon: 'fa fa-file-lines', command: () => exportData(ExportFormat.CSV) });
             }
 
             if (!config.hideXLSXExport) {
-                exportOpts.push({ label: 'Export to Excel', icon: 'fa fa-file-excel-o', command: () => exportData(ExportFormat.XLSX) });
+                exportOpts.push({ label: 'Export to Excel', icon: 'fa fa-file-excel', command: () => exportData(ExportFormat.XLSX) });
             }
 
             if (!config.hidePDFExport) {
-                exportOpts.push({ label: 'Export to PDF', icon: 'fa fa-file-pdf-o', command: () => exportData(ExportFormat.PDF) });
+                exportOpts.push({ label: 'Export to PDF', icon: 'fa fa-file-pdf', command: () => exportData(ExportFormat.PDF) });
             }
         }
 

@@ -247,7 +247,7 @@ function BulkImportIssue() {
                             <Button
                                 size="sm"
                                 variant="secondary"
-                                leftIcon={<i className="fa fa-file-excel-o" />}
+                                leftIcon={<i className="fa fa-file-excel" />}
                                 label="Export"
                                 onClick={exportData}
                                 disabled={isBusy}
@@ -285,7 +285,7 @@ function BulkImportIssue() {
                         <div className="flex flex-col gap-1 text-xs text-(--text-secondary)">
                             {!!source && (
                                 <span className="truncate">
-                                    <i className="fa fa-file-text-o mr-1" />
+                                    <i className="fa fa-file-lines mr-1" />
                                     {source}
                                     {isValidating && (
                                         <span className="ml-2 text-(--color-primary-600)">

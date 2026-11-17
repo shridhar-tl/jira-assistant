@@ -51,15 +51,9 @@ export default function SprintList({ rapidViews, value, onChange, placeholder }:
 
         const fetchedSprints = await jiraService.$jira.getRapidSprintList(selectedRapidIds);
         const sprintsArray = Array.isArray(fetchedSprints) ? fetchedSprints : Object.values(fetchedSprints).flat();
-        const sortedSprints = sprintsArray
+        const sortedSprints = [...sprintsArray]
             .sort((a: Sprint, b: Sprint) => b.id - a.id)
-            .map((s: Sprint) => {
-                if (!s.stateAppended) {
-                    s.stateAppended = true;
-                    s.name += ` - (${s.state || ''})`;
-                }
-                return s;
-            });
+            .map((s: Sprint) => (s.stateAppended ? s : { ...s, stateAppended: true, name: `${s.name} - (${s.state || ''})` }));
 
         setSprints(sortedSprints);
     };

@@ -18,7 +18,7 @@ export default function DraftBar() {
 
     return (
         <div className="flex shrink-0 flex-wrap items-center gap-2 border-b border-amber-300 bg-amber-50 px-3 py-1.5 text-sm text-amber-900 dark:border-amber-700 dark:bg-amber-900/20 dark:text-amber-200">
-            <i className="fa fa-pencil-square-o" />
+            <i className="fa fa-pen-to-square" />
             {draft.isApplying ? (
                 <>
                     <span>Applying changes…</span>

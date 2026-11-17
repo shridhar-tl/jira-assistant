@@ -45,7 +45,7 @@ export default function UnscheduledList({ issues, title, draggable, onPlan }: Un
                         {issue.issueTypeIconUrl && <img src={issue.issueTypeIconUrl} alt="" className="h-3.5 w-3.5 shrink-0" />}
                         <span className="shrink-0 font-medium">{issue.key}</span>
                         <span className="min-w-0 flex-1 truncate">{issue.summary}</span>
-                        {onPlan && <Button size="xs" layout="plain" leftIcon={<i className="fa fa-calendar-plus-o" />} ariaLabel={`Plan ${issue.key}`} onClick={() => onPlan(issue.key)} />}
+                        {onPlan && <Button size="xs" layout="plain" leftIcon={<i className="fa fa-calendar-plus" />} ariaLabel={`Plan ${issue.key}`} onClick={() => onPlan(issue.key)} />}
                     </div>
                 ))}
             </div>
