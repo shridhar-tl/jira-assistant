@@ -22,6 +22,10 @@ on:
         description: 'Atlassian API token'
         required: true
         type: string
+      approveMajorVersion:
+        description: 'Approve Forge major version (required when scopes or egress change; installed sites must re-consent)'
+        default: false
+        type: boolean
   push:
     branches: [ package, master ]
   pull_request:
@@ -65,5 +69,5 @@ jobs:
     - run: npm install --force
     - run: npm run build-plugin
     - run: forge settings set usage-analytics false
-    - run: forge deploy -e $FORGE_ENV
+    - run: forge deploy -e $FORGE_ENV ${{ inputs.approveMajorVersion && '--approve MAJOR_VERSION_RULE' || '' }}
     - run: forge logout
