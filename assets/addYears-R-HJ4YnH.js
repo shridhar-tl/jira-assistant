@@ -1,1 +1,0 @@
-import{_ as e}from"./index-C4PsaI60.js";function t(t,n,r){return e(t,n*12,r)}export{t};
