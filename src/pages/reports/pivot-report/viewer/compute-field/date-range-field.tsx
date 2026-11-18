@@ -10,14 +10,14 @@ import { convertToDate } from '@utils/helpers';
 type Issue = Record<string, any>;
 type TransformFn = ((issues: Issue[]) => Issue[]) | undefined;
 
-function isDateWithin(value: unknown, interval: DateInterval): boolean {
-    const date = convertToDate(value);
-    return !!date && isWithinInterval(date, interval);
-}
-
 interface DateInterval {
     start: Date | number;
     end: Date | number;
+}
+
+function isDateWithin(value: unknown, interval: DateInterval): boolean {
+    const date = convertToDate(value);
+    return !!date && isWithinInterval(date, interval);
 }
 
 interface RangeHeader {
