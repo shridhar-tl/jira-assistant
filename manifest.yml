@@ -151,6 +151,8 @@ permissions:
     - read:project:jira
     - read:issue-meta:jira
     - read:avatar:jira
+    - read:group:jira
+    - read:user:jira
     - read:board-scope.admin:jira-software
     - read:issue.changelog:jira
     - write:jira-work
