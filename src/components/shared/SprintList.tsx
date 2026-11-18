@@ -33,6 +33,7 @@ function toRapidViewArray(views: RapidView | RapidView[] | null): RapidView[] {
 
 export default function SprintList({ rapidViews, value, onChange, placeholder }: SprintListProps) {
     const [sprints, setSprints] = useState<Sprint[] | null>(null);
+    const [searchText, setSearchText] = useState('');
 
     useEffect(() => {
         let cancelled = false;
@@ -68,7 +69,12 @@ export default function SprintList({ rapidViews, value, onChange, placeholder }:
         };
     }, [rapidViews]);
 
-    const items = useMemo(() => (sprints || []).map((s) => ({ label: s.name, value: s.id.toString() })), [sprints]);
+    const items = useMemo(() => {
+        const query = searchText.trim().toLowerCase();
+        return (sprints || [])
+            .filter((s) => !query || s.name.toLowerCase().includes(query) || s.id.toString().startsWith(query))
+            .map((s) => ({ label: s.name, value: s.id.toString() }));
+    }, [sprints, searchText]);
     const selectedIds = useMemo(() => (value || []).map((s) => s.id.toString()), [value]);
 
     const handleChange = (e: ComponentEvent<string[]>) => {
@@ -84,6 +90,7 @@ export default function SprintList({ rapidViews, value, onChange, placeholder }:
             items={items}
             value={selectedIds}
             onChange={handleChange}
+            onFilter={setSearchText}
             minLength={0}
             placeholder={placeholder || 'Start typing the sprint name here'}
             disabled={!sprints || sprints.length === 0}

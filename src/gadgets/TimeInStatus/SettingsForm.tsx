@@ -14,6 +14,7 @@ import {
     RapidViewList,
     SelectButton,
     syncBoardSelection,
+    toSelectedBoards,
 } from '@components';
 import type { RapidView } from '@components/shared/RapidViewList';
 
@@ -74,7 +75,7 @@ function getGroupsSummary(settings: TimeInStatusSettings): string {
 }
 
 function toSprintBoardChanges(settings: TimeInStatusSettings, value: RapidView | RapidView[] | null): Partial<TimeInStatusSettings> {
-    const boards = (Array.isArray(value) ? value : value ? [value] : []).map(({ id, name }) => ({ id, name }));
+    const boards = toSelectedBoards(value);
     return {
         sprintBoards: boards,
         sprintSelection: syncBoardSelection(settings.sprintBoards, settings.sprintSelection, boards),

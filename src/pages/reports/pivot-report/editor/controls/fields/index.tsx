@@ -1,5 +1,7 @@
 import { useEffect, useMemo } from 'react';
 
+import classNames from 'classnames';
+
 import { stop } from '@/utils';
 
 import type { ComponentEvent } from '@components';
@@ -116,7 +118,7 @@ function FieldsList({ fields, title }: FieldsListProps) {
                         item={field}
                     >
                         <div className="group flex cursor-move items-center gap-2 rounded-md border border-transparent px-2 py-1.5 transition-colors hover:border-(--border-primary) hover:bg-(--bg-secondary)">
-                            <span className={`fa ${getTypeIcon(field)} w-4 shrink-0 text-center text-xs text-(--text-tertiary)`} />
+                            <span className={classNames('fa w-4 shrink-0 text-center text-xs text-(--text-tertiary)', getTypeIcon(field))} />
                             <span
                                 className="min-w-0 flex-1 truncate text-sm text-(--text-primary)"
                                 title={`${field.name} (${field.key || field.id})`}

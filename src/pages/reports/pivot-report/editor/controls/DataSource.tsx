@@ -11,6 +11,7 @@ import {
     RapidViewList,
     SelectButton,
     SprintSelector,
+    toSelectedBoards,
     type SprintSelectionMap,
 } from '@components';
 import type { RapidView } from '@components/shared/RapidViewList';
@@ -56,10 +57,6 @@ function SourceField({ label, helpText, error, children }: SourceFieldProps) {
     );
 }
 
-function toBoards(value: RapidView | RapidView[] | null) {
-    return (Array.isArray(value) ? value : value ? [value] : []).map(({ id, name }) => ({ id, name }));
-}
-
 export default function DataSource({ onDone }: DataSourceProps) {
     const { jql, dataSourceType, sprintBoards, sprintSelection } = usePivotConfig(
         useShallow(({ jql, dataSourceType, sprintBoards, sprintSelection }) => ({ jql, dataSourceType, sprintBoards, sprintSelection })),
@@ -69,7 +66,7 @@ export default function DataSource({ onDone }: DataSourceProps) {
     const hasSprintsSelected = getSelectedBoardIds(sprintSelection).length > 0;
     const isSourceValid = isSprintSource ? hasSprintsSelected : (jql?.trim().length || 0) >= minJqlLength;
 
-    const handleBoardsChange = useCallback((value: RapidView | RapidView[] | null) => updateSprintBoards(toBoards(value)), []);
+    const handleBoardsChange = useCallback((value: RapidView | RapidView[] | null) => updateSprintBoards(toSelectedBoards(value)), []);
 
     const handleSprintChange = useCallback(
         (selection: SprintSelectionMap) => {

@@ -148,7 +148,6 @@ export function getQueryFields(fieldsMap: Record<string, boolean> = {}) {
 }
 
 /**
- * Returns the JQL to pull the issues of the report.
  * Returns undefined when none of the selected sprints are available, as no issues can match such a selection.
  */
 export async function getIssueSearchJql(): Promise<string | undefined> {

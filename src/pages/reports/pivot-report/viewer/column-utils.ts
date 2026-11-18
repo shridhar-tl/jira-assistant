@@ -30,7 +30,8 @@ export function processColumns(columns: any[], headerOpts: any, issues: any[], d
 function processColumn(col: any, headerOpts: any, issues: any[], depth: number, hasSiblings: boolean, processColumns: any): [number, any] {
     const { header } = headerOpts;
     const currentHeader = header[depth];
-    const { key, subItems, name, headerText = getDefaultHeaderText(col), showTotal, showTotalFirst, ...otherProps } = col;
+    const { key, subItems, name, headerText: customHeaderText, showTotal, showTotalFirst, ...otherProps } = col;
+    const headerText = customHeaderText || getDefaultHeaderText(col);
     const cellProps = getCellProps(col);
 
     if (!depth) {
@@ -140,9 +141,6 @@ function generateTotalColumn(totalColumn: any, headerOpts: any, subItems: any[],
     return childCount || 1;
 }
 
-/**
- * Returns the number of header rows needed for the column. Top level columns are displayed in the first row along with the row fields.
- */
 function getColumnDepth(col: PivotFieldConfig, curDepth: number, occupiesRow: boolean, isTopLevel?: boolean): number {
     const { subItems, enableGrouping, schema } = col;
     const depth = curDepth + (occupiesRow ? 1 : 0) + (schema?.computed && schema.depth ? schema.depth : 0);

@@ -38,7 +38,7 @@ function normalizeArrays(fields: any) {
 }
 
 /**
- * Returns the type used for rendering, formatting and aggregation. Time tracking fields are reported by Jira as number and are resolved to timespent.
+ * Time tracking fields are reported by Jira as number and are resolved to timespent.
  */
 export function getFieldType(field: FieldLike): string | undefined {
     return normalizeType(field).type || field.schema?.type;
@@ -52,9 +52,6 @@ export function isEmptyValue(value: unknown): boolean {
     return value === null || value === undefined || value === '' || (Array.isArray(value) && !value.length);
 }
 
-/**
- * Converts the value of a field to a string which uniquely identifies it, so that the same value pulled as part of different issues falls in same group
- */
 export function toGroupKey(value: unknown): string {
     if (isEmptyValue(value)) {
         return '';

@@ -5,8 +5,6 @@ import type { MeetingCalendarEntry, Worklog, WorklogCalendarEntry } from '@types
 
 import type { CalendarEvent, CalendarInfoEvent } from './types';
 
-const snapMinutes = 15;
-
 export const viewModes: Array<{ value: CalendarViewMode; label: string }> = [
     { value: 'dayGridMonth', label: 'Month' },
     { value: 'timeGridWeek', label: 'Week' },

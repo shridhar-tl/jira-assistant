@@ -35,6 +35,10 @@ export function createBoardSelection(board: AgileBoard, existing?: BoardSprintSe
     };
 }
 
+export function toSelectedBoards(value: AgileBoard | AgileBoard[] | null): AgileBoard[] {
+    return (Array.isArray(value) ? value : value ? [value] : []).map(({ id, name }) => ({ id, name }));
+}
+
 export function toAgileBoards(value: unknown): AgileBoard[] {
     if (!Array.isArray(value)) {
         return [];
@@ -44,9 +48,6 @@ export function toAgileBoards(value: unknown): AgileBoard[] {
         .map(({ id, name }) => ({ id: Number(id), name: String(name || id) }));
 }
 
-/**
- * Retains the selection of the boards which are still available and selects the last sprint of the newly added boards.
- */
 export function syncBoardSelection(prevBoards: AgileBoard[], prevSelection: SprintSelectionMap, boards: AgileBoard[]): SprintSelectionMap {
     const knownBoardIds = new Set(prevBoards.map((b) => b.id));
     const result: SprintSelectionMap = {};

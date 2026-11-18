@@ -374,9 +374,6 @@ function handle_Identifier(expr: any, scope: Scope): FilterFn {
 
 const arrayItemProps = ['displayName', 'emailAddress', 'name', 'value', 'key', 'id', 'accountId'];
 
-/**
- * Converts the list of values to be compared. Objects are compared with any of its known identifying props (like name, value, id etc)
- */
 function toComparableValues(values: unknown[], keyField: unknown, converter: (value: unknown) => unknown): unknown[] {
     const props = Array.isArray(keyField) ? keyField : typeof keyField === 'string' ? [keyField] : arrayItemProps;
 

@@ -13,26 +13,13 @@ import { BlockLoading } from '@components';
 
 import { isPokerPath } from '@pages/poker/constants';
 
-import { getCurrentQueryParams } from '@utils';
+import { getCurrentQueryParams, getErrorMessage } from '@utils';
 
 import type { InitValue } from '../renderer/types';
 
 import InitializationError from './InitializationError';
 
 const unknownInitErrorMessage = 'An unknown error occurred while initializing Jira Assistant. Look at the browser console for more details.';
-
-function getErrorMessage(err: unknown): string {
-    if (err instanceof Error && err.message) {
-        return err.message;
-    }
-    if (typeof err === 'string' && err) {
-        return err;
-    }
-    if (err && typeof err === 'object' && typeof (err as { message?: unknown }).message === 'string' && (err as { message: string }).message) {
-        return (err as { message: string }).message;
-    }
-    return unknownInitErrorMessage;
-}
 
 interface WebInitProps {
     initValue?: InitValue;
@@ -52,7 +39,7 @@ export function withInitParams<P extends WebInitProps>(Component: ComponentType<
             setInitError(null);
             initializeApp(location, navigate).then(setInitValue, (err: unknown) => {
                 console.error('JA: Initialization failed:', err);
-                setInitError(getErrorMessage(err));
+                setInitError(getErrorMessage(err, unknownInitErrorMessage));
             });
         }, [location, navigate]);
 

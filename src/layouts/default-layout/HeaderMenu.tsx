@@ -8,6 +8,8 @@ import type { MenuItem, MenuSection } from '@/constants/navigation';
 
 import { MenuNav, type MenuNavItem } from '@components';
 
+import MenuBadge from './MenuBadge';
+
 interface HeaderMenuProps {
     menus: MenuSection[];
 }
@@ -26,23 +28,6 @@ function findActiveMenu(menus: MenuSection[], pathname: string) {
     return active;
 }
 
-function renderBadge(badge: MenuItem['badge']) {
-    if (!badge) {
-        return undefined;
-    }
-    return (
-        <span
-            className={classNames('px-1.5 py-0.5 text-[10px] font-semibold rounded-full leading-tight', {
-                'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300': badge.variant === 'info',
-                'bg-emerald-100 text-emerald-700 dark:bg-emerald-900 dark:text-emerald-300': badge.variant === 'success',
-                'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300': badge.variant === 'danger',
-            })}
-        >
-            {badge.text}
-        </span>
-    );
-}
-
 function HeaderMenu({ menus }: HeaderMenuProps) {
     const { pathname } = useLocation();
     const navigate = useNavigate();
@@ -58,7 +43,7 @@ function HeaderMenu({ menus }: HeaderMenuProps) {
                     id: menu.id,
                     label: menu.name,
                     icon: <i className={classNames(menu.icon, 'w-4 text-center')} />,
-                    badge: renderBadge(menu.badge),
+                    badge: menu.badge ? <MenuBadge badge={menu.badge} /> : undefined,
                 })),
             })),
         [menus, active],

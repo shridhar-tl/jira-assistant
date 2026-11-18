@@ -9,6 +9,8 @@ import { Button, Checkbox, RapidViewList, SprintList, TabPage, TabView } from '@
 
 import { distinct, getErrorMessage, union } from '@utils';
 
+import type { Issue } from '@types';
+
 import { EventCategory } from '@constants';
 
 import { ExportFormat } from '../../../common/Exporter';
@@ -21,12 +23,24 @@ import SummaryView1 from './SummaryView1';
 import SummaryView2 from './SummaryView2';
 import VelocityChart from './VelocityChart';
 
-interface SprintReportData {
-    sprintDetails: any[];
-    ticketDetails?: any[];
+interface SprintReportIssue {
+    key: string;
 }
 
-const reportErrorMessage ='Unable to generate the report. Look at console log for more details';
+interface SprintReportDetails {
+    contents: {
+        completedIssues: SprintReportIssue[];
+        puntedIssues: SprintReportIssue[];
+        issuesNotCompletedInCurrentSprint: SprintReportIssue[];
+    };
+}
+
+interface SprintReportData {
+    sprintDetails: SprintReportDetails[];
+    ticketDetails?: Issue[];
+}
+
+const reportErrorMessage = 'Unable to generate the report. Look at console log for more details';
 
 const gadgetConfig = {
     title: 'Sprint report',
@@ -88,12 +102,12 @@ function SprintReport(props: BaseGadgetProps) {
 
                 if (includeWorklogs) {
                     const ticketKeys = distinct(
-                        union(result, (spr: any) => [
+                        union(result, (spr: SprintReportDetails) => [
                             ...spr.contents.completedIssues,
                             ...spr.contents.puntedIssues,
                             ...spr.contents.issuesNotCompletedInCurrentSprint,
                         ]),
-                        (t: any) => t.key as string,
+                        (t: SprintReportIssue) => t.key,
                     );
                     if (!ticketKeys.length) {
                         return { sprintDetails: result, ticketDetails: [] };
@@ -107,7 +121,7 @@ function SprintReport(props: BaseGadgetProps) {
                             'parent',
                             'timeoriginalestimate',
                         ])
-                        .then((tickets: any) => ({ sprintDetails: result, ticketDetails: tickets }));
+                        .then((tickets: Issue[]) => ({ sprintDetails: result, ticketDetails: tickets }));
                 }
                 return { sprintDetails: result };
             })

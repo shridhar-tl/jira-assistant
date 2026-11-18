@@ -11,6 +11,10 @@ const noSprintsAvailableMessage =
 
 let latestRunId = 0;
 
+export function cancelReportGeneration() {
+    latestRunId++;
+}
+
 export async function generateReport() {
     const scope = isReportDefinitionValid();
     if (!scope) {

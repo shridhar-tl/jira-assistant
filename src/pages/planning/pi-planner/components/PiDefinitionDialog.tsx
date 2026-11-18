@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { addDays, startOfDay } from 'date-fns';
 
@@ -41,13 +41,22 @@ export default function PiDefinitionDialog({ doc, terms, onSaved, onHide }: PiDe
     const [sprintLists, setSprintLists] = useState<Record<number, PlannerSprint[]>>({});
     const [isSaving, setIsSaving] = useState(false);
     const [copyFrom, setCopyFrom] = useState(noCopy);
+    const loadedBoardsRef = useRef(new Set<number>());
 
     const boardIds = useMemo(() => teams.map((t) => t.boardId), [teams]);
 
     useEffect(() => {
-        if (boardIds.length) {
-            loadTeamSprints(boardIds, true).then(setSprintLists).catch(console.error);
+        const boardsToLoad = boardIds.filter((id) => !loadedBoardsRef.current.has(id));
+        if (!boardsToLoad.length) {
+            return;
         }
+        boardsToLoad.forEach((id) => loadedBoardsRef.current.add(id));
+        loadTeamSprints(boardsToLoad, true)
+            .then((lists) => setSprintLists((current) => ({ ...current, ...lists })))
+            .catch((err) => {
+                boardsToLoad.forEach((id) => loadedBoardsRef.current.delete(id));
+                console.error(err);
+            });
     }, [boardIds.join(',')]);
 
     const autoMatch = (list: PiTeam[], lists: Record<number, PlannerSprint[]>) =>
@@ -67,7 +76,7 @@ export default function PiDefinitionDialog({ doc, terms, onSaved, onHide }: PiDe
     };
 
     useEffect(() => {
-        if (!Object.keys(sprintLists).length) {
+        if (!boardIds.length || boardIds.some((id) => !sprintLists[id])) {
             return;
         }
         if (!doc) {
@@ -81,7 +90,7 @@ export default function PiDefinitionDialog({ doc, terms, onSaved, onHide }: PiDe
                     : { ...t, sprintIds: matchSprints(sprintLists[t.boardId] || [], toDateKey(start), toDateKey(end)).map((s) => s.id) },
             ),
         );
-    }, [sprintLists, start.getTime(), end.getTime()]);
+    }, [sprintLists, boardIds.join(','), start.getTime(), end.getTime()]);
 
     const handleTeams = (boards: PlannerBoard[]) => {
         setTeams(

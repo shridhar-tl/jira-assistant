@@ -4,11 +4,23 @@ import { Checkbox, ScrollableTable, TBody, THead } from '@components';
 
 import { distinct, getUserName, groupBy, parseISOString, union } from '@utils';
 
+import type { IssueFields } from '@types';
+
 import { convertSecs } from '../../../services/utils-service';
 
 interface WorklogDateRange {
     start: number;
     end: number;
+}
+
+interface SprintDateInfo {
+    state?: string;
+    startDate?: string;
+    isoStartDate?: string;
+    endDate?: string;
+    isoEndDate?: string;
+    completeDate?: string;
+    isoCompleteDate?: string;
 }
 
 interface SprintWiseWorklogProps {
@@ -377,7 +389,7 @@ function getSprintTime(isoValue?: string, displayValue?: string): number | undef
     return time === undefined || Number.isNaN(time) ? undefined : time;
 }
 
-function getSprintDateRange(sprintInfo: any): WorklogDateRange {
+function getSprintDateRange(sprintInfo: SprintDateInfo): WorklogDateRange {
     const start = getSprintTime(sprintInfo.isoStartDate, sprintInfo.startDate) ?? Number.POSITIVE_INFINITY;
     const isActive = String(sprintInfo.state || '').toUpperCase() === 'ACTIVE';
     const end =
@@ -393,10 +405,10 @@ function isWithinRange(started: string | undefined, range: WorklogDateRange): bo
     return time >= range.start && time <= range.end;
 }
 
-function setUserWiseWorklog(fields: any, range: WorklogDateRange | null): Record<string, { total: number; allTotal: number }> {
+function setUserWiseWorklog(fields: Partial<IssueFields>, range: WorklogDateRange | null): Record<string, { total: number; allTotal: number }> {
     const worklogs: Record<string, { total: number; allTotal: number }> = {};
-    const worklogList = (fields.worklog || {}).worklogs || [];
-    worklogList.forEach((wl: any) => {
+    const worklogList = fields.worklog?.worklogs || [];
+    worklogList.forEach((wl) => {
         if (range && !isWithinRange(wl.started, range)) return;
         const author = getUserName(wl.author);
         if (!author) return;

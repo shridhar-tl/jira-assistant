@@ -4,7 +4,7 @@ import { endOfDay, startOfDay } from 'date-fns';
 
 import { useService } from '@/services/injector';
 
-import type { MeetingCalendarEntry, Worklog, WorklogCalendarEntry } from '@types';
+import type { MeetingCalendarEntry, WorklogCalendarEntry } from '@types';
 
 import { createInfoEvent, createMeetingEvent, createWorklogEvent, filterEvents, groupWorklogsByDate } from '../calendar-utils';
 import type { CalendarEvent, CalendarSettings } from '../types';

@@ -4,6 +4,7 @@ import { notifyReportsListChanged } from '@components/ReportSelectList';
 
 import { getBlankReportDefinition, normalizeReportDefinition, usePivotConfig, useReportData, useSelectedItemConfig } from '../store/pivot-config';
 import type { PivotReportDefinition } from '../types';
+import { cancelReportGeneration } from '../viewer/generator';
 
 export async function saveReport() {
     const { hasChanges, ...report } = usePivotConfig.getState();
@@ -38,6 +39,7 @@ async function saveReportToDb(report: PivotReportDefinition) {
 }
 
 export async function loadReport(reportId?: string) {
+    cancelReportGeneration();
     useReportData.setState({ showParameters: false, isFetching: false, reportData: undefined, reportErrors: undefined }, true);
     useSelectedItemConfig.getState().selectItem();
 
