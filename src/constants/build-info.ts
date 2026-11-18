@@ -6,7 +6,7 @@ const isExtnBuild = !isWebBuild && !isAppBuild && !isPluginBuild;
 
 const isProdBuild = import.meta.env.PROD;
 const isDevBuild = !isProdBuild;
-const isQuickView = document.location.href.indexOf('?quick=true') > -1;
+const isQuickView = globalThis.location?.href.includes('?quick=true') ?? false;
 
 export const appVersionNo = '3.0.3';
 
