@@ -1,4 +1,4 @@
-import { formatDate as formatDateUtil, formatDateTimeForJira as formatDTForJira, getDateArray, getUserName, padNumber } from '@utils';
+import { formatDate as formatDateUtil, formatDateTimeForJira as formatDTForJira, getDateArray, getUserName, padNumber, parseDateString } from '@utils';
 
 import type { User } from '@types';
 
@@ -7,7 +7,10 @@ const secsPerHour = 3600;
 
 export function convertDate(date: string | Date | number): Date {
     if (date instanceof Date) return date;
-    if (typeof date === 'string' || typeof date === 'number') {
+    if (typeof date === 'string') {
+        return parseDateString(date);
+    }
+    if (typeof date === 'number') {
         return new Date(date);
     }
     return new Date();

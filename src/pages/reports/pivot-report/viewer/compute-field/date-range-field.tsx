@@ -5,9 +5,15 @@ import { DayColumn } from '@/display-controls';
 import { inject } from '@services';
 
 import { getDateRange, getWeekGroup, type DateRangeItem, type WeekGroup as DateWeekGroup } from '@utils/date-utils';
+import { convertToDate } from '@utils/helpers';
 
 type Issue = Record<string, any>;
 type TransformFn = ((issues: Issue[]) => Issue[]) | undefined;
+
+function isDateWithin(value: unknown, interval: DateInterval): boolean {
+    const date = convertToDate(value);
+    return !!date && isWithinInterval(date, interval);
+}
 
 interface DateInterval {
     start: Date | number;
@@ -186,15 +192,7 @@ function getDateRangeGroupTransformFn({ start, end }: DateInterval, filterField:
                     }
 
                     if (Array.isArray(obj)) {
-                        obj = obj.filter((item) => {
-                            const fieldValue = item[fieldName];
-
-                            if (!fieldValue) {
-                                return false;
-                            }
-
-                            return isWithinInterval(new Date(fieldValue), { start, end });
-                        });
+                        obj = obj.filter((item) => isDateWithin(item[fieldName], { start, end }));
 
                         if (!obj.length) {
                             return null;
@@ -209,15 +207,7 @@ function getDateRangeGroupTransformFn({ start, end }: DateInterval, filterField:
                 .filter((issue): issue is Issue => !!issue);
     } else {
         return (issues: Issue[]) =>
-            issues.filter((issue) => {
-                const fieldValue = issue[filterField];
-
-                if (!fieldValue) {
-                    return false;
-                }
-
-                return isWithinInterval(new Date(fieldValue), { start, end });
-            });
+            issues.filter((issue) => isDateWithin(issue[filterField], { start, end }));
     }
 }
 

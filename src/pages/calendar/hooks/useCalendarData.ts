@@ -78,9 +78,8 @@ export function useCalendarData(settings: CalendarSettings, currentUser: any) {
                 const infoEvents: CalendarEvent[] = [];
 
                 if (settings.showInfo) {
-                    groupedWorklogs.forEach((wls, dateKey) => {
-                        const date = new Date(dateKey);
-                        const sourceWorklogs = wls.map((wl) => wl.sourceObject);
+                    groupedWorklogs.forEach(({ date, worklogs: dayWorklogs }) => {
+                        const sourceWorklogs = dayWorklogs.map((wl) => wl.sourceObject);
                         const infoEvent = createInfoEvent(date, sourceWorklogs, currentUser.maxHours, currentUser.minHours, settings);
                         infoEvents.push(infoEvent);
                     });

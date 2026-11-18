@@ -1,5 +1,3 @@
-import { formatDate } from '@utils';
-
 import type { CalendarInfo, CalendarLeaveEvent, MeetingCalendarEntry } from '@types';
 
 interface GooglePerson {
@@ -107,8 +105,8 @@ export default class CalendarService {
                 return data.items.map((e: any): MeetingCalendarEntry => {
                     const obj: MeetingCalendarEntry = {
                         id: e.id,
-                        start: e.start.dateTime ? new Date(e.start.dateTime) : new Date(formatDate(new Date(e.start.date), 'yyyy-MM-dd')),
-                        end: e.end.dateTime ? new Date(e.end.dateTime) : new Date(formatDate(new Date(e.end.date), 'yyyy-MM-dd')),
+                        start: toGoogleDate(e.start),
+                        end: toGoogleDate(e.end),
                         title: e.summary,
                         url: e.hangoutLink,
                         entryType: 2,

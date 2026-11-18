@@ -12,6 +12,7 @@ import {
     setIssueProperty,
     updateIssueFields,
 } from '../shared/jira-api';
+import { toDateKey } from '../shared/segments';
 import type { FeaturePlacement, StatusCategory } from '../shared/types';
 import { loadPiData, type PiData } from './pi-loader';
 import { deletePlan, getPlan, listPlans, savePlan, saveProgramSettings } from './pi-storage';
@@ -340,7 +341,8 @@ function findPlan(plans: PiSummary[], currentId: string, sprint: ExternalSprint 
     if (!boardId) {
         return null;
     }
-    const day = (sprint.start || sprint.end)?.toISOString().substring(0, 10);
+    const sprintDate = sprint.start || sprint.end;
+    const day = sprintDate ? toDateKey(sprintDate) : undefined;
     const plan = plans.find((p) => p.id !== currentId && p.boardIds.includes(boardId) && (!day || (day >= p.startDate && day <= p.endDate)));
     return plan?.name || null;
 }

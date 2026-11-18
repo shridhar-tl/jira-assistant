@@ -1,4 +1,7 @@
+import { parseISO } from 'date-fns';
 import moment from 'moment';
+
+const dateOnlyPattern = /^\d{4}-\d{2}-\d{2}$/;
 
 export function setLastUpdated(obj: any): void {
     if (obj) {
@@ -152,6 +155,10 @@ export function calcCostPerSecs(secs: number, cost: number): number | null {
     return (secs / 60 / 60) * cost || null;
 }
 
+export function parseDateString(value: string): Date {
+    return dateOnlyPattern.test(value) ? parseISO(value) : new Date(value);
+}
+
 export function convertToDate(value: any): Date | undefined {
     if (!value) {
         return value;
@@ -162,7 +169,7 @@ export function convertToDate(value: any): Date | undefined {
     if (typeof value === 'string' && value.indexOf('/Date(') > -1) {
         return new Date(parseInt(value.replace('/Date(', '').replace(')/', ''), 10));
     }
-    const dateObj = new Date(value);
+    const dateObj = typeof value === 'string' ? parseDateString(value) : new Date(value);
     if (!isNaN(dateObj.getTime())) {
         return dateObj;
     }

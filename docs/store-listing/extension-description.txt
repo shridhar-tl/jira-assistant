@@ -69,7 +69,7 @@ Learn the features of Jira Assistant: https://www.youtube.com/watch?list=PLxDBQL
 * Free for personal and commercial use.
 
 🎥 Setup help 🎥
-Watch the setup video: https://www.youtube.com/embed/HsWq7cT3Qq0?rel=0&autoplay=1&showinfo=0&cc_load_policy=1
+Watch the setup video: https://youtu.be/HsWq7cT3Qq0
 
 🙌 Support us 🙌
 If Jira Assistant saves you time, consider a donation: https://paypal.me/shridhartl

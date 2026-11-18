@@ -3,7 +3,7 @@ import { Fragment, useCallback, useMemo, useState } from 'react';
 import classNames from 'classnames';
 
 import { Draggable } from '../../controls';
-import { getPathValue } from '../../utils/helpers';
+import { convertToDate, getPathValue } from '../../utils/helpers';
 import { Column, NoDataRow, ScrollableTable, TBody, THead, TRow } from '../shared/ScrollableTable';
 
 import ColumnList from './ColumnList';
@@ -163,7 +163,8 @@ function groupData(
             convertFunc = (d) => {
                 const val = d[field];
                 if (!val) return val;
-                const date = new Date(val);
+                const date = convertToDate(val);
+                if (!date) return val;
                 const now = new Date();
                 const diffMs = now.getTime() - date.getTime();
                 const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
@@ -177,8 +178,8 @@ function groupData(
             convertFunc = (d) => {
                 const val = d[field];
                 if (!val) return val;
-                const date = new Date(val);
-                if (isNaN(date.getTime())) return val;
+                const date = convertToDate(val);
+                if (!date) return val;
                 const year = date.getFullYear();
                 const month = String(date.getMonth() + 1).padStart(2, '0');
                 const monthName = date.toLocaleString('default', { month: 'long' });

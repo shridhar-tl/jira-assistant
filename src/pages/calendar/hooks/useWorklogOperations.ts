@@ -36,7 +36,7 @@ function getUpdatedAllDayEvents(date: Date, eventsList: CalendarEvent[], setting
         .filter((wl) => format(new Date(wl.dateStarted), 'yyyy-MM-dd') === dateKey);
 
     if (worklogs.length > 0 && settings.showInfo) {
-        const infoEvent = createInfoEvent(new Date(dateKey), worklogs, currentUser.maxHours, currentUser.minHours, settings);
+        const infoEvent = createInfoEvent(date, worklogs, currentUser.maxHours, currentUser.minHours, settings);
         result = [...result, infoEvent];
     }
 

@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 
+import { format } from 'date-fns';
+
 import { convertToStorableValue } from '@/common/storage-helpers';
 import BackupImporter from '@/layouts/default-layout/BackupImporter';
 import type { UserGroup as UserGroupType } from '@/types';
@@ -125,7 +127,7 @@ function UserGroup({ groups: initialGroups, isPlugged = false, onDone }: UserGro
         try {
             const data = await $backup.exportBackup({ [$session.userId!]: { groups: true } });
             const json = convertToStorableValue(data);
-            const fileName = `JA_Groups_${new Date().toISOString().slice(0, 10).replace(/-/g, '')}.jab`;
+            const fileName = `JA_Groups_${format(new Date(), 'yyyyMMdd')}.jab`;
             saveStringAs(json, 'jab', fileName);
             $analytics.trackEvent('Groups exported', 'UserActions');
         } catch (err: any) {

@@ -225,18 +225,26 @@ export function filterEvents(events: CalendarEvent[], showMeetings: boolean, sho
     return events.filter((e) => types.includes(e.data.entryType));
 }
 
-export function groupWorklogsByDate(worklogs: WorklogCalendarEntry[]): Map<string, WorklogCalendarEntry[]> {
-    const grouped = new Map<string, WorklogCalendarEntry[]>();
+export interface WorklogDateGroup {
+    date: Date;
+    worklogs: WorklogCalendarEntry[];
+}
+
+export function groupWorklogsByDate(worklogs: WorklogCalendarEntry[]): WorklogDateGroup[] {
+    const grouped = new Map<string, WorklogDateGroup>();
 
     worklogs.forEach((wl) => {
-        const dateKey = format(new Date(wl.start), 'yyyy-MM-dd');
-        if (!grouped.has(dateKey)) {
-            grouped.set(dateKey, []);
+        const date = startOfDay(new Date(wl.start));
+        const dateKey = format(date, 'yyyy-MM-dd');
+        let group = grouped.get(dateKey);
+        if (!group) {
+            group = { date, worklogs: [] };
+            grouped.set(dateKey, group);
         }
-        grouped.get(dateKey)!.push(wl);
+        group.worklogs.push(wl);
     });
 
-    return grouped;
+    return Array.from(grouped.values());
 }
 
 export function getWorklogsForDate(worklogs: Worklog[], date: Date): Worklog[] {
@@ -248,6 +256,11 @@ export function parseTimeToHours(time: string | undefined): number {
     if (!time) return 0;
     const [h, m] = time.split(':').map(Number);
     return h + (m || 0) / 60;
+}
+
+export function setTimeOfDay(date: Date, time: string): Date {
+    const [hours, minutes] = time.split(':').map(Number);
+    return new Date(date.getFullYear(), date.getMonth(), date.getDate(), hours || 0, minutes || 0);
 }
 
 export function getEntryTimeFormat(timeFormat: string | undefined): string {

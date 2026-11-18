@@ -1,6 +1,6 @@
 import * as Excel from 'exceljs';
 
-import { saveAs } from '../utils/helpers';
+import { parseDateString, saveAs } from '../utils/helpers';
 
 interface ChartImageInfo {
     dataUrl: string;
@@ -337,6 +337,6 @@ function toDate(value: string, _onlyDate: boolean): Date | string {
     if (!value) {
         return value;
     }
-    const val = new Date(value);
+    const val = parseDateString(value);
     return isNaN(val.getTime()) ? value : val;
 }

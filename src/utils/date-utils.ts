@@ -12,7 +12,7 @@ import {
 } from 'date-fns';
 
 import { FULL_DAY_NAMES, FULL_MONTH_NAMES, SHORT_DAY_NAMES, SHORT_MONTH_NAMES, TINY_DAY_NAMES } from '../constants/settings';
-import { getStartOfWeek } from './helpers';
+import { getStartOfWeek, parseDateString } from './helpers';
 
 export { addDays, differenceInDays } from 'date-fns';
 
@@ -84,7 +84,7 @@ export function addDaysToDate(date: Date, days: number): Date {
  * Format time as HH:MM:SS
  */
 export function formatTime(date: Date | string): string {
-    const d = typeof date === 'string' ? new Date(date) : date;
+    const d = typeof date === 'string' ? parseDateString(date) : date;
     return formatDate(d, 'HH:mm:ss');
 }
 

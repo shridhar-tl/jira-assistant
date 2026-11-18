@@ -28,7 +28,7 @@ import { DefaultEndOfDay, DefaultStartOfDay, DefaultWorkingDays, sett_page_calen
 
 import AddWorklog from '@dialogs/AddWorklog';
 
-import { compareCalendarEntries, parseTimeToHours, resolveViewMode } from './calendar-utils';
+import { compareCalendarEntries, parseTimeToHours, resolveViewMode, setTimeOfDay } from './calendar-utils';
 import './Calendar.css';
 import CalendarEventContent from './CalendarEventContent';
 import CalendarSettingsDialog from './CalendarSettings';
@@ -237,7 +237,7 @@ export default function Calendar({
             const worklogObj: Partial<Worklog> = {
                 timeSpent: `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`,
                 dateStarted: isMonthMode
-                    ? new Date(`${info.start.toISOString().split('T')[0]} ${currentUser.startOfDay || DefaultStartOfDay}`)
+                    ? setTimeOfDay(info.start, currentUser.startOfDay || DefaultStartOfDay)
                     : info.start,
             };
 

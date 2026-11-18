@@ -1,0 +1,91 @@
+Jira Assistant: worklogs, timesheets, sprint planning and reports for Jira. Free, with no data sent to any third-party server.
+
+**🚀 About Jira Assistant 🚀**
+
+Jira Assistant (JA) helps you log work, track time, plan sprints and build reports on top of your own Jira.
+
+Works with Jira Cloud, Server and Data Center. No Jira admin permission is needed to get started.
+
+Visit [www.jiraassistant.com](https://www.jiraassistant.com) for details, FAQs and other browsers.
+
+Prefer not to install anything? Use the web version at [app.jiraassistant.com](https://app.jiraassistant.com).
+
+Want it for your whole organization? Install the Jira Cloud app from the Atlassian Marketplace.
+
+**🎥 Video guides 🎥**
+
+Learn the features of Jira Assistant: [Jira Assistant video playlist](https://www.youtube.com/watch?list=PLxDBQLgpBhsDGppYrDqARYULukk7XFJPV&v=HsWq7cT3Qq0)
+
+**🔍 Key features 🔍**
+
+- Log work from a calendar with drag and drop, copy and resize.
+- Track time with a timer, started right from Jira issue pages and board cards.
+- Plan sprints with team capacity, leave, velocity and forecast in the new Sprint Planner.
+- Build dashboards with gadgets for worklogs, open tickets, bookmarks and reports.
+- Get worklog, sprint, estimate, time in status and workload reports.
+- Bulk import worklogs and issues from CSV, Excel or JSON files.
+- Create meeting worklogs automatically from Google or Outlook Calendar.
+- Export any grid to CSV, Excel or PDF.
+- Connect multiple Jira accounts and switch between them.
+
+**🗓️ Worklog Calendar 🗓️**
+
+- See your worklogs and meetings on a day, week or month calendar.
+- Add, edit, copy and move worklogs with drag and drop.
+- Spot days with missing or pending worklogs.
+- Keep worklogs as drafts and upload them to Jira when ready.
+- Sync with Google or Outlook Calendar to turn meetings into worklogs.
+
+**🏃 Sprint Planner 🏃**
+
+- Plan the sprints of any board with the backlog and drag issues between sprints.
+- Create, start and complete sprints without leaving the planner.
+- Set up the team with working days, hours and a focus factor to get each person's capacity.
+- Track leave and holidays on a leave calendar. Add them by hand or read them from Outlook, Google, .ics files or Confluence Team Calendars.
+- See velocity, a forecast of upcoming sprints and the health of the current sprint.
+- Plan on a roadmap and a resource timeline. Split an issue's work across dates and people.
+- Link dependent issues and spot conflicts in the plan.
+- Try changes in draft mode before applying them to Jira.
+
+**📊 Reports 📊**
+
+- Worklog (timesheet) report by user, day, issue, project or sprint, with cost and billing views.
+- Sprint report with worklogs and velocity across multiple boards.
+- Estimate vs Actual report using story points or hours.
+- Say-Do Ratio report for commitments, completed work and velocity growth.
+- Time in Status report with lead time, cycle time, bottlenecks and status timelines.
+- Workload Heatmap showing each person's daily load against their capacity.
+- Pivot report with row and column grouping, filters and aggregate functions.
+- Save Pivot reports, share them as files and add them to dashboards as gadgets.
+
+**📈 Dashboards 📈**
+
+- Create several dashboards and arrange gadgets with drag and drop.
+- Choose from worklog, calendar, ticket, bookmark, Time in Status and Workload Heatmap gadgets.
+- Set a dashboard as a quick view and choose its icon and layout.
+
+**👥 User groups 👥**
+
+- Group Jira users into teams for reporting.
+- Set a time zone per group so reports match each team's working day.
+
+**⚙️ Personalize ⚙️**
+
+- Choose what happens when you click the JA icon: open a page, a dashboard or a quick menu.
+- Switch between light and dark themes and pick a skin.
+- Set default values, worklog rules and timer options from the settings page.
+- See recent updates on your Jira tickets from the header.
+
+**🔒 Privacy 🔒**
+
+- Jira Assistant talks only to your Jira and to the calendars you connect.
+- Your Jira data stays in your browser and is not collected or stored by Jira Assistant.
+- Free for personal and commercial use.
+
+**🎥 Setup help 🎥**
+
+Watch the setup video: [Jira Assistant Setup](https://youtu.be/HsWq7cT3Qq0)
+
+**🙌 Support us 🙌**
+
+If Jira Assistant saves you time, consider **[a donation](https://paypal.me/shridhartl)**.
