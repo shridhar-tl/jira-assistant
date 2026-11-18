@@ -38,6 +38,7 @@ export const ApiUrls = {
     searchGroup: '~/rest/api/2/groups/picker?caseInsensitive=true&maxResults={1}&query={0}',
     getGroupMembers: '~/rest/api/2/group/member?maxResults={1}&includeInactiveUsers=true&groupId={0}',
     getUserDetails: '~/rest/api/2/user?username={0}',
+    getUserDetailsByAccountId: '~/rest/api/2/user?accountId={0}',
     mySelf: '~/rest/api/2/myself',
     serverInfo: '~/rest/api/2/serverInfo',
 

@@ -254,7 +254,7 @@ export const IssuePicker: React.FC<IssuePickerProps> = React.memo(
             <div
                 className={`flex items-center gap-2 px-3 py-2 border border-(--border-color) rounded-lg cursor-pointer transition-colors hover:bg-(--bg-hover) ${disabled ? 'opacity-50 cursor-not-allowed' : ''} ${className}`}
                 ref={displayRef}
-                tabIndex={tabIndex}
+                tabIndex={disabled ? -1 : (tabIndex ?? 0)}
                 onClick={disabled ? undefined : () => toggleEdit(true)}
                 onKeyDown={disabled ? undefined : editTicket}
                 data-test-id="issue-key"

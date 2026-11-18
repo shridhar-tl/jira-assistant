@@ -7,6 +7,7 @@ import { Button } from '@components';
 import AddWorklog from '../dialogs/AddWorklog';
 import GroupEditor from '../dialogs/GroupEditor';
 import { inject } from '../services/injector';
+import { getErrorMessage } from '../utils';
 
 import { GadgetContainer, useBaseGadget, type BaseGadgetProps } from './BaseGadget';
 import { GadgetTitle } from './constants';
@@ -24,6 +25,8 @@ import Report from './WorklogReport/Report';
 import CustomActions from './WorklogReport/settings/CustomActions';
 import SettingsDialog from './WorklogReport/settings/SettingsDialog';
 import WorklogReportInfo from './WorklogReport/WorklogReportInfo';
+
+const reportErrorMessage = 'Unable to generate the report. Look at console log for more details';
 
 function WorklogReportInner(props: BaseGadgetProps) {
     const gadgetHook = useBaseGadget(props, {
@@ -64,6 +67,10 @@ function WorklogReportInner(props: BaseGadgetProps) {
         gadgetHook.setIsLoading(true);
         try {
             await fetchData(dispatch, getState)();
+        } catch (err: unknown) {
+            console.error('Error generating worklog report:', err);
+            const { $message } = inject('MessageService');
+            $message.error(getErrorMessage(err, reportErrorMessage), 'Worklog report');
         } finally {
             gadgetHook.setIsLoading(false);
         }

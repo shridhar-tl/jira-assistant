@@ -5,6 +5,8 @@ import { GadgetContainer, useBaseGadget } from '@/gadgets/BaseGadget';
 
 import { inject } from '@services';
 
+import { getErrorMessage } from '@utils';
+
 import { TabView, TabPage } from '@components';
 
 import ChartPanel from './ChartPanel';
@@ -12,8 +14,10 @@ import { fetchEstimateActualData, loadProjects, searchProjectInList } from './da
 import SettingsPanel from './SettingsPanel';
 import type { ChartState, DateRange, ProjectItem } from './types';
 
+const reportErrorMessage = 'Unable to generate the report. Look at console log for more details';
+
 export default function EstimateActualReport() {
-    const { $session } = inject('SessionService');
+    const { $session, $message, $usergroup } = inject('SessionService', 'MessageService', 'UserGroupService');
 
     const [selectedTab, setSelectedTab] = useState(0);
     const [groups, setGroups] = useState<any[]>([]);
@@ -42,9 +46,7 @@ export default function EstimateActualReport() {
     const { setIsLoading } = gadgetHook;
 
     useEffect(() => {
-        inject('UserGroupService')
-            .$usergroup.getUserGroups()
-            .then((g: any) => setGroups(g || []));
+        $usergroup.getUserGroups().then((g: any) => setGroups(g || []));
         loadProjects().then((list) => {
             setProjectsList(list);
             setFilteredProjectsList(list);
@@ -75,10 +77,13 @@ export default function EstimateActualReport() {
             setChartData(result.chartData);
             setChartWidth(result.chartWidth);
             setSelectedTab(1);
+        } catch (err: unknown) {
+            console.error('Error generating estimate vs actual report:', err);
+            $message.error(getErrorMessage(err, reportErrorMessage), 'Estimate vs Actual');
         } finally {
             setIsLoading(false);
         }
-    }, [setIsLoading]);
+    }, [setIsLoading, $message]);
 
     const handleGroupsChanged = useCallback((updatedGroups?: any[]) => {
         setShowGroupsPopup(false);

@@ -237,7 +237,7 @@ function SprintDetailsRow({ sprint, formatDateTime }: SprintDetailsRowProps) {
 function SPVal({ oldVal, val }: { oldVal?: number; val?: number | string }) {
     return (
         <>
-            {oldVal && (
+            {oldVal != null && (
                 <span className="text-amber-500 mr-1 text-xs">
                     {oldVal} <i className="fa fa-arrow-right text-[10px]" />
                 </span>

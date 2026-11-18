@@ -1,8 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+
+import type { ComponentEvent } from 'fluxo-ui';
 
 import { inject } from '@services';
 
-import { Autocomplete } from '@components';
+import { AutocompleteMulti } from '@components';
 
 export interface Sprint {
     id: number;
@@ -24,17 +26,19 @@ interface SprintListProps {
     placeholder?: string;
 }
 
+function toRapidViewArray(views: RapidView | RapidView[] | null): RapidView[] {
+    if (!views) return [];
+    return Array.isArray(views) ? views : [views];
+}
+
 export default function SprintList({ rapidViews, value, onChange, placeholder }: SprintListProps) {
     const [sprints, setSprints] = useState<Sprint[] | null>(null);
 
     useEffect(() => {
-        pullSprintList(rapidViews);
-    }, [rapidViews]);
+        let cancelled = false;
+        const viewsArray = toRapidViewArray(rapidViews);
 
-    const pullSprintList = async (views: RapidView | RapidView[] | null) => {
-        const viewsArray = views ? (Array.isArray(views) ? views : [views]) : [];
-
-        if (!viewsArray || viewsArray.length === 0) {
+        if (viewsArray.length === 0) {
             setSprints(null);
             onChange([]);
             return;
@@ -44,36 +48,45 @@ export default function SprintList({ rapidViews, value, onChange, placeholder }:
 
         if (value && value.length > 0) {
             const filteredValue = value.filter((s) => selectedRapidIds.includes(s.rapidId));
-            onChange(filteredValue);
+            if (filteredValue.length !== value.length) {
+                onChange(filteredValue);
+            }
         }
 
-        const jiraService = inject('JiraService');
+        const { $jira } = inject('JiraService');
+        $jira.getRapidSprintList(selectedRapidIds).then((fetchedSprints) => {
+            if (cancelled) return;
+            const sprintsArray: Sprint[] = Array.isArray(fetchedSprints) ? fetchedSprints : Object.values(fetchedSprints).flat();
+            const sortedSprints = [...sprintsArray]
+                .sort((a, b) => b.id - a.id)
+                .map((s) => (s.stateAppended ? s : { ...s, stateAppended: true, name: `${s.name} - (${s.state || ''})` }));
+            setSprints(sortedSprints);
+        });
 
-        const fetchedSprints = await jiraService.$jira.getRapidSprintList(selectedRapidIds);
-        const sprintsArray = Array.isArray(fetchedSprints) ? fetchedSprints : Object.values(fetchedSprints).flat();
-        const sortedSprints = [...sprintsArray]
-            .sort((a: Sprint, b: Sprint) => b.id - a.id)
-            .map((s: Sprint) => (s.stateAppended ? s : { ...s, stateAppended: true, name: `${s.name} - (${s.state || ''})` }));
+        return () => {
+            cancelled = true;
+        };
+    }, [rapidViews]);
 
-        setSprints(sortedSprints);
-    };
+    const items = useMemo(() => (sprints || []).map((s) => ({ label: s.name, value: s.id.toString() })), [sprints]);
+    const selectedIds = useMemo(() => (value || []).map((s) => s.id.toString()), [value]);
 
-    const searchSprints = (query: string) => {
-        const lowerQuery = (query || '').toLowerCase();
-        const sprintIds = value?.map((v) => v.id) || [];
-
-        return (sprints || []).filter(
-            (r) => (r.name.toLowerCase().includes(lowerQuery) || r.id.toString().startsWith(query)) && !sprintIds.includes(r.id),
-        );
+    const handleChange = (e: ComponentEvent<string[]>) => {
+        const available = [...(sprints || []), ...(value || [])];
+        const selected = e.value
+            .map((id) => available.find((s) => s.id.toString() === id))
+            .filter((s): s is Sprint => !!s);
+        onChange(selected);
     };
 
     return (
-        <Autocomplete
-            items={(sprints || []).map((s) => ({ label: s.name, value: s.id.toString() }))}
-            value={value?.[0]?.name || ''}
-            onChange={(e: any) => {}}
+        <AutocompleteMulti
+            items={items}
+            value={selectedIds}
+            onChange={handleChange}
+            minLength={0}
             placeholder={placeholder || 'Start typing the sprint name here'}
-            readonly={!sprints || sprints.length === 0}
+            disabled={!sprints || sprints.length === 0}
         />
     );
 }

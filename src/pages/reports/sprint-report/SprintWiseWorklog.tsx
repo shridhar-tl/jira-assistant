@@ -2,9 +2,14 @@ import { Fragment, useCallback, useEffect, useRef, useState } from 'react';
 
 import { Checkbox, ScrollableTable, TBody, THead } from '@components';
 
-import { distinct, getUserName, groupBy, union } from '@utils';
+import { distinct, getUserName, groupBy, parseISOString, union } from '@utils';
 
 import { convertSecs } from '../../../services/utils-service';
+
+interface WorklogDateRange {
+    start: number;
+    end: number;
+}
 
 interface SprintWiseWorklogProps {
     groups: any[];
@@ -44,6 +49,7 @@ function SprintWiseWorklog({ groups, ticketDetails, sprintDetails }: SprintWiseW
                     endDate: sprintInfo.completeDate,
                     sprintStatus: sprintInfo.state,
                     issueDetails: {} as Record<string, any>,
+                    worklogRange: excludeNonSprintHrs ? getSprintDateRange(sprintInfo) : null,
                 };
 
                 let ticketDet = sprintContext.issueDetails;
@@ -111,7 +117,7 @@ function SprintWiseWorklog({ groups, ticketDetails, sprintDetails }: SprintWiseW
             rawReportDataRef.current = data;
             return data;
         },
-        [ticketDetails, sprintDetails],
+        [ticketDetails, sprintDetails, excludeNonSprintHrs],
     );
 
     const updateWorklogDetails = useCallback(
@@ -217,11 +223,18 @@ function SprintWiseWorklog({ groups, ticketDetails, sprintDetails }: SprintWiseW
         if (groups.length > 0) {
             updateGroups(groups);
         }
-    }, [groups]);
+    }, [groups, ticketDetails, sprintDetails]);
 
     useEffect(() => {
         updateWorklogDetails();
-    }, [showSubtask, showIncomplete, excludeNonSprintHrs]);
+    }, [showSubtask, showIncomplete]);
+
+    useEffect(() => {
+        const rawData = processTicketData(localGroups);
+        if (rawData) {
+            updateWorklogDetails(rawData);
+        }
+    }, [excludeNonSprintHrs]);
 
     const toggleGroupSelection = useCallback(
         (grp: any, chk: boolean) => {
@@ -250,7 +263,6 @@ function SprintWiseWorklog({ groups, ticketDetails, sprintDetails }: SprintWiseW
                     checked={excludeNonSprintHrs}
                     onChange={(e) => setExcludeNonSprintHrs(e.value)}
                     label="Exclude hours logged out of sprint"
-                    disabled={true}
                 />
                 <span className="text-xs text-amber-600 font-medium ml-2">
                     <i className="fa fa-info-circle mr-1" />
@@ -359,10 +371,33 @@ function SprintWiseWorklog({ groups, ticketDetails, sprintDetails }: SprintWiseW
     );
 }
 
-function setUserWiseWorklog(fields: any): Record<string, { total: number; allTotal: number }> {
+function getSprintTime(isoValue?: string, displayValue?: string): number | undefined {
+    const date = isoValue ? parseISOString(isoValue) : displayValue ? new Date(displayValue) : null;
+    const time = date?.getTime();
+    return time === undefined || Number.isNaN(time) ? undefined : time;
+}
+
+function getSprintDateRange(sprintInfo: any): WorklogDateRange {
+    const start = getSprintTime(sprintInfo.isoStartDate, sprintInfo.startDate) ?? Number.POSITIVE_INFINITY;
+    const isActive = String(sprintInfo.state || '').toUpperCase() === 'ACTIVE';
+    const end =
+        getSprintTime(sprintInfo.isoCompleteDate, sprintInfo.completeDate) ??
+        (isActive ? undefined : getSprintTime(sprintInfo.isoEndDate, sprintInfo.endDate)) ??
+        Date.now();
+    return { start, end };
+}
+
+function isWithinRange(started: string | undefined, range: WorklogDateRange): boolean {
+    if (!started) return false;
+    const time = parseISOString(started).getTime();
+    return time >= range.start && time <= range.end;
+}
+
+function setUserWiseWorklog(fields: any, range: WorklogDateRange | null): Record<string, { total: number; allTotal: number }> {
     const worklogs: Record<string, { total: number; allTotal: number }> = {};
     const worklogList = (fields.worklog || {}).worklogs || [];
     worklogList.forEach((wl: any) => {
+        if (range && !isWithinRange(wl.started, range)) return;
         const author = getUserName(wl.author);
         if (!author) return;
         let wlObj = worklogs[author];
@@ -387,7 +422,7 @@ function getIssueDetails(allTicketDetails: any[], issueList: string[], details: 
                 status: fields.status,
                 issuetype: fields.issuetype,
                 estimate: fields.timeoriginalestimate,
-                worklogs: setUserWiseWorklog(fields),
+                worklogs: setUserWiseWorklog(fields, details.worklogRange),
             };
 
             if (isMainTask) {

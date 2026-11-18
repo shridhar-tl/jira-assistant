@@ -4,6 +4,8 @@ import { inject } from '@services';
 
 import { Button, Checkbox, showContextMenu } from '@components';
 
+import { getErrorMessage } from '@utils';
+
 import { GadgetActionType } from '@constants';
 
 import { WorklogContext } from '../common/context';
@@ -39,6 +41,9 @@ interface BookmarkItem {
     rowClass: string;
 }
 
+const loadBookmarksErrorMessage = 'Unable to load the bookmarks. Look at console log for more details';
+const removeBookmarksErrorMessage = 'Unable to remove the selected bookmarks. Look at console log for more details';
+
 export default function MyBookmarks(props: BaseGadgetProps) {
     const [bookmarksList, setBookmarksList] = useState<BookmarkItem[]>([]);
     const [selAllChk, setSelAllChk] = useState(false);
@@ -57,19 +62,25 @@ export default function MyBookmarks(props: BaseGadgetProps) {
         setIsLoading(true);
         setShowAddPopup(false);
 
-        const { $bookmark, $userutils } = inject('BookmarkService', 'UserUtilsService');
+        const { $bookmark, $userutils, $message } = inject('BookmarkService', 'UserUtilsService', 'MessageService');
 
-        $bookmark.getBookmarks().then((result: any[]) => {
-            result.forEach((b) => {
-                b.ticketUrl = $userutils.getTicketUrl(b.ticketNo);
-                b.selected = false;
-                b.rowClass = getRowStatus(b);
-            });
+        $bookmark
+            .getBookmarks()
+            .then((result: any[]) => {
+                result.forEach((b) => {
+                    b.ticketUrl = $userutils.getTicketUrl(b.ticketNo);
+                    b.selected = false;
+                    b.rowClass = getRowStatus(b);
+                });
 
-            setBookmarksList(result);
-            setSelAllChk(false);
-            setIsLoading(false);
-        });
+                setBookmarksList(result);
+                setSelAllChk(false);
+            })
+            .catch((err: unknown) => {
+                console.error('Error loading bookmarks:', err);
+                $message.error(getErrorMessage(err, loadBookmarksErrorMessage), 'Bookmarks');
+            })
+            .finally(() => setIsLoading(false));
     }, [setIsLoading]);
 
     useEffect(() => {
@@ -116,10 +127,14 @@ export default function MyBookmarks(props: BaseGadgetProps) {
 
             Dialog.confirmDelete('Are you sure to delete the selected bookmark(s)?', 'Confirm delete bookmark(s)').then(() => {
                 setIsLoading(true);
-                $bookmark.removeBookmark(ids).then((result: any[]) => {
-                    setBookmarksList(result);
-                    setIsLoading(false);
-                });
+                $bookmark
+                    .removeBookmark(ids)
+                    .then((result: any[]) => setBookmarksList(result))
+                    .catch((err: unknown) => {
+                        console.error('Error removing bookmarks:', err);
+                        $message.error(getErrorMessage(err, removeBookmarksErrorMessage), 'Bookmarks');
+                    })
+                    .finally(() => setIsLoading(false));
             });
         },
         [bookmarksList, setIsLoading],

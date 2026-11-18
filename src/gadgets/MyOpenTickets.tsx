@@ -2,6 +2,8 @@ import { memo, useCallback, useEffect, useRef, useState } from 'react';
 
 import { inject } from '@services';
 
+import { getErrorMessage } from '@utils';
+
 import { GadgetActionType } from '@constants';
 
 import { Column, NoDataRow, ScrollableTable, TBody, THead } from '../components/shared/ScrollableTable';
@@ -67,6 +69,8 @@ const TicketRow = memo(function TicketRow({ ticket: b, onAddWorklog, onBookmark 
     );
 });
 
+const loadTicketsErrorMessage = 'Unable to load the open tickets. Look at console log for more details';
+
 export default function MyOpenTickets(props: BaseGadgetProps) {
     const [ticketList, setTicketList] = useState<TicketItem[]>([]);
 
@@ -90,7 +94,7 @@ export default function MyOpenTickets(props: BaseGadgetProps) {
     const refreshData = useCallback(
         (refresh?: boolean) => {
             setIsLoading(true);
-            const { $jira, $userutils } = inject('JiraService', 'UserUtilsService');
+            const { $jira, $userutils, $message } = inject('JiraService', 'UserUtilsService', 'MessageService');
 
             $jira
                 .getOpenTickets(refresh)
@@ -117,6 +121,10 @@ export default function MyOpenTickets(props: BaseGadgetProps) {
                         };
                     });
                     setTicketList(tickets);
+                })
+                .catch((err: unknown) => {
+                    console.error('Error loading open tickets:', err);
+                    $message.error(getErrorMessage(err, loadTicketsErrorMessage), 'Open tickets');
                 })
                 .finally(() => setIsLoading(false));
         },

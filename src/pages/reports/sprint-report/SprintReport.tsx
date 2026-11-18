@@ -7,7 +7,7 @@ import { inject } from '@services';
 
 import { Button, Checkbox, RapidViewList, SprintList, TabPage, TabView } from '@components';
 
-import { addDistinctRange, distinct, union } from '@utils';
+import { distinct, getErrorMessage, union } from '@utils';
 
 import { EventCategory } from '@constants';
 
@@ -21,6 +21,13 @@ import SummaryView1 from './SummaryView1';
 import SummaryView2 from './SummaryView2';
 import VelocityChart from './VelocityChart';
 
+interface SprintReportData {
+    sprintDetails: any[];
+    ticketDetails?: any[];
+}
+
+const reportErrorMessage ='Unable to generate the report. Look at console log for more details';
+
 const gadgetConfig = {
     title: 'Sprint report',
     hideCSVExport: true,
@@ -31,11 +38,14 @@ function SprintReport(props: BaseGadgetProps) {
     const gadgetHook = useBaseGadget({ ...props, isGadget: false }, gadgetConfig);
     const { setIsLoading, setDisableRefresh } = gadgetHook;
 
-    const { $jira } = inject('JiraService');
-    const { $userutils } = inject('UserUtilsService');
-    const { $session } = inject('SessionService');
-    const { $usergroup } = inject('UserGroupService');
-    const { $analytics } = inject('AnalyticsService');
+    const { $jira, $userutils, $session, $usergroup, $analytics, $message } = inject(
+        'JiraService',
+        'UserUtilsService',
+        'SessionService',
+        'UserGroupService',
+        'AnalyticsService',
+        'MessageService',
+    );
 
     const [selectedTab, setSelectedTab] = useState(0);
     const [selectedRapidViews, setSelectedRapidViews] = useState<any[]>($session.CurrentUser?.rapidViews || []);
@@ -73,31 +83,22 @@ function SprintReport(props: BaseGadgetProps) {
         });
 
         Promise.all(arr)
-            .then((result) => {
+            .then((result): SprintReportData | Promise<SprintReportData> => {
                 $analytics.trackEvent('Sprint report viewed', EventCategory.UserActions);
 
                 if (includeWorklogs) {
-                    let ticketsList = distinct(
-                        union(result, (spr: any) => spr.contents.completedIssues),
-                        (t: any) => t.key,
+                    const ticketKeys = distinct(
+                        union(result, (spr: any) => [
+                            ...spr.contents.completedIssues,
+                            ...spr.contents.puntedIssues,
+                            ...spr.contents.issuesNotCompletedInCurrentSprint,
+                        ]),
+                        (t: any) => t.key as string,
                     );
-                    ticketsList = addDistinctRange(
-                        ticketsList,
-                        distinct(
-                            union(result, (spr: any) => spr.contents.puntedIssues),
-                            (t: any) => t.key,
-                        ),
-                        (t: any) => t.key,
-                    );
-                    ticketsList = addDistinctRange(
-                        ticketsList,
-                        distinct(
-                            union(result, (spr: any) => spr.contents.issuesNotCompletedInCurrentSprint),
-                            (t: any) => t.key,
-                        ),
-                        (t: any) => t.key,
-                    );
-                    const keys = ticketsList.map((t: any) => t.key).join(',');
+                    if (!ticketKeys.length) {
+                        return { sprintDetails: result, ticketDetails: [] };
+                    }
+                    const keys = ticketKeys.join(',');
                     return $jira
                         .searchTickets(`key in (${keys}) or parent in (${keys})`, [
                             'summary',
@@ -110,7 +111,7 @@ function SprintReport(props: BaseGadgetProps) {
                 }
                 return { sprintDetails: result };
             })
-            .then((data: any) => {
+            .then((data: SprintReportData) => {
                 const result = data.sprintDetails;
                 const getCountWithSP = (issues: any[]) =>
                     issues.filter((issue) => ((issue.currentEstimateStatistic || {}).statFieldValue || {}).value).length;
@@ -173,7 +174,8 @@ function SprintReport(props: BaseGadgetProps) {
                     sprint.addedIssues = added;
                     sprint.addedWithSP = addedWithSP;
                     sprint.removedIssues = removed;
-                    sprint.totalIssuesSPOld = (sprint.completedSPOld || 0) + (sprint.incompletedSPOld || 0);
+                    const totalSPOld = (sprint.completedSPOld ?? (sprint.completedSP || 0)) + (sprint.incompletedSPOld ?? (sprint.incompletedSP || 0));
+                    sprint.totalIssuesSPOld = totalSPOld;
                     sprint.totalIssuesSP = (sprint.completedSP || 0) + (sprint.incompletedSP || 0);
                     sprint.totalIssuesCount = sprint.CompletedTotal + sprint.incompletedTotal;
                     sprint.totalIssuesWithSP = sprint.completedWithSP + sprint.incompletedWithSP;
@@ -184,7 +186,9 @@ function SprintReport(props: BaseGadgetProps) {
                         }
                     }
                     sprint.estimateIssuesSPOld =
-                        (sprint.completedSPOld || 0) + (sprint.incompletedSPOld || 0) + (sprint.removedSP || 0) - (sprint.addedSP || 0);
+                        totalSPOld +
+                        (sprint.removedSPOld ?? (sprint.removedSP || 0)) -
+                        (sprint.addedSPOld ?? (sprint.addedSP || 0));
                     if (sprint.estimateIssuesSPOld < 0) {
                         sprint.estimateIssuesSPOld = 0;
                     }
@@ -217,8 +221,13 @@ function SprintReport(props: BaseGadgetProps) {
                 setWorklogDetails(data.ticketDetails);
                 setSelectedTab(1);
                 setSprintDetails(result);
+            })
+            .catch((err: unknown) => {
+                console.error('Error generating sprint report:', err);
+                setIsLoading(false);
+                $message.error(getErrorMessage(err, reportErrorMessage), 'Sprint report');
             });
-    }, [selectedSprints, includeWorklogs, $jira, $analytics, $userutils, setIsLoading, setDisableRefresh]);
+    }, [selectedSprints, includeWorklogs, $jira, $analytics, $userutils, $message, setIsLoading, setDisableRefresh]);
 
     const sprintCount = sprintDetails ? sprintDetails.length : 0;
     const isReportDataReady = sprintDetails && sprintCount > 0;

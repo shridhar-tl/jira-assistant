@@ -1182,9 +1182,10 @@ export default class JiraService {
 
     getUserDetails(username: string): Promise<any> {
         const keyName = `userdetail_${username}`;
+        const url = this.$session.CurrentUser?.isAtlasCloud ? ApiUrls.getUserDetailsByAccountId : ApiUrls.getUserDetails;
 
         return this.fetchCachedData(keyName, () =>
-            this.$ajax.get(ApiUrls.getUserDetails, username).then((user: any) => {
+            this.$ajax.get(url, encodeURIComponent(username)).then((user: any) => {
                 this.$jaCache.session.set(keyName, user);
                 return user;
             }, this.jiraErrorHandler),

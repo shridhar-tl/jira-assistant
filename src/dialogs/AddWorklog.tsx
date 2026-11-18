@@ -341,7 +341,6 @@ function AddWorklog({ editTracker, worklog: worklogProp, uploadImmediately: uplo
                             value={log.ticketNo}
                             useDisplay={true}
                             className="w-full"
-                            tabIndex={1}
                             placeholder="Enter the ticket number or start typing the summary"
                             disabled={!!log.isUploaded}
                             maxLength={20}

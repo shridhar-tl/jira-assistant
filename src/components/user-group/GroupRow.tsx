@@ -5,6 +5,7 @@ import type { ComponentEvent, ListItem } from 'fluxo-ui';
 import type { JiraUser, UserGroup } from '@/types';
 
 import { Button, Dropdown } from '@components';
+import { getUserName } from '@utils/helpers';
 
 import AddUserForm from './AddUserForm';
 import GroupNameComponent from './GroupNameComponent';
@@ -17,11 +18,6 @@ interface GroupRowProps {
     userTimezones: ListItem[];
     hasGroupWithName: (name: string, group?: UserGroup) => boolean;
     onRemove: (index: number) => void;
-}
-
-function getUserName(user: JiraUser, lowercase = false) {
-    const name = user.name || user.emailAddress || user.accountId;
-    return lowercase ? name?.toLowerCase() : name;
 }
 
 function GroupRow({ group, index, groupTimezones, userTimezones, hasGroupWithName, onRemove }: GroupRowProps) {

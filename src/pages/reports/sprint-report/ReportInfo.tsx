@@ -1,3 +1,5 @@
+import config from '@/customize';
+
 function SprintReportInfo() {
     return (
         <div className="p-6 space-y-4">
@@ -14,9 +16,14 @@ function SprintReportInfo() {
                 </summary>
                 <div className="px-5 py-4 bg-amber-50/50 dark:bg-amber-950/20 border-t border-amber-200 dark:border-amber-800">
                     <p className="text-sm text-secondary">
-                        This report is currently in an experimental phase and is under active development. If you encounter any issues or
-                        have suggestions for improvement, click the <i className="fa fa-phone mx-1" /> icon in the top-right corner to
-                        share your feedback.
+                        This report is currently in an experimental phase and is under active development.
+                        {config.modules.contactUs && (
+                            <>
+                                {' '}
+                                If you encounter any issues or have suggestions for improvement, click the{' '}
+                                <i className="fa-solid fa-headset mx-1" /> (Contact us) icon at the bottom of the sidebar to share your feedback.
+                            </>
+                        )}
                     </p>
                 </div>
             </details>

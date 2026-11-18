@@ -8,7 +8,7 @@ interface SummaryView1Props {
 function SPChangeIndicator({ oldVal, newVal }: { oldVal?: number; newVal?: number | string }) {
     return (
         <>
-            {oldVal && (
+            {oldVal != null && (
                 <span className="text-amber-500 mr-1">
                     {oldVal} <i className="fa fa-arrow-right text-xs" />
                 </span>
