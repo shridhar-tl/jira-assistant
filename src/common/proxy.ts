@@ -3,7 +3,7 @@ import { SystemUserId } from '../constants/common';
 import { SettingsCategory } from '../constants/settings';
 import browserInfo, { BROWSER_NAME } from '../utils/browsers';
 
-import { isExtnAccessDenied, processResponse } from './proxy-helper';
+import { isExtnAccessDenied, isExtnNoResponse, processResponse, rejectIfNoResponse } from './proxy-helper';
 import { convertToStorableValue } from './storage-helpers';
 
 declare const chrome: any;
@@ -30,6 +30,10 @@ export function onExtnAccessDenied(listener: ExtnAccessDeniedListener): () => vo
         accessDeniedListeners.delete(listener);
     };
 }
+const validationTimeoutMs = 20000;
+const extnNoResponseMessage =
+    'Jira Assistant extension did not respond. Restart the browser or disable and re-enable the extension, and then try again.';
+
 const chr = typeof chrome !== 'undefined' ? chrome : typeof browser !== 'undefined' ? browser : {};
 
 function hasInjection(): boolean {
@@ -98,17 +102,24 @@ export async function validateIfWebApp(state: WebAppState): Promise<WebAppState 
         }
 
         try {
-            const version = await executeService('SELF', 'VERSION');
+            const version = await rejectIfNoResponse(executeService('SELF', 'VERSION'), validationTimeoutMs, extnNoResponseMessage);
             state.extnVersion = version;
             state.extnUnavailable = !version || !(version >= 2.38);
             state.isExtnValid = version >= 2.38;
             // Reads the integrated user the same way authentication does, so that the extension
             // reports an access denial for this site here instead of failing later during authentication.
-            const userSetting = await executeService('StorageService', 'getSetting', [SystemUserId, SettingsCategory.System, 'CurrentUserId']);
+            const userSetting = await rejectIfNoResponse(
+                executeService('StorageService', 'getSetting', [SystemUserId, SettingsCategory.System, 'CurrentUserId']),
+                validationTimeoutMs,
+                extnNoResponseMessage,
+            );
             const isIntegrated = userSetting?.value > 0;
             state.needIntegration = !isIntegrated;
             state.authReady = state.isExtnValid && isIntegrated;
         } catch (err) {
+            if (isExtnNoResponse(err)) {
+                throw err;
+            }
             if (isExtnAccessDenied(err)) {
                 state.extnAccessDeniedReason = err.message;
                 state.authReady = false;

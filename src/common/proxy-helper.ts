@@ -11,6 +11,24 @@ export function isExtnAccessDenied(err: unknown): err is ExtnAccessDeniedError {
     return !!err && typeof err === 'object' && (err as Partial<ExtnAccessDeniedError>).code === extnAccessDeniedCode;
 }
 
+export const extnNoResponseCode = 'EXTN_NO_RESPONSE';
+
+export class ExtnNoResponseError extends Error {
+    readonly code = extnNoResponseCode;
+}
+
+export function isExtnNoResponse(err: unknown): err is ExtnNoResponseError {
+    return err instanceof ExtnNoResponseError;
+}
+
+export function rejectIfNoResponse<T>(request: Promise<T>, timeoutMs: number, message: string): Promise<T> {
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const timeout = new Promise<never>((_, reject) => {
+        timer = setTimeout(() => reject(new ExtnNoResponseError(message)), timeoutMs);
+    });
+    return Promise.race([request, timeout]).finally(() => clearTimeout(timer));
+}
+
 interface ProxyResponse {
     success?: any;
     error?: any;

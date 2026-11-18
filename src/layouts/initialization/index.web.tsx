@@ -17,6 +17,23 @@ import { getCurrentQueryParams } from '@utils';
 
 import type { InitValue } from '../renderer/types';
 
+import InitializationError from './InitializationError';
+
+const unknownInitErrorMessage = 'An unknown error occurred while initializing Jira Assistant. Look at the browser console for more details.';
+
+function getErrorMessage(err: unknown): string {
+    if (err instanceof Error && err.message) {
+        return err.message;
+    }
+    if (typeof err === 'string' && err) {
+        return err;
+    }
+    if (err && typeof err === 'object' && typeof (err as { message?: unknown }).message === 'string' && (err as { message: string }).message) {
+        return (err as { message: string }).message;
+    }
+    return unknownInitErrorMessage;
+}
+
 interface WebInitProps {
     initValue?: InitValue;
     authTypeChosen?: (authType: string) => void;
@@ -29,6 +46,15 @@ export function withInitParams<P extends WebInitProps>(Component: ComponentType<
         const location = useLocation();
         const navigate = useNavigate();
         const [initValue, setInitValue] = useState<InitValue | false>(false);
+        const [initError, setInitError] = useState<string | null>(null);
+
+        const startInitialization = useCallback(() => {
+            setInitError(null);
+            initializeApp(location, navigate).then(setInitValue, (err: unknown) => {
+                console.error('JA: Initialization failed:', err);
+                setInitError(getErrorMessage(err));
+            });
+        }, [location, navigate]);
 
         const authTypeChosen = useCallback(
             (authType: string) => {
@@ -42,11 +68,11 @@ export function withInitParams<P extends WebInitProps>(Component: ComponentType<
             [navigate, initValue],
         );
 
-        useEffect(() => {
-            initializeApp(location, navigate).then(setInitValue);
-        }, []);
+        useEffect(startInitialization, []);
 
-        if (initValue) {
+        if (initError !== null) {
+            return <InitializationError message={initError} retry={startInitialization} />;
+        } else if (initValue) {
             return <Component {...(props as P)} key={initValue.authType || '1'} initValue={initValue} authTypeChosen={authTypeChosen} />;
         } else {
             return <BlockLoading text="Loading... Please wait..." />;
