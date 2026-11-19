@@ -180,7 +180,11 @@ function getCollectiveUsers(totalUsersList: any[], sprints: any[], newState: any
                 const {
                     groupedData: [sprintData],
                 } = groupReport;
-                const { tickets, grandTotal, grandTotalCost } = sprintData.usersMap[name] || { tickets: [] };
+                const { tickets, grandTotal, grandTotalCost, isCurrentUser } = sprintData.usersMap[name] || { tickets: [] };
+
+                if (isCurrentUser) {
+                    user.isCurrentUser = true;
+                }
 
                 if (grandTotal) {
                     user.allSprintTotalHours += grandTotal;

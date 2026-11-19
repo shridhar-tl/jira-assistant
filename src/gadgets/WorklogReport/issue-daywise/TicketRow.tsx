@@ -1,5 +1,3 @@
-import React from 'react';
-
 import { IssueDays, IssueInfo } from '../userdaywise/shared';
 
 interface TicketRowProps {
@@ -23,7 +21,6 @@ export default function TicketRow({
     issue,
     dates,
     user,
-    uid,
     sprintsList,
     costView,
     timeExportFormat,

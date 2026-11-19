@@ -1,8 +1,12 @@
+import classNames from 'classnames';
+
 import { ScrollableTable, THead, TBody } from '@components';
+
+import { isClosed } from './utils';
 
 interface SummaryView1Props {
     sprintDetails: any[];
-    formatDateTime: (val: string) => string;
+    formatDateTime: (isoValue?: string) => string;
 }
 
 function SPChangeIndicator({ oldVal, newVal }: { oldVal?: number; newVal?: number | string }) {
@@ -55,7 +59,7 @@ function SummaryView1({ sprintDetails, formatDateTime }: SummaryView1Props) {
                     </td>
                     {sprintDetails.map((sprint, i) => (
                         <td key={i} className="px-3 py-2">
-                            {formatDateTime(sprint.sprint.startDate)}
+                            {formatDateTime(sprint.sprint.isoStartDate)}
                         </td>
                     ))}
                 </tr>
@@ -65,7 +69,7 @@ function SummaryView1({ sprintDetails, formatDateTime }: SummaryView1Props) {
                     </td>
                     {sprintDetails.map((sprint, i) => (
                         <td key={i} className="px-3 py-2">
-                            {formatDateTime(sprint.sprint.completeDate)}
+                            {formatDateTime(sprint.sprint.isoCompleteDate)}
                         </td>
                     ))}
                 </tr>
@@ -76,7 +80,10 @@ function SummaryView1({ sprintDetails, formatDateTime }: SummaryView1Props) {
                     {sprintDetails.map((sprint, i) => (
                         <td key={i} className="px-3 py-2">
                             <span
-                                className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${sprint.sprint.state === 'closed' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'}`}
+                                className={classNames(
+                                    'inline-block px-2 py-0.5 rounded-full text-xs font-medium',
+                                    isClosed(sprint.sprint.state) ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800',
+                                )}
                             >
                                 {sprint.sprint.state}
                             </span>

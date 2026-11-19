@@ -93,6 +93,7 @@ function RadioGroup({ label, field, value, setValue, options }: RadioGroupProps)
                         <input
                             type="radio"
                             name={field}
+                            value={opt.value}
                             checked={value === opt.value}
                             onChange={() => setValue(field, opt.value)}
                             disabled={opt.disabled}

@@ -61,9 +61,7 @@ export default class OutlookCalendarBase {
         this.$message = $message;
     }
 
-    async getEvents(startDate?: Date, endDate?: Date, options?: any): Promise<MeetingCalendarEntry[]> {
-        options = options || {};
-
+    async getEvents(startDate?: Date, endDate?: Date): Promise<MeetingCalendarEntry[]> {
         if (!startDate) {
             startDate = moment().startOf('month').add(-1, 'days').toDate();
         }
@@ -154,7 +152,7 @@ export default class OutlookCalendarBase {
             });
     }
 
-    protected async fetchEvents(eventsUrl: string): Promise<any> {
+    protected async fetchEvents(_eventsUrl: string): Promise<any> {
         throw new Error('fetchEvents must be implemented by subclass');
     }
 }

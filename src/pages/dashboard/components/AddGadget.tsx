@@ -51,7 +51,7 @@ export function AddGadget({ show, onHide, addedGadgets, addGadget, removeGadget 
             }));
 
             setGadgets([...gadgetList, ...reportGadgets]);
-        } catch (error) {
+        } catch {
             setGadgets(gadgetList);
         }
     };

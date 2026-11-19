@@ -11,7 +11,7 @@ const BasicAuthPage = lazy(() => import('@pages/authenticate/BasicAuthPage'));
 const OptionsPage = lazy(() => import('@pages/settings/global/GlobalSettings'));
 const GuestPokerPage = lazy(() => import('@pages/poker/GuestPokerPage'));
 
-export default function Renderer({ initValue, authInfo, authTypeChosen, contextProps }: RendererProps) {
+export default function Renderer({ initValue, authInfo, authTypeChosen }: RendererProps) {
     const isExtnValid = initValue?.isExtnValid ?? false;
     const extnUnavailable = initValue?.extnUnavailable ?? true;
     const authType = initValue?.authType;

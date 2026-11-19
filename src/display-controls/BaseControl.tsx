@@ -1,5 +1,4 @@
-import { type ReactNode } from 'react';
-import { type ElementType } from 'react';
+import { type ElementType, type ReactNode } from 'react';
 
 interface BaseControlProps {
     tag?: ElementType | null;

@@ -1,12 +1,14 @@
-import { Fragment, useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 
 import classNames from 'classnames';
 
 import { ScrollableTable, THead, TBody } from '@components';
 
+import { isClosed, isIconUrl } from './utils';
+
 interface SummaryView2Props {
     sprintDetails: any[];
-    formatDateTime: (val: string) => string;
+    formatDateTime: (isoValue?: string) => string;
 }
 
 const helpTitle = 'Ticket with storypoints + Ticket without storypoints = Total story count';
@@ -145,7 +147,7 @@ function SummaryView2({ sprintDetails, formatDateTime }: SummaryView2Props) {
 
 interface SprintDetailsRowProps {
     sprint: any;
-    formatDateTime: (val: string) => string;
+    formatDateTime: (isoValue?: string) => string;
 }
 
 function SprintDetailsRow({ sprint, formatDateTime }: SprintDetailsRowProps) {
@@ -159,6 +161,7 @@ function SprintDetailsRow({ sprint, formatDateTime }: SprintDetailsRowProps) {
         <>
             <tr
                 className="border-b border-(--border-color) cursor-pointer hover:bg-(--bg-hover) transition-colors"
+                data-sprint-id={sprint.sprint.id}
                 onClick={toggleExpanded}
                 title="Click to expand and view individual ticket details"
             >
@@ -173,13 +176,13 @@ function SprintDetailsRow({ sprint, formatDateTime }: SprintDetailsRowProps) {
                         <span>{sprint.sprint.name}</span>
                     </div>
                 </td>
-                <td className="px-3 py-2 text-center text-xs">{formatDateTime(sprint.sprint.startDate)}</td>
-                <td className="px-3 py-2 text-center text-xs">{formatDateTime(sprint.sprint.completeDate)}</td>
+                <td className="px-3 py-2 text-center text-xs">{formatDateTime(sprint.sprint.isoStartDate)}</td>
+                <td className="px-3 py-2 text-center text-xs">{formatDateTime(sprint.sprint.isoCompleteDate)}</td>
                 <td className="px-3 py-2 text-center">
                     <span
                         className={classNames(
                             'inline-block px-2 py-0.5 rounded-full text-xs font-medium',
-                            sprint.sprint.state === 'closed' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800',
+                            isClosed(sprint.sprint.state) ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800',
                         )}
                     >
                         {sprint.sprint.state}
@@ -339,19 +342,19 @@ function CategorizedTicketList({ header, issues, headerColor }: CategorizedTicke
                     <td className="px-3 py-1.5">{issue.summary}</td>
                     <td className="px-3 py-1.5">
                         <div className="flex items-center gap-1.5">
-                            {issue.typeUrl && <img className="w-4 h-4" src={issue.typeUrl} alt="" />}
+                            {isIconUrl(issue.typeUrl) && <img className="w-4 h-4" src={issue.typeUrl} alt="" />}
                             <span>{issue.typeName}</span>
                         </div>
                     </td>
                     <td className="px-3 py-1.5">
                         <div className="flex items-center gap-1.5">
-                            {issue.priorityUrl && <img className="w-4 h-4" src={issue.priorityUrl} alt="" />}
+                            {isIconUrl(issue.priorityUrl) && <img className="w-4 h-4" src={issue.priorityUrl} alt="" />}
                             <span>{issue.priorityName}</span>
                         </div>
                     </td>
                     <td className="px-3 py-1.5">
                         <div className="flex items-center gap-1.5">
-                            {issue.statusUrl && <img className="w-4 h-4" src={issue.statusUrl} alt="" />}
+                            {isIconUrl(issue.statusUrl) && <img className="w-4 h-4" src={issue.statusUrl} alt="" />}
                             <span>{issue.statusName}</span>
                         </div>
                     </td>

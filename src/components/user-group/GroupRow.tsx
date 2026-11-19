@@ -18,34 +18,37 @@ interface GroupRowProps {
     userTimezones: ListItem[];
     hasGroupWithName: (name: string, group?: UserGroup) => boolean;
     onRemove: (index: number) => void;
+    onChange: (index: number, changes: Partial<UserGroup>) => void;
 }
 
-function GroupRow({ group, index, groupTimezones, userTimezones, hasGroupWithName, onRemove }: GroupRowProps) {
-    const [users, setUsers] = useState<JiraUser[]>(group.users || []);
-    const [timeZone, setTimeZone] = useState(group.timeZone || '');
+function GroupRow({ group, index, groupTimezones, userTimezones, hasGroupWithName, onRemove, onChange }: GroupRowProps) {
     const [isExpanded, setIsExpanded] = useState(true);
+    const users = group.users || [];
 
     const handleAddUsers = (newUsers: JiraUser[]) => {
         const existingNames = users.map((u) => getUserName(u, true));
         const toAdd = newUsers.filter((u) => !existingNames.includes(getUserName(u, true)));
         const merged = [...users, ...toAdd].sort((a, b) => (a.displayName || '').localeCompare(b.displayName || ''));
-        group.users = merged;
-        setUsers(merged);
+        onChange(index, { users: merged });
     };
 
     const removeUser = (idx: number) => {
-        const newUsers = users.filter((_, i) => i !== idx);
-        group.users = newUsers;
-        setUsers(newUsers);
+        onChange(index, { users: users.filter((_, i) => i !== idx) });
+    };
+
+    const updateUser = (idx: number, changes: Partial<JiraUser>) => {
+        onChange(index, { users: users.map((u, i) => (i === idx ? { ...u, ...changes } : u)) });
     };
 
     const handleTimezoneChange = (e: ComponentEvent<string>) => {
-        group.timeZone = e.value;
-        setTimeZone(e.value);
+        onChange(index, { timeZone: e.value });
     };
 
     return (
-        <div className="rounded-2xl shadow-sm bg-(--bg-primary) overflow-hidden border-l-[3px] border-blue-500 dark:border-blue-400">
+        <div
+            data-testid="user-group"
+            className="rounded-2xl shadow-sm bg-(--bg-primary) overflow-hidden border-l-[3px] border-blue-500 dark:border-blue-400"
+        >
             {/* Group header */}
             <div className="flex items-center gap-2 px-4 py-2.5 bg-gray-50 dark:bg-white/5">
                 <button
@@ -58,7 +61,7 @@ function GroupRow({ group, index, groupTimezones, userTimezones, hasGroupWithNam
                 </button>
 
                 <div className="flex-1 min-w-0">
-                    <GroupNameComponent group={group} hasGroupWithName={hasGroupWithName} />
+                    <GroupNameComponent group={group} hasGroupWithName={hasGroupWithName} onRename={(name) => onChange(index, { name })} />
                 </div>
 
                 <span className="text-xs px-2 py-0.5 rounded-full bg-white dark:bg-white/10 text-gray-500 dark:text-gray-400 shrink-0 font-medium shadow-sm">
@@ -68,7 +71,7 @@ function GroupRow({ group, index, groupTimezones, userTimezones, hasGroupWithNam
                 <div className="shrink-0 w-44">
                     <Dropdown
                         options={groupTimezones}
-                        value={timeZone}
+                        value={group.timeZone || ''}
                         onChange={handleTimezoneChange}
                         searchable
                         size="sm"
@@ -112,6 +115,7 @@ function GroupRow({ group, index, groupTimezones, userTimezones, hasGroupWithNam
                                     index={i}
                                     userTimezones={userTimezones}
                                     onRemove={removeUser}
+                                    onChange={updateUser}
                                 />
                             ))}
                         </div>

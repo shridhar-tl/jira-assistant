@@ -2,7 +2,7 @@ import { Component, type ErrorInfo, type ReactNode } from 'react';
 
 import { RefreshIcon, WarningIcon } from 'fluxo-ui/icons';
 
-import { Button } from './';
+import { Button } from '.';
 
 interface Props {
     children: ReactNode;

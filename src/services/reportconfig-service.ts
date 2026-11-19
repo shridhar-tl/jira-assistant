@@ -13,7 +13,6 @@ export default class ReportConfigService {
     private $jira: JiraService;
     private $usergroup: UserGroupService;
     private isViewerConfigured: boolean = false;
-    private isBuilderConfigured: boolean = false;
 
     parameters: EventEmitter;
     eventPipe: EventEmitter;
@@ -57,7 +56,7 @@ export default class ReportConfigService {
                         promise.resolve(p);
                         return props;
                     }),
-                resolveData: (props: any) => this.$jira.getProjects(),
+                resolveData: () => this.$jira.getProjects(),
             },
             ITL: {
                 label: 'Issue type list',
@@ -66,7 +65,7 @@ export default class ReportConfigService {
                     this.$jira.getIssueTypes().then((p: any) => promise.resolve(p));
                     return Promise.resolve(props);
                 },
-                resolveData: (props: any) => this.$jira.getIssueTypes(),
+                resolveData: () => this.$jira.getIssueTypes(),
             },
             OTL: {
                 label: 'My open tickets list',
@@ -75,7 +74,7 @@ export default class ReportConfigService {
                     this.$jira.getOpenTickets().then((p: any) => promise.resolve(p));
                     return Promise.resolve(props);
                 },
-                resolveData: (props: any) => this.$jira.getOpenTickets(),
+                resolveData: () => this.$jira.getOpenTickets(),
             },
             RPV: {
                 label: 'Rapid view list (sprint board list)',
@@ -84,7 +83,7 @@ export default class ReportConfigService {
                     this.$jira.getRapidViews().then((p: any) => promise.resolve(p));
                     return Promise.resolve(props);
                 },
-                resolveData: (props: any) => this.$jira.getRapidViews(),
+                resolveData: () => this.$jira.getRapidViews(),
             },
             CUF: {
                 label: 'Custom fields list',
@@ -93,7 +92,7 @@ export default class ReportConfigService {
                     this.$jira.getCustomFields().then((p: any) => promise.resolve(p));
                     return Promise.resolve(props);
                 },
-                resolveData: (props: any) => this.$jira.getCustomFields(),
+                resolveData: () => this.$jira.getCustomFields(),
             },
             EXP: true,
             HTP: true,
@@ -130,10 +129,6 @@ export default class ReportConfigService {
         if (this.isViewerConfigured) {
             return;
         }
-        const defaultConfig = {
-            parameterTypes: this.getParameterTypesConfig(),
-            datasetTypes: this.getDatasetConfig(),
-        };
         this.configureReport();
         this.isViewerConfigured = true;
     }

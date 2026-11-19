@@ -44,7 +44,7 @@ export default function CalendarEventContent({
 
     if (entryType === 3) {
         const timeSpent = $utils.formatSecs(logged!);
-        const diffStr = diff ? ` (${diff > 0 ? '+' : ''}${$utils.formatSecs(Math.abs(diff))})` : '';
+        const diffStr = diff ? ` (${diff > 0 ? '+' : '-'}${$utils.formatSecs(Math.abs(diff))})` : '';
         return <span className="pad-l-5">{`Logged: ${timeSpent}${diffStr}`}</span>;
     }
 

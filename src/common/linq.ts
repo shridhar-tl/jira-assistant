@@ -497,7 +497,7 @@ Array.prototype.findAllIndex = function <T>(clause: (item: T, index: number) => 
     return newArray;
 };
 
-Array.prototype.flatten = function <T, R>(clause: any, filter?: (item: R) => boolean, templ?: any, propPrefix?: string): R[] {
+Array.prototype.flatten = function <R>(clause: any, filter?: (item: R) => boolean, templ?: any, propPrefix?: string): R[] {
     const $this = this;
     const thisLen = $this.length;
     const resultArray: R[] = [];

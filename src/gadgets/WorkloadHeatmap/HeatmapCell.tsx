@@ -34,6 +34,8 @@ function HeatmapCell({ day, load, userName }: HeatmapCellProps) {
             onMouseLeave={scheduleClose}
             onClick={showDetails}
             title={load.absenceTitle}
+            data-day={day.key}
+            data-level={load.level}
         >
             {load.absence && (
                 <i

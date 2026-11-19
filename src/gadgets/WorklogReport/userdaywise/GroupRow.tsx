@@ -1,4 +1,4 @@
-import React, { Fragment, useState, useCallback } from 'react';
+import { Fragment, useState, useCallback } from 'react';
 
 import { useWorklogStore } from '../datastore';
 

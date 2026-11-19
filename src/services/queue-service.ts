@@ -36,11 +36,9 @@ class SimpleEventEmitter {
 }
 
 export default class QueueService {
-    private continueOnFailure = true;
     private concurrentRuns = 3;
     private event: SimpleEventEmitter;
     private queue: QueueItem[] = [];
-    private failedItems: QueueItem[] = [];
     private runningItems: QueueItem[] = [];
 
     constructor() {
@@ -54,7 +52,6 @@ export default class QueueService {
 
     reset(): void {
         this.queue = [];
-        this.failedItems = [];
         this.runningItems = [];
     }
 

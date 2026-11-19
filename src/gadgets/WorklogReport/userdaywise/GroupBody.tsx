@@ -1,5 +1,3 @@
-import React from 'react';
-
 import { TBody } from '../../../components/shared';
 import { useWorklogStore } from '../datastore';
 

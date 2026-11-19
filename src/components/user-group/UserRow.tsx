@@ -13,11 +13,11 @@ interface UserRowProps {
     index: number;
     userTimezones: ListItem[];
     onRemove: (index: number) => void;
+    onChange: (index: number, changes: Partial<JiraUser>) => void;
 }
 
-function UserRow({ user, index, userTimezones, onRemove }: UserRowProps) {
+function UserRow({ user, index, userTimezones, onRemove, onChange }: UserRowProps) {
     const { $userutils } = inject('UserUtilsService');
-    const [timeZone, setTimeZone] = useState(user.timeZone || '');
     const [costPerHour, setCostPerHour] = useState(String(user.costPerHour || 0));
 
     const isActive = user.active !== false;
@@ -25,19 +25,19 @@ function UserRow({ user, index, userTimezones, onRemove }: UserRowProps) {
     const showLogin = user.name && user.name !== user.emailAddress;
 
     const timeZoneChanged = (e: ComponentEvent<string>) => {
-        user.timeZone = e.value;
-        setTimeZone(e.value);
+        onChange(index, { timeZone: e.value });
     };
 
     const costChanged = (e: ComponentEvent<string>) => {
-        const numCost = parseFloat(e.value) || 0;
-        user.costPerHour = numCost;
         setCostPerHour(e.value);
+        onChange(index, { costPerHour: parseFloat(e.value) || 0 });
     };
 
     return (
         <div
             title={!isActive ? 'User is inactive' : ''}
+            data-testid="user-group-user"
+            data-account-id={user.accountId}
             className={`relative bg-white dark:bg-white/5 rounded-xl p-2.5 shadow-sm border border-gray-100 dark:border-white/10 group hover:shadow-md transition-shadow ${!isActive ? 'opacity-60' : ''}`}
         >
             {/* Remove — appears on hover */}
@@ -77,7 +77,7 @@ function UserRow({ user, index, userTimezones, onRemove }: UserRowProps) {
             <div className="grid grid-cols-2 gap-1.5">
                 <div className="flex flex-col gap-0.5">
                     <span className="text-[10px] font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wide">Timezone</span>
-                    <Dropdown options={userTimezones} value={timeZone} onChange={timeZoneChanged} searchable size="sm" className="w-full" />
+                    <Dropdown options={userTimezones} value={user.timeZone || ''} onChange={timeZoneChanged} searchable size="sm" className="w-full" />
                 </div>
                 <div className="flex flex-col gap-0.5">
                     <span className="text-[10px] font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wide">Cost / hr</span>

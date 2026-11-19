@@ -1,4 +1,3 @@
-/* global chrome browser */
 import $ from '../common/jsquery';
 import { processResponse } from '../common/proxy-helper';
 

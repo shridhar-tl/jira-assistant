@@ -18,7 +18,7 @@ export default function TimerControl({ curIssueKey }: TimerControlProps) {
     const { key, lapse, description, isRunning } = displayState;
 
     const handleStartNew = useCallback(
-        (event: React.MouseEvent) => {
+        () => {
             if (curIssueKey) {
                 if (curState.key && curState.isRunning && curState.key !== curIssueKey) {
                     if (

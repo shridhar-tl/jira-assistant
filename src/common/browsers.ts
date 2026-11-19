@@ -1,4 +1,3 @@
-/* global chrome opr */
 const win: any = window;
 const userAgent = navigator.userAgent.toLowerCase();
 

@@ -19,8 +19,6 @@ interface DialogState {
 class CommonDialog extends BaseDialog<any, DialogState> {
     private body?: DialogBody;
     private onClose?: () => void;
-    private scope?: any;
-    private tmpScope?: any;
 
     constructor(props: any) {
         super(props);
@@ -80,7 +78,7 @@ type ChangeEventHandler = (
 ) => void;
 
 interface WaitForConfig {
-    waitFor?: Promise<any>;
+    waitFor?: number;
     acceptLabel?: string;
 }
 
@@ -176,7 +174,7 @@ class DialogConfig {
                 <Button onClick={cancel} variant="secondary" leftIcon={<i className="fa fa-times" />}>
                     Cancel
                 </Button>
-                <Button onClick={confirm} variant="danger" leftIcon={<i className="fa fa-trash" />}>
+                <Button onClick={confirm} variant="danger" leftIcon={<i className="fa fa-trash" />} waitFor={config?.waitFor}>
                     Delete
                 </Button>
             </>

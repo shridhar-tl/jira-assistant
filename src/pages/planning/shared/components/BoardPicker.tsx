@@ -26,6 +26,15 @@ type BoardPickerProps = (SingleProps | MultipleProps) & {
 const maxSuggestions = 50;
 const typeLabels: Record<PlannerBoard['type'], string> = { scrum: 'Scrum', kanban: 'Kanban', simple: 'Team' };
 
+function filterBoards(boards: PlannerBoard[], query: string): PlannerBoard[] {
+    const search = query.trim().toLowerCase();
+    return search ? boards.filter((b) => b.name.toLowerCase().includes(search) || String(b.id).startsWith(search)) : boards;
+}
+
+function toItem(board: PlannerBoard) {
+    return { label: `${board.name} (${typeLabels[board.type]})`, value: board.id };
+}
+
 export default function BoardPicker(props: BoardPickerProps) {
     const { scrumOnly, placeholder = 'Choose a board', className } = props;
     const [boards, setBoards] = useState<PlannerBoard[]>([]);
@@ -57,9 +66,11 @@ export default function BoardPicker(props: BoardPickerProps) {
         return (
             <div className={className}>
                 <AutocompleteMulti
-                    items={available.map((b) => ({ label: `${b.name} (${typeLabels[b.type]})`, value: b.id }))}
+                    items={filterBoards(available, query).map(toItem)}
                     value={value}
                     onChange={(e) => onChange(available.filter((b) => (e.value as number[]).includes(b.id)))}
+                    onFilter={setQuery}
+                    minLength={0}
                     placeholder={placeholder}
                     readonly={isLoading}
                 />
@@ -68,11 +79,7 @@ export default function BoardPicker(props: BoardPickerProps) {
     }
 
     const { onChange } = props;
-    const search = query.trim().toLowerCase();
-    const showAll = !search || query === selected?.name;
-    const items = (showAll ? available : available.filter((b) => b.name.toLowerCase().includes(search) || String(b.id).startsWith(search)))
-        .slice(0, maxSuggestions)
-        .map((b) => ({ label: `${b.name} (${typeLabels[b.type]})`, value: b.id }));
+    const items = (query === selected?.name ? available : filterBoards(available, query)).slice(0, maxSuggestions).map(toItem);
 
     return (
         <div className={className}>

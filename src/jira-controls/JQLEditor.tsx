@@ -17,7 +17,15 @@ function JQLEditor({ jql, field, plugged, onChange }: JQLEditorProps) {
         setValue(jql || '');
     }, [jql]);
 
-    const handleChange = useCallback((e: { value: string }) => setValue(e.value), []);
+    const handleChange = useCallback(
+        (e: { value: string }) => {
+            setValue(e.value);
+            if (!plugged) {
+                onChange(e.value, field);
+            }
+        },
+        [plugged, onChange, field],
+    );
 
     const beginEdit = useCallback(() => setEditMode(true), []);
 
@@ -40,7 +48,7 @@ function JQLEditor({ jql, field, plugged, onChange }: JQLEditorProps) {
                     className="jql-query w-full font-mono text-sm"
                     placeholder="JQL query to fetch data"
                     value={value}
-                    onChange={plugged ? handleChange : (e: { value: string }) => onChange(e.value, field)}
+                    onChange={handleChange}
                     rows={4}
                     autoFocus
                 />

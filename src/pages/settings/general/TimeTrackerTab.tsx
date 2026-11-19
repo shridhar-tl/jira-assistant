@@ -26,11 +26,7 @@ const roundOperation = [
     { value: 'floor', label: 'Lower bound' },
 ];
 
-interface TimeTrackerTabProps {
-    onSave: (value: any, field: string) => void;
-}
-
-export default function TimeTrackerTab({ onSave }: TimeTrackerTabProps) {
+export default function TimeTrackerTab() {
     const { $settings, $message } = inject('SettingsService', 'MessageService');
 
     const [trPauseOnLock, setTrPauseOnLock] = useState<boolean>(false);

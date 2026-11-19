@@ -37,6 +37,10 @@ const userTimezones: TimezoneOption[] = [
     ...Intl.supportedValuesOf('timeZone').map((t) => ({ label: t, value: t })),
 ];
 
+function cloneGroups(groups: UserGroupType[]): UserGroupType[] {
+    return groups.map((g) => ({ ...g, users: (g.users || []).map((u) => ({ ...u })) }));
+}
+
 function UserGroup({ groups: initialGroups, isPlugged = false, onDone }: UserGroupProps) {
     const { $session, $message, $usergroup, $analytics, $backup } = inject(
         'SessionService',
@@ -46,7 +50,7 @@ function UserGroup({ groups: initialGroups, isPlugged = false, onDone }: UserGro
         'BackupService',
     );
 
-    const [groups, setGroups] = useState<UserGroupType[]>(initialGroups || []);
+    const [groups, setGroups] = useState<UserGroupType[]>(() => cloneGroups(initialGroups || []));
 
     useEffect(() => {
         if (!initialGroups) {
@@ -56,7 +60,11 @@ function UserGroup({ groups: initialGroups, isPlugged = false, onDone }: UserGro
 
     const loadGroups = async () => {
         const loadedGroups = await $usergroup.getUserGroups();
-        setGroups(loadedGroups);
+        setGroups(cloneGroups(loadedGroups));
+    };
+
+    const updateGroup = (index: number, changes: Partial<UserGroupType>) => {
+        setGroups((current) => current.map((g, i) => (i === index ? { ...g, ...changes } : g)));
     };
 
     const addNewGroup = async (groupName: string, groupId?: string) => {
@@ -151,6 +159,7 @@ function UserGroup({ groups: initialGroups, isPlugged = false, onDone }: UserGro
                     groupTimezones={groupTimezones}
                     userTimezones={userTimezones}
                     onRemove={deleteGroup}
+                    onChange={updateGroup}
                 />
             ))}
             <AddGroupCard onAdd={addNewGroup} />

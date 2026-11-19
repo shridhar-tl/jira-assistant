@@ -83,15 +83,15 @@ export default class UserUtilsService {
     };
 
     formatDateTime = (value: Date | string | number, format?: string, utc?: boolean): string => {
-        if (!value) return String(value);
+        if (!value) return '';
 
         const defaultFormat = `${this.$session.CurrentUser?.dateFormat || 'dd/MMM/yy'} ${this.$session.CurrentUser?.timeFormat || 'HH:mm'}`;
         const fmt = format || defaultFormat;
 
         let date = this.$utils.convertDate(value);
 
-        if (!(date instanceof Date)) {
-            return String(value);
+        if (!(date instanceof Date) || Number.isNaN(date.getTime())) {
+            return '';
         }
 
         if (utc) {

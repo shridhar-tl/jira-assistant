@@ -2,9 +2,8 @@ import type { MouseEvent } from 'react';
 
 import classNames from 'classnames';
 
-import type { SprintCapacity } from '../../../shared/capacity';
+import type { EstimateUnit, SprintCapacity } from '../../../shared/capacity';
 import CapacityBar from '../../../shared/components/CapacityBar';
-import type { EstimateUnit } from '../../../shared/capacity';
 import { formatDateRange, formatNumber, getUnitLabel } from '../../../shared/format';
 import type { PlannerSprint } from '../../../shared/types';
 

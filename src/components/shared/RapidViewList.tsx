@@ -38,18 +38,13 @@ export default function RapidViewList({ value, onChange, multiple = false, place
     }, []);
 
     if (multiple) {
-        const selectedIds = ((value as RapidView[]) || []).map((v) => v.id);
-
         return (
-            <AutocompleteMulti
-                items={rapidViews.map((r) => ({ label: r.name, value: r.id }))}
-                value={selectedIds}
-                onChange={(e) => {
-                    const selectedViews = rapidViews.filter((r) => (e.value as number[]).includes(r.id));
-                    onChange(selectedViews);
-                }}
-                placeholder={placeholder || 'Start typing the board name here'}
-                readonly={isLoading || rapidViews.length === 0}
+            <MultiRapidViewSelect
+                rapidViews={rapidViews}
+                value={(value as RapidView[]) || []}
+                onChange={onChange}
+                placeholder={placeholder}
+                disabled={isLoading || rapidViews.length === 0}
             />
         );
     }
@@ -67,6 +62,43 @@ export default function RapidViewList({ value, onChange, multiple = false, place
 
 const maxSuggestions = 50;
 
+function filterRapidViews(rapidViews: RapidView[], query: string): RapidView[] {
+    const search = query.trim().toLowerCase();
+    return search ? rapidViews.filter((r) => r.name.toLowerCase().includes(search) || r.id.toString().startsWith(search)) : rapidViews;
+}
+
+interface MultiRapidViewSelectProps {
+    rapidViews: RapidView[];
+    value: RapidView[];
+    onChange: (value: RapidView[]) => void;
+    placeholder?: string;
+    disabled: boolean;
+}
+
+function MultiRapidViewSelect({ rapidViews, value, onChange, placeholder, disabled }: MultiRapidViewSelectProps) {
+    const [query, setQuery] = useState('');
+
+    const items = useMemo(
+        () => filterRapidViews(rapidViews, query).map((r) => ({ label: r.name, value: r.id })),
+        [rapidViews, query],
+    );
+
+    return (
+        <AutocompleteMulti
+            items={items}
+            value={value.map((v) => v.id)}
+            onChange={(e) => {
+                const selectedIds = e.value as number[];
+                onChange(rapidViews.filter((r) => selectedIds.includes(r.id)));
+            }}
+            onFilter={setQuery}
+            minLength={0}
+            placeholder={placeholder || 'Start typing the board name here'}
+            readonly={disabled}
+        />
+    );
+}
+
 interface SingleRapidViewSelectProps {
     rapidViews: RapidView[];
     value: RapidView | null;
@@ -83,11 +115,7 @@ function SingleRapidViewSelect({ rapidViews, value, onChange, placeholder, disab
     }, [value?.id, value?.name]);
 
     const items = useMemo(() => {
-        const search = query.trim().toLowerCase();
-        const showAll = !search || query === value?.name;
-        const matches = showAll
-            ? rapidViews
-            : rapidViews.filter((r) => r.name.toLowerCase().includes(search) || r.id.toString().startsWith(search));
+        const matches = query === value?.name ? rapidViews : filterRapidViews(rapidViews, query);
         return matches.slice(0, maxSuggestions).map((r) => ({ label: r.name, value: r.id }));
     }, [rapidViews, query, value?.name]);
 

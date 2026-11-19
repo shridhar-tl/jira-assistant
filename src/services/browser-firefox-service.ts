@@ -112,7 +112,7 @@ export default class FirefoxBrowserService extends BrowserBase {
         this.browser.identity.removeCachedAuthToken({ token: authToken }, () => {});
     }
 
-    getStoreUrl(forRating?: boolean): string {
+    getStoreUrl(_forRating?: boolean): string {
         return FF_STORE_URL;
     }
 

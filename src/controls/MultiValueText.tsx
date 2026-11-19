@@ -1,6 +1,4 @@
-import React, { useState, KeyboardEvent, ChangeEvent } from 'react';
-
-import { TextInput, Button } from '@components';
+import React, { useState, KeyboardEvent } from 'react';
 
 interface MultiValueTextProps {
     value?: string[];

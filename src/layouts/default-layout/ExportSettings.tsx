@@ -15,7 +15,6 @@ import { Button, Checkbox, Modal } from '@components';
 import { saveStringAs } from '@utils/helpers';
 
 interface ExportSettingsProps {
-    onDone: () => void;
     onHide: () => void;
 }
 
@@ -30,7 +29,7 @@ const COLUMN_HELP: Record<string, string> = {
     settings: 'Preferences, calendars, and all other configuration',
 };
 
-export default function ExportSettings({ onDone, onHide }: ExportSettingsProps) {
+export default function ExportSettings({ onHide }: ExportSettingsProps) {
     const [users, setUsers] = useState<UserEntry[] | null>(null);
     const [settings, setSettings] = useState<BackupSettings>({});
     const [exportAll, setExportAll] = useState(true);

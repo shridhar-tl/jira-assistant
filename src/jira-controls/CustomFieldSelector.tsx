@@ -56,7 +56,7 @@ function CustomFieldSelector({ onChange }: CustomFieldSelectorProps) {
                     { label: 'Basic Fields', items: basicFields },
                     { label: 'Custom Fields', items: customFields },
                 ]);
-            } catch (err) {
+            } catch {
                 $message.error('Failed to load custom fields', 'Error');
             }
         })();

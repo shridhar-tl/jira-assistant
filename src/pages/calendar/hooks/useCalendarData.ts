@@ -16,7 +16,7 @@ export function useCalendarData(settings: CalendarSettings, currentUser: any) {
     const { $worklog, $calendar, $outlook, $message } = useService('WorklogService', 'CalendarService', 'OutlookService', 'MessageService');
 
     const fetchEvents = useCallback(
-        async (start: Date, end: Date, mode: 'replace' | 'merge' = 'replace') => {
+        async (start: Date, end: Date, mode: 'replace' | 'merge' = 'replace', settingsToUse: CalendarSettings = settings) => {
             const startDate = startOfDay(start);
             const endDate = endOfDay(end);
 
@@ -38,7 +38,7 @@ export function useCalendarData(settings: CalendarSettings, currentUser: any) {
             try {
                 const requests: Promise<any>[] = [$worklog.getWorklogsEntry(startDate, endDate, ['worklog', 'summary'])];
 
-                if (currentUser.googleIntegration && currentUser.hasGoogleCredentials && settings.showMeetings) {
+                if (currentUser.googleIntegration && currentUser.hasGoogleCredentials && settingsToUse.showMeetings) {
                     requests.push(
                         $calendar.getEvents(startDate, endDate).catch((err: any) => {
                             let msg = 'Unable to fetch Google meetings!';
@@ -51,7 +51,7 @@ export function useCalendarData(settings: CalendarSettings, currentUser: any) {
                     );
                 }
 
-                if (currentUser.outlookIntegration && currentUser.hasOutlookCredentials && settings.showMeetings) {
+                if (currentUser.outlookIntegration && currentUser.hasOutlookCredentials && settingsToUse.showMeetings) {
                     requests.push(
                         $outlook.getEvents(startDate, endDate).catch((err: any) => {
                             let msg = 'Unable to fetch Outlook meetings!';
@@ -71,22 +71,22 @@ export function useCalendarData(settings: CalendarSettings, currentUser: any) {
                 if (results[1]) meetings.push(...results[1]);
                 if (results[2]) meetings.push(...results[2]);
 
-                const worklogEvents = worklogs.map((wl) => createWorklogEvent(wl, settings));
-                const meetingEvents = meetings.map((m) => createMeetingEvent(m, settings));
+                const worklogEvents = worklogs.map((wl) => createWorklogEvent(wl, settingsToUse));
+                const meetingEvents = meetings.map((m) => createMeetingEvent(m, settingsToUse));
 
                 const groupedWorklogs = groupWorklogsByDate(worklogs);
                 const infoEvents: CalendarEvent[] = [];
 
-                if (settings.showInfo) {
+                if (settingsToUse.showInfo) {
                     groupedWorklogs.forEach(({ date, worklogs: dayWorklogs }) => {
                         const sourceWorklogs = dayWorklogs.map((wl) => wl.sourceObject);
-                        const infoEvent = createInfoEvent(date, sourceWorklogs, currentUser.maxHours, currentUser.minHours, settings);
+                        const infoEvent = createInfoEvent(date, sourceWorklogs, currentUser.maxHours, currentUser.minHours, settingsToUse);
                         infoEvents.push(infoEvent);
                     });
                 }
 
                 const allEvents = [...worklogEvents, ...meetingEvents, ...infoEvents];
-                const filtered = filterEvents(allEvents, settings.showMeetings, settings.showWorklogs, settings.showInfo);
+                const filtered = filterEvents(allEvents, settingsToUse.showMeetings, settingsToUse.showWorklogs, settingsToUse.showInfo);
 
                 if (mode === 'merge') {
                     setEvents((prev) => {

@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 
 import Indicator from '../../../components/worklog-indicator';
 import { addWorklog } from '../actions';

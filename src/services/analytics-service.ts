@@ -128,7 +128,7 @@ export default class AnalyticsService {
 
                 try {
                     return JSON.stringify(err);
-                } catch (e) {
+                } catch {
                     return this.searilizeObj(err);
                 }
             } else {
@@ -161,7 +161,7 @@ export default class AnalyticsService {
             } else {
                 return result;
             }
-        } catch (e) {
+        } catch {
             return 'Unknown error: Unable to searilize';
         }
     }

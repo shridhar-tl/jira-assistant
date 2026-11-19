@@ -340,7 +340,7 @@ export function replaceRepeatedWords(names: string[]): string[] {
 
     const positionsToReplace = new Set<number>();
     for (let i = 0; i < maxTokens; i++) {
-        for (const [token, count] of Object.entries(tokenCounts[i])) {
+        for (const [, count] of Object.entries(tokenCounts[i])) {
             if (count / total >= 0.5) {
                 positionsToReplace.add(i);
                 break;

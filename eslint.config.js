@@ -14,6 +14,12 @@ export default tseslint.config(
         languageOptions: {
             ecmaVersion: 2020,
             globals: globals.browser,
+            parserOptions: {
+                jsxPragma: null,
+            },
+        },
+        linterOptions: {
+            reportUnusedDisableDirectives: 'error',
         },
         plugins: {
             import: importPluginX,
@@ -62,17 +68,27 @@ export default tseslint.config(
             'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
             quotes: ['error', 'single'],
             'react/jsx-key': 'error',
-            'no-unused-vars': [
+            'no-unused-vars': 'off',
+            '@typescript-eslint/no-unused-vars': [
                 'error',
                 {
-                    args: 'none',
+                    args: 'after-used',
                     argsIgnorePattern: '^_',
                     vars: 'all',
                     varsIgnorePattern: '^_',
                     caughtErrors: 'all',
                     caughtErrorsIgnorePattern: '^_',
+                    destructuredArrayIgnorePattern: '^_',
+                    ignoreRestSiblings: true,
+                    reportUsedIgnorePattern: false,
                 },
             ],
+            '@typescript-eslint/no-unused-expressions': 'error',
+            'import/no-duplicates': 'error',
+            'import/no-self-import': 'error',
+            'import/no-useless-path-segments': 'error',
+            'no-unused-private-class-members': 'error',
+            'no-unused-labels': 'error',
             '@typescript-eslint/no-explicit-any': 'off',
         },
     },

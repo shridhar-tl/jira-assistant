@@ -190,6 +190,7 @@ function SprintWiseWorklog({ groups, ticketDetails, sprintDetails }: SprintWiseW
                         issue.grandTotalAll = grandTotalAll;
                         issue.groupTotal = groupTotal;
                         issue.groupTotalAll = groupTotalAll;
+                        issue.subtasks?.forEach((task: TaskTotals) => setOwnTotals(task, currentGroups));
                     };
 
                     issuetype.issues.forEach(processIssue);
@@ -383,6 +384,37 @@ function SprintWiseWorklog({ groups, ticketDetails, sprintDetails }: SprintWiseW
     );
 }
 
+interface TotalsUser {
+    name?: string;
+    emailAddress?: string;
+    accountId?: string;
+    include?: boolean;
+}
+
+interface TotalsGroup {
+    include?: boolean;
+    users: TotalsUser[];
+}
+
+interface TaskTotals {
+    worklogs: Record<string, { total?: number } | undefined>;
+    groupTotal?: number[];
+    grandTotal?: number;
+}
+
+function setOwnTotals(task: TaskTotals, groups: TotalsGroup[]): void {
+    let grandTotal = 0;
+    const groupTotal: number[] = [];
+    groups.forEach((grp, grpIdx) => {
+        if (!grp.include) return;
+        const grpTotal = grp.users.reduce((sum, user) => (user.include ? sum + (task.worklogs[getUserName(user)!]?.total || 0) : sum), 0);
+        groupTotal[grpIdx] = grpTotal;
+        grandTotal += grpTotal;
+    });
+    task.groupTotal = groupTotal;
+    task.grandTotal = grandTotal;
+}
+
 function getSprintTime(isoValue?: string, displayValue?: string): number | undefined {
     const date = isoValue ? parseISOString(isoValue) : displayValue ? new Date(displayValue) : null;
     const time = date?.getTime();
@@ -487,7 +519,7 @@ interface SprintWorklogDetailsProps {
 function SprintWorklogDetails({ groups, sprint, showIncomplete, showSubtask }: SprintWorklogDetailsProps) {
     return (
         <>
-            <tr className="bg-(--bg-secondary)/50 border-b border-(--border-color) font-semibold">
+            <tr className="bg-(--bg-secondary)/50 border-b border-(--border-color) font-semibold" data-row-type="sprint">
                 <td colSpan={4} className="px-3 py-2">
                     {sprint.sprintName}
                 </td>
@@ -522,7 +554,7 @@ function IssueTypesList({ issueTypes, groups, showIncomplete, showSubtask }: Iss
         <>
             {issueTypes.map((type, t) => (
                 <Fragment key={t}>
-                    <tr className="border-b border-(--border-color)/50 bg-(--bg-hover)/30">
+                    <tr className="border-b border-(--border-color)/50 bg-(--bg-hover)/30" data-row-type="issuetype">
                         <td colSpan={4} className="px-3 py-1.5">
                             <div className="flex items-center gap-1.5 font-medium">
                                 {type.issuetype.iconUrl && <img src={type.issuetype.iconUrl} alt="" className="w-4 h-4" />}
@@ -567,7 +599,7 @@ function IssueList({ groups, issues, showIncomplete, showSubtask }: IssueListPro
 
                 return (
                     <Fragment key={isu}>
-                        <tr className="border-b border-(--border-color)/20 hover:bg-(--bg-hover)">
+                        <tr className="border-b border-(--border-color)/20 hover:bg-(--bg-hover)" data-row-type="issue">
                             <td colSpan={2} className="px-3 py-1 font-medium">
                                 {issue.ticketNo}
                             </td>
@@ -620,7 +652,7 @@ function SubtaskList({ issue, groups }: SubtaskListProps) {
     return (
         <>
             {issue.subtasks.map((task: any, t: number) => (
-                <tr key={t} className="border-b border-(--border-color)/10 hover:bg-(--bg-hover) text-secondary">
+                <tr key={t} className="border-b border-(--border-color)/10 hover:bg-(--bg-hover) text-secondary" data-row-type="subtask">
                     <td className="px-1 py-1 text-center text-[10px]">-</td>
                     <td className="px-2 py-1">{task.ticketNo}</td>
                     <td className="px-2 py-1 max-w-100 truncate">{task.summary}</td>

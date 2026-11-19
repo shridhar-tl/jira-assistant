@@ -814,7 +814,7 @@ export default class JiraService {
     ): Promise<any[] | Record<number, any[]>> | any {
         const { worklogStartDate, worklogEndDate, includeRemoved, boardId, ...opts } = options || {};
 
-        const worker = async (sprintId: number, progress?: (percent: number) => void) => {
+        const worker = async (sprintId: number) => {
             const url = ApiUrls.getSprintIssues.replace('{0}', String(sprintId));
             const { issues } = await this.$ajax.get(url, opts);
 
@@ -853,7 +853,7 @@ export default class JiraService {
                 const total = sprintIds.length;
                 let completed = 0;
                 await runOnQueue(sprintIds, 3, async (id: number) => {
-                    sprints[id] = await worker(id, progress);
+                    sprints[id] = await worker(id);
                     completed++;
                     progress((completed * 100) / total);
                 });

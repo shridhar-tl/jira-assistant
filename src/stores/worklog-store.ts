@@ -176,7 +176,7 @@ export const useWorklogStore = create<WorklogState>((set, get) => ({
         });
     },
 
-    loadTicketList: async (startAt = 0) => {
+    loadTicketList: async () => {
         if (get().ticketsList) return;
 
         const { $jira, $userutils } = inject('JiraService', 'UserUtilsService');

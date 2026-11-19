@@ -1,5 +1,3 @@
-import React from 'react';
-
 import { useWorklogStore } from '../datastore';
 
 import { IssueDays, IssueInfo } from './shared';
@@ -98,7 +96,6 @@ function IssueDaysWrapper({
     groupIndex,
     uid,
     ticketNo,
-    isSprint,
     costView,
     timeExportFormat,
     addNewWorklog,

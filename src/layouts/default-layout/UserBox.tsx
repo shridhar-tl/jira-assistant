@@ -80,7 +80,7 @@ function UserBox({ onLogout, showThemeToggle }: UserBoxProps) {
                 </button>
             </li>
 
-            {showSettingPopup && <ExportSettings onDone={hideSettings} onHide={hideSettings} />}
+            {showSettingPopup && <ExportSettings onHide={hideSettings} />}
 
             {showPanel && (
                 <div

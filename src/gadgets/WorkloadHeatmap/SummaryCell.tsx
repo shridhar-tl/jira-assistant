@@ -27,6 +27,7 @@ function SummaryCell({ summary, isToday, isPast, isWorkingDay = true, emphasis }
                 'heat-today': isToday,
                 'font-semibold': emphasis,
             })}
+            data-level={summary.level}
             title={showValue ? `${formatHours(summary.seconds)} planned of ${formatHours(summary.capacity)} capacity` : undefined}
         >
             {showValue && (

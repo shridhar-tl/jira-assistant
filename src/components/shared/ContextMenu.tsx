@@ -74,6 +74,7 @@ export function ContextMenuProvider({ children }: { children: ReactNode }) {
             {visible && (
                 <div
                     ref={menuRef}
+                    role="menu"
                     className="fixed z-9999 bg-(--bg-primary) border border-(--border-primary) rounded-lg py-1 min-w-50 shadow-(--shadow-lg)"
                     style={{ left: position.x, top: position.y }}
                 >
@@ -83,6 +84,8 @@ export function ContextMenuProvider({ children }: { children: ReactNode }) {
                         ) : (
                             <button
                                 key={index}
+                                type="button"
+                                role="menuitem"
                                 onClick={() => {
                                     if (!item.disabled && item.command) {
                                         item.command();

@@ -140,7 +140,7 @@ export default function Calendar({
         (newSettings: CalendarSettings, noRefresh?: boolean) => {
             if (isGadget) {
                 if (!noRefresh && dateRangeRef.current) {
-                    fetchEvents(dateRangeRef.current.start, dateRangeRef.current.end);
+                    fetchEvents(dateRangeRef.current.start, dateRangeRef.current.end, 'replace', newSettings);
                 }
                 return;
             }
@@ -149,7 +149,7 @@ export default function Calendar({
             setSettings(newSettings);
 
             if (!noRefresh && dateRangeRef.current) {
-                fetchEvents(dateRangeRef.current.start, dateRangeRef.current.end);
+                fetchEvents(dateRangeRef.current.start, dateRangeRef.current.end, 'replace', newSettings);
             }
 
             $config.saveSettings('calendar', newSettings);
@@ -389,11 +389,10 @@ export default function Calendar({
             const success = await uploadAllWorklogs(worklogIds, uploadOptions);
             setUploading(false);
 
-            if (dateRangeRef.current) {
-                fetchEvents(dateRangeRef.current.start, dateRangeRef.current.end);
-            }
             if (success) {
                 onWorklogChange?.(GadgetActionType.WorklogModified);
+            } else if (dateRangeRef.current) {
+                fetchEvents(dateRangeRef.current.start, dateRangeRef.current.end);
             }
         },
         [events, resolveUploadOptions, uploadAllWorklogs, fetchEvents, onWorklogChange],

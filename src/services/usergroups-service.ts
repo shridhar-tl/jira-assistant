@@ -1,26 +1,20 @@
-import type AuthService from './auth-service';
 import type JiraService from './jira-service';
 import type SessionService from './session-service';
 import type SettingsService from './settings-service';
-import type UserService from './user-service';
 
 function getUserName(user: any): string {
     return user?.accountId || user?.name || user?.key || user?.emailAddress || '';
 }
 
 export default class UserGroupService {
-    static dependencies = ['AuthService', 'SessionService', 'UserService', 'SettingsService', 'JiraService'];
+    static dependencies = ['SessionService', 'SettingsService', 'JiraService'];
 
-    private $auth: AuthService;
     private $session: SessionService;
-    private $user: UserService;
     private $settings: SettingsService;
     private $jira: JiraService;
 
-    constructor($auth: AuthService, $session: SessionService, $user: UserService, $settings: SettingsService, $jira: JiraService) {
-        this.$auth = $auth;
+    constructor($session: SessionService, $settings: SettingsService, $jira: JiraService) {
         this.$session = $session;
-        this.$user = $user;
         this.$settings = $settings;
         this.$jira = $jira;
     }

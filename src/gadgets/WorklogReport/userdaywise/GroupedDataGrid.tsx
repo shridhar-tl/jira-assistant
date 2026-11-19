@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 
 import { ScrollableTable } from '../../../components/shared';
 import { getComponentFor, normalizeType } from '../../../display-controls';

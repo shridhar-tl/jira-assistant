@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { executeService } from '@/common';
 import { BROWSER_NAME } from '@/common/browsers';
 import { CHROME_WS_URL, StoreUrls } from '@/constants';

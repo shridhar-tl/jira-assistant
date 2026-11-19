@@ -16,13 +16,13 @@ export default class WebBrowserService extends BrowserBase {
     }
 
     getCurrentTab(): Promise<any> {
-        return new Promise((resolve, reject) => {
+        return new Promise(() => {
             // This function is for private use
         });
     }
 
-    replaceTabUrl(url: string): Promise<any> {
-        return this.getCurrentTab().then((tab) => {
+    replaceTabUrl(_url: string): Promise<any> {
+        return this.getCurrentTab().then(() => {
             // This function is for private use
         });
     }
@@ -62,7 +62,7 @@ export default class WebBrowserService extends BrowserBase {
         (window as any)['browser'].identity.removeCachedAuthToken({ token: authToken }, () => {});
     }
 
-    getStoreUrl(forRating?: boolean): string {
+    getStoreUrl(_forRating?: boolean): string {
         return StoreUrls[BROWSER_NAME] || CHROME_WS_URL;
     }
 

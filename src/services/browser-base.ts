@@ -18,7 +18,7 @@ class BrowserBase {
         'replaceTabUrl,getAuthToken,getRedirectUrl,getLaunchUrl,' +
         'launchWebAuthFlow,removeAuthToken,extractAccessToken';
 
-    async requestPermission(permissions: any, ...urls: string[]): Promise<boolean> {
+    async requestPermission(_permissions: any, ..._urls: string[]): Promise<boolean> {
         return true;
     }
 
@@ -32,15 +32,15 @@ class BrowserBase {
         return result;
     }
 
-    async hasPermission(permissions: any): Promise<boolean> {
+    async hasPermission(_permissions: any): Promise<boolean> {
         return true;
     }
 
-    async getLaunchUrl(file: string): Promise<string> {
+    async getLaunchUrl(_file: string): Promise<string> {
         return '';
     }
 
-    persistBackground(persist: boolean): void {}
+    persistBackground(_persist: boolean): void {}
     connectAndKeepAlive(): void {}
 }
 

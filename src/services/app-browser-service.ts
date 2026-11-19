@@ -4,7 +4,7 @@ import { CHROME_WS_URL, StoreUrls } from '@/constants';
 export default class AppBrowserService {
     static dependencies = [] as string[];
 
-    async requestPermission(permissions: any, ...url: string[]): Promise<boolean> {
+    async requestPermission(_permissions: any, ..._url: string[]): Promise<boolean> {
         // For web builds, permissions are not required
         // For browser extensions, this will be implemented properly
         return true;
@@ -23,23 +23,23 @@ export default class AppBrowserService {
         }
     }
 
-    getAuthToken(options: any): Promise<string | null> {
+    getAuthToken(_options: any): Promise<string | null> {
         return Promise.resolve(null);
     }
 
-    removeAuthToken(token: string): Promise<void> {
+    removeAuthToken(_token: string): Promise<void> {
         return Promise.resolve();
     }
 
-    getStoreUrl(forRating?: boolean): string {
+    getStoreUrl(_forRating?: boolean): string {
         return StoreUrls[BROWSER_NAME] || CHROME_WS_URL;
     }
 
-    async getLaunchUrl(file: string): Promise<string> {
+    async getLaunchUrl(_file: string): Promise<string> {
         return '';
     }
 
-    connectAndKeepAlive(callback?: () => void): void {
+    connectAndKeepAlive(_callback?: () => void): void {
         // For browser extensions, this keeps the background service worker alive
     }
 }

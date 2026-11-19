@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { format } from 'date-fns';
 
@@ -104,7 +104,7 @@ function SprintInfo({ sprint, onClose }: SprintInfoProps) {
                     <div className="flex items-center bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded px-3 py-2">
                         <strong className="mr-2">Average Velocity:</strong>
                         <span>
-                            {sprint.velocity} ({parseFloat(sprint.velocityGrowth!.toFixed(2))}%)
+                            {sprint.velocity} ({parseFloat(sprint.velocityGrowth?.toFixed(2) || '0')}%)
                         </span>
                     </div>
                 )}

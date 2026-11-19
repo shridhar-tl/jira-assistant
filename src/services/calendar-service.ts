@@ -73,7 +73,7 @@ export default class CalendarService {
             });
 
             return accessToken || false;
-        } catch (err) {
+        } catch {
             return false;
         }
     }

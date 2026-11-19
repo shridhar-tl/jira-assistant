@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import { Fragment } from 'react';
 
 import { THead } from '../../../components/shared';
 import { useWorklogStore } from '../datastore';

@@ -145,7 +145,7 @@ export function createInfoEvent(date: Date, worklogs: Worklog[], maxHours: numbe
 
     return {
         id: dateKey,
-        title: `Logged: ${formatTimeSpent(timeSpent)}${diff ? ` (${diff > 0 ? '+' : ''}${formatTimeSpent(Math.abs(diff))})` : ''}`,
+        title: `Logged: ${formatTimeSpent(timeSpent)}${diff ? ` (${diff > 0 ? '+' : '-'}${formatTimeSpent(Math.abs(diff))})` : ''}`,
         start: startOfDay(date),
         end: endOfDay(date),
         allDay: true,

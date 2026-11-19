@@ -82,7 +82,7 @@ export default function GeneralSettings() {
                         </TabPage>
                         <TabPage header="Time Tracker">
                             <div className="p-4">
-                                <TimeTrackerTab onSave={saveSetting} />
+                                <TimeTrackerTab />
                             </div>
                         </TabPage>
                         <TabPage header="Worklog">

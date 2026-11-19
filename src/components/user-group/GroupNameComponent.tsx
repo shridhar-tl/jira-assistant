@@ -11,9 +11,10 @@ import { Button, TextInput } from '@components';
 interface GroupNameComponentProps {
     group: UserGroup;
     hasGroupWithName: (name: string, group?: UserGroup) => boolean;
+    onRename: (name: string) => void;
 }
 
-function GroupNameComponent({ group, hasGroupWithName }: GroupNameComponentProps) {
+function GroupNameComponent({ group, hasGroupWithName, onRename }: GroupNameComponentProps) {
     const { $message } = inject('MessageService');
     const [editMode, setEditMode] = useState(false);
     const [groupName, setGroupName] = useState(group.name);
@@ -33,7 +34,7 @@ function GroupNameComponent({ group, hasGroupWithName }: GroupNameComponentProps
             $message.warning(`The group with the name '${trimmedName}' already exists!`, 'Group already exists');
             return;
         }
-        group.name = trimmedName;
+        onRename(trimmedName);
         endEdit();
     };
 

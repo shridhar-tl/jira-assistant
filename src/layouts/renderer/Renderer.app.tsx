@@ -9,7 +9,7 @@ const AuthenticatePage = lazy(() => import('@pages/authenticate/AuthenticatePage
 const BasicAuthPage = lazy(() => import('@pages/authenticate/BasicAuthPage'));
 const OptionsPage = lazy(() => import('@pages/settings/global/GlobalSettings'));
 
-export default function Renderer({ authInfo, authTypeChosen, contextProps }: RendererProps) {
+export default function Renderer({ authInfo, authTypeChosen }: RendererProps) {
     const userId = authInfo && authInfo.userId;
 
     return (

@@ -1,4 +1,4 @@
-import React, { Fragment, memo, useEffect, useState } from 'react';
+import { Fragment, memo, useEffect, useState } from 'react';
 
 import { ScrollableTable, THead, TRow, Column, TBody } from '../../../components/shared';
 import { useWorklogStore } from '../datastore';

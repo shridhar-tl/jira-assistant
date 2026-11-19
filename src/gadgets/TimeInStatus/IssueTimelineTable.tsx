@@ -95,7 +95,7 @@ export default function IssueTimelineTable({ model, settings, onSettingsChange, 
             optionalId: id,
             className: 'whitespace-nowrap',
             sortValue: (m) => m.issue[id] ?? null,
-            render: (m) => <TimeSpentDisplay value={m.issue[id]} />,
+            render: (m) => <TimeSpentDisplay value={m.issue[id]} tag={null} />,
         });
 
         const all: IssueColumn[] = [
@@ -151,14 +151,14 @@ export default function IssueTimelineTable({ model, settings, onSettingsChange, 
                 optionalId: 'created',
                 className: 'whitespace-nowrap',
                 sortValue: (m) => m.issue.created,
-                render: (m) => <DateDisplay value={new Date(m.issue.created)} />,
+                render: (m) => <DateDisplay value={new Date(m.issue.created)} tag={null} />,
             },
             {
                 id: 'parent',
                 label: 'Parent',
                 optionalId: 'parent',
                 sortValue: (m) => m.issue.parentKey ?? null,
-                render: (m) => (m.issue.parentKey ? <TicketDisplay value={m.issue.parentKey} onAddWorklog={onAddWorklog} /> : null),
+                render: (m) => (m.issue.parentKey ? <TicketDisplay value={m.issue.parentKey} onAddWorklog={onAddWorklog} tag={null} /> : null),
                 exportValue: (m) => m.issue.parentKey || '',
             },
             {
@@ -166,7 +166,7 @@ export default function IssueTimelineTable({ model, settings, onSettingsChange, 
                 label: 'Epic',
                 optionalId: 'epic',
                 sortValue: (m) => m.issue.epicKey ?? null,
-                render: (m) => (m.issue.epicKey ? <TicketDisplay value={m.issue.epicKey} hideWorklog /> : null),
+                render: (m) => (m.issue.epicKey ? <TicketDisplay value={m.issue.epicKey} hideWorklog tag={null} /> : null),
                 exportValue: (m) => m.issue.epicKey || '',
             },
             {
@@ -324,7 +324,7 @@ export default function IssueTimelineTable({ model, settings, onSettingsChange, 
                             <TRow key={m.issue.key} className="border-b border-(--border-primary) hover:bg-(--bg-hover)">
                                 <td className="px-2 py-1.5 whitespace-nowrap">
                                     <div className="flex items-center gap-1">
-                                        <TicketDisplay value={m.issue.key} url={m.issue.url} onAddWorklog={onAddWorklog} />
+                                        <TicketDisplay value={m.issue.key} url={m.issue.url} onAddWorklog={onAddWorklog} tag={null} />
                                         {m.isPartialHistory && (
                                             <i
                                                 className="fa fa-exclamation-triangle text-amber-500"

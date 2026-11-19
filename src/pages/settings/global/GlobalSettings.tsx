@@ -111,6 +111,8 @@ export default function GlobalSettings() {
                     This will also delete all associated data including local worklogs, custom reports, etc.
                 </>,
                 'Confirm delete integration',
+                undefined,
+                { waitFor: 8 },
             ).then(() => setValue(true, 'deleted', user));
         } else {
             setValue(false, 'deleted', user);

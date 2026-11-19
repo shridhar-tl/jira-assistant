@@ -76,7 +76,7 @@ export default class SettingsService {
         return value !== undefined ? value : settingsDefaultValues[name];
     };
 
-    getPageSettings = (userId: number, name?: string): Promise<Record<string, any>> =>
+    getPageSettings = (userId: number): Promise<Record<string, any>> =>
         this.getAllSettings(userId, SettingsCategory.PageSettings);
 
     getDashboards = async (userId: number): Promise<any[]> => {

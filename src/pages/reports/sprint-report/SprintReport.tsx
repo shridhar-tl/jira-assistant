@@ -7,7 +7,7 @@ import { inject } from '@services';
 
 import { Button, Checkbox, RapidViewList, SprintList, TabPage, TabView } from '@components';
 
-import { distinct, getErrorMessage, union } from '@utils';
+import { distinct, getErrorMessage, isValidDate, parseISOString, union } from '@utils';
 
 import type { Issue } from '@types';
 
@@ -75,7 +75,13 @@ function SprintReport(props: BaseGadgetProps) {
         $usergroup.getUserGroups().then((g: any) => setGroups(g));
     }, [$usergroup]);
 
-    const formatDateTime = useCallback((val: string) => $userutils.formatDateTime(val), [$userutils]);
+    const formatDateTime = useCallback(
+        (isoValue?: string) => {
+            const date = isoValue ? parseISOString(isoValue) : undefined;
+            return date && isValidDate(date) ? $userutils.formatDateTime(date) : '';
+        },
+        [$userutils],
+    );
 
     const refreshData = useCallback(() => {
         if (!selectedSprints || selectedSprints.length === 0) {

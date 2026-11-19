@@ -224,7 +224,22 @@ export function useWorklogOperations(setEvents: SetEvents, settings: any, curren
     const uploadAllWorklogs = useCallback(
         async (worklogIds: number[], uploadOptions: WorklogUploadOptions) => {
             try {
-                await $worklog.uploadWorklogs(worklogIds, false, uploadOptions);
+                const uploaded = (await $worklog.uploadWorklogs(worklogIds, true, uploadOptions)) as WorklogCalendarEntry[];
+                const pendingIds = new Set(worklogIds);
+                const isPendingEvent = (e: CalendarEvent) => e.data.entryType === 1 && pendingIds.has((e.data.sourceObject as Worklog).id);
+
+                setEvents((prev) => {
+                    const removed = prev.filter(isPendingEvent);
+                    let updated = [
+                        ...prev.filter((e) => !isPendingEvent(e)),
+                        ...uploaded.map((entry) => createWorklogEvent(entry, settings)),
+                    ];
+                    const affectedDays = [...removed.map((e) => new Date(e.start)), ...uploaded.map((entry) => new Date(entry.start))];
+                    affectedDays.forEach((day) => {
+                        updated = getUpdatedAllDayEvents(day, updated, settings, currentUser);
+                    });
+                    return updated;
+                });
 
                 $message.success(`${worklogIds.length} worklog(s) uploaded successfully!`);
                 $analytics.trackEvent('Worklog uploaded: All', 'User actions');
@@ -236,7 +251,7 @@ export function useWorklogOperations(setEvents: SetEvents, settings: any, curren
                 return false;
             }
         },
-        [$worklog, $message, $analytics],
+        [setEvents, settings, currentUser, $worklog, $message, $analytics],
     );
 
     const deleteWorklog = useCallback(

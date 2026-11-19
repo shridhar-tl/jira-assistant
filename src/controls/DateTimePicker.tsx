@@ -22,7 +22,6 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({
     placeholder = 'Select date',
 }) => {
     const formatString = showTime ? 'yyyy-MM-dd\'T\'HH:mm' : 'yyyy-MM-dd';
-    const displayFormat = showTime ? 'yyyy-MM-dd HH:mm' : 'yyyy-MM-dd';
 
     const getFormattedValue = (): string => {
         if (!value) return '';
