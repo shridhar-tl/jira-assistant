@@ -277,10 +277,6 @@ function SprintWiseWorklog({ groups, ticketDetails, sprintDetails }: SprintWiseW
                     onChange={(e) => setExcludeNonSprintHrs(e.value)}
                     label="Exclude hours logged out of sprint"
                 />
-                <span className="text-xs text-amber-600 font-medium ml-2">
-                    <i className="fa fa-info-circle mr-1" />
-                    Hours displayed below may not be accurate. Still work in progress.
-                </span>
             </div>
 
             <ScrollableTable dataset={reportData} className="text-xs" exportSheetName="Worklog details">
@@ -437,7 +433,10 @@ function isWithinRange(started: string | undefined, range: WorklogDateRange): bo
     return time >= range.start && time <= range.end;
 }
 
-function setUserWiseWorklog(fields: Partial<IssueFields>, range: WorklogDateRange | null): Record<string, { total: number; allTotal: number }> {
+function setUserWiseWorklog(
+    fields: Partial<IssueFields>,
+    range: WorklogDateRange | null,
+): Record<string, { total: number; allTotal: number }> {
     const worklogs: Record<string, { total: number; allTotal: number }> = {};
     const worklogList = fields.worklog?.worklogs || [];
     worklogList.forEach((wl) => {

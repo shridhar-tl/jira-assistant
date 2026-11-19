@@ -162,7 +162,7 @@ export default class WorklogService {
         const toDateStr = formatDate(addDays(endDate, 1), 'yyyy-MM-dd');
 
         const jql =
-            `worklogAuthor in (${listForQuery}) and worklogDate >= '${fromDateStr}' and worklogDate < '${toDateStr}' ${worklogJQLSuffix}`.trim();
+            `worklogAuthor in (${listForQuery}) and worklogDate >= '${fromDateStr}' and worklogDate <= '${toDateStr}' ${worklogJQLSuffix}`.trim();
 
         const fieldsToUse = fields && fields.length > 0 ? fields : ['worklog'];
 

@@ -51,7 +51,7 @@
         "dexie": "^4.4.7",
         "espree": "^11.2.0",
         "exceljs": "^4.4.0",
-        "fluxo-ui": "^0.5.7",
+        "fluxo-ui": "^0.5.8",
         "js-sql-parser": "^1.6.0",
         "moment": "^2.31.0",
         "moment-timezone": "^0.6.6",

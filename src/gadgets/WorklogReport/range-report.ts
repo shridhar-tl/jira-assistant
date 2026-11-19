@@ -266,7 +266,7 @@ async function getIssuesWithWorklogFor(fromDate: moment.Moment, toDate: moment.M
     const projectJQL = projectKeys ? `project in ("${projectKeys.join('","')}")` : '';
     const settJQL = authorJQL || projectJQL ? `(${authorJQL}${authorJQL && projectJQL ? ' OR ' : ''}${projectJQL}) AND ` : '';
 
-    const dateJQL = `(worklogDate >= '${fromDate.clone().add(-1, 'days').format('YYYY-MM-DD')}' and worklogDate < '${toDate.clone().add(1, 'days').format('YYYY-MM-DD')}') `;
+    const dateJQL = `(worklogDate >= '${fromDate.clone().add(-1, 'days').format('YYYY-MM-DD')}' and worklogDate <= '${toDate.clone().add(1, 'days').format('YYYY-MM-DD')}') `;
     const jql = `${settJQL}${dateJQL}${additionalJQL}`;
 
     return await svc.$jira.searchTickets(jql, fieldsToFetch, undefined, {

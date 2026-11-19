@@ -49,7 +49,7 @@ export async function fetchEstimateActualData(params: RefreshParams): Promise<Re
     const fromDateStr = format(subDays(fromDate, 1), 'yyyy-MM-dd');
     const toDateStr = format(addDays(toDate, 1), 'yyyy-MM-dd');
 
-    let jql = `(worklogAuthor in ("${userList.join('","')}") and worklogDate >= '${fromDateStr}' and worklogDate < '${toDateStr}') `;
+    let jql = `(worklogAuthor in ("${userList.join('","')}") and worklogDate >= '${fromDateStr}' and worklogDate <= '${toDateStr}') `;
     let addJql = '';
     let hasProject = projects && projects.length > 0;
     const hasTickets = custTicketsList.length > 0;

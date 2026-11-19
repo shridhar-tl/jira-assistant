@@ -107,7 +107,17 @@ export function generateIssueDayWiseData(groupReport: any, state: any) {
                     const { logTime } = logItem[0];
                     const sortIndex = `${logTime.getFullYear()}${String(logTime.getMonth() + 1).padStart(2, '0')}${String(logTime.getDate()).padStart(2, '0')}${String(logTime.getHours()).padStart(2, '0')}${String(logTime.getMinutes()).padStart(2, '0')}_${issue.ticketNo}`;
 
-                    return { ...issue, fields: { ...fields, logDateTime: logTime }, logs: { [k]: logItem }, worklogStartIndex: sortIndex };
+                    const totalHours = logItem.reduce((sum: number, l: any) => sum + (l.totalHours || 0), 0);
+                    const totalCost = logItem.reduce((sum: number, l: any) => sum + (l.totalCost || 0), 0);
+
+                    return {
+                        ...issue,
+                        fields: { ...fields, logDateTime: logTime },
+                        logs: { [k]: logItem },
+                        worklogStartIndex: sortIndex,
+                        totalHours,
+                        totalCost,
+                    };
                 });
             })
             .sort((a: any, b: any) => a.worklogStartIndex.localeCompare(b.worklogStartIndex));

@@ -48,7 +48,7 @@ export function formatDate(date: Date, formatStr: string): string {
         .replace('dd', dd)
         .replace('HH', hh)
         .replace('H', String(date.getHours()))
-        .replace('hh', padNumber(date.getHours() > 12 ? date.getHours() - 12 : date.getHours()))
+        .replace('hh', padNumber(date.getHours() % 12 || 12))
         .replace('mm', min)
         .replace('ss', ss)
         .replace('tt', date.getHours() >= 12 ? 'PM' : 'AM');
