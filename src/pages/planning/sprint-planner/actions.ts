@@ -2,7 +2,17 @@ import { addDays, format, subDays } from 'date-fns';
 
 import { inject } from '@services';
 
-import { backlogColumnId, buildBoardLeaveIndex, combineLeave, loadBoardData, loadLeave, loadMoreBacklog, resolveTeamMembers, type BoardData } from '../shared/board-loader';
+import {
+    backlogColumnId,
+    buildBoardLeaveIndex,
+    combineLeave,
+    loadBoardData,
+    loadLeave,
+    loadMoreBacklog,
+    orderSprints,
+    resolveTeamMembers,
+    type BoardData,
+} from '../shared/board-loader';
 import { getSprintRanges } from '../shared/capacity';
 import { readCache, writeCache } from '../shared/cache';
 import { cacheTtl, icsImportFutureDays, icsImportPastDays, leaveListFutureDays, leaveListPastDays, segmentsPropertyKey } from '../shared/constants';
@@ -12,11 +22,11 @@ import {
     createSprint as createSprintApi,
     deleteIssueLink,
     getAssigneeFieldValue,
+    getIssuesByKey,
     getJiraErrorMessage,
     moveIssuesToBacklog,
     moveIssuesToSprint,
     rankIssues,
-    searchIssuePages,
     setIssueProperty,
     updateIssueFields,
     updateSprint,
@@ -32,14 +42,9 @@ import { isPermissionError, saveTeamDefinition, TeamConflictError } from '../sha
 import type { LeaveEntry, PlannedSegment, PlannerIssue, PlannerSprint, PlannerUser, StoredCalendarEvent, TeamDefinition, UnmappedLeave } from '../shared/types';
 import { loadVelocity } from '../shared/velocity';
 import { normalizePlannerSettings, savePlannerSettings, type PlannerSettings } from './planner-settings';
-import { usePlannerStore, type DraftChange, type DraftResult } from './store';
+import { usePlannerStore, type DraftChange, type DraftResult, type IssueEdit } from './store';
 
-export interface IssueEdit {
-    assignee?: PlannerUser | null;
-    estimate?: number | null;
-    startDate?: Date | null;
-    dueDate?: Date | null;
-}
+export type { IssueEdit };
 
 export type CompleteSprintTarget = { kind: 'backlog' } | { kind: 'sprint'; sprintId: number } | { kind: 'new'; name: string };
 
@@ -371,7 +376,7 @@ export async function updateIssues(edits: { key: string; edit: IssueEdit }[]): P
 
     const before = data;
     const issues = { ...data.issues };
-    const payloads: { key: string; fields: Record<string, unknown> }[] = [];
+    const payloads: { key: string; fields: Record<string, unknown>; edit: IssueEdit }[] = [];
     for (const { key, edit } of edits) {
         const issue = issues[key];
         if (!issue) {
@@ -380,14 +385,14 @@ export async function updateIssues(edits: { key: string; edit: IssueEdit }[]): P
         issues[key] = applyEditLocally(issue, edit, data);
         const fields = buildFieldsPayload(issue, edit, data);
         if (Object.keys(fields).length) {
-            payloads.push({ key, fields });
+            payloads.push({ key, fields, edit });
         }
     }
     const updated = { ...data, issues };
     usePlannerStore.setState({ data: updated });
 
     if (isDraft()) {
-        payloads.forEach(({ key, fields }) => addDraftChange({ id: createChangeId(), kind: 'fields', label: `Update ${key}`, key, fields }, before));
+        payloads.forEach(({ key, fields, edit }) => addDraftChange({ id: createChangeId(), kind: 'fields', label: `Update ${key}`, key, fields, edit }, before));
         return;
     }
 
@@ -440,7 +445,17 @@ export async function saveSegments(key: string, segments: PlannedSegment[]): Pro
     if (isDraft()) {
         addDraftChange({ id: createChangeId(), kind: 'segments', label: `Plan of ${key}`, key, segments }, data);
         if (dateEdit) {
-            addDraftChange({ id: createChangeId(), kind: 'fields', label: `Dates of ${key}`, key, fields: buildFieldsPayload(issue, dateEdit, data) }, data);
+            addDraftChange(
+                {
+                    id: createChangeId(),
+                    kind: 'fields',
+                    label: `Dates of ${key}`,
+                    key,
+                    fields: buildFieldsPayload(issue, dateEdit, data),
+                    edit: data.fieldIds.startDate ? dateEdit : { dueDate: dateEdit.dueDate },
+                },
+                data,
+            );
         }
         return;
     }
@@ -554,10 +569,7 @@ export async function reloadIssues(keys: string[]): Promise<void> {
     if (!data || !keys.length) {
         return;
     }
-    const { issues } = await searchIssuePages(`key in (${keys.join(',')})`, getIssueFields(data.mapContext), {
-        properties: plannerIssueProperties,
-        pageSize: keys.length,
-    });
+    const issues = await getIssuesByKey(keys, getIssueFields(data.mapContext), plannerIssueProperties);
     const current = getState().data;
     if (!current) {
         return;
@@ -634,6 +646,46 @@ export function getOpenIssueKeys(data: BoardData, sprintId: number): string[] {
 }
 
 /** Moves the open issues to the chosen target first and then closes the sprint, the same as Jira's complete sprint dialog. */
+function applyCompletionLocally(
+    data: BoardData,
+    sprintId: number,
+    openKeys: string[],
+    targetColumn: string,
+    createdSprint: PlannerSprint | null,
+    keepClosed: boolean,
+): BoardData {
+    const sprintColumn = String(sprintId);
+    const doneKeys = (data.columns[sprintColumn] || []).filter((k) => !openKeys.includes(k));
+    const closed = data.sprints.map((s) => (s.id === sprintId ? { ...s, state: 'closed' as const, completeDate: new Date() } : s));
+    const sprints = orderSprints([...closed.filter((s) => keepClosed || s.id !== sprintId), ...(createdSprint ? [createdSprint] : [])]);
+
+    const columns = { ...data.columns };
+    if (keepClosed) {
+        columns[sprintColumn] = doneKeys;
+    } else {
+        delete columns[sprintColumn];
+    }
+    columns[targetColumn] = [...openKeys, ...(columns[targetColumn] || [])];
+
+    const targetSprintId = targetColumn === backlogColumnId ? null : Number(targetColumn);
+    const issues = { ...data.issues };
+    for (const key of openKeys) {
+        const issue = issues[key];
+        if (issue) {
+            issues[key] = {
+                ...issue,
+                currentSprintId: targetSprintId,
+                sprintIds: targetSprintId ? [...issue.sprintIds.filter((id) => id !== targetSprintId), targetSprintId] : issue.sprintIds,
+            };
+        }
+    }
+    if (!keepClosed) {
+        doneKeys.forEach((key) => delete issues[key]);
+    }
+
+    return { ...data, sprints, columns, issues, sprintRanges: getSprintRanges(sprints.filter((s) => s.state !== 'closed')) };
+}
+
 export async function completeSprint(sprintId: number, target: CompleteSprintTarget): Promise<boolean> {
     const { data } = getState();
     if (!data) {
@@ -642,6 +694,8 @@ export async function completeSprint(sprintId: number, target: CompleteSprintTar
     const openKeys = getOpenIssueKeys(data, sprintId);
 
     try {
+        let targetColumn = backlogColumnId;
+        let createdSprint: PlannerSprint | null = null;
         if (openKeys.length) {
             if (target.kind === 'backlog') {
                 await moveIssuesToBacklog(openKeys);
@@ -652,15 +706,18 @@ export async function completeSprint(sprintId: number, target: CompleteSprintTar
             } else {
                 let targetId = target.kind === 'sprint' ? target.sprintId : 0;
                 if (target.kind === 'new') {
-                    targetId = (await createSprintApi(data.board.id, { name: target.name })).id;
+                    createdSprint = await createSprintApi(data.board.id, { name: target.name });
+                    targetId = createdSprint.id;
                 }
                 const firstKey = data.columns[String(targetId)]?.[0];
                 await moveIssuesToSprint(targetId, openKeys, firstKey ? { beforeKey: firstKey } : undefined);
+                targetColumn = String(targetId);
             }
         }
         await updateSprint(sprintId, { state: 'closed' });
         showSuccess('Sprint completed');
-        await loadBoard(data.board.id, true);
+        setData((current) => applyCompletionLocally(current, sprintId, openKeys, targetColumn, createdSprint, getState().settings.showClosedSprints));
+        loadVelocityData(true);
         return true;
     } catch (err) {
         showError(getJiraErrorMessage(err), 'Unable to complete the sprint');
@@ -711,7 +768,7 @@ export async function createIssueInColumn(columnId: string, issue: NewIssue): Pr
     }
 
     try {
-        const created = (await $jira.createIssue({ fields })) as { key: string };
+        const created = (await $jira.createIssue(fields)) as { key: string };
         await insertCreatedIssue(created.key, columnId);
         return { ok: true, needsFullForm: false };
     } catch (err) {
@@ -726,11 +783,8 @@ async function insertCreatedIssue(key: string, columnId: string) {
     if (!data) {
         return;
     }
-    const { issues } = await searchIssuePages(`key = ${key}`, getIssueFields(data.mapContext), { properties: plannerIssueProperties, pageSize: 1 });
-    if (!issues.length) {
-        return;
-    }
-    const issue = mapPlannerIssue(issues[0], data.mapContext);
+    const [raw] = await getIssuesByKey([key], getIssueFields(data.mapContext), plannerIssueProperties);
+    const issue = mapPlannerIssue(raw, data.mapContext);
     setData((current) => ({
         ...current,
         issues: { ...current.issues, [key]: issue },
@@ -920,9 +974,38 @@ export function discardDraft() {
     });
 }
 
+function getRankIndex(columnKeys: string[], rank: RankPosition): number {
+    const index = rank.beforeKey ? columnKeys.indexOf(rank.beforeKey) : rank.afterKey ? columnKeys.indexOf(rank.afterKey) + 1 : 0;
+    return index < 0 || (rank.afterKey && index === 0) ? columnKeys.length : index;
+}
+
+function replayChange(data: BoardData, change: DraftChange): BoardData {
+    switch (change.kind) {
+        case 'move': {
+            const target = (data.columns[change.toColumn] || []).filter((k) => !change.keys.includes(k));
+            return applyMoveLocally(data, change.keys, change.toColumn, getRankIndex(target, change.rank)).data;
+        }
+        case 'fields': {
+            const issue = data.issues[change.key];
+            return issue ? { ...data, issues: { ...data.issues, [change.key]: applyEditLocally(issue, change.edit, data) } } : data;
+        }
+        case 'segments': {
+            const issue = data.issues[change.key];
+            return issue ? { ...data, issues: { ...data.issues, [change.key]: { ...issue, segments: change.segments, legacySegments: false } } } : data;
+        }
+        case 'link':
+            return updateLinksLocally(data, change.inwardKey, change.outwardKey, change.typeName, change.action === 'delete', change.linkId);
+    }
+}
+
 export function removeDraftChange(changeId: string) {
-    const { draft } = getState();
-    usePlannerStore.setState({ draft: { ...draft, changes: draft.changes.filter((c) => c.id !== changeId) } });
+    const { draft, data } = getState();
+    const changes = draft.changes.filter((c) => c.id !== changeId);
+    const snapshot = changes.length ? draft.snapshot : null;
+    usePlannerStore.setState({
+        data: draft.snapshot ? changes.reduce(replayChange, draft.snapshot) : data,
+        draft: { ...draft, changes, snapshot },
+    });
 }
 
 type OtherChange = Exclude<DraftChange, { kind: 'move' }>;
@@ -1053,7 +1136,7 @@ export async function applyDraft(): Promise<void> {
             ...getState().draft,
             isApplying: false,
             changes: failed,
-            snapshot: failed.length ? getState().draft.snapshot : null,
+            snapshot: null,
             results,
         },
     });
@@ -1061,10 +1144,19 @@ export async function applyDraft(): Promise<void> {
     const count = draft.changes.length;
     if (failed.length) {
         showError(`${failed.length} of ${count} changes could not be applied. They are kept in the draft.`, 'Draft partly applied');
-    } else {
-        showSuccess(`${count} changes applied to Jira`);
+        await loadBoard(data.board.id, true);
+        const fresh = getState().data;
+        if (fresh) {
+            usePlannerStore.setState({ data: failed.reduce(replayChange, fresh), draft: { ...getState().draft, snapshot: fresh } });
+        }
+        return;
     }
-    await loadBoard(data.board.id, true);
+
+    showSuccess(`${count} changes applied to Jira`);
+    const touchedKeys = [...new Set(others.flatMap((c) => (c.kind === 'link' ? [c.inwardKey, c.outwardKey] : [c.key])))];
+    if (touchedKeys.length) {
+        await reloadIssues(touchedKeys).catch((err) => console.warn('Unable to reload the updated issues', err));
+    }
 }
 
 export function setSelection(keys: string[]) {

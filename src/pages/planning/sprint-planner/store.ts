@@ -3,8 +3,15 @@ import { create } from 'zustand';
 import type { BoardData } from '../shared/board-loader';
 import { setStorageConsent } from '../shared/storage-consent';
 import type { RankPosition } from '../shared/jira-api';
-import type { PlannedSegment, SprintVelocity, StatusCategory } from '../shared/types';
+import type { PlannedSegment, PlannerUser, SprintVelocity, StatusCategory } from '../shared/types';
 import { getPlannerSettings, type PlannerSettings } from './planner-settings';
+
+export interface IssueEdit {
+    assignee?: PlannerUser | null;
+    estimate?: number | null;
+    startDate?: Date | null;
+    dueDate?: Date | null;
+}
 
 export interface BoardFilters {
     text: string;
@@ -18,7 +25,7 @@ export interface BoardFilters {
 
 export type DraftChange =
     | { id: string; kind: 'move'; label: string; keys: string[]; toColumn: string; rank: RankPosition }
-    | { id: string; kind: 'fields'; label: string; key: string; fields: Record<string, unknown> }
+    | { id: string; kind: 'fields'; label: string; key: string; fields: Record<string, unknown>; edit: IssueEdit }
     | { id: string; kind: 'segments'; label: string; key: string; segments: PlannedSegment[] }
     | { id: string; kind: 'link'; label: string; action: 'create' | 'delete'; typeName: string; inwardKey: string; outwardKey: string; linkId?: string };
 

@@ -8,7 +8,7 @@ export const GoogleOAuth = {
     },
 };
 
-export const AppVersionNo = 3.04;
+export const AppVersionNo = 3.05;
 
 let AnalyticsTrackingId = 'G-CJQYE6Q1JQ';
 

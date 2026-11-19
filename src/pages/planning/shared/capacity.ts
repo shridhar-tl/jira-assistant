@@ -194,12 +194,11 @@ export function computeSprintCapacity(sprint: PlannerSprint, range: SprintRange 
     let issueCount = 0;
 
     for (const issue of issues) {
-        if (issue.isSubtask && issue.parentKey && issues.some((i) => i.key === issue.parentKey)) {
-            continue;
-        }
-        issueCount++;
-        if (!isIssueEstimated(issue, estimateUnit)) {
-            unestimatedCount++;
+        if (!issue.isSubtask || !issue.parentKey || !issues.some((i) => i.key === issue.parentKey)) {
+            issueCount++;
+            if (!isIssueEstimated(issue, estimateUnit)) {
+                unestimatedCount++;
+            }
         }
         if (issue.statusCategory === 'done') {
             continue;

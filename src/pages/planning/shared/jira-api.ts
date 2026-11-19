@@ -353,6 +353,12 @@ export async function searchIssuePages(jql: string, fields: string[], opts: Sear
     return { issues, nextPageToken: next };
 }
 
+export function getIssuesByKey(keys: string[], fields: string[], properties: string[]): Promise<RawIssue[]> {
+    const { $ajax } = inject('AjaxService');
+    const params = { fields: fields.join(','), properties: properties.join(',') };
+    return Promise.all(keys.map((key) => $ajax.get<RawIssue>(prepareUrlWithQueryString(`~/rest/api/2/issue/${encodeURIComponent(key)}`, params))));
+}
+
 function chunkArray<T>(items: T[], size: number): T[][] {
     const result: T[][] = [];
     for (let i = 0; i < items.length; i += size) {

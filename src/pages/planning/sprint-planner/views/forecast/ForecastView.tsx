@@ -61,8 +61,9 @@ export default function ForecastView({ model }: ForecastViewProps) {
 
         if (lastRange && typicalCapacity > 0) {
             const length = Math.max(1, differenceInCalendarDays(lastRange.end, lastRange.start) + 1);
-            for (let i = sprints.length; i < settings.forecastSprintCount; i++) {
-                const offset = i - sprints.length + 1;
+            const realSprintCount = sprints.length;
+            for (let i = realSprintCount; i < settings.forecastSprintCount; i++) {
+                const offset = i - realSprintCount + 1;
                 const startDate = addDays(lastRange.end, 1 + (offset - 1) * length);
                 const info = { name: getNextSprintName(lastSprint?.name, offset, data.board.name), startDate, endDate: addDays(startDate, length - 1) };
                 const id = `virtual-${offset}`;

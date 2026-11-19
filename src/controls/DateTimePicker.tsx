@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 
-import { format, parse } from 'date-fns';
+import { format, isValid, parse, parseISO } from 'date-fns';
 
 interface DateTimePickerProps {
     value?: Date | string;
@@ -10,6 +10,14 @@ interface DateTimePickerProps {
     className?: string;
     disabled?: boolean;
     placeholder?: string;
+}
+
+function toInputValue(value: Date | string | undefined, formatString: string): string {
+    if (!value) {
+        return '';
+    }
+    const date = value instanceof Date ? value : parseISO(value);
+    return isValid(date) ? format(date, formatString) : '';
 }
 
 export const DateTimePicker: React.FC<DateTimePickerProps> = ({
@@ -22,45 +30,44 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({
     placeholder = 'Select date',
 }) => {
     const formatString = showTime ? 'yyyy-MM-dd\'T\'HH:mm' : 'yyyy-MM-dd';
+    const formatted = useMemo(() => toInputValue(value, formatString), [value, formatString]);
+    const [text, setText] = useState(formatted);
+    const [shownValue, setShownValue] = useState(formatted);
 
-    const getFormattedValue = (): string => {
-        if (!value) return '';
-
-        try {
-            const dateObj = value instanceof Date ? value : new Date(value);
-            if (isNaN(dateObj.getTime())) return '';
-            return format(dateObj, formatString);
-        } catch {
-            return '';
-        }
-    };
+    if (shownValue !== formatted) {
+        setShownValue(formatted);
+        setText(formatted);
+    }
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const newValue = e.target.value;
+        setText(newValue);
         if (!newValue) {
-            if (onClear) {
-                onClear();
-                return;
-            }
-            onChange?.(new Date());
             return;
         }
+        const parsedDate = parse(newValue, formatString, new Date());
+        if (isValid(parsedDate)) {
+            onChange?.(parsedDate);
+        }
+    };
 
-        try {
-            const parsedDate = parse(newValue, formatString, new Date());
-            if (!isNaN(parsedDate.getTime())) {
-                onChange?.(parsedDate);
-            }
-        } catch (error) {
-            console.error('Error parsing date:', error);
+    const handleBlur = () => {
+        if (text) {
+            return;
+        }
+        if (onClear) {
+            onClear();
+        } else {
+            setText(formatted);
         }
     };
 
     return (
         <input
             type={showTime ? 'datetime-local' : 'date'}
-            value={getFormattedValue()}
+            value={text}
             onChange={handleChange}
+            onBlur={handleBlur}
             disabled={disabled}
             placeholder={placeholder}
             className={`px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100 ${className}`}

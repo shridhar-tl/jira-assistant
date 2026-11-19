@@ -1,8 +1,10 @@
 import { inject } from '@services';
 
+import { convertToDate } from '@utils/helpers';
+
 import { getCached, writeCache } from './cache';
 import { cacheTtl, defaultTeamDefinition, teamDefinitionVersion, teamPropertyKey } from './constants';
-import { getBoardPropertyDirect } from './jira-api';
+import { getBoardPropertyDirect, getJiraErrorMessage } from './jira-api';
 import { assertPropertySize } from './property-limits';
 import { ensureStorageAllowed } from './storage-consent';
 import { writeTeamProperty } from './team-property-writer';
@@ -101,6 +103,11 @@ export function createDefaultTeam(): TeamDefinition {
     };
 }
 
+function normalizeTimestamp(value: unknown): string {
+    const date = value ? convertToDate(value) : undefined;
+    return date ? date.toISOString() : '';
+}
+
 export function normalizeTeamDefinition(value: Partial<TeamDefinition> | null | undefined): TeamDefinition {
     const defaults = createDefaultTeam();
     if (!value || typeof value !== 'object') {
@@ -115,7 +122,7 @@ export function normalizeTeamDefinition(value: Partial<TeamDefinition> | null | 
         groupName: value.groupName ?? null,
         atlassianTeamId: value.atlassianTeamId ?? null,
         version: teamDefinitionVersion,
-        updated: value.updated || '',
+        updated: normalizeTimestamp(value.updated),
         updatedBy: value.updatedBy || '',
         memberSource: value.memberSource === 'group' || value.memberSource === 'atlassianTeam' ? value.memberSource : 'board',
         members: (Array.isArray(value.members) ? value.members : []).map(normalizeMember).filter((m): m is TeamMember => !!m).slice(0, maxMembers),
@@ -177,7 +184,9 @@ export async function saveTeamDefinition(boardId: number, team: TeamDefinition):
     return toSave;
 }
 
+const boardPermissionMessage = /nopermission/i;
+
 export function isPermissionError(err: unknown): boolean {
     const status = (err as { status?: number })?.status;
-    return status === 401 || status === 403;
+    return status === 401 || status === 403 || (status === 404 && boardPermissionMessage.test(getJiraErrorMessage(err)));
 }

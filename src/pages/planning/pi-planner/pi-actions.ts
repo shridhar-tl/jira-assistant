@@ -252,7 +252,7 @@ export async function syncObjectiveToJira(objective: PiObjective): Promise<PiObj
         return objective;
     }
     const { $jira } = inject('JiraService');
-    const created = (await $jira.createIssue({ fields: { ...fields, project: { key: projectKey }, issuetype: { id: storage.issueTypeId } } })) as { key: string };
+    const created = (await $jira.createIssue({ ...fields, project: { key: projectKey }, issuetype: { id: storage.issueTypeId } })) as { key: string };
     return { ...objective, jiraKey: created.key };
 }
 
@@ -279,7 +279,7 @@ export async function syncRiskToJira(risk: PiRisk, roamLabel: string): Promise<P
         return risk;
     }
     const { $jira } = inject('JiraService');
-    const created = (await $jira.createIssue({ fields: { ...fields, project: { key: projectKey }, issuetype: { id: storage.issueTypeId } } })) as { key: string };
+    const created = (await $jira.createIssue({ ...fields, project: { key: projectKey }, issuetype: { id: storage.issueTypeId } })) as { key: string };
     return { ...risk, jiraKey: created.key };
 }
 

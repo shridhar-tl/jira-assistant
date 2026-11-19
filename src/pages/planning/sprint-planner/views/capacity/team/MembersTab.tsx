@@ -10,7 +10,7 @@ import type { BoardData } from '../../../../shared/board-loader';
 import Field from '../../../../shared/components/Field';
 import UserAvatar from '../../../../shared/components/UserAvatar';
 import UserPicker from '../../../../shared/components/UserPicker';
-import type { MemberSource, TeamDefinition, TeamMember } from '../../../../shared/types';
+import type { MemberSource, PlannerUser, TeamDefinition, TeamMember } from '../../../../shared/types';
 
 interface MembersTabProps {
     team: TeamDefinition;
@@ -23,6 +23,10 @@ const sourceItems = [
     { label: 'JA user group', value: 'group' },
     { label: 'Atlassian team', value: 'atlassianTeam' },
 ];
+
+function findAssignee(data: BoardData, id: string): PlannerUser | null {
+    return Object.values(data.issues).find((i) => i.assignee?.id === id)?.assignee || null;
+}
 
 function upsertMember(team: TeamDefinition, member: TeamMember): TeamDefinition {
     const exists = team.members.some((m) => m.id === member.id);
@@ -151,9 +155,16 @@ export default function MembersTab({ team, data, onChange }: MembersTabProps) {
                             key={id}
                             className="cursor-pointer rounded bg-(--bg-tertiary) px-1.5 hover:bg-(--bg-hover)"
                             title="Add back to the team"
-                            onClick={() => onChange({ ...team, excludedMemberIds: team.excludedMemberIds.filter((e) => e !== id) })}
+                            onClick={() => {
+                                const user = findAssignee(data, id);
+                                onChange(
+                                    user
+                                        ? upsertMember(team, { ...user, allocation: 100, hoursPerDay: null, workingDays: null })
+                                        : { ...team, excludedMemberIds: team.excludedMemberIds.filter((e) => e !== id) },
+                                );
+                            }}
                         >
-                            {data.issues && Object.values(data.issues).find((i) => i.assignee?.id === id)?.assignee?.displayName || id} <i className="fa fa-undo" />
+                            {findAssignee(data, id)?.displayName || id} <i className="fa fa-undo" />
                         </button>
                     ))}
                 </div>

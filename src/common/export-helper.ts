@@ -3,7 +3,7 @@ import type { FlowComposer } from 'fluxo-ui/pdf';
 import { buildPdfFromTable } from 'fluxo-ui/pdf/html';
 import { exportCsv } from '../utils/helpers';
 
-import Exporter, { ExportFormat } from './Exporter';
+import Exporter, { ExportFormat, getCellExportData } from './Exporter';
 
 function isVisible(el: Element): boolean {
     return (el as HTMLElement).offsetParent !== null;
@@ -49,8 +49,7 @@ const pdfChartGap = 16;
 const pdfStripeColor = '#f1f5f9';
 
 function readExportText(text: string, cell: HTMLTableCellElement): string {
-    const child = cell.querySelector<HTMLElement>('[data-export-data]');
-    return cell.getAttribute('data-export-data') || child?.getAttribute('data-export-data') || text;
+    return getCellExportData(cell) || text;
 }
 
 function isRowExportable(row: HTMLTableRowElement): boolean {
@@ -172,9 +171,14 @@ export class ExportHelper {
             table.querySelectorAll<HTMLTableRowElement>('tbody tr:not([data-export-ignore="true"])'),
         ).filter((r) => isVisible(r));
 
+        const visibleTfootRows = Array.from(
+            table.querySelectorAll<HTMLTableRowElement>('tfoot:not([data-export-ignore="true"]) tr:not([data-export-ignore="true"])'),
+        ).filter((r) => isVisible(r));
+
         const content =
             genData(visibleTheadRows, colInfo) +
-            genData(visibleTbodyRows, colInfo);
+            genData(visibleTbodyRows, colInfo) +
+            genData(visibleTfootRows, colInfo);
 
         exportCsv(content, fileName);
 
@@ -192,8 +196,7 @@ export class ExportHelper {
 
             const child = td.querySelector<HTMLElement>('[data-export-data]');
             let val = String(
-                td.getAttribute('data-export-data') ||
-                (child && child.getAttribute('data-export-data')) ||
+                getCellExportData(td) ||
                 (child && child.innerText) ||
                 td.innerText ||
                 '',

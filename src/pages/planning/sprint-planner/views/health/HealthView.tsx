@@ -95,9 +95,6 @@ export default function HealthView({ model, compact }: HealthViewProps) {
         }
         const ctx = createDistributionContext(data.members, data.team, data.leaveIndex, data.sprintRanges.get(activeSprint.id) || null);
         for (const issue of sprintIssues[activeSprint.id] || []) {
-            if (issue.isSubtask) {
-                continue;
-            }
             const committed = (issue.originalEstimate || 0) / 3600;
             const remaining = issue.statusCategory === 'done' ? 0 : getIssueHours(issue);
             const shares = getPersonShares(getIssuePlanParts(issue, remaining, ctx).parts, ctx);

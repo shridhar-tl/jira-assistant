@@ -8,7 +8,7 @@ const isProdBuild = import.meta.env.PROD;
 const isDevBuild = !isProdBuild;
 const isQuickView = globalThis.location?.href.includes('?quick=true') ?? false;
 
-export const appVersionNo = '3.0.4';
+export const appVersionNo = '3.0.5';
 
 export function redirectToRoute(route?: string): void {
     document.location.href = getRouteUrl(route);

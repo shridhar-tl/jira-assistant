@@ -1,7 +1,7 @@
 {
     "name": "jira-assistant",
     "type": "module",
-    "version": "3.0.4",
+    "version": "3.0.5",
     "description": "Help to track & upload work done on a Jira Ticket on timely basis and generate Worklog, Sprint and other custom reports",
     "homepage": "/",
     "author": {

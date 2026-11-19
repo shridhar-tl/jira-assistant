@@ -97,7 +97,7 @@ export default function DependencyTable({ dependencies, issues, locationOf, team
                             );
                         })}
                         {!rows.length && (
-                            <tr>
+                            <tr data-export-ignore="true">
                                 <td colSpan={6} className="px-2 py-6 text-center text-(--text-tertiary)">
                                     No dependencies to show.
                                 </td>

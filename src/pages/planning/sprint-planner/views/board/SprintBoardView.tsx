@@ -247,8 +247,9 @@ export default function SprintBoardView({ model, onShowHealth }: SprintBoardView
             const columnId = String(column.id);
             const sprint = data.sprints.find((s) => String(s.id) === columnId) || null;
             const keys = data.columns[columnId] || [];
-            const issues = keys.map((k) => data.issues[k]).filter((i) => i && !i.isSubtask);
-            const totalEstimate = issues.reduce(
+            const allIssues = keys.map((k) => data.issues[k]).filter((i) => !!i);
+            const issues = allIssues.filter((i) => !i.isSubtask);
+            const totalEstimate = allIssues.reduce(
                 (sum, i) => sum + (unit === 'hours' ? getIssueHours(i) : getIssuePoints(i, data.estimateUnit)),
                 0,
             );

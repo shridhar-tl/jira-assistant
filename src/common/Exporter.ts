@@ -9,6 +9,11 @@ interface ChartImageInfo {
     title: string;
 }
 
+export function getCellExportData(cell: HTMLTableCellElement): string | null {
+    const child = cell.querySelector<HTMLElement>('[data-export-data]');
+    return cell.getAttribute('data-export-data') || child?.getAttribute('data-export-data') || null;
+}
+
 export default class Exporter {
     document: Excel.Workbook;
     worksheet: Excel.Worksheet | null;
@@ -56,6 +61,11 @@ export default class Exporter {
         );
         this.prepareData(bodyRows);
         console.log('bodyRows rows', bodyRows.length);
+
+        const footerRows = Array.from(
+            table.querySelectorAll<HTMLTableRowElement>(':scope > tfoot:not([data-export-ignore="true"]) > tr:not([data-export-ignore="true"])'),
+        );
+        this.prepareData(footerRows);
 
         this.worksheet.views = [{ state: 'frozen', xSplit: 0, ySplit: headerRows.length }];
 
@@ -178,7 +188,7 @@ export default class Exporter {
                 dataArr[dataArr.length] = null;
             }
 
-            let value: string | number | Date | null = col.getAttribute('data-export-value') || col.innerText || '';
+            let value: string | number | Date | null = col.getAttribute('data-export-value') || getCellExportData(col) || col.innerText || '';
 
             if (value && !exportIgnore) {
                 value = (value as string).trim();

@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, useState, type KeyboardEvent, type ReactNode } from 'react';
 
 import { Button, Drawer, Dropdown, InputSwitch, Multiselect, NumericInput, SelectButton } from '@components';
 
@@ -46,6 +46,48 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
     );
 }
 
+interface SettingNumberProps {
+    value: number;
+    min: number;
+    max: number;
+    step?: number;
+    onCommit: (value: number) => void;
+}
+
+function SettingNumber({ value, min, max, step, onCommit }: SettingNumberProps) {
+    const [draft, setDraft] = useState<number | undefined>(value);
+    const [syncedValue, setSyncedValue] = useState(value);
+
+    if (syncedValue !== value) {
+        setSyncedValue(value);
+        setDraft(value);
+    }
+
+    const commit = () => {
+        if (draft === undefined) {
+            setDraft(value);
+            return;
+        }
+        const next = Math.min(max, Math.max(min, Math.round(draft)));
+        setDraft(next);
+        if (next !== value) {
+            onCommit(next);
+        }
+    };
+
+    return (
+        <NumericInput
+            value={draft}
+            min={min}
+            max={max}
+            step={step}
+            onChange={(e) => setDraft(e.value)}
+            onBlur={commit}
+            onKeyDown={(e: KeyboardEvent<HTMLInputElement>) => e.key === 'Enter' && e.currentTarget.blur()}
+        />
+    );
+}
+
 export default function PlannerSettingsDrawer({ open, onClose }: PlannerSettingsDrawerProps) {
     const settings = usePlannerStore((s) => s.settings);
     const consentAccepted = useStorageConsent((s) => s.accepted);
@@ -79,7 +121,7 @@ export default function PlannerSettingsDrawer({ open, onClose }: PlannerSettings
                     <InputSwitch label="Show the parent (epic) strip" checked={settings.showEpicStrip} onChange={(e) => changeSettings({ showEpicStrip: e.value })} />
                     <InputSwitch label="Show dependency lines between cards" checked={settings.showDependencyLines} onChange={(e) => changeSettings({ showDependencyLines: e.value })} />
                     <Field label="Backlog items loaded at a time" hint="More are loaded on demand with Load more.">
-                        <NumericInput value={settings.backlogLimit} min={25} max={500} step={25} onChange={(e) => e.value && changeSettings({ backlogLimit: e.value })} />
+                        <SettingNumber value={settings.backlogLimit} min={25} max={500} step={25} onCommit={(value) => changeSettings({ backlogLimit: value })} />
                     </Field>
                 </Section>
 
@@ -96,7 +138,7 @@ export default function PlannerSettingsDrawer({ open, onClose }: PlannerSettings
                         <Dropdown options={dateFields.length ? dateFields : [{ value: 'duedate', label: 'Due date' }]} value={settings.dueDateField} onChange={(e) => changeSettings({ dueDateField: e.value as string })} searchable />
                     </Field>
                     <Field label="Lead time for derived dates (working days)" hint="0 derives the duration from the remaining estimate.">
-                        <NumericInput value={settings.leadTimeDays} min={0} max={60} onChange={(e) => changeSettings({ leadTimeDays: e.value ?? 0 })} />
+                        <SettingNumber value={settings.leadTimeDays} min={0} max={60} onCommit={(value) => changeSettings({ leadTimeDays: value })} />
                     </Field>
                     <InputSwitch label="Keep Jira start / due dates in sync with planned segments" checked={settings.syncNativeDates} onChange={(e) => changeSettings({ syncNativeDates: e.value })} />
                 </Section>
@@ -131,7 +173,7 @@ export default function PlannerSettingsDrawer({ open, onClose }: PlannerSettings
 
                 <Section title="Forecast">
                     <Field label="Sprints to forecast">
-                        <NumericInput value={settings.forecastSprintCount} min={1} max={12} onChange={(e) => e.value && changeSettings({ forecastSprintCount: e.value })} />
+                        <SettingNumber value={settings.forecastSprintCount} min={1} max={12} onCommit={(value) => changeSettings({ forecastSprintCount: value })} />
                     </Field>
                 </Section>
 

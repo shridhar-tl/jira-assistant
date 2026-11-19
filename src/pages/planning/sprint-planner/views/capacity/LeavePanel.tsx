@@ -115,7 +115,7 @@ export default function LeavePanel({ data, readOnly }: LeavePanelProps) {
                             </tr>
                         ))}
                         {!manualLeave.length && !calendarRanges.length && (
-                            <tr>
+                            <tr data-export-ignore="true">
                                 <td colSpan={5} className="px-2 py-3 text-center text-(--text-tertiary)">
                                     No leave or holidays planned. Add them here or connect a calendar under Team.
                                 </td>

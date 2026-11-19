@@ -37,10 +37,8 @@ export function computePersonLoads(input: PersonLoadInput): PersonLoadResult {
     const loads: PersonDayLoads = new Map();
     const unscheduled = new Map<string, PlannerIssue[]>();
     const unestimated = new Map<string, PlannerIssue[]>();
-    const keys = new Set(issues.map((i) => i.key));
-
     for (const issue of issues) {
-        if (issue.statusCategory === 'done' || (issue.isSubtask && issue.parentKey && keys.has(issue.parentKey) && !issue.segments.length)) {
+        if (issue.statusCategory === 'done') {
             continue;
         }
         const hours = getIssueHours(issue);

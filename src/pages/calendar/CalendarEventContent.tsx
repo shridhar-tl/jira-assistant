@@ -121,7 +121,7 @@ export default function CalendarEventContent({
         const clsName = lines * 30 > totalMins ? ' short-desc' : '';
 
         return (
-            <div className="cal-entry-content pad-8" title={title} data-jira-key={wl?.ticketNo} data-jira-wl-id={wl?.worklogId}>
+            <div className="cal-entry-content pt-1" title={title} data-jira-key={wl?.ticketNo} data-jira-wl-id={wl?.worklogId}>
                 {entryType === 1 && wl && <WorklogOptions worklog={wl} onUpload={onUploadWorklog} onClone={onCloneWorklog} />}
                 {leftIcon}
                 <div className="cal-entry-time">

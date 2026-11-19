@@ -43,13 +43,12 @@ export function buildResourceModel(data: BoardData, colorMode: BarColorMode, lea
     const memberIds = new Set(data.members.map((m) => m.id));
     const events: ResourceTimelineEvent[] = [];
     const unscheduled: PlannerIssue[] = [];
-    const keys = new Set(Object.keys(data.issues));
     const today = startOfDay(new Date());
     let start = addDays(today, -pastDays);
     let end = addWeeks(today, defaultWeeks);
 
     for (const issue of Object.values(data.issues)) {
-        if (issue.statusCategory === 'done' || (issue.isSubtask && issue.parentKey && keys.has(issue.parentKey) && !issue.segments.length)) {
+        if (issue.statusCategory === 'done') {
             continue;
         }
         const range = issue.currentSprintId ? data.sprintRanges.get(issue.currentSprintId) || null : null;
