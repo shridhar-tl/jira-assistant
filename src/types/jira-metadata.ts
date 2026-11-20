@@ -51,6 +51,13 @@ export interface JiraCreateIssueType {
     hierarchyLevel?: number;
 }
 
+export interface JiraIssueLinkType {
+    id: string;
+    name: string;
+    inward: string;
+    outward: string;
+}
+
 export interface JiraStatusRef {
     id: string;
     name: string;

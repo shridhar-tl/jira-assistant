@@ -1,4 +1,5 @@
 import type { PivotFieldConfig } from '../../types';
+import { filterDerivedItems } from '../../utils/derived-sources';
 import { countValues } from '../common-utils';
 
 import { generateDateRangeColumns } from './date-range-field';
@@ -41,7 +42,7 @@ export function getAggregatedDerivedFieldValue(cell: any, issues: any[]) {
             }
 
             if (Array.isArray(obj)) {
-                return obj.map((item) => item[field]);
+                return filterDerivedItems(cell, obj).map((item) => item[field]);
             }
 
             return [obj[field]];
@@ -73,7 +74,7 @@ export function flattenDerivedFields(cell: any, issues: any[]) {
             }
 
             if (Array.isArray(obj)) {
-                return obj.map((sf) => ({ ...issue, [prop]: [sf] }));
+                return filterDerivedItems(cell, obj).map((sf) => ({ ...issue, [prop]: [sf] }));
             }
 
             return [obj[field]];

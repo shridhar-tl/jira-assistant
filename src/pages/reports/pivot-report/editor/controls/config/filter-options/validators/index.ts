@@ -2,6 +2,8 @@
 // @ts-ignore
 import parser from 'js-sql-parser';
 
+import { getQueryFieldsForKey } from '../../../../../utils/derived-sources';
+
 import { allowedFunctionsMap, paramsFunctionName } from './functions';
 
 type ValidatorFn = (json: any, result: any, leftPart?: any) => any;
@@ -234,7 +236,10 @@ function validate_Identifier(obj: any, result: any) {
         throw new Error(`Unknown field ${value}`);
     }
 
-    result.fields[field.schema?.derived && field.key.includes('.') ? field.key.split('.')[0] : field.key] = true;
+    getQueryFieldsForKey(field.key, field.schema?.derived).forEach((key) => (result.fields[key] = true));
+    if (field.schema?.derived) {
+        result.derivedKeys?.add(field.key);
+    }
 
     return field.schema;
 }

@@ -38,6 +38,7 @@ export interface PivotFieldConfig {
     rangeType?: string;
     filterField?: string;
     useDistinct?: boolean;
+    itemFilterValues?: string[];
 }
 
 export interface DateRangeSelection {

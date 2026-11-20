@@ -44,6 +44,7 @@ export const ApiUrls = {
 
     // Field APIs
     getCustomFields: '~/rest/api/2/field',
+    getIssueLinkTypes: '~/rest/api/2/issueLinkType',
 
     // JQL APIs
     getJQLAutocomplete: '~/rest/api/2/jql/autocompletedata',

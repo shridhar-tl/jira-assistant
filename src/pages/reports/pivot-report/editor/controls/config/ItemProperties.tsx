@@ -4,9 +4,11 @@ import { Button, Checkbox, SelectButton, TextInput } from '@components';
 import type { ComponentEvent } from '@components';
 
 import { updateItemByPath } from '../../../store/pivot-config';
+import { getDerivedItemFilter } from '../../../utils/derived-sources';
 import { getDefaultHeaderText } from '../../../utils/format-functions';
 import { getFieldType } from '../../../viewer/common-utils';
 
+import DerivedItemFilter from './DerivedItemFilter';
 import displayOptionComponent from './display-options';
 import QueryFilter from './filter-options/QueryFilter';
 import PropertyRow from './PropertyRow';
@@ -42,6 +44,7 @@ export default function ItemProperties({ selection }: ItemPropertiesProps) {
     const clearSelection = () => selectItem();
     const isGrouped = item.enableGrouping || (!isRow && level === 0);
     const DisplayOption = displayOptionComponent[item.schema?.type] || displayOptionComponent['any'];
+    const itemFilter = item.schema?.derived ? getDerivedItemFilter(item.key) : undefined;
 
     const update = (changes: object) => {
         updateItemByPath({ ...item, ...changes }, null, { args: { itemPath, isRow } });
@@ -101,6 +104,14 @@ export default function ItemProperties({ selection }: ItemPropertiesProps) {
                     )}
 
                     {DisplayOption && <DisplayOption item={item} isGrouped={isGrouped} isRow={isRow} />}
+
+                    {itemFilter && (
+                        <DerivedItemFilter
+                            itemFilter={itemFilter}
+                            values={item.itemFilterValues}
+                            onChange={(itemFilterValues) => update({ itemFilterValues })}
+                        />
+                    )}
 
                     {isGrouped && !isRow && (
                         <PropertyRow label="Totals" className="sm:col-span-2">

@@ -14,7 +14,7 @@ import {
 
 import { ApiUrls, defaultJiraFields, defaultSettings, DummyWLId, isPluginBuild } from '@constants';
 
-import type { JiraCreateIssueType, JiraFieldMeta, JiraFieldMetaMap, JiraTransition } from '@types';
+import type { JiraCreateIssueType, JiraFieldMeta, JiraFieldMetaMap, JiraIssueLinkType, JiraTransition } from '@types';
 
 import type AjaxService from './ajax-service';
 import type CacheService from './cache-service';
@@ -487,6 +487,19 @@ export default class JiraService {
         );
 
         return onlyOne ? result[0] : result;
+    }
+
+    async getIssueLinkTypes(): Promise<JiraIssueLinkType[]> {
+        const cacheKey = 'issueLinkTypes';
+        let linkTypes: JiraIssueLinkType[] | undefined = this.$jaCache.session.get(cacheKey);
+
+        if (!linkTypes) {
+            const result: { issueLinkTypes?: JiraIssueLinkType[] } = await this.$ajax.get(ApiUrls.getIssueLinkTypes);
+            linkTypes = result.issueLinkTypes || [];
+            this.$jaCache.session.set(cacheKey, linkTypes);
+        }
+
+        return linkTypes;
     }
 
     async getJiraStatuses(): Promise<any[]> {

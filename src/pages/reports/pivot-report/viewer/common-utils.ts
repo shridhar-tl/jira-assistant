@@ -6,6 +6,7 @@ import { inject } from '@services';
 import { valuePropsMap } from '../editor/controls/config/display-options/formatting';
 import { getQueryFields } from '../store/pivot-config';
 import type { PivotFieldConfig } from '../types';
+import { hydrateDerivedSources, normalizeDerivedSources } from '../utils/derived-sources';
 
 type KeyField = string | string[] | ((value: unknown) => unknown) | undefined;
 type FieldLike = Pick<PivotFieldConfig, 'key' | 'schema'>;
@@ -17,24 +18,16 @@ export const noValueText = '(None)';
 const aggregatedValueTypes: Record<string, string> = { count: 'number', merge: 'string' };
 
 export async function fetchData(jql: string, scope: any) {
-    const fields = getQueryFields(scope.fields);
+    const derivedKeys = new Set<string>(scope.derivedKeys);
+    const fields = getQueryFields(scope.fields, derivedKeys);
 
     const { $jira } = inject('JiraService');
     const result = await $jira.searchTickets(jql, fields);
 
-    return result.map(({ id, key, fields }: any) => normalizeArrays({ ...fields, id, issuekey: key }));
-}
+    const issues = result.map(({ id, key, fields }: any) => normalizeDerivedSources({ ...fields, id, issuekey: key }));
+    await hydrateDerivedSources(issues, derivedKeys);
 
-function normalizeArrays(fields: any) {
-    if (fields.worklog) {
-        fields.worklog = fields.worklog.worklogs;
-    }
-
-    if (fields.comment) {
-        fields.comment = fields.comment.comments;
-    }
-
-    return fields;
+    return issues;
 }
 
 /**

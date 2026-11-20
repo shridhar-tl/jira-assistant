@@ -28,6 +28,7 @@ export function isReportDefinitionValid() {
         fieldsMap,
         fields: {},
         parameters: {},
+        derivedKeys: new Set<string>(),
     };
 
     fields.forEach((f, i) => validateField(f, i, 0, reportErrors, scope));

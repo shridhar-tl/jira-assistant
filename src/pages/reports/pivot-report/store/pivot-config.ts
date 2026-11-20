@@ -23,6 +23,7 @@ import {
     type PivotReportDefinition,
     type ReportParameters,
 } from '../types';
+import { getQueryFieldsForKey } from '../utils/derived-sources';
 
 interface ReportDataState {
     showParameters: boolean;
@@ -139,10 +140,10 @@ export function getGroupItem(item: PivotFieldConfig) {
     return { id, key, name, schema };
 }
 
-export function getQueryFields(fieldsMap: Record<string, boolean> = {}) {
+export function getQueryFields(fieldsMap: Record<string, boolean> = {}, derivedKeys?: Set<string>) {
     const { fields } = usePivotConfig.getState();
 
-    mapFieldsList(fieldsMap, fields);
+    mapFieldsList(fieldsMap, fields, derivedKeys);
 
     return Object.keys(fieldsMap);
 }
@@ -222,23 +223,26 @@ function getDefaultSprintBoards(): AgileBoard[] {
     return toAgileBoards($session.CurrentUser?.rapidViews);
 }
 
-function mapFieldsList(fieldsMap: Record<string, boolean>, items?: PivotFieldConfig[]) {
+function mapFieldsList(fieldsMap: Record<string, boolean>, items?: PivotFieldConfig[], derivedKeys?: Set<string>) {
     if (!items) {
         return;
     }
 
     items.forEach((f) => {
-        if (f.schema?.derived && f.key.includes('.')) {
-            fieldsMap[f.key.split('.')[0]] = true;
-        } else if (f.key) {
-            fieldsMap[f.key] = true;
+        if (f.key) {
+            getQueryFieldsForKey(f.key, f.schema?.derived).forEach((key) => (fieldsMap[key] = true));
+
+            if (f.schema?.derived) {
+                derivedKeys?.add(f.key);
+            }
         }
 
         if (f.filterField) {
-            fieldsMap[f.filterField.split('.')[0]] = true;
+            getQueryFieldsForKey(f.filterField, true).forEach((key) => (fieldsMap[key] = true));
+            derivedKeys?.add(f.filterField);
         }
 
-        mapFieldsList(fieldsMap, f.subItems);
+        mapFieldsList(fieldsMap, f.subItems, derivedKeys);
     });
 }
 

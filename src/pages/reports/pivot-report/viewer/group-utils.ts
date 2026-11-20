@@ -1,11 +1,13 @@
 import { groupBy } from '@/utils/array-utils';
 
 import type { PivotFieldConfig } from '../types';
+import { filterDerivedItems } from '../utils/derived-sources';
 
 import { getGroupByFunction, isArrayField, isEmptyValue, toGroupKey } from './common-utils';
 
 type Issue = Record<string, unknown>;
 type GroupField = Pick<PivotFieldConfig, 'key' | 'schema'>;
+type DerivedGroupField = Pick<PivotFieldConfig, 'key' | 'schema' | 'itemFilterValues'>;
 type GroupCallback<T> = (value: unknown, issues: Issue[], key: string) => T;
 
 interface ValueGroup {
@@ -13,7 +15,7 @@ interface ValueGroup {
     issues: Issue[];
 }
 
-export function getIssuesGroupFunction(field: GroupField) {
+export function getIssuesGroupFunction(field: DerivedGroupField) {
     if (field.schema?.derived) {
         return getIssuesDerivedFieldsGroupFunction(field);
     } else if (isArrayField(field)) {
@@ -69,7 +71,7 @@ function getIssuesArrayFieldGroupFunction(row: GroupField) {
     };
 }
 
-function getIssuesDerivedFieldsGroupFunction(row: GroupField) {
+function getIssuesDerivedFieldsGroupFunction(row: DerivedGroupField) {
     if (!row.key.includes('.')) {
         return getIssuesNormalFieldGroupFunction(row);
     }
@@ -82,7 +84,7 @@ function getIssuesDerivedFieldsGroupFunction(row: GroupField) {
 
         for (const issue of issues) {
             const rootObj = issue[path];
-            const items: Issue[] = Array.isArray(rootObj) ? rootObj : rootObj ? [rootObj] : [];
+            const items: Issue[] = filterDerivedItems(row, Array.isArray(rootObj) ? rootObj : rootObj ? [rootObj] : []);
 
             groupBy(items, groupByFn).forEach(({ key, values }) => {
                 let groupedObj = resultObj.get(key);

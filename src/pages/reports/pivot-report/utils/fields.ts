@@ -160,6 +160,61 @@ function getDerivedFields(): JiraField[] {
             schema: { type: 'bool', derived: true, isArray: true },
         },
 
+        {
+            id: 'linkedIssuesLinkType',
+            key: 'linkedIssues.linkType',
+            name: 'Linked Issue Link Type',
+            schema: { type: 'string', derived: true, isArray: true },
+        },
+        {
+            id: 'linkedIssuesKey',
+            key: 'linkedIssues.issuekey',
+            name: 'Linked Issue Key',
+            schema: { type: 'issuekey', derived: true, isArray: true },
+        },
+        {
+            id: 'linkedIssuesSummary',
+            key: 'linkedIssues.summary',
+            name: 'Linked Issue Summary',
+            schema: { type: 'string', derived: true, isArray: true },
+        },
+        {
+            id: 'linkedIssuesStatus',
+            key: 'linkedIssues.status',
+            name: 'Linked Issue Status',
+            schema: { type: 'status', derived: true, isArray: true },
+        },
+        {
+            id: 'linkedIssuesIssueType',
+            key: 'linkedIssues.issuetype',
+            name: 'Linked Issue Type',
+            schema: { type: 'issuetype', derived: true, isArray: true },
+        },
+        {
+            id: 'linkedIssuesPriority',
+            key: 'linkedIssues.priority',
+            name: 'Linked Issue Priority',
+            schema: { type: 'priority', derived: true, isArray: true },
+        },
+        {
+            id: 'linkedIssuesTimeSpent',
+            key: 'linkedIssues.timeSpent',
+            name: 'Linked Issue Σ Time Spent',
+            schema: { type: 'timespent', derived: true, isArray: true },
+        },
+        {
+            id: 'linkedIssuesOriginalEstimate',
+            key: 'linkedIssues.originalEstimate',
+            name: 'Linked Issue Σ Original Estimate',
+            schema: { type: 'timespent', derived: true, isArray: true },
+        },
+        {
+            id: 'linkedIssuesRemainingEstimate',
+            key: 'linkedIssues.remainingEstimate',
+            name: 'Linked Issue Σ Remaining Estimate',
+            schema: { type: 'timespent', derived: true, isArray: true },
+        },
+
         { id: 'worklogAuthor', key: 'worklog.author', name: 'Worklog Added By', schema: { type: 'user', derived: true, isArray: true } },
         {
             id: 'worklogCreated',
