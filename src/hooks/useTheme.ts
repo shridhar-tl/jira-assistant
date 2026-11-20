@@ -1,11 +1,12 @@
 import { useThemeStore } from '@stores';
 
 export function useTheme() {
-    const { theme, setTheme, toggleTheme } = useThemeStore();
+    const { preference, theme, setPreference, toggleTheme } = useThemeStore();
 
     return {
+        preference,
         theme,
-        setTheme,
+        setPreference,
         toggleTheme,
         isDark: theme === 'dark',
         isLight: theme === 'light',

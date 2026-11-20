@@ -41,9 +41,12 @@ export interface RouteConfig {
 
 export type ThemeMode = 'light' | 'dark';
 
+export type ThemePreference = ThemeMode | 'system';
+
 export interface ThemeState {
+    preference: ThemePreference;
     theme: ThemeMode;
-    setTheme: (theme: ThemeMode) => void;
+    setPreference: (preference: ThemePreference) => void;
     toggleTheme: () => void;
 }
 

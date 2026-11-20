@@ -9,17 +9,25 @@ import { Link } from '@/controls';
 
 import { inject } from '@services';
 
-import { InputSwitch, type ComponentEvent } from '@components';
-
-import { useTheme } from '@hooks';
+import { SelectButton, type ComponentEvent } from '@components';
 
 import { getHostFromUrl } from '@utils/helpers';
+
+import type { ThemePreference } from '@types';
+
+import { useTheme } from '@hooks';
 
 import BackupImporter from './BackupImporter';
 import ExportSettings from './ExportSettings';
 
 const menuItemClassName =
     'w-full cursor-pointer flex items-center gap-2.5 px-2.5 py-2 text-[13px] rounded-md transition-colors text-left text-(--text-primary) hover:bg-(--bg-hover) no-underline';
+
+const themeOptions: { value: ThemePreference; label: string }[] = [
+    { label: 'Light', value: 'light' },
+    { label: 'Dark', value: 'dark' },
+    { label: 'System', value: 'system' },
+];
 
 interface UserBoxProps {
     onLogout: (e: React.MouseEvent) => void;
@@ -235,19 +243,29 @@ interface MenuItemProps {
 }
 
 function ThemeToggleItem() {
-    const { isDark, setTheme } = useTheme();
-    const switchId = useId();
+    const { isDark, preference, setPreference } = useTheme();
+    const labelId = useId();
 
-    const changeTheme = useCallback((e: ComponentEvent<boolean>) => setTheme(e.value ? 'dark' : 'light'), [setTheme]);
+    const changeTheme = useCallback((e: ComponentEvent<string>) => setPreference(e.value as ThemePreference), [setPreference]);
 
     return (
-        <label htmlFor={switchId} className={`${menuItemClassName} select-none`}>
+        <div className="w-full flex items-center gap-2.5 px-2.5 py-2 text-[13px] text-(--text-primary)">
             <span className="w-4 flex items-center justify-center shrink-0 text-(--text-tertiary)">
                 {isDark ? <NightLightIcon className="size-3.5" /> : <BrightSunIcon className="size-3.5" />}
             </span>
-            <span className="truncate flex-1">Dark mode</span>
-            <InputSwitch id={switchId} checked={isDark} onChange={changeTheme} onLabel="" offLabel="" size="sm" ariaLabel="Dark mode" />
-        </label>
+            <span id={labelId} className="truncate flex-1">
+                Theme
+            </span>
+            <SelectButton
+                items={themeOptions}
+                value={preference}
+                onChange={changeTheme}
+                variant="segmented"
+                size="sm"
+                required
+                ariaLabelledBy={labelId}
+            />
+        </div>
     );
 }
 
