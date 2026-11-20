@@ -4,6 +4,7 @@ import classNames from 'classnames';
 
 import { ScrollableTable, THead, TBody } from '@components';
 
+import { getCommonEstimateUnit, getEstimateNoun } from './estimate-unit';
 import { isClosed, isIconUrl } from './utils';
 
 interface SummaryView2Props {
@@ -11,9 +12,12 @@ interface SummaryView2Props {
     formatDateTime: (isoValue?: string) => string;
 }
 
-const helpTitle = 'Ticket with storypoints + Ticket without storypoints = Total story count';
-
 function SummaryView2({ sprintDetails, formatDateTime }: SummaryView2Props) {
+    const commonUnit = getCommonEstimateUnit(sprintDetails);
+    const estimateNoun = getEstimateNoun(commonUnit);
+    const valueHeader = commonUnit?.shortLabel ?? 'Estimate';
+    const helpTitle = `Tickets with ${estimateNoun} + Tickets without ${estimateNoun} = Total ticket count`;
+
     return (
         <>
             <div className="p-4 text-sm text-secondary">
@@ -21,8 +25,8 @@ function SummaryView2({ sprintDetails, formatDateTime }: SummaryView2Props) {
                 <ul className="list-disc pl-6 mt-1 space-y-0.5">
                     <li>* Tickets highlighted below are changes in scope of the sprint</li>
                     <li>
-                        Count of tickets format: Count of tickets with storypoints + Count of tickets without storypoints = Total count of
-                        tickets
+                        Count of tickets format: Count of tickets with {estimateNoun} + Count of tickets without {estimateNoun} = Total
+                        count of tickets
                     </li>
                 </ul>
             </div>
@@ -98,37 +102,37 @@ function SummaryView2({ sprintDetails, formatDateTime }: SummaryView2Props) {
                     </tr>
                     <tr>
                         <th className="px-2 py-1 text-center text-xs font-medium text-secondary border-b border-(--border-color) bg-(--bg-secondary)">
-                            SP
+                            {valueHeader}
                         </th>
                         <th className="px-2 py-1 text-center text-xs font-medium text-secondary border-b border-(--border-color) bg-(--bg-secondary)">
                             Count <i className="fa fa-question-circle opacity-50" title={helpTitle} />
                         </th>
                         <th className="px-2 py-1 text-center text-xs font-medium text-secondary border-b border-(--border-color) bg-(--bg-secondary)">
-                            SP
+                            {valueHeader}
                         </th>
                         <th className="px-2 py-1 text-center text-xs font-medium text-secondary border-b border-(--border-color) bg-(--bg-secondary)">
                             Count <i className="fa fa-question-circle opacity-50" title={helpTitle} />
                         </th>
                         <th className="px-2 py-1 text-center text-xs font-medium text-secondary border-b border-(--border-color) bg-(--bg-secondary)">
-                            SP
+                            {valueHeader}
                         </th>
                         <th className="px-2 py-1 text-center text-xs font-medium text-secondary border-b border-(--border-color) bg-(--bg-secondary)">
                             Count <i className="fa fa-question-circle opacity-50" title={helpTitle} />
                         </th>
                         <th className="px-2 py-1 text-center text-xs font-medium text-secondary border-b border-(--border-color) bg-(--bg-secondary)">
-                            SP
+                            {valueHeader}
                         </th>
                         <th className="px-2 py-1 text-center text-xs font-medium text-secondary border-b border-(--border-color) bg-(--bg-secondary)">
                             Count <i className="fa fa-question-circle opacity-50" title={helpTitle} />
                         </th>
                         <th className="px-2 py-1 text-center text-xs font-medium text-secondary border-b border-(--border-color) bg-(--bg-secondary)">
-                            SP
+                            {valueHeader}
                         </th>
                         <th className="px-2 py-1 text-center text-xs font-medium text-secondary border-b border-(--border-color) bg-(--bg-secondary)">
                             Count <i className="fa fa-question-circle opacity-50" title={helpTitle} />
                         </th>
                         <th className="px-2 py-1 text-center text-xs font-medium text-secondary border-b border-(--border-color) bg-(--bg-secondary)">
-                            SP
+                            {valueHeader}
                         </th>
                         <th className="px-2 py-1 text-center text-xs font-medium text-secondary border-b border-(--border-color) bg-(--bg-secondary)">
                             Count <i className="fa fa-question-circle opacity-50" title={helpTitle} />
@@ -137,7 +141,7 @@ function SummaryView2({ sprintDetails, formatDateTime }: SummaryView2Props) {
                 </THead>
                 <TBody>
                     {sprintDetails.map((sprint, i) => (
-                        <SprintDetailsRow key={i} sprint={sprint} formatDateTime={formatDateTime} />
+                        <SprintDetailsRow key={i} sprint={sprint} formatDateTime={formatDateTime} showUnit={!commonUnit} />
                     ))}
                 </TBody>
             </ScrollableTable>
@@ -148,9 +152,10 @@ function SummaryView2({ sprintDetails, formatDateTime }: SummaryView2Props) {
 interface SprintDetailsRowProps {
     sprint: any;
     formatDateTime: (isoValue?: string) => string;
+    showUnit: boolean;
 }
 
-function SprintDetailsRow({ sprint, formatDateTime }: SprintDetailsRowProps) {
+function SprintDetailsRow({ sprint, formatDateTime, showUnit }: SprintDetailsRowProps) {
     const [expanded, setExpanded] = useState(false);
 
     const toggleExpanded = useCallback(() => setExpanded((prev) => !prev), []);
@@ -174,6 +179,7 @@ function SprintDetailsRow({ sprint, formatDateTime }: SprintDetailsRowProps) {
                             )}
                         />
                         <span>{sprint.sprint.name}</span>
+                        {showUnit && <span className="text-xs font-normal text-secondary">({sprint.estimateUnit.label})</span>}
                     </div>
                 </td>
                 <td className="px-3 py-2 text-center text-xs">{formatDateTime(sprint.sprint.isoStartDate)}</td>
@@ -285,7 +291,7 @@ function SprintTicketDetails({ sprint }: { sprint: any }) {
                             Status
                         </th>
                         <th className="px-3 py-1.5 text-center font-semibold text-primary border-b border-(--border-color) bg-(--bg-secondary) min-w-[80px]">
-                            Story Points
+                            {sprint.estimateUnit.label}
                         </th>
                     </tr>
                 </THead>

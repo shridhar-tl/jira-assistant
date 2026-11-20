@@ -2,6 +2,7 @@ import classNames from 'classnames';
 
 import { ScrollableTable, THead, TBody } from '@components';
 
+import { type EstimateUnit, getCommonEstimateUnit, getEstimateNoun, getEstimateValueLabel } from './estimate-unit';
 import { isClosed } from './utils';
 
 interface SummaryView1Props {
@@ -23,6 +24,8 @@ function SPChangeIndicator({ oldVal, newVal }: { oldVal?: number; newVal?: numbe
 }
 
 function SummaryView1({ sprintDetails, formatDateTime }: SummaryView1Props) {
+    const commonUnit = getCommonEstimateUnit(sprintDetails);
+
     return (
         <ScrollableTable dataset={sprintDetails} className="text-center text-sm" exportSheetName="Summary view 1">
             <THead>
@@ -48,6 +51,7 @@ function SummaryView1({ sprintDetails, formatDateTime }: SummaryView1Props) {
                             className="px-3 py-2 font-semibold text-primary border-b border-(--border-color) bg-(--bg-secondary) min-w-[180px] text-center"
                         >
                             {sprint.sprint.name}
+                            {!commonUnit && <span className="block text-xs font-normal text-secondary">{sprint.estimateUnit.label}</span>}
                         </th>
                     ))}
                 </tr>
@@ -106,6 +110,7 @@ function SummaryView1({ sprintDetails, formatDateTime }: SummaryView1Props) {
                     spOldField="estimateIssuesSPOld"
                     withSPField="estimateIssuesWithSP"
                     countField="estimateIssuesCount"
+                    unit={commonUnit}
                 />
 
                 <SectionRows
@@ -115,6 +120,7 @@ function SummaryView1({ sprintDetails, formatDateTime }: SummaryView1Props) {
                     spOldField="totalIssuesSPOld"
                     withSPField="totalIssuesWithSP"
                     countField="totalIssuesCount"
+                    unit={commonUnit}
                 />
 
                 <SectionRows
@@ -124,6 +130,7 @@ function SummaryView1({ sprintDetails, formatDateTime }: SummaryView1Props) {
                     spOldField="completedSPOld"
                     withSPField="completedWithSP"
                     countField="CompletedTotal"
+                    unit={commonUnit}
                 />
 
                 <SectionRows
@@ -133,6 +140,7 @@ function SummaryView1({ sprintDetails, formatDateTime }: SummaryView1Props) {
                     spOldField="incompletedSPOld"
                     withSPField="incompletedWithSP"
                     countField="incompletedTotal"
+                    unit={commonUnit}
                 />
 
                 <SectionRows
@@ -142,6 +150,7 @@ function SummaryView1({ sprintDetails, formatDateTime }: SummaryView1Props) {
                     spOldField="addedSPOld"
                     withSPField="addedWithSP"
                     countField="addedIssues"
+                    unit={commonUnit}
                 />
 
                 <SectionRows
@@ -151,6 +160,7 @@ function SummaryView1({ sprintDetails, formatDateTime }: SummaryView1Props) {
                     spOldField="removedSPOld"
                     withSPField="removedWithSP"
                     countField="removedTotal"
+                    unit={commonUnit}
                     isLast
                 />
             </TBody>
@@ -165,10 +175,12 @@ interface SectionRowsProps {
     spOldField: string;
     withSPField: string;
     countField: string;
+    unit?: EstimateUnit;
     isLast?: boolean;
 }
 
-function SectionRows({ label, sprintDetails, spField, spOldField, withSPField, countField, isLast }: SectionRowsProps) {
+function SectionRows({ label, sprintDetails, spField, spOldField, withSPField, countField, unit, isLast }: SectionRowsProps) {
+    const estimateNoun = getEstimateNoun(unit);
     const borderClass = isLast ? '' : 'border-b-2 border-(--border-color)';
     const sectionColor = getSectionColor(label);
 
@@ -178,7 +190,7 @@ function SectionRows({ label, sprintDetails, spField, spOldField, withSPField, c
                 <td rowSpan={4} className={`px-3 py-2 font-semibold text-left ${borderClass} ${sectionColor} w-36 align-middle`}>
                     {label}
                 </td>
-                <td className="px-3 py-2 text-left text-secondary text-xs">Story points</td>
+                <td className="px-3 py-2 text-left text-secondary text-xs">{getEstimateValueLabel(unit)}</td>
                 {sprintDetails.map((sprint, i) => (
                     <td key={i} className="px-3 py-2 font-medium">
                         <SPChangeIndicator oldVal={sprint[spOldField]} newVal={sprint[spField]} />
@@ -186,7 +198,7 @@ function SectionRows({ label, sprintDetails, spField, spOldField, withSPField, c
                 ))}
             </tr>
             <tr className="border-b border-(--border-color)/50 hover:bg-(--bg-hover)">
-                <td className="px-3 py-2 text-left text-secondary text-xs">Tickets with SP</td>
+                <td className="px-3 py-2 text-left text-secondary text-xs">Tickets with {estimateNoun}</td>
                 {sprintDetails.map((sprint, i) => (
                     <td key={i} className="px-3 py-2">
                         {sprint[withSPField]}
@@ -194,7 +206,7 @@ function SectionRows({ label, sprintDetails, spField, spOldField, withSPField, c
                 ))}
             </tr>
             <tr className="border-b border-(--border-color)/50 hover:bg-(--bg-hover)">
-                <td className="px-3 py-2 text-left text-secondary text-xs">Tickets without SP</td>
+                <td className="px-3 py-2 text-left text-secondary text-xs">Tickets without {estimateNoun}</td>
                 {sprintDetails.map((sprint, i) => (
                     <td key={i} className="px-3 py-2">
                         {sprint[countField] - sprint[withSPField]}

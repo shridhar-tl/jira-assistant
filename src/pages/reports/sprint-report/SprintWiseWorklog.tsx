@@ -8,6 +8,8 @@ import type { IssueFields } from '@types';
 
 import { convertSecs } from '../../../services/utils-service';
 
+import { getCommonEstimateUnit } from './estimate-unit';
+
 interface WorklogDateRange {
     start: number;
     end: number;
@@ -48,6 +50,7 @@ function SprintWiseWorklog({ groups, ticketDetails, sprintDetails }: SprintWiseW
                 const sprintWorklogs: Record<string, number> = {};
                 const sprint: any = {
                     sprintName: sprintInfo.name,
+                    estimateUnit: curSprint.estimateUnit,
                     startDate: sprintInfo.startDate,
                     endDate: sprintInfo.endDate,
                     completeDate: sprintInfo.completeDate,
@@ -258,6 +261,8 @@ function SprintWiseWorklog({ groups, ticketDetails, sprintDetails }: SprintWiseW
         [updateWorklogDetails],
     );
 
+    const commonUnit = sprintDetails ? getCommonEstimateUnit(sprintDetails) : undefined;
+
     const toggleUserSelection = useCallback(
         (user: any, chk: boolean) => {
             user.include = chk;
@@ -305,7 +310,7 @@ function SprintWiseWorklog({ groups, ticketDetails, sprintDetails }: SprintWiseW
                             rowSpan={3}
                             className="px-3 py-2 text-center font-semibold text-primary border-b border-(--border-color) bg-(--bg-secondary) sticky top-0 z-10 min-w-[60px]"
                         >
-                            SP
+                            {commonUnit?.shortLabel ?? 'Board estimate'}
                         </th>
                         <th
                             rowSpan={3}
@@ -370,6 +375,7 @@ function SprintWiseWorklog({ groups, ticketDetails, sprintDetails }: SprintWiseW
                             key={sprint.sprintName}
                             groups={localGroups}
                             sprint={sprint}
+                            showUnit={!commonUnit}
                             showIncomplete={showIncomplete}
                             showSubtask={showSubtask}
                         />
@@ -511,16 +517,18 @@ function getIssueDetails(allTicketDetails: any[], issueList: string[], details: 
 interface SprintWorklogDetailsProps {
     groups: any[];
     sprint: any;
+    showUnit: boolean;
     showIncomplete: boolean;
     showSubtask: boolean;
 }
 
-function SprintWorklogDetails({ groups, sprint, showIncomplete, showSubtask }: SprintWorklogDetailsProps) {
+function SprintWorklogDetails({ groups, sprint, showUnit, showIncomplete, showSubtask }: SprintWorklogDetailsProps) {
     return (
         <>
             <tr className="bg-(--bg-secondary)/50 border-b border-(--border-color) font-semibold" data-row-type="sprint">
                 <td colSpan={4} className="px-3 py-2">
                     {sprint.sprintName}
+                    {showUnit && <span className="ml-1 font-normal text-secondary">({sprint.estimateUnit.label})</span>}
                 </td>
                 <td className="px-2 py-2 text-center">{sprint.completedSP + (showIncomplete ? sprint.incompleteSP : 0)}</td>
                 <td className="px-2 py-2 text-center">{convertSecs(sprint.estimate)}</td>

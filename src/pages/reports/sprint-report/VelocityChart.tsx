@@ -1,9 +1,13 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler } from 'chart.js';
 import { Line } from 'react-chartjs-2';
 
+import { SelectButton } from '@components';
+
 import { orderBy } from '@utils';
+
+import { type EstimateUnit, type EstimateUnitKind, estimateUnits } from './estimate-unit';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler);
 
@@ -95,11 +99,33 @@ const chartOptions = {
     },
 };
 
+function getChartOptions(unit: EstimateUnit) {
+    return {
+        ...chartOptions,
+        scales: {
+            ...chartOptions.scales,
+            y: { ...chartOptions.scales.y, title: { display: true, text: unit.label } },
+        },
+    };
+}
+
 interface VelocityChartProps {
     sprintDetails: any[];
 }
 
+function getUnitsInUse(sprintDetails: any[]): EstimateUnit[] {
+    const counts = new Map<EstimateUnitKind, number>();
+    sprintDetails.forEach((sprint) => counts.set(sprint.estimateUnit.kind, (counts.get(sprint.estimateUnit.kind) || 0) + 1));
+    return [...counts.entries()].sort((a, b) => b[1] - a[1]).map(([kind]) => estimateUnits[kind]);
+}
+
 function VelocityChart({ sprintDetails }: VelocityChartProps) {
+    const unitsInUse = useMemo(() => getUnitsInUse(sprintDetails), [sprintDetails]);
+    const [selectedKind, setSelectedKind] = useState<EstimateUnitKind | undefined>(undefined);
+    const unit = unitsInUse.find((u) => u.kind === selectedKind) ?? unitsInUse[0] ?? estimateUnits.points;
+    const unitOptions = useMemo(() => unitsInUse.map((u) => ({ label: u.label, value: u.kind })), [unitsInUse]);
+    const options = useMemo(() => getChartOptions(unit), [unit]);
+
     const chartData = useMemo(() => {
         const sprintLabels: string[] = [];
         const arrEstimated: number[] = [];
@@ -109,7 +135,9 @@ function VelocityChart({ sprintDetails }: VelocityChartProps) {
         const arrAdded: number[] = [];
         const arrRemoved: number[] = [];
 
-        orderBy(sprintDetails, (sprint: any) => sprint.sprint.id).forEach((sprint: any) => {
+        const sprintsInUnit = sprintDetails.filter((sprint: any) => sprint.estimateUnit.kind === unit.kind);
+
+        orderBy(sprintsInUnit, (sprint: any) => sprint.sprint.id).forEach((sprint: any) => {
             sprintLabels.push(sprint.sprint.name);
             arrEstimated.push(sprint.estimateIssuesSP || 0);
             arrCompleted.push(sprint.completedSP || 0);
@@ -130,12 +158,25 @@ function VelocityChart({ sprintDetails }: VelocityChartProps) {
                 { data: arrRemoved, label: 'Removed from sprint', fill: true, tension: 0.3, ...lineChartColours[5] },
             ],
         };
-    }, [sprintDetails]);
+    }, [sprintDetails, unit]);
 
     return (
         <div className="p-4">
+            {unitsInUse.length > 1 && (
+                <div className="flex flex-wrap items-center gap-3 mb-3 text-sm text-secondary">
+                    <span>The selected sprints are estimated in different units. Showing sprints estimated in:</span>
+                    <SelectButton
+                        items={unitOptions}
+                        value={unit.kind}
+                        onChange={(e) => setSelectedKind(e.value as EstimateUnitKind)}
+                        variant="segmented"
+                        size="sm"
+                        required
+                    />
+                </div>
+            )}
             <div className="relative h-[calc(100vh-240px)] min-h-[400px]">
-                <Line data={chartData} options={chartOptions} />
+                <Line data={chartData} options={options} />
             </div>
         </div>
     );

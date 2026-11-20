@@ -17,6 +17,7 @@ import { ExportFormat } from '../../../common/Exporter';
 import GroupEditor from '../../../dialogs/GroupEditor';
 import { GadgetContainer, useBaseGadget, type BaseGadgetProps } from '../../../gadgets/BaseGadget';
 
+import { detectEstimateUnit, roundEstimate, toEstimateValue } from './estimate-unit';
 import SprintReportInfo from './ReportInfo';
 import SprintWiseWorklog from './SprintWiseWorklog';
 import SummaryView1 from './SummaryView1';
@@ -137,6 +138,13 @@ function SprintReport(props: BaseGadgetProps) {
                     issues.filter((issue) => ((issue.currentEstimateStatistic || {}).statFieldValue || {}).value).length;
 
                 result.forEach((sprint: any) => {
+                    const unit = detectEstimateUnit([
+                        ...sprint.contents.completedIssues,
+                        ...sprint.contents.puntedIssues,
+                        ...sprint.contents.issuesNotCompletedInCurrentSprint,
+                    ]);
+                    const toValue = (statistic?: { value?: number } | null) => toEstimateValue(unit, statistic?.value);
+                    sprint.estimateUnit = unit;
                     let added = 0;
                     let addedWithSP = 0;
                     const jiraKeysList = sprint.contents.issueKeysAddedDuringSprint;
@@ -152,8 +160,8 @@ function SprintReport(props: BaseGadgetProps) {
                     const processAdded = (issue: any) => {
                         issue.addedLater = jiraKeysList[issue.key] === true;
                         issue.removedLater = jiraKeysList[issue.key] === false;
-                        issue.currentSP = ((issue.currentEstimateStatistic || {}).statFieldValue || {}).value || 0;
-                        issue.oldSP = ((issue.estimateStatistic || {}).statFieldValue || {}).value || 0;
+                        issue.currentSP = toValue(issue.currentEstimateStatistic?.statFieldValue);
+                        issue.oldSP = toValue(issue.estimateStatistic?.statFieldValue);
                         if (issue.addedLater) {
                             addedSP += issue.currentSP;
                             addedSPOld += issue.oldSP;
@@ -171,22 +179,24 @@ function SprintReport(props: BaseGadgetProps) {
                     sprint.contents.completedIssues.forEach(processAdded);
                     sprint.contents.puntedIssues.forEach(processAdded);
                     sprint.contents.issuesNotCompletedInCurrentSprint.forEach(processAdded);
+                    addedSP = roundEstimate(addedSP);
+                    addedSPOld = roundEstimate(addedSPOld);
                     sprint.addedSP = addedSP || '';
                     sprint.addedSPOld = addedSPOld && addedSPOld !== addedSP ? addedSPOld : null;
-                    const completedModified = sprint.contents.completedIssuesInitialEstimateSum.value;
-                    const completed = sprint.contents.completedIssuesEstimateSum.value;
+                    const completedModified = toValue(sprint.contents.completedIssuesInitialEstimateSum);
+                    const completed = toValue(sprint.contents.completedIssuesEstimateSum);
                     sprint.completedSP = completed || '';
                     sprint.completedSPOld = completedModified && completedModified !== completed ? completedModified : null;
                     sprint.completedWithSP = getCountWithSP(sprint.contents.completedIssues);
                     sprint.CompletedTotal = sprint.contents.completedIssues.length;
-                    const incompletedModified = sprint.contents.issuesNotCompletedInitialEstimateSum.value;
-                    const incompleted = sprint.contents.issuesNotCompletedEstimateSum.value || '';
+                    const incompletedModified = toValue(sprint.contents.issuesNotCompletedInitialEstimateSum);
+                    const incompleted = toValue(sprint.contents.issuesNotCompletedEstimateSum) || '';
                     sprint.incompletedSP = incompleted;
                     sprint.incompletedSPOld = incompletedModified && incompletedModified !== incompleted ? incompletedModified : null;
                     sprint.incompletedWithSP = getCountWithSP(sprint.contents.issuesNotCompletedInCurrentSprint);
                     sprint.incompletedTotal = sprint.contents.issuesNotCompletedInCurrentSprint.length;
-                    const removedModified = sprint.contents.puntedIssuesInitialEstimateSum.value;
-                    const removed = sprint.contents.puntedIssuesEstimateSum.value || '';
+                    const removedModified = toValue(sprint.contents.puntedIssuesInitialEstimateSum);
+                    const removed = toValue(sprint.contents.puntedIssuesEstimateSum) || '';
                     sprint.removedSP = removed;
                     sprint.removedSPOld = removedModified && removedModified !== removed ? removedModified : null;
                     sprint.removedWithSP = getCountWithSP(sprint.contents.puntedIssues);
@@ -194,9 +204,11 @@ function SprintReport(props: BaseGadgetProps) {
                     sprint.addedIssues = added;
                     sprint.addedWithSP = addedWithSP;
                     sprint.removedIssues = removed;
-                    const totalSPOld = (sprint.completedSPOld ?? (sprint.completedSP || 0)) + (sprint.incompletedSPOld ?? (sprint.incompletedSP || 0));
+                    const totalSPOld = roundEstimate(
+                        (sprint.completedSPOld ?? (sprint.completedSP || 0)) + (sprint.incompletedSPOld ?? (sprint.incompletedSP || 0)),
+                    );
                     sprint.totalIssuesSPOld = totalSPOld;
-                    sprint.totalIssuesSP = (sprint.completedSP || 0) + (sprint.incompletedSP || 0);
+                    sprint.totalIssuesSP = roundEstimate((sprint.completedSP || 0) + (sprint.incompletedSP || 0));
                     sprint.totalIssuesCount = sprint.CompletedTotal + sprint.incompletedTotal;
                     sprint.totalIssuesWithSP = sprint.completedWithSP + sprint.incompletedWithSP;
                     if (sprint.totalIssuesSPOld === sprint.totalIssuesSP) {
@@ -205,15 +217,15 @@ function SprintReport(props: BaseGadgetProps) {
                             delete sprint.totalIssuesSP;
                         }
                     }
-                    sprint.estimateIssuesSPOld =
-                        totalSPOld +
-                        (sprint.removedSPOld ?? (sprint.removedSP || 0)) -
-                        (sprint.addedSPOld ?? (sprint.addedSP || 0));
+                    sprint.estimateIssuesSPOld = roundEstimate(
+                        totalSPOld + (sprint.removedSPOld ?? (sprint.removedSP || 0)) - (sprint.addedSPOld ?? (sprint.addedSP || 0)),
+                    );
                     if (sprint.estimateIssuesSPOld < 0) {
                         sprint.estimateIssuesSPOld = 0;
                     }
-                    sprint.estimateIssuesSP =
-                        (sprint.completedSP || 0) + (sprint.incompletedSP || 0) + (sprint.removedSP || 0) - (sprint.addedSP || 0);
+                    sprint.estimateIssuesSP = roundEstimate(
+                        (sprint.completedSP || 0) + (sprint.incompletedSP || 0) + (sprint.removedSP || 0) - (sprint.addedSP || 0),
+                    );
                     sprint.estimateIssuesCount = sprint.CompletedTotal + sprint.incompletedTotal + sprint.removedTotal - sprint.addedIssues;
                     sprint.estimateIssuesWithSP =
                         sprint.completedWithSP + sprint.incompletedWithSP + sprint.removedWithSP - sprint.addedWithSP;
