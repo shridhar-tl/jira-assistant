@@ -5,6 +5,7 @@ import { addWorklog } from '../actions';
 import { useWorklogStore, useWorklogDispatch } from '../datastore';
 
 import TicketRow from './TicketRow';
+import { isUserExpanded } from './user-expansion';
 import { useConvertSecs, useFormatTime } from './useReportUtils';
 
 function getUserName(user: any, includeEmail?: boolean): string {
@@ -20,6 +21,7 @@ function getImageUrl(user: any) {
 interface UserRowProps {
     groupIndex: number;
     index: number;
+    groupUserCount: number;
     user: any;
     colSpan: number;
     additionalCols?: any[];
@@ -28,7 +30,7 @@ interface UserRowProps {
     timeExportFormat?: string;
 }
 
-export default function UserRow({ groupIndex, user: u, colSpan, additionalCols, boardId, costView, timeExportFormat }: UserRowProps) {
+export default function UserRow({ groupIndex, groupUserCount, user: u, colSpan, additionalCols, boardId, costView, timeExportFormat }: UserRowProps) {
     const state = useWorklogStore();
     const dispatch = useWorklogDispatch();
     const { userDisplayFormat, timeframeType, userExpnState, expandUsers } = state;
@@ -38,7 +40,7 @@ export default function UserRow({ groupIndex, user: u, colSpan, additionalCols, 
 
     const uid = getUserName(u);
     const expandKey = `${boardId}_${groupIndex}_${uid}`;
-    const expanded = userExpnState[expandKey] ?? expandUsers;
+    const expanded = isUserExpanded(userExpnState, expandKey, expandUsers, groupUserCount);
 
     const detailedDisp = userDisplayFormat !== '1';
 

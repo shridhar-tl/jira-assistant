@@ -60,6 +60,7 @@ export default function GroupRow({ group: grp, index, boardId, costView, timeExp
                         key={i}
                         groupIndex={index}
                         index={i}
+                        groupUserCount={grp.users.length}
                         colSpan={colSpan}
                         user={u}
                         timeExportFormat={timeExportFormat}
