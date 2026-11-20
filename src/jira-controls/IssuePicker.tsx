@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 
 import { inject } from '@services';
 
@@ -6,11 +6,16 @@ import { Autocomplete } from '@components';
 
 import { viewIssueUrl } from '@utils/helpers';
 
+import type BookmarkService from '../services/bookmark-service';
 import type JiraService from '../services/jira-service';
 import type SessionService from '../services/session-service';
+import type TicketService from '../services/ticket-service';
 
 const ignoredKeysStrokes = [9, 16, 17, 18, 27, 123];
 const issueKeyTest = /^\b[A-Z][A-Z0-9_]+-[1-9][0-9]*$/gi;
+const minSearchLength = 2;
+const maxBookmarkSuggestions = 10;
+const bookmarksGroupLabel = 'Bookmarks';
 
 interface IssueObject {
     id: string;
@@ -48,6 +53,59 @@ async function getIssueObject($jira: JiraService, $session: SessionService, key:
     }
 }
 
+interface JiraIssueFields {
+    summary?: string;
+    issuetype?: { iconUrl?: string };
+}
+
+interface JiraIssue {
+    id: string;
+    key: string;
+    fields?: JiraIssueFields;
+}
+
+interface PickerSection {
+    label: string;
+    issues?: IssueObject[];
+}
+
+async function loadBookmarkedIssues($bookmark: BookmarkService, $ticket: TicketService, $session: SessionService): Promise<IssueObject[]> {
+    try {
+        const keys = ((await $bookmark.getIssueKeys()) || []).filter((key) => new RegExp(issueKeyTest).test(key));
+        if (!keys.length) {
+            return [];
+        }
+
+        const issues: JiraIssue[] = (await $ticket.getTicketDetails(keys, true)) || [];
+        const byKey = new Map(issues.map((issue) => [issue.key.toUpperCase(), issue]));
+        const root = $session.CurrentUser.jiraUrl?.replace(/\/+$/, '') || '';
+
+        return keys.reduce<IssueObject[]>((list, key) => {
+            const issue = byKey.get(key.toUpperCase());
+            if (issue) {
+                const summary = issue.fields?.summary || '';
+                list.push({
+                    id: issue.id,
+                    key: issue.key,
+                    root,
+                    url: viewIssueUrl(root, issue.key),
+                    summary,
+                    summaryText: summary,
+                    img: issue.fields?.issuetype?.iconUrl || '',
+                });
+            }
+            return list;
+        }, []);
+    } catch (err) {
+        console.error('Unable to load bookmarked issues for picker', err);
+        return [];
+    }
+}
+
+function matchesQuery(issue: IssueObject, query: string): boolean {
+    return issue.key.toLowerCase().includes(query) || (issue.summaryText || '').toLowerCase().includes(query);
+}
+
 interface IssuePickerProps {
     value?: string | IssueObject;
     disabled?: boolean;
@@ -65,6 +123,19 @@ interface IssueListItem {
     value: IssueObject;
     label: string;
     icon?: React.ReactElement;
+}
+
+interface IssueListGroup {
+    label: string;
+    items: IssueListItem[];
+}
+
+function toListItem(issue: IssueObject): IssueListItem {
+    return {
+        value: issue,
+        label: `${issue.key} — ${issue.summaryText}`,
+        icon: issue.img ? <img src={issue.img} alt="" className="w-4 h-4" /> : undefined,
+    };
 }
 
 export const IssuePicker: React.FC<IssuePickerProps> = React.memo(
@@ -87,11 +158,13 @@ export const IssuePicker: React.FC<IssuePickerProps> = React.memo(
             useDisplay && value ? ({ key: typeof value === 'string' ? value : value.key } as IssueObject) : false,
         );
         const [editMode, toggleEdit] = useState(!value);
-        const [suggestions, setSuggestions] = useState<IssueListItem[]>([]);
+        const [searchResults, setSearchResults] = useState<IssueListGroup[]>([]);
+        const [bookmarks, setBookmarks] = useState<IssueObject[] | null>(null);
+        const bookmarksRequestedRef = useRef(false);
         const [searchLoading, setSearchLoading] = useState(false);
         const [inputValue, setInputValue] = useState('');
 
-        const { $jira, $session } = inject('JiraService', 'SessionService');
+        const { $jira, $session, $bookmark, $ticket } = inject('JiraService', 'SessionService', 'BookmarkService', 'TicketService');
 
         const updateIssue = useCallback(
             (issue: IssueObject | undefined, key?: string) => {
@@ -124,39 +197,52 @@ export const IssuePicker: React.FC<IssuePickerProps> = React.memo(
             }
         }, [value]); // eslint-disable-line react-hooks/exhaustive-deps
 
+        const loadBookmarks = useCallback(() => {
+            if (bookmarksRequestedRef.current) {
+                return;
+            }
+            bookmarksRequestedRef.current = true;
+            loadBookmarkedIssues($bookmark, $ticket, $session).then(setBookmarks);
+        }, [$bookmark, $ticket, $session]);
+
         const handleFilter = useCallback(
             async (query: string) => {
-                if (!query || query.length < 2) {
-                    setSuggestions([]);
+                if (!query || query.length < minSearchLength) {
+                    setSearchResults([]);
                     return;
                 }
 
                 setSearchLoading(true);
                 try {
-                    const sections = await $jira.lookupIssues(query);
-                    const items: IssueListItem[] = [];
-
-                    sections.forEach((section: any) => {
-                        if (section.issues) {
-                            section.issues.forEach((issue: IssueObject) => {
-                                items.push({
-                                    value: issue,
-                                    label: `${issue.key} — ${issue.summaryText}`,
-                                    icon: issue.img ? <img src={issue.img} alt="" className="w-4 h-4" /> : undefined,
-                                });
-                            });
-                        }
-                    });
-
-                    setSuggestions(items);
+                    const sections: PickerSection[] = await $jira.lookupIssues(query);
+                    setSearchResults(sections.map((section) => ({ label: section.label, items: (section.issues || []).map(toListItem) })));
                 } catch {
-                    setSuggestions([]);
+                    setSearchResults([]);
                 } finally {
                     setSearchLoading(false);
                 }
             },
             [$jira],
         );
+
+        const suggestionGroups = useMemo(() => {
+            const query = inputValue.trim().toLowerCase();
+            const bookmarkItems = (bookmarks || [])
+                .filter((issue) => !query || matchesQuery(issue, query))
+                .slice(0, maxBookmarkSuggestions)
+                .map(toListItem);
+            const bookmarkKeys = new Set(bookmarkItems.map((item) => item.value.key));
+
+            const jiraGroups =
+                query.length >= minSearchLength
+                    ? searchResults.map((group) => ({
+                          ...group,
+                          items: group.items.filter((item) => !bookmarkKeys.has(item.value.key)),
+                      }))
+                    : [];
+
+            return [{ label: bookmarksGroupLabel, items: bookmarkItems }, ...jiraGroups].filter((group) => group.items.length > 0);
+        }, [bookmarks, searchResults, inputValue]);
 
         const onIssueSelected = useCallback(
             (e: any) => {
@@ -169,7 +255,7 @@ export const IssuePicker: React.FC<IssuePickerProps> = React.memo(
                 if (selected && typeof selected === 'object' && selected.key) {
                     focusDisplayRef.current = !!useDisplay;
                     updateIssue(selected);
-                    setSuggestions([]);
+                    setSearchResults([]);
                     setInputValue('');
                 }
             },
@@ -231,19 +317,20 @@ export const IssuePicker: React.FC<IssuePickerProps> = React.memo(
 
         if (editMode || !issueObj || !useDisplay) {
             return (
-                <div onBlur={handleBlur}>
+                <div onBlur={handleBlur} onFocus={loadBookmarks}>
                     <Autocomplete
                         value={inputValue}
                         onChange={handleChange}
                         onSelect={onIssueSelected}
                         onFilter={handleFilter}
-                        items={suggestions}
+                        items={suggestionGroups}
+                        openOnFocus
                         disabled={disabled}
                         placeholder={placeholder}
                         className={className}
                         loading={searchLoading}
                         autoFocus={!!useDisplay}
-                        minLength={2}
+                        minLength={minSearchLength}
                         debounceMs={300}
                     />
                 </div>
