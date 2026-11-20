@@ -163,6 +163,7 @@ export const IssuePicker: React.FC<IssuePickerProps> = React.memo(
         const bookmarksRequestedRef = useRef(false);
         const [searchLoading, setSearchLoading] = useState(false);
         const [inputValue, setInputValue] = useState('');
+        const inputValueRef = useRef('');
 
         const { $jira, $session, $bookmark, $ticket } = inject('JiraService', 'SessionService', 'BookmarkService', 'TicketService');
 
@@ -196,6 +197,16 @@ export const IssuePicker: React.FC<IssuePickerProps> = React.memo(
                 })();
             }
         }, [value]); // eslint-disable-line react-hooks/exhaustive-deps
+
+        useEffect(() => {
+            const timers = timerRef.current;
+            return () => clearTimeout(timers.blurTimer);
+        }, []);
+
+        const updateInputValue = useCallback((text: string) => {
+            inputValueRef.current = text;
+            setInputValue(text);
+        }, []);
 
         const loadBookmarks = useCallback(() => {
             if (bookmarksRequestedRef.current) {
@@ -256,21 +267,24 @@ export const IssuePicker: React.FC<IssuePickerProps> = React.memo(
                     focusDisplayRef.current = !!useDisplay;
                     updateIssue(selected);
                     setSearchResults([]);
-                    setInputValue('');
+                    updateInputValue('');
                 }
             },
-            [updateIssue, useDisplay],
+            [updateIssue, updateInputValue, useDisplay],
         );
 
-        const handleChange = useCallback((e: any) => {
-            const newVal = e.value;
-            if (typeof newVal === 'string') {
-                setInputValue(newVal);
-            }
-        }, []);
+        const handleChange = useCallback(
+            (e: any) => {
+                const newVal = e.value;
+                if (typeof newVal === 'string') {
+                    updateInputValue(newVal);
+                }
+            },
+            [updateInputValue],
+        );
 
         const handleBlur = useCallback(() => {
-            const selKey = inputValue.trim();
+            const selKey = inputValueRef.current.trim();
 
             if (!selKey) {
                 return;
@@ -283,7 +297,7 @@ export const IssuePicker: React.FC<IssuePickerProps> = React.memo(
                 const issue = await getIssueObject($jira, $session, selKey);
                 updateIssue(issue, selKey);
             }, 600);
-        }, [inputValue, $jira, $session, updateIssue]);
+        }, [$jira, $session, updateIssue]);
 
         const isDisplayMode = !editMode && !!issueObj && !!useDisplay && !loading;
 
