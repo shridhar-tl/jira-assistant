@@ -8,7 +8,7 @@ import type { IssueFields } from '@types';
 
 import { convertSecs } from '../../../services/utils-service';
 
-import { getCommonEstimateUnit } from './estimate-unit';
+import { getCommonEstimateUnit, roundEstimate } from './estimate-unit';
 
 interface WorklogDateRange {
     start: number;
@@ -530,7 +530,7 @@ function SprintWorklogDetails({ groups, sprint, showUnit, showIncomplete, showSu
                     {sprint.sprintName}
                     {showUnit && <span className="ml-1 font-normal text-secondary">({sprint.estimateUnit.label})</span>}
                 </td>
-                <td className="px-2 py-2 text-center">{sprint.completedSP + (showIncomplete ? sprint.incompleteSP : 0)}</td>
+                <td className="px-2 py-2 text-center">{roundEstimate(sprint.completedSP + (showIncomplete ? sprint.incompleteSP : 0))}</td>
                 <td className="px-2 py-2 text-center">{convertSecs(sprint.estimate)}</td>
                 {groups.map((grp, i) => (
                     <Fragment key={i}>
@@ -569,7 +569,7 @@ function IssueTypesList({ issueTypes, groups, showIncomplete, showSubtask }: Iss
                             </div>
                         </td>
                         <td className="px-2 py-1.5 text-center font-medium">
-                            {type.completedSP + (showIncomplete ? type.incompleteSP : 0)}
+                            {roundEstimate(type.completedSP + (showIncomplete ? type.incompleteSP : 0))}
                         </td>
                         <td className="px-2 py-1.5 text-center font-semibold">{convertSecs(type.estimate)}</td>
                         {groups.map((grp, i) => (

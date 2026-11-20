@@ -42,7 +42,7 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({
     disabled = false,
     placeholder = 'Select date',
 }) => {
-    const formatString = showTime ? "yyyy-MM-dd'T'HH:mm" : 'yyyy-MM-dd';
+    const formatString = showTime ? 'yyyy-MM-dd\'T\'HH:mm' : 'yyyy-MM-dd';
     const formatted = useMemo(() => toInputValue(value, formatString), [value, formatString]);
     const [text, setText] = useState(formatted);
     const [shownValue, setShownValue] = useState(formatted);

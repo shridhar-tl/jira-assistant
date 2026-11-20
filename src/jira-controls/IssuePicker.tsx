@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 
 import { inject } from '@services';
 
-import { Autocomplete } from '@components';
+import { Autocomplete, type ComponentEvent } from '@components';
 
 import { viewIssueUrl } from '@utils/helpers';
 
@@ -256,7 +256,7 @@ export const IssuePicker: React.FC<IssuePickerProps> = React.memo(
         }, [bookmarks, searchResults, inputValue]);
 
         const onIssueSelected = useCallback(
-            (e: any) => {
+            (e: ComponentEvent<IssueObject | string | undefined>) => {
                 if (timerRef.current.blurTimer) {
                     clearTimeout(timerRef.current.blurTimer);
                     delete timerRef.current.blurTimer;
@@ -274,7 +274,7 @@ export const IssuePicker: React.FC<IssuePickerProps> = React.memo(
         );
 
         const handleChange = useCallback(
-            (e: any) => {
+            (e: ComponentEvent<string>) => {
                 const newVal = e.value;
                 if (typeof newVal === 'string') {
                     updateInputValue(newVal);

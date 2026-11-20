@@ -7,7 +7,7 @@ import { SelectButton } from '@components';
 
 import { orderBy } from '@utils';
 
-import { type EstimateUnit, type EstimateUnitKind, estimateUnits } from './estimate-unit';
+import { type EstimateUnit, type EstimateUnitKind, estimateUnits, type SprintWithEstimateUnit } from './estimate-unit';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler);
 
@@ -113,7 +113,7 @@ interface VelocityChartProps {
     sprintDetails: any[];
 }
 
-function getUnitsInUse(sprintDetails: any[]): EstimateUnit[] {
+function getUnitsInUse(sprintDetails: SprintWithEstimateUnit[]): EstimateUnit[] {
     const counts = new Map<EstimateUnitKind, number>();
     sprintDetails.forEach((sprint) => counts.set(sprint.estimateUnit.kind, (counts.get(sprint.estimateUnit.kind) || 0) + 1));
     return [...counts.entries()].sort((a, b) => b[1] - a[1]).map(([kind]) => estimateUnits[kind]);
@@ -135,7 +135,7 @@ function VelocityChart({ sprintDetails }: VelocityChartProps) {
         const arrAdded: number[] = [];
         const arrRemoved: number[] = [];
 
-        const sprintsInUnit = sprintDetails.filter((sprint: any) => sprint.estimateUnit.kind === unit.kind);
+        const sprintsInUnit = sprintDetails.filter((sprint: SprintWithEstimateUnit) => sprint.estimateUnit.kind === unit.kind);
 
         orderBy(sprintsInUnit, (sprint: any) => sprint.sprint.id).forEach((sprint: any) => {
             sprintLabels.push(sprint.sprint.name);

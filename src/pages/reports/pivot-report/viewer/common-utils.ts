@@ -11,20 +11,31 @@ import { hydrateDerivedSources, normalizeDerivedSources } from '../utils/derived
 type KeyField = string | string[] | ((value: unknown) => unknown) | undefined;
 type FieldLike = Pick<PivotFieldConfig, 'key' | 'schema'>;
 
+interface FetchDataScope {
+    fields?: Record<string, boolean>;
+    derivedKeys?: Set<string>;
+}
+
+interface SearchResultIssue {
+    id: string;
+    key: string;
+    fields?: Record<string, unknown>;
+}
+
 const groupKeyProps = ['accountId', 'id', 'key', 'name', 'value'];
 
 export const noValueText = '(None)';
 
 const aggregatedValueTypes: Record<string, string> = { count: 'number', merge: 'string' };
 
-export async function fetchData(jql: string, scope: any) {
+export async function fetchData(jql: string, scope: FetchDataScope) {
     const derivedKeys = new Set<string>(scope.derivedKeys);
     const fields = getQueryFields(scope.fields, derivedKeys);
 
     const { $jira } = inject('JiraService');
-    const result = await $jira.searchTickets(jql, fields);
+    const result: SearchResultIssue[] = await $jira.searchTickets(jql, fields);
 
-    const issues = result.map(({ id, key, fields }: any) => normalizeDerivedSources({ ...fields, id, issuekey: key }));
+    const issues = result.map(({ id, key, fields }) => normalizeDerivedSources({ ...fields, id, issuekey: key }));
     await hydrateDerivedSources(issues, derivedKeys);
 
     return issues;
