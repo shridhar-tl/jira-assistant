@@ -18,9 +18,11 @@ import { Calendar as FluxoCalendar } from 'fluxo-ui';
 
 import { useService } from '@/services/injector';
 
-import { useWorklogMerge } from '@hooks';
+import { CalendarNavigation, Modal } from '@components';
 
 import type { Meeting, Worklog } from '@types';
+
+import { useWorklogMerge } from '@hooks';
 
 import { GadgetActionType, type GadgetActionTypeValue } from '@constants';
 
@@ -462,7 +464,22 @@ export default function Calendar({
         [currentViewMode, pendingWorklogCount, isLoading, uploading, fullView, zoomIn, isGadget, handleUploadAll, fetchEvents],
     );
 
-    const embeddedToolbar = useEmbeddedHeader ? toolbarEndContent({ viewSwitcher: null, pluginActions: null }) : null;
+    const goToPrevPeriod = useCallback(() => apiRef.current?.prev(), []);
+    const goToNextPeriod = useCallback(() => apiRef.current?.next(), []);
+    const goToToday = useCallback(() => apiRef.current?.today(), []);
+
+    const embeddedToolbar = useEmbeddedHeader ? (
+        <>
+            <CalendarNavigation
+                layout="today-between"
+                className="mr-1"
+                onPrev={goToPrevPeriod}
+                onNext={goToNextPeriod}
+                onToday={goToToday}
+            />
+            {toolbarEndContent({ viewSwitcher: null, pluginActions: null })}
+        </>
+    ) : null;
 
     // Compute calendar config from user settings
     const calendarConfig = useMemo(() => {
@@ -536,8 +553,9 @@ export default function Calendar({
                     showNavigationPicker={!isGadget}
                     navigationPickerIconOnly
                     hideToolbar={useEmbeddedHeader}
-                    hideToolbarNavigation={isGadget}
                     hideToolbarViewSwitcher={isGadget}
+                    navigationLayout="today-between"
+                    keyboardShortcuts={isGadget ? 'focus-within' : true}
                     dayHeaderLayout="inline"
                     dayHeaderFormat="EEE, dd/MM"
                     slotLabelInterval={zoomIn ? 15 : 30}
@@ -578,17 +596,11 @@ export default function Calendar({
             {mergeConfirmation}
 
             {showMeetingDetails && currentMeetingItem && (
-                <div
-                    className="meeting-details-overlay fixed inset-0 bg-black/50 flex items-center justify-center z-50"
-                    onClick={hideMeetingDetails}
-                >
-                    <div
-                        className="rounded-lg p-4 max-w-2xl max-h-[80vh] overflow-auto bg-(--bg-primary) border border-(--border-primary) shadow-(--shadow-xl)"
-                        onClick={(e: any) => e.stopPropagation()}
-                    >
+                <Modal isOpen onClose={hideMeetingDetails} title="Meeting details" size="md">
+                    <div className="p-4">
                         <MeetingDetails eventDetails={currentMeetingItem} />
                     </div>
-                </div>
+                </Modal>
             )}
         </div>
     );

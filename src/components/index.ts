@@ -7,6 +7,7 @@ export {
     AutocompleteMulti,
     Button,
     Calendar,
+    CalendarNavigation,
     Checkbox,
     Chips,
     Confirm,
@@ -90,6 +91,8 @@ export {
     type SplitterPanelProps,
     type SplitterProps,
 } from 'fluxo-ui';
+
+export { useEscapeLayer } from 'fluxo-ui/hooks';
 
 export interface ContextMenuItemInput {
     label?: string;

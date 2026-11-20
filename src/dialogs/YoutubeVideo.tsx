@@ -2,8 +2,11 @@ import { useCallback, useRef, useState } from 'react';
 
 import { createPortal } from 'react-dom';
 
-import { inject } from '@services';
 import type AnalyticsService from '@/services/analytics-service';
+
+import { inject } from '@services';
+
+import { useEscapeLayer } from '@components';
 
 import { isAppBuild, isExtnBuild } from '../constants/build-info';
 import { EventCategory } from '../constants/settings';
@@ -83,6 +86,8 @@ export default function YoutubeVideo({ onHide }: YoutubeVideoProps) {
     });
     const [url, setUrl] = useState<string>(() => getVideoUrl(activeList[index], $analytics));
     const [showList, setShowList] = useState(false);
+
+    useEscapeLayer(true, onHide);
 
     const playAt = useCallback(
         (newIndex: number, event?: string) => {

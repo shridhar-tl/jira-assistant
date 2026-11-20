@@ -66,6 +66,9 @@ function AddWorklog({ editTracker, worklog: worklogProp, uploadImmediately: uplo
 
     const previousTimeRef = useRef<Date | undefined>(undefined);
     const initializedRef = useRef(false);
+    const timeSpentRef = useRef<HTMLInputElement>(null);
+    const descriptionRef = useRef<HTMLTextAreaElement>(null);
+    const focusTimeSpent = !editTracker && !!worklogProp && !!(worklogProp.id || getTicketNo(worklogProp));
 
     const [showDialog, setShowDialog] = useState(true);
     const [log, setLog] = useState<Partial<Worklog>>({});
@@ -214,6 +217,7 @@ function AddWorklog({ editTracker, worklog: worklogProp, uploadImmediately: uplo
                         dateStarted: new Date(entry.created),
                         description: entry.description,
                     });
+                    requestAnimationFrame(() => descriptionRef.current?.focus());
                 }
             })();
         } else {
@@ -332,7 +336,7 @@ function AddWorklog({ editTracker, worklog: worklogProp, uploadImmediately: uplo
     const title = editTracker ? 'Edit Tracker' : isEditing ? 'Edit Worklog' : 'Add Worklog';
 
     return (
-        <Modal isOpen={showDialog} onClose={handleHide} title={title} size="lg">
+        <Modal isOpen={showDialog} onClose={handleHide} title={title} size="lg" initialFocus={focusTimeSpent ? timeSpentRef : undefined}>
             <div className="flex flex-col" onKeyDown={handleKeyDown}>
                 <div className="flex flex-col gap-5 p-5">
                     <div className="flex flex-col gap-4">
@@ -365,6 +369,7 @@ function AddWorklog({ editTracker, worklog: worklogProp, uploadImmediately: uplo
                             <div className="flex flex-col gap-1.5">
                                 <label className="text-sm font-semibold text-primary">Time Spent</label>
                                 <MaskedInput
+                                    ref={timeSpentRef}
                                     mask="99:99"
                                     value={log.timeSpent || ''}
                                     onChange={(e) => updateField('timeSpent', e.value)}
@@ -383,6 +388,7 @@ function AddWorklog({ editTracker, worklog: worklogProp, uploadImmediately: uplo
                             )}
                         </label>
                         <textarea
+                            ref={descriptionRef}
                             rows={3}
                             value={log.description || ''}
                             onChange={(e) => updateField('description', e.target.value)}
