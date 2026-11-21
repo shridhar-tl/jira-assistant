@@ -40,6 +40,7 @@ jobs:
       FORGE_ENV: staging
       FORGE_EMAIL: ${{ secrets.FORGE_EMAIL }}
       FORGE_API_TOKEN: ${{ secrets.FORGE_API_TOKEN }}
+      FORGE_APPROVE_MAJOR_VERSION: ${{ vars.FORGE_APPROVE_MAJOR_VERSION == 'true' }}
 
     strategy:
       matrix:
@@ -62,6 +63,7 @@ jobs:
         echo "FORGE_ENV=${{ github.event.inputs.environment }}" >> $GITHUB_ENV
         echo "FORGE_EMAIL=${{ github.event.inputs.forgeEmail }}" >> $GITHUB_ENV
         echo "FORGE_API_TOKEN=${{ github.event.inputs.forgeApiToken }}" >> $GITHUB_ENV
+        echo "FORGE_APPROVE_MAJOR_VERSION=${{ inputs.approveMajorVersion }}" >> $GITHUB_ENV
       if: startsWith(github.event_name, 'workflow_dispatch')
       
     - run: echo Deploying ${{github.ref}} to ${{env.FORGE_ENV}}
@@ -69,5 +71,11 @@ jobs:
     - run: npm install --force
     - run: npm run build-plugin
     - run: forge settings set usage-analytics false
-    - run: forge deploy -e $FORGE_ENV ${{ inputs.approveMajorVersion && '--approve MAJOR_VERSION_RULE' || '' }}
+    - name: Deploy to Forge
+      run: |
+        if [ "$FORGE_APPROVE_MAJOR_VERSION" = "true" ]; then
+          forge deploy -e "$FORGE_ENV" --approve MAJOR_VERSION_RULE
+        else
+          forge deploy -e "$FORGE_ENV"
+        fi
     - run: forge logout
