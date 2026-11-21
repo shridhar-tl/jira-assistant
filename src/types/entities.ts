@@ -199,6 +199,7 @@ export interface IssueType {
     id: string;
     name: string;
     subtask: boolean;
+    iconUrl?: string;
 }
 
 export interface IssueStatus {

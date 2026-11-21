@@ -1,6 +1,16 @@
 import type { PokerIssueProvider } from 'planning-poker/contracts';
 
-import { findPokerIssue, getPokerEstimateTarget, lookupPokerIssues, pokerIssueKeyTest, updatePokerEstimate } from './issue-lookup';
+import {
+    findPokerIssue,
+    getPokerEstimateTarget,
+    listPokerBoards,
+    listPokerSprints,
+    loadPokerJqlIssues,
+    loadPokerSprintIssues,
+    lookupPokerIssues,
+    pokerIssueKeyTest,
+    updatePokerEstimate,
+} from './issue-lookup';
 
 export default function createJiraIssueProvider(): PokerIssueProvider {
     return {
@@ -37,6 +47,16 @@ export default function createJiraIssueProvider(): PokerIssueProvider {
 
         async updateEstimate(issue, points) {
             await updatePokerEstimate(issue.key.trim(), issue.root, points);
+        },
+
+        sprints: {
+            listBoards: listPokerBoards,
+            listSprints: listPokerSprints,
+            loadSprintIssues: loadPokerSprintIssues,
+        },
+
+        query: {
+            loadIssues: loadPokerJqlIssues,
         },
     };
 }

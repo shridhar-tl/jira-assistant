@@ -14,7 +14,7 @@ import {
 
 import { ApiUrls, defaultJiraFields, defaultSettings, DummyWLId, isPluginBuild } from '@constants';
 
-import type { JiraCreateIssueType, JiraFieldMeta, JiraFieldMetaMap, JiraIssueLinkType, JiraTransition } from '@types';
+import type { Issue, JiraCreateIssueType, JiraFieldMeta, JiraFieldMetaMap, JiraIssueLinkType, JiraTransition } from '@types';
 
 import type AjaxService from './ajax-service';
 import type CacheService from './cache-service';
@@ -43,6 +43,22 @@ export interface JiraChangeHistory {
     id: string;
     created: string | number;
     items: JiraChangeItem[];
+}
+
+export interface IssueSearchPage {
+    issues: Issue[];
+    hasMore: boolean;
+}
+
+interface TokenSearchResponse {
+    issues?: Issue[];
+    nextPageToken?: string;
+    isLast?: boolean;
+}
+
+interface OffsetSearchResponse {
+    issues?: Issue[];
+    total?: number;
 }
 
 interface BulkChangelogResponse {
@@ -283,6 +299,36 @@ export default class JiraService {
             }
             throw err;
         }
+    }
+
+    async searchTicketsUpTo(jql: string, fields: string[], limit: number): Promise<IssueSearchPage> {
+        const wanted = limit + 1;
+        const issues: Issue[] = [];
+
+        if (this.$session.CurrentUser?.isAtlasCloud) {
+            let nextPageToken: string | undefined;
+            do {
+                const params: Record<string, string | number | string[]> = { jql, fields, maxResults: wanted - issues.length };
+                if (nextPageToken) {
+                    params.nextPageToken = nextPageToken;
+                }
+                const result = await this.$ajax.get<TokenSearchResponse>(prepareUrlWithQueryString(ApiUrls.search, params));
+                const page = result.issues ?? [];
+                issues.push(...page);
+                nextPageToken = result.isLast || page.length === 0 ? undefined : result.nextPageToken;
+            } while (nextPageToken && issues.length < wanted);
+        } else {
+            let hasNext = true;
+            while (hasNext) {
+                const params = { jql, fields, maxResults: wanted - issues.length, startAt: issues.length };
+                const result = await this.$ajax.get<OffsetSearchResponse>(prepareUrlWithQueryString(ApiUrls.searchLegacyV2, params));
+                const page = result.issues ?? [];
+                issues.push(...page);
+                hasNext = page.length > 0 && issues.length < Math.min(result.total ?? 0, wanted);
+            }
+        }
+
+        return { issues: issues.slice(0, limit), hasMore: issues.length > limit };
     }
 
     async validateForWorklogs(issues: any[], worklogStartDate?: Date, worklogEndDate?: Date): Promise<void> {
