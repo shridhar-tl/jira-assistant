@@ -20,6 +20,7 @@ function DayHeader({ day }: { day: HeatmapDay }) {
                 'text-(--text-tertiary)': !day.isWorkingDay || day.isPast,
                 'text-(--text-secondary)': day.isWorkingDay && !day.isPast,
             })}
+            data-export-data={format(day.date, 'EEE dd MMM')}
         >
             <div className="text-[11px] uppercase">{day.isToday ? 'Today' : format(day.date, 'EEE')}</div>
             <div className="text-xs font-semibold text-(--text-primary)">{format(day.date, 'dd MMM')}</div>
@@ -31,7 +32,10 @@ function GroupRows({ group, days }: { group: GroupLoadRow; days: HeatmapDay[] })
     return (
         <>
             <tr>
-                <td className="sticky left-0 z-1 border-b border-r border-(--border-primary) bg-(--bg-secondary) px-2 py-1">
+                <td
+                    className="sticky left-0 z-1 border-b border-r border-(--border-primary) bg-(--bg-secondary) px-2 py-1"
+                    data-export-data={group.name}
+                >
                     <div className="flex items-center gap-2 text-[13px] font-semibold text-(--text-primary)">
                         <span className="fa fa-users text-xs text-(--primary-color)" />
                         <span className="truncate" title={group.name}>
@@ -69,7 +73,7 @@ export default function HeatmapGrid({ model }: HeatmapGridProps) {
 
     return (
         <div className="min-h-0 flex-1 overflow-auto">
-            <table className="w-full border-separate border-spacing-0 text-xs">
+            <table className="exportable w-full border-separate border-spacing-0 text-xs" data-export-sheet-name="Workload heatmap">
                 <thead>
                     <tr>
                         <th

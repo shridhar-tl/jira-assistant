@@ -128,8 +128,12 @@ export default function MoveFeatureDialog({ target, model, data, terms, onHide }
                     )}
                 </div>
 
-                {columnId !== unplannedIterationId && !columnSprints.length && stories.length > 0 && (
-                    <span className="text-xs text-amber-600 dark:text-amber-400">This team has no sprint in that {terms.iteration.toLowerCase()} yet. Add one to the plan first.</span>
+                {columnId !== unplannedIterationId && !columnSprints.length && !hasStoriesElsewhere && (
+                    <span className="text-xs text-amber-600 dark:text-amber-400">
+                        {stories.length
+                            ? `This team has no sprint in that ${terms.iteration.toLowerCase()} yet. Add one to the plan first.`
+                            : `This team has no sprint in that ${terms.iteration.toLowerCase()} yet, so the rough plan goes to "Not in a sprint". Add a sprint to the plan first to plan it in that ${terms.iteration.toLowerCase()}.`}
+                    </span>
                 )}
 
                 {hasStoriesElsewhere ? (

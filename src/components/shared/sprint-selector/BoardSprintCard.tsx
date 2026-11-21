@@ -94,7 +94,7 @@ function BoardSprintCard({ board, selection, sprintStates, onChange }: BoardSpri
                     <div className="flex flex-col gap-1">
                         <RadioButtonGroup
                             items={rangeItems}
-                            value={String(range)}
+                            value={isSelected ? String(range) : ''}
                             onChange={(e) => handleRangeChange(e.value)}
                             name={`sprint_range_${board.id}`}
                             orientation="vertical"

@@ -21,6 +21,7 @@ import {
     type PivotDataSourceType,
     type PivotFieldConfig,
     type PivotReportDefinition,
+    type ReportData,
     type ReportParameters,
 } from '../types';
 import { getQueryFieldsForKey } from '../utils/derived-sources';
@@ -30,22 +31,6 @@ interface ReportDataState {
     isFetching: boolean;
     reportData?: ReportData;
     reportErrors?: string[];
-}
-
-interface ReportData {
-    header: ReportCell[][][];
-    body: ReportCell[][];
-    footer: ReportCell[][];
-}
-
-interface ReportCell {
-    value?: any;
-    headerText?: string;
-    tagProps?: Record<string, any>;
-    renderer?: {
-        Component?: any;
-        props?: Record<string, any>;
-    };
 }
 
 interface FieldFilterState {

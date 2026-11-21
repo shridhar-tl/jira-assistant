@@ -51,21 +51,24 @@ export async function loadTeamSprints(boardIds: number[], force?: boolean): Prom
  * in the plan's sprints, one for the features in scope (and the parents of those stories) and one for the other stories of those features.
  */
 export async function loadPiData(doc: PiDocument, featureTypes: string[], force?: boolean): Promise<PiData> {
-    const boardIds = doc.teams.map((t) => t.boardId);
-    const [fieldIds, configs, teamDefs, sprintLists] = await Promise.all([
+    const [fieldIds, allConfigs] = await Promise.all([
         getFieldIds(''),
-        Promise.all(boardIds.map((id) => getBoardConfig(id, force))),
+        Promise.all(doc.teams.map((t) => getBoardConfig(t.boardId, force).catch(() => null))),
+    ]);
+    const configs = allConfigs.filter((c): c is BoardConfig => !!c);
+    const boardIds = configs.map((c) => c.boardId);
+    const [teamDefs, sprintLists, boards] = await Promise.all([
         loadTeamDefinitions(boardIds, force),
         loadTeamSprints(boardIds, force),
+        Promise.all(configs.map((config) => resolveBoard(config.boardId, config))),
     ]);
 
-    const boards = await Promise.all(boardIds.map((id, index) => resolveBoard(id, configs[index])));
     const mapContext: IssueMapContext = { fieldIds, estimationFieldId: configs[0]?.estimationFieldId || null, rollupSubtasks: true };
     const fields = [...new Set([...getIssueFields(mapContext), ...configs.map((c) => c.estimationFieldId).filter((f): f is string => !!f)])];
     const types = featureTypes.length ? featureTypes : defaultFeatureTypes;
     const projectKeys = [...new Set(configs.map((c, i) => c.projectKey || boards[i].projectKey).filter((k): k is string => !!k))];
 
-    const sprintIds = doc.teams.flatMap((t) => t.sprintIds);
+    const sprintIds = doc.teams.filter((t) => boardIds.includes(t.boardId)).flatMap((t) => t.sprintIds);
     const stories: Record<string, PlannerIssue> = {};
     const addStories = (issues: RawIssue[]) =>
         issues.forEach((raw) => {

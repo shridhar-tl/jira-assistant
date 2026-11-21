@@ -150,7 +150,7 @@ function ParameterControl({ type, isArray, paramKey }: ParameterControlProps) {
                 return <TextInput value={value} onChange={handleChange} />;
             }
         case 'daterange':
-            return <DateRangePicker value={toPickerValue(value)} onChange={(e) => setValue(fromPickerValue(e))} />;
+            return <DateRangePicker value={toPickerValue(value)} placeholder="Select the dates" onChange={(e) => setValue(fromPickerValue(e))} />;
         case 'datetime':
             return <DateTimePicker value={value} onChange={setValue} showTime={true} />;
         case 'date':

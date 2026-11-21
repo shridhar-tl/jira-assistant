@@ -44,6 +44,12 @@ export default function RowConfigItem({ item, index, depth, dragProps }: RowConf
                 <span className="fa fa-table-list text-xs text-(--text-secondary)" title="Row field" />
                 <span className="min-w-0 flex-1 truncate text-sm font-medium text-(--text-primary)">{item.displayText || item.name}</span>
                 {!!item.filter?.trim() && <span className="fa fa-filter text-xs text-(--primary-color)" title="Filter applied" />}
+                {item.sortOrder && (
+                    <span
+                        className={classNames('fa text-xs text-(--primary-color)', item.sortOrder === 'desc' ? 'fa-arrow-down-z-a' : 'fa-arrow-down-a-z')}
+                        title={item.sortOrder === 'desc' ? 'Sorted in descending order' : 'Sorted in ascending order'}
+                    />
+                )}
                 <span className="shrink-0 rounded-full bg-(--bg-tertiary) px-2 py-0.5 text-[11px] font-medium text-(--text-secondary)">
                     {getFieldSummary(item, depth)}
                 </span>

@@ -83,14 +83,6 @@ export default function ReportInfo() {
                     <ul className="space-y-2 text-sm text-secondary">
                         <li className="flex gap-2">
                             <i className="fa fa-circle text-[4px] mt-2 text-emerald-400 shrink-0" />
-                            <span>Ability to sort data within each group.</span>
-                        </li>
-                        <li className="flex gap-2">
-                            <i className="fa fa-circle text-[4px] mt-2 text-emerald-400 shrink-0" />
-                            <span>Display of totals for each group, providing a more comprehensive summary.</span>
-                        </li>
-                        <li className="flex gap-2">
-                            <i className="fa fa-circle text-[4px] mt-2 text-emerald-400 shrink-0" />
                             <span>Support for parent issues, sub-tasks, and linked issues to explore relationships and dependencies.</span>
                         </li>
                         <li className="flex gap-2">

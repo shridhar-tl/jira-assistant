@@ -68,6 +68,7 @@ function processColumn(col: any, headerOpts: any, issues: any[], depth: number, 
         enableGrouping: true,
         depth,
         tagProps: {},
+        columnFilterFn: filterFn,
     };
 
     let countOfSubColumnsUnderTotalColumn = 0;
@@ -89,6 +90,7 @@ function processColumn(col: any, headerOpts: any, issues: any[], depth: number, 
             colGroup: true,
             depth,
             colGroupFn,
+            columnFilterFn: filterFn,
             groupFilterFn: getGroupKeyComparer(grpKey),
             issueFilterFn: getIssueFilterFunction(col, grpKey),
             value,
@@ -118,6 +120,28 @@ function processColumn(col: any, headerOpts: any, issues: any[], depth: number, 
     }
 
     return [colSpan ? colSpan + countOfSubColumnsUnderTotalColumn : childItems.length, childItems];
+}
+
+interface SpannedHeaderCell {
+    tagProps?: { rowSpan?: number };
+    subItems?: unknown;
+}
+
+function childCellsOf(cell: SpannedHeaderCell): unknown[] {
+    return Array.isArray(cell.subItems) ? cell.subItems.flat(Infinity) : [];
+}
+
+export function spanLeafHeaders(header: SpannedHeaderCell[][]) {
+    const headerCells = new Set<unknown>(header.flat());
+
+    header.forEach((row, rowIndex) => {
+        const rowSpan = header.length - rowIndex;
+        row.forEach((cell) => {
+            if (rowSpan > (cell.tagProps?.rowSpan || 1) && !childCellsOf(cell).some((child) => headerCells.has(child))) {
+                cell.tagProps = { ...cell.tagProps, rowSpan };
+            }
+        });
+    });
 }
 
 export function getMaxDepth() {

@@ -18,6 +18,7 @@ export function CalendarGadget(props: CalendarGadgetProps) {
 
     const gadgetHook = useBaseGadget(props, {
         title: 'Calendar',
+        hideExport: true,
     });
 
     const { performAction } = gadgetHook;

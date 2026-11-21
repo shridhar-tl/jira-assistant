@@ -36,7 +36,7 @@ export default function DisplayOption({ item, isGrouped, isRow }: DefaultOptions
                         value={item.agrFunc}
                         onChange={(e: ComponentEvent<string>) => handleFieldChange('agrFunc', e.value)}
                         options={functions}
-                        placeholder="First value"
+                        placeholder={isRow ? 'No Aggregation' : 'First value'}
                     />
                     {allowDistinct && (
                         <Checkbox

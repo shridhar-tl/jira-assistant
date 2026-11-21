@@ -2,6 +2,8 @@
 // @ts-ignore
 import parser from 'js-sql-parser';
 
+import { normalizeType } from '@/display-controls';
+
 import { getQueryFieldsForKey } from '../../../../../utils/derived-sources';
 
 import { allowedFunctionsMap, paramsFunctionName } from './functions';
@@ -241,7 +243,9 @@ function validate_Identifier(obj: any, result: any) {
         result.derivedKeys?.add(field.key);
     }
 
-    return field.schema;
+    const { compatibleTypes } = normalizeType(field);
+
+    return compatibleTypes ? { ...field.schema, compatibleTypes } : field.schema;
 }
 
 function validate_FunctionCall(obj: any, result: any, leftPart: any) {
@@ -287,7 +291,7 @@ function validate_FunctionCall(obj: any, result: any, leftPart: any) {
         // If return type starts with ":" and matches with ":" followed by param name,
         // then the type of param would be the return type of this function
         if (returns === `:${cur.paramName}`) {
-            returns = returnType?.type || returnType;
+            returns = returnType;
         }
     }
 

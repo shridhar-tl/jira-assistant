@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 
 import classNames from 'classnames';
 
-import { Button, TextInput } from '@components';
+import { Button, TextInput, type ComponentEvent } from '@components';
 
 import { DASHBOARD_ICONS } from '@constants';
 
@@ -96,7 +96,7 @@ export function DashboardName({ value: propValue, icon: propIcon, onChange }: Da
                         </div>
                     )}
                 </div>
-                <TextInput value={value} onChange={(e: any) => setValue(e.target.value)} maxLength={18} size="sm" />
+                <TextInput value={value} onChange={({ value }: ComponentEvent<string>) => setValue(value)} maxLength={18} size="sm" />
                 <Button
                     leftIcon={<i className="fa fa-check" />}
                     variant="success"

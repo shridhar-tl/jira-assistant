@@ -12,7 +12,7 @@ import { GadgetActionType } from '@constants';
 
 import { WorklogContext } from '../common/context';
 import { UserDateWiseWorklog, type DateWiseWorklogItem } from '../components/shared';
-import DateRangePicker from '../controls/DateRangePicker';
+import DateRangePicker, { resolveDateRange } from '../controls/DateRangePicker';
 import { formatTs } from '../services/utils-service';
 
 import { GadgetContainer, dashboardEventEmitter, useBaseGadget, type BaseGadgetProps } from './BaseGadget';
@@ -114,7 +114,8 @@ function DateWiseWorklog(props: BaseGadgetProps) {
         [uploadWorklog, addNewWorklog],
     );
 
-    const dateRange = settingsRef.current.dateRange;
+    const savedRange = settingsRef.current.dateRange;
+    const dateRange = useMemo(() => resolveDateRange(savedRange), [savedRange]);
 
     const customActions = useMemo(() => {
         return <DateRangePicker value={dateRange} onChange={dateSelected} styles={{ marginRight: '35px' }} />;

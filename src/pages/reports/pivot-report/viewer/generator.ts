@@ -1,7 +1,7 @@
 import { getIssueSearchJql, usePivotConfig, useReportData } from '../store/pivot-config';
 import type { ReportData } from '../types';
 
-import { getMaxDepth, processColumns } from './column-utils';
+import { getMaxDepth, processColumns, spanLeafHeaders } from './column-utils';
 import { fetchData } from './common-utils';
 import { isReportDefinitionValid } from './report-validator';
 import { generateRowGroupBody, processRowField } from './row-utils';
@@ -81,6 +81,8 @@ function generateFieldHeaders(reportData: ReportData, issues: any[]) {
             prevRow = processRowField(field, prevRow, reportData, rowSpan);
         }
     });
+
+    spanLeafHeaders(reportData.header);
 }
 
 function validateReportParameters({ parameters: list }: any) {

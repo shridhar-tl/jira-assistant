@@ -3,7 +3,7 @@ import { memo, useCallback, type MouseEvent } from 'react';
 import classNames from 'classnames';
 
 import { loadLevelClassNames } from './constants';
-import { formatHours, formatPercent } from './format-utils';
+import { formatHours, formatLoad, formatPercent } from './format-utils';
 import { useHeatmapOverlay } from './overlay-context';
 import type { HeatmapDay, UserDayLoad } from './types';
 
@@ -36,6 +36,7 @@ function HeatmapCell({ day, load, userName }: HeatmapCellProps) {
             title={load.absenceTitle}
             data-day={day.key}
             data-level={load.level}
+            data-export-data={hasLoad ? formatLoad(load.percent, load.seconds) : undefined}
         >
             {load.absence && (
                 <i

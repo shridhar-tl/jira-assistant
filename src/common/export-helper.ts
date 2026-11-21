@@ -1,6 +1,8 @@
 import { createFlow, savePdf } from 'fluxo-ui/pdf';
 import type { FlowComposer } from 'fluxo-ui/pdf';
 import { buildPdfFromTable } from 'fluxo-ui/pdf/html';
+import { inject } from '@services';
+
 import { exportCsv } from '../utils/helpers';
 
 import Exporter, { ExportFormat, getCellExportData } from './Exporter';
@@ -43,6 +45,8 @@ function canvasToDataUrlWithBackground(canvas: HTMLCanvasElement, backgroundColo
     ctx.drawImage(canvas, 0, 0);
     return offscreen.toDataURL('image/png');
 }
+
+const noTableToExportMessage = 'The current view has no table to export as CSV. Switch to a view showing a table and export again.';
 
 const pdfMargin = 40;
 const pdfChartGap = 16;
@@ -110,7 +114,11 @@ export class ExportHelper {
         if (!root) return;
 
         const table = this.getPrimaryTable(root);
-        if (!table) return;
+        if (!table || !isVisible(table)) {
+            const { $message } = inject('MessageService');
+            $message.warning(noTableToExportMessage, 'Nothing to export');
+            return;
+        }
 
         const sheetName = table.getAttribute('data-export-sheet-name') || this.fileName || 'download';
         this.exportTable(table, sheetName);
@@ -176,9 +184,9 @@ export class ExportHelper {
         ).filter((r) => isVisible(r));
 
         const content =
-            genData(visibleTheadRows, colInfo) +
-            genData(visibleTbodyRows, colInfo) +
-            genData(visibleTfootRows, colInfo);
+            genData(visibleTheadRows, colInfo, false) +
+            genData(visibleTbodyRows, colInfo, true) +
+            genData(visibleTfootRows, colInfo, false);
 
         exportCsv(content, fileName);
 
@@ -210,15 +218,24 @@ export class ExportHelper {
                 val = val.replace(/"/g, '""');
             }
 
-            if (opts.encode && val.indexOf(',') >= 0) {
+            if (opts.encode && (val.indexOf(',') >= 0 || val.indexOf('"') >= 0)) {
                 val = `"${val}"`;
             }
 
             return val;
         }
 
-        function genData(rows: HTMLTableRowElement[], colInfoArr: Array<{ noExport?: boolean }>): string {
+        function genData(rows: HTMLTableRowElement[], colInfoArr: Array<{ noExport?: boolean }>, repeatSpannedRows: boolean): string {
             const header: string[][] = [];
+
+            const getExportedColumn = (start: number, span: number) => {
+                for (let col = start; col < start + span; col++) {
+                    if (!colInfoArr[col]?.noExport) {
+                        return col;
+                    }
+                }
+                return start;
+            };
             rows.forEach((r, i) => {
                 const cells = Array.from(r.querySelectorAll<HTMLTableCellElement>(':scope > th, :scope > td'));
                 cells.forEach((c, _origJ) => {
@@ -239,21 +256,19 @@ export class ExportHelper {
                             noExport: c.hasAttribute('data-no-export') || (cellIsHidden && !c.hasAttribute('data-force-export')),
                         };
                     }
-                    header[i][j] = getVal(c);
+                    const value = getVal(c);
+                    const colspan = Math.max(parseInt(c.getAttribute('colspan') || '1', 10), 1);
+                    const rowspan = Math.max(parseInt(c.getAttribute('rowspan') || '1', 10), 1);
+                    const valueColumn = getExportedColumn(j, colspan);
 
-                    let colspan = parseInt(c.getAttribute('colspan') || '1', 10);
-                    while (colspan > 1) {
-                        header[i][j + colspan - 1] = '';
-                        colspan--;
-                    }
-
-                    let rowspan = parseInt(c.getAttribute('rowspan') || '1', 10);
-                    while (rowspan > 1) {
-                        if (!header[i + rowspan - 1]) {
-                            header[i + rowspan - 1] = [];
+                    for (let spanRow = 0; spanRow < rowspan; spanRow++) {
+                        if (!header[i + spanRow]) {
+                            header[i + spanRow] = [];
                         }
-                        header[i + rowspan - 1][j] = '';
-                        rowspan--;
+                        for (let spanCol = j; spanCol < j + colspan; spanCol++) {
+                            const hasValue = spanCol === valueColumn && (!spanRow || repeatSpannedRows);
+                            header[i + spanRow][spanCol] = hasValue ? value : '';
+                        }
                     }
                 });
             });

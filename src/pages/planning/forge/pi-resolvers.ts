@@ -68,6 +68,12 @@ async function canEdit(accountId: string | undefined, settings: PiProgramSetting
     return groups.some((g) => settings.editors.groupIds.includes(g.groupId || '') || settings.editors.groupIds.includes(g.name || ''));
 }
 
+async function getDisplayName(accountId: string): Promise<string> {
+    const response = await asUser().requestJira(route`/rest/api/3/myself`, { headers: { Accept: 'application/json' } });
+    const me = response.ok ? ((await response.json()) as { displayName?: string }) : null;
+    return me?.displayName || accountId;
+}
+
 async function ensureEditor(context: CallContext) {
     const settings = await getSettings();
     if (!(await canEdit(context.accountId, settings))) {
@@ -145,7 +151,11 @@ async function saveSettings(payload: { settings: PiProgramSettings }, context: C
     const toSave: PiProgramSettings = { ...defaultSettings, ...settings, version: current.version + 1 };
     if (toSave.editors.restricted && context.accountId && !toSave.editors.accountIds.includes(context.accountId) && !toSave.editors.groupIds.length) {
         // Prevent the editor from locking everyone out
-        toSave.editors = { ...toSave.editors, accountIds: [...toSave.editors.accountIds, context.accountId] };
+        toSave.editors = {
+            ...toSave.editors,
+            accountIds: [...toSave.editors.accountIds, context.accountId],
+            names: { ...toSave.editors.names, [context.accountId]: await getDisplayName(context.accountId) },
+        };
     }
     await kvs.set(settingsKey, toSave);
     return { ok: true, settings: toSave };
@@ -163,7 +173,7 @@ export function registerPiResolvers(resolver: Resolver) {
         if (!idPattern.test(id)) {
             return reject(400, 'Invalid plan');
         }
-        return ((await kvs.get(docKeyPrefix + id)) as PiDocument | undefined) || null;
+        return { doc: ((await kvs.get(docKeyPrefix + id)) as PiDocument | undefined) || null };
     });
 
     resolver.define('PiSave', (req) => savePi(req.payload as unknown as SavePayload, req.context as CallContext));

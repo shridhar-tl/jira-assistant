@@ -2,6 +2,8 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { addDays, startOfDay } from 'date-fns';
 
+import { inject } from '@services';
+
 import { DateTimePicker } from '@/controls';
 
 import { Button, Dropdown, InputSwitch, Modal, Multiselect, TextInput } from '@components';
@@ -11,8 +13,10 @@ import Field from '../../shared/components/Field';
 import { formatDateRange } from '../../shared/format';
 import { parseDateKey, toDateKey } from '../../shared/segments';
 import type { PlannerBoard, PlannerSprint } from '../../shared/types';
+import { getJiraErrorMessage } from '../../shared/jira-api';
 import { createPlanId, savePlanDocument } from '../pi-actions';
 import { loadTeamSprints } from '../pi-loader';
+import { getPlan } from '../pi-storage';
 import { createIterations, matchSprints } from '../pi-model';
 import { usePiStore } from '../pi-store';
 import type { PiDocument, PiIteration, PiTeam } from '../pi-types';
@@ -100,30 +104,40 @@ export default function PiDefinitionDialog({ doc, terms, onSaved, onHide }: PiDe
         );
     };
 
-    const applyCopy = (planId: string) => {
+    const applyCopy = async (planId: string) => {
         setCopyFrom(planId);
-        const source = plans.find((p) => p.id === planId);
-        if (source) {
-            setTeams(source.boardIds.map((id) => teams.find((t) => t.boardId === id) || { boardId: id, name: `Board ${id}`, sprintIds: [] }));
+        if (planId === noCopy) {
+            return;
+        }
+        try {
+            const source = await getPlan(planId);
+            if (source) {
+                setTeams(source.teams.map((s) => teams.find((t) => t.boardId === s.boardId) || { boardId: s.boardId, name: s.name, sprintIds: [] }));
+            }
+        } catch (err) {
+            const { $message } = inject('MessageService');
+            $message.error(getJiraErrorMessage(err), `Unable to copy the ${terms.teams.toLowerCase()}`);
         }
     };
 
     const save = async () => {
         setIsSaving(true);
+        const current = usePiStore.getState().doc;
+        const base = doc && current?.id === doc.id ? current : doc;
         const next: PiDocument = {
-            id: doc?.id || createPlanId(),
+            id: base?.id || createPlanId(),
             name: name.trim(),
             startDate: toDateKey(start),
             endDate: toDateKey(end),
             teams,
             iterations,
-            milestones: doc?.milestones || [],
-            objectives: doc?.objectives || [],
-            risks: doc?.risks || [],
-            votes: doc?.votes || [],
-            version: doc?.version || 0,
-            updated: doc?.updated || '',
-            updatedBy: doc?.updatedBy || '',
+            milestones: base?.milestones || [],
+            objectives: base?.objectives || [],
+            risks: base?.risks || [],
+            votes: base?.votes || [],
+            version: base?.version || 0,
+            updated: base?.updated || '',
+            updatedBy: base?.updatedBy || '',
         };
         const ok = await savePlanDocument(next);
         setIsSaving(false);

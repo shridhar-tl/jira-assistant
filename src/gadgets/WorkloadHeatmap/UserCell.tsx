@@ -39,7 +39,7 @@ function UserCell({ row }: UserCellProps) {
     const { user, unestimated, unscheduled } = row;
 
     return (
-        <td data-user-id={user.id} className="sticky left-0 z-1 min-w-36 max-w-56 border-b border-r border-(--border-primary) bg-(--bg-primary) px-2 py-1">
+        <td data-user-id={user.id} data-export-data={user.displayName} className="sticky left-0 z-1 min-w-36 max-w-56 border-b border-r border-(--border-primary) bg-(--bg-primary) px-2 py-1">
             <div className="flex items-center gap-2">
                 {user.avatarUrl ? (
                     <img src={user.avatarUrl} alt="" className="h-6 w-6 shrink-0 rounded-full" />

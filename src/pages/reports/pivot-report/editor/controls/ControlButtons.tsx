@@ -20,6 +20,7 @@ interface ControlButtonsProps {
 
 export default function ControlButtons({ reportId }: ControlButtonsProps) {
     const navigate = useNavigate();
+    const queryName = usePivotConfig((state) => state.queryName);
     const [showSaveDialog, setShowSaveDialog] = useState(false);
     const toggleSavePopup = () => setShowSaveDialog(!showSaveDialog);
 
@@ -38,7 +39,7 @@ export default function ControlButtons({ reportId }: ControlButtonsProps) {
 
         if (result) {
             const { id, createdBy } = result;
-            navigate(`/${createdBy}/reports/pivot/${id}`);
+            navigate(`/${createdBy}/reports/pivot/${id}`, { state: { keepEditing: true } });
         }
     };
 
@@ -71,7 +72,7 @@ export default function ControlButtons({ reportId }: ControlButtonsProps) {
                     />
                 )}
             </div>
-            {showSaveDialog && <SaveReportDialog allowCopy={!!reportId} onHide={toggleSavePopup} onChange={saveAsCopy} />}
+            {showSaveDialog && <SaveReportDialog queryName={reportId ? queryName : ''} allowCopy={!!reportId} onHide={toggleSavePopup} onChange={saveAsCopy} />}
         </>
     );
 }

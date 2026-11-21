@@ -71,28 +71,42 @@ export function date_diff(date1: any, date2: any, unit?: moment.unitOfTime.Diff)
     return moment(date1).diff(date2, unit).valueOf();
 }
 
-export function sum(_values: any[]) {
-    return 0;
+function presentValues(values: unknown): unknown[] {
+    return (Array.isArray(values) ? values : [values]).filter((v) => v !== null && v !== undefined && v !== '');
 }
 
-export function avg(_values: any[]) {
-    return 0;
+function numericValues(values: unknown): number[] {
+    return presentValues(values)
+        .map(Number)
+        .filter((v) => !Number.isNaN(v));
 }
 
-export function min(_values: any[]) {
-    return 0;
+export function sum(values: unknown) {
+    return numericValues(values).reduce((total, v) => total + v, 0);
 }
 
-export function max(_values: any[]) {
-    return 0;
+export function avg(values: unknown) {
+    const numbers = numericValues(values);
+    return numbers.length ? sum(numbers) / numbers.length : null;
 }
 
-export function first(_values: any[]) {
-    return null;
+export function min(values: unknown) {
+    const numbers = numericValues(values);
+    return numbers.length ? Math.min(...numbers) : null;
 }
 
-export function last(_values: any[]) {
-    return null;
+export function max(values: unknown) {
+    const numbers = numericValues(values);
+    return numbers.length ? Math.max(...numbers) : null;
+}
+
+export function first(values: unknown) {
+    return presentValues(values)[0] ?? null;
+}
+
+export function last(values: unknown) {
+    const present = presentValues(values);
+    return present.length ? present[present.length - 1] : null;
 }
 
 function parseDateModifier(value?: number): { amount: number; unit: moment.unitOfTime.Diff } | null {

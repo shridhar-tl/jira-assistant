@@ -38,6 +38,11 @@
     font-weight: 500;
 }
 
+.scroll-table-container table.pivot-group-table tbody td[data-total-row] {
+    background-color: var(--bg-tertiary);
+    font-weight: 600;
+}
+
 .scroll-table-container table.pivot-group-table tbody tr:nth-child(even) td:not([rowspan]) {
     background-color: var(--bg-secondary);
 }

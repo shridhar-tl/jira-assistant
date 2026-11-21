@@ -13,6 +13,10 @@ export function formatPercent(percent: number | null): string {
     return percent === null ? '–' : `${percent}%`;
 }
 
+export function formatLoad(percent: number | null, seconds: number): string {
+    return `${formatPercent(percent)} (${formatHours(seconds)})`;
+}
+
 export function formatShortDate(date: Date): string {
     return format(date, 'dd MMM');
 }

@@ -20,7 +20,12 @@ export async function saveReportAs(queryName: string, copy?: boolean) {
         delete report.id;
     }
 
-    return saveReportToDb(report);
+    const saved = await saveReportToDb(report);
+    if (!copy && report.id) {
+        usePivotConfig.setState({ queryName });
+    }
+
+    return saved;
 }
 
 async function saveReportToDb(report: PivotReportDefinition) {

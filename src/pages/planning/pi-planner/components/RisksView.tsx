@@ -110,7 +110,15 @@ export default function RisksView({ doc, terms, canEdit, people }: RisksViewProp
     const [editing, setEditing] = useState<PiRisk | 'new' | null>(null);
     const teamName = (id: number | null) => (id ? doc.teams.find((t) => t.boardId === id)?.name || '' : terms.program);
 
-    const setRoam = (risk: PiRisk, roam: RoamStatus) => updatePlan({ risks: doc.risks.map((r) => (r.id === risk.id ? { ...r, roam } : r)) });
+    const setRoam = async (risk: PiRisk, roam: RoamStatus) => {
+        try {
+            const next = await syncRiskToJira({ ...risk, roam }, terms.roam[roam]);
+            await updatePlan({ risks: doc.risks.map((r) => (r.id === risk.id ? next : r)) });
+        } catch (err) {
+            const { $message } = inject('MessageService');
+            $message.error(getJiraErrorMessage(err), `Unable to save the ${terms.risk.toLowerCase()}`);
+        }
+    };
     const remove = (id: string) => updatePlan({ risks: doc.risks.filter((r) => r.id !== id) });
 
     return (

@@ -7,8 +7,11 @@ import { inject } from '@services';
 import { getDateRange, getWeekGroup, type DateRangeItem, type WeekGroup as DateWeekGroup } from '@utils/date-utils';
 import { convertToDate } from '@utils/helpers';
 
+import { getFilterFunction } from '../filters';
+
 type Issue = Record<string, any>;
 type TransformFn = ((issues: Issue[]) => Issue[]) | undefined;
+type IssueFilterFn = ((issues: Issue[]) => Issue[]) | undefined;
 
 interface DateInterval {
     start: Date | number;
@@ -28,6 +31,7 @@ interface RangeHeader {
     depth: number;
     tagProps: { colSpan?: number; rowSpan?: number };
     transformFn: TransformFn;
+    columnFilterFn?: IssueFilterFn;
     renderer?: { Component: typeof DayColumn };
     subItems?: unknown;
 }
@@ -42,7 +46,8 @@ export function generateDateRangeColumns(
     hasSiblings: boolean,
     processColumns: any,
 ) {
-    const { dateRange, rangeType = 'days', filterField, showTotal, showTotalFirst, subItems } = column;
+    const { dateRange, rangeType = 'days', filterField, showTotal, showTotalFirst, subItems, filter } = column;
+    const columnFilterFn: IssueFilterFn = getFilterFunction(filter);
     const { header } = headerOpts;
     const currentHeader: RangeHeader[] = header[depth];
     const subHeader: RangeHeader[] = header[depth + 1];
@@ -68,6 +73,7 @@ export function generateDateRangeColumns(
         enableGrouping: true,
         depth,
         tagProps: { rowSpan: 2 },
+        columnFilterFn,
         transformFn: getDateRangeGroupTransformFn(
             {
                 start: startOfDay(new Date(dateRange.fromDate)),
@@ -97,6 +103,7 @@ export function generateDateRangeColumns(
             enableGrouping: true,
             depth,
             tagProps: { colSpan: 0 },
+            columnFilterFn,
             transformFn: getDateRangeGroupTransformFn(group, filterField),
         };
 

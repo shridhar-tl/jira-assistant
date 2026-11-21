@@ -11,8 +11,8 @@ export function listPlans(): Promise<PiListResult> {
     return call<PiListResult>('PiList', {});
 }
 
-export function getPlan(id: string): Promise<PiDocument | null> {
-    return call<PiDocument | null>('PiGet', { id });
+export async function getPlan(id: string): Promise<PiDocument | null> {
+    return (await call<{ doc: PiDocument | null }>('PiGet', { id })).doc;
 }
 
 export function savePlan(doc: PiDocument): Promise<PiSaveResult<PiDocument>> {

@@ -45,6 +45,7 @@ export default function DateRangeFieldOptions({ item, isRow }: DateRangeFieldOpt
             <PropertyRow label="Date range">
                 <DateRangePicker
                     value={toPickerValue(item.dateRange)}
+                    placeholder="Select the dates"
                     onChange={(e) => handleFieldChange('dateRange', fromPickerValue(e))}
                 />
             </PropertyRow>

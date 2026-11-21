@@ -1,6 +1,6 @@
 import type { CSSProperties } from 'react';
 
-import { endOfMonth, endOfWeek, startOfMonth, startOfWeek, subDays, subMonths, subWeeks } from 'date-fns';
+import { endOfDay, endOfMonth, endOfWeek, startOfDay, startOfMonth, startOfWeek, subDays, subMonths, subWeeks } from 'date-fns';
 
 import type { DateSelectedCallbackArg } from '@components';
 import { DateRangePicker as FluxoDateRangePicker } from '@components';
@@ -60,6 +60,25 @@ function buildRanges(): QuickDateRange[] {
 
 export function getQuickDateValue(quickDate: number): [Date, Date] | undefined {
     return buildRanges()[quickDate]?.range;
+}
+
+function getQuickRange(quickDate: string | number): [Date, Date] | undefined {
+    const ranges = buildRanges();
+    return typeof quickDate === 'number' ? ranges[quickDate]?.range : ranges.find((r) => r.value === quickDate)?.range;
+}
+
+export function resolveDateRange(value?: DateRangeValue): DateRangeValue {
+    const quickRange = value?.quickDate != null ? getQuickRange(value.quickDate) : undefined;
+    if (quickRange) {
+        return { fromDate: quickRange[0], toDate: quickRange[1], quickDate: value!.quickDate };
+    }
+
+    if (value?.fromDate && value.toDate) {
+        return { fromDate: value.fromDate, toDate: value.toDate };
+    }
+
+    const today = new Date();
+    return { fromDate: startOfDay(today), toDate: endOfDay(today) };
 }
 
 function normalizePickerValue(value?: [Date, Date] | DateRangeValue): [Date, Date] | string | undefined {

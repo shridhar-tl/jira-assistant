@@ -11,7 +11,7 @@ import { showContextMenu } from '@components';
 import { GadgetActionType } from '@constants';
 
 import { Column, NoDataRow, ScrollableTable, TBody, THead } from '../components/shared/ScrollableTable';
-import DateRangePicker from '../controls/DateRangePicker';
+import DateRangePicker, { resolveDateRange } from '../controls/DateRangePicker';
 import Link from '../controls/Link';
 import { DateDisplay } from '../display-controls';
 import { formatTs, getRowStatus } from '../services/utils-service';
@@ -55,11 +55,9 @@ export default function TicketWiseWorklog(props: BaseGadgetProps) {
     const { resolveUploadOptions, mergeConfirmation } = useWorklogMerge();
 
     const refreshData = useCallback(() => {
-        const selDate = settingsRef.current.dateRange;
-        if (!selDate || !selDate.fromDate) return;
+        const selDate = { ...resolveDateRange(settingsRef.current.dateRange), dateWise: false };
 
         setIsLoading(true);
-        selDate.dateWise = false;
 
         $worklog.getWorklogs(selDate).then((result: any[]) => {
             result.forEach((b) => {
@@ -133,7 +131,8 @@ export default function TicketWiseWorklog(props: BaseGadgetProps) {
         [uploadWorklog, addNewWorklog],
     );
 
-    const dateRange = settingsRef.current.dateRange;
+    const savedRange = settingsRef.current.dateRange;
+    const dateRange = useMemo(() => resolveDateRange(savedRange), [savedRange]);
 
     const customActions = useMemo(
         () => <DateRangePicker value={dateRange} onChange={dateSelected} styles={{ marginRight: '35px' }} />,

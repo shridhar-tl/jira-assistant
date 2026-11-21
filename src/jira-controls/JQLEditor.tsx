@@ -71,8 +71,8 @@ function JQLEditor({ jql, field, plugged, onChange }: JQLEditorProps) {
             )}
             {plugged && isEdit && (
                 <div className="flex gap-2">
-                    <Button leftIcon={<i className="fa fa-check" />} onClick={doneEdit} />
-                    <Button leftIcon={<i className="fa fa-times" />} onClick={cancelEdit} />
+                    <Button leftIcon={<i className="fa fa-check" />} onClick={doneEdit} title="Apply the query" ariaLabel="Apply the query" />
+                    <Button leftIcon={<i className="fa fa-times" />} onClick={cancelEdit} title="Discard the changes" ariaLabel="Discard the changes" />
                 </div>
             )}
         </div>

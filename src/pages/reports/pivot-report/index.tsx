@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import { useParams } from 'react-router';
+import { useLocation, useParams } from 'react-router';
 
 import { GadgetContainer, useBaseGadget } from '@/gadgets/BaseGadget';
 
@@ -16,11 +16,15 @@ import { generateReport } from './viewer/generator';
 
 export default function PivotReport() {
     const { reportId, userId } = useParams<{ reportId?: string; userId?: string }>();
+    const { state: navigationState } = useLocation();
     const [editMode, setEditMode] = useState(!reportId);
     const toggleEdit = () => setEditMode((prev) => !prev);
 
     useEffect(() => {
         loadReport(reportId);
+        if (!(navigationState as SavedReportNavigation | null)?.keepEditing) {
+            setEditMode(!reportId);
+        }
     }, [reportId]);
 
     const reportName = usePivotConfig(({ queryName }) => queryName);
@@ -59,9 +63,13 @@ export default function PivotReport() {
                     <EditorBody />
                 </GadgetContainer>
             </div>
-            <EditorControls reportId={reportId} show={editMode} onHide={toggleEdit} />
+            <EditorControls key={reportId || 'new'} reportId={reportId} show={editMode} onHide={toggleEdit} />
         </div>
     );
+}
+
+interface SavedReportNavigation {
+    keepEditing?: boolean;
 }
 
 function toggleParameters() {

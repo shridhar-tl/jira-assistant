@@ -6,7 +6,7 @@ import { GadgetActionType } from '@constants';
 
 import { WorklogContext } from '../common/context';
 import WorklogBarChart from '../components/shared/worklog-bar-chart';
-import DateRangePicker from '../controls/DateRangePicker';
+import DateRangePicker, { resolveDateRange } from '../controls/DateRangePicker';
 
 import { GadgetContainer, dashboardEventEmitter, useBaseGadget, type BaseGadgetProps } from './BaseGadget';
 import { GadgetTitle } from './constants';
@@ -17,6 +17,7 @@ function WorklogBarChartGadget(props: BaseGadgetProps) {
 
     const gadgetHook = useBaseGadget(props, {
         title: GadgetTitle.WorklogBarChart,
+        hideExport: true,
     });
 
     const { setIsLoading, settingsRef, saveSettings } = gadgetHook;
@@ -53,7 +54,9 @@ function WorklogBarChartGadget(props: BaseGadgetProps) {
         };
     }, [refreshData]);
 
-    const dateRange = settingsRef.current.dateRange;
+    const savedRange = settingsRef.current.dateRange;
+    const dateRange = useMemo(() => resolveDateRange(savedRange), [savedRange]);
+    const chartSettings = useMemo(() => ({ ...settingsRef.current, dateRange }), [settingsRef, dateRange]);
 
     const customActions = useMemo(() => {
         return <DateRangePicker value={dateRange} onChange={dateSelected} styles={{ marginRight: '35px' }} />;
@@ -66,7 +69,7 @@ function WorklogBarChartGadget(props: BaseGadgetProps) {
             refreshData={refreshData}
             customActions={customActions}
         >
-            <WorklogBarChart lastUpdated={lastUpdated} settings={settingsRef.current} setLoader={setIsLoading} />
+            <WorklogBarChart lastUpdated={lastUpdated} settings={chartSettings} setLoader={setIsLoading} />
             <ChangeTracker
                 key={worklogContext?.timerEntry?.key}
                 enabled={!gadgetHook.isLoading && worklogContext?.needReload}

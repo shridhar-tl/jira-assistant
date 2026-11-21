@@ -4,6 +4,7 @@ import { Button, Checkbox, SelectButton, TextInput } from '@components';
 import type { ComponentEvent } from '@components';
 
 import { updateItemByPath } from '../../../store/pivot-config';
+import type { PivotFieldConfig } from '../../../types';
 import { getDerivedItemFilter } from '../../../utils/derived-sources';
 import { getDefaultHeaderText } from '../../../utils/format-functions';
 import { getFieldType } from '../../../viewer/common-utils';
@@ -16,6 +17,27 @@ import PropertyRow from './PropertyRow';
 interface ItemPropertiesProps {
     selection: any;
 }
+
+const sortOrderOptions = [
+    { value: 'none', label: 'As fetched' },
+    { value: 'asc', label: 'Ascending' },
+    { value: 'desc', label: 'Descending' },
+];
+
+const groupSortHelpText = 'Orders the groups by the value of this field. Issues without a value stay at the end.';
+const valueSortHelpText = 'Orders the groups of the field above by this value. Groups without a value stay at the end.';
+const listSortHelpText = 'Orders the issues listed in each group by the value of this field. Issues without a value stay at the end.';
+
+function getSortHelpText(item: PivotFieldConfig) {
+    if (item.enableGrouping) {
+        return groupSortHelpText;
+    }
+
+    return item.agrFunc && item.agrFunc !== 'none' ? valueSortHelpText : listSortHelpText;
+}
+
+const totalRowHelpText =
+    'Adds a row after the groups of this field with the aggregated values of all their issues. An issue in more than one group is counted once.';
 
 const totalPositionOptions = [
     { value: 'start', label: 'At start' },
@@ -105,12 +127,35 @@ export default function ItemProperties({ selection }: ItemPropertiesProps) {
 
                     {DisplayOption && <DisplayOption item={item} isGrouped={isGrouped} isRow={isRow} />}
 
+                    {isRow && !item.schema?.computed && (
+                        <PropertyRow label="Sort order" helpText={getSortHelpText(item)} className="sm:col-span-2">
+                            <SelectButton
+                                items={sortOrderOptions}
+                                value={item.sortOrder || 'none'}
+                                onChange={({ value }: ComponentEvent<string>) => update({ sortOrder: value === 'none' ? undefined : value })}
+                                variant="segmented"
+                                required
+                                ariaLabel="Sort order"
+                            />
+                        </PropertyRow>
+                    )}
+
                     {itemFilter && (
                         <DerivedItemFilter
                             itemFilter={itemFilter}
                             values={item.itemFilterValues}
                             onChange={(itemFilterValues) => update({ itemFilterValues })}
                         />
+                    )}
+
+                    {isRow && item.enableGrouping && (
+                        <PropertyRow label="Totals" helpText={totalRowHelpText} className="sm:col-span-2">
+                            <Checkbox
+                                checked={!!item.showTotal}
+                                onChange={({ value }: ComponentEvent<boolean>) => update({ showTotal: value })}
+                                label="Show total row"
+                            />
+                        </PropertyRow>
                     )}
 
                     {isGrouped && !isRow && (

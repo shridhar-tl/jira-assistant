@@ -19,7 +19,7 @@ export function getFieldSummary(field: SummaryField, depth: number): string {
         return field.colGroup || depth ? 'Pivot' : 'Grouped';
     }
 
-    if (field.agrFunc === noAggregationFuncName) {
+    if (field.agrFunc === noAggregationFuncName || (!field.agrFunc && !field.colGroup && !depth)) {
         return 'List';
     }
 

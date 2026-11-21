@@ -26,14 +26,14 @@ export default function GroupTable() {
 interface TableSectionProps {
     tag: any;
     isHeader?: boolean;
-    rows: ReportCell[][] | ReportCell[][][];
+    rows: ReportCell[][];
 }
 
 function TableSection({ tag: Tag, isHeader, rows }: TableSectionProps) {
     return (
         <Tag>
             {rows.map((cells, i) => (
-                <TableRow key={i} isHeader={isHeader} cells={cells as ReportCell[]} />
+                <TableRow key={i} isHeader={isHeader} cells={cells} />
             ))}
         </Tag>
     );

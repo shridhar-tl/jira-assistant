@@ -1,6 +1,6 @@
 export { Draggable, Droppable, Sortable } from 'fluxo-ui';
 export { default as ColorPicker } from './ColorPicker';
-export { default as DateRangePicker, getQuickDateValue, labelText } from './DateRangePicker';
+export { default as DateRangePicker, getQuickDateValue, labelText, resolveDateRange } from './DateRangePicker';
 export type { DateRangeValue, DateSelectedCallbackArg, QuickDateRange } from './DateRangePicker';
 export { DateTimePicker } from './DateTimePicker';
 export { default as Image } from './Image';

@@ -3,7 +3,7 @@ import { memo } from 'react';
 import classNames from 'classnames';
 
 import { loadLevelClassNames } from './constants';
-import { formatHours, formatPercent } from './format-utils';
+import { formatHours, formatLoad, formatPercent } from './format-utils';
 import type { LoadSummary } from './types';
 
 interface SummaryCellProps {
@@ -28,6 +28,7 @@ function SummaryCell({ summary, isToday, isPast, isWorkingDay = true, emphasis }
                 'font-semibold': emphasis,
             })}
             data-level={summary.level}
+            data-export-data={showValue ? formatLoad(summary.percent, summary.seconds) : undefined}
             title={showValue ? `${formatHours(summary.seconds)} planned of ${formatHours(summary.capacity)} capacity` : undefined}
         >
             {showValue && (

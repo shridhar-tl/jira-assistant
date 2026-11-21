@@ -19,6 +19,8 @@ export interface PivotReportDefinition {
     hasChanges?: boolean;
 }
 
+export type SortOrder = 'asc' | 'desc';
+
 export interface PivotFieldConfig {
     id: string;
     key: string;
@@ -39,6 +41,7 @@ export interface PivotFieldConfig {
     filterField?: string;
     useDistinct?: boolean;
     itemFilterValues?: string[];
+    sortOrder?: SortOrder;
 }
 
 export interface DateRangeSelection {
@@ -90,7 +93,7 @@ export interface ReportCell {
 }
 
 export interface ReportData {
-    header: ReportCell[][][];
+    header: ReportCell[][];
     body: ReportCell[][];
     footer: ReportCell[][];
 }

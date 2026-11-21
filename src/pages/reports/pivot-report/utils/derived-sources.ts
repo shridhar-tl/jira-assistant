@@ -1,3 +1,5 @@
+import { stringifyComment } from '@utils/worklog-utils';
+
 import { inject } from '@services';
 
 import type { JiraIssueLinkType } from '@types';
@@ -69,6 +71,16 @@ const linkedIssueTimeFields: Record<string, string> = {
     remainingEstimate: 'aggregatetimeestimate',
 };
 
+type CommentText = Parameters<typeof stringifyComment>[0];
+
+function withPlainText(items: unknown, prop: string): FieldValues[] | undefined {
+    if (!Array.isArray(items)) {
+        return undefined;
+    }
+
+    return items.map((item: FieldValues) => ({ ...item, [prop]: stringifyComment(item[prop] as CommentText) }));
+}
+
 function toLinkedIssues(fields: FieldValues): LinkedIssueItem[] {
     const links = Array.isArray(fields.issuelinks) ? (fields.issuelinks as JiraIssueLink[]) : [];
 
@@ -136,12 +148,12 @@ const derivedSources: Record<string, DerivedSource> = {
     worklog: {
         prop: 'worklog',
         queryFields: ['worklog'],
-        normalize: (fields) => (fields.worklog as { worklogs?: unknown[] } | undefined)?.worklogs,
+        normalize: (fields) => withPlainText((fields.worklog as { worklogs?: unknown[] } | undefined)?.worklogs, 'comment'),
     },
     comment: {
         prop: 'comment',
         queryFields: ['comment'],
-        normalize: (fields) => (fields.comment as { comments?: unknown[] } | undefined)?.comments,
+        normalize: (fields) => withPlainText((fields.comment as { comments?: unknown[] } | undefined)?.comments, 'body'),
     },
     linkedIssues: {
         prop: 'linkedIssues',

@@ -157,7 +157,7 @@ export default function PiPlannerPage() {
                     )}
                     <span className="flex-1" />
                     {doc && canEdit && <Button size="sm" layout="outlined" leftIcon={<i className="fa fa-pencil" />} label="Edit plan" onClick={() => setEditing(doc)} />}
-                    {doc && <Button size="sm" layout="outlined" leftIcon={<i className="fa fa-download" />} ariaLabel="Export" title="Export to Excel" onClick={handleExport} />}
+                    {doc && view !== 'board' && <Button size="sm" layout="outlined" leftIcon={<i className="fa fa-download" />} ariaLabel="Export" title="Export to Excel" onClick={handleExport} />}
                     {doc && <Button size="sm" layout="outlined" leftIcon={<i className={classNames('fa fa-refresh', { 'fa-spin': isLoading })} />} ariaLabel="Refresh" title="Reload from Jira" onClick={() => reloadPlanData()} />}
                     {settings && canEdit && <Button size="sm" layout="outlined" leftIcon={<i className="fa fa-cog" />} ariaLabel="Settings" title="Program settings" onClick={() => setShowSettings(true)} />}
                     <Button size="sm" layout="outlined" leftIcon={<i className="fa fa-question-circle" />} ariaLabel="Help" title={`How to use ${terms.plans.toLowerCase()}`} onClick={() => setShowHelp(true)} />

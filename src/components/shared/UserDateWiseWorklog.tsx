@@ -4,6 +4,7 @@ import { inject } from '@services';
 
 import { WorklogIndicator } from '@components';
 
+import { resolveDateRange } from '../../controls/DateRangePicker';
 import Link from '../../controls/Link';
 import { formatTs, getRowStatus } from '../../services/utils-service';
 
@@ -45,19 +46,8 @@ function UserDateWiseWorklog({ lastUpdated, settings, showContext, editWorklog, 
     useEffect(() => {
         (async () => {
             try {
-                const selDate = settings.dateRange;
-                if (!selDate) {
-                    setWorklogs([]);
-                    return;
-                }
-
-                if (!selDate.fromDate) {
-                    setWorklogs([]);
-                    return;
-                }
-
                 setLoader?.(true);
-                selDate.dateWise = true;
+                const selDate = { ...resolveDateRange(settings.dateRange), dateWise: true };
                 const result = await $worklog.getWorklogs(selDate);
                 result.forEach((b: any) => {
                     b.rowClass = getRowStatus(b);

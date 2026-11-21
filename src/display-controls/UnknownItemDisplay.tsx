@@ -10,7 +10,7 @@ interface UnknownItemDisplayProps {
 }
 
 function UnknownItemDisplay({ value, tag, ...rest }: UnknownItemDisplayProps) {
-    if (!value) return <BaseControl tag={tag} {...rest} />;
+    if (!value && value !== 0) return <BaseControl tag={tag} {...rest} />;
 
     const val = value?.text || value;
 

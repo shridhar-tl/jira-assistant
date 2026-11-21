@@ -69,12 +69,46 @@ interface Scope {
     fieldsMap: Record<string, any>;
     parameters: Record<string, any>;
     isLikeComparison?: boolean;
+    keepStringCase?: boolean;
 }
 
 interface FilterFn {
     (issue: any): any;
     returnsArrayOfValues?: boolean;
     isStaticValue?: boolean;
+    isDate?: boolean;
+}
+
+function toDateValue(value: unknown): unknown {
+    if (value instanceof Date) {
+        return value.getTime();
+    }
+
+    if (Array.isArray(value)) {
+        return value.map(toDateValue);
+    }
+
+    return typeof value === 'string' ? convertDateTime(value) : value;
+}
+
+function asDateOperand(fn: FilterFn): FilterFn {
+    const wrapped: FilterFn = (issue: Issue) => toDateValue(fn(issue));
+    wrapped.isStaticValue = fn.isStaticValue;
+    wrapped.returnsArrayOfValues = fn.returnsArrayOfValues;
+
+    return wrapped;
+}
+
+function asDateOperands(left: FilterFn, right: FilterFn): [FilterFn, FilterFn] {
+    if (left.isDate && !right.isDate) {
+        return [left, asDateOperand(right)];
+    }
+
+    if (right.isDate && !left.isDate) {
+        return [asDateOperand(left), right];
+    }
+
+    return [left, right];
 }
 
 const expressionType: Record<string, (expr: any, scope: Scope) => FilterFn> = {
@@ -113,20 +147,28 @@ function create_LeftRightExpression(expr: any, scope: Scope): FilterFn {
 function create_ComparisonBooleanPrimary(json: any, scope: Scope): FilterFn {
     const { left, right, operator } = json;
 
-    const leftFn = createFilterForObject(left, scope);
-    const rightFn = createFilterForObject(right, scope);
+    const [leftFn, rightFn] = asDateOperands(createFilterForObject(left, scope), createFilterForObject(right, scope));
 
     let oprFn: (issue: any) => any;
     if (leftFn.returnsArrayOfValues) {
         oprFn = createArrayOperatorFn(operator, leftFn, rightFn);
     } else if (rightFn.returnsArrayOfValues) {
-        oprFn = createArrayOperatorFn(operator, rightFn, leftFn);
+        oprFn = createArrayOperatorFn(mirroredOperators[operator] || operator, rightFn, leftFn);
     } else {
         oprFn = createOperatorFn(operator, leftFn, rightFn);
     }
 
     return (issue: any) => (issue && oprFn(issue) ? issue : undefined);
 }
+
+const mirroredOperators: Record<string, string> = { '>': '<', '>=': '<=', '<': '>', '<=': '>=' };
+
+const rangeComparers: Record<string, (left: RangeValue, right: RangeValue) => boolean> = {
+    '>': (a, b) => a > b,
+    '>=': (a, b) => a >= b,
+    '<': (a, b) => a < b,
+    '<=': (a, b) => a <= b,
+};
 
 function createOperatorFn(operator: string, leftFn: FilterFn, rightFn: FilterFn): (issue: any) => any {
     switch (operator) {
@@ -138,13 +180,10 @@ function createOperatorFn(operator: string, leftFn: FilterFn, rightFn: FilterFn)
             return (issue: any) => leftFn(issue) !== rightFn(issue);
 
         case '>':
-            return createRangeComparer(leftFn, rightFn, (a, b) => a > b);
         case '>=':
-            return createRangeComparer(leftFn, rightFn, (a, b) => a >= b);
         case '<':
-            return createRangeComparer(leftFn, rightFn, (a, b) => a < b);
         case '<=':
-            return createRangeComparer(leftFn, rightFn, (a, b) => a <= b);
+            return createRangeComparer(leftFn, rightFn, rangeComparers[operator]);
         default:
             return () => false; // This case should never happen, but just a warning fix
     }
@@ -168,6 +207,14 @@ function createRangeComparer(leftFn: FilterFn, rightFn: FilterFn, compare: (left
     };
 }
 
+function createAnyValueRangeComparer(valuesFn: FilterFn, rightFn: FilterFn, compare: (left: RangeValue, right: RangeValue) => boolean) {
+    return (issue: Issue) => {
+        const right = rightFn(issue);
+
+        return !isEmptyOperand(right) && (valuesFn(issue) as RangeValue[]).some((value) => !isEmptyOperand(value) && compare(value, right));
+    };
+}
+
 function createArrayOperatorFn(operator: string, leftFn: FilterFn, rightFn: FilterFn): (issue: any) => any {
     switch (operator) {
         case '=':
@@ -176,6 +223,12 @@ function createArrayOperatorFn(operator: string, leftFn: FilterFn, rightFn: Filt
         case '!=':
         case '<>':
             return (issue: any) => !leftFn(issue).includes(rightFn(issue));
+
+        case '>':
+        case '>=':
+        case '<':
+        case '<=':
+            return createAnyValueRangeComparer(leftFn, rightFn, rangeComparers[operator]);
         default:
             return () => false; // This case should never happen, but just a warning fix
     }
@@ -189,14 +242,18 @@ function create_BetweenPredicate(expr: any, scope: Scope): FilterFn {
 
     const leftFieldFn = createFilterForObject(leftField, scope);
 
-    const leftFn = createFilterForObject(left, scope);
-    const rightFn = createFilterForObject(right, scope);
+    const leftFn = withFieldType(leftFieldFn, createFilterForObject(left, scope));
+    const rightFn = withFieldType(leftFieldFn, createFilterForObject(right, scope));
 
     return (issue: any) => {
         const fieldValue = leftFieldFn(issue);
 
         return issue && !isEmptyOperand(fieldValue) && fieldValue >= leftFn(issue) && fieldValue <= rightFn(issue) ? issue : undefined;
     };
+}
+
+function withFieldType(fieldFn: FilterFn, valueFn: FilterFn): FilterFn {
+    return fieldFn.isDate && !valueFn.isDate ? asDateOperand(valueFn) : valueFn;
 }
 
 function create_InExpressionListPredicate(expr: any, scope: Scope): FilterFn {
@@ -210,7 +267,7 @@ function create_InExpressionListPredicate(expr: any, scope: Scope): FilterFn {
 function validate_ExpressionList(expr: any, scope: Scope, leftFn: FilterFn, hasNot: boolean): FilterFn {
     const { value } = expr;
 
-    let values: any[] = value.map((v: any) => createFilterForObject(v, scope));
+    let values: any[] = value.map((v: any) => withFieldType(leftFn, createFilterForObject(v, scope)));
 
     if (values.length === 1 && value[0].name?.toLowerCase() === 'parameters' && value[0].type === 'FunctionCall') {
         values = values[0]();
@@ -322,6 +379,7 @@ function handle_Identifier(expr: any, scope: Scope): FilterFn {
             return toComparableValues(values, keyField, converter);
         };
         fn.returnsArrayOfValues = true;
+        fn.isDate = isDate;
 
         return fn;
     }
@@ -338,7 +396,10 @@ function handle_Identifier(expr: any, scope: Scope): FilterFn {
     }
 
     if (!keyField) {
-        return (issue: any) => converter(issue?.[propName]);
+        const fn: FilterFn = (issue: any) => converter(issue?.[propName]);
+        fn.isDate = isDate;
+
+        return fn;
     } else if (Array.isArray(keyField)) {
         const fn: FilterFn = (issue: any) => {
             if (!issue) {
@@ -419,7 +480,8 @@ function handle_FunctionCall(expr: any, scope: Scope): FilterFn {
         params.splice(0, 1);
     }
 
-    const args: FilterFn[] = params.map((p: any) => createFilterForObject(p, scope));
+    const argScope: Scope = { ...scope, keepStringCase: true };
+    const args: FilterFn[] = params.map((p: any) => createFilterForObject(p, argScope));
 
     if (args?.length && args.some((a: FilterFn) => !a.isStaticValue)) {
         return (issue: any) =>
@@ -450,14 +512,16 @@ function handle_Prefix(expr: PrefixExpression): FilterFn {
     return func;
 }
 
-function getHardCodedValues(expr: any): FilterFn {
+function getHardCodedValues(expr: any, scope?: Scope): FilterFn {
     const { type, value } = expr;
     let valueToCompare: any = value;
 
     switch (type.toLowerCase()) {
-        case 'string':
-            valueToCompare = toComparableCase(value.substring(1, value.length - 1));
+        case 'string': {
+            const text = value.substring(1, value.length - 1);
+            valueToCompare = scope?.keepStringCase ? text : toComparableCase(text);
             break;
+        }
         case 'number':
             valueToCompare = Number(value);
             break;

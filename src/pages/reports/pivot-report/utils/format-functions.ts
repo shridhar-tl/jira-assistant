@@ -22,7 +22,7 @@ const aggregationFunction: AggregationFunction[] = [
     { value: 'min', label: 'Min', allowedFor: ['number', 'timespent', 'date', 'datetime'] },
     { value: 'max', label: 'Max', allowedFor: ['number', 'timespent', 'date', 'datetime'] },
     { value: countFuncName, label: 'Count', allowDistinct: true },
-    { value: 'merge', label: 'Merge (CSV)', allowedFor: ['string'] },
+    { value: 'merge', label: 'Merge (CSV)', allowedFor: ['string', 'issuekey'] },
     { value: defaultAggregationFuncName, label: 'First value' },
     { value: 'last', label: 'Last value' },
 ];
