@@ -28,8 +28,19 @@ interface BuilderPageState {
 
 const untitledName = 'Untitled report';
 
+let savedSnapshot = '';
+
+function snapshotOf(definition: ReportDefinition): string {
+    return JSON.stringify({ ...definition, metadata: { ...definition.metadata, updatedAt: undefined } });
+}
+
+function markSaved(definition: ReportDefinition): ReportDefinition {
+    savedSnapshot = snapshotOf(definition);
+    return definition;
+}
+
 function blankReport(): SavedBuilderReport {
-    return { queryName: '', reportType: builderReportType, definition: createEmptyDefinition(untitledName) };
+    return { queryName: '', reportType: builderReportType, definition: markSaved(createEmptyDefinition(untitledName)) };
 }
 
 export const useBuilderPage = create<BuilderPageState>(() => ({
@@ -63,7 +74,7 @@ export async function loadPageSample(sampleId: string): Promise<void> {
     if (loadId !== latestLoad) return;
 
     useBuilderPage.setState(({ loadToken }) => ({
-        report: { queryName: sample.title, reportType: builderReportType, sampleId, definition },
+        report: { queryName: sample.title, reportType: builderReportType, sampleId, definition: markSaved(definition) },
         isDirty: false,
         isLoading: false,
         mode: 'view',
@@ -105,7 +116,7 @@ export async function loadPageReport(reportId: number | undefined, keepMode?: bo
     }
 
     useBuilderPage.setState(({ loadToken, mode }) => ({
-        report,
+        report: { ...report, definition: markSaved(report.definition) },
         isDirty: false,
         isLoading: false,
         mode: keepMode ? mode : 'view',
@@ -115,7 +126,9 @@ export async function loadPageReport(reportId: number | undefined, keepMode?: bo
 }
 
 export function updateDefinition(definition: ReportDefinition): void {
-    useBuilderPage.setState(({ report }) => (report.definition === definition ? {} : { report: { ...report, definition }, isDirty: true }));
+    useBuilderPage.setState(({ report }) =>
+        report.definition === definition ? {} : { report: { ...report, definition }, isDirty: snapshotOf(definition) !== savedSnapshot },
+    );
 }
 
 export function setPageMode(mode: BuilderPageMode): void {
@@ -131,7 +144,7 @@ export async function savePageReport(queryName?: string, asCopy?: boolean): Prom
         report: {
             ...toSave,
             id,
-            definition: { ...toSave.definition, metadata: { ...toSave.definition.metadata, title: toSave.queryName } },
+            definition: markSaved({ ...toSave.definition, metadata: { ...toSave.definition.metadata, title: toSave.queryName } }),
         },
         isDirty: false,
     });
