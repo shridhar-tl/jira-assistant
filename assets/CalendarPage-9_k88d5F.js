@@ -1,1 +1,0 @@
-import{t as e}from"./Calendar-BLfhEF-7.js";import{t}from"./vendor-react-o77v2-Bu.js";var n=t();function r(){return(0,n.jsx)(`div`,{className:`calendar-page h-full flex flex-col`,children:(0,n.jsx)(e,{isGadget:!1})})}export{r as default};
