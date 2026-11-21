@@ -176,10 +176,11 @@ export default function Calendar({
                 dateStarted: start,
                 timeSpent: `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`,
                 description: meeting.subject || meeting.summary,
-                parentId: parseInt(meeting.id) || undefined,
+                parentId: meeting.id,
             };
 
             if (ticketNo) {
+                obj.ticketNo = ticketNo;
                 try {
                     const entry = await $worklog.saveWorklog(obj as Worklog);
                     addWorklog(entry);

@@ -26,7 +26,7 @@ function CascadeSelect({ value, tag, tagProps, className, settings, count, ...re
 
     return (
         <BaseControl tag={tag} tagProps={tagProps} className={className} settings={settings} count={count} {...rest}>
-            {valueText} - {childText}
+            {childText ? `${valueText} - ${childText}` : valueText}
         </BaseControl>
     );
 }

@@ -80,7 +80,7 @@ export interface Worklog {
     worklogId?: number;
     isUploaded: boolean;
     uploadImmediately?: boolean;
-    parentId?: number;
+    parentId?: string | number;
     summary?: string;
     copy?: boolean;
     author?: JiraUser;
@@ -130,7 +130,7 @@ export interface WorklogCalendarEntry {
     end: Date;
     editable: boolean;
     sourceObject: Worklog;
-    parentId?: number;
+    parentId?: string | number;
 }
 
 export interface DateWiseWorklog {

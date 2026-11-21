@@ -81,7 +81,7 @@ export function getComponentFor(type: string): { Component: any; props?: any } {
             return { Component: TimeSpentDisplay };
         case 'timetracking':
             return { Component: TimeTrackDisplay };
-        case 'cascadeselect':
+        case 'option-with-child':
             return { Component: CascadeSelect };
         case 'comments-page':
         case 'comment':

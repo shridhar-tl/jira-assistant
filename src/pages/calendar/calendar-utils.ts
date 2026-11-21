@@ -105,6 +105,7 @@ export function createWorklogEvent(entry: WorklogCalendarEntry, settings: any): 
         borderColor: settings.worklogColor || '#9a9cff',
         editable: entry.editable,
         resizable: entry.editable,
+        parentId: entry.parentId,
     };
 }
 

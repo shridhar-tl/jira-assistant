@@ -71,8 +71,9 @@ export function toGroupKey(value: unknown): string {
 
     const obj = value as Record<string, unknown>;
     const prop = groupKeyProps.find((p) => obj[p] !== undefined && obj[p] !== null);
+    const key = prop ? String(obj[prop]) : JSON.stringify(value);
 
-    return prop ? String(obj[prop]) : JSON.stringify(value);
+    return obj.child && typeof obj.child === 'object' ? `${key}>${toGroupKey(obj.child)}` : key;
 }
 
 export function countValues(values: unknown[], distinct?: boolean) {

@@ -50,6 +50,8 @@ function getTagRenderer(obj: any, value: any): ReactNode {
         return <TagsDisplay value={value} tagProp="value" tag="span" />;
     } else if (obj['name']) {
         return <TagsDisplay value={value} tagProp="name" tag="span" />;
+    } else if (obj['displayName']) {
+        return <TagsDisplay value={value} tagProp="displayName" tag="span" />;
     } else {
         return JSON.stringify(obj);
     }
