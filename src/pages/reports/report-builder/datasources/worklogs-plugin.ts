@@ -1,11 +1,12 @@
 import { endOfDay, format, startOfDay } from 'date-fns';
-import { ClockIcon } from 'fluxo-ui/icons';
 
 import { inject } from '@services';
 
+import { ClockIcon } from '@components/icons';
 import type { DatasetField, DatasourceFetchContext, DatasourcePlugin } from '@components/report-builder';
 
 import { convertToDate } from '@utils/helpers';
+import { stringifyComment } from '@utils/worklog-utils';
 
 import { normalizeIssue, selectedFieldToDataset, worklogItemFields } from '../config/jira-fields';
 import type { JiraIssue, SelectedIssueField } from '../config/jira-fields';
@@ -33,7 +34,7 @@ interface WorklogEntry {
     author?: { accountId?: string; name?: string; emailAddress?: string; key?: string; displayName?: string };
     started?: string;
     timeSpentSeconds?: number;
-    comment?: string;
+    comment?: Parameters<typeof stringifyComment>[0];
 }
 
 interface UserGroupRecord {
@@ -160,7 +161,7 @@ export const worklogsDatasourcePlugin: DatasourcePlugin = {
                         started: w.started,
                         timeSpentSeconds: w.timeSpentSeconds ?? 0,
                         hours: (w.timeSpentSeconds ?? 0) / 3600,
-                        comment: w.comment ?? '',
+                        comment: stringifyComment(w.comment),
                         date: format(started, 'yyyy-MM-dd'),
                     };
                 });

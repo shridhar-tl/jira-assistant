@@ -10,6 +10,8 @@ export interface SavedBuilderReport {
     queryName: string;
     reportType: typeof builderReportType;
     definition: ReportDefinition;
+    /** Id of the sample the report was created from. */
+    sampleId?: string;
     uniqueId?: string;
     dateCreated?: Date;
     dateUpdated?: Date;

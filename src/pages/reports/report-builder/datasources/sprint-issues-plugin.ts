@@ -1,7 +1,6 @@
-import { LayersIcon } from 'fluxo-ui/icons';
-
 import type { AgileBoard, SprintSelectionMap } from '@components';
 
+import { LayersIcon } from '@components/icons';
 import type { DatasourcePlugin } from '@components/report-builder';
 
 import { getIssueSchema, type SelectedIssueField } from '../config/jira-fields';

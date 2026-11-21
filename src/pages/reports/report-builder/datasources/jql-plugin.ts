@@ -1,5 +1,4 @@
-import { FilterIcon } from 'fluxo-ui/icons';
-
+import { FilterIcon } from '@components/icons';
 import type { DatasourcePlugin } from '@components/report-builder';
 
 import type { SelectedIssueField } from '../config/jira-fields';

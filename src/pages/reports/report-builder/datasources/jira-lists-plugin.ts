@@ -1,5 +1,4 @@
-import { ListIcon } from 'fluxo-ui/icons';
-
+import { ListIcon } from '@components/icons';
 import type { DatasourcePlugin } from '@components/report-builder';
 
 import { getJiraList } from './jira-lists';

@@ -6,7 +6,7 @@ import { GadgetContainer, useBaseGadget } from '@/gadgets/BaseGadget';
 
 import { inject } from '@services';
 
-import { Button } from '@components';
+import { Button, SampleReportBanner } from '@components';
 
 import ReportSelectList from '@components/ReportSelectList';
 
@@ -16,7 +16,7 @@ import SaveReportDialog from '@dialogs/SaveReportDialog';
 import DatasourceDialogHost from './datasources/DatasourceDialogHost';
 import { builderReportType } from './report-store';
 import ReportDesigner from './ReportDesigner';
-import { deletePageReport, loadPageReport, savePageReport, setPageMode, useBuilderPage } from './store/builder-page-store';
+import { deletePageReport, loadPageReport, loadPageSample, savePageReport, setPageMode, useBuilderPage } from './store/builder-page-store';
 import BuilderReportViewer from './viewer/BuilderReportViewer';
 
 interface BuilderNavigationState {
@@ -27,19 +27,21 @@ const pageTitle = 'Report Builder';
 const unsavedChangesMessage = 'You have unsaved changes in this report. Do you want to discard them?';
 
 export default function ReportBuilderPage() {
-    const { reportId, userId } = useParams<{ reportId?: string; userId?: string }>();
+    const { reportId, sampleId, userId } = useParams<{ reportId?: string; sampleId?: string; userId?: string }>();
     const { state: navigationState } = useLocation();
     const navigate = useNavigate();
     const report = useBuilderPage((s) => s.report);
     const mode = useBuilderPage((s) => s.mode);
     const isDirty = useBuilderPage((s) => s.isDirty);
     const isLoading = useBuilderPage((s) => s.isLoading);
+    const isSample = useBuilderPage((s) => !s.report.id && !!s.report.sampleId);
     const [saveDialogOpen, setSaveDialogOpen] = useState(false);
     const reportPath = `/${userId}/reports/builder`;
 
     useEffect(() => {
-        loadPageReport(reportId ? parseInt(reportId) : undefined, (navigationState as BuilderNavigationState | null)?.keepEditing);
-    }, [reportId]); // eslint-disable-line react-hooks/exhaustive-deps
+        if (sampleId) loadPageSample(sampleId);
+        else loadPageReport(reportId ? parseInt(reportId) : undefined, (navigationState as BuilderNavigationState | null)?.keepEditing);
+    }, [reportId, sampleId]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const gadgetHook = useBaseGadget(
         { isGadget: false },
@@ -60,10 +62,12 @@ export default function ReportBuilderPage() {
 
     const handleNew = useCallback(() => {
         confirmDiscard(() => {
-            if (reportId) navigate(reportPath);
+            if (reportId || sampleId) navigate(`${reportPath}/new`);
             else loadPageReport(undefined);
         });
-    }, [confirmDiscard, navigate, reportId, reportPath]);
+    }, [confirmDiscard, navigate, reportId, sampleId, reportPath]);
+
+    const goToReportsHome = useCallback(() => confirmDiscard(() => navigate(reportPath)), [confirmDiscard, navigate, reportPath]);
 
     const persist = useCallback(
         async (queryName?: string, asCopy?: boolean) => {
@@ -100,6 +104,7 @@ export default function ReportBuilderPage() {
 
     const customActions = (
         <>
+            <Button layout="plain" size="sm" leftIcon={<i className="fa fa-th-large" />} onClick={goToReportsHome} title="All report builder reports" />
             <ReportSelectList reportType={builderReportType} reportId={reportId} reportPath={reportPath} />
             {isDirty && <span className="hidden px-2 text-xs text-(--text-secondary) sm:inline">Unsaved changes</span>}
             <Button layout="plain" size="sm" leftIcon={<i className="fa fa-plus" />} onClick={handleNew} title="Create a new report" />
@@ -151,16 +156,21 @@ export default function ReportBuilderPage() {
     );
 
     return (
-        <div className="flex" style={{ height: 'calc(100vh - 60px)' }}>
+        <div className="flex h-[calc(100vh-60px)]">
             <div className="min-w-0 flex-1">
                 <GadgetContainer isGadget={false} gadgetHook={gadgetHook} customActions={customActions} config={{ hideRefresh: true }}>
-                    {isLoading ? (
-                        <div className="flex items-center justify-center p-8 text-sm text-(--text-secondary)">Loading report…</div>
-                    ) : mode === 'design' ? (
-                        <ReportDesigner />
-                    ) : (
-                        <BuilderReportViewer key={report.id ?? 'new'} definition={report.definition} />
-                    )}
+                    <div className="flex h-full min-h-0 flex-col">
+                        {isSample && !isLoading && <SampleReportBanner title={report.queryName} onSave={() => setSaveDialogOpen(true)} onBack={goToReportsHome} />}
+                        <div className="min-h-0 flex-1">
+                            {isLoading ? (
+                                <div className="flex items-center justify-center p-8 text-sm text-(--text-secondary)">Loading report…</div>
+                            ) : mode === 'design' ? (
+                                <ReportDesigner />
+                            ) : (
+                                <BuilderReportViewer key={report.id ?? report.sampleId ?? 'new'} definition={report.definition} />
+                            )}
+                        </div>
+                    </div>
                 </GadgetContainer>
             </div>
             <DatasourceDialogHost />

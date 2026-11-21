@@ -19,7 +19,7 @@ import type { SprintIssuesDatasourceConfig } from '../sprint-issues-plugin';
 import type { SourceMode } from '../sprint-resolution';
 
 import ConfigureDialogShell from './ConfigureDialogShell';
-import { getApplyLabel, getDialogTitle, getFieldAliasError, getNameError } from './dialog-utils';
+import { getApplyLabel, getDialogTitle, getExpressionError, getFieldAliasError, getNameError, getTemplateError } from './dialog-utils';
 import DialogField from './DialogField';
 import ExpressionInput from './ExpressionInput';
 import IssueFieldsPicker from './IssueFieldsPicker';
@@ -55,11 +55,10 @@ export default function SprintIssuesDialog({ request }: SprintIssuesDialogProps)
             ? getSelectedBoardIds(selection).length === 0
                 ? 'Choose the boards and sprints.'
                 : null
-            : sprintExpression.trim()
-              ? null
-              : 'Enter the expression returning the sprints.';
+            : getExpressionError(sprintExpression, 'Enter the expression returning the sprints.');
+    const jqlError = getTemplateError(jql);
     const fieldsError = fields.length === 0 ? 'Choose at least one field.' : getFieldAliasError(fields);
-    const canApply = !nameError && !sourceError && !fieldsError;
+    const canApply = !nameError && !sourceError && !fieldsError && !jqlError;
 
     const apply = () => {
         const config: SprintIssuesDatasourceConfig = {
@@ -132,6 +131,7 @@ export default function SprintIssuesDialog({ request }: SprintIssuesDialogProps)
                 label="Additional JQL filter (optional)"
                 htmlFor={jqlId}
                 helpText={<>e.g. issuetype in (Story, Bug). Supports {'{{ expression }}'} templates.</>}
+                error={jqlError}
             >
                 <TextArea id={jqlId} value={jql} onChange={(e) => setJql(e.value)} rows={2} />
             </DialogField>

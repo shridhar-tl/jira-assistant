@@ -10,7 +10,7 @@ import { closeConfigureDialog } from '../configure-dialog-store';
 import type { WorklogUserMode, WorklogsDatasourceConfig } from '../worklogs-plugin';
 
 import ConfigureDialogShell from './ConfigureDialogShell';
-import { getApplyLabel, getDialogTitle, getFieldAliasError, getNameError } from './dialog-utils';
+import { getApplyLabel, getDialogTitle, getExpressionError, getFieldAliasError, getNameError, getTemplateError } from './dialog-utils';
 import DialogField from './DialogField';
 import ExpressionInput from './ExpressionInput';
 import IssueFieldsPicker from './IssueFieldsPicker';
@@ -60,15 +60,17 @@ export default function WorklogsDialog({ request }: WorklogsDialogProps) {
     );
 
     const nameError = getNameError(name, request);
-    const dateError = !fromExpression.trim() || !toExpression.trim() ? 'Enter both the start and end date expressions.' : null;
+    const fromError = getExpressionError(fromExpression, 'Enter the expression of the start date.');
+    const toError = getExpressionError(toExpression, 'Enter the expression of the end date.');
     const userError =
         userMode === 'groups' && groupNames.length === 0
             ? 'Choose at least one user group.'
-            : userMode === 'expression' && !userExpression.trim()
-              ? 'Enter the expression returning the users.'
+            : userMode === 'expression'
+              ? getExpressionError(userExpression, 'Enter the expression returning the users.')
               : null;
+    const jqlError = getTemplateError(jql);
     const fieldsError = getFieldAliasError(issueFields);
-    const canApply = !nameError && !dateError && !userError && !fieldsError;
+    const canApply = !nameError && !fromError && !toError && !userError && !fieldsError && !jqlError;
 
     const apply = () => {
         const config: WorklogsDatasourceConfig = {
@@ -95,10 +97,10 @@ export default function WorklogsDialog({ request }: WorklogsDialogProps) {
             error={nameError}
         >
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <DialogField label="From" htmlFor={fromId} error={dateError}>
+                <DialogField label="From" htmlFor={fromId} error={fromError}>
                     <ExpressionInput id={fromId} value={fromExpression} onChange={setFrom} placeholder="StartOf('month', Today())" />
                 </DialogField>
-                <DialogField label="To" htmlFor={toId}>
+                <DialogField label="To" htmlFor={toId} error={toError}>
                     <ExpressionInput id={toId} value={toExpression} onChange={setTo} placeholder="EndOf('month', Today())" />
                 </DialogField>
             </div>
@@ -135,6 +137,7 @@ export default function WorklogsDialog({ request }: WorklogsDialogProps) {
                 label="Additional JQL filter (optional)"
                 htmlFor={jqlId}
                 helpText={<>e.g. project = ABC. Supports {'{{ expression }}'} templates.</>}
+                error={jqlError}
             >
                 <TextArea id={jqlId} value={jql} onChange={(e) => setJql(e.value)} rows={2} />
             </DialogField>

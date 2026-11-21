@@ -1,8 +1,31 @@
-import type { DatasourceConfigureRequest } from '@components/report-builder';
+import { validateExpression, type DatasourceConfigureRequest } from '@components/report-builder';
 
 import type { SelectedIssueField } from '../../config/jira-fields';
 
 const identifierPattern = /^[A-Za-z_][A-Za-z0-9_]*$/;
+const templatePattern = /\{\{([\s\S]*?)\}\}/g;
+
+export function getExpressionError(value: string, emptyMessage: string): string | null {
+    const trimmed = value.trim();
+    if (!trimmed) return emptyMessage;
+    const [first] = validateExpression(trimmed);
+    return first ? `Invalid expression: ${first.message}` : null;
+}
+
+/** Checks the {{ expression }} placeholders of a JQL template. */
+export function getTemplateError(template: string | undefined): string | null {
+    if (!template) return null;
+    const opens = template.split('{{').length - 1;
+    const closes = template.split('}}').length - 1;
+    if (opens !== closes) return 'Every {{ must be closed with }}.';
+    for (const match of template.matchAll(templatePattern)) {
+        const expression = match[1].trim();
+        if (!expression) return 'A {{ }} placeholder is empty.';
+        const [first] = validateExpression(expression);
+        if (first) return `Invalid placeholder {{ ${expression} }}: ${first.message}`;
+    }
+    return null;
+}
 
 export function getNameError(name: string, request: DatasourceConfigureRequest): string | null {
     if (!identifierPattern.test(name)) return 'Enter a name using letters, digits and underscores, starting with a letter.';

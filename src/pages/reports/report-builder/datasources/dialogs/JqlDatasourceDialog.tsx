@@ -8,7 +8,7 @@ import { closeConfigureDialog } from '../configure-dialog-store';
 import type { JqlDatasourceConfig } from '../jql-plugin';
 
 import ConfigureDialogShell from './ConfigureDialogShell';
-import { getApplyLabel, getDialogTitle, getFieldAliasError, getNameError } from './dialog-utils';
+import { getApplyLabel, getDialogTitle, getFieldAliasError, getNameError, getTemplateError } from './dialog-utils';
 import DialogField from './DialogField';
 import IssueFieldsPicker from './IssueFieldsPicker';
 import { useParameterHint } from './use-parameter-hint';
@@ -30,8 +30,9 @@ export default function JqlDatasourceDialog({ request }: JqlDatasourceDialogProp
 
     const nameError = getNameError(name, request);
     const fieldsError = fields.length === 0 ? 'Choose at least one field.' : getFieldAliasError(fields);
-    const jqlError = jql.trim() ? null : 'Enter the JQL query.';
-    const canApply = !nameError && !fieldsError && !jqlError;
+    const jqlError = jql.trim() ? getTemplateError(jql) : 'Enter the JQL query.';
+    const maxResultsError = maxResults !== undefined && (!Number.isInteger(maxResults) || maxResults < 0) ? 'Enter a whole number of issues, or leave it empty.' : null;
+    const canApply = !nameError && !fieldsError && !jqlError && !maxResultsError;
 
     const apply = () => {
         const config: JqlDatasourceConfig = { jql: jql.trim(), fields, maxResults: maxResults && maxResults > 0 ? maxResults : undefined };
@@ -70,7 +71,7 @@ export default function JqlDatasourceDialog({ request }: JqlDatasourceDialogProp
             <DialogField label="Fields" error={fieldsError}>
                 <IssueFieldsPicker value={fields} onChange={setFields} autoSelectDefaults={request.mode === 'create'} />
             </DialogField>
-            <DialogField label="Maximum issues" htmlFor={maxResultsInputId} helpText="Leave empty to load every matching issue.">
+            <DialogField label="Maximum issues" htmlFor={maxResultsInputId} helpText="Leave empty to load every matching issue." error={maxResultsError}>
                 <NumericInput
                     id={maxResultsInputId}
                     value={maxResults}

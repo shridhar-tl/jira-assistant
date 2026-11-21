@@ -13,6 +13,7 @@ import {
     toAvailableSubReports,
     type SavedBuilderReport,
 } from '../report-store';
+import { createSampleDefinition, getSampleReport } from '../samples';
 
 export type BuilderPageMode = 'design' | 'view';
 
@@ -45,6 +46,30 @@ let latestLoad = 0;
 export async function refreshSubReports(): Promise<void> {
     const reports = await listBuilderReports();
     useBuilderPage.setState(({ report }) => ({ subReports: toAvailableSubReports(reports, report.id) }));
+}
+
+export async function loadPageSample(sampleId: string): Promise<void> {
+    const loadId = ++latestLoad;
+    const sample = getSampleReport(sampleId);
+    if (!sample) {
+        const { $message } = inject('MessageService');
+        $message.error(`The sample report "${sampleId}" does not exist.`, 'Sample not found');
+        await loadPageReport(undefined);
+        return;
+    }
+
+    useBuilderPage.setState({ isLoading: true });
+    const definition = await createSampleDefinition(sample);
+    if (loadId !== latestLoad) return;
+
+    useBuilderPage.setState(({ loadToken }) => ({
+        report: { queryName: sample.title, reportType: builderReportType, sampleId, definition },
+        isDirty: false,
+        isLoading: false,
+        mode: 'view',
+        loadToken: loadToken + 1,
+    }));
+    await refreshSubReports();
 }
 
 export async function loadPageReport(reportId: number | undefined, keepMode?: boolean): Promise<void> {

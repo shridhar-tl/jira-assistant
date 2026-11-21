@@ -10,7 +10,7 @@ import type { SourceMode } from '../sprint-resolution';
 import { sprintStates, type SprintStateName, type SprintsDatasourceConfig } from '../sprints-plugin';
 
 import ConfigureDialogShell from './ConfigureDialogShell';
-import { getApplyLabel, getDialogTitle, getNameError } from './dialog-utils';
+import { getApplyLabel, getDialogTitle, getExpressionError, getNameError } from './dialog-utils';
 import DialogField from './DialogField';
 import ExpressionInput from './ExpressionInput';
 import SourceModeToggle from './SourceModeToggle';
@@ -44,9 +44,7 @@ export default function SprintsDialog({ request }: SprintsDialogProps) {
             ? boards.length === 0
                 ? 'Choose at least one board.'
                 : null
-            : boardExpression.trim()
-              ? null
-              : 'Enter the expression returning the boards.';
+            : getExpressionError(boardExpression, 'Enter the expression returning the boards.');
     const statesError = states.length === 0 ? 'Choose at least one sprint state.' : null;
     const canApply = !nameError && !sourceError && !statesError;
 

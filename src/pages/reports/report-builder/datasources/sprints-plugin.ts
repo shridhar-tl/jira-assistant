@@ -1,7 +1,6 @@
-import { FlagIcon } from 'fluxo-ui/icons';
-
 import type { AgileBoard } from '@components';
 
+import { FlagIcon } from '@components/icons';
 import type { DatasetField, DatasourcePlugin } from '@components/report-builder';
 
 import { openConfigureDialog } from './configure-dialog-store';
