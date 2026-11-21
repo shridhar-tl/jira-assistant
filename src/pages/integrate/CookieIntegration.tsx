@@ -180,7 +180,7 @@ function CookieIntegration({ setAuthType }: CookieIntegrationProps) {
                     useOAuth();
                     break;
                 case 4: // Use Basic Auth
-                    navigate('/integrate/basic');
+                    navigate('/integrate/basic/1');
                     break;
             }
         },
@@ -246,6 +246,7 @@ function CookieIntegration({ setAuthType }: CookieIntegrationProps) {
                 isLoading={isLoading}
                 disabled={!jiraUrl.trim() || isLoading}
                 onClick={integrate}
+                data-test-id="cookie-integrate"
                 className="w-full"
             >
                 Integrate

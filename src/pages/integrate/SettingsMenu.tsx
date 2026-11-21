@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 
 const settingsMenuItems = [
-    { label: 'Import Settings', icon: 'fa fa-upload' },
-    { label: 'Options', icon: 'fa fa-cogs' },
+    { label: 'Import Settings', icon: 'fa fa-upload', testId: 'integrate-import-settings' },
+    { label: 'Options', icon: 'fa fa-cogs', testId: 'integrate-options' },
     { separator: true },
-    { label: 'Use Jira OAuth', icon: 'fa fa-external-link' },
-    { label: 'Use Basic Auth', icon: 'fa fa-user' },
+    { label: 'Use Jira OAuth', icon: 'fa fa-external-link', testId: 'integrate-oauth' },
+    { label: 'Use Basic Auth', icon: 'fa fa-user', testId: 'integrate-basic' },
 ] as const;
 
 function SettingsMenu({ onItemClick }: { onItemClick: (index: number) => void }) {
@@ -33,6 +33,7 @@ function SettingsMenu({ onItemClick }: { onItemClick: (index: number) => void })
                 className="text-blue-600 hover:text-blue-800 text-lg cursor-pointer p-1 transition-colors"
                 onClick={() => setOpen(!open)}
                 title="Click to show more options"
+                data-test-id="integrate-settings"
             >
                 <i className="fa fa-cogs" />
             </button>
@@ -44,6 +45,7 @@ function SettingsMenu({ onItemClick }: { onItemClick: (index: number) => void })
                         ) : (
                             <button
                                 key={index}
+                                data-test-id={item.testId}
                                 className="w-full text-left px-4 py-2 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-hover)] transition-colors flex items-center gap-2 cursor-pointer"
                                 onClick={() => {
                                     onItemClick(index);

@@ -40,7 +40,7 @@ export default function UserRow({ groupIndex, groupUserCount, user: u, colSpan, 
 
     const uid = getUserName(u);
     const expandKey = `${boardId}_${groupIndex}_${uid}`;
-    const expanded = isUserExpanded(userExpnState, expandKey, expandUsers, groupUserCount);
+    const expanded = isUserExpanded(userExpnState, expandKey, expandUsers, groupUserCount, u.tickets?.length || 0);
 
     const detailedDisp = userDisplayFormat !== '1';
 

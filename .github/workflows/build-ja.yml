@@ -36,7 +36,13 @@ jobs:
       uses: actions/setup-node@v7
       with:
         node-version: ${{ matrix.node-version }}
-    - run: npm install --force
+    - name: Install packages
+      run: |
+        rm -f package-lock.json
+        npm install --force
+    - name: Extract version
+      id: extract_version
+      uses: Saionaro/extract-package-version@v1.4.0
     - run: npm run build-web
     - run: git config --global user.name 'GitHub Web Deploy CI'
     - run: git config --global user.email 'shridhar.tl@gmail.com'
@@ -45,12 +51,55 @@ jobs:
     - run: npm run build
     - run: git push origin --delete  ja-extn
     - run: npm run publish-extn
-    - name: Extract version
-      id: extract_version
-      uses: Saionaro/extract-package-version@v1.4.0
 
     - name: Save build package
       uses: actions/upload-artifact@v7
       with:
         name: JA_Build_${{ steps.extract_version.outputs.version }}
         path: dist/
+
+    - name: Commit lock file
+      if: github.ref == 'refs/heads/package'
+      env:
+        JA_VERSION: ${{ steps.extract_version.outputs.version }}
+      run: |
+        git add -f package-lock.json
+        if git diff --cached --quiet; then
+          echo "package-lock.json is unchanged"
+        else
+          git commit -m "Update package-lock.json with packages used for v$JA_VERSION build [skip ci]"
+          git push origin HEAD:refs/heads/package || echo "::warning::Could not push package-lock.json to the package branch. The build tag still includes it."
+        fi
+
+    - name: Tag build
+      if: github.ref == 'refs/heads/package'
+      env:
+        TZ: Asia/Kolkata
+        JA_VERSION: ${{ steps.extract_version.outputs.version }}
+      run: |
+        TAG_NAME="JA_$(date +%Y%m%d)_v${JA_VERSION//./_}"
+        git tag -f -a "$TAG_NAME" -m "Build v$JA_VERSION"
+        git push -f origin "refs/tags/$TAG_NAME"
+        echo "Created tag $TAG_NAME"
+
+    - name: Prepare source package
+      env:
+        JA_VERSION: ${{ steps.extract_version.outputs.version }}
+      run: |
+        SRC_DIR="$RUNNER_TEMP/ja-src"
+        mkdir -p "$SRC_DIR"
+        git archive HEAD | tar -x -C "$SRC_DIR"
+        cp package-lock.json "$SRC_DIR/"
+        rm -rf "$SRC_DIR/docs" "$SRC_DIR/.github" "$SRC_DIR/.mcp.json" "$SRC_DIR/README.md"
+        if [ -f "$SRC_DIR/REVIEWERS_README.md" ]; then
+          mv "$SRC_DIR/REVIEWERS_README.md" "$SRC_DIR/README.md"
+        fi
+        echo "SRC_DIR=$SRC_DIR" >> "$GITHUB_ENV"
+        echo "SRC_NAME=JA_SRC_V${JA_VERSION//./_}" >> "$GITHUB_ENV"
+
+    - name: Save source package
+      uses: actions/upload-artifact@v7
+      with:
+        name: ${{ env.SRC_NAME }}
+        path: ${{ env.SRC_DIR }}
+        include-hidden-files: true

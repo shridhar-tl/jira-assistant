@@ -33,7 +33,8 @@ const isExtnBuild = buildMode === 'EXTN' || buildMode === '';
 const variantExtensions = ['.tsx', '.ts']; //, '.jsx', '.js'
 const variantSuffixes = ['web', 'app', 'plugin']; // ToDo: This has to be looked at: , 'common', 'background', 'menu', 'register'
 
-const srcDir = path.resolve(__dirname, './src');
+const projectDir = fs.realpathSync.native(__dirname);
+const srcDir = path.resolve(projectDir, './src');
 
 const aliases: Record<string, string> = {
     '@': srcDir,
@@ -118,12 +119,12 @@ function rewriteHtmlEntryVariants(html: string): string {
     }
 
     return html.replace(/(<script\b[^>]*\bsrc=")(\/[^"]+)(")/g, (match, prefix: string, src: string, suffix: string) => {
-        const variantPath = tryVariantPath(path.resolve(__dirname, `.${src}`));
+        const variantPath = tryVariantPath(path.resolve(projectDir, `.${src}`));
         if (!variantPath) {
             return match;
         }
 
-        const variantSrc = `/${path.relative(__dirname, variantPath).split(path.sep).join('/')}`;
+        const variantSrc = `/${path.relative(projectDir, variantPath).split(path.sep).join('/')}`;
         return `${prefix}${variantSrc}${suffix}`;
     });
 }
@@ -142,7 +143,7 @@ function buildVariantPlugin(): Plugin {
             }
 
             if (source.startsWith('/') && !source.startsWith('//')) {
-                const resolved = path.resolve(__dirname, `.${source}`);
+                const resolved = path.resolve(projectDir, `.${source}`);
                 return tryVariantPath(resolved);
             }
 
@@ -249,7 +250,7 @@ function extnExtrasBuilder(): Plugin {
                 // background.ts has no DOM; any CSS pulled in transitively (e.g. via UI-aware
                 // services that the background script never actually uses for rendering) is dead
                 // weight in the service worker bundle, so discard it.
-                const backgroundCss = path.resolve(__dirname, 'dist/background.css');
+                const backgroundCss = path.resolve(projectDir, 'dist/background.css');
                 if (fs.existsSync(backgroundCss)) {
                     fs.unlinkSync(backgroundCss);
                 }
@@ -262,7 +263,7 @@ function extnExtrasBuilder(): Plugin {
 }
 
 function resolveLocalPokerRoot(envPath: string | undefined): string | null {
-    const root = envPath ? path.resolve(__dirname, envPath) : null;
+    const root = envPath ? path.resolve(projectDir, envPath) : null;
     return root && fs.existsSync(path.join(root, 'src/embed/index.ts')) ? root : null;
 }
 
@@ -277,7 +278,7 @@ function pokerSource(): Plugin {
                 return;
             }
 
-            const localModules = path.resolve(__dirname, 'node_modules');
+            const localModules = path.resolve(projectDir, 'node_modules');
             const shared = ['react', 'react-dom', 'react-router', 'classnames'].reduce<Record<string, string>>((map, dep) => {
                 const dir = path.resolve(localModules, dep);
                 if (fs.existsSync(dir)) map[dep] = dir;
@@ -298,7 +299,7 @@ function pokerSource(): Plugin {
                     alias: [...pokerAliases, ...Object.entries(shared).map(([find, replacement]) => ({ find, replacement }))],
                     dedupe: ['react', 'react-dom', 'react-router', 'fluxo-ui'],
                 },
-                server: { fs: { allow: [__dirname, root] } },
+                server: { fs: { allow: [projectDir, root] } },
             };
         },
     };
@@ -311,6 +312,7 @@ const forgeTunnelHosts = ['localhost', '127.0.0.1', '.atlassian-dev.net', '.atla
 const forgeAllowedOrigins = [/\.atlassian-dev\.net$/, /\.atlassian\.net$/, /^https?:\/\/localhost(:\d+)?$/];
 
 export default defineConfig(({ command }) => ({
+    root: projectDir,
     // Forge plugin and Electron app are loaded as static assets from a non-root URL,
     // so emit relative asset paths (./assets/...) instead of absolute ones.
     base: (isPluginBuild && command === 'build') || isAppBuild ? './' : '/',
@@ -352,8 +354,8 @@ export default defineConfig(({ command }) => ({
         rollupOptions: {
             input: isExtnBuild
                 ? {
-                      index: path.resolve(__dirname, 'index.html'),
-                      menu: path.resolve(__dirname, 'menu.html'),
+                      index: path.resolve(projectDir, 'index.html'),
+                      menu: path.resolve(projectDir, 'menu.html'),
                   }
                 : undefined,
             output: {

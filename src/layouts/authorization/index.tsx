@@ -87,10 +87,15 @@ export function withAuthInfo<P extends WithAuthInfoProps>(Component: ComponentTy
         }, [shouldAuth]);
 
         useEffect(() => {
-            if ((!rawPathname || rawPathname === '/') && authInfo && authInfo.authenticated && authInfo.userId) {
-                navigate(`/${authInfo.userId}/dashboard/0`, { replace: true });
+            if ((rawPathname && rawPathname !== '/') || !authInfo) {
+                return;
             }
-        }, [rawPathname, authInfo, navigate]);
+            if (authInfo.authenticated && authInfo.userId) {
+                navigate(`/${authInfo.userId}/dashboard/0`, { replace: true });
+            } else if (authInfo.needIntegration && !allowsGuest) {
+                navigate('/integrate', { replace: true });
+            }
+        }, [rawPathname, authInfo, allowsGuest, navigate]);
 
         if (shouldAuth) {
             if (!authInfo) {
