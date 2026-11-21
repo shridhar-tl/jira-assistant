@@ -19,7 +19,6 @@ import type OutlookOAuthService from './outlook-oauth-service';
 import type OutlookCalendar from './outlook-service';
 import type QueueService from './queue-service';
 import type ReportService from './report-service';
-import type ReportConfigService from './reportconfig-service';
 import type SessionService from './session-service';
 import type SettingsService from './settings-service';
 import type SprintService from './sprint-service';
@@ -53,7 +52,6 @@ export type ServiceTypes =
     | 'OutlookOAuthService'
     | 'OutlookService'
     | 'QueueService'
-    | 'ReportConfigService'
     | 'ReportService'
     | 'SessionService'
     | 'SettingsService'
@@ -89,7 +87,6 @@ export interface ServiceReference {
     $msoAuth: OutlookOAuthService;
     $outlook: OutlookCalendar;
     $q: QueueService;
-    $reportConfig: ReportConfigService;
     $report: ReportService;
     $session: SessionService;
     $settings: SettingsService;
@@ -125,7 +122,6 @@ type ServiceNameToRef = {
     OutlookOAuthService: '$msoAuth';
     OutlookService: '$outlook';
     QueueService: '$q';
-    ReportConfigService: '$reportConfig';
     ReportService: '$report';
     SessionService: '$session';
     SettingsService: '$settings';

@@ -13,6 +13,7 @@ const config = {
 
         worklogReport: true,
         pivotReport: true,
+        reportBuilder: true,
         sayDoRatioReport: true,
         sprintReport: !isPluginBuild,
         estimateVsActual: true,

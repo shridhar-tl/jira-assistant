@@ -7,6 +7,7 @@ import { inject } from '@services';
 import { BlockLoading, Button } from '@components';
 
 import { gadgetList, type GadgetInfo } from '../../../gadgets/gadget-list';
+import { builderReportType } from '../../reports/report-builder/report-store';
 
 interface AddGadgetProps {
     show: boolean;
@@ -16,45 +17,58 @@ interface AddGadgetProps {
     removeGadget: (gadgetId: string) => void;
 }
 
+interface SavedReportListItem {
+    id: number;
+    queryName: string;
+    reportType: string;
+    advanced?: boolean;
+    isNew?: boolean;
+    outputCount?: number | null;
+}
+
+function toReportGadget(r: SavedReportListItem): GadgetInfo {
+    if (r.reportType === builderReportType) {
+        return {
+            id: `RB:${r.id}:${r.queryName}`,
+            icon: 'fa-chart-line',
+            name: r.queryName,
+            isOld: false,
+            details: 'Report built with the Report Builder. Its parameters can be changed from the gadget.',
+        };
+    }
+
+    return {
+        id: `${r.advanced ? 'AR' : r.isNew ? 'CR' : 'SQ'}:${r.id}:${r.queryName}`,
+        icon: 'fa-filter',
+        name: r.queryName,
+        isOld: !(r.isNew || r.advanced),
+        details: !r.advanced
+            ? `${r.outputCount} columns displayed in table format${
+                  r.isNew ? ' with interactive option to sort and group based on columns.' : ' (deprecated, not allowed to add to dashboard)'
+              }`
+            : '<no details available>',
+    };
+}
+
+async function loadGadgetList(): Promise<GadgetInfo[]> {
+    const { $report } = inject('ReportService');
+
+    try {
+        const reports = ((await $report.getReportsList()) as SavedReportListItem[]).filter((r) => r.reportType !== 'pivot');
+        return [...gadgetList, ...reports.map(toReportGadget)];
+    } catch {
+        return gadgetList;
+    }
+}
+
 export function AddGadget({ show, onHide, addedGadgets, addGadget, removeGadget }: AddGadgetProps) {
     const [gadgets, setGadgets] = useState<GadgetInfo[] | null>(null);
 
     useEffect(() => {
         if (show && !gadgets) {
-            loadGadgetList();
+            loadGadgetList().then(setGadgets);
         }
     }, [show, gadgets]);
-
-    const loadGadgetList = async () => {
-        const { $report } = inject('ReportService');
-
-        try {
-            const reports = (await $report.getReportsList()).filter((r: any) => r.reportType !== 'pivot');
-
-            if (!reports?.length) {
-                setGadgets(gadgetList);
-                return;
-            }
-
-            const reportGadgets = reports.map((r: any) => ({
-                id: `${r.advanced ? 'AR' : r.isNew ? 'CR' : 'SQ'}:${r.id}:${r.queryName}`,
-                icon: 'fa-filter',
-                name: r.queryName,
-                isOld: !(r.isNew || r.advanced),
-                details: !r.advanced
-                    ? `${r.outputCount} columns displayed in table format${
-                          r.isNew
-                              ? ' with interactive option to sort and group based on columns.'
-                              : ' (deprecated, not allowed to add to dashboard)'
-                      }`
-                    : '<no details available>',
-            }));
-
-            setGadgets([...gadgetList, ...reportGadgets]);
-        } catch {
-            setGadgets(gadgetList);
-        }
-    };
 
     const containerClassName = classNames(
         'fixed top-12 right-0 h-[calc(100vh-3rem)] border-l border-(--border-primary) overflow-hidden bg-(--bg-primary) transition-all duration-300 z-40 shadow-(--shadow-lg)',

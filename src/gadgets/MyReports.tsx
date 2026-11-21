@@ -9,6 +9,7 @@ import { Button, Checkbox, Modal, TextInput, type ComponentEvent } from '@compon
 import { notifyReportsListChanged } from '../components/ReportSelectList';
 import { Column, NoDataRow, ScrollableTable, TBody, THead } from '../components/shared/ScrollableTable';
 import { Dialog } from '../dialogs/CommonDialog';
+import { builderReportType } from '../pages/reports/report-builder/report-store';
 
 import { GadgetContainer, useBaseGadget, type BaseGadgetProps } from './BaseGadget';
 import { GadgetTitle } from './constants';
@@ -40,6 +41,8 @@ interface ImportReportItem {
 function getReportTypeLabel(rpt: { reportType: string; advanced?: boolean; isNew?: boolean }): string {
     if (rpt.reportType === 'pivot') {
         return 'Pivot report';
+    } else if (rpt.reportType === builderReportType) {
+        return 'Report Builder';
     } else if (rpt.isNew) {
         return 'Custom report';
     } else if (rpt.advanced) {
@@ -49,9 +52,11 @@ function getReportTypeLabel(rpt: { reportType: string; advanced?: boolean; isNew
 }
 
 function getReportPath(rpt: { reportType: string; advanced?: boolean; isNew?: boolean }): string | null {
-    // Only pivot reports have a viewer page migrated currently
     if (rpt.reportType === 'pivot') {
         return 'pivot';
+    }
+    if (rpt.reportType === builderReportType) {
+        return 'builder';
     }
     return null;
 }
@@ -126,7 +131,7 @@ export default function MyReports(props: BaseGadgetProps) {
             const path = getReportPath(rpt);
             if (!path) {
                 const { $message } = inject('MessageService');
-                $message.warning('This report type is not yet supported. Only Pivot reports can be opened.');
+                $message.warning('This report type is no longer supported. Only Pivot and Report Builder reports can be opened.');
                 return;
             }
             navigate(`/${userId}/reports/${path}/${rpt.id}`);

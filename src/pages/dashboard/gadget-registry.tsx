@@ -1,4 +1,5 @@
 import { GadgetTitle } from '@/gadgets/constants';
+import ReportBuilderGadgetLoader from '@/gadgets/ReportBuilderGadgetLoader';
 
 import {
     BaseGadgetUnavailable,
@@ -60,6 +61,10 @@ export function getGadgetComponent(gadgetName: string, opts: string[] = []): Gad
         CR: () => ({
             Component: BaseGadgetUnavailable,
             props: { title: opts[1] || 'Custom Report' },
+        }),
+        RB: () => ({
+            Component: ReportBuilderGadgetLoader,
+            props: { reportId: opts[0], title: opts[1] || 'Report' },
         }),
         AR: () => ({
             Component: BaseGadgetUnavailable,

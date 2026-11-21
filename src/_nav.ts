@@ -56,6 +56,7 @@ const {
     sprintReport,
     estimateVsActual,
     pivotReport,
+    reportBuilder,
     workloadHeatmap,
     timeInStatus,
     sayDoRatioReport,
@@ -68,7 +69,7 @@ const {
     // Menu groups
     activitiesGroup = calendar || importWorklog || importIssues,
     planningGroup = sprintPlanner || piPlanner || (planningPoker && !isAppBuild),
-    reportsGroup = worklogReport || workloadHeatmap || timeInStatus || sayDoRatioReport || sprintReport || pivotReport || estimateVsActual,
+    reportsGroup = worklogReport || workloadHeatmap || timeInStatus || sayDoRatioReport || sprintReport || pivotReport || reportBuilder || estimateVsActual,
     settingsGroup = userGroups || generalSettings || advancedSettings,
 } = config.modules as any;
 
@@ -180,6 +181,16 @@ const navigation: MenuSection[] = [
                 id: 'R-PR',
                 url: '/reports/pivot',
                 icon: 'fa fa-table',
+            },
+            reportBuilder && {
+                name: 'Report Builder',
+                id: 'R-RB',
+                url: '/reports/builder',
+                icon: 'fa fa-pen-ruler',
+                badge: {
+                    variant: 'success',
+                    text: 'NEW',
+                },
             },
             sayDoRatioReport && {
                 name: 'Say-Do Ratio',
