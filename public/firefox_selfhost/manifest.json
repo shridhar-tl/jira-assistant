@@ -5,10 +5,14 @@
     "version": "3.0.5",
     "updateURL": "https://raw.githubusercontent.com/shridhar-tl/jira-assistant/master/release/firefox/update_manifest.json",
     "updateLink": "https://github.com/shridhar-tl/jira-assistant/raw/master/release/firefox/JiraAssist_Latest.xpi",
-    "applications": {
+    "browser_specific_settings": {
         "gecko": {
             "id": "shridhar.tl@gmail.com",
-            "update_url": "https://raw.githubusercontent.com/shridhar-tl/jira-assistant/master/release/firefox/update_manifest.json"
+            "update_url": "https://raw.githubusercontent.com/shridhar-tl/jira-assistant/master/release/firefox/update_manifest.json",
+            "data_collection_permissions": {
+                "required": ["none"],
+                "optional": ["technicalAndInteraction"]
+            }
         }
     },
     "description": "Help to track & upload work done on a Jira Ticket on timely basis and generate Worklog, Sprint and other custom reports.",

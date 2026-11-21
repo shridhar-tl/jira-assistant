@@ -1,4 +1,4 @@
-const fs = require('fs-extra');
+const fs = require('fs');
 const path = require('path');
 process.env.NODE_ENV = 'production';
 
@@ -38,7 +38,7 @@ if (buildMode === 'WEB') {
         postinstall: 'electron-builder install-app-deps',
     };
 
-    fs.writeJsonSync(resolveBuildPath('package.json'), {
+    const appPackageJson = {
         name,
         version,
         description,
@@ -48,7 +48,9 @@ if (buildMode === 'WEB') {
         build,
         scripts,
         main: './electron.js',
-    });
+    };
+    fs.writeFileSync(resolveBuildPath('package.json'), `${JSON.stringify(appPackageJson)}
+`);
 
     const appBuildActionFile = `.github/workflows/build-app.yml`;
     const sourceActionPath = resolveApp(appBuildActionFile);
@@ -102,14 +104,14 @@ function movePackages(buildPath, printLogs) {
                 if (printLogs) {
                     console.log(`Copying ${src} to ${targ}`);
                 }
-                fs.copySync(src, targ, { overwrite: true });
+                fs.cpSync(src, targ, { recursive: true, force: true });
             } else {
                 if (printLogs) {
                     console.log(`Moving ${src} to ${targ}`);
                 }
-                // moveSync will fail if target already exists (e.g. manifest.json that was
-                // copied from public/<browser>/), so use overwrite.
-                fs.moveSync(src, targ, { overwrite: true });
+                // Moving will fail if target already exists (e.g. manifest.json that was
+                // copied from public/<browser>/), so remove the target first.
+                moveSync(src, targ, true);
             }
         });
     });
@@ -151,7 +153,7 @@ function moveSourceMapFiles(allFilesList, printLogs) {
         if (printLogs) {
             console.log(`Moving '${f}' to ${sourceMapPath + path.basename(f)}`);
         }
-        fs.moveSync(f, sourceMapPath + path.basename(f));
+        moveSync(f, sourceMapPath + path.basename(f));
     });
 }
 
@@ -215,8 +217,7 @@ function cleanupBrowserFolders() {
     browsersList.forEach((folder) => {
         const folderPath = resolveBuildPath(folder);
         if (fs.existsSync(folderPath)) {
-            fs.emptyDirSync(folderPath);
-            fs.rmdirSync(folderPath);
+            fs.rmSync(folderPath, { recursive: true, force: true });
         }
     });
 
@@ -230,6 +231,23 @@ function cleanupWebOnlyFiles() {
     webOnlyRootFiles.forEach((file) => {
         safeUnlink(resolveBuildPath(file));
     });
+}
+
+function moveSync(src, targ, overwrite) {
+    if (overwrite) {
+        fs.rmSync(targ, { recursive: true, force: true });
+    }
+
+    try {
+        fs.renameSync(src, targ);
+    } catch (err) {
+        // Windows can transiently lock a freshly copied folder (EPERM/EACCES/EBUSY), and rename can't cross devices (EXDEV).
+        if (!['EXDEV', 'EPERM', 'EACCES', 'EBUSY'].includes(err.code)) {
+            throw err;
+        }
+        fs.cpSync(src, targ, { recursive: true, force: overwrite });
+        fs.rmSync(src, { recursive: true, force: true, maxRetries: 10, retryDelay: 200 });
+    }
 }
 
 function safeUnlink(filePath) {

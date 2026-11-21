@@ -49,6 +49,27 @@ const gadgetConfig = {
     exportFormat: ExportFormat,
 };
 
+function toCloserLinkHtml(html: string, mapJiraUrl: (url: string) => string): string {
+    const source = new DOMParser().parseFromString(html, 'text/html').body;
+    const firstNode = source.childNodes[0];
+    const output = document.createElement('div');
+
+    if (firstNode instanceof HTMLAnchorElement) {
+        const link = document.createElement('a');
+        link.textContent = firstNode.textContent;
+        link.setAttribute('target', '_blank');
+        const href = firstNode.getAttribute('href');
+        if (href) {
+            link.setAttribute('href', mapJiraUrl(href));
+        }
+        output.appendChild(link);
+    } else {
+        output.textContent = source.textContent;
+    }
+
+    return output.innerHTML;
+}
+
 function SprintReport(props: BaseGadgetProps) {
     const gadgetHook = useBaseGadget({ ...props, isGadget: false }, gadgetConfig);
     const { setIsLoading, setDisableRefresh } = gadgetHook;
@@ -237,14 +258,7 @@ function SprintReport(props: BaseGadgetProps) {
                     }
                     sprint.expanded = result.length === 1;
                     if (sprint.lastUserToClose) {
-                        const div = document.createElement('div');
-                        div.innerHTML = sprint.lastUserToClose;
-                        const link = div.childNodes[0] as HTMLAnchorElement;
-                        if (link) {
-                            link.setAttribute('target', '_blank');
-                            link.setAttribute('href', $userutils.mapJiraUrl(link.attributes?.getNamedItem('href')?.value!));
-                            sprint.lastUserToClose = div.innerHTML;
-                        }
+                        sprint.lastUserToClose = toCloserLinkHtml(sprint.lastUserToClose, $userutils.mapJiraUrl);
                     }
                 });
 

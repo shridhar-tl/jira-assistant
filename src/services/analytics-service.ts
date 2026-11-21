@@ -2,6 +2,35 @@ import { AnalyticsTrackingId, AnalyticsUrl, AppVersionNo, isWebBuild } from '@/c
 
 import { prepareUrlWithQueryString } from '@utils/helpers';
 
+interface ExtensionPermissionEvent {
+    addListener(callback: () => void): void;
+}
+
+interface ExtensionPermissionsApi {
+    getAll(): Promise<{ data_collection?: string[] }>;
+    onAdded?: ExtensionPermissionEvent;
+    onRemoved?: ExtensionPermissionEvent;
+}
+
+declare const browser: { permissions?: ExtensionPermissionsApi } | undefined;
+
+const analyticsDataCollection = 'technicalAndInteraction';
+
+function getExtensionPermissionsApi(): ExtensionPermissionsApi | undefined {
+    return typeof browser !== 'undefined' && typeof browser?.permissions?.getAll === 'function' ? browser.permissions : undefined;
+}
+
+// Firefox 140+ reports the built-in data collection consent via permissions.getAll().data_collection.
+// Browsers without this key have no such consent, so the in-app analytics setting alone applies.
+async function hasDataCollectionConsent(permissionsApi: ExtensionPermissionsApi): Promise<boolean> {
+    try {
+        const { data_collection } = await permissionsApi.getAll();
+        return !data_collection || data_collection.includes(analyticsDataCollection);
+    } catch {
+        return false;
+    }
+}
+
 function removeImageOnLoad(this: HTMLImageElement): void {
     this.remove();
 }
@@ -18,9 +47,20 @@ export default class AnalyticsService {
     private JAInstId?: string;
     private currentPage?: string;
     private gtag: (...args: any[]) => void;
+    private dataCollectionConsent: Promise<boolean> = Promise.resolve(true);
 
     constructor() {
         this.gtag = function () {};
+
+        const permissionsApi = getExtensionPermissionsApi();
+        if (permissionsApi) {
+            const refreshConsent = () => {
+                this.dataCollectionConsent = hasDataCollectionConsent(permissionsApi);
+            };
+            refreshConsent();
+            permissionsApi.onAdded?.addListener(refreshConsent);
+            permissionsApi.onRemoved?.addListener(refreshConsent);
+        }
     }
 
     send(obj: Record<string, any>): void {
@@ -48,6 +88,14 @@ export default class AnalyticsService {
         };
 
         const url = prepareUrlWithQueryString(AnalyticsUrl, data);
+        void this.dataCollectionConsent.then((granted) => {
+            if (granted) {
+                this.dispatch(url);
+            }
+        });
+    }
+
+    private dispatch(url: string): void {
         if (typeof document !== 'undefined') {
             const imgTag = document.createElement('img');
             imgTag.onload = removeImageOnLoad as any;

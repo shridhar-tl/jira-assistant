@@ -58,13 +58,9 @@ export class JSQuery {
         return new JSQuery(this.element.querySelectorAll(selector));
     }
 
-    text(): string {
-        return (this.element as HTMLElement)?.innerText || '';
-    }
-
-    html(str?: string): string | void {
+    text(str?: string): string | void {
         if (typeof str === 'string' && this.element) {
-            (this.element as HTMLElement).innerHTML = str;
+            this.element.textContent = str;
         } else {
             return (this.element as HTMLElement)?.innerText || '';
         }
@@ -90,9 +86,7 @@ export class JSQuery {
         let childElement: Element | HTMLElement;
 
         if (typeof child === 'string') {
-            const div = document.createElement('div');
-            div.innerHTML = child;
-            childElement = div.childNodes[0] as Element;
+            childElement = new DOMParser().parseFromString(child, 'text/html').body.childNodes[0] as Element;
         } else if (child instanceof JSQuery) {
             childElement = child.get(0);
         } else {

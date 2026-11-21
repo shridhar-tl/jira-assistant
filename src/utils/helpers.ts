@@ -130,9 +130,7 @@ export function viewIssueUrl(root: string, key: string): string | undefined {
 
 export function parseHTML(html: string): string {
     // ToDo: Parse HTML and return JSX with alternate option
-    const div = document.createElement('div');
-    div.innerHTML = html;
-    return div.innerText;
+    return new DOMParser().parseFromString(html, 'text/html').body.textContent || '';
 }
 
 export function parseJiraCustomCSV(obj: string): Record<string, string> {

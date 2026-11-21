@@ -2,7 +2,7 @@ import $ from '../common/jsquery';
 
 import { icons, isCloud } from './constants';
 import { triggerWLTracking } from './issue-utils';
-import { clearEnd, executeJASvc, pad } from './utils';
+import { clearEnd, escapeHtml, executeJASvc, pad } from './utils';
 
 interface Settings {
     timerKey?: string;
@@ -63,9 +63,9 @@ function updateTimer(noUpdate?: boolean) {
     const { timerKey } = settings;
     if (timerKey) {
         keyEl.attr('href', getTicketUrl(timerKey));
-        keyEl.html(timerKey);
+        keyEl.text(timerKey);
     }
-    $('div.ja-timer-box span.ja-time-lapsed').html(getLapsed(noUpdate ? curLapse : ++curLapse));
+    $('div.ja-timer-box span.ja-time-lapsed').text(getLapsed(noUpdate ? curLapse : ++curLapse));
 }
 
 function getTicketUrl(key: string) {
@@ -93,7 +93,7 @@ function getDiv(settings: Settings, lapse: number) {
 
     return `<div class="ja-timer-box ${isCloud ? 'ja-cloudv' : 'ja-dcv'}">
 <div class="ja-timer-ctl">
-<a class="ja-ticket-no" href="${getTicketUrl(timerKey || '')}" target="_blank" rel="noreferrer noopener">${timerKey}</a>
+<a class="ja-ticket-no" href="${escapeHtml(getTicketUrl(timerKey || ''))}" target="_blank" rel="noreferrer noopener">${escapeHtml(timerKey || '')}</a>
 <span class="ja-time-lapsed" style="margin-right: 12px;">${getLapsed(lapse)}</span>
 ${timerStarted && timerStarted > 0 ? icons.pause : icons.resume}
 ${icons.stop}

@@ -88,13 +88,16 @@ interface MenuConfig {
                     case 1:
                         if (menuConfig.menus && menuConfig.menus.length > 0 && Array.isArray(menuConfig.menus)) {
                             const menus = document.getElementById('menus');
-                            let html = '';
-                            for (let i = 0; i < menuConfig.menus.length; i++) {
-                                const m = menuConfig.menus[i];
-                                html += `<li><a s-href="${m.url}">${m.name}</a></li>`;
-                            }
                             if (menus) {
-                                menus.innerHTML = html;
+                                const items = menuConfig.menus.map((m) => {
+                                    const link = document.createElement('a');
+                                    link.setAttribute('s-href', m.url);
+                                    link.textContent = m.name;
+                                    const item = document.createElement('li');
+                                    item.appendChild(link);
+                                    return item;
+                                });
+                                menus.replaceChildren(...items);
                             }
                         }
                         bindEvents();

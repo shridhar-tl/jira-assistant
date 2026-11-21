@@ -33,9 +33,15 @@ export async function waitAndGet(selector: string, timeout = 5000) {
     return waitAndGet(selector, timeout - 1000);
 }
 
+const htmlEscapes: Record<string, string> = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', '\'': '&#39;' };
+
+export function escapeHtml(value: string) {
+    return value.replace(/[&<>"']/g, (c) => htmlEscapes[c]);
+}
+
 export function getIconHtml(issueKey: string, issueId: string, jaAction: string, icon: string, curPage: string) {
     const css = curPage === Pages.Board && !isCloud ? 'margin-x-3' : '';
-    return `<span class="${css} ja-ctl-el ja-issue-el" data-issue-key="${issueKey}" data-ja-action="${jaAction}" data-issue-id="${issueId}" style="cursor:pointer">${icon}</span>`;
+    return `<span class="${css} ja-ctl-el ja-issue-el" data-issue-key="${escapeHtml(issueKey)}" data-ja-action="${jaAction}" data-issue-id="${escapeHtml(issueId)}" style="cursor:pointer">${icon}</span>`;
 }
 
 export function getPathName() {
@@ -53,7 +59,11 @@ export function injectPollyfill() {
 }
 
 export function injectCss() {
-    $(document.head).append(`<link rel="stylesheet" href="${chr.runtime.getURL('jira_cs.css')}" media="all">`);
+    const el = document.createElement('link');
+    el.rel = 'stylesheet';
+    el.href = chr.runtime.getURL('jira_cs.css');
+    el.media = 'all';
+    document.head.appendChild(el);
 }
 
 export function clearEnd(s: string, str: string) {

@@ -46,6 +46,14 @@
     "content_security_policy": "script-src 'self' ; object-src 'self'; frame-src https://app.jiraassistant.com;",
     "permissions": ["tabs", "activeTab", "identity", "https://*.atlassian.net/", "idle", "scripting"],
     "optional_permissions": ["http://*/", "https://*/"],
+    "browser_specific_settings": {
+        "gecko": {
+            "data_collection_permissions": {
+                "required": ["none"],
+                "optional": ["technicalAndInteraction"]
+            }
+        }
+    },
     "developer": {
         "name": "Shridhar TL",
         "url": "https://www.jiraassistant.com/"
