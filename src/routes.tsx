@@ -15,6 +15,7 @@ const BulkImportIssueComponent = config.modules.importIssues && React.lazy(() =>
 
 // Reports
 const PivotReportComponent = config.modules.pivotReport && React.lazy(() => import('./pages/reports/pivot-report'));
+const PivotReportHomeComponent = config.modules.pivotReport && React.lazy(() => import('./pages/reports/pivot-report/home/PivotReportHome'));
 const SayDoRatioReportComponent = config.modules.sayDoRatioReport && React.lazy(() => import('./pages/reports/say-do-ratio'));
 const EstimateActualComponent = config.modules.estimateVsActual && React.lazy(() => import('./pages/reports/estimate-actual'));
 const SprintReportComponent = config.modules.sprintReport && React.lazy(() => import('./pages/reports/sprint-report/SprintReport'));
@@ -75,8 +76,16 @@ const sessionBasedRoute: RouteItem[] = [
         path: '/reports/time-in-status',
         component: TimeInStatusComponent,
     },
-    PivotReportComponent && {
+    PivotReportHomeComponent && {
         path: '/reports/pivot',
+        component: PivotReportHomeComponent,
+    },
+    PivotReportComponent && {
+        path: '/reports/pivot/new',
+        component: PivotReportComponent,
+    },
+    PivotReportComponent && {
+        path: '/reports/pivot/sample/:sampleId',
         component: PivotReportComponent,
     },
     PivotReportComponent && {

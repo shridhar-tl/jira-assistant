@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 
-import { DateRangePicker, Dropdown } from '@components';
+import { DateRangePicker, Dropdown, SelectButton, TextInput } from '@components';
 import type { ComponentEvent } from '@components';
 
 import { updateItemByPath, useSelectedItemConfig } from '../../../../store/pivot-config';
@@ -14,6 +14,13 @@ const rangeType = [
 ];
 
 const filterFieldHelpText = 'Issues (or its worklogs, comments etc.) are shown under the date matching the value of this field.';
+const parameterHelpText = 'Name of the parameter asked while generating the report. Use the same name in JQL as worklogDate >= startDate(parameters(\'Period\')) to pull only the issues of these dates.';
+const defaultParameterName = 'Period';
+
+const rangeSourceOptions = [
+    { value: 'fixed', label: 'Fixed dates' },
+    { value: 'parameter', label: 'Ask while generating' },
+];
 
 interface DateRangeFieldOptionsProps {
     item: any;
@@ -40,15 +47,45 @@ export default function DateRangeFieldOptions({ item, isRow }: DateRangeFieldOpt
         updateItemByPath({ ...item, [field]: value }, null, { args: { itemPath, isRow } });
     };
 
+    const isParameter = item.dateRangeParameter !== undefined;
+
+    const handleSourceChange = (source: string) => {
+        const { dateRangeParameter: _, ...rest } = item;
+        const updated = source === 'parameter' ? { ...rest, dateRangeParameter: defaultParameterName } : rest;
+
+        updateItemByPath(updated, null, { args: { itemPath, isRow } });
+    };
+
     return (
         <>
-            <PropertyRow label="Date range">
-                <DateRangePicker
-                    value={toPickerValue(item.dateRange)}
-                    placeholder="Select the dates"
-                    onChange={(e) => handleFieldChange('dateRange', fromPickerValue(e))}
+            <PropertyRow label="Dates" className="sm:col-span-2">
+                <SelectButton
+                    items={rangeSourceOptions}
+                    value={isParameter ? 'parameter' : 'fixed'}
+                    onChange={(e) => handleSourceChange(e.value)}
+                    variant="segmented"
+                    required
+                    ariaLabel="Dates of the range"
                 />
             </PropertyRow>
+            {isParameter ? (
+                <PropertyRow label="Parameter name" helpText={parameterHelpText} className="sm:col-span-2">
+                    <TextInput
+                        value={item.dateRangeParameter}
+                        onChange={(e) => handleFieldChange('dateRangeParameter', e.value)}
+                        maxLength={25}
+                        placeholder={defaultParameterName}
+                    />
+                </PropertyRow>
+            ) : (
+                <PropertyRow label="Date range">
+                    <DateRangePicker
+                        value={toPickerValue(item.dateRange)}
+                        placeholder="Select the dates"
+                        onChange={(e) => handleFieldChange('dateRange', fromPickerValue(e))}
+                    />
+                </PropertyRow>
+            )}
             {!isRow && (
                 <PropertyRow label="Show columns as">
                     <Dropdown

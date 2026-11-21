@@ -6,17 +6,29 @@ import JQLEditor from '@/jira-controls/JQLEditor';
 
 import {
     Button,
+    customSprintRange,
+    Dropdown,
     getSelectedBoardIds,
+    InputSwitch,
     isSameSprintSelection,
     RapidViewList,
     SelectButton,
+    sprintRangeOptions,
     SprintSelector,
     toSelectedBoards,
     type SprintSelectionMap,
 } from '@components';
+
 import type { RapidView } from '@components/shared/RapidViewList';
 
-import { updateDataSourceType, updateJQL, updateSprintBoards, updateSprintSelection, usePivotConfig } from '../../store/pivot-config';
+import {
+    updateDataSourceType,
+    updateJQL,
+    updateSprintBoards,
+    updateSprintSelection,
+    updateSprintsParameter,
+    usePivotConfig,
+} from '../../store/pivot-config';
 import { jqlDataSource, sprintDataSource, type PivotDataSourceType } from '../../types';
 
 interface DataSourceProps {
@@ -45,6 +57,11 @@ const dataSourceHelpText: Record<PivotDataSourceType, string> = {
 const boardRequiredMessage = 'Select at least one agile board to choose the sprints from.';
 const sprintRequiredMessage = 'Choose the sprints to pull the issues from.';
 const noBoardsMessage = 'No agile boards selected. Select one or more agile boards above to choose the sprints from.';
+const sprintsOnRunHelpText = 'The agile boards and sprints are asked every time the report is generated, so that it can be used for any team.';
+const defaultRangeHelpText = 'Sprints chosen by default for each agile board. It can be changed while generating the report.';
+const jqlParametersHelpText = 'Use parameters(\'Name\') to ask for a value while generating the report.';
+
+const defaultRangeOptions = sprintRangeOptions.filter(({ value }) => value !== customSprintRange);
 
 function SourceField({ label, helpText, error, children }: SourceFieldProps) {
     return (
@@ -58,13 +75,19 @@ function SourceField({ label, helpText, error, children }: SourceFieldProps) {
 }
 
 export default function DataSource({ onDone }: DataSourceProps) {
-    const { jql, dataSourceType, sprintBoards, sprintSelection } = usePivotConfig(
-        useShallow(({ jql, dataSourceType, sprintBoards, sprintSelection }) => ({ jql, dataSourceType, sprintBoards, sprintSelection })),
+    const { jql, dataSourceType, sprintBoards, sprintSelection, sprintsParameter } = usePivotConfig(
+        useShallow(({ jql, dataSourceType, sprintBoards, sprintSelection, sprintsParameter }) => ({
+            jql,
+            dataSourceType,
+            sprintBoards,
+            sprintSelection,
+            sprintsParameter,
+        })),
     );
 
     const isSprintSource = dataSourceType === sprintDataSource;
     const hasSprintsSelected = getSelectedBoardIds(sprintSelection).length > 0;
-    const isSourceValid = isSprintSource ? hasSprintsSelected : (jql?.trim().length || 0) >= minJqlLength;
+    const isSourceValid = isSprintSource ? !!sprintsParameter || hasSprintsSelected : (jql?.trim().length || 0) >= minJqlLength;
 
     const handleBoardsChange = useCallback((value: RapidView | RapidView[] | null) => updateSprintBoards(toSelectedBoards(value)), []);
 
@@ -98,6 +121,30 @@ export default function DataSource({ onDone }: DataSourceProps) {
 
             {isSprintSource && (
                 <div className="flex flex-col gap-4 rounded-lg border border-(--border-primary) bg-(--bg-secondary) p-3 sm:p-4">
+                    <SourceField label="Choose sprints while generating the report" helpText={sprintsOnRunHelpText}>
+                        <InputSwitch
+                            checked={!!sprintsParameter}
+                            onChange={(e) => updateSprintsParameter(e.value ? { range: 0 } : undefined)}
+                            onLabel="Yes"
+                            offLabel="No"
+                            ariaLabel="Choose sprints while generating the report"
+                        />
+                    </SourceField>
+
+                    {sprintsParameter && (
+                        <SourceField label="Default sprints" helpText={defaultRangeHelpText}>
+                            <Dropdown
+                                value={sprintsParameter.range}
+                                options={defaultRangeOptions}
+                                onChange={(e) => updateSprintsParameter({ range: Number(e.value) })}
+                            />
+                        </SourceField>
+                    )}
+                </div>
+            )}
+
+            {isSprintSource && !sprintsParameter && (
+                <div className="flex flex-col gap-4 rounded-lg border border-(--border-primary) bg-(--bg-secondary) p-3 sm:p-4">
                     <SourceField
                         label="Agile boards"
                         error={sprintBoards.length ? null : boardRequiredMessage}
@@ -126,9 +173,13 @@ export default function DataSource({ onDone }: DataSourceProps) {
             <SourceField
                 label={isSprintSource ? 'Additional JQL filter (optional)' : 'JQL query'}
                 helpText={
-                    isSprintSource
-                        ? 'Filters the issues of the chosen sprints. e.g. issuetype in (Story, Bug) AND status != Rejected'
-                        : 'e.g. project = ABC AND issuetype in (Story, Bug) ORDER BY created DESC'
+                    <>
+                        {isSprintSource
+                            ? 'Filters the issues of the chosen sprints. e.g. issuetype in (Story, Bug) AND status != Rejected'
+                            : 'e.g. project in parameters(\'Projects\') AND issuetype in (Story, Bug) ORDER BY created DESC'}
+                        <br />
+                        {jqlParametersHelpText}
+                    </>
                 }
             >
                 <div className="w-full min-w-0">

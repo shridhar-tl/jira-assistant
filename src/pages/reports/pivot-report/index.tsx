@@ -1,35 +1,49 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
-import { useLocation, useParams } from 'react-router';
+import { useLocation, useNavigate, useParams } from 'react-router';
 
 import { GadgetContainer, useBaseGadget } from '@/gadgets/BaseGadget';
 
-import { Button } from '@components';
+import { Button, SampleReportBanner } from '@components';
 
 import ReportSelectList from '@components/ReportSelectList';
 
 import EditorBody from './editor/body';
 import EditorControls from './editor/controls';
+import SaveReportPrompt from './editor/SaveReportPrompt';
 import { usePivotConfig, useReportData } from './store/pivot-config';
 import { useReportParameters } from './store/report-parameters';
-import { loadReport } from './utils/common';
+import { openSaveDialog } from './store/save-dialog';
+import { getReportsHomePath, loadReport } from './utils/common';
 import { generateReport } from './viewer/generator';
 
 export default function PivotReport() {
-    const { reportId, userId } = useParams<{ reportId?: string; userId?: string }>();
+    const { reportId, sampleId, userId = '' } = useParams<{ reportId?: string; sampleId?: string; userId?: string }>();
     const { state: navigationState } = useLocation();
-    const [editMode, setEditMode] = useState(!reportId);
+    const navigate = useNavigate();
+    const isNewReport = !reportId && !sampleId;
+    const keepEditing = !!(navigationState as SavedReportNavigation | null)?.keepEditing;
+    const [editMode, setEditMode] = useState(isNewReport || keepEditing);
     const toggleEdit = () => setEditMode((prev) => !prev);
+    const sourceKey = `${reportId}|${sampleId}`;
+    const [loadedSourceKey, setLoadedSourceKey] = useState(sourceKey);
+
+    if (loadedSourceKey !== sourceKey) {
+        setLoadedSourceKey(sourceKey);
+        if (!keepEditing) {
+            setEditMode(isNewReport);
+        }
+    }
 
     useEffect(() => {
-        loadReport(reportId);
-        if (!(navigationState as SavedReportNavigation | null)?.keepEditing) {
-            setEditMode(!reportId);
-        }
-    }, [reportId]);
+        loadReport({ reportId, sampleId });
+    }, [reportId, sampleId]);
 
     const reportName = usePivotConfig(({ queryName }) => queryName);
+    const isSample = usePivotConfig(({ id, sampleId }) => !id && !!sampleId);
     const hasParams = useReportParameters(({ parameters }) => Object.keys(parameters).length > 0);
+    const reportsHomePath = getReportsHomePath(userId);
+    const goToReportsHome = useCallback(() => navigate(reportsHomePath), [navigate, reportsHomePath]);
 
     const gadgetHook = useBaseGadget(
         { isGadget: false },
@@ -41,7 +55,8 @@ export default function PivotReport() {
 
     const customActions = (
         <>
-            <ReportSelectList reportType="pivot" reportId={reportId} reportPath={`/${userId}/reports/pivot`} />
+            <Button layout="plain" leftIcon={<i className="fa fa-th-large" />} onClick={goToReportsHome} title="All pivot reports" size="sm" />
+            <ReportSelectList reportType="pivot" reportId={reportId} reportPath={reportsHomePath} />
             {hasParams && (
                 <Button
                     layout="plain"
@@ -59,10 +74,22 @@ export default function PivotReport() {
         <div className="flex h-[calc(100vh-3rem)]">
             <div className="flex-1 min-w-0">
                 <GadgetContainer isGadget={false} gadgetHook={gadgetHook} customActions={customActions} refreshData={generateReport}>
-                    <EditorBody />
+                    <div className="flex h-full min-h-0 flex-col">
+                        {isSample && <SampleReportBanner title={reportName} onSave={openSaveDialog} onBack={goToReportsHome} />}
+                        <div className="min-h-0 flex-1">
+                            <EditorBody />
+                        </div>
+                    </div>
                 </GadgetContainer>
             </div>
-            <EditorControls key={reportId || 'new'} reportId={reportId} show={editMode} onHide={toggleEdit} />
+            <EditorControls
+                key={reportId || (sampleId ? `sample-${sampleId}` : 'new')}
+                reportId={reportId}
+                showSourceFirst={isNewReport}
+                show={editMode}
+                onHide={toggleEdit}
+            />
+            <SaveReportPrompt />
         </div>
     );
 }

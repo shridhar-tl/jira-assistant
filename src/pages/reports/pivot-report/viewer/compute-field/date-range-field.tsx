@@ -7,6 +7,8 @@ import { inject } from '@services';
 import { getDateRange, getWeekGroup, type DateRangeItem, type WeekGroup as DateWeekGroup } from '@utils/date-utils';
 import { convertToDate } from '@utils/helpers';
 
+import { useReportParameters } from '../../store/report-parameters';
+import type { DateRangeSelection, PivotFieldConfig } from '../../types';
 import { getFilterFunction } from '../filters';
 
 type Issue = Record<string, any>;
@@ -38,6 +40,18 @@ interface RangeHeader {
 
 type WeekGroup = DateWeekGroup<DateRangeItem>;
 
+function getColumnDateRange({ dateRange, dateRangeParameter }: PivotFieldConfig): DateRangeSelection {
+    const paramName = dateRangeParameter?.trim();
+
+    if (!paramName) {
+        return dateRange as DateRangeSelection;
+    }
+
+    const { parameters } = useReportParameters.getState();
+
+    return parameters[paramName.toLowerCase()]?.value as DateRangeSelection;
+}
+
 export function generateDateRangeColumns(
     column: any,
     headerOpts: any,
@@ -46,7 +60,8 @@ export function generateDateRangeColumns(
     hasSiblings: boolean,
     processColumns: any,
 ) {
-    const { dateRange, rangeType = 'days', filterField, showTotal, showTotalFirst, subItems, filter } = column;
+    const { rangeType = 'days', filterField, showTotal, showTotalFirst, subItems, filter } = column;
+    const dateRange = getColumnDateRange(column);
     const columnFilterFn: IssueFilterFn = getFilterFunction(filter);
     const { header } = headerOpts;
     const currentHeader: RangeHeader[] = header[depth];

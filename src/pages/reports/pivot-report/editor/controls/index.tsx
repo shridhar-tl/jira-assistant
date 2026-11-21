@@ -15,10 +15,11 @@ interface EditorControlsProps {
     show: boolean;
     onHide: () => void;
     reportId?: string;
+    showSourceFirst: boolean;
 }
 
-export default function EditorControls({ show, onHide, reportId }: EditorControlsProps) {
-    const [showSource, setShowSource] = useState(!reportId);
+export default function EditorControls({ show, onHide, reportId, showSourceFirst }: EditorControlsProps) {
+    const [showSource, setShowSource] = useState(showSourceFirst);
     const toggleSource = () => setShowSource(!showSource);
     const headerRight = <ControlButtons reportId={reportId} />;
 

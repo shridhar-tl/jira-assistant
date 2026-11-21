@@ -5,13 +5,24 @@ import { usePivotConfig, useReportData } from '../store/pivot-config';
 import { sprintDataSource, type JiraField, type PivotFieldConfig, type ReportParameterDefinition } from '../types';
 import { isFieldUnavailable, isFilterFieldUnavailable } from '../utils/field-references';
 import { useFieldsList } from '../utils/fields';
+import { mergeParameterDefinitions, validateParameterName } from '../utils/jql-parameters';
+import { getSprintsParameterDefinition, sprintsParameterKey } from '../utils/sprints-parameter';
 
 export function isReportDefinitionValid() {
-    const { jql, fields, dataSourceType, sprintBoards, sprintSelection } = usePivotConfig.getState();
+    const { jql, fields, dataSourceType, sprintBoards, sprintSelection, sprintsParameter } = usePivotConfig.getState();
     const reportErrors: string[] = [];
+    const { fieldsMap } = useFieldsList.getState();
+    const scope: ValidationScope = {
+        fieldsMap,
+        fields: {},
+        parameters: {},
+        derivedKeys: new Set<string>(),
+    };
 
     if (dataSourceType === sprintDataSource) {
-        if (!sprintBoards.length) {
+        if (sprintsParameter) {
+            scope.parameters[sprintsParameterKey] = getSprintsParameterDefinition(sprintsParameter);
+        } else if (!sprintBoards.length) {
             reportErrors.push('Select at least one agile board to pull the issues of its sprints');
         } else if (!getSelectedBoardIds(sprintSelection).length) {
             reportErrors.push('Select the sprints to pull the issues from Jira');
@@ -23,14 +34,6 @@ export function isReportDefinitionValid() {
     if (!fields?.length) {
         reportErrors.push('No fields selected to generate report');
     }
-
-    const { fieldsMap } = useFieldsList.getState();
-    const scope = {
-        fieldsMap,
-        fields: {},
-        parameters: {} as Record<string, ReportParameterDefinition>,
-        derivedKeys: new Set<string>(),
-    };
 
     fields.forEach((f, i) => validateField(f, i, 0, reportErrors, scope));
 
@@ -49,7 +52,7 @@ function validateProps(field: any, index: number, depth: number, reportErrors: s
     validateCommonProps(field, index, depth, reportErrors, scope, path);
 
     if (field.schema?.type === dateRangeType) {
-        validateDateRangeField(field, index, reportErrors, scope.fieldsMap, path);
+        validateDateRangeField(field, index, reportErrors, scope, path);
     }
 
     if (isColGroup) {
@@ -74,19 +77,35 @@ function validateCommonProps(field: any, index: number, depth: number, reportErr
     }
 }
 
+export interface ValidationScope {
+    fieldsMap: Record<string, JiraField>;
+    fields: Record<string, boolean>;
+    parameters: Record<string, ReportParameterDefinition>;
+    derivedKeys: Set<string>;
+}
+
 const dateRangeType = 'date-range';
 const unavailableFieldMessage = 'is not available in this Jira instance. Remove it or replace it with an equivalent field';
 
-function validateDateRangeField(
-    field: PivotFieldConfig,
-    index: number,
-    reportErrors: string[],
-    fieldsMap: Record<string, JiraField>,
-    path: string,
-) {
-    const { name, dateRange, filterField } = field;
+function validateDateRangeField(field: PivotFieldConfig, index: number, reportErrors: string[], scope: ValidationScope, path: string) {
+    const { fieldsMap } = scope;
+    const { name, dateRange, dateRangeParameter, filterField } = field;
+    const paramName = dateRangeParameter?.trim();
 
-    if (!dateRange?.fromDate || !dateRange?.toDate) {
+    if (dateRangeParameter !== undefined && !paramName) {
+        reportErrors.push(`Field ${path}"${name}" at position ${index + 1} does not have the parameter name for the date range`);
+    } else if (paramName) {
+        const nameError = validateParameterName(paramName);
+        if (nameError) {
+            reportErrors.push(`Field ${path}"${name}" at position ${index + 1}: ${nameError}`);
+        } else {
+            mergeParameterDefinitions(
+                scope.parameters,
+                { [paramName.toLowerCase()]: { name: paramName, type: 'daterange' } },
+                reportErrors,
+            );
+        }
+    } else if (!dateRange?.fromDate || !dateRange?.toDate) {
         reportErrors.push(`Field ${path}"${name}" at position ${index + 1} does not have a date range selected`);
     }
 

@@ -2,10 +2,13 @@ import { inject } from '@services';
 
 import { notifyReportsListChanged } from '@components/ReportSelectList';
 
+import { Dialog } from '@dialogs/CommonDialog';
+
+import { getSampleReport } from '../samples';
 import { getBlankReportDefinition, normalizeReportDefinition, usePivotConfig, useReportData, useSelectedItemConfig } from '../store/pivot-config';
 import { resetReportParameters } from '../store/report-parameters';
-import type { PivotReportDefinition } from '../types';
-import { cancelReportGeneration } from '../viewer/generator';
+import type { JiraField, PivotReportDefinition } from '../types';
+import { cancelReportGeneration, generateReport } from '../viewer/generator';
 
 import { resolveFieldReferences } from './field-references';
 import { fillFieldsList } from './fields';
@@ -47,14 +50,57 @@ async function saveReportToDb(report: PivotReportDefinition) {
     return $report.getReportDefinition(newId);
 }
 
+export function getReportsHomePath(userId: string) {
+    return `/${userId}/reports/pivot`;
+}
+
+export function getReportPath(userId: string, reportId: number | string) {
+    return `${getReportsHomePath(userId)}/${reportId}`;
+}
+
+export function getNewReportPath(userId: string) {
+    return `${getReportsHomePath(userId)}/new`;
+}
+
+export function getSampleReportPath(userId: string, sampleId: string) {
+    return `${getReportsHomePath(userId)}/sample/${sampleId}`;
+}
+
+export async function deleteReport(id: number, queryName: string): Promise<boolean> {
+    try {
+        await Dialog.confirmDelete(`Are you sure to delete the report named "${queryName}" permanently?`);
+    } catch {
+        return false;
+    }
+
+    const { $report, $message, $analytics } = inject('ReportService', 'MessageService', 'AnalyticsService');
+
+    await $report.deleteSavedQuery([id]);
+    notifyReportsListChanged();
+    $message.success(`Pivot report "${queryName}" deleted successfully`);
+    $analytics.trackEvent('Pivot Report Deleted', '');
+
+    return true;
+}
+
+export interface ReportSource {
+    reportId?: string;
+    sampleId?: string;
+}
+
 let latestLoadId = 0;
 
-export async function loadReport(reportId?: string) {
+export async function loadReport({ reportId, sampleId }: ReportSource) {
     const loadId = ++latestLoadId;
     cancelReportGeneration();
     useReportData.setState({ showParameters: false, isFetching: false, reportData: undefined, reportErrors: undefined }, true);
     useSelectedItemConfig.getState().selectItem();
     resetReportParameters();
+
+    if (sampleId) {
+        await loadSampleReport(sampleId, loadId);
+        return;
+    }
 
     if (!reportId) {
         usePivotConfig.setState(getBlankReportDefinition(), true);
@@ -81,4 +127,37 @@ export async function loadReport(reportId?: string) {
 
     const definition = normalizeReportDefinition(report);
     usePivotConfig.setState({ ...definition, fields: resolveFieldReferences(definition.fields, customFields) }, true);
+}
+
+async function loadSampleReport(sampleId: string, loadId: number) {
+    const sample = getSampleReport(sampleId);
+
+    if (!sample) {
+        usePivotConfig.setState(getBlankReportDefinition(), true);
+        const { $message } = inject('MessageService');
+        $message.error(`The sample report "${sampleId}" is not available.`, 'Sample Not Found');
+        return;
+    }
+
+    let customFields: JiraField[];
+    try {
+        customFields = await fillFieldsList();
+    } catch (err) {
+        console.error('Unable to pull the fields of Jira to load the sample report', err);
+        customFields = [];
+    }
+
+    if (loadId !== latestLoadId) {
+        return;
+    }
+
+    const definition = normalizeReportDefinition({
+        ...getBlankReportDefinition(),
+        ...structuredClone(sample.definition),
+        queryName: sample.title,
+        sampleId: sample.id,
+    });
+
+    usePivotConfig.setState({ ...definition, fields: resolveFieldReferences(definition.fields, customFields) }, true);
+    generateReport();
 }

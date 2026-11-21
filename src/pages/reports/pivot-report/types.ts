@@ -16,8 +16,23 @@ export interface PivotReportDefinition {
     sprintBoards: AgileBoard[];
     sprintSelection: SprintSelectionMap;
     fields: PivotFieldConfig[];
+    sprintsParameter?: SprintsParameterConfig;
+    sampleId?: string;
     createdBy?: string;
     hasChanges?: boolean;
+}
+
+/**
+ * When available, the agile boards and their sprints are chosen while running the report instead of being saved with it
+ */
+export interface SprintsParameterConfig {
+    range: number;
+}
+
+export interface SavedPivotReport extends PivotReportDefinition {
+    id: number;
+    dateCreated?: Date | string;
+    dateUpdated?: Date | string;
 }
 
 export type SortOrder = 'asc' | 'desc';
@@ -38,6 +53,7 @@ export interface PivotFieldConfig {
     filter?: string;
     subItems?: PivotFieldConfig[];
     dateRange?: DateRangeSelection;
+    dateRangeParameter?: string;
     rangeType?: string;
     filterField?: string;
     useDistinct?: boolean;
@@ -75,7 +91,21 @@ export interface ParameterOption {
     iconUrl?: string;
 }
 
-export type ReportParameterValue = string | number | boolean | Date | string[] | DateRangeSelection | ParameterOption[] | UserGroup[];
+export interface SprintsParameterValue {
+    boards: AgileBoard[];
+    selection: SprintSelectionMap;
+}
+
+export type ReportParameterValue =
+    | string
+    | number
+    | boolean
+    | Date
+    | string[]
+    | DateRangeSelection
+    | SprintsParameterValue
+    | ParameterOption[]
+    | UserGroup[];
 
 export interface ReportParameterDefinition {
     name: string;
@@ -84,6 +114,8 @@ export interface ReportParameterDefinition {
     fieldKey?: string;
     itemType?: string;
     customType?: string;
+    jqlField?: string;
+    sprintRange?: number;
 }
 
 export interface ReportParameter extends ReportParameterDefinition {

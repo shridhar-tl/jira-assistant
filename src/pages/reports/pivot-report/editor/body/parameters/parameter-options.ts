@@ -20,6 +20,7 @@ export type ParameterKind =
     | 'priority'
     | 'resolution'
     | 'suggestion'
+    | 'sprints'
     | 'text';
 
 export type OptionsLoader = (query: string) => Promise<ParameterOption[]>;
@@ -39,7 +40,7 @@ const namedListSources: Partial<Record<ParameterKind, NamedListSource>> = {
     resolution: 'getResolutions',
 };
 
-const directKinds: ParameterKind[] = ['date', 'datetime', 'daterange', 'bool'];
+const directKinds: ParameterKind[] = ['date', 'datetime', 'daterange', 'bool', 'sprints'];
 const fieldKinds: ParameterKind[] = ['user', 'project', 'issuetype', 'status', 'priority', 'resolution'];
 const sprintCustomType = 'com.pyxis.greenhopper.jira:gh-sprint';
 const customFieldClauseRegex = /^cf\[\d+\]$/i;
@@ -47,7 +48,7 @@ const minUserSearchLength = 2;
 const maxUserSearchResults = 20;
 
 export function getParameterKind(param: ReportParameter): ParameterKind {
-    const { type, itemType, fieldKey } = param;
+    const { type, itemType, fieldKey, jqlField } = param;
 
     if (directKinds.includes(type as ParameterKind)) {
         return type as ParameterKind;
@@ -62,7 +63,7 @@ export function getParameterKind(param: ReportParameter): ParameterKind {
         return kind;
     }
 
-    return fieldKey ? 'suggestion' : 'text';
+    return fieldKey || jqlField ? 'suggestion' : 'text';
 }
 
 export function getOptionsLoader(kind: ParameterKind): OptionsLoader | undefined {
@@ -133,7 +134,7 @@ async function searchUserOptions(text: string): Promise<ParameterOption[]> {
     const users: JiraUser[] = (await $jira.searchUsers(text, maxUserSearchResults)) || [];
 
     return users.reduce<ParameterOption[]>((options, user) => {
-        const value = getUserName(user);
+        const value = user.accountId || getUserName(user);
         if (value) {
             options.push({ value, label: user.displayName || value, iconUrl: user.avatarUrls?.['24x24'] });
         }
@@ -142,7 +143,13 @@ async function searchUserOptions(text: string): Promise<ParameterOption[]> {
     }, []);
 }
 
-export async function resolveSuggestionLoader(fieldKey?: string, customType?: string): Promise<OptionsLoader | null> {
+export async function resolveSuggestionLoader({ fieldKey, customType, jqlField }: ReportParameter): Promise<OptionsLoader | null> {
+    const isSprint = customType === sprintCustomType;
+
+    if (jqlField) {
+        return createSuggestionLoader(jqlField, isSprint);
+    }
+
     if (!fieldKey) {
         return null;
     }
@@ -160,14 +167,19 @@ export async function resolveSuggestionLoader(fieldKey?: string, customType?: st
     const jqlFields = (autocomplete?.visibleFieldNames || []).filter(
         (f) => f.auto === 'true' && [unquoteJqlLiteral(f.value), f.cfid].some((name) => !!name && clauseNames.includes(name.toLowerCase())),
     );
-    const jqlField = jqlFields.find((f) => f.cfid && customFieldClauseRegex.test(f.cfid)) || jqlFields[0];
+    const matchedField = jqlFields.find((f) => f.cfid && customFieldClauseRegex.test(f.cfid)) || jqlFields[0];
 
-    if (!jqlField) {
+    if (!matchedField) {
         return null;
     }
 
-    const fieldName = jqlField.cfid && customFieldClauseRegex.test(jqlField.cfid) ? jqlField.cfid : jqlField.value;
-    const isSprint = customType === sprintCustomType;
+    const fieldName = matchedField.cfid && customFieldClauseRegex.test(matchedField.cfid) ? matchedField.cfid : matchedField.value;
+
+    return createSuggestionLoader(fieldName, isSprint);
+}
+
+function createSuggestionLoader(fieldName: string, isSprint: boolean): OptionsLoader {
+    const { $jira } = inject('JiraService');
 
     return async (query) => {
         const { results = [] } = await $jira.getJQLSuggestions(fieldName, query.trim());

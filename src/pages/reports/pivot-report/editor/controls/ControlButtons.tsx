@@ -1,17 +1,12 @@
-import { useCallback, useState } from 'react';
+import { useCallback } from 'react';
 
 import { useNavigate } from 'react-router';
 
-import { inject } from '@services';
-
 import { Button } from '@components';
-import { notifyReportsListChanged } from '@components/ReportSelectList';
-
-import { Dialog } from '@dialogs/CommonDialog';
-import SaveReportDialog from '@dialogs/SaveReportDialog';
 
 import { usePivotConfig } from '../../store/pivot-config';
-import { saveReport, saveReportAs } from '../../utils/common';
+import { openSaveDialog } from '../../store/save-dialog';
+import { deleteReport, getReportsHomePath, saveReport } from '../../utils/common';
 import { generateReport } from '../../viewer/generator';
 
 interface ControlButtonsProps {
@@ -20,78 +15,39 @@ interface ControlButtonsProps {
 
 export default function ControlButtons({ reportId }: ControlButtonsProps) {
     const navigate = useNavigate();
-    const queryName = usePivotConfig((state) => state.queryName);
-    const [showSaveDialog, setShowSaveDialog] = useState(false);
-    const toggleSavePopup = () => setShowSaveDialog(!showSaveDialog);
 
     const saveReportHandler = useCallback(async () => {
         if (reportId) {
             await saveReport();
         } else {
-            toggleSavePopup();
+            openSaveDialog();
         }
     }, [reportId]);
 
-    const saveAsCopy = async (name: string, copy?: boolean) => {
-        const result = await saveReportAs(name, copy);
+    const deleteCurrentReport = useCallback(async () => {
+        const { id, queryName, createdBy } = usePivotConfig.getState();
 
-        toggleSavePopup();
-
-        if (result) {
-            const { id, createdBy } = result;
-            navigate(`/${createdBy}/reports/pivot/${id}`, { state: { keepEditing: true } });
+        if (id && (await deleteReport(id, queryName)) && createdBy) {
+            navigate(getReportsHomePath(createdBy));
         }
-    };
-
-    const deleteReport = useCallback(() => {
-        deleteCurrentReport((createdBy: string) => {
-            navigate(`/${createdBy}/reports/pivot`);
-        });
     }, [navigate]);
 
     return (
-        <>
-            <div className="flex items-center gap-1">
-                <Button layout="plain" leftIcon={<span className="fa fa-play" />} onClick={generateReport} title="Generate the report" />
-                {!!reportId && (
-                    <Button
-                        layout="plain"
-                        leftIcon={<span className="fa fa-trash" />}
-                        onClick={deleteReport}
-                        title="Delete this report"
-                        className="text-red-600"
-                    />
-                )}
-                <Button layout="plain" leftIcon={<span className="fa fa-save" />} onClick={saveReportHandler} title="Save this report" />
-                {!!reportId && (
-                    <Button
-                        layout="plain"
-                        leftIcon={<span className="fa fa-copy" />}
-                        onClick={toggleSavePopup}
-                        title="Rename report or save as new report"
-                    />
-                )}
-            </div>
-            {showSaveDialog && <SaveReportDialog queryName={reportId ? queryName : ''} allowCopy={!!reportId} onHide={toggleSavePopup} onChange={saveAsCopy} />}
-        </>
+        <div className="flex items-center gap-1">
+            <Button layout="plain" leftIcon={<span className="fa fa-play" />} onClick={generateReport} title="Generate the report" />
+            {!!reportId && (
+                <Button
+                    layout="plain"
+                    leftIcon={<span className="fa fa-trash" />}
+                    onClick={deleteCurrentReport}
+                    title="Delete this report"
+                    className="text-red-600"
+                />
+            )}
+            <Button layout="plain" leftIcon={<span className="fa fa-save" />} onClick={saveReportHandler} title="Save this report" />
+            {!!reportId && (
+                <Button layout="plain" leftIcon={<span className="fa fa-copy" />} onClick={openSaveDialog} title="Rename report or save as new report" />
+            )}
+        </div>
     );
-}
-
-function deleteCurrentReport(onDone: (createdBy: string) => void) {
-    const { id, queryName, createdBy } = usePivotConfig.getState();
-
-    if (!id) return;
-
-    Dialog.confirmDelete(`Are you sure to delete the report named "${queryName}" permanently?`).then(() => {
-        const { $report, $message, $analytics } = inject('ReportService', 'MessageService', 'AnalyticsService');
-
-        $report.deleteSavedQuery([id]).then(() => {
-            notifyReportsListChanged();
-            $message.success(`Pivot report "${queryName}" deleted successfully`);
-            $analytics.trackEvent('Pivot Report Deleted', '');
-            if (createdBy) {
-                onDone(createdBy);
-            }
-        });
-    });
 }

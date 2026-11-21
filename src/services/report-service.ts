@@ -75,10 +75,16 @@ export default class ReportService {
             queryName: q.queryName,
             reportType: q.reportType || (q.advanced ? 'advanced' : 'custom'),
             dateCreated: q.dateCreated,
+            dateUpdated: q.dateUpdated,
             advanced: q.advanced,
             outputCount: q.advanced ? null : q.outputFields?.length || q.fields?.length,
             isNew: !q.advanced && Array.isArray(q.fields),
         }));
+    }
+
+    async getReportDefinitions<T>(reportType: string): Promise<T[]> {
+        const qrys = await this.$storage.getReportsByUserId(this.$session.userId!);
+        return qrys.filter((q: any) => q.reportType === reportType) as T[];
     }
 
     getReportDefinition(id: number): Promise<any> {
@@ -93,9 +99,11 @@ export default class ReportService {
             query.uniqueId = UUID_generate();
         }
 
-        query.dateCreated = new Date();
-
         const reportId = query.id;
+        if (!(reportId > 0) || !query.dateCreated) {
+            query.dateCreated = new Date();
+        }
+
         const qry = await this.$storage.getReportByNameForValidation(query.queryName, this.$session.userId!, reportId);
         if (qry) {
             return Promise.reject({ message: `The query with the name "${query.queryName}" already exists!` });

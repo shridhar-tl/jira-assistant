@@ -30,6 +30,22 @@ const singleInstanceCustomTypes = new Set([
     'com.atlassian.servicedesk.sentiment:sd-sentiment',
 ]);
 
+interface FieldIdentity {
+    name: string;
+    type: string;
+}
+
+/**
+ * Different Jira instances (and project types) track the same information using different fields.
+ * When a field is not available, the field tracking the same information is used instead.
+ */
+const equivalentFieldGroups: FieldIdentity[][] = [
+    [
+        { name: 'story points', type: 'com.atlassian.jira.plugin.system.customfieldtypes:float' },
+        { name: 'story point estimate', type: 'com.pyxis.greenhopper.jira:jsw-story-points' },
+    ],
+];
+
 type FieldMapping = Map<string, JiraField | null>;
 
 function isJiraCustomField(field: Pick<PivotFieldConfig, 'id' | 'schema'>): boolean {
@@ -59,7 +75,32 @@ function findEquivalentField(field: PivotFieldConfig, customFields: JiraField[])
     const byName = savedName ? singleMatch(candidates.filter(isSavedName)) : null;
     const byType = savedType && singleInstanceCustomTypes.has(savedType) ? singleMatch(candidates) : null;
 
-    return byName || sameId || byType;
+    return byName || sameId || byType || findAlternateField(savedName, savedType, customFields);
+}
+
+function isSameIdentity(identity: FieldIdentity, name: string | undefined, type: string | undefined) {
+    return identity.type === type && identity.name === name;
+}
+
+function findAlternateField(savedName: string | undefined, savedType: string | undefined, customFields: JiraField[]): JiraField | null {
+    const group = equivalentFieldGroups.find((identities) => identities.some((i) => isSameIdentity(i, savedName, savedType)));
+
+    if (!group) {
+        return null;
+    }
+
+    for (const identity of group) {
+        const ofType = customFields.filter((f) => customTypeOf(f) === identity.type);
+        const match =
+            singleMatch(ofType.filter((f) => f.name.trim().toLowerCase() === identity.name)) ||
+            (singleInstanceCustomTypes.has(identity.type) ? singleMatch(ofType) : null);
+
+        if (match) {
+            return match;
+        }
+    }
+
+    return null;
 }
 
 function collectFieldMapping(fields: PivotFieldConfig[] | undefined, customFields: JiraField[], mapping: FieldMapping) {

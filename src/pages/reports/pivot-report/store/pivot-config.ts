@@ -3,10 +3,9 @@ import { create } from 'zustand';
 import { getOrderByClause, joinJql, stripOrderBy } from '@/gadgets/shared/jira-query-utils';
 import { getPathValue } from '@/utils/helpers';
 
-import { inject } from '@services';
-
 import {
     cleanSprintSelection,
+    customSprintRange,
     getSprintFilterJql,
     syncBoardSelection,
     toAgileBoards,
@@ -22,8 +21,13 @@ import {
     type PivotFieldConfig,
     type PivotReportDefinition,
     type ReportData,
+    type SprintsParameterConfig,
 } from '../types';
 import { getQueryFieldsForKey } from '../utils/derived-sources';
+import { applyJqlParameters } from '../utils/jql-parameters';
+import { getDefaultSprintBoards, sprintsParameterKey } from '../utils/sprints-parameter';
+
+import { isSprintsParameterValue, useReportParameters } from './report-parameters';
 
 interface ReportDataState {
     showParameters: boolean;
@@ -114,6 +118,10 @@ export function updateSprintSelection(sprintSelection: SprintSelectionMap) {
     usePivotConfig.setState({ sprintSelection });
 }
 
+export function updateSprintsParameter(sprintsParameter?: SprintsParameterConfig) {
+    usePivotConfig.setState({ sprintsParameter });
+}
+
 export function getGroupItem(item: PivotFieldConfig) {
     const { id, key, name, schema } = item;
 
@@ -132,14 +140,17 @@ export function getQueryFields(fieldsMap: Record<string, boolean> = {}, derivedK
  * Returns undefined when none of the selected sprints are available, as no issues can match such a selection.
  */
 export async function getIssueSearchJql(): Promise<string | undefined> {
-    const { dataSourceType, jql, sprintSelection } = usePivotConfig.getState();
-    const userJql = jql?.trim() || '';
+    const { dataSourceType, jql, sprintSelection, sprintsParameter } = usePivotConfig.getState();
+    const { parameters } = useReportParameters.getState();
+    const userJql = applyJqlParameters(jql?.trim() || '', parameters);
 
     if (dataSourceType !== sprintDataSource) {
         return userJql;
     }
 
-    const sprintJql = await getSprintFilterJql(sprintSelection);
+    const sprintsValue = parameters[sprintsParameterKey]?.value;
+    const selection = sprintsParameter ? (isSprintsParameterValue(sprintsValue) ? sprintsValue.selection : {}) : sprintSelection;
+    const sprintJql = await getSprintFilterJql(selection);
     if (!sprintJql) {
         return undefined;
     }
@@ -173,8 +184,19 @@ export function normalizeReportDefinition({ parameters: _, ...report }: PivotRep
         jql: typeof report.jql === 'string' ? report.jql : '',
         sprintBoards,
         sprintSelection: cleanSprintSelection(sprintSelection, sprintBoards),
+        sprintsParameter: normalizeSprintsParameter(report.sprintsParameter),
         fields: Array.isArray(report.fields) ? report.fields.map(normalizeField) : [],
     };
+}
+
+function normalizeSprintsParameter(value: unknown): SprintsParameterConfig | undefined {
+    if (!value || typeof value !== 'object') {
+        return undefined;
+    }
+
+    const range = Number((value as SprintsParameterConfig).range);
+
+    return { range: Number.isInteger(range) && range > customSprintRange ? range : 0 };
 }
 
 /**
@@ -196,11 +218,6 @@ function normalizeDateRange(value: unknown): DateRangeSelection | undefined {
     const { fromDate, toDate } = range || {};
 
     return fromDate && toDate ? { fromDate: new Date(fromDate), toDate: new Date(toDate) } : undefined;
-}
-
-function getDefaultSprintBoards(): AgileBoard[] {
-    const { $session } = inject('SessionService');
-    return toAgileBoards($session.CurrentUser?.rapidViews);
 }
 
 function mapFieldsList(fieldsMap: Record<string, boolean>, items?: PivotFieldConfig[], derivedKeys?: Set<string>) {

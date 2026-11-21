@@ -6,12 +6,19 @@ import type { UserGroup } from '@types';
 
 import { DateTimePicker, MultiValueText } from '@controls';
 
-import { isParameterOption, isUserGroup, setParameterValue, useReportParameters } from '../../../store/report-parameters';
+import {
+    isParameterOption,
+    isSprintsParameterValue,
+    isUserGroup,
+    setParameterValue,
+    useReportParameters,
+} from '../../../store/report-parameters';
 import type { DateRangeSelection, ParameterOption, ReportParameter, ReportParameterValue } from '../../../types';
 import { fromPickerValue, toPickerValue } from '../../../utils/date-range';
 
 import { getOptionsLoader, getParameterKind, resolveSuggestionLoader, type OptionsLoader } from './parameter-options';
 import ParameterOptionsPicker from './ParameterOptionsPicker';
+import SprintsParameter from './SprintsParameter';
 import UserGroupsParameter from './UserGroupsParameter';
 
 interface ParameterControlProps {
@@ -53,6 +60,14 @@ export default function ParameterControl({ paramKey }: ParameterControlProps) {
     }
 
     switch (kind) {
+        case 'sprints':
+            return (
+                <SprintsParameter
+                    value={isSprintsParameterValue(value) ? value : undefined}
+                    range={param.sprintRange ?? 0}
+                    onChange={setValue}
+                />
+            );
         case 'daterange':
             return (
                 <DateRangePicker
@@ -80,7 +95,7 @@ export default function ParameterControl({ paramKey }: ParameterControlProps) {
                 <NumericInput value={value as number | undefined} onChange={(e) => setValue(e.value)} />
             );
         case 'suggestion':
-            return <SuggestionControl key={`${param.fieldKey}|${param.customType}`} param={param} onChange={setValue} />;
+            return <SuggestionControl key={`${param.fieldKey}|${param.customType}|${param.jqlField}`} param={param} onChange={setValue} />;
         default:
             return <TextValueControl param={param} onChange={setValue} />;
     }
@@ -101,12 +116,12 @@ function TextValueControl({ param: { value, isArray }, onChange }: ValueControlP
 
 function SuggestionControl({ param, onChange }: ValueControlProps) {
     const [loader, setLoader] = useState<OptionsLoader | null>();
-    const { fieldKey, customType, isArray } = param;
+    const { isArray } = param;
 
     useEffect(() => {
         let isActive = true;
 
-        resolveSuggestionLoader(fieldKey, customType)
+        resolveSuggestionLoader(param)
             .catch((err) => {
                 console.error('Unable to resolve the suggestions for report parameter', err);
                 return null;
@@ -120,7 +135,7 @@ function SuggestionControl({ param, onChange }: ValueControlProps) {
         return () => {
             isActive = false;
         };
-    }, [fieldKey, customType]);
+    }, []);
 
     if (loader === undefined) {
         return (

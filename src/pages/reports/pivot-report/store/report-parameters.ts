@@ -1,10 +1,21 @@
 import { create } from 'zustand';
 
+import { getSelectedBoardIds } from '@components/shared/sprint-selector';
+
 import { getUserName } from '@utils/helpers';
 
 import type { UserGroup } from '@types';
 
-import type { ParameterOption, ReportParameter, ReportParameterDefinition, ReportParameters, ReportParameterValue } from '../types';
+
+import type {
+    ParameterOption,
+    ReportParameter,
+    ReportParameterDefinition,
+    ReportParameters,
+    ReportParameterValue,
+    SprintsParameterValue,
+} from '../types';
+import { getInitialSprintsValue, sprintsParameterType } from '../utils/sprints-parameter';
 
 interface ReportParametersState {
     parameters: ReportParameters;
@@ -35,7 +46,8 @@ export function syncReportParameters(definitions: Record<string, ReportParameter
     Object.values(definitions).forEach((definition) => {
         const paramKey = definition.name.toLowerCase();
         const existing = current[paramKey];
-        const param: ReportParameter = existing && isSameDefinition(existing, definition) ? existing : { ...definition };
+        const param: ReportParameter =
+            existing && isSameDefinition(existing, definition) ? existing : { ...definition, value: getInitialValue(definition) };
 
         if (isEmptyParameterValue(param.value)) {
             hasMissingValues = true;
@@ -49,7 +61,11 @@ export function syncReportParameters(definitions: Record<string, ReportParameter
     return hasMissingValues;
 }
 
-const definitionProps: (keyof ReportParameterDefinition)[] = ['type', 'isArray', 'fieldKey', 'itemType', 'customType'];
+const definitionProps: (keyof ReportParameterDefinition)[] = ['type', 'isArray', 'fieldKey', 'itemType', 'customType', 'jqlField', 'sprintRange'];
+
+function getInitialValue(definition: ReportParameterDefinition): ReportParameterValue | undefined {
+    return definition.type === sprintsParameterType ? getInitialSprintsValue(definition.sprintRange) : undefined;
+}
 
 function isSameDefinition(param: ReportParameterDefinition, definition: ReportParameterDefinition) {
     return definitionProps.every((prop) => param[prop] === definition[prop]);
@@ -62,6 +78,10 @@ export function isNumberParameter(param?: ReportParameterDefinition) {
 }
 
 export function isEmptyParameterValue(value?: ReportParameterValue) {
+    if (isSprintsParameterValue(value)) {
+        return !getSelectedBoardIds(value.selection).length;
+    }
+
     if (Array.isArray(value) && value.every(isUserGroup)) {
         return !getGroupMembers(value).length;
     }
@@ -71,6 +91,10 @@ export function isEmptyParameterValue(value?: ReportParameterValue) {
 
 export function isParameterOption(value: unknown): value is ParameterOption {
     return typeof value === 'object' && value !== null && 'value' in value && 'label' in value;
+}
+
+export function isSprintsParameterValue(value: unknown): value is SprintsParameterValue {
+    return typeof value === 'object' && value !== null && Array.isArray((value as SprintsParameterValue).boards) && 'selection' in value;
 }
 
 export function isUserGroup(value: unknown): value is UserGroup {

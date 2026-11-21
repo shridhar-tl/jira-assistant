@@ -6,3 +6,4 @@ export * from './sprint-selector';
 export { default as UserDateWiseWorklog } from './UserDateWiseWorklog';
 export type { DateWiseWorklogItem } from './UserDateWiseWorklog';
 export { UserGroup, GroupRow, UserRow, GroupNameComponent, GroupFooter } from '../user-group';
+export * from './report-gallery';

@@ -1,6 +1,8 @@
 import { getIssueSearchJql, usePivotConfig, useReportData } from '../store/pivot-config';
 import { syncReportParameters } from '../store/report-parameters';
 import type { ReportData, ReportParameterDefinition } from '../types';
+import { mergeParameterDefinitions, resolveJqlParameters } from '../utils/jql-parameters';
+import { sprintsParameterKey } from '../utils/sprints-parameter';
 
 import { getMaxDepth, processColumns, spanLeafHeaders } from './column-utils';
 import { fetchData } from './common-utils';
@@ -22,13 +24,15 @@ export async function generateReport() {
         return;
     }
 
-    if (!validateReportParameters(scope)) {
+    const runId = ++latestRunId;
+    const isStale = () => runId !== latestRunId;
+
+    const parameters = await collectReportParameters(scope.parameters);
+    if (isStale() || !parameters || !validateReportParameters(parameters)) {
         return;
     }
 
     useReportData.setState({ reportErrors: undefined, isFetching: true });
-    const runId = ++latestRunId;
-    const isStale = () => runId !== latestRunId;
 
     try {
         const jql = await getIssueSearchJql();
@@ -86,7 +90,28 @@ function generateFieldHeaders(reportData: ReportData, issues: any[]) {
     spanLeafHeaders(reportData.header);
 }
 
-function validateReportParameters({ parameters }: { parameters: Record<string, ReportParameterDefinition> }) {
+type ParameterDefinitions = Record<string, ReportParameterDefinition>;
+
+/**
+ * Parameters of the data source are listed ahead of the parameters used within the fields
+ */
+async function collectReportParameters({ [sprintsParameterKey]: sprints, ...fieldParameters }: ParameterDefinitions) {
+    const { jql } = usePivotConfig.getState();
+    const { parameters: jqlParameters, errors } = await resolveJqlParameters(jql?.trim() || '');
+    const parameters: ParameterDefinitions = sprints ? { [sprintsParameterKey]: sprints } : {};
+
+    mergeParameterDefinitions(parameters, jqlParameters, errors);
+    mergeParameterDefinitions(parameters, fieldParameters, errors);
+
+    if (errors.length) {
+        useReportData.setState({ reportErrors: errors, isFetching: false, showParameters: false }, true);
+        return;
+    }
+
+    return parameters;
+}
+
+function validateReportParameters(parameters: ParameterDefinitions) {
     const hasMissingValues = syncReportParameters(parameters);
 
     if (hasMissingValues) {
