@@ -1,1 +1,0 @@
-import{J as e}from"./components-MbJlfwq8.js";function t(t,n,r){return e(t,n*12,r)}export{t};

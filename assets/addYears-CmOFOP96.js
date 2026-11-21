@@ -1,0 +1,1 @@
+import{J as e}from"./components-Dd0cxXRt.js";function t(t,n,r){return e(t,n*12,r)}export{t};
