@@ -24,7 +24,7 @@ const sample: BuilderSampleReport = {
                 {
                     type: 'computed',
                     columns: [
-                        { name: 'assigneeName', expression: "IfNull(Field.assignee.displayName, 'Unassigned')" },
+                        { name: 'assigneeName', expression: 'IfNull(Field.assignee.displayName, \'Unassigned\')' },
                         { name: 'estimateHours', expression: 'Hours(IfNull(Field.timeoriginalestimate, 0), 2)' },
                         { name: 'actualHours', expression: 'Hours(IfNull(Field.timespent, 0), 2)' },
                         { name: 'variance', expression: 'Field.actualHours - Field.estimateHours' },
@@ -75,7 +75,7 @@ const sample: BuilderSampleReport = {
                 col('accuracy', 'Accuracy', {
                     width: '90px',
                     align: 'right',
-                    formatExpr: "=Concat(Field.accuracy, '%')",
+                    formatExpr: '=Concat(Field.accuracy, \'%\')',
                     conditionalFormats: [rule('over', 'Field.actualHours > Field.estimateHours * 1.5', '#fee2e2', '#991b1b', true)],
                 }),
             ]),

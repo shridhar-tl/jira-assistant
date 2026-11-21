@@ -16,10 +16,10 @@ const sample: BuilderSampleReport = {
                 { type: 'flatten', childField: 'components', childPrefix: 'component_', keepEmpty: true },
                 {
                     type: 'group',
-                    keys: [{ name: 'component', expression: "IfNull(Field.component_name, 'No component')" }],
+                    keys: [{ name: 'component', expression: 'IfNull(Field.component_name, \'No component\')' }],
                     aggregates: [
                         { name: 'open', fn: 'count' },
-                        { name: 'bugs', fn: 'sum', expression: "IIf(Field.issuetype.name == 'Bug', 1, 0)" },
+                        { name: 'bugs', fn: 'sum', expression: 'IIf(Field.issuetype.name == \'Bug\', 1, 0)' },
                         { name: 'unassigned', fn: 'sum', expression: 'IIf(IsNull(Field.assignee), 1, 0)' },
                         { name: 'averageAge', fn: 'avg', expression: 'Field.issueAge' },
                     ],
@@ -52,13 +52,13 @@ const sample: BuilderSampleReport = {
                 col('bugShare', 'Bug %', {
                     width: '80px',
                     align: 'right',
-                    formatExpr: "=Concat(Field.bugShare, '%')",
+                    formatExpr: '=Concat(Field.bugShare, \'%\')',
                     conditionalFormats: [rule('buggy', 'Field.bugShare > 50', '#fee2e2', '#991b1b', true)],
                 }),
                 col('unassignedShare', 'Unassigned %', {
                     width: '110px',
                     align: 'right',
-                    formatExpr: "=Concat(Field.unassignedShare, '%')",
+                    formatExpr: '=Concat(Field.unassignedShare, \'%\')',
                     conditionalFormats: [rule('ownerless', 'Field.unassignedShare > 33', '#fef3c7', '#92400e', true)],
                 }),
                 col('averageAge', 'Avg age (days)', { width: '120px', align: 'right', formatExpr: '=FormatNumber(Field.averageAge, 0)' }),

@@ -18,7 +18,7 @@ const sample: BuilderSampleReport = {
             derivedSource('ds-created-weekly', 'CreatedWeekly', 'ds-created', [
                 {
                     type: 'group',
-                    keys: [{ name: 'week', expression: "StartOf('week', Field.created)" }],
+                    keys: [{ name: 'week', expression: 'StartOf(\'week\', Field.created)' }],
                     aggregates: [{ name: 'created', fn: 'count' }],
                 },
             ]),
@@ -46,14 +46,14 @@ const sample: BuilderSampleReport = {
                     },
                     { type: 'sort', keys: [{ expression: 'Field.week', direction: 'asc' }] },
                     { type: 'window', partitionBy: [], orderBy: [{ expression: 'Field.week', direction: 'asc' }], columns: [{ name: 'backlogChange', fn: 'runningSum', field: 'net' }] },
-                    { type: 'computed', columns: [{ name: 'weekLabel', expression: "FormatDate(Field.week, 'dd MMM')" }] },
+                    { type: 'computed', columns: [{ name: 'weekLabel', expression: 'FormatDate(Field.week, \'dd MMM\')' }] },
                 ],
                 'Created and resolved counts joined on the week they fall in.',
             ),
             derivedSource('ds-resolved-weekly', 'ResolvedWeekly', 'ds-resolved', [
                 {
                     type: 'group',
-                    keys: [{ name: 'week', expression: "StartOf('week', Field.resolutiondate)" }],
+                    keys: [{ name: 'week', expression: 'StartOf(\'week\', Field.resolutiondate)' }],
                     aggregates: [{ name: 'resolved', fn: 'count' }],
                 },
             ]),

@@ -16,7 +16,7 @@ const sample: BuilderSampleReport = {
             worklogsSource('ds-worklogs', 'MyWorklogs', {
                 userMode: 'me',
                 issueFields: [fields.summary, fields.status],
-                defaultFrom: "DateAdd('day', -6, Today())",
+                defaultFrom: 'DateAdd(\'day\', -6, Today())',
                 defaultTo: 'Today()',
             }),
             derivedSource('ds-diary', 'Diary', 'ds-worklogs', [
@@ -24,8 +24,8 @@ const sample: BuilderSampleReport = {
                 {
                     type: 'computed',
                     columns: [
-                        { name: 'day', expression: "FormatDate(Field.date, 'dddd, dd MMM')" },
-                        { name: 'task', expression: "Concat(Field.issueKey, ' · ', Field.summary)" },
+                        { name: 'day', expression: 'FormatDate(Field.date, \'dddd, dd MMM\')' },
+                        { name: 'task', expression: 'Concat(Field.issueKey, \' · \', Field.summary)' },
                     ],
                 },
             ]),
@@ -42,7 +42,7 @@ const sample: BuilderSampleReport = {
                     }),
                     col('status.name', 'Status', { width: '120px' }),
                     hoursColumn('hours', 'Hours'),
-                    col('comment', 'Comment', { conditionalFormats: [rule('no-comment', "Field.comment == ''", '#fef3c7', '#92400e')] }),
+                    col('comment', 'Comment', { conditionalFormats: [rule('no-comment', 'Field.comment == \'\'', '#fef3c7', '#92400e')] }),
                 ],
                 { groupBy: 'day', showGroupFooter: true },
             ),

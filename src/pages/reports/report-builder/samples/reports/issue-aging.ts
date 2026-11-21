@@ -3,7 +3,7 @@ import { openJql, projectsJql } from '../jql';
 import type { BuilderSampleReport } from '../types';
 
 const ageBucket =
-    "IIf(Field.issueAge <= 7, '1. Up to a week', IIf(Field.issueAge <= 30, '2. Up to a month', IIf(Field.issueAge <= 90, '3. Up to 3 months', IIf(Field.issueAge <= 365, '4. Up to a year', '5. Over a year'))))";
+    'IIf(Field.issueAge <= 7, \'1. Up to a week\', IIf(Field.issueAge <= 30, \'2. Up to a month\', IIf(Field.issueAge <= 90, \'3. Up to 3 months\', IIf(Field.issueAge <= 365, \'4. Up to a year\', \'5. Over a year\'))))';
 
 const sample: BuilderSampleReport = {
     id: 'issue-aging',

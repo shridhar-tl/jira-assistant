@@ -17,8 +17,8 @@ const sample: BuilderSampleReport = {
             worklogsSource('ds-worklogs', 'TeamWorklogs', {
                 userMode: 'expression',
                 userExpression: 'GroupUsers(Parameters.groups)',
-                defaultFrom: "StartOf('week', Today())",
-                defaultTo: "EndOf('week', Today())",
+                defaultFrom: 'StartOf(\'week\', Today())',
+                defaultTo: 'EndOf(\'week\', Today())',
             }),
             derivedSource('ds-daily', 'DailyHours', 'ds-worklogs', [
                 {
@@ -30,7 +30,7 @@ const sample: BuilderSampleReport = {
                     aggregates: [{ name: 'hours', fn: 'sum', expression: 'Field.hours' }],
                 },
                 { type: 'sort', keys: [{ expression: 'Field.date', direction: 'asc' }] },
-                { type: 'computed', columns: [{ name: 'day', expression: "FormatDate(Field.date, 'ddd dd MMM')" }] },
+                { type: 'computed', columns: [{ name: 'day', expression: 'FormatDate(Field.date, \'ddd dd MMM\')' }] },
             ]),
             derivedSource('ds-people', 'HoursPerPerson', 'ds-worklogs', [
                 {

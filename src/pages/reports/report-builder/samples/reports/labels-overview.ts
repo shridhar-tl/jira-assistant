@@ -21,7 +21,7 @@ const sample: BuilderSampleReport = {
                     keys: [{ name: 'label', expression: 'Field.labels' }],
                     aggregates: [
                         { name: 'issues', fn: 'count' },
-                        { name: 'open', fn: 'sum', expression: "IIf(Field.status.statusCategory.key == 'done', 0, 1)" },
+                        { name: 'open', fn: 'sum', expression: 'IIf(Field.status.statusCategory.key == \'done\', 0, 1)' },
                     ],
                 },
                 { type: 'sort', keys: [{ expression: 'Field.issues', direction: 'desc' }] },

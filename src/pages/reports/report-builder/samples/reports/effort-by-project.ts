@@ -18,8 +18,8 @@ const sample: BuilderSampleReport = {
                 userMode: 'expression',
                 userExpression: 'GroupUsers(Parameters.groups)',
                 issueFields: [fields.project, fields.issueType],
-                defaultFrom: "StartOf('month', Today())",
-                defaultTo: "EndOf('month', Today())",
+                defaultFrom: 'StartOf(\'month\', Today())',
+                defaultTo: 'EndOf(\'month\', Today())',
             }),
             derivedSource('ds-by-project', 'HoursByProject', 'ds-worklogs', [
                 {
@@ -47,7 +47,7 @@ const sample: BuilderSampleReport = {
         ],
         components: [
             header('title', 'Effort by project and issue type', 'h1'),
-            text('intro', "=Concat(FormatNumber(Sum(Datasources.Worklogs, 'hours'), 1), ' hours logged in total')"),
+            text('intro', '=Concat(FormatNumber(Sum(Datasources.Worklogs, \'hours\'), 1), \' hours logged in total\')'),
             columns(
                 'charts',
                 [chart('project-chart', 'chart-donut', 'ds-by-project', { title: 'Hours by project', labelField: 'project', valueField: 'hours' })],
@@ -64,7 +64,7 @@ const sample: BuilderSampleReport = {
             table('projects', 'ds-by-project', [
                 col('project', 'Project'),
                 hoursColumn('hours', 'Hours'),
-                col('share', 'Share', { width: '80px', align: 'right', formatExpr: "=Concat(Round(Field.share, 1), '%')" }),
+                col('share', 'Share', { width: '80px', align: 'right', formatExpr: '=Concat(Round(Field.share, 1), \'%\')' }),
                 col('people', 'People', { width: '80px', align: 'right' }),
             ]),
             table('types', 'ds-by-type', [col('issueType', 'Issue type'), hoursColumn('hours', 'Hours')], { groupBy: 'project', showGroupFooter: true }),

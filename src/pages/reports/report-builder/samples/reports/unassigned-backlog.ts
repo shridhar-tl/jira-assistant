@@ -45,7 +45,7 @@ const sample: BuilderSampleReport = {
                     headRows: [
                         {
                             id: 'count',
-                            cells: [{ colSpan: 8, textExpression: "=Concat(Count(Datasources.Unassigned), ' unassigned open issues')" }],
+                            cells: [{ colSpan: 8, textExpression: '=Concat(Count(Datasources.Unassigned), \' unassigned open issues\')' }],
                         },
                     ],
                 },

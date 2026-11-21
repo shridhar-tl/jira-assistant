@@ -24,8 +24,8 @@ const sample: BuilderSampleReport = {
                 {
                     type: 'computed',
                     columns: [
-                        { name: 'assigneeName', expression: "IfNull(Field.assignee.displayName, 'Unassigned')" },
-                        { name: 'daysLeft', expression: "DateDiff('day', Today(), Field.duedate)" },
+                        { name: 'assigneeName', expression: 'IfNull(Field.assignee.displayName, \'Unassigned\')' },
+                        { name: 'daysLeft', expression: 'DateDiff(\'day\', Today(), Field.duedate)' },
                     ],
                 },
                 { type: 'sort', keys: [{ expression: 'Field.assigneeName', direction: 'asc' }, { expression: 'Field.daysLeft', direction: 'asc' }] },

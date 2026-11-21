@@ -46,9 +46,9 @@ const sample: BuilderSampleReport = {
                         {
                             id: 'totals',
                             cells: [
-                                { colSpan: 5, textExpression: "=Concat(Count(Datasources.OpenByAge), ' open issues')" },
-                                { align: 'right', textExpression: "=Sum(Datasources.OpenByAge, 'storyPoints')" },
-                                { align: 'right', textExpression: "=FormatNumber(Sum(Datasources.OpenByAge, 'remainingHours'), 1)" },
+                                { colSpan: 5, textExpression: '=Concat(Count(Datasources.OpenByAge), \' open issues\')' },
+                                { align: 'right', textExpression: '=Sum(Datasources.OpenByAge, \'storyPoints\')' },
+                                { align: 'right', textExpression: '=FormatNumber(Sum(Datasources.OpenByAge, \'remainingHours\'), 1)' },
                                 {},
                             ],
                         },

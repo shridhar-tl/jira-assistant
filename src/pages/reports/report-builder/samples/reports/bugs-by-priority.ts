@@ -22,7 +22,7 @@ const sample: BuilderSampleReport = {
             derivedSource('ds-by-priority', 'BugsByPriority', 'ds-bugs', [
                 {
                     type: 'group',
-                    keys: [{ name: 'priority', expression: "IfNull(Field.priority.name, 'None')" }],
+                    keys: [{ name: 'priority', expression: 'IfNull(Field.priority.name, \'None\')' }],
                     aggregates: [
                         { name: 'bugs', fn: 'count' },
                         { name: 'unassigned', fn: 'sum', expression: 'IIf(IsNull(Field.assignee), 1, 0)' },
@@ -34,7 +34,7 @@ const sample: BuilderSampleReport = {
                 { type: 'flatten', childField: 'components', childPrefix: 'component_', keepEmpty: true },
                 {
                     type: 'group',
-                    keys: [{ name: 'component', expression: "IfNull(Field.component_name, 'No component')" }],
+                    keys: [{ name: 'component', expression: 'IfNull(Field.component_name, \'No component\')' }],
                     aggregates: [{ name: 'bugs', fn: 'count' }],
                 },
                 { type: 'sort', keys: [{ expression: 'Field.bugs', direction: 'desc' }] },

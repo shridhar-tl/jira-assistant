@@ -14,10 +14,10 @@ const sample: BuilderSampleReport = {
             derivedSource('ds-workload', 'Workload', 'ds-issues', [
                 {
                     type: 'group',
-                    keys: [{ name: 'assignee', expression: "IfNull(Field.assignee.displayName, 'Unassigned')" }],
+                    keys: [{ name: 'assignee', expression: 'IfNull(Field.assignee.displayName, \'Unassigned\')' }],
                     aggregates: [
                         { name: 'issues', fn: 'count' },
-                        { name: 'open', fn: 'sum', expression: "IIf(Field.status.statusCategory.key == 'done', 0, 1)" },
+                        { name: 'open', fn: 'sum', expression: 'IIf(Field.status.statusCategory.key == \'done\', 0, 1)' },
                         { name: 'points', fn: 'sum', expression: 'IfNull(Field.storyPoints, 0)' },
                         { name: 'spentHours', fn: 'sum', expression: 'Hours(IfNull(Field.timespent, 0), 2)' },
                         { name: 'remainingHours', fn: 'sum', expression: 'Hours(IfNull(Field.timeestimate, 0), 2)' },
@@ -55,7 +55,7 @@ const sample: BuilderSampleReport = {
                     formatExpr: '=FormatNumber(Field.remainingHours, 2)',
                     conditionalFormats: [rule('busy', 'Field.share > 30', '#fee2e2', '#991b1b', true)],
                 }),
-                col('share', 'Share', { width: '80px', align: 'right', formatExpr: "=Concat(Round(Field.share, 0), '%')" }),
+                col('share', 'Share', { width: '80px', align: 'right', formatExpr: '=Concat(Round(Field.share, 0), \'%\')' }),
             ]),
         ],
     },

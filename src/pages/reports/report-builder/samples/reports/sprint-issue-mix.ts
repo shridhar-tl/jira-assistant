@@ -17,7 +17,7 @@ const sample: BuilderSampleReport = {
                     keys: [{ name: 'issueType', expression: 'Field.issuetype.name' }],
                     aggregates: [
                         { name: 'issues', fn: 'count' },
-                        { name: 'done', fn: 'sum', expression: "IIf(Field.status.statusCategory.key == 'done', 1, 0)" },
+                        { name: 'done', fn: 'sum', expression: 'IIf(Field.status.statusCategory.key == \'done\', 1, 0)' },
                         { name: 'points', fn: 'sum', expression: 'IfNull(Field.storyPoints, 0)' },
                     ],
                 },
@@ -49,7 +49,7 @@ const sample: BuilderSampleReport = {
                 col('percentDone', 'Done %', {
                     width: '90px',
                     align: 'right',
-                    formatExpr: "=Concat(Field.percentDone, '%')",
+                    formatExpr: '=Concat(Field.percentDone, \'%\')',
                     conditionalFormats: [rule('complete', 'Field.percentDone == 100', '#dcfce7', '#166534', true)],
                 }),
             ]),

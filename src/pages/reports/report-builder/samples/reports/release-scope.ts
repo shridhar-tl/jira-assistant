@@ -33,9 +33,9 @@ const sample: BuilderSampleReport = {
                     ],
                     aggregates: [
                         { name: 'issues', fn: 'count' },
-                        { name: 'toDo', fn: 'sum', expression: "IIf(Field.status.statusCategory.key == 'new', 1, 0)" },
-                        { name: 'inProgress', fn: 'sum', expression: "IIf(Field.status.statusCategory.key == 'indeterminate', 1, 0)" },
-                        { name: 'done', fn: 'sum', expression: "IIf(Field.status.statusCategory.key == 'done', 1, 0)" },
+                        { name: 'toDo', fn: 'sum', expression: 'IIf(Field.status.statusCategory.key == \'new\', 1, 0)' },
+                        { name: 'inProgress', fn: 'sum', expression: 'IIf(Field.status.statusCategory.key == \'indeterminate\', 1, 0)' },
+                        { name: 'done', fn: 'sum', expression: 'IIf(Field.status.statusCategory.key == \'done\', 1, 0)' },
                         { name: 'points', fn: 'sum', expression: 'IfNull(Field.storyPoints, 0)' },
                     ],
                 },
@@ -43,10 +43,10 @@ const sample: BuilderSampleReport = {
                     type: 'computed',
                     columns: [
                         { name: 'percentDone', expression: 'Percent(Field.done, Field.issues, 0)' },
-                        { name: 'daysToRelease', expression: "IIf(IsNull(Field.releaseDate), null, DateDiff('day', Today(), Field.releaseDate))" },
+                        { name: 'daysToRelease', expression: 'IIf(IsNull(Field.releaseDate), null, DateDiff(\'day\', Today(), Field.releaseDate))' },
                     ],
                 },
-                { type: 'sort', keys: [{ expression: "IfNull(Field.releaseDate, '9999-12-31')", direction: 'asc' }] },
+                { type: 'sort', keys: [{ expression: 'IfNull(Field.releaseDate, \'9999-12-31\')', direction: 'asc' }] },
             ]),
         ],
         components: [
@@ -73,7 +73,7 @@ const sample: BuilderSampleReport = {
                 col('issues', 'Issues', { width: '80px', align: 'right' }),
                 col('done', 'Done', { width: '80px', align: 'right' }),
                 col('points', 'Points', { width: '80px', align: 'right' }),
-                col('percentDone', 'Done %', { width: '80px', align: 'right', formatExpr: "=Concat(Field.percentDone, '%')" }),
+                col('percentDone', 'Done %', { width: '80px', align: 'right', formatExpr: '=Concat(Field.percentDone, \'%\')' }),
             ]),
             header('issues-title', 'Issues per version', 'h3'),
             table(

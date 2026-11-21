@@ -1,6 +1,6 @@
+import type { ReportDefinition } from '@components/report-builder';
 import type { ReportSample, ReportSampleCategory } from '@components/shared/report-gallery';
 
-import type { ReportDefinition } from '@components/report-builder';
 
 export type BuilderSampleCategory = 'sprints' | 'issues' | 'time' | 'releases';
 

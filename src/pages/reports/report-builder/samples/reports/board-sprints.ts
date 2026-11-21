@@ -16,7 +16,7 @@ const sample: BuilderSampleReport = {
                     type: 'sort',
                     keys: [
                         { expression: 'Field.boardName', direction: 'asc' },
-                        { expression: "IfNull(Field.startDate, '9999-12-31')", direction: 'asc' },
+                        { expression: 'IfNull(Field.startDate, \'9999-12-31\')', direction: 'asc' },
                     ],
                 },
             ]),
@@ -35,7 +35,7 @@ const sample: BuilderSampleReport = {
                 'sprints',
                 'ds-ordered',
                 [
-                    col('name', 'Sprint', { conditionalFormats: [rule('active', "Field.state == 'active'", '#dbeafe', '#1e40af', true)] }),
+                    col('name', 'Sprint', { conditionalFormats: [rule('active', 'Field.state == \'active\'', '#dbeafe', '#1e40af', true)] }),
                     col('state', 'State', { width: '90px' }),
                     dateColumn('startDate', 'Start'),
                     dateColumn('endDate', 'End'),

@@ -26,16 +26,16 @@ const sample: BuilderSampleReport = {
                     ],
                     aggregates: [
                         { name: 'children', fn: 'count' },
-                        { name: 'done', fn: 'sum', expression: "IIf(Field.status.statusCategory.key == 'done', 1, 0)" },
+                        { name: 'done', fn: 'sum', expression: 'IIf(Field.status.statusCategory.key == \'done\', 1, 0)' },
                         { name: 'points', fn: 'sum', expression: 'IfNull(Field.storyPoints, 0)' },
-                        { name: 'donePoints', fn: 'sum', expression: "IIf(Field.status.statusCategory.key == 'done', IfNull(Field.storyPoints, 0), 0)" },
+                        { name: 'donePoints', fn: 'sum', expression: 'IIf(Field.status.statusCategory.key == \'done\', IfNull(Field.storyPoints, 0), 0)' },
                     ],
                 },
                 {
                     type: 'computed',
                     columns: [
                         { name: 'percentDone', expression: 'Percent(Field.done, Field.children, 0)' },
-                        { name: 'label', expression: "Concat(Field.parentKey, ' ', Mid(Field.parentSummary, 1, 40))" },
+                        { name: 'label', expression: 'Concat(Field.parentKey, \' \', Mid(Field.parentSummary, 1, 40))' },
                     ],
                 },
                 { type: 'sort', keys: [{ expression: 'Field.percentDone', direction: 'asc' }] },
@@ -59,7 +59,7 @@ const sample: BuilderSampleReport = {
                 col('parentSummary', 'Summary'),
                 col('parentStatus', 'Status', {
                     width: '120px',
-                    conditionalFormats: [rule('closed-early', "Field.parentStatus == 'Done' && Field.done < Field.children", '#fee2e2', '#991b1b', true)],
+                    conditionalFormats: [rule('closed-early', 'Field.parentStatus == \'Done\' && Field.done < Field.children', '#fee2e2', '#991b1b', true)],
                 }),
                 col('children', 'Children', { width: '80px', align: 'right' }),
                 col('done', 'Done', { width: '80px', align: 'right' }),
@@ -68,7 +68,7 @@ const sample: BuilderSampleReport = {
                 col('percentDone', 'Done %', {
                     width: '80px',
                     align: 'right',
-                    formatExpr: "=Concat(Field.percentDone, '%')",
+                    formatExpr: '=Concat(Field.percentDone, \'%\')',
                     conditionalFormats: [rule('complete', 'Field.percentDone == 100', '#dcfce7', '#166534', true)],
                 }),
             ]),

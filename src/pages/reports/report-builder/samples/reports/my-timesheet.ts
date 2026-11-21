@@ -16,8 +16,8 @@ const sample: BuilderSampleReport = {
             worklogsSource('ds-worklogs', 'MyWorklogs', {
                 userMode: 'me',
                 issueFields: [fields.summary, fields.project],
-                defaultFrom: "StartOf('week', Today())",
-                defaultTo: "EndOf('week', Today())",
+                defaultFrom: 'StartOf(\'week\', Today())',
+                defaultTo: 'EndOf(\'week\', Today())',
             }),
             derivedSource('ds-daily', 'DailyHours', 'ds-worklogs', [
                 {
@@ -29,12 +29,12 @@ const sample: BuilderSampleReport = {
                     ],
                 },
                 { type: 'sort', keys: [{ expression: 'Field.date', direction: 'asc' }] },
-                { type: 'computed', columns: [{ name: 'day', expression: "FormatDate(Field.date, 'ddd dd MMM')" }] },
+                { type: 'computed', columns: [{ name: 'day', expression: 'FormatDate(Field.date, \'ddd dd MMM\')' }] },
             ]),
         ],
         components: [
             header('title', 'My timesheet', 'h1'),
-            text('intro', "=Concat('Total logged: ', FormatNumber(Sum(Datasources.MyWorklogs, 'hours'), 2), ' hours on ', Count(Datasources.DailyHours), ' days')"),
+            text('intro', '=Concat(\'Total logged: \', FormatNumber(Sum(Datasources.MyWorklogs, \'hours\'), 2), \' hours on \', Count(Datasources.DailyHours), \' days\')'),
             chart('daily-chart', 'chart-bar', 'ds-daily', { title: 'Hours per day', xAxisField: 'day', yAxisField: 'hours', showLegend: false, aggregation: 'none' }),
             table(
                 'worklogs',
