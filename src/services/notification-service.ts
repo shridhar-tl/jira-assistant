@@ -1,7 +1,7 @@
 import moment from 'moment';
 
-import { BROWSER_NAME } from '@/common/browsers';
 import { AppVersionNo, isPluginBuild, isWebBuild, messagesUrl } from '@/constants';
+import { BROWSER_NAME } from '@/utils/browsers';
 
 import type AjaxRequestService from './ajax-request-service';
 import type CacheService from './cache-service';

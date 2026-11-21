@@ -23,17 +23,19 @@ const browser = {
 
 export default browser;
 
+export type BrowserName = 'chrome' | 'edge' | 'firefox' | 'opera';
+
 export const BROWSER_NAME = getName();
 
-function getName(): string {
+function getName(): BrowserName {
     if (isEdge || isEdgeChromium) {
         return 'edge';
     } else if (isFirefox) {
         return 'firefox';
-    } else if (isChrome) {
-        return 'chrome';
     } else if (isOpera) {
         return 'opera';
+    } else if (isChrome) {
+        return 'chrome';
     } else {
         return 'chrome';
     }

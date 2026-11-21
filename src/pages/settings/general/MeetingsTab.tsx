@@ -81,7 +81,10 @@ export default function MeetingsTab({ settings, userId, removedIntg, onSave, onC
 
     const googleSignIn = async () => {
         try {
-            await $calendar.authenticate(true);
+            if (!(await $calendar.authenticate(true))) {
+                $message.warning('Unable to integrate with Google Calendar!');
+                return;
+            }
             onSave(true, 'hasGoogleCredentials');
             $session.CurrentUser.hasGoogleCredentials = true;
             $analytics.trackEvent('Signedin to Google Calendar', 'Integration');

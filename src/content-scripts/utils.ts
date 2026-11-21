@@ -58,14 +58,6 @@ export function injectPollyfill() {
     document.body.appendChild(el);
 }
 
-export function injectCss() {
-    const el = document.createElement('link');
-    el.rel = 'stylesheet';
-    el.href = chr.runtime.getURL('jira_cs.css');
-    el.media = 'all';
-    document.head.appendChild(el);
-}
-
 export function clearEnd(s: string, str: string) {
     while (endsWith(s, str)) {
         s = s.substring(0, s.length - str.length);

@@ -3,6 +3,7 @@ import classNames from 'classnames';
 import { ScrollableTable, THead, TBody } from '@components';
 
 import { type EstimateUnit, getCommonEstimateUnit, getEstimateNoun, getEstimateValueLabel } from './estimate-unit';
+import SprintCloserCell from './SprintCloserCell';
 import { isClosed } from './utils';
 
 interface SummaryView1Props {
@@ -99,7 +100,9 @@ function SummaryView1({ sprintDetails, formatDateTime }: SummaryView1Props) {
                         Closed by
                     </td>
                     {sprintDetails.map((sprint, i) => (
-                        <td key={i} className="px-3 py-2" dangerouslySetInnerHTML={{ __html: sprint.lastUserToClose || '' }} />
+                        <td key={i} className="px-3 py-2">
+                            <SprintCloserCell closer={sprint.lastUserToClose} />
+                        </td>
                     ))}
                 </tr>
 

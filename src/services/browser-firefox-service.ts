@@ -1,6 +1,7 @@
 import { FF_STORE_URL } from '../constants/urls';
 
-import BrowserBase, { type PermissionObj } from './browser-base';
+import BrowserBase, { type ContentScriptFiles, type PermissionObj, type RegisteredContentScript } from './browser-base';
+import { extractAccessToken, getGoogleCalendarAuthUrl } from './google-web-auth';
 
 declare const chrome: any;
 declare const browser: any;
@@ -56,17 +57,19 @@ export default class FirefoxBrowserService extends BrowserBase {
         }
     }
 
-    async registerContentScripts(id: string, js: string[], matches: string[]): Promise<void> {
-        return await this.browser.scripting.registerContentScripts([
+    async registerContentScripts(id: string, { js, css }: ContentScriptFiles, matches: string[]): Promise<void> {
+        const scripts: RegisteredContentScript[] = [
             {
                 id,
                 js,
+                css,
                 matches,
                 persistAcrossSessions: false,
                 runAt: 'document_end',
                 allFrames: true,
             },
-        ]);
+        ];
+        return await this.browser.scripting.registerContentScripts(scripts);
     }
 
     replaceTabUrl(url: string): Promise<any> {
@@ -84,18 +87,12 @@ export default class FirefoxBrowserService extends BrowserBase {
     }
 
     getAuthToken(options: any): Promise<string> {
-        const REDIRECT_URL = this.browser.identity.getRedirectURL();
-        const CLIENT_ID = '692513716183-jm587gc534dvsere4qhnk5bj68pql3p9.apps.googleusercontent.com';
-        const SCOPES = ['https://www.googleapis.com/auth/calendar.readonly'];
-        const AUTH_URL = `https://accounts.google.com/o/oauth2/auth?client_id=${CLIENT_ID}&response_type=token&redirect_uri=${encodeURIComponent(
-            REDIRECT_URL,
-        )}&scope=${encodeURIComponent(SCOPES.join(' '))}`;
         return this.browser.identity
             .launchWebAuthFlow({
                 interactive: options.interactive,
-                url: AUTH_URL,
+                url: getGoogleCalendarAuthUrl(this.browser.identity.getRedirectURL()),
             })
-            .then((tokken: string) => this.extractAccessToken(tokken));
+            .then((tokken: string) => extractAccessToken(tokken));
     }
 
     getRedirectUrl(endpoint?: string): string {
@@ -117,12 +114,7 @@ export default class FirefoxBrowserService extends BrowserBase {
     }
 
     extractAccessToken(redirectUri: string): string | null {
-        const m = redirectUri.match(/[#?](.*)/);
-        if (!m || m.length < 1) {
-            return null;
-        }
-        const params = new URLSearchParams(m[1].split('#')[0]);
-        return params.get('access_token');
+        return extractAccessToken(redirectUri);
     }
 
     getLaunchUrl(file: string): Promise<string> {

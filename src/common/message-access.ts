@@ -25,7 +25,10 @@ type ArgsValidator = (args: unknown[], senderOrigin: string) => boolean;
 
 type ActionRules = Readonly<Record<string, true | ArgsValidator>>;
 
-const contentScriptRules: Readonly<Record<string, ActionRules>> = {
+// true grants every action of the service
+type ServiceRules = Readonly<Record<string, true | ActionRules>>;
+
+const contentScriptRules: ServiceRules = {
     SELF: {
         GET_CS_SETTINGS: (args, senderOrigin) => args[0] === senderOrigin,
     },
@@ -40,19 +43,31 @@ const contentScriptRules: Readonly<Record<string, ActionRules>> = {
     },
 };
 
-const jaSiteServices: readonly string[] = ['SELF'];
+const jaSiteRules: ServiceRules = { SELF: true };
 
-const externalServicesByDomain: ReadonlyArray<{ rootDomain: string; services: readonly string[] }> = [
-    { rootDomain: 'jiraassistant.com', services: jaSiteServices },
-    { rootDomain: 'atlassian.net', services: ['SELF', 'WorklogTimerService', 'SettingsService'] },
+const externalRulesByDomain: ReadonlyArray<{ rootDomain: string; rules: ServiceRules }> = [
+    { rootDomain: 'jiraassistant.com', rules: jaSiteRules },
+    { rootDomain: 'atlassian.net', rules: { SELF: { VERSION: true, IS_INTEGRATED: true } } },
 ];
+
+function isAllowedByRules(rules: ServiceRules, message: ExtnMessageRequest, senderOrigin: string): boolean {
+    const serviceRule = Object.hasOwn(rules, message.svcName) ? rules[message.svcName] : undefined;
+    if (serviceRule === true) {
+        return true;
+    }
+    const actionRule = serviceRule && Object.hasOwn(serviceRule, message.action) ? serviceRule[message.action] : undefined;
+    if (!actionRule) {
+        return false;
+    }
+    return actionRule === true || actionRule(message.args, senderOrigin);
+}
 
 function isAllowedForExternalPage(message: ExtnMessageRequest, senderOrigin: string, allowLocalOrigin: boolean): boolean {
     if (isJAWebAppOrigin(senderOrigin, allowLocalOrigin)) {
         return true;
     }
-    return externalServicesByDomain.some(
-        ({ rootDomain, services }) => isHttpsOriginOfDomain(senderOrigin, rootDomain) && services.includes(message.svcName),
+    return externalRulesByDomain.some(
+        ({ rootDomain, rules }) => isHttpsOriginOfDomain(senderOrigin, rootDomain) && isAllowedByRules(rules, message, senderOrigin),
     );
 }
 
@@ -96,15 +111,6 @@ function isOwnExtensionPage(sender: ExtnMessageSender, ownOrigin: string): boole
     return sender.origin === ownOrigin || !!sender.url?.startsWith(`${ownOrigin}/`);
 }
 
-function isAllowedForContentScript(message: ExtnMessageRequest, senderOrigin: string): boolean {
-    const rule = Object.hasOwn(contentScriptRules, message.svcName) ? contentScriptRules[message.svcName] : undefined;
-    const actionRule = rule && Object.hasOwn(rule, message.action) ? rule[message.action] : undefined;
-    if (!actionRule) {
-        return false;
-    }
-    return actionRule === true || actionRule(message.args, senderOrigin);
-}
-
 /**
  * Returns the reason for denying the request, or null when the request is allowed.
  */
@@ -137,8 +143,8 @@ export function getAccessDenialReason(message: ExtnMessageRequest, sender: ExtnM
     }
 
     if (isTrustedJAOrigin(senderOrigin)) {
-        return jaSiteServices.includes(message.svcName) ? null : `${message.svcName}.${message.action} is not allowed for ${senderOrigin}`;
+        return isAllowedByRules(jaSiteRules, message, senderOrigin) ? null : `${message.svcName}.${message.action} is not allowed for ${senderOrigin}`;
     }
 
-    return isAllowedForContentScript(message, senderOrigin) ? null : `${message.svcName}.${message.action} is not allowed for content script of ${senderOrigin}`;
+    return isAllowedByRules(contentScriptRules, message, senderOrigin) ? null : `${message.svcName}.${message.action} is not allowed for content script of ${senderOrigin}`;
 }

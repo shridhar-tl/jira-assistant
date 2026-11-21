@@ -3,8 +3,20 @@ name: Build Electron App
 on:
   push:
     branches: [ ja-app ]
+    paths-ignore:
+      - '**/package-lock.json'
+      - '**/npm-shrinkwrap.json'
+      - '**/pnpm-lock.yaml'
+      - 'docs/**'
+      - 'scripts/**'
   pull_request:
     branches: [ ja-app ]
+    paths-ignore:
+      - '**/package-lock.json'
+      - '**/npm-shrinkwrap.json'
+      - '**/pnpm-lock.yaml'
+      - 'docs/**'
+      - 'scripts/**'
 
 jobs:
   release:

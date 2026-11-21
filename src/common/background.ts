@@ -235,7 +235,7 @@ async function loadSettings(): Promise<void> {
 
             if (matches.length) {
                 log('Attaching CS for ', matches);
-                await services.$jaBrowserExtn.registerContentScripts('jira-plugin', ['/jira_cs.js'], matches);
+                await services.$jaBrowserExtn.registerContentScripts('jira-plugin', { js: ['/jira_cs.js'], css: ['/jira_cs.css'], pageJs: ['/api-pollyfill.js'] }, matches);
             }
         } else {
             await chrome.scripting.unregisterContentScripts();

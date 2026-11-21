@@ -29,7 +29,7 @@
         }
     },
     "externally_connectable": {
-        "matches": ["https://*.jiraassistant.com/*"]
+        "matches": ["https://*.jiraassistant.com/*", "https://*.atlassian.net/*"]
     },
     "options_page": "/index.html#/options",
     "background": {
@@ -39,10 +39,6 @@
         {
             "resources": ["index.html"],
             "matches": ["https://*.jiraassistant.com/*"]
-        },
-        {
-            "resources": ["api-pollyfill.js", "/assets/*", "/jira_cs.js", "/jira_cs.css"],
-            "matches": ["<all_urls>"]
         }
     ],
     "oauth2": {

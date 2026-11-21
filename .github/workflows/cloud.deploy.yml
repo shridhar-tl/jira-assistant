@@ -28,8 +28,20 @@ on:
         type: boolean
   push:
     branches: [ package, master ]
+    paths-ignore:
+      - '**/package-lock.json'
+      - '**/npm-shrinkwrap.json'
+      - '**/pnpm-lock.yaml'
+      - 'docs/**'
+      - 'scripts/**'
   pull_request:
     branches: [ package, master ]
+    paths-ignore:
+      - '**/package-lock.json'
+      - '**/npm-shrinkwrap.json'
+      - '**/pnpm-lock.yaml'
+      - 'docs/**'
+      - 'scripts/**'
 
 jobs:
   build:

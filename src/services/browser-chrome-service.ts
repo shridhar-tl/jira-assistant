@@ -1,6 +1,7 @@
 import { CHROME_WS_URL } from '@/constants';
 
-import BrowserBase from './browser-base';
+import BrowserBase, { type ContentScriptFiles, type RegisteredContentScript } from './browser-base';
+import { extractAccessToken } from './google-web-auth';
 
 declare const chrome: any;
 
@@ -79,16 +80,28 @@ export default class ChromeBrowserService extends BrowserBase {
         }
     }
 
-    async registerContentScripts(id: string, js: string[], matches: string[]): Promise<void> {
-        return await this.chrome.scripting.registerContentScripts([
+    async registerContentScripts(id: string, { js, css, pageJs }: ContentScriptFiles, matches: string[]): Promise<void> {
+        const scripts: RegisteredContentScript[] = [
             {
                 id,
                 js,
+                css,
                 matches,
                 runAt: 'document_end',
                 allFrames: true,
             },
-        ]);
+        ];
+        if (pageJs?.length) {
+            scripts.unshift({
+                id: `${id}-page`,
+                js: pageJs,
+                matches,
+                runAt: 'document_start',
+                allFrames: true,
+                world: 'MAIN',
+            });
+        }
+        return await this.chrome.scripting.registerContentScripts(scripts);
     }
 
     replaceTabUrl(url: string): Promise<any> {
@@ -105,7 +118,7 @@ export default class ChromeBrowserService extends BrowserBase {
         return new Promise((resolve, reject) => {
             this.chrome.identity.getAuthToken(options, (accessToken: string) => {
                 if (this.chrome.runtime.lastError || !accessToken) {
-                    console.error('GCalendar integration failed', accessToken, this.chrome.runtime.lastError.message);
+                    console.error('GCalendar integration failed', accessToken, this.chrome.runtime.lastError?.message);
                     reject({ error: this.chrome.runtime.lastError, tokken: accessToken });
                 } else {
                     resolve(accessToken);
@@ -124,7 +137,7 @@ export default class ChromeBrowserService extends BrowserBase {
         });
     }
 
-    removeAuthTokken(authToken: string): void {
+    removeAuthToken(authToken: string): void {
         this.chrome.identity.removeCachedAuthToken({ token: authToken }, () => {});
     }
 
@@ -133,12 +146,7 @@ export default class ChromeBrowserService extends BrowserBase {
     }
 
     extractAccessToken(redirectUri: string): string | null {
-        const m = redirectUri.match(/[#?](.*)/);
-        if (!m || m.length < 1) {
-            return null;
-        }
-        const params = new URLSearchParams(m[1].split('#')[0]);
-        return params.get('access_token');
+        return extractAccessToken(redirectUri);
     }
 
     getLaunchUrl(file: string): Promise<string> {

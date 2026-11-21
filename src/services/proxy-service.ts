@@ -1,6 +1,6 @@
 import { executeService } from '@/common';
-import { BROWSER_NAME } from '@/common/browsers';
 import { CHROME_WS_URL, StoreUrls } from '@/constants';
+import { BROWSER_NAME } from '@/utils/browsers';
 
 import AjaxRequestService from './ajax-request-service';
 import BrowserBase from './browser-base';

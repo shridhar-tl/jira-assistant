@@ -19,6 +19,7 @@ import { GadgetContainer, useBaseGadget, type BaseGadgetProps } from '../../../g
 
 import { detectEstimateUnit, roundEstimate, toEstimateValue } from './estimate-unit';
 import SprintReportInfo from './ReportInfo';
+import { parseSprintCloser } from './sprint-closer';
 import SprintWiseWorklog from './SprintWiseWorklog';
 import SummaryView1 from './SummaryView1';
 import SummaryView2 from './SummaryView2';
@@ -48,27 +49,6 @@ const gadgetConfig = {
     hideCSVExport: true,
     exportFormat: ExportFormat,
 };
-
-function toCloserLinkHtml(html: string, mapJiraUrl: (url: string) => string): string {
-    const source = new DOMParser().parseFromString(html, 'text/html').body;
-    const firstNode = source.childNodes[0];
-    const output = document.createElement('div');
-
-    if (firstNode instanceof HTMLAnchorElement) {
-        const link = document.createElement('a');
-        link.textContent = firstNode.textContent;
-        link.setAttribute('target', '_blank');
-        const href = firstNode.getAttribute('href');
-        if (href) {
-            link.setAttribute('href', mapJiraUrl(href));
-        }
-        output.appendChild(link);
-    } else {
-        output.textContent = source.textContent;
-    }
-
-    return output.innerHTML;
-}
 
 function SprintReport(props: BaseGadgetProps) {
     const gadgetHook = useBaseGadget({ ...props, isGadget: false }, gadgetConfig);
@@ -258,7 +238,7 @@ function SprintReport(props: BaseGadgetProps) {
                     }
                     sprint.expanded = result.length === 1;
                     if (sprint.lastUserToClose) {
-                        sprint.lastUserToClose = toCloserLinkHtml(sprint.lastUserToClose, $userutils.mapJiraUrl);
+                        sprint.lastUserToClose = parseSprintCloser(sprint.lastUserToClose, $userutils.mapJiraUrl);
                     }
                 });
 

@@ -7,6 +7,23 @@ function getOriginFromUrl(url: string): string {
     }
 }
 
+export interface ContentScriptFiles {
+    js: string[];
+    css?: string[];
+    pageJs?: string[];
+}
+
+export interface RegisteredContentScript {
+    id: string;
+    js: string[];
+    css?: string[];
+    matches: string[];
+    runAt: 'document_start' | 'document_end' | 'document_idle';
+    allFrames: boolean;
+    world?: 'ISOLATED' | 'MAIN';
+    persistAcrossSessions?: boolean;
+}
+
 export interface PermissionObj {
     permissions: string[];
     origins?: string[];

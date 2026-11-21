@@ -1,5 +1,5 @@
-import { BROWSER_NAME } from '@/common/browsers';
 import { CHROME_WS_URL, StoreUrls } from '@/constants';
+import { BROWSER_NAME } from '@/utils/browsers';
 
 import BrowserBase from './browser-base';
 

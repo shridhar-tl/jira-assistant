@@ -5,6 +5,7 @@ import classNames from 'classnames';
 import { ScrollableTable, THead, TBody } from '@components';
 
 import { getCommonEstimateUnit, getEstimateNoun } from './estimate-unit';
+import SprintCloserCell from './SprintCloserCell';
 import { isClosed, isIconUrl } from './utils';
 
 interface SummaryView2Props {
@@ -194,7 +195,9 @@ function SprintDetailsRow({ sprint, formatDateTime, showUnit }: SprintDetailsRow
                         {sprint.sprint.state}
                     </span>
                 </td>
-                <td className="px-3 py-2 text-center" dangerouslySetInnerHTML={{ __html: sprint.lastUserToClose || '' }} />
+                <td className="px-3 py-2 text-center">
+                    <SprintCloserCell closer={sprint.lastUserToClose} />
+                </td>
                 <td className={cellClass}>
                     <SPVal oldVal={sprint.estimateIssuesSPOld} val={sprint.estimateIssuesSP} />
                 </td>

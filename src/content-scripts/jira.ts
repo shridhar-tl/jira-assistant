@@ -4,7 +4,7 @@ import { curOrigin, Pages, regexSet } from './constants';
 import { applyBoardLogic } from './jira-board';
 import { applyIssueLogic } from './jira-issue';
 import { createTimerBox } from './timer-box';
-import { chr, executeJASvc, getPathName, injectCss, injectPollyfill, isExtnContextValid, until } from './utils';
+import { chr, executeJASvc, getPathName, injectPollyfill, isExtnContextValid, until } from './utils';
 
 const win: any = window;
 
@@ -52,8 +52,9 @@ function loadLocationInfo() {
     applyModifications(true);
 }
 
-injectPollyfill();
-injectCss();
+if (chr.runtime.getManifest().manifest_version === 2) {
+    injectPollyfill();
+}
 loadLocationInfo();
 win.addEventListener('ja-locationchange', loadLocationInfo);
 
