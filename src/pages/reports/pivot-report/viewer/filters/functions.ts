@@ -5,14 +5,17 @@ import { getUserName } from '@/utils';
 
 import { inject } from '@services';
 
+import { getParameterFilterValue } from '../../store/report-parameters';
+import type { ReportParameters } from '../../types';
+
 export function currentUser() {
     const { $session } = inject('SessionService');
     const user = $session.CurrentUser?.jiraUser;
     return getUserName(user);
 }
 
-export function parameters(this: any, paramName: string) {
-    return toComparableCase(this.parameters[paramName.toLowerCase()]?.value);
+export function parameters(this: { parameters: ReportParameters }, paramName: string) {
+    return toComparableCase(getParameterFilterValue(this.parameters[paramName.toLowerCase()]));
 }
 
 function toComparableCase(value: any): any {

@@ -22,7 +22,6 @@ import {
     type PivotFieldConfig,
     type PivotReportDefinition,
     type ReportData,
-    type ReportParameters,
 } from '../types';
 import { getQueryFieldsForKey } from '../utils/derived-sources';
 
@@ -89,10 +88,6 @@ export function updateItemByPath(item: any, _: any, { args }: any) {
     const { fields } = newState;
 
     usePivotConfig.setState({ fields });
-}
-
-export function updateParameters(parameters: ReportParameters = {}) {
-    usePivotConfig.setState({ parameters });
 }
 
 export function updateJQL(jql: string) {
@@ -167,7 +162,7 @@ export function getBlankReportDefinition(): PivotReportDefinition {
     };
 }
 
-export function normalizeReportDefinition(report: PivotReportDefinition): PivotReportDefinition {
+export function normalizeReportDefinition({ parameters: _, ...report }: PivotReportDefinition & { parameters?: unknown }): PivotReportDefinition {
     const sprintBoards = toAgileBoards(report.sprintBoards);
     const sprintSelection = report.sprintSelection && typeof report.sprintSelection === 'object' ? report.sprintSelection : {};
 

@@ -11,6 +11,7 @@ import ReportSelectList from '@components/ReportSelectList';
 import EditorBody from './editor/body';
 import EditorControls from './editor/controls';
 import { usePivotConfig, useReportData } from './store/pivot-config';
+import { useReportParameters } from './store/report-parameters';
 import { loadReport } from './utils/common';
 import { generateReport } from './viewer/generator';
 
@@ -28,9 +29,7 @@ export default function PivotReport() {
     }, [reportId]);
 
     const reportName = usePivotConfig(({ queryName }) => queryName);
-    const parameters = usePivotConfig(({ parameters }) => parameters);
-
-    const hasParams = parameters && Object.keys(parameters).length > 0;
+    const hasParams = useReportParameters(({ parameters }) => Object.keys(parameters).length > 0);
 
     const gadgetHook = useBaseGadget(
         { isGadget: false },
@@ -57,7 +56,7 @@ export default function PivotReport() {
     );
 
     return (
-        <div className="flex" style={{ height: 'calc(100vh - 60px)' }}>
+        <div className="flex h-[calc(100vh-3rem)]">
             <div className="flex-1 min-w-0">
                 <GadgetContainer isGadget={false} gadgetHook={gadgetHook} customActions={customActions} refreshData={generateReport}>
                     <EditorBody />

@@ -2,9 +2,9 @@
   "mcpServers": {
     "fluxo-ui": {
       "type": "stdio",
-      "command": "npx",
+      "command": "node",
       "args": [
-        "fluxo-ui-mcp"
+        "node_modules/fluxo-ui/mcp/server.mjs"
       ],
       "env": {}
     }

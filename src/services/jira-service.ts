@@ -14,7 +14,17 @@ import {
 
 import { ApiUrls, defaultJiraFields, defaultSettings, DummyWLId, isPluginBuild } from '@constants';
 
-import type { Issue, JiraCreateIssueType, JiraFieldMeta, JiraFieldMetaMap, JiraIssueLinkType, JiraTransition } from '@types';
+import type {
+    Issue,
+    JiraCreateIssueType,
+    JiraFieldMeta,
+    JiraFieldMetaMap,
+    JiraIssueLinkType,
+    JiraJqlAutocompleteData,
+    JiraJqlSuggestion,
+    JiraNamedEntity,
+    JiraTransition,
+} from '@types';
 
 import type AjaxService from './ajax-service';
 import type CacheService from './cache-service';
@@ -383,7 +393,7 @@ export default class JiraService {
         return this.$ajax.get(url, reqObj);
     }
 
-    async getJQLAutocomplete(): Promise<any> {
+    async getJQLAutocomplete(): Promise<JiraJqlAutocompleteData> {
         let result = await this.$jaCache.session.getPromise('jql_autocomplete');
 
         if (result) {
@@ -397,7 +407,7 @@ export default class JiraService {
         return result;
     }
 
-    async getJQLSuggestions(fieldName: string, fieldValue: string): Promise<any> {
+    async getJQLSuggestions(fieldName: string, fieldValue: string): Promise<{ results?: JiraJqlSuggestion[] }> {
         return await this.$ajax.get(ApiUrls.getJQLSuggestions, { fieldName, fieldValue });
     }
 
@@ -503,6 +513,25 @@ export default class JiraService {
             this.$jaCache.session.set('issuetypes', issuetypes);
             return issuetypes;
         });
+    }
+
+    getPriorities(): Promise<JiraNamedEntity[]> {
+        return this.getCachedList('priorities', ApiUrls.getPriorities);
+    }
+
+    getResolutions(): Promise<JiraNamedEntity[]> {
+        return this.getCachedList('resolutions', ApiUrls.getResolutions);
+    }
+
+    private async getCachedList<T>(cacheKey: string, url: string): Promise<T[]> {
+        let list: T[] | undefined = this.$jaCache.session.get(cacheKey);
+
+        if (!list) {
+            list = await this.$ajax.get<T[]>(url);
+            this.$jaCache.session.set(cacheKey, list);
+        }
+
+        return list || [];
     }
 
     async getProjectStatuses(projects: string | string[]): Promise<any> {

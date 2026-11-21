@@ -2,7 +2,8 @@ import { getSelectedBoardIds } from '@components/shared/sprint-selector';
 
 import { validateFilterText } from '../editor/controls/config/filter-options/validators';
 import { usePivotConfig, useReportData } from '../store/pivot-config';
-import { sprintDataSource, type PivotFieldConfig } from '../types';
+import { sprintDataSource, type JiraField, type PivotFieldConfig, type ReportParameterDefinition } from '../types';
+import { isFieldUnavailable, isFilterFieldUnavailable } from '../utils/field-references';
 import { useFieldsList } from '../utils/fields';
 
 export function isReportDefinitionValid() {
@@ -27,7 +28,7 @@ export function isReportDefinitionValid() {
     const scope = {
         fieldsMap,
         fields: {},
-        parameters: {},
+        parameters: {} as Record<string, ReportParameterDefinition>,
         derivedKeys: new Set<string>(),
     };
 
@@ -48,7 +49,7 @@ function validateProps(field: any, index: number, depth: number, reportErrors: s
     validateCommonProps(field, index, depth, reportErrors, scope, path);
 
     if (field.schema?.type === dateRangeType) {
-        validateDateRangeField(field, index, reportErrors, path);
+        validateDateRangeField(field, index, reportErrors, scope.fieldsMap, path);
     }
 
     if (isColGroup) {
@@ -61,6 +62,10 @@ function validateProps(field: any, index: number, depth: number, reportErrors: s
 function validateCommonProps(field: any, index: number, depth: number, reportErrors: string[], scope: any, path: string) {
     const { name, filter } = field;
 
+    if (isFieldUnavailable(field, scope.fieldsMap)) {
+        reportErrors.push(`Field ${path}"${name}" at position ${index + 1} ${unavailableFieldMessage}`);
+    }
+
     if (filter?.trim()) {
         const { isValid, errorMessage } = validateFilterText(filter, scope);
         if (!isValid) {
@@ -70,8 +75,15 @@ function validateCommonProps(field: any, index: number, depth: number, reportErr
 }
 
 const dateRangeType = 'date-range';
+const unavailableFieldMessage = 'is not available in this Jira instance. Remove it or replace it with an equivalent field';
 
-function validateDateRangeField(field: PivotFieldConfig, index: number, reportErrors: string[], path: string) {
+function validateDateRangeField(
+    field: PivotFieldConfig,
+    index: number,
+    reportErrors: string[],
+    fieldsMap: Record<string, JiraField>,
+    path: string,
+) {
     const { name, dateRange, filterField } = field;
 
     if (!dateRange?.fromDate || !dateRange?.toDate) {
@@ -80,6 +92,10 @@ function validateDateRangeField(field: PivotFieldConfig, index: number, reportEr
 
     if (!filterField) {
         reportErrors.push(`Field ${path}"${name}" at position ${index + 1} does not have the date field selected to filter the issues`);
+    } else if (isFilterFieldUnavailable(filterField, fieldsMap)) {
+        reportErrors.push(
+            `The date field selected to filter the issues for ${path}"${name}" at position ${index + 1} ${unavailableFieldMessage}`,
+        );
     }
 }
 

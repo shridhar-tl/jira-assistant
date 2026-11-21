@@ -1,5 +1,7 @@
 import type { AgileBoard, SprintSelectionMap } from '@components/shared/sprint-selector';
 
+import type { UserGroup } from '@types';
+
 export const jqlDataSource = 1;
 export const sprintDataSource = 2;
 
@@ -14,7 +16,6 @@ export interface PivotReportDefinition {
     sprintBoards: AgileBoard[];
     sprintSelection: SprintSelectionMap;
     fields: PivotFieldConfig[];
-    parameters?: ReportParameters;
     createdBy?: string;
     hasChanges?: boolean;
 }
@@ -55,7 +56,9 @@ export interface FieldSchema {
     computed?: boolean;
     depth?: number;
     isArray?: boolean;
-    custom?: boolean;
+    items?: string;
+    system?: string;
+    custom?: string | boolean;
 }
 
 export interface JiraField {
@@ -66,14 +69,28 @@ export interface JiraField {
     schema?: FieldSchema;
 }
 
-export interface ReportParameters {
-    [key: string]: {
-        name: string;
-        type: string;
-        isArray?: boolean;
-        value?: any;
-    };
+export interface ParameterOption {
+    value: string | number;
+    label: string;
+    iconUrl?: string;
 }
+
+export type ReportParameterValue = string | number | boolean | Date | string[] | DateRangeSelection | ParameterOption[] | UserGroup[];
+
+export interface ReportParameterDefinition {
+    name: string;
+    type: string;
+    isArray?: boolean;
+    fieldKey?: string;
+    itemType?: string;
+    customType?: string;
+}
+
+export interface ReportParameter extends ReportParameterDefinition {
+    value?: ReportParameterValue;
+}
+
+export type ReportParameters = Record<string, ReportParameter>;
 
 export interface FieldGroup {
     label: string;

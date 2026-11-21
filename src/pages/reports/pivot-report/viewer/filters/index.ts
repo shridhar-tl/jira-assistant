@@ -2,7 +2,8 @@ import moment from 'moment';
 
 import { normalizeTypeWithOptions } from '@/display-controls';
 import { parseWhereClause } from '../../editor/controls/config/filter-options/validators';
-import { usePivotConfig } from '../../store/pivot-config';
+import { useReportParameters } from '../../store/report-parameters';
+import type { ReportParameters } from '../../types';
 import { useFieldsList } from '../../utils/fields';
 
 import * as functions from './functions';
@@ -11,6 +12,10 @@ const comparerFieldMapping: Record<string, string[]> = {
     parent: ['key', 'id'],
     project: ['name', 'key'],
     user: ['displayName', 'emailAddress', 'name', 'accountId'],
+    option: ['value', 'id'],
+    'option-with-child': ['value', 'id'],
+    version: ['name', 'id'],
+    group: ['name', 'groupId'],
 };
 
 function normalizeTypeForComparison(field: any) {
@@ -21,6 +26,10 @@ const likeComparerFieldMapping: Record<string, string[]> = {
     parent: ['key'],
     project: ['name', 'key'],
     user: ['displayName', 'emailAddress', 'name', 'accountId'],
+    option: ['value'],
+    'option-with-child': ['value'],
+    version: ['name'],
+    group: ['name'],
 };
 
 function normalizeTypeForLikeComparison(field: any) {
@@ -37,7 +46,7 @@ export function getFilterFunction(filterText?: string) {
         return;
     }
     const { fieldsMap } = useFieldsList.getState();
-    const { parameters = {} } = usePivotConfig.getState();
+    const { parameters } = useReportParameters.getState();
 
     const scope: Scope = { fieldsMap, parameters };
 
@@ -67,7 +76,7 @@ interface PrefixExpression {
 
 interface Scope {
     fieldsMap: Record<string, any>;
-    parameters: Record<string, any>;
+    parameters: ReportParameters;
     isLikeComparison?: boolean;
     keepStringCase?: boolean;
 }
@@ -218,11 +227,11 @@ function createAnyValueRangeComparer(valuesFn: FilterFn, rightFn: FilterFn, comp
 function createArrayOperatorFn(operator: string, leftFn: FilterFn, rightFn: FilterFn): (issue: any) => any {
     switch (operator) {
         case '=':
-            return (issue: any) => leftFn(issue).includes(rightFn(issue));
+            return (issue: any) => arrayContains(leftFn(issue), rightFn(issue));
 
         case '!=':
         case '<>':
-            return (issue: any) => !leftFn(issue).includes(rightFn(issue));
+            return (issue: any) => !arrayContains(leftFn(issue), rightFn(issue));
 
         case '>':
         case '>=':
@@ -232,6 +241,10 @@ function createArrayOperatorFn(operator: string, leftFn: FilterFn, rightFn: Filt
         default:
             return () => false; // This case should never happen, but just a warning fix
     }
+}
+
+function arrayContains(values: unknown[], value: unknown) {
+    return isEmptyOperand(value) ? !values.length : values.includes(value);
 }
 
 function create_BetweenPredicate(expr: any, scope: Scope): FilterFn {
@@ -267,23 +280,19 @@ function create_InExpressionListPredicate(expr: any, scope: Scope): FilterFn {
 function validate_ExpressionList(expr: any, scope: Scope, leftFn: FilterFn, hasNot: boolean): FilterFn {
     const { value } = expr;
 
-    let values: any[] = value.map((v: any) => withFieldType(leftFn, createFilterForObject(v, scope)));
+    let values: FilterFn[] = value.map((v: any) => withFieldType(leftFn, createFilterForObject(v, scope)));
 
     if (values.length === 1 && value[0].name?.toLowerCase() === 'parameters' && value[0].type === 'FunctionCall') {
-        values = values[0]();
+        // When parameters are directly as first argument, it returns the list of values itself
+        values = toStaticValueFns(values[0](null));
     }
 
     if (leftFn.returnsArrayOfValues) {
         return (issue: any) => {
             const leftValue = leftFn(issue);
 
-            for (let rightFn of values) {
-                if (typeof rightFn === 'function') {
-                    // When parameters are directly as first argument, array would contain direct values itself
-                    rightFn = rightFn(issue);
-                }
-
-                if (leftValue.includes(rightFn)) {
+            for (const rightFn of values) {
+                if (leftValue.includes(rightFn(issue))) {
                     return hasNot ? null : issue;
                 }
             }
@@ -309,6 +318,16 @@ function validate_ExpressionList(expr: any, scope: Scope, leftFn: FilterFn, hasN
             }
         };
     }
+}
+
+function toStaticValueFns(value: unknown): FilterFn[] {
+    const list = Array.isArray(value) ? value : value === undefined || value === null ? [] : [value];
+
+    return list.map((item) => {
+        const fn: FilterFn = () => item;
+        fn.isStaticValue = true;
+        return fn;
+    });
 }
 
 function create_LikePredicate(expr: any, scope: Scope): FilterFn {

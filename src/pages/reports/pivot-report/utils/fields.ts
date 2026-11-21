@@ -14,7 +14,7 @@ export const useFieldsList = create<FieldsListState>(() => ({
     fieldsMap: {},
 }));
 
-export async function fillFieldsList() {
+export async function fillFieldsList(): Promise<JiraField[]> {
     const fields = await getFieldsList();
 
     useFieldsList.setState({
@@ -25,6 +25,8 @@ export async function fillFieldsList() {
         ],
         fieldsMap: fields.fieldsMap,
     });
+
+    return fields.custom;
 }
 
 export async function getFieldsList() {

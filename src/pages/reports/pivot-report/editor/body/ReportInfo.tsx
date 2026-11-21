@@ -102,11 +102,8 @@ export default function ReportInfo() {
                     <i className="fa fa-exclamation-triangle mt-0.5 shrink-0" />
                     <div className="space-y-1">
                         <p>
-                            <strong>Please Note:</strong> This report is currently under active development and is not yet considered fully
-                            stable. Manually validate the output before using it for any business purpose.
-                        </p>
-                        <p>
-                            If you encounter unexpected errors or output that does not match your expectations, please report the issue with
+                            <strong>Please Note:</strong> Manually validate the output before using it for any business purpose. If you
+                            encounter unexpected errors or output that does not match your expectations, please report the issue with
                             screenshots, console error logs, and details about any custom fields involved.
                         </p>
                     </div>

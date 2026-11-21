@@ -3,8 +3,12 @@ import { inject } from '@services';
 import { notifyReportsListChanged } from '@components/ReportSelectList';
 
 import { getBlankReportDefinition, normalizeReportDefinition, usePivotConfig, useReportData, useSelectedItemConfig } from '../store/pivot-config';
+import { resetReportParameters } from '../store/report-parameters';
 import type { PivotReportDefinition } from '../types';
 import { cancelReportGeneration } from '../viewer/generator';
+
+import { resolveFieldReferences } from './field-references';
+import { fillFieldsList } from './fields';
 
 export async function saveReport() {
     const { hasChanges, ...report } = usePivotConfig.getState();
@@ -43,19 +47,25 @@ async function saveReportToDb(report: PivotReportDefinition) {
     return $report.getReportDefinition(newId);
 }
 
+let latestLoadId = 0;
+
 export async function loadReport(reportId?: string) {
+    const loadId = ++latestLoadId;
     cancelReportGeneration();
     useReportData.setState({ showParameters: false, isFetching: false, reportData: undefined, reportErrors: undefined }, true);
     useSelectedItemConfig.getState().selectItem();
+    resetReportParameters();
 
     if (!reportId) {
         usePivotConfig.setState(getBlankReportDefinition(), true);
         return;
     }
 
-    const { $report } = inject('ReportService');
-    const report = await $report.getReportDefinition(parseInt(reportId));
-    const { $message } = inject('MessageService');
+    const { $report, $message } = inject('ReportService', 'MessageService');
+    const [report, customFields] = await Promise.all([$report.getReportDefinition(parseInt(reportId)), fillFieldsList()]);
+    if (loadId !== latestLoadId) {
+        return;
+    }
 
     if (!report) {
         usePivotConfig.setState(getBlankReportDefinition(), true);
@@ -69,5 +79,6 @@ export async function loadReport(reportId?: string) {
         return;
     }
 
-    usePivotConfig.setState(normalizeReportDefinition(report), true);
+    const definition = normalizeReportDefinition(report);
+    usePivotConfig.setState({ ...definition, fields: resolveFieldReferences(definition.fields, customFields) }, true);
 }

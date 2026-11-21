@@ -58,6 +58,32 @@ export interface JiraIssueLinkType {
     outward: string;
 }
 
+export interface JiraNamedEntity {
+    id: string;
+    name: string;
+    iconUrl?: string;
+    description?: string;
+}
+
+export interface JiraJqlSuggestion {
+    value: string;
+    displayName: string;
+}
+
+export interface JiraJqlField {
+    value: string;
+    displayName: string;
+    auto?: string;
+    cfid?: string;
+    types?: string[];
+}
+
+export interface JiraJqlAutocompleteData {
+    visibleFieldNames?: JiraJqlField[];
+    visibleFunctionNames?: unknown[];
+    jqlReservedWords?: string[];
+}
+
 export interface JiraStatusRef {
     id: string;
     name: string;

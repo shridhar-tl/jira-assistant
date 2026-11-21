@@ -6,6 +6,8 @@ export const ApiUrls = {
     // Project & Issue Type APIs
     getAllProjects: '~/rest/api/2/project',
     getAllIssueTypes: '~/rest/api/2/issuetype',
+    getPriorities: '~/rest/api/2/priority',
+    getResolutions: '~/rest/api/2/resolution',
 
     // Search APIs
     search: '~/rest/api/3/search/jql',

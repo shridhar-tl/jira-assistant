@@ -1,5 +1,6 @@
 import { getIssueSearchJql, usePivotConfig, useReportData } from '../store/pivot-config';
-import type { ReportData } from '../types';
+import { syncReportParameters } from '../store/report-parameters';
+import type { ReportData, ReportParameterDefinition } from '../types';
 
 import { getMaxDepth, processColumns, spanLeafHeaders } from './column-utils';
 import { fetchData } from './common-utils';
@@ -85,35 +86,12 @@ function generateFieldHeaders(reportData: ReportData, issues: any[]) {
     spanLeafHeaders(reportData.header);
 }
 
-function validateReportParameters({ parameters: list }: any) {
-    const { parameters: values = {} } = usePivotConfig.getState();
-    const { showParameters, parameters } = Object.values(list).reduce(
-        (
-            obj: { showParameters: boolean; parameters: Record<string, { name: string; type: string; isArray?: boolean; value?: any }> },
-            cur: any,
-        ) => {
-            const paramNameLCase = cur.name.toLowerCase();
-            let curParameter = values[paramNameLCase];
+function validateReportParameters({ parameters }: { parameters: Record<string, ReportParameterDefinition> }) {
+    const hasMissingValues = syncReportParameters(parameters);
 
-            if (!curParameter || curParameter.type !== cur.type || curParameter.isArray !== cur.isArray) {
-                curParameter = { name: cur.name, type: cur.type, isArray: cur.isArray };
-            }
-
-            if (!curParameter.value) {
-                obj.showParameters = true;
-            }
-
-            obj.parameters[paramNameLCase] = curParameter;
-
-            return obj;
-        },
-        { showParameters: false, parameters: {} },
-    );
-
-    usePivotConfig.setState({ parameters });
-    if (showParameters) {
+    if (hasMissingValues) {
         useReportData.setState({ showParameters: true, isFetching: false }, true);
     }
 
-    return !showParameters;
+    return !hasMissingValues;
 }

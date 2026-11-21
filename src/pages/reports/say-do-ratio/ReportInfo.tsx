@@ -18,9 +18,7 @@ function ReportInfo() {
                     <ul className="space-y-2 text-sm text-secondary">
                         <li className="flex gap-2">
                             <i className="fa fa-circle text-[4px] mt-2 text-blue-400 shrink-0" />
-                            <span>
-                                The Say-Do Ratio report summarizes achievements within each sprint and tracks progress over time.
-                            </span>
+                            <span>The Say-Do Ratio report summarizes achievements within each sprint and tracks progress over time.</span>
                         </li>
                         <li className="flex gap-2">
                             <i className="fa fa-circle text-[4px] mt-2 text-blue-400 shrink-0" />
@@ -133,19 +131,12 @@ function ReportInfo() {
                     <i className="fa fa-exclamation-triangle mt-0.5 shrink-0" />
                     <div className="space-y-2">
                         <p>
-                            <strong>Important:</strong> This report uses Jira APIs that are currently in preview and may not be available
-                            on all Jira instances.{' '}
-                            {!isPluginBuild &&
-                                'It is available for Jira Cloud users only. If the report does not work immediately, wait a few days for the rollout to reach your region.'}
-                            {isPluginBuild &&
-                                'If the report does not work immediately, wait a few days for the rollout to reach your region.'}
-                        </p>
-                        <p>
                             Accurate Say-Do Ratio calculation can be challenging if stories are removed during a sprint, as Jira does not
                             provide an API to retrieve the original sprint scope.{' '}
                             {!isPluginBuild &&
                                 'A workaround using internal Jira APIs is implemented, but it is not available when using OAuth authentication.'}
-                            {isPluginBuild && 'A workaround is applied for upcoming sprints, but results for in-progress sprints may not be fully accurate.'}
+                            {isPluginBuild &&
+                                'A workaround is applied for upcoming sprints, but results for in-progress sprints may not be fully accurate.'}
                         </p>
                         {!isPluginBuild && (
                             <p>Using the report with OAuth authentication has limited functionality due to the above constraints.</p>

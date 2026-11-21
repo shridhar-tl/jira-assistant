@@ -21,7 +21,7 @@ export default function SideBar({ title, onBackClick, show, onHide, children, co
             className={classNames(
                 'shrink-0 overflow-hidden border-l border-(--border-primary) bg-(--bg-primary) transition-all duration-500',
                 'max-md:fixed max-md:right-0 max-md:top-12 max-md:z-40 max-md:h-[calc(100dvh-3rem)] max-md:shadow-2xl',
-                'md:sticky md:top-0 md:h-[calc(100vh-32px)]',
+                'md:h-full',
                 show ? 'opacity-100' : 'w-0 border-l-0 opacity-0',
             )}
             style={show ? { width: panelWidth } : undefined}

@@ -6,6 +6,7 @@ import { removeField } from '../../../store/field-actions';
 import { useSelectedItemConfig } from '../../../store/pivot-config';
 
 import { getFieldSummary } from './field-summary';
+import UnavailableFieldIcon from './UnavailableFieldIcon';
 
 interface RowConfigItemProps {
     item: any;
@@ -43,6 +44,7 @@ export default function RowConfigItem({ item, index, depth, dragProps }: RowConf
                 <span className="fa fa-grip-vertical cursor-move text-xs text-(--text-tertiary)" title="Drag to reorder" />
                 <span className="fa fa-table-list text-xs text-(--text-secondary)" title="Row field" />
                 <span className="min-w-0 flex-1 truncate text-sm font-medium text-(--text-primary)">{item.displayText || item.name}</span>
+                <UnavailableFieldIcon item={item} />
                 {!!item.filter?.trim() && <span className="fa fa-filter text-xs text-(--primary-color)" title="Filter applied" />}
                 {item.sortOrder && (
                     <span

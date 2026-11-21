@@ -1,13 +1,7 @@
-import { Button, DateRangePicker, TextInput } from '@components';
-import type { ComponentEvent } from '@components';
-
-import { DateTimePicker, MultiValueText } from '@controls';
-
-import { updateParameters, usePivotConfig, useReportData } from '../../store/pivot-config';
-import { fromPickerValue, toPickerValue } from '../../utils/date-range';
-import { generateReport } from '../../viewer/generator';
+import { useReportData } from '../../store/pivot-config';
 
 import GroupTable from './group-table';
+import ReportParameters from './parameters/ReportParameters';
 import ReportInfo from './ReportInfo';
 
 export default function EditorBody() {
@@ -78,82 +72,4 @@ function ReportErrorsSummary({ errors }: ReportErrorsSummaryProps) {
             </div>
         </div>
     );
-}
-
-function ReportParameters() {
-    const parameters = usePivotConfig(({ parameters }) => parameters);
-
-    if (!parameters) {
-        return null;
-    }
-
-    const keys = Object.keys(parameters);
-
-    return (
-        <div className="m-3 rounded-lg border border-(--border-primary) bg-(--bg-secondary) p-4 sm:m-4">
-            <div className="mb-4 flex items-center gap-2">
-                <span className="fa fa-list-check text-(--primary-color)" />
-                <strong className="text-sm text-(--text-primary)">Provide values for the report parameters</strong>
-            </div>
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                {keys.map((key) => (
-                    <label key={key} className="flex min-w-0 flex-col gap-1.5">
-                        <span className="text-xs font-semibold text-(--text-secondary)">{parameters[key].name}</span>
-                        <ParameterControl {...parameters[key]} paramKey={key} />
-                    </label>
-                ))}
-            </div>
-            <div className="mt-4 flex sm:justify-end">
-                <Button
-                    leftIcon={<span className="fa fa-play" />}
-                    onClick={generateReport}
-                    className="w-full justify-center sm:w-auto"
-                    label="Generate report"
-                />
-            </div>
-        </div>
-    );
-}
-
-interface ParameterControlProps {
-    type: string;
-    isArray?: boolean;
-    name: string;
-    paramKey: string;
-}
-
-function ParameterControl({ type, isArray, paramKey }: ParameterControlProps) {
-    const parameters = usePivotConfig(({ parameters }) => parameters);
-    const value = parameters?.[paramKey]?.value;
-
-    const setValue = (newValue: unknown) => {
-        if (!parameters) return;
-        const param = parameters[paramKey];
-        updateParameters({
-            ...parameters,
-            [paramKey]: {
-                name: param?.name || '',
-                type: param?.type || 'string',
-                isArray: param?.isArray,
-                value: newValue,
-            },
-        });
-    };
-
-    const handleChange = (e: ComponentEvent<unknown>) => setValue(e.value);
-
-    switch (type) {
-        default:
-            if (isArray) {
-                return <MultiValueText value={value} onChange={setValue} />;
-            } else {
-                return <TextInput value={value} onChange={handleChange} />;
-            }
-        case 'daterange':
-            return <DateRangePicker value={toPickerValue(value)} placeholder="Select the dates" onChange={(e) => setValue(fromPickerValue(e))} />;
-        case 'datetime':
-            return <DateTimePicker value={value} onChange={setValue} showTime={true} />;
-        case 'date':
-            return <DateTimePicker value={value} onChange={setValue} showTime={false} />;
-    }
 }

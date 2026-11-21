@@ -4,6 +4,7 @@ import parser from 'js-sql-parser';
 
 import { normalizeType } from '@/display-controls';
 
+import type { ReportParameterDefinition } from '../../../../../types';
 import { getQueryFieldsForKey } from '../../../../../utils/derived-sources';
 
 import { allowedFunctionsMap, paramsFunctionName } from './functions';
@@ -245,7 +246,11 @@ function validate_Identifier(obj: any, result: any) {
 
     const { compatibleTypes } = normalizeType(field);
 
-    return compatibleTypes ? { ...field.schema, compatibleTypes } : field.schema;
+    if (!field.schema) {
+        return field.schema;
+    }
+
+    return { ...field.schema, ...(compatibleTypes && { compatibleTypes }), fieldKey: field.key };
 }
 
 function validate_FunctionCall(obj: any, result: any, leftPart: any) {
@@ -326,18 +331,33 @@ function validateParametersFunctionArgs(funcName: string, params: any[], result:
             throw new Error('Parameter name is too big');
         }
 
+        if (!leftPart?.type) {
+            throw new Error(`Parameter ${nameParam.value} can be used only for comparing with a field`);
+        }
+
         const nameLCase = paramNameWithoutQuotes.toLowerCase();
+        const isArray = leftPart.isArray || undefined;
 
         const existingParam = result.parameters[nameLCase];
         if (existingParam && !compareTypes(leftPart.type, existingParam.type)) {
             throw new Error(`Parameter ${nameParam.value} is used across incompatible types`);
         }
 
-        result.parameters[nameLCase] = {
+        if (existingParam && existingParam.isArray !== isArray) {
+            throw new Error(`Parameter ${nameParam.value} is used as a list in one place and as a single value in another place`);
+        }
+
+        const schema = typeof leftPart.type === 'object' && !Array.isArray(leftPart.type) ? leftPart.type : undefined;
+        const parameter: ReportParameterDefinition = {
             name: paramNameWithoutQuotes,
-            type: leftPart.type?.type || leftPart.type,
-            isArray: leftPart.isArray || undefined,
+            type: schema?.type || leftPart.type,
+            isArray,
+            fieldKey: schema?.fieldKey,
+            itemType: schema?.items,
+            customType: typeof schema?.custom === 'string' ? schema.custom : undefined,
         };
+
+        result.parameters[nameLCase] = existingParam ?? parameter;
     }
 }
 

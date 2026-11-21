@@ -10,6 +10,7 @@ import { removeField, updateField } from '../../../store/field-actions';
 import { getGroupItem, useSelectedItemConfig } from '../../../store/pivot-config';
 
 import { getFieldSummary } from './field-summary';
+import UnavailableFieldIcon from './UnavailableFieldIcon';
 
 const accept = ['jira-field'];
 const emptyArray: any[] = [];
@@ -132,6 +133,7 @@ function ColItem({ path, item, depth, index, dragProps, removeItem, updateItem }
                     title={isGrouped ? 'Values of this field are shown as columns' : 'Value field'}
                 />
                 <span className="min-w-0 flex-1 truncate text-sm font-medium text-(--text-primary)">{item.displayText || item.name}</span>
+                <UnavailableFieldIcon item={item} />
                 {!!item.filter?.trim() && <span className="fa fa-filter text-xs text-(--primary-color)" title="Filter applied" />}
                 <span className="shrink-0 rounded-full bg-(--bg-tertiary) px-2 py-0.5 text-[11px] font-medium text-(--text-secondary)">
                     {getFieldSummary(item, depth)}
