@@ -1,0 +1,1 @@
+import{$ as e}from"./components-BspC6pMX.js";function t(t,n,r){return e(t,n*12,r)}export{t};
