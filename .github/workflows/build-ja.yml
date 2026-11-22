@@ -160,16 +160,29 @@ jobs:
         name: JA_Store_Packages_${{ needs.build.outputs.version }}
         path: store
 
+    - name: Checkout publish scripts
+      if: steps.creds.outputs.configured == 'true'
+      uses: actions/checkout@v7
+      with:
+        sparse-checkout: scripts/store-publish
+        path: repo
+
+    - name: Use Node.js 24.x
+      if: steps.creds.outputs.configured == 'true'
+      uses: actions/setup-node@v7
+      with:
+        node-version: 24.x
+
     - name: Publish to Chrome Web Store
       if: steps.creds.outputs.configured == 'true'
-      uses: wdzeng/chrome-extension@v2
-      with:
-        extension-id: ${{ vars.CHROME_EXTENSION_ID }}
-        publisher-id: ${{ vars.CHROME_PUBLISHER_ID }}
-        zip-path: store/ja-chrome-v${{ needs.build.outputs.version }}.zip
-        client-id: ${{ secrets.CHROME_CLIENT_ID }}
-        client-secret: ${{ secrets.CHROME_CLIENT_SECRET }}
-        refresh-token: ${{ secrets.CHROME_REFRESH_TOKEN }}
+      env:
+        PACKAGE_PATH: store/ja-chrome-v${{ needs.build.outputs.version }}.zip
+        CHROME_EXTENSION_ID: ${{ vars.CHROME_EXTENSION_ID }}
+        CHROME_PUBLISHER_ID: ${{ vars.CHROME_PUBLISHER_ID }}
+        CHROME_CLIENT_ID: ${{ secrets.CHROME_CLIENT_ID }}
+        CHROME_CLIENT_SECRET: ${{ secrets.CHROME_CLIENT_SECRET }}
+        CHROME_REFRESH_TOKEN: ${{ secrets.CHROME_REFRESH_TOKEN }}
+      run: node repo/scripts/store-publish/chrome.mjs
 
   publish-edge:
     needs: build
@@ -202,14 +215,27 @@ jobs:
         name: JA_Store_Packages_${{ needs.build.outputs.version }}
         path: store
 
+    - name: Checkout publish scripts
+      if: steps.creds.outputs.configured == 'true'
+      uses: actions/checkout@v7
+      with:
+        sparse-checkout: scripts/store-publish
+        path: repo
+
+    - name: Use Node.js 24.x
+      if: steps.creds.outputs.configured == 'true'
+      uses: actions/setup-node@v7
+      with:
+        node-version: 24.x
+
     - name: Publish to Edge Add-ons
       if: steps.creds.outputs.configured == 'true'
-      uses: wdzeng/edge-addon@v2
-      with:
-        product-id: ${{ vars.EDGE_PRODUCT_ID }}
-        zip-path: store/ja-edge-v${{ needs.build.outputs.version }}.zip
-        client-id: ${{ secrets.EDGE_CLIENT_ID }}
-        api-key: ${{ secrets.EDGE_API_KEY }}
+      env:
+        PACKAGE_PATH: store/ja-edge-v${{ needs.build.outputs.version }}.zip
+        EDGE_PRODUCT_ID: ${{ vars.EDGE_PRODUCT_ID }}
+        EDGE_CLIENT_ID: ${{ secrets.EDGE_CLIENT_ID }}
+        EDGE_API_KEY: ${{ secrets.EDGE_API_KEY }}
+      run: node repo/scripts/store-publish/edge.mjs
 
   publish-firefox:
     needs: build
@@ -253,14 +279,26 @@ jobs:
       if: steps.creds.outputs.configured == 'true'
       run: (cd source && zip -r -X -q "$GITHUB_WORKSPACE/ja-source.zip" .)
 
+    - name: Checkout publish scripts
+      if: steps.creds.outputs.configured == 'true'
+      uses: actions/checkout@v7
+      with:
+        sparse-checkout: scripts/store-publish
+        path: repo
+
+    - name: Use Node.js 24.x
+      if: steps.creds.outputs.configured == 'true'
+      uses: actions/setup-node@v7
+      with:
+        node-version: 24.x
+
     - name: Publish to Firefox Add-ons
       if: steps.creds.outputs.configured == 'true'
-      uses: wdzeng/firefox-addon@v1
-      with:
-        addon-guid: ${{ vars.FIREFOX_ADDON_GUID }}
-        xpi-path: store/ja-firefox-v${{ needs.build.outputs.version }}.zip
-        source-file-path: ja-source.zip
-        self-hosted: false
-        approval-notes: Build environment and steps to reproduce the package are described in README.md of the attached source package.
-        jwt-issuer: ${{ secrets.FIREFOX_JWT_ISSUER }}
-        jwt-secret: ${{ secrets.FIREFOX_JWT_SECRET }}
+      env:
+        PACKAGE_PATH: store/ja-firefox-v${{ needs.build.outputs.version }}.zip
+        SOURCE_PATH: ja-source.zip
+        FIREFOX_APPROVAL_NOTES: Build environment and steps to reproduce the package are described in README.md of the attached source package.
+        FIREFOX_ADDON_GUID: ${{ vars.FIREFOX_ADDON_GUID }}
+        FIREFOX_JWT_ISSUER: ${{ secrets.FIREFOX_JWT_ISSUER }}
+        FIREFOX_JWT_SECRET: ${{ secrets.FIREFOX_JWT_SECRET }}
+      run: node repo/scripts/store-publish/firefox.mjs
