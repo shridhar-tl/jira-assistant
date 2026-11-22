@@ -9,7 +9,9 @@ import type {
     DerivedTransform,
     HeaderComponentProps,
     ParameterConfig,
+    RepeaterComponentProps,
     ReportComponent,
+    SubReportComponentProps,
     TableCellItem,
     TableColumnDef,
     TableComponentProps,
@@ -253,4 +255,14 @@ type ChartOptions = Omit<Partial<ChartComponentProps>, 'datasourceId'>;
 export function chart(id: string, type: ChartType, datasourceId: string, options: ChartOptions): ReportComponent {
     const props: ChartComponentProps = { datasourceId, showLegend: true, legendPosition: 'bottom', tooltipEnabled: true, height: 300, ...options };
     return component(id, type, props);
+}
+
+type RepeaterOptions = Omit<Partial<RepeaterComponentProps>, 'datasourceId'>;
+
+export function repeater(id: string, datasourceId: string, children: ReportComponent[], options: RepeaterOptions = {}): ReportComponent {
+    return component(id, 'repeater', { datasourceId, layout: 'stack', gap: 12, ...options } satisfies RepeaterComponentProps, {}, children);
+}
+
+export function subReport(id: string, subReportId: string, parameterMap: Record<string, string>): ReportComponent {
+    return component(id, 'sub-report', { subReportId, parameterMap, showBorder: true } satisfies SubReportComponentProps);
 }

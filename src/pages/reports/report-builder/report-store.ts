@@ -1,7 +1,9 @@
 import { inject } from '@services';
 
-import type { AvailableSubReport, ReportDefinition, SubReportHooks } from '@components/report-builder';
+import type { AvailableSubReport, ReportComponent, ReportDefinition, SubReportComponentProps, SubReportHooks } from '@components/report-builder';
 import { notifyReportsListChanged } from '@components/ReportSelectList';
+
+import { createSampleSubReportDefinition, isSampleSubReportId } from './samples';
 
 export const builderReportType = 'builder';
 
@@ -24,6 +26,7 @@ interface ReportListItem {
 }
 
 const duplicateNamePattern = /already exists/i;
+const sampleSubReportReadOnly = 'This sub-report belongs to a sample. Save the sample as your own report first, then change its sub-report.';
 const maxNameAttempts = 20;
 
 export function isBuilderReport(value: unknown): value is SavedBuilderReport {
@@ -77,15 +80,49 @@ export function toAvailableSubReports(reports: ReportListItem[], excludeId?: num
 }
 
 export async function resolveSubReportDefinition(subReportId: string): Promise<ReportDefinition | null> {
+    if (isSampleSubReportId(subReportId)) return createSampleSubReportDefinition(subReportId);
     const id = Number(subReportId);
     if (!Number.isFinite(id) || id <= 0) return null;
     return (await loadBuilderReport(id))?.definition ?? null;
+}
+
+function sampleSubReportIds(components: ReportComponent[], out = new Set<string>()): Set<string> {
+    for (const component of components) {
+        const subReportId = component.type === 'sub-report' ? (component.props as unknown as SubReportComponentProps).subReportId : undefined;
+        if (subReportId && isSampleSubReportId(subReportId)) out.add(subReportId);
+        if (component.children) sampleSubReportIds(component.children, out);
+    }
+    return out;
+}
+
+function replaceSubReportIds(components: ReportComponent[], savedIds: Map<string, string>): ReportComponent[] {
+    return components.map((component) => {
+        const props = component.props as unknown as SubReportComponentProps;
+        const savedId = component.type === 'sub-report' ? savedIds.get(props.subReportId) : undefined;
+        return {
+            ...component,
+            ...(savedId && { props: { ...component.props, subReportId: savedId } }),
+            ...(component.children && { children: replaceSubReportIds(component.children, savedIds) }),
+        };
+    });
+}
+
+export async function saveSampleSubReports(definition: ReportDefinition): Promise<ReportDefinition> {
+    const savedIds = new Map<string, string>();
+    for (const subReportId of sampleSubReportIds(definition.components)) {
+        const subReport = await createSampleSubReportDefinition(subReportId);
+        if (!subReport) continue;
+        const { id } = await saveWithUniqueName({ ...subReport, id: crypto.randomUUID() });
+        savedIds.set(subReportId, String(id));
+    }
+    return savedIds.size === 0 ? definition : { ...definition, components: replaceSubReportIds(definition.components, savedIds) };
 }
 
 export function createSubReportHooks(onListChanged: () => void): Required<SubReportHooks> {
     return {
         resolveSubReport: resolveSubReportDefinition,
         onSaveSubReport: async (subReportId, definition) => {
+            if (isSampleSubReportId(subReportId)) throw new Error(sampleSubReportReadOnly);
             const existing = await loadBuilderReport(Number(subReportId));
             if (!existing) throw new Error('The sub-report no longer exists.');
             await saveBuilderReport({ ...existing, definition });

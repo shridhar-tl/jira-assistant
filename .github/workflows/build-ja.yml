@@ -25,6 +25,9 @@ jobs:
     runs-on: ubuntu-latest
     env:
       CI: ""
+    outputs:
+      version: ${{ steps.extract_version.outputs.version }}
+      src_name: ${{ steps.prepare_source.outputs.src_name }}
 
     strategy:
       matrix:
@@ -58,6 +61,24 @@ jobs:
         name: JA_Build_${{ steps.extract_version.outputs.version }}
         path: dist/
 
+    - name: Package store builds
+      env:
+        JA_VERSION: ${{ steps.extract_version.outputs.version }}
+      run: |
+        PKG_DIR="$RUNNER_TEMP/ja-store"
+        mkdir -p "$PKG_DIR"
+        for BROWSER in chrome edge firefox opera; do
+          (cd "dist/$BROWSER" && zip -r -X -q "$PKG_DIR/ja-$BROWSER-v$JA_VERSION.zip" .)
+        done
+        ls -l "$PKG_DIR"
+        echo "PKG_DIR=$PKG_DIR" >> "$GITHUB_ENV"
+
+    - name: Save store packages
+      uses: actions/upload-artifact@v7
+      with:
+        name: JA_Store_Packages_${{ steps.extract_version.outputs.version }}
+        path: ${{ env.PKG_DIR }}
+
     - name: Commit lock file
       if: github.ref == 'refs/heads/package'
       env:
@@ -83,6 +104,7 @@ jobs:
         echo "Created tag $TAG_NAME"
 
     - name: Prepare source package
+      id: prepare_source
       env:
         JA_VERSION: ${{ steps.extract_version.outputs.version }}
       run: |
@@ -96,6 +118,7 @@ jobs:
         fi
         echo "SRC_DIR=$SRC_DIR" >> "$GITHUB_ENV"
         echo "SRC_NAME=JA_SRC_V${JA_VERSION//./_}" >> "$GITHUB_ENV"
+        echo "src_name=JA_SRC_V${JA_VERSION//./_}" >> "$GITHUB_OUTPUT"
 
     - name: Save source package
       uses: actions/upload-artifact@v7
@@ -103,3 +126,141 @@ jobs:
         name: ${{ env.SRC_NAME }}
         path: ${{ env.SRC_DIR }}
         include-hidden-files: true
+
+  publish-chrome:
+    needs: build
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/package'
+    runs-on: ubuntu-latest
+    environment: store-release
+    steps:
+    - name: Check Chrome Web Store credentials
+      id: creds
+      env:
+        CHROME_EXTENSION_ID: ${{ vars.CHROME_EXTENSION_ID }}
+        CHROME_PUBLISHER_ID: ${{ vars.CHROME_PUBLISHER_ID }}
+        CHROME_CLIENT_ID: ${{ secrets.CHROME_CLIENT_ID }}
+        CHROME_CLIENT_SECRET: ${{ secrets.CHROME_CLIENT_SECRET }}
+        CHROME_REFRESH_TOKEN: ${{ secrets.CHROME_REFRESH_TOKEN }}
+      run: |
+        MISSING=""
+        for NAME in CHROME_EXTENSION_ID CHROME_PUBLISHER_ID CHROME_CLIENT_ID CHROME_CLIENT_SECRET CHROME_REFRESH_TOKEN; do
+          [ -n "${!NAME}" ] || MISSING="$MISSING $NAME"
+        done
+        if [ -n "$MISSING" ]; then
+          echo "::notice title=Chrome Web Store skipped::Not configured in store-release environment:$MISSING"
+          echo "configured=false" >> "$GITHUB_OUTPUT"
+        else
+          echo "configured=true" >> "$GITHUB_OUTPUT"
+        fi
+
+    - name: Download store packages
+      if: steps.creds.outputs.configured == 'true'
+      uses: actions/download-artifact@v7
+      with:
+        name: JA_Store_Packages_${{ needs.build.outputs.version }}
+        path: store
+
+    - name: Publish to Chrome Web Store
+      if: steps.creds.outputs.configured == 'true'
+      uses: wdzeng/chrome-extension@v2
+      with:
+        extension-id: ${{ vars.CHROME_EXTENSION_ID }}
+        publisher-id: ${{ vars.CHROME_PUBLISHER_ID }}
+        zip-path: store/ja-chrome-v${{ needs.build.outputs.version }}.zip
+        client-id: ${{ secrets.CHROME_CLIENT_ID }}
+        client-secret: ${{ secrets.CHROME_CLIENT_SECRET }}
+        refresh-token: ${{ secrets.CHROME_REFRESH_TOKEN }}
+
+  publish-edge:
+    needs: build
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/package'
+    runs-on: ubuntu-latest
+    environment: store-release
+    steps:
+    - name: Check Edge Add-ons credentials
+      id: creds
+      env:
+        EDGE_PRODUCT_ID: ${{ vars.EDGE_PRODUCT_ID }}
+        EDGE_CLIENT_ID: ${{ secrets.EDGE_CLIENT_ID }}
+        EDGE_API_KEY: ${{ secrets.EDGE_API_KEY }}
+      run: |
+        MISSING=""
+        for NAME in EDGE_PRODUCT_ID EDGE_CLIENT_ID EDGE_API_KEY; do
+          [ -n "${!NAME}" ] || MISSING="$MISSING $NAME"
+        done
+        if [ -n "$MISSING" ]; then
+          echo "::notice title=Edge Add-ons skipped::Not configured in store-release environment:$MISSING"
+          echo "configured=false" >> "$GITHUB_OUTPUT"
+        else
+          echo "configured=true" >> "$GITHUB_OUTPUT"
+        fi
+
+    - name: Download store packages
+      if: steps.creds.outputs.configured == 'true'
+      uses: actions/download-artifact@v7
+      with:
+        name: JA_Store_Packages_${{ needs.build.outputs.version }}
+        path: store
+
+    - name: Publish to Edge Add-ons
+      if: steps.creds.outputs.configured == 'true'
+      uses: wdzeng/edge-addon@v2
+      with:
+        product-id: ${{ vars.EDGE_PRODUCT_ID }}
+        zip-path: store/ja-edge-v${{ needs.build.outputs.version }}.zip
+        client-id: ${{ secrets.EDGE_CLIENT_ID }}
+        api-key: ${{ secrets.EDGE_API_KEY }}
+
+  publish-firefox:
+    needs: build
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/package'
+    runs-on: ubuntu-latest
+    environment: store-release
+    steps:
+    - name: Check Firefox Add-ons credentials
+      id: creds
+      env:
+        FIREFOX_ADDON_GUID: ${{ vars.FIREFOX_ADDON_GUID }}
+        FIREFOX_JWT_ISSUER: ${{ secrets.FIREFOX_JWT_ISSUER }}
+        FIREFOX_JWT_SECRET: ${{ secrets.FIREFOX_JWT_SECRET }}
+      run: |
+        MISSING=""
+        for NAME in FIREFOX_ADDON_GUID FIREFOX_JWT_ISSUER FIREFOX_JWT_SECRET; do
+          [ -n "${!NAME}" ] || MISSING="$MISSING $NAME"
+        done
+        if [ -n "$MISSING" ]; then
+          echo "::notice title=Firefox Add-ons skipped::Not configured in store-release environment:$MISSING"
+          echo "configured=false" >> "$GITHUB_OUTPUT"
+        else
+          echo "configured=true" >> "$GITHUB_OUTPUT"
+        fi
+
+    - name: Download store packages
+      if: steps.creds.outputs.configured == 'true'
+      uses: actions/download-artifact@v7
+      with:
+        name: JA_Store_Packages_${{ needs.build.outputs.version }}
+        path: store
+
+    - name: Download source package
+      if: steps.creds.outputs.configured == 'true'
+      uses: actions/download-artifact@v7
+      with:
+        name: ${{ needs.build.outputs.src_name }}
+        path: source
+
+    - name: Archive source package
+      if: steps.creds.outputs.configured == 'true'
+      run: (cd source && zip -r -X -q "$GITHUB_WORKSPACE/ja-source.zip" .)
+
+    - name: Publish to Firefox Add-ons
+      if: steps.creds.outputs.configured == 'true'
+      uses: wdzeng/firefox-addon@v1
+      with:
+        addon-guid: ${{ vars.FIREFOX_ADDON_GUID }}
+        xpi-path: store/ja-firefox-v${{ needs.build.outputs.version }}.zip
+        source-file-path: ja-source.zip
+        self-hosted: false
+        approval-notes: Build environment and steps to reproduce the package are described in README.md of the attached source package.
+        jwt-issuer: ${{ secrets.FIREFOX_JWT_ISSUER }}
+        jwt-secret: ${{ secrets.FIREFOX_JWT_SECRET }}

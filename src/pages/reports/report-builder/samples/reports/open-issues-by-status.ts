@@ -64,7 +64,7 @@ const sample: BuilderSampleReport = {
                     col('priority.name', 'Priority', { width: '100px' }),
                     col('updated', 'Updated', { width: '120px', formatExpr: '=FormatUserDate(Field.updated)' }),
                 ],
-                { groupBy: ['project.name', 'status.name'], showGroupFooter: true },
+                { groupBy: ['project.name', 'status.name'] },
             ),
         ],
     },

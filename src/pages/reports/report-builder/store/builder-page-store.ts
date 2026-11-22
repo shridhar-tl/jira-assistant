@@ -10,10 +10,11 @@ import {
     listBuilderReports,
     loadBuilderReport,
     saveBuilderReport,
+    saveSampleSubReports,
     toAvailableSubReports,
     type SavedBuilderReport,
 } from '../report-store';
-import { createSampleDefinition, getSampleReport } from '../samples';
+import { createSampleDefinition, getSampleReport, sampleSubReportsOf } from '../samples';
 
 export type BuilderPageMode = 'design' | 'view';
 
@@ -56,7 +57,9 @@ let latestLoad = 0;
 
 export async function refreshSubReports(): Promise<void> {
     const reports = await listBuilderReports();
-    useBuilderPage.setState(({ report }) => ({ subReports: toAvailableSubReports(reports, report.id) }));
+    useBuilderPage.setState(({ report }) => ({
+        subReports: [...(report.id ? [] : sampleSubReportsOf(report.sampleId)), ...toAvailableSubReports(reports, report.id)],
+    }));
 }
 
 export async function loadPageSample(sampleId: string): Promise<void> {
@@ -137,7 +140,7 @@ export function setPageMode(mode: BuilderPageMode): void {
 
 export async function savePageReport(queryName?: string, asCopy?: boolean): Promise<number> {
     const { report } = useBuilderPage.getState();
-    const toSave: SavedBuilderReport = { ...report, queryName: queryName ?? report.queryName };
+    const toSave: SavedBuilderReport = { ...report, queryName: queryName ?? report.queryName, definition: await saveSampleSubReports(report.definition) };
     if (asCopy) delete toSave.id;
     const id = await saveBuilderReport(toSave);
     useBuilderPage.setState({

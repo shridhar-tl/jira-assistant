@@ -38,7 +38,6 @@ For easy development, use Jira's Cloud version, free for up to 5 users. You can 
 - To create a new account: http://go.atlassian.com/about-cloud-dev-instance
 - To know more about this free instance: https://blog.developer.atlassian.com/cloud-ecosystem-dev-env/
 
-
 ### Setting Up a Local Jira Instance (30 Days Trial)
 
 If you prefer local testing, Docker makes it straightforward. Run the following command to set up a Docker container with Jira:
@@ -58,3 +57,7 @@ docker start jira
 ```
 
 Access your personal Jira instance by opening "http://localhost:9090" in your browser and following the setup instructions.
+
+### Edge Manifest key to add for dev testing
+
+"key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAqgOeieQeQWZRxeoAGGLjXGCutm354BFj5jX7XmQdfUlfAsxYeLiQpvXH0dk9SgIpIVfiGJoI59oKhlixbwUTs8Zp/v0NQaMQc3MhhvRtYz+UjQuPajR59HyoVzZB3+/2ESe0RC+LT3sEXUVSNxy7Zoc8RUOkLW4+53hsQkVtVvOrFUB+jTdn9Tlk7nLSnFBit510pmR8/tvVusDRnLcvqlTObF+axpgmi+kyciqc/cXiYqKzOU75Y2nWot7E8XfjhGXmMbm4jG24gGejNgazERpBEjb6U1WK+sAO9ZO23C1kjaVuqllEnzjTz08do+Fa9rgmUC5Lr05sbQJ/kMKV9wIDAQAB"

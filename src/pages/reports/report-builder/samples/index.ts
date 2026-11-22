@@ -1,8 +1,9 @@
-import { createEmptyDefinition, type ReportDefinition } from '@components/report-builder';
+import { createEmptyDefinition, type AvailableSubReport, type ReportDefinition } from '@components/report-builder';
 
 import { loadJiraFields } from '../config/jira-fields';
 
 import { resolveSampleFields } from './custom-fields';
+import assigneeWorkBreakdown from './reports/assignee-work-breakdown';
 import boardSprints from './reports/board-sprints';
 import bugsByPriority from './reports/bugs-by-priority';
 import componentHealth from './reports/component-health';
@@ -25,7 +26,8 @@ import statusDrillDown from './reports/status-drill-down';
 import teamTimesheet from './reports/team-timesheet';
 import unassignedBacklog from './reports/unassigned-backlog';
 import worklogDiary from './reports/worklog-diary';
-import type { BuilderSampleCategoryInfo, BuilderSampleReport } from './types';
+import { parseSampleSubReportId, sampleSubReportId } from './sub-report-ids';
+import type { BuilderSampleCategoryInfo, BuilderSampleReport, BuilderSampleSubReport } from './types';
 
 export const sampleCategories: BuilderSampleCategoryInfo[] = [
     { id: 'sprints', label: 'Sprints & agile', icon: 'fa-flag-checkered' },
@@ -42,6 +44,7 @@ export const sampleReports: BuilderSampleReport[] = [
     boardSprints,
     openIssuesByStatus,
     statusDrillDown,
+    assigneeWorkBreakdown,
     myOpenWork,
     unassignedBacklog,
     issueAging,
@@ -73,3 +76,29 @@ export async function createSampleDefinition(sample: BuilderSampleReport): Promi
     };
     return resolveSampleFields(definition, await loadJiraFields());
 }
+
+function findSampleSubReport(subReportId: string): BuilderSampleSubReport | undefined {
+    const parsed = parseSampleSubReportId(subReportId);
+    return parsed ? getSampleReport(parsed.sampleId)?.subReports?.find((sub) => sub.key === parsed.key) : undefined;
+}
+
+export function sampleSubReportsOf(sampleId: string | undefined): AvailableSubReport[] {
+    const sample = getSampleReport(sampleId);
+    if (!sample?.subReports) return [];
+    return sample.subReports.map((sub) => ({ id: sampleSubReportId(sample.id, sub.key), label: `${sub.title} (sample)` }));
+}
+
+export async function createSampleSubReportDefinition(subReportId: string): Promise<ReportDefinition | null> {
+    const sub = findSampleSubReport(subReportId);
+    if (!sub) return null;
+    const base = createEmptyDefinition(sub.title);
+    const definition: ReportDefinition = {
+        ...base,
+        id: subReportId,
+        metadata: { ...base.metadata, description: sub.description },
+        ...structuredClone(sub.definition),
+    };
+    return resolveSampleFields(definition, await loadJiraFields());
+}
+
+export { isSampleSubReportId, sampleSubReportId } from './sub-report-ids';

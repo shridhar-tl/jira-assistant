@@ -52,7 +52,7 @@ const sample: BuilderSampleReport = {
                         ],
                     }),
                 ],
-                { groupBy: 'assigneeName', showGroupFooter: true },
+                { groupBy: 'assigneeName' },
             ),
         ],
     },
