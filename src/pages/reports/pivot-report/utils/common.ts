@@ -127,6 +127,7 @@ export async function loadReport({ reportId, sampleId }: ReportSource) {
 
     const definition = normalizeReportDefinition(report);
     usePivotConfig.setState({ ...definition, fields: resolveFieldReferences(definition.fields, customFields) }, true);
+    generateReport();
 }
 
 async function loadSampleReport(sampleId: string, loadId: number) {

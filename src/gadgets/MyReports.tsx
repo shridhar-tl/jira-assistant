@@ -497,7 +497,7 @@ function ImportReportsDialog({ reportsToImport: initialReports, onHide }: Import
                         {(rpt: ImportReportItem, i: number) => {
                             const { $userutils } = inject('UserUtilsService');
                             return (
-                                <tr key={`${i}_${rpt.status}`}>
+                                <tr key={i}>
                                     <td className="text-center">
                                         <Checkbox checked={rpt.selected} disabled={rpt.disabled} onChange={() => toggleReport(i)} />
                                     </td>
@@ -505,6 +505,7 @@ function ImportReportsDialog({ reportsToImport: initialReports, onHide }: Import
                                     <td>
                                         <TextInput
                                             value={rpt.queryName}
+                                            aria-label={`New name of ${rpt.oldName}`}
                                             disabled={rpt.disabled || !rpt.selected}
                                             onChange={(e: ComponentEvent<string>) => reportNameChanged(i, e.value)}
                                         />

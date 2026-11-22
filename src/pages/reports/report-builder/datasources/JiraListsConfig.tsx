@@ -19,6 +19,9 @@ export default function JiraListsConfig({ datasourceId, config, onChange }: Data
                 onChange={(e) => onChange({ ...cfg, list: e.value as JiraListKind } as unknown as Record<string, unknown>)}
                 size="sm"
             />
+            <span className="text-xs text-(--text-secondary)">
+                Each row is one item of the list, such as a project or a status. Use it in tables, or as the options of a Dropdown parameter.
+            </span>
         </div>
     );
 }

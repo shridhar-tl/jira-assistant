@@ -4,7 +4,7 @@ import type { ReportSample, ReportSampleCategory } from '@components/shared/repo
 
 export type BuilderSampleCategory = 'sprints' | 'issues' | 'time' | 'releases';
 
-export type BuilderSampleDefinition = Pick<ReportDefinition, 'datasources' | 'parameters' | 'components'>;
+export type BuilderSampleDefinition = Pick<ReportDefinition, 'datasources' | 'parameters' | 'components'> & Partial<Pick<ReportDefinition, 'variables'>>;
 
 export type BuilderSampleReport = ReportSample<BuilderSampleDefinition, BuilderSampleCategory>;
 

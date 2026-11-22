@@ -56,7 +56,7 @@ export default function JqlDatasourceDialog({ request }: JqlDatasourceDialogProp
                 error={jqlError}
                 helpText={
                     <>
-                        Insert parameter values with {'{{ expression }}'}, e.g. project in ({'{{ Parameters.projects }}'}). {parameterHint}
+                        Insert parameter values with {'{{ expression }}'}, e.g. project in ({'{{ Parameters.projects }}'}). Text values are quoted for you. {parameterHint}
                     </>
                 }
             >

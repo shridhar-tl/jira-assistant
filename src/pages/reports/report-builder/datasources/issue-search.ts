@@ -29,8 +29,11 @@ export function issuesToDataset(issues: JiraIssue[], fields: SelectedIssueField[
     return { rows: issues.map((issue) => normalizeIssue(issue, fields, today)), fields: getIssueSchema(fields) };
 }
 
+/** A placeholder already wrapped in quotes, such as "{{ Parameters.word }}", whose quotes would double the ones added to the value. */
+const quotedPlaceholder = /(["'])(\{\{[^{}]*\}\})\1/g;
+
 export function interpolateJql(template: string | undefined, context: DatasourceFetchContext): Promise<string> {
-    return context.interpolate(template ?? '', formatJqlValue);
+    return context.interpolate((template ?? '').replace(quotedPlaceholder, '$2'), formatJqlValue);
 }
 
 export function combineJql(...parts: Array<string | undefined>): string {

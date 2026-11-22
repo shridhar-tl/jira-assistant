@@ -13,6 +13,7 @@ import epicProgress from './reports/epic-progress';
 import estimateVsActual from './reports/estimate-vs-actual';
 import issueAging from './reports/issue-aging';
 import labelsOverview from './reports/labels-overview';
+import myOpenWork from './reports/my-open-work';
 import myTimesheet from './reports/my-timesheet';
 import openIssuesByStatus from './reports/open-issues-by-status';
 import releaseScope from './reports/release-scope';
@@ -20,6 +21,7 @@ import sprintCarryOver from './reports/sprint-carry-over';
 import sprintIssueMix from './reports/sprint-issue-mix';
 import sprintStatusSummary from './reports/sprint-status-summary';
 import sprintWorkload from './reports/sprint-workload';
+import statusDrillDown from './reports/status-drill-down';
 import teamTimesheet from './reports/team-timesheet';
 import unassignedBacklog from './reports/unassigned-backlog';
 import worklogDiary from './reports/worklog-diary';
@@ -39,6 +41,8 @@ export const sampleReports: BuilderSampleReport[] = [
     sprintCarryOver,
     boardSprints,
     openIssuesByStatus,
+    statusDrillDown,
+    myOpenWork,
     unassignedBacklog,
     issueAging,
     bugsByPriority,
