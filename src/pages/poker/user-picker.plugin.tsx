@@ -1,15 +1,15 @@
 import { useCallback, useMemo, useRef, useState } from 'react';
 
 import type { ComponentEvent, ListItem } from 'fluxo-ui';
-
 import type { PokerUserPicker, UserPickerProps } from 'planning-poker/contracts';
 import type { PokerUserRef } from 'planning-poker/shared/types/poker';
+
+import type { JiraUser } from '@/types';
 
 import { inject } from '@services';
 
 import { AutocompleteMulti } from '@components';
 
-import type { JiraUser } from '@/types';
 
 import { jiraAvatarUrl } from './avatar-url';
 

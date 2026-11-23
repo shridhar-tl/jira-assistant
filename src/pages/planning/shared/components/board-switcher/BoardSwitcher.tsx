@@ -6,8 +6,9 @@ import { Button, OverlayPanel, TextInput } from '@components';
 
 import { getAllBoards } from '../../jira-api';
 import type { PlannerBoard } from '../../types';
-import BoardOption from './BoardOption';
+
 import { buildSections, getBoardIcon, getBoardSubtitle, maxListedBoards } from './board-switcher-utils';
+import BoardOption from './BoardOption';
 
 interface BoardSwitcherProps {
     board: PlannerBoard | null;

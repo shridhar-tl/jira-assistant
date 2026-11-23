@@ -1,5 +1,5 @@
-import { buildMode, isWebBuild, outlookRedirectUrl } from '@/constants';
 import { isTrustedJAOrigin } from '@/common/trusted-origin';
+import { buildMode, isWebBuild, outlookRedirectUrl } from '@/constants';
 import { prepareUrlWithQueryString } from '@/utils';
 
 import type AjaxRequestService from './ajax-request-service';
@@ -63,8 +63,8 @@ export default class OutlookCalendar extends OutlookCalendarBase {
         return { response_type, state, nonce, response_mode: 'query' };
     }
 
-    async authenticate(): Promise<any> {
-        return new Promise(async (resolve, reject) => {
+    authenticate(): Promise<any> {
+        return new Promise((resolve, reject) => {
             const params = this.getAddlProps('code');
             const authParams = {
                 ...params,

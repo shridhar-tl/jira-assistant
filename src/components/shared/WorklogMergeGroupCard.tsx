@@ -1,8 +1,9 @@
 import { inject } from '@services';
 
+import { roundTimeSpentSecs } from '@utils';
+
 import type { WorklogMergeGroup, WorklogRoundingInterval } from '@types';
 
-import { roundTimeSpentSecs } from '@utils';
 
 import { formatSecs, getTotalSecs } from '../../services/utils-service';
 

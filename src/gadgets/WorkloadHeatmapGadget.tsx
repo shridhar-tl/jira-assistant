@@ -11,8 +11,8 @@ import { GadgetContainer, useBaseGadget, type BaseGadgetProps } from './BaseGadg
 import { GadgetTitle } from './constants';
 import { howItWorks } from './WorkloadHeatmap/constants';
 import HeatmapPeriodControls from './WorkloadHeatmap/HeatmapPeriodControls';
-import SettingsDialog from './WorkloadHeatmap/SettingsDialog';
 import { getPageSettings, normalizeSettings, savePageSettings } from './WorkloadHeatmap/settings';
+import SettingsDialog from './WorkloadHeatmap/SettingsDialog';
 import type { WorkloadHeatmapSettings } from './WorkloadHeatmap/types';
 import useWorkloadHeatmap from './WorkloadHeatmap/useWorkloadHeatmap';
 import WorkloadHeatmapView from './WorkloadHeatmap/WorkloadHeatmapView';

@@ -23,7 +23,7 @@ const terminologyItems = [
 ];
 const cadenceItems = [
     { label: 'Common iterations', value: 'aligned' },
-    { label: "Each team's sprints", value: 'teamSprints' },
+    { label: 'Each team\'s sprints', value: 'teamSprints' },
 ];
 const storageItems = [
     { label: 'Jira Assistant', value: 'ja' },

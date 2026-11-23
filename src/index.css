@@ -47,6 +47,11 @@ body,
     }
 }
 
+/* Hiding the donate button in General settings takes effect at once, before the header renders again. */
+body.no-donation .btn-donate {
+    display: none !important;
+}
+
 body.quick-view {
     min-width: 400px;
 }

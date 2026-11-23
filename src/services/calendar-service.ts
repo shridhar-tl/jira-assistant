@@ -146,7 +146,7 @@ export default class CalendarService {
 
                 const authToken = await this.authenticate(true);
                 if (!authToken) {
-                    throw new Error('Re-authentication failed');
+                    throw new Error('Re-authentication failed', { cause: err });
                 }
 
                 return await onAuthSuccess(authToken);

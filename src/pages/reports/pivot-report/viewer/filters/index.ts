@@ -1,6 +1,7 @@
 import moment from 'moment';
 
 import { normalizeTypeWithOptions } from '@/display-controls';
+
 import { parseWhereClause } from '../../editor/controls/config/filter-options/validators';
 import { useReportParameters } from '../../store/report-parameters';
 import type { ReportParameters } from '../../types';

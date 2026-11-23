@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 import { Checkbox } from '@components';
 
-import { ShowMoreLink } from './Common';
+import { SettingsRadioGroup, ShowMoreLink } from './Common';
 
 interface FormattingSettingsProps {
     state: any;
@@ -15,7 +15,7 @@ function FormattingSettings({ setValue, state }: FormattingSettingsProps) {
 
     return (
         <div className="space-y-6">
-            <RadioGroup
+            <SettingsRadioGroup
                 label="Report timezone (experimental)"
                 field="timeZone"
                 value={timeZone}
@@ -27,7 +27,7 @@ function FormattingSettings({ setValue, state }: FormattingSettingsProps) {
                 ]}
             />
 
-            <RadioGroup
+            <SettingsRadioGroup
                 label="Days to hide in Daywise view"
                 field="daysToHide"
                 value={daysToHide}
@@ -39,7 +39,7 @@ function FormattingSettings({ setValue, state }: FormattingSettingsProps) {
                 ]}
             />
 
-            <RadioGroup
+            <SettingsRadioGroup
                 label="Log hour format"
                 field="logFormat"
                 value={logFormat}
@@ -58,43 +58,12 @@ function FormattingSettings({ setValue, state }: FormattingSettingsProps) {
 
 export default FormattingSettings;
 
-interface RadioGroupProps {
-    label: string;
-    field: string;
-    value: string;
-    setValue: (key: string, value: any) => void;
-    options: { value: string; label: string }[];
-}
-
-function RadioGroup({ label, field, value, setValue, options }: RadioGroupProps) {
-    return (
-        <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
-            <label className="text-sm font-medium text-primary sm:w-48 shrink-0 pt-1">{label}</label>
-            <div className="space-y-1.5 flex-1">
-                {options.map((opt) => (
-                    <label key={opt.value} className="flex items-center gap-2 text-sm cursor-pointer">
-                        <input
-                            type="radio"
-                            name={field}
-                            value={opt.value}
-                            checked={value === opt.value}
-                            onChange={() => setValue(field, opt.value)}
-                            className="accent-blue-600"
-                        />
-                        <span>{opt.label}</span>
-                    </label>
-                ))}
-            </div>
-        </div>
-    );
-}
-
 function MoreFormattingSettings({ setValue, state }: { setValue: (key: string, value: any) => void; state: any }) {
     const { breakupMode, userDisplayFormat, rIndicator, expandUsers, splitWorklogDays } = state;
 
     return (
         <div className="space-y-6">
-            <RadioGroup
+            <SettingsRadioGroup
                 label="User display format"
                 field="userDisplayFormat"
                 value={userDisplayFormat}
@@ -105,7 +74,7 @@ function MoreFormattingSettings({ setValue, state }: { setValue: (key: string, v
                 ]}
             />
 
-            <RadioGroup
+            <SettingsRadioGroup
                 label="Log breakup"
                 field="breakupMode"
                 value={breakupMode}
@@ -116,7 +85,7 @@ function MoreFormattingSettings({ setValue, state }: { setValue: (key: string, v
                 ]}
             />
 
-            <RadioGroup
+            <SettingsRadioGroup
                 label="Range indicator"
                 field="rIndicator"
                 value={rIndicator}

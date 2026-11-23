@@ -3,6 +3,7 @@ import { Button, Modal } from '@components';
 import { formatDateRange } from '../../../shared/format';
 import { parseDateKey } from '../../../shared/segments';
 import type { LeaveEntry, LeaveSourceConfig, TeamMember } from '../../../shared/types';
+
 import { getLeaveWho, leaveSourceLabels } from './leave-display';
 
 interface LeaveDetailsDialogProps {

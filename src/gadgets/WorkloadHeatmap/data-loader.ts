@@ -1,9 +1,11 @@
 import { parseISO, startOfDay } from 'date-fns';
 
+import { parseDateKey, readSegments } from '@/pages/planning/shared/segments';
 import type { UserGroup } from '@/types';
 import { chunk } from '@/utils';
 
 import { inject } from '@services';
+
 import type { JiraUser } from '@services/jira-service';
 
 import {
@@ -15,7 +17,6 @@ import {
     stripOrderBy,
 } from '../shared/jira-query-utils';
 
-import { parseDateKey, readSegments } from '@/pages/planning/shared/segments';
 
 import { assigneeChunkSize, baseIssueFields, defaultIssueFilterJql, defaultStartDateFieldName, ungroupedAssigneesName } from './constants';
 import type { HeatmapDataset, HeatmapFilterOptions, HeatmapGroup, HeatmapIssue, HeatmapUser, WorkloadHeatmapSettings } from './types';

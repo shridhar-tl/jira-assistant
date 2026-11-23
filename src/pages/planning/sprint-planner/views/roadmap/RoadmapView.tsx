@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
+import { inject } from '@services';
+
 import {
     Confirm,
     GanttChart,
@@ -15,7 +17,6 @@ import {
     type TaskBarTemplateProps,
 } from '@components';
 
-import { inject } from '@services';
 
 import { loadParents, type ParentInfo } from '../../../shared/board-loader';
 import ResizablePanels from '../../../shared/components/ResizablePanels';
@@ -28,6 +29,7 @@ import type { RoadmapZoom } from '../../planner-settings';
 import { usePlannerStore } from '../../store';
 import type { BoardModel } from '../../useBoardModel';
 import IssueEditDialog from '../board/IssueEditDialog';
+
 import { buildRoadmapModel, type RoadmapTaskData } from './roadmap-model';
 import SegmentDialog, { type SegmentDialogState } from './SegmentDialog';
 import UnscheduledList from './UnscheduledList';

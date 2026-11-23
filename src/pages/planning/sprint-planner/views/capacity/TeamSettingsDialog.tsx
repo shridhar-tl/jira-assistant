@@ -6,6 +6,7 @@ import type { StoredCalendarEvent, TeamDefinition } from '../../../shared/types'
 import { saveTeam } from '../../actions';
 import { usePlannerStore } from '../../store';
 import type { BoardModel } from '../../useBoardModel';
+
 import LeaveSourcesTab from './team/LeaveSourcesTab';
 import MembersTab from './team/MembersTab';
 import PlanningTab from './team/PlanningTab';

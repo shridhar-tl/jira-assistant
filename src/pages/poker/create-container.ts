@@ -1,5 +1,4 @@
 import type { ServiceContainer } from 'fluxo-ui/services';
-
 import { registerPokerApiServices } from 'planning-poker/standalone';
 import { createPokerContainer, pokerServices, registerPokerService } from 'planning-poker/ui';
 

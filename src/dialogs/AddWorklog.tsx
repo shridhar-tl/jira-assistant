@@ -4,7 +4,7 @@ import { startOfDay, isBefore, isAfter, isEqual, format as formatDate, parse as 
 
 import { inject } from '@services';
 
-import { Modal, Button, Checkbox, Dropdown, MaskedInput } from '@components';
+import { Modal, Button, Checkbox, Dropdown, MaskedInput, TextArea } from '@components';
 
 import type { Worklog } from '@types';
 
@@ -353,7 +353,7 @@ function AddWorklog({ editTracker, worklog: worklogProp, uploadImmediately: uplo
                         {errors.ticketNo && <p className="text-xs text-red-500">Please provide a valid ticket number</p>}
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-[minmax(0,2fr)_minmax(0,1fr)] gap-4">
                         <div className="flex flex-col gap-1.5">
                             <label className="text-sm font-semibold text-primary">Date Started</label>
                             <DateTimePicker
@@ -388,13 +388,14 @@ function AddWorklog({ editTracker, worklog: worklogProp, uploadImmediately: uplo
                                 <span className="ml-1 font-normal text-xs text-secondary">(min {minCommentLength} chars)</span>
                             )}
                         </label>
-                        <textarea
+                        <TextArea
                             ref={descriptionRef}
+                            className="w-full"
                             rows={3}
                             value={log.description || ''}
-                            onChange={(e) => updateField('description', e.target.value)}
+                            onChange={(e) => updateField('description', e.value)}
                             placeholder="Describe the work you have done..."
-                            className={`w-full px-3 py-2 border rounded-lg text-sm bg-(--bg-primary) text-primary resize-y transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500 ${errors.description ? 'border-red-400' : 'border-(--border-color)'}`}
+                            invalid={!!errors.description}
                         />
                         {errors.description && (
                             <p className="text-xs text-red-500">

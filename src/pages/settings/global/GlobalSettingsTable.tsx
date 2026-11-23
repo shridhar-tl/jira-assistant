@@ -4,7 +4,7 @@ import { isPluginBuild } from '@/constants/build-info';
 import { SystemUserId } from '@/constants/common';
 import config from '@/customize';
 
-import { Checkbox, TextInput } from '@components';
+import { Checkbox, TextArea, TextInput } from '@components';
 
 import { getHostFromUrl } from '@utils/helpers';
 
@@ -293,16 +293,12 @@ interface JqlTextareaProps {
 
 function JqlTextarea({ value, placeholder, onChange, disabled }: JqlTextareaProps) {
     return (
-        <textarea
-            className={classNames(
-                'w-full text-[12px] font-mono leading-relaxed rounded border px-2 py-1.5 resize-y min-h-[56px] outline-none transition-colors',
-                'bg-(--bg-primary) text-primary border-(--border-primary)',
-                'focus:border-(--border-focus) focus:ring-1 focus:ring-(--border-focus)',
-                disabled && 'opacity-50 cursor-not-allowed bg-(--bg-secondary)',
-            )}
+        <TextArea
+            className="w-full font-mono"
+            size="sm"
             value={value}
             placeholder={placeholder}
-            onChange={(e) => onChange(e.target.value)}
+            onChange={(e) => onChange(e.value)}
             disabled={disabled}
             rows={2}
         />

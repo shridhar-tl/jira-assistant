@@ -1,5 +1,4 @@
 import { router } from '@forge/bridge';
-
 import type { PokerHostService } from 'planning-poker/contracts';
 
 import { pokerBasePath } from './constants';

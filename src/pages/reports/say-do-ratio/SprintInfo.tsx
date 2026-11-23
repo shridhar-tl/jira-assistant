@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { format } from 'date-fns';
 
@@ -52,12 +52,12 @@ function groupIssues(issues: SprintIssue[]): IssueGroup[] {
 }
 
 function SprintInfo({ sprint, onClose }: SprintInfoProps) {
-    const [groupedIssues, setGroupedIssues] = useState<IssueGroup[]>([]);
+    const initialGroups = useMemo(() => groupIssues(sprint.issues), [sprint]);
+    const [detailed, setDetailed] = useState<{ sprint: SprintData; groups: IssueGroup[] } | null>(null);
+    const groupedIssues = detailed?.sprint === sprint ? detailed.groups : initialGroups;
 
     useEffect(() => {
         const { issues } = sprint;
-        const initialGroups = groupIssues(issues);
-        setGroupedIssues(initialGroups);
 
         (async () => {
             try {
@@ -77,8 +77,7 @@ function SprintInfo({ sprint, onClose }: SprintInfoProps) {
                         fields: { ...issue.fields, ...fields },
                     };
                 });
-                const newGroupedIssues = groupIssues(newIssues);
-                setGroupedIssues(newGroupedIssues);
+                setDetailed({ sprint, groups: groupIssues(newIssues) });
             } catch (err) {
                 console.error('Failed to load sprint issue details:', err);
             }

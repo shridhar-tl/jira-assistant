@@ -1,3 +1,5 @@
+import { inject } from '@services';
+
 import type { DatasourceConfig, ReportDefinition } from '@components/report-builder';
 
 import type { JiraFieldMeta, SelectedIssueField } from '../config/jira-fields';
@@ -13,10 +15,12 @@ interface PlaceholderField {
     label: string;
     names: string[];
     schemaType: string;
+    /** The general setting where the user chose the field, which is used before the fields matched by name. */
+    setting: 'storyPointField';
 }
 
 const placeholders: PlaceholderField[] = [
-    { id: storyPointsFieldId, label: 'Story Points', names: ['story points', 'story point estimate'], schemaType: 'number' },
+    { id: storyPointsFieldId, label: 'Story Points', names: ['story points', 'story point estimate'], schemaType: 'number', setting: 'storyPointField' },
 ];
 
 const fieldListKeys = ['fields', 'issueFields'] as const;
@@ -33,7 +37,10 @@ function fieldLists(ds: DatasourceConfig): SelectedIssueField[][] {
 }
 
 function findMatch(placeholder: PlaceholderField, jiraFields: JiraFieldMeta[]): JiraFieldMeta | undefined {
-    return jiraFields.find(
+    const { $session } = inject('SessionService');
+    const configuredId = $session.CurrentUser[placeholder.setting]?.id;
+    const configured = configuredId && jiraFields.find((f) => f.id === configuredId && f.schema?.type === placeholder.schemaType);
+    return configured || jiraFields.find(
         (f) => f.custom && f.schema?.type === placeholder.schemaType && placeholder.names.includes(f.name.trim().toLowerCase()),
     );
 }

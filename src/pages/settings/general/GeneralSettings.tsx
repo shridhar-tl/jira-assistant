@@ -25,7 +25,7 @@ export default function GeneralSettings() {
     const isExtnConnected = isWebBuild ? localStorage.getItem('authType') === '1' : false;
     const showMenuOptionsTab = (!isWebBuild || isExtnConnected) && !isPluginBuild;
 
-    const [settings, setSettings] = useState<Record<string, any>>({});
+    const [settings, setSettings] = useState<Record<string, any> | null>(null);
     const [activeTab, setActiveTab] = useState(0);
     const [removedIntg, setRemovedIntg] = useState(false);
 
@@ -53,10 +53,7 @@ export default function GeneralSettings() {
             setSettings((prev) => ({ ...prev, [field]: value }));
             $settings.saveGeneralSetting(currentUserId, field, value);
 
-            const cUser = $session.CurrentUser;
-            if (cUser) {
-                (cUser as any)[field] = value;
-            }
+            $session.setUserSetting(field, value);
         },
         [$settings, $session],
     );
@@ -74,6 +71,11 @@ export default function GeneralSettings() {
                 </div>
 
                 <div className="rounded-lg overflow-hidden bg-(--bg-primary) border border-(--border-primary) shadow-(--shadow-sm)">
+                    {!settings ? (
+                        <div className="flex items-center justify-center gap-2 py-16 text-sm text-(--text-secondary)">
+                            <i className="fa fa-spinner fa-spin" /> Loading settings...
+                        </div>
+                    ) : (
                     <TabView activeIndex={activeTab} onTabChange={(e) => setActiveTab(e.index)}>
                         <TabPage header="General">
                             <div className="p-4">
@@ -117,6 +119,7 @@ export default function GeneralSettings() {
                             </TabPage>
                         )}
                     </TabView>
+                    )}
                 </div>
             </div>
         </div>

@@ -23,31 +23,30 @@ class OAuthClient {
         inject(this, 'AjaxService', 'AppBrowserService');
     }
 
-    authenticate(params: AuthParams): Promise<Record<string, string>> {
-        return new Promise(async (resolve) => {
-            const { client_id, redirect_uri, scope } = this.settings;
+    async authenticate(params: AuthParams): Promise<Record<string, string>> {
+        const { client_id, redirect_uri, scope } = this.settings;
 
-            const authParams = {
-                ...params,
-                client_id,
-                redirect_uri,
-                scope,
+        const authParams = {
+            ...params,
+            client_id,
+            redirect_uri,
+            scope,
+        };
+
+        const url = prepareUrlWithQueryString(this.settings.authEndPoint, authParams);
+
+        if (import.meta.env.MODE === 'production') {
+            const result = await this.$jaBrowserExtn.launchWebAuthFlow({ interactive: true, url });
+            return this.parseQueryString(new URL(result).hash.clearStart('#'));
+        }
+
+        return new Promise((resolve) => {
+            (window as any).oAuthHandler = (result: string) => {
+                (window as any).oAuthHandler = null;
+                resolve(this.parseQueryString(result.clearStart('#')));
             };
 
-            const url = prepareUrlWithQueryString(this.settings.authEndPoint, authParams);
-
-            if (import.meta.env.MODE === 'production') {
-                let result = await this.$jaBrowserExtn.launchWebAuthFlow({ interactive: true, url });
-                result = new URL(result).hash;
-                resolve(this.parseQueryString(result.clearStart('#')));
-            } else {
-                (window as any).oAuthHandler = (result: string) => {
-                    (window as any).oAuthHandler = null;
-                    resolve(this.parseQueryString(result.clearStart('#')));
-                };
-
-                this.$jaBrowserExtn.openTab(url, 'oAuthHandler', 'height=610,width=500');
-            }
+            this.$jaBrowserExtn.openTab(url, 'oAuthHandler', 'height=610,width=500');
         });
     }
 
@@ -63,7 +62,7 @@ class OAuthClient {
 
         let url = this.settings.tokenEndPoint;
 
-        let result: any = null;
+        let result: any;
         if (useGetRequest) {
             url = prepareUrlWithQueryString(url, data);
             result = await this.$jaBrowserExtn.launchWebAuthFlow({ interactive: false, url });

@@ -182,7 +182,7 @@ function ColItem({ path, item, depth, index, dragProps, removeItem, updateItem }
     );
 }
 
-interface ColConfigItemProps extends Omit<ColItemProps, 'removeItem' | 'updateItem'> {}
+type ColConfigItemProps = Omit<ColItemProps, 'removeItem' | 'updateItem'>;
 
 export default function ColConfigItem(props: ColConfigItemProps) {
     return <ColItem {...props} removeItem={removeField} updateItem={updateField} />;

@@ -3,6 +3,7 @@ import type Resolver from '@forge/resolver';
 
 import { isDateKey, isLeaveId, isSameLeave, maxLeaveEntriesPerRequest, overlapsRange, sanitizeLeaveEntry } from '../shared/leave-records';
 import type { LeaveEntry } from '../shared/types';
+
 import { ensureBoardAccess, rejectWith } from './board-access';
 
 export interface LeaveRow {

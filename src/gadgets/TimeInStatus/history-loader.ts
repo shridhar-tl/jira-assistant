@@ -2,6 +2,7 @@ import type { IssueStatusHistory, StatusTransition } from '@/types';
 import { chunk, runOnQueue } from '@/utils';
 
 import { inject } from '@services';
+
 import type { JiraChangeHistory } from '@services/jira-service';
 
 import { escapeJqlValue } from '../shared/jira-query-utils';

@@ -1,16 +1,18 @@
 import classNames from 'classnames';
 
-import { Button } from '@components';
 
 import { GadgetAlert } from '@/gadgets/shared';
+
+import { Button } from '@components';
 
 import { formatDateRange } from '../../shared/format';
 import { parseDateKey } from '../../shared/segments';
 import { removePlan } from '../pi-actions';
 import { getPiStatus } from '../pi-model';
-import PiPlannerInfo from './PiPlannerInfo';
 import { usePiStore } from '../pi-store';
 import type { TermSet } from '../terminology';
+
+import PiPlannerInfo from './PiPlannerInfo';
 
 interface PiListViewProps {
     terms: TermSet;

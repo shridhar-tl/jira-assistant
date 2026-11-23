@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import { runOnQueue } from '@utils/array-utils';
-
 import { inject } from '@services';
+
+import { runOnQueue } from '@utils/array-utils';
 
 import type { JiraFieldDefinition, JiraFieldMeta } from '@types';
 
@@ -151,7 +151,7 @@ export default function useBulkImport() {
                 result = await validateRow(row, columns, getEnv());
             } catch (err) {
                 console.error('Unexpected error while validating row', row, err);
-                applyRowResults([{ ...row, selected: false, status: { ...row.status, validating: false, error: msgValidationFailed } }]);
+                applyRowResults([{ ...row, selected: false, blocked: true, status: { ...row.status, validating: false, error: msgValidationFailed } }]);
                 return;
             }
 
@@ -320,11 +320,11 @@ export default function useBulkImport() {
         if (!canImportRow(row)) {
             return;
         }
-        useIssueImportStore.getState().setRows((rows) => rows.map((r) => (r.rowId === row.rowId ? { ...r, selected: !r.selected } : r)));
+        useIssueImportStore.getState().setRows((rows) => rows.map((r) => (r.rowId === row.rowId ? { ...r, selected: !r.selected, blocked: false } : r)));
     }, []);
 
     const selectAll = useCallback((selected: boolean) => {
-        useIssueImportStore.getState().setRows((rows) => rows.map((r) => ({ ...r, selected: selected && canImportRow(r) })));
+        useIssueImportStore.getState().setRows((rows) => rows.map((r) => (canImportRow(r) ? { ...r, selected, blocked: false } : { ...r, selected: false })));
     }, []);
 
     const importSelected = useCallback(async (): Promise<ImportSummary> => {

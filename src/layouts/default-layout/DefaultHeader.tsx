@@ -2,14 +2,14 @@ import { useState, useEffect, useCallback } from 'react';
 
 import { NavLink } from 'react-router';
 
+import { Dialog } from '@dialogs';
 import classNames from 'classnames';
 
-import { Dialog } from '@dialogs';
 
 import { isWebBuild } from '@/constants/build-info';
 import { AppVersionNo } from '@/constants/common';
-import { SettingsCategory } from '@/constants/settings';
 import type { MenuSection } from '@/constants/navigation';
+import { SettingsCategory } from '@/constants/settings';
 import config from '@/customize';
 
 import { inject } from '@services';
@@ -85,7 +85,7 @@ export default function DefaultHeader({ onLogout, isQuickView, menus }: DefaultH
                 {showDonateButton && (
                     <NavLink
                         to={`/${userId}/contribute`}
-                        className="hidden md:inline-flex items-center"
+                        className="btn-donate hidden md:inline-flex items-center"
                         title="Would you like to contribute / compensate us for the effort we put in development of this tool? Click to know more"
                     >
                         <img

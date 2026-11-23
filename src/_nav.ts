@@ -22,6 +22,14 @@ export interface MenuSection {
     items: MenuItem[];
 }
 
+/** Dashboard icons are saved as the bare Font Awesome name (fa-pie-chart), except the default board which has the full class. */
+function dashboardIconClass(icon?: string): string {
+    if (!icon) {
+        return 'fa fa-tachometer';
+    }
+    return icon.startsWith('fa ') ? icon : `fa ${icon}`;
+}
+
 export function getDashboardMenu(d: any, idx: number, userId: number): MenuItem {
     if (!d) {
         return null!;
@@ -33,7 +41,7 @@ export function getDashboardMenu(d: any, idx: number, userId: number): MenuItem 
         name,
         id: `D-${idx}`,
         url: `/${userId}/dashboard/${idx}`,
-        icon: icon,
+        icon: dashboardIconClass(icon),
         /*badge: {
             variant: 'info',
             text: 'NEW'

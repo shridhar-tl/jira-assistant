@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 
+import { TextInput, type ComponentEvent } from '@components';
+
 interface StringEditorProps {
     value?: string;
     placeholder?: string;
@@ -7,7 +9,7 @@ interface StringEditorProps {
 }
 
 function StringEditor({ value, placeholder = 'Enter value', onChange }: StringEditorProps) {
-    const [newValue, setNewValue] = useState(value);
+    const [newValue, setNewValue] = useState(value ?? '');
     const inputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
@@ -19,11 +21,9 @@ function StringEditor({ value, placeholder = 'Enter value', onChange }: StringEd
     };
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        const { keyCode } = e;
-
-        if (keyCode === 13) {
+        if (e.key === 'Enter') {
             handleChange(e.currentTarget.value, true);
-        } else if (keyCode === 27) {
+        } else if (e.key === 'Escape') {
             handleChange(value || '', false);
         }
     };
@@ -32,14 +32,14 @@ function StringEditor({ value, placeholder = 'Enter value', onChange }: StringEd
         handleChange(e.currentTarget.value, true);
     };
 
-    const handleValueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setNewValue(e.currentTarget.value);
+    const handleValueChange = (e: ComponentEvent<string>) => {
+        setNewValue(e.value);
     };
 
     return (
-        <input
+        <TextInput
             ref={inputRef}
-            type="text"
+            size="sm"
             className="string-editor"
             placeholder={placeholder}
             onBlur={handleBlur}

@@ -300,14 +300,14 @@ export default function MyReports(props: BaseGadgetProps) {
             <ScrollableTable dataset={reportsList} exportSheetName="My reports">
                 <THead>
                     <tr>
-                        <Column className="w-10" noExport>
+                        <Column className="w-10 min-w-10" noExport>
                             <Checkbox checked={selAllChk} onChange={selectAll} />
                         </Column>
                         <Column sortBy="queryName">Report name</Column>
                         <Column sortBy="reportType">Report type</Column>
                         <Column sortBy="outputCount">Output fields</Column>
                         <Column sortBy="sortDate">Created on</Column>
-                        <Column className="w-24 text-center" noExport>
+                        <Column className="w-24 min-w-24 text-center" noExport>
                             Actions
                         </Column>
                     </tr>
@@ -483,7 +483,7 @@ function ImportReportsDialog({ reportsToImport: initialReports, onHide }: Import
                 <ScrollableTable dataset={reports}>
                     <THead>
                         <tr>
-                            <Column className="w-10">
+                            <Column className="w-10 min-w-10">
                                 <Checkbox checked={selectAll} onChange={toggleSelectAll} />
                             </Column>
                             <Column>Report name</Column>

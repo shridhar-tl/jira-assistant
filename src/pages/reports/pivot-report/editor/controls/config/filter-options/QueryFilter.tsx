@@ -22,12 +22,12 @@ interface FilterExample {
 }
 
 const filterExamples: FilterExample[] = [
-    { query: "status != 'Done' and issuetype in ('Bug', 'Story')", description: 'Compare with values or a list of values' },
-    { query: "assignee = currentUser() or labels = 'backend'", description: 'Match users or values of multi-value fields' },
+    { query: 'status != \'Done\' and issuetype in (\'Bug\', \'Story\')', description: 'Compare with values or a list of values' },
+    { query: 'assignee = currentUser() or labels = \'backend\'', description: 'Match users or values of multi-value fields' },
     { query: '`Story Points` between 3 and 8', description: 'Wrap field names having space within backticks' },
-    { query: "summary like '%payment%'", description: 'Use % as wildcard to match part of the text' },
-    { query: "created >= today(-7) and date_diff(now(), updated, 'days') > 2", description: 'Compare dates relative to today' },
-    { query: "assignee in (parameters('Team members'))", description: 'Ask for the value every time the report is generated' },
+    { query: 'summary like \'%payment%\'', description: 'Use % as wildcard to match part of the text' },
+    { query: 'created >= today(-7) and date_diff(now(), updated, \'days\') > 2', description: 'Compare dates relative to today' },
+    { query: 'assignee in (parameters(\'Team members\'))', description: 'Ask for the value every time the report is generated' },
 ];
 
 const filterHelpText =

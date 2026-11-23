@@ -1,13 +1,14 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import GroupEditor from '@/dialogs/GroupEditor';
 import { GadgetContainer, useBaseGadget } from '@/gadgets/BaseGadget';
 
 import { inject } from '@services';
 
+import { TabView, TabPage } from '@components';
+
 import { getErrorMessage } from '@utils';
 
-import { TabView, TabPage } from '@components';
 
 import ChartPanel from './ChartPanel';
 import { fetchEstimateActualData, loadProjects, searchProjectInList } from './data-utils';
@@ -17,7 +18,7 @@ import type { ChartState, DateRange, ProjectItem } from './types';
 const reportErrorMessage = 'Unable to generate the report. Look at console log for more details';
 
 export default function EstimateActualReport() {
-    const { $session, $message, $usergroup } = inject('SessionService', 'MessageService', 'UserGroupService');
+    const { $session, $message, $usergroup } = useMemo(() => inject('SessionService', 'MessageService', 'UserGroupService'), []);
 
     const [selectedTab, setSelectedTab] = useState(0);
     const [groups, setGroups] = useState<any[]>([]);
@@ -34,14 +35,6 @@ export default function EstimateActualReport() {
 
     const storyPointField = ($session.CurrentUser.storyPointField || ({} as any)).id;
 
-    const $this = useRef<any>({});
-    $this.current.groups = groups;
-    $this.current.dateRange = dateRange;
-    $this.current.projects = projects;
-    $this.current.ticketsList = ticketsList;
-    $this.current.estimationField = estimationField;
-    $this.current.storyPointHour = storyPointHour;
-
     const gadgetHook = useBaseGadget({ isGadget: false }, { title: 'Estimate vs Actual report', hideMenu: true });
     const { setIsLoading } = gadgetHook;
 
@@ -51,27 +44,22 @@ export default function EstimateActualReport() {
             setProjectsList(list);
             setFilteredProjectsList(list);
         });
-    }, []);
+    }, [$usergroup]);
 
-    const validateData = useCallback(() => {
-        const dr = $this.current.dateRange;
-        const gr = $this.current.groups;
-        return !dr?.fromDate || !gr?.length;
-    }, []);
+    const disableGenerate = !dateRange?.fromDate || !groups?.length;
 
     const refreshData = useCallback(async () => {
-        const cur = $this.current;
         setIsLoading(true);
         setChartData({ labels: [], datasets: [] });
 
         try {
             const result = await fetchEstimateActualData({
-                dateRange: cur.dateRange,
-                groups: cur.groups,
-                projects: cur.projects,
-                ticketsList: cur.ticketsList,
-                estimationField: cur.estimationField,
-                storyPointHour: cur.storyPointHour,
+                dateRange,
+                groups,
+                projects,
+                ticketsList,
+                estimationField,
+                storyPointHour,
             });
 
             setChartData(result.chartData);
@@ -83,7 +71,7 @@ export default function EstimateActualReport() {
         } finally {
             setIsLoading(false);
         }
-    }, [setIsLoading, $message]);
+    }, [setIsLoading, $message, dateRange, groups, projects, ticketsList, estimationField, storyPointHour]);
 
     const handleGroupsChanged = useCallback((updatedGroups?: any[]) => {
         setShowGroupsPopup(false);
@@ -123,7 +111,7 @@ export default function EstimateActualReport() {
                                 estimationField={estimationField}
                                 storyPointField={storyPointField}
                                 storyPointHour={storyPointHour}
-                                disableGenerate={validateData()}
+                                disableGenerate={disableGenerate}
                                 onShowGroups={() => setShowGroupsPopup(true)}
                                 onDateChange={setDateRange}
                                 onProjectsChange={setProjects}

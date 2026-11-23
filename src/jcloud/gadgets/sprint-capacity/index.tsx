@@ -11,6 +11,7 @@ import { BlockLoading, Loading } from '@components';
 import withSimpleAuth from '../../../layouts/authorization/simple-auth';
 import GadgetMessage from '../../components/GadgetMessage';
 import { type DashboardItemProps, getDashboardItemConfig, isDashboardItemEdit } from '../../dashboard-host';
+
 import { normalizeSprintCapacitySettings, type SprintCapacitySettings } from './settings';
 
 const EditConfig = lazy(() => import('./EditConfig'));

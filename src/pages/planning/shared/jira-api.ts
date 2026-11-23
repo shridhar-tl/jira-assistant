@@ -1,6 +1,7 @@
+import { inject } from '@services';
+
 import { prepareUrlWithQueryString } from '@utils/helpers';
 
-import { inject } from '@services';
 
 import { getCached } from './cache';
 import {

@@ -1,5 +1,4 @@
 import { realtime } from '@forge/bridge';
-
 import type {
     ConnectionStatus,
     PokerRealtimeService,

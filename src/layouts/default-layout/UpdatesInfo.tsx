@@ -1,8 +1,8 @@
 import { Link } from '@/controls';
+import type { UpdateDescription, UpdateInfo } from '@/services/notification-service';
 
 import { inject } from '@services';
 
-import type { UpdateDescription, UpdateInfo } from '@/services/notification-service';
 
 interface UpdatesInfoProps {
     updates: UpdateInfo[];

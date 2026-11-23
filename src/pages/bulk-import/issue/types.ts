@@ -107,6 +107,8 @@ export interface ImportRow {
     revision: number;
     line?: number;
     selected: boolean;
+    /** Left out because the row could not be imported, as opposed to being left out by the user. */
+    blocked: boolean;
     clone: boolean;
     delete: boolean;
     cells: Record<string, ImportCell>;

@@ -4,6 +4,7 @@ import { InputSwitch } from '@components';
 
 import GadgetMessage from '../../components/GadgetMessage';
 import useDashboardItemConfig from '../../useDashboardItemConfig';
+
 import { normalizeSprintCapacitySettings, type SprintCapacitySettings } from './settings';
 
 interface EditConfigProps {

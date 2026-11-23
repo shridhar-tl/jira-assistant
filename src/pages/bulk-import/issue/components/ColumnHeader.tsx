@@ -1,8 +1,9 @@
 import classNames from 'classnames';
 
+import { stop } from '@/utils';
+
 import { Button } from '@components';
 
-import { stop } from '@/utils';
 
 import type { ImportColumn } from '../types';
 

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback } from 'react';
 
 import { useNavigate } from 'react-router';
 
@@ -15,28 +15,14 @@ interface DashboardHeaderProps {
     index: number;
     userId: string;
     onShowGadgets: () => void;
-    tabViewChanged: (isTabView: boolean) => void;
+    onConfigChange: (config: Dashboard) => void;
     isQuickView?: boolean;
 }
 
-export function DashboardHeader({
-    config: initialConfig,
-    index: initialIndex,
-    userId,
-    onShowGadgets,
-    tabViewChanged,
-    isQuickView,
-}: DashboardHeaderProps) {
-    const [config, setConfig] = useState(initialConfig);
-    const [index, setIndex] = useState(initialIndex);
+export function DashboardHeader({ config, index, userId, onShowGadgets, onConfigChange, isQuickView }: DashboardHeaderProps) {
     const navigate = useNavigate();
 
     const { $dashboard } = inject('DashboardService');
-
-    useEffect(() => {
-        setConfig(initialConfig);
-        setIndex(initialIndex);
-    }, [initialConfig, initialIndex]);
 
     const deleteDashboard = useCallback(async () => {
         await $dashboard.deleteDashboard(index);
@@ -44,23 +30,22 @@ export function DashboardHeader({
     }, [$dashboard, index, userId, navigate]);
 
     const setAsQuickView = useCallback(async () => {
-        const updatedConfig = await $dashboard.setAsQuickView(config, index);
-        setConfig(updatedConfig);
-    }, [$dashboard, config, index]);
+        const { isQuickView: quickView } = await $dashboard.setAsQuickView(config, index);
+        onConfigChange({ ...config, isQuickView: quickView });
+    }, [$dashboard, config, index, onConfigChange]);
 
     const setAsTabView = useCallback(async () => {
-        const updatedConfig = await $dashboard.setAsTabView(config, index);
-        setConfig(updatedConfig);
-        tabViewChanged(updatedConfig.isTabView || false);
-    }, [$dashboard, config, index, tabViewChanged]);
+        const { isTabView } = await $dashboard.setAsTabView(config, index);
+        onConfigChange({ ...config, isTabView });
+    }, [$dashboard, config, index, onConfigChange]);
 
     const nameChanged = useCallback(
         (name: string, icon: string) => {
             const updatedConfig = { ...config, name, icon };
-            setConfig(updatedConfig);
+            onConfigChange(updatedConfig);
             $dashboard.saveDashboardInfo(index, updatedConfig, true);
         },
-        [config, index, $dashboard],
+        [config, index, $dashboard, onConfigChange],
     );
 
     const showContext = useCallback(

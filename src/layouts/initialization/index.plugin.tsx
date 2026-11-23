@@ -1,13 +1,14 @@
 import type { ComponentType } from 'react';
 import { memo, useEffect, useState } from 'react';
 
+import { clearEnd } from '@/utils/helpers';
+
 import { inject, registerDepnServices } from '@services/index.plugin';
 
 import { BlockLoading } from '@components';
 
 import { ApiUrls } from '@constants';
 
-import { clearEnd } from '@/utils/helpers';
 
 interface PluginInitProps {
     jiraContext?: {

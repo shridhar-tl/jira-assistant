@@ -4,7 +4,6 @@ import type { DateSelectedCallbackArg } from '@components';
 import { Button } from '@components';
 
 import DateRangePicker from '../../../controls/DateRangePicker';
-
 import { useWorklogStore, useWorklogDispatch } from '../datastore';
 
 import ChooseBoard from './ChooseBoard';

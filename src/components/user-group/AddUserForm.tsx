@@ -7,6 +7,7 @@ import type { JiraUser } from '@/types';
 import { inject } from '@services';
 
 import { AutocompleteMulti, Button } from '@components';
+
 import { getUserName } from '@utils/helpers';
 
 interface AddUserFormProps {

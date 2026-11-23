@@ -8,7 +8,7 @@ export const maxLeaveTitleLength = 80;
 const millisecondsPerDay = 86400000;
 const datePattern = /^\d{4}-\d{2}-\d{2}$/;
 const idPattern = /^[A-Za-z0-9_.:-]{1,80}$/;
-const personPattern = /^[^\u0000-\u001f]{1,128}$/;
+const personPattern = /^[^\p{Cc}]{1,128}$/u;
 const maxMemberIds = 200;
 const sourceTypes = new Set<LeaveSourceType>(['manual', 'outlook', 'google', 'ics', 'confluence']);
 

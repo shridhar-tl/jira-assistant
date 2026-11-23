@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
 
+import { GadgetAlert } from '@/gadgets/shared';
 import type { JiraCreateIssueType } from '@/types';
 
 import { inject } from '@services';
 
 import { Button, Dropdown, Modal, NumericInput, TextInput } from '@components';
 
-import { GadgetAlert } from '@/gadgets/shared';
 
 import { backlogColumnId, type BoardData } from '../../../shared/board-loader';
 import Field from '../../../shared/components/Field';

@@ -1,8 +1,9 @@
 import { useState, useCallback } from 'react';
 
-import { Modal, Button, TabView, TabPage } from '@components';
+import { Modal, Button, TabView, TabPage, TextArea } from '@components';
 
 import { useWorklogStore } from '../datastore';
+
 import DataSourceSettings from './DataSourceSettings';
 import FieldsListSettings from './FieldsListSettings';
 import FormattingSettings from './FormattingSettings';
@@ -98,10 +99,11 @@ function SettingsDialog({ onHide }: SettingsDialogProps) {
                     </TabPage>
                     <TabPage header="JQL filter">
                         <div className="p-5 space-y-3">
-                            <textarea
+                            <TextArea
+                                className="w-full font-mono"
+                                rows={14}
                                 value={allSettings.jql || ''}
-                                onChange={(e) => setValue('jql', e.target.value)}
-                                className="w-full h-80 px-3 py-2 text-sm font-mono border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-primary focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                                onChange={(e) => setValue('jql', e.value)}
                                 placeholder="Provide the additional JQL filters to be applied while fetching data."
                             />
                             <p className="text-sm text-secondary">

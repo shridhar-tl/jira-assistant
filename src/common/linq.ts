@@ -73,7 +73,7 @@ function getObject(row: any, clause: any, curItem: any, propPrefix?: string): an
             const spread = obj.spread === true || !propName;
             const value = getObjVal(row, field);
             const props = obj.props;
-            let newVal = null;
+            let newVal;
 
             if (value) {
                 if (!repeatOnVal) {

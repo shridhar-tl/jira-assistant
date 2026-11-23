@@ -15,6 +15,7 @@ import {
     SelectButton,
     TextArea,
 } from '@components';
+
 import type { RapidView } from '@components/shared/RapidViewList';
 
 import { rangeModeOptions, scopeModeOptions } from './constants';

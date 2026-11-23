@@ -9,21 +9,22 @@ import { inject } from '@services';
 
 export default function TimerControl() {
     const [showEditor, setShowEditor] = useState(false);
-    const { getElapsedTimeInSecs, resumeTimer, pauseTimer, stopTimer } = useWorklogStore();
+    const { getElapsedTimeInSecs, loadTracker, resumeTimer, pauseTimer, stopTimer } = useWorklogStore();
     const { $userutils } = inject('UserUtilsService');
 
     const curTime = getElapsedTimeInSecs();
 
     const trackerUpdated = useCallback(() => {
         setShowEditor(false);
-    }, []);
+        loadTracker();
+    }, [loadTracker]);
 
     if (!curTime) return null;
 
     const ticketUrl = $userutils.getTicketUrl(curTime.key) || '';
 
     return (
-        <div className="flex items-center gap-2 px-3 py-1 bg-blue-50 dark:bg-blue-900 rounded border border-blue-200 dark:border-blue-700">
+        <div data-testid="header-timer" className="flex items-center gap-2 px-3 py-1 bg-blue-50 dark:bg-blue-900 rounded border border-blue-200 dark:border-blue-700">
             <Link className="font-semibold text-blue-600 dark:text-blue-300 no-underline hover:underline" href={ticketUrl}>
                 {curTime.key}
             </Link>
@@ -96,7 +97,7 @@ function Lapse({ isRunning, lapse: initialLapse, title }: LapseProps) {
     }
 
     return (
-        <span className="font-mono text-sm font-semibold text-gray-700 dark:text-gray-300" title={title}>
+        <span data-testid="timer-lapse" className="font-mono text-sm font-semibold text-gray-700 dark:text-gray-300" title={title}>
             {display}
         </span>
     );

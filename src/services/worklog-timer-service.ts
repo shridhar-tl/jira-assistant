@@ -14,12 +14,24 @@ interface TimerEntry {
     autoPaused?: boolean;
 }
 
+export interface ActiveTimerResult {
+    isActive: true;
+    entry: TimerEntry;
+}
+
+export interface InvalidTimerResult {
+    invalidEntry: true;
+    entry: TimerEntry;
+}
+
 interface TimeConfig {
     hour: number;
     minute: number;
     second: number;
     millisecond: number;
 }
+
+const roundOperations: Record<string, (value: number) => number> = { round: Math.round, ceil: Math.ceil, floor: Math.floor };
 
 export default class WorklogTimerService extends BaseService {
     static dependencies = ['StorageService', 'SettingsService'];
@@ -71,7 +83,7 @@ export default class WorklogTimerService extends BaseService {
         return newEntry;
     }
 
-    async startTimer(userId: number, key: string, description?: string, forceStop?: boolean): Promise<any> {
+    async startTimer(userId: number, key: string, description?: string, forceStop?: boolean): Promise<TimerEntry | ActiveTimerResult> {
         const timer = await this.getCurrentTimer();
 
         if (timer && forceStop) {
@@ -118,7 +130,7 @@ export default class WorklogTimerService extends BaseService {
         }
         const { started } = timer;
         const curTime = new Date().getTime();
-        if (started >= curTime) {
+        if (started > curTime) {
             throw new Error('Time mismatch: System time has changed since timer has started');
         }
         const lapse = curTime - started;
@@ -142,7 +154,7 @@ export default class WorklogTimerService extends BaseService {
         return timer;
     }
 
-    async stopTimer(userId?: number, jiraIssue?: string): Promise<any> {
+    async stopTimer(userId?: number, jiraIssue?: string): Promise<boolean | InvalidTimerResult> {
         const timer = await this.getCurrentTimer();
         if (!timer) {
             return false;
@@ -158,7 +170,7 @@ export default class WorklogTimerService extends BaseService {
         const { started } = timer;
         if (started! > 0) {
             if (started! >= endTime) {
-                if (started! >= new Date().getTime()) {
+                if (started! > new Date().getTime()) {
                     await this.$settings.set('WLTimer', null);
                     throw new Error('Time mismatch: System time has changed since timer has started');
                 }
@@ -174,10 +186,10 @@ export default class WorklogTimerService extends BaseService {
         const minTime = parseTimeInMins(await this.$settings.get('TR_MinTime'));
         if (timeInMins >= minTime) {
             const TR_RoundTime = (await this.$settings.get('TR_RoundTime')) || 5;
-            const TR_RoundOpr = await this.$settings.get('TR_RoundOpr');
+            const roundOperation = roundOperations[(await this.$settings.get('TR_RoundOpr')) || ''];
 
-            if (TR_RoundOpr && (Math as any)[TR_RoundOpr]) {
-                timeInMins = parseInt(String(Math.max(1, (Math as any)[TR_RoundOpr](timeInMins / TR_RoundTime)) * TR_RoundTime));
+            if (roundOperation) {
+                timeInMins = parseInt(String(Math.max(1, roundOperation(timeInMins / TR_RoundTime)) * TR_RoundTime));
             }
 
             if (timeInMins >= 1) {

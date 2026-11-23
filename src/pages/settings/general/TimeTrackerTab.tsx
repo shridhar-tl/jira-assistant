@@ -4,11 +4,13 @@ import { executeService } from '@/common/proxy';
 
 import { inject } from '@services';
 
-import { Checkbox, Dropdown, TextInput } from '@components';
+import { Checkbox, Dropdown, MaskedInput, TextInput } from '@components';
 
 import { isPluginBuild, isWebBuild } from '@constants';
 
 const defaultMinTimeToTrack = '00:05';
+const minTimePattern = /^\d{2}:\d{2}$/;
+const emptyMinTime = /^[_:]*$/;
 const defaultAttachDelay = 2;
 
 const roundList = [
@@ -113,6 +115,15 @@ export default function TimeTrackerTab() {
         await $settings.set(field, value);
     };
 
+    const changeMinTime = (value: string) => {
+        setTrMinTime(value);
+        if (minTimePattern.test(value)) {
+            $settings.set('TR_MinTime', value);
+        } else if (emptyMinTime.test(value)) {
+            $settings.set('TR_MinTime', undefined);
+        }
+    };
+
     return (
         <div className="divide-y divide-(--border-primary)">
             <div className="pb-5">
@@ -120,12 +131,13 @@ export default function TimeTrackerTab() {
                 <p className="text-xs text-(--text-secondary) mb-3">
                     Tracked sessions shorter than this duration will be ignored (HH:MM format)
                 </p>
-                <TextInput
+                <MaskedInput
+                    mask="99:99"
                     value={trMinTime}
-                    onChange={(e) => saveSetting(e.value, 'TR_MinTime')}
+                    onChange={(e) => changeMinTime(e.value)}
                     placeholder={defaultMinTimeToTrack}
-                    maxLength={5}
                     className="w-28"
+                    aria-label="Minimum time spent"
                 />
             </div>
 

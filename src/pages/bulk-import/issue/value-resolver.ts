@@ -30,7 +30,8 @@ const maxTextLength = 32767;
 const estimateRegex = /^(\d+(\.\d+)?\s*[wdhm]\s*)+$/i;
 const numberOnlyRegex = /^\d+(\.\d+)?$/;
 const cascadeSeparator = /\s*(?:->|>)\s*/;
-const allowedUrlProtocols = ['http:', 'https:', 'ftp:', 'mailto:', 'file:'];
+const nonPersonAccountTypes = ['app', 'unknown'];
+const allowedUrlProtocols =['http:', 'https:', 'ftp:', 'mailto:', 'file:'];
 const isoDateFormats = [
     'yyyy-MM-dd',
     'yyyy/MM/dd',
@@ -42,10 +43,10 @@ const isoDateFormats = [
     'MMMM d, yyyy',
 ];
 const isoDateTimeFormats = [
-    "yyyy-MM-dd'T'HH:mm:ss.SSSxx",
-    "yyyy-MM-dd'T'HH:mm:ssxxx",
-    "yyyy-MM-dd'T'HH:mm:ss",
-    "yyyy-MM-dd'T'HH:mm",
+    'yyyy-MM-dd\'T\'HH:mm:ss.SSSxx',
+    'yyyy-MM-dd\'T\'HH:mm:ssxxx',
+    'yyyy-MM-dd\'T\'HH:mm:ss',
+    'yyyy-MM-dd\'T\'HH:mm',
     'yyyy-MM-dd HH:mm:ss',
     'yyyy-MM-dd HH:mm',
     'yyyy-MM-dd hh:mm a',
@@ -163,9 +164,12 @@ async function resolveUser(
     input: string,
     env: ResolveEnv,
 ): Promise<{ item: DisplayItem; payload?: unknown; error?: string; warning?: string }> {
-    const users = await env.lookup.findUsers(input);
     const normalized = input.toLowerCase();
-    const exactMatches = users.filter((u) => getUserMatchText(u).includes(normalized));
+    const found = await env.lookup.findUsers(input);
+    const exactMatches = found.filter((u) => getUserMatchText(u).includes(normalized));
+    const users = found.filter(
+        (u) => !nonPersonAccountTypes.includes(u.accountType || '') && getUserMatchText(u).some((text) => text.includes(normalized)),
+    );
 
     let user: JiraUser | undefined;
     let warning: string | undefined;
@@ -396,7 +400,7 @@ export async function resolveValue(
         case 'datetime': {
             const date = parseDate(text, env.dateTimeFormats) || parseDate(text, env.dateFormats);
             return date
-                ? { display: [{ text: env.formatDateTime(date) }], payload: format(date, "yyyy-MM-dd'T'HH:mm:ss.SSSxx") }
+                ? { display: [{ text: env.formatDateTime(date) }], payload: format(date, 'yyyy-MM-dd\'T\'HH:mm:ss.SSSxx') }
                 : invalid(`Invalid date and time. Use yyyy-mm-dd hh:mm format (e.g. ${format(new Date(), 'yyyy-MM-dd HH:mm')})`, input);
         }
         case 'labels':

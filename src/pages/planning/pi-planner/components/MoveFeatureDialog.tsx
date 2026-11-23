@@ -6,8 +6,8 @@ import { getIssueHours, getIssuePoints } from '../../shared/capacity';
 import Field from '../../shared/components/Field';
 import { formatNumber } from '../../shared/format';
 import { clearFeaturePlacement, moveFeatureStories, placeFeature } from '../pi-actions';
-import { unplannedIterationId, type ProgramModel } from '../pi-model';
 import type { PiData } from '../pi-loader';
+import { unplannedIterationId, type ProgramModel } from '../pi-model';
 import type { TermSet } from '../terminology';
 
 export interface MoveTarget {

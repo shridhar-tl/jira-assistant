@@ -31,7 +31,9 @@ function parseJiraCustomCSV(csv: string) {
             });
             return obj;
         }
-    } catch {}
+    } catch (err) {
+        console.warn('Unable to parse the custom field value', csv, err);
+    }
     return { name: csv };
 }
 
@@ -42,12 +44,10 @@ function TagsDisplay({ value, tagProp = 'name', titleProp, iconClass, hrefProp, 
 
     const renderTag = (a: any, i: number, isObject = false) => {
         let val = a;
-        let item = a;
 
         if (typeof a === 'string') {
             if (csvObjectTester.test(a)) {
-                item = parseJiraCustomCSV(a);
-                val = item[tagProp] || val;
+                val = parseJiraCustomCSV(a)[tagProp] || val;
             }
         } else {
             val = a[tagProp];

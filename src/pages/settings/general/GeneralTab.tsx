@@ -1,5 +1,7 @@
 import { useMemo } from 'react';
 
+import { WeekDaysSelector } from '@/controls';
+
 import { inject } from '@services';
 
 import { Checkbox, Dropdown, MaskedInput } from '@components';
@@ -7,9 +9,9 @@ import { Checkbox, Dropdown, MaskedInput } from '@components';
 import { setStartOfWeek } from '@utils/helpers';
 
 import { isWebBuild } from '@constants';
+
 import { dateFormats, timeFormats } from '@constants/settings';
 
-import { WeekDaysSelector } from '@/controls';
 
 const weekDaysArray = [
     { val: 0, label: 'Default' },

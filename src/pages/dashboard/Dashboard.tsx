@@ -2,8 +2,6 @@ import { useEffect, useRef, useState } from 'react';
 
 import { useParams } from 'react-router';
 
-import { Sortable } from 'fluxo-ui';
-
 import classNames from 'classnames';
 
 import { GadgetActionType } from '@/constants';
@@ -11,7 +9,7 @@ import { isQuickView as quickView } from '@/constants/build-info';
 
 import { inject } from '@services';
 
-import { TabPage, TabView } from '@components';
+import { Sortable, TabPage, TabView } from '@components';
 
 import type { Dashboard as DashboardType, Widget } from '@types';
 
@@ -223,8 +221,9 @@ export default function Dashboard() {
 
     const hideWorklog = () => setShowWorklogPopup(false);
 
-    const tabViewChanged = (newIsTabView: boolean) => {
-        setIsTabView(newIsTabView);
+    const configChanged = (board: DashboardType) => {
+        updateCurrentBoard(board);
+        setIsTabView(quickView || !!board.isTabView);
     };
 
     if (!currentBoard) {
@@ -247,9 +246,9 @@ export default function Dashboard() {
                     <DashboardHeader
                         config={currentBoard}
                         index={dashboardIndex}
-                        userId={$session.userId?.toString()!}
+                        userId={String($session.userId ?? '')}
                         onShowGadgets={onShowGadgets}
-                        tabViewChanged={tabViewChanged}
+                        onConfigChange={configChanged}
                         isQuickView={quickView}
                     />
                 )}

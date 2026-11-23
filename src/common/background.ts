@@ -3,9 +3,9 @@ import { SettingsCategory } from '../constants/settings';
 import injectServices, { inject, serviceObjectMap } from '../services/index-background';
 
 import './extensions';
-import { convertToStorableValue } from './storage-helpers';
 import { type ExtnMessageRequest, type ExtnMessageSender, getAccessDenialReason, parseRequest } from './message-access';
 import { type ExtnAccessDeniedError, extnAccessDeniedCode } from './proxy-helper';
+import { convertToStorableValue } from './storage-helpers';
 import { getSenderOrigin } from './trusted-origin';
 
 declare const chrome: any;
@@ -128,11 +128,12 @@ async function executeCommand(
                     response.success = await Promise.resolve(AppVersionNo);
                     break;
 
-                case 'IS_INTEGRATED':
+                case 'IS_INTEGRATED': {
                     const { $storage } = services;
                     const { value: userId } = (await $storage.getSetting(SystemUserId, SettingsCategory.System, 'CurrentUserId')) || {};
                     response.success = userId > 0;
                     break;
+                }
 
                 case 'RELOAD':
                     accessSettingsLoading = loadAccessSettings();
@@ -162,7 +163,7 @@ async function executeCommand(
 
             $message.onNewMessage((msg: any) => response.messages.push(msg));
 
-            response.success = convertToStorableValue(await $service[action].apply($service, args));
+            response.success = convertToStorableValue(await $service[action](...args));
         }
     } catch (ex: any) {
         const { message, status, statusText, error: err } = ex;

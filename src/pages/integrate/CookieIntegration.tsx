@@ -153,7 +153,7 @@ function CookieIntegration({ setAuthType }: CookieIntegrationProps) {
         tryIntegrate(root);
     }, [jiraUrl, tryIntegrate, services]);
 
-    const useOAuth = useCallback(() => {
+    const startOAuth = useCallback(() => {
         const url = getJiraCloudOAuthAuthorizeUrl({
             initSource: buildMode,
             authType: '1',
@@ -177,14 +177,14 @@ function CookieIntegration({ setAuthType }: CookieIntegrationProps) {
                     services.$jaBrowserExtn.openTab(isWebBuild ? '/options' : '/index.html#/options');
                     break;
                 case 3: // Use Jira OAuth
-                    useOAuth();
+                    startOAuth();
                     break;
                 case 4: // Use Basic Auth
                     navigate('/integrate/basic/1');
                     break;
             }
         },
-        [services, useOAuth, navigate],
+        [services, startOAuth, navigate],
     );
 
     const onSettingsImport = useCallback(() => {

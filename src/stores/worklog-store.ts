@@ -1,13 +1,30 @@
 import { create } from 'zustand';
 
-import type { WorklogTimer } from '@/types';
+import { Dialog } from '@/dialogs/CommonDialog';
+import type { Issue, IssuePriority, IssueType, WorklogTimer } from '@/types';
 
 import { inject } from '@services';
+
+import { getErrorMessage } from '@utils';
 
 const ticketsJql = `
 (resolution=unresolved or resolved > -3d)
  and (assignee=currentUser() or reporter=currentUser() or lastViewed > -3d)
  order by lastViewed desc`;
+
+const timeMismatchMessage = 'System time has changed since timer has started. Please stop and restart the timer.';
+
+function confirmReplaceTimer(runningKey: string): Promise<boolean> {
+    return new Promise((resolve) => {
+        Dialog.yesNo(
+            `Already timer is running for "${runningKey}". Would you like to stop it and start new timer?`,
+            'Timer already running',
+        ).then(
+            () => resolve(true),
+            () => resolve(false),
+        );
+    });
+}
 
 interface TimerState {
     key: string;
@@ -17,18 +34,18 @@ interface TimerState {
     hasError?: boolean;
 }
 
-interface Ticket {
+export interface TimerTicket {
     key: string;
     summary: string;
-    issuetype: any;
-    priority: any;
+    issuetype?: IssueType;
+    priority?: IssuePriority;
     url?: string;
 }
 
 interface WorklogState {
     timerEntry: WorklogTimer | null;
     curState: TimerState;
-    ticketsList: Ticket[] | null;
+    ticketsList: TimerTicket[] | null;
     needReload: boolean;
     loadTracker: () => Promise<void>;
     getElapsedTimeInSecs: () => TimerState | null;
@@ -46,14 +63,21 @@ function getElapseState(timerEntry: WorklogTimer | null): TimerState | null {
     const { key, started, lapse = 0, description } = timerEntry;
     const curTime = new Date().getTime();
 
-    if (started && started >= curTime) {
-        const { $message } = inject('MessageService');
-        $message.error('System time has changed since timer has started. Please stop and restart the timer.', 'Time mismatch');
+    if (started && started > curTime) {
         return { key, lapse: 0, description, isRunning: false, hasError: true };
     }
 
     const totalMS = (started && started > 0 ? curTime - started : 0) + lapse;
     return { key, lapse: Math.round(totalMS / 1000), description, isRunning: started ? started > 0 : false };
+}
+
+function toCurState(timerEntry: WorklogTimer | null): TimerState {
+    const state = getElapseState(timerEntry);
+    if (state?.hasError) {
+        const { $message } = inject('MessageService');
+        $message.error(timeMismatchMessage, 'Time mismatch');
+    }
+    return state || ({} as TimerState);
 }
 
 export function getDispTime(lapse: number) {
@@ -76,7 +100,7 @@ export const useWorklogStore = create<WorklogState>((set, get) => ({
 
         set({
             timerEntry: entry || null,
-            curState: getElapseState(entry || null) || ({} as TimerState),
+            curState: toCurState(entry || null),
             needReload: oldKey ? oldKey !== entry?.key : false,
         });
     },
@@ -96,36 +120,27 @@ export const useWorklogStore = create<WorklogState>((set, get) => ({
         try {
             const result = await $wltimer.startTimer(userId!, key, undefined, force);
 
-            if (result?.isActive) {
-                const confirmed = await new Promise((resolve) => {
-                    if (
-                        window.confirm(
-                            `Already timer is running for "${result?.entry?.key}".\n\nWould you like to stop it and start new timer?`,
-                        )
-                    ) {
-                        resolve(true);
-                    } else {
-                        resolve(false);
-                    }
-                });
-
-                if (confirmed) {
+            if ('isActive' in result) {
+                if (await confirmReplaceTimer(result.entry.key)) {
                     const newResult = await $wltimer.startTimer(userId!, key, undefined, true);
+                    if ('isActive' in newResult) {
+                        return;
+                    }
                     set({
                         timerEntry: newResult,
-                        curState: getElapseState(newResult) || ({} as TimerState),
+                        curState: toCurState(newResult),
                         needReload: true,
                     });
                 }
             } else {
                 set({
                     timerEntry: result,
-                    curState: getElapseState(result) || ({} as TimerState),
+                    curState: toCurState(result),
                     needReload: false,
                 });
             }
-        } catch (err: any) {
-            $message.error(err.message);
+        } catch (err) {
+            $message.error(getErrorMessage(err, 'Unable to start the timer'));
         }
     },
 
@@ -136,7 +151,7 @@ export const useWorklogStore = create<WorklogState>((set, get) => ({
 
         set({
             timerEntry: entry,
-            curState: getElapseState(entry) || ({} as TimerState),
+            curState: toCurState(entry),
             needReload: false,
         });
     },
@@ -148,7 +163,7 @@ export const useWorklogStore = create<WorklogState>((set, get) => ({
 
         set({
             timerEntry: entry,
-            curState: getElapseState(entry) || ({} as TimerState),
+            curState: toCurState(entry),
             needReload: false,
         });
     },
@@ -171,7 +186,7 @@ export const useWorklogStore = create<WorklogState>((set, get) => ({
 
         set({
             timerEntry: entry,
-            curState: getElapseState(entry) || ({} as TimerState),
+            curState: toCurState(entry),
             needReload: false,
         });
     },
@@ -187,7 +202,7 @@ export const useWorklogStore = create<WorklogState>((set, get) => ({
 
         const getUrl = $userutils.getTicketUrl;
 
-        const ticketsList = list.map((t: any) => {
+        const ticketsList = (list as Issue[]).map((t) => {
             const { key, fields } = t;
             const { summary, issuetype, priority } = fields;
             return { key, summary, issuetype, priority, url: getUrl(key) };

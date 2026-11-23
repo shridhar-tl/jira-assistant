@@ -26,7 +26,7 @@ function getLogClass(value?: number, isSelected?: boolean): string {
         return isSelected ? 'text-center selected' : 'text-center';
     }
 
-    let className = 'log-good';
+    let className: string;
 
     if (value >= 85) {
         className = 'log-good';

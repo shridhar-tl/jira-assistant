@@ -4,8 +4,8 @@ import classNames from 'classnames';
 import { isAfter } from 'date-fns';
 
 import { backlogColumnId } from '../../../shared/board-loader';
-import { getContrastText, getParentColor } from '../../../shared/colors';
 import { getIssueHours, getIssuePoints } from '../../../shared/capacity';
+import { getContrastText, getParentColor } from '../../../shared/colors';
 import { formatNumber, formatShortDate } from '../../../shared/format';
 import type { BoardModel } from '../../useBoardModel';
 import { noParentFilterValue } from '../../useBoardModel';

@@ -1,6 +1,5 @@
 import { usePivotConfig } from '../store/pivot-config';
 import type { PivotFieldConfig } from '../types';
-
 import { getDefaultHeaderText } from '../utils/format-functions';
 
 import { getCellProps, getGroupKeyComparer, getIssueFilterFunction, isEmptyValue, noValueText } from './common-utils';

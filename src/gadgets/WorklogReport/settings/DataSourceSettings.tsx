@@ -2,7 +2,7 @@ import { memo, useState } from 'react';
 
 import RapidViewList from '../../../components/shared/RapidViewList';
 
-import { ShowMoreLink } from './Common';
+import { SettingsRadioGroup, ShowMoreLink } from './Common';
 
 const msgProjTimeFrame = 'Not applicable when timeframe is Sprint or when no default project is configured';
 
@@ -19,7 +19,7 @@ function DataSourceSettings({ setValue, setBoards, state }: DataSourceSettingsPr
 
     return (
         <div className="space-y-6">
-            <RadioGroup
+            <SettingsRadioGroup
                 label="User List"
                 field="userListMode"
                 value={userListMode}
@@ -42,7 +42,7 @@ function DataSourceSettings({ setValue, setBoards, state }: DataSourceSettingsPr
                 ]}
             />
 
-            <RadioGroup
+            <SettingsRadioGroup
                 label="Time frame type"
                 field="timeframeType"
                 value={timeframeType}
@@ -67,46 +67,6 @@ function DataSourceSettings({ setValue, setBoards, state }: DataSourceSettingsPr
 }
 
 export default DataSourceSettings;
-
-interface RadioOption {
-    value: string;
-    label: string;
-    disabled?: boolean;
-    warning?: string;
-}
-
-interface RadioGroupProps {
-    label: string;
-    field: string;
-    value: string;
-    setValue: (key: string, value: any) => void;
-    options: RadioOption[];
-}
-
-function RadioGroup({ label, field, value, setValue, options }: RadioGroupProps) {
-    return (
-        <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
-            <label className="text-sm font-medium text-primary sm:w-48 shrink-0 pt-1">{label}</label>
-            <div className="space-y-1.5 flex-1">
-                {options.map((opt) => (
-                    <label key={opt.value} className={`flex items-center gap-2 text-sm cursor-pointer ${opt.disabled ? 'opacity-50' : ''}`}>
-                        <input
-                            type="radio"
-                            name={field}
-                            value={opt.value}
-                            checked={value === opt.value}
-                            onChange={() => setValue(field, opt.value)}
-                            disabled={opt.disabled}
-                            className="accent-blue-600"
-                        />
-                        <span>{opt.label}</span>
-                        {opt.warning && <i className="fa fa-exclamation-triangle text-amber-500 text-xs" title={opt.warning} />}
-                    </label>
-                ))}
-            </div>
-        </div>
-    );
-}
 
 const SprintListSection = memo(function SprintListSection({
     setBoards,
@@ -136,7 +96,7 @@ function ReportGrouping({
 }) {
     return (
         <>
-            <RadioGroup
+            <SettingsRadioGroup
                 label="Users worklog grouping"
                 field="reportUserGrp"
                 value={reportUserGrp}
@@ -180,7 +140,7 @@ const SprintAdditionalOptions = memo(function SprintAdditionalOptions({
             <ShowMoreLink showMore={showMore} setShowMore={setShowMore} />
             {showMore && (
                 <>
-                    <RadioGroup
+                    <SettingsRadioGroup
                         label="Sprint start date rounding"
                         field="sprintStartRounding"
                         value={sprintStartRounding}
@@ -192,7 +152,7 @@ const SprintAdditionalOptions = memo(function SprintAdditionalOptions({
                             { value: '4', label: 'Use end of previous sprint (if available)' },
                         ]}
                     />
-                    <RadioGroup
+                    <SettingsRadioGroup
                         label="Sprint end date rounding"
                         field="sprintEndRounding"
                         value={sprintEndRounding}

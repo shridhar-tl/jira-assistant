@@ -14,7 +14,7 @@ function parseText(msg: string): ReactNode[] | string {
     }
 
     const msgArr: ReactNode[] = [];
-    let testResult: RegExpExecArray | null = null;
+    let testResult: RegExpExecArray | null;
     let startIdx = 0;
 
     textParserRegex.lastIndex = 0;

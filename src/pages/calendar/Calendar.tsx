@@ -17,8 +17,9 @@ import type {
 import { Calendar as FluxoCalendar } from 'fluxo-ui';
 
 import { useService } from '@/services/injector';
+import { useWorklogStore } from '@/stores/worklog-store';
 
-import { CalendarNavigation, Modal } from '@components';
+import { CalendarNavigation, ChangeTracker, Modal } from '@components';
 
 import type { Meeting, Worklog } from '@types';
 
@@ -88,6 +89,8 @@ export default function Calendar({
     );
 
     const { events, setEvents, isLoading, fetchEvents } = useCalendarData(settings, currentUser);
+    const timerKey = useWorklogStore((s) => s.timerEntry?.key);
+    const timerNeedsReload = useWorklogStore((s) => s.needReload);
 
     const {
         loadingEventIds,
@@ -105,9 +108,15 @@ export default function Calendar({
 
     const { showMeetingDetails, currentMeetingItem, showMeetingDetailsPopup, hideMeetingDetails } = useMeetingDetails();
 
-    useEffect(() => {
-        if (refreshKey && dateRangeRef.current) {
+    const refreshEvents = useCallback(() => {
+        if (dateRangeRef.current) {
             fetchEvents(dateRangeRef.current.start, dateRangeRef.current.end);
+        }
+    }, [fetchEvents]);
+
+    useEffect(() => {
+        if (refreshKey) {
+            refreshEvents();
         }
     }, [refreshKey]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -457,12 +466,12 @@ export default function Calendar({
                 onToggleDisplayHours={() => setFullView(!fullView)}
                 onToggleZoom={() => setZoomIn(!zoomIn)}
                 onUploadAll={handleUploadAll}
-                onRefresh={() => dateRangeRef.current && fetchEvents(dateRangeRef.current.start, dateRangeRef.current.end)}
+                onRefresh={refreshEvents}
                 onSettings={() => setShowSettingsPopup(true)}
                 injectedComponents={!isGadget && components}
             />
         ),
-        [currentViewMode, pendingWorklogCount, isLoading, uploading, fullView, zoomIn, isGadget, handleUploadAll, fetchEvents],
+        [currentViewMode, pendingWorklogCount, isLoading, uploading, fullView, zoomIn, isGadget, handleUploadAll, refreshEvents],
     );
 
     const goToPrevPeriod = useCallback(() => apiRef.current?.prev(), []);
@@ -539,6 +548,7 @@ export default function Calendar({
 
     return (
         <div className={calendarClasses}>
+            <ChangeTracker key={timerKey} enabled={!isLoading && timerNeedsReload} onChange={refreshEvents} />
             {useEmbeddedHeader && headerSlotEl && createPortal(embeddedToolbar, headerSlotEl)}
             <div className="calendar-container flex-1">
                 <FluxoCalendar

@@ -10,10 +10,11 @@ import DependencyOverlay, { type OverlayLink } from '../../shared/components/Dep
 import ResizablePanels from '../../shared/components/ResizablePanels';
 import { formatDateRange, formatNumber } from '../../shared/format';
 import { parseDateKey } from '../../shared/segments';
-import { unplannedIterationId, type PiTeamRow, type ProgramModel } from '../pi-model';
 import type { PiData } from '../pi-loader';
+import { unplannedIterationId, type PiTeamRow, type ProgramModel } from '../pi-model';
 import type { PiDocument } from '../pi-types';
 import type { TermSet } from '../terminology';
+
 import FeatureCard, { featureDragType, type FeatureDragData } from './FeatureCard';
 import MoveFeatureDialog, { type MoveTarget } from './MoveFeatureDialog';
 

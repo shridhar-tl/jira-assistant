@@ -15,6 +15,7 @@ import { computePersonLoads } from '../../../shared/person-load';
 import type { PlannerSprint } from '../../../shared/types';
 import { usePlannerStore } from '../../store';
 import type { BoardModel } from '../../useBoardModel';
+
 import CapacityTable from './CapacityTable';
 import LeavePanel from './LeavePanel';
 import VelocityPanel from './VelocityPanel';

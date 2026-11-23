@@ -1,5 +1,6 @@
-import { Sortable } from '../../controls';
 import { showContextMenu } from '@components';
+
+import { Sortable } from '../../controls';
 
 import type { ColumnSchema, GroupedColumnListProps, GroupedColumnSchema, GroupOption, GroupSettings } from './types';
 
@@ -139,7 +140,7 @@ function GroupedColumn({ group, index, toggleSort, removeGroup, settingsChanged,
 
     const changeSettings = (menuItem: GroupOption) => {
         const { prop, type, value, default: def } = menuItem;
-        let settings: GroupSettings = group.settings ? { ...group.settings } : {};
+        const settings: GroupSettings = group.settings ? { ...group.settings } : {};
         if (type === 'check') {
             const curValue = settings[prop] === undefined ? def : settings[prop];
             settings[prop] = !curValue;

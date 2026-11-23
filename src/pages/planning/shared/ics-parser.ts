@@ -155,9 +155,8 @@ function toEvents(props: IcsProperty[], windowStart: Date, windowEnd: Date, offs
     const ruleProp = get('RRULE');
     const rule = ruleProp ? parseRule(ruleProp.value) : null;
     if (rule) {
-        let next = start.date;
         for (let i = 1; i < maxOccurrences; i++) {
-            next = addFrequency(start.date, rule.freq, rule.interval * i);
+            const next = addFrequency(start.date, rule.freq, rule.interval * i);
             if ((rule.count !== null && i >= rule.count) || (rule.until && isAfter(next, rule.until)) || isAfter(next, windowEnd)) {
                 break;
             }

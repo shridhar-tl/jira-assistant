@@ -5,6 +5,7 @@ import type { ComponentEvent, ListItem } from 'fluxo-ui';
 import type { JiraUser, UserGroup } from '@/types';
 
 import { Button, Dropdown } from '@components';
+
 import { getUserName } from '@utils/helpers';
 
 import AddUserForm from './AddUserForm';

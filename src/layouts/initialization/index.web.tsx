@@ -11,9 +11,10 @@ import { inject, registerDepnServices } from '@services/index.web';
 
 import { BlockLoading } from '@components';
 
+import { getCurrentQueryParams, getErrorMessage } from '@utils';
+
 import { isPokerPath } from '@pages/poker/constants';
 
-import { getCurrentQueryParams, getErrorMessage } from '@utils';
 
 import type { InitValue } from '../renderer/types';
 
@@ -108,7 +109,7 @@ async function processJiraCloudOAuth(code: string, state: any): Promise<void> {
             redirectToRoute(`/${userId}/dashboard/0`);
             break;
 
-        default:
+        default: {
             const url = await getExtnLaunchUrl(userId, {});
             if (url) {
                 window.location.href = url;
@@ -116,6 +117,7 @@ async function processJiraCloudOAuth(code: string, state: any): Promise<void> {
                 window.close();
             }
             break;
+        }
     }
 }
 
@@ -170,7 +172,9 @@ function parseQueryParams(): QueryParams {
     if (typeof params.state === 'string') {
         try {
             params.state = JSON.parse(atob(params.state));
-        } catch {}
+        } catch (err) {
+            console.error('Unable to read the state returned by the authentication', err);
+        }
     }
 
     return params;

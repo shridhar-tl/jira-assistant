@@ -23,6 +23,7 @@ import { loadLeaveRange, refreshCalendars, removeManualLeave, saveManualLeave } 
 import { usePlannerStore } from '../../store';
 import type { BoardModel } from '../../useBoardModel';
 import LeaveDialog, { type LeaveDefaults } from '../capacity/LeaveDialog';
+
 import { appliesToMembers, getLeaveIcon, toCalendarEntry, type LeaveCalendarData } from './leave-display';
 import LeaveDetailsDialog from './LeaveDetailsDialog';
 

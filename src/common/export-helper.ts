@@ -1,6 +1,7 @@
 import { createFlow, savePdf } from 'fluxo-ui/pdf';
 import type { FlowComposer } from 'fluxo-ui/pdf';
 import { buildPdfFromTable } from 'fluxo-ui/pdf/html';
+
 import { inject } from '@services';
 
 import { exportCsv } from '../utils/helpers';
@@ -239,7 +240,7 @@ export class ExportHelper {
             rows.forEach((r, i) => {
                 const cells = Array.from(r.querySelectorAll<HTMLTableCellElement>(':scope > th, :scope > td'));
                 cells.forEach((c, _origJ) => {
-                    let j = 0;
+                    let j: number;
                     // Find next available slot in this row (accounting for already-filled cells from colspan/rowspan)
                     if (!header[i]) {
                         header[i] = [];

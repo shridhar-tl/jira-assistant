@@ -6,8 +6,8 @@ import { addDays } from 'date-fns';
 import { loadLevelClassNames } from '@/gadgets/WorkloadHeatmap/constants';
 import HeatmapGrid from '@/gadgets/WorkloadHeatmap/HeatmapGrid';
 import HeatmapLegend from '@/gadgets/WorkloadHeatmap/HeatmapLegend';
-import { getLoadLevel } from '@/gadgets/WorkloadHeatmap/load-calculator';
 import HeatmapOverlay from '@/gadgets/WorkloadHeatmap/HeatmapOverlay';
+import { getLoadLevel } from '@/gadgets/WorkloadHeatmap/load-calculator';
 import '@/gadgets/WorkloadHeatmap/WorkloadHeatmap.css';
 
 import { inject } from '@services';
@@ -35,6 +35,7 @@ import type { BoardModel } from '../../useBoardModel';
 import IssueEditDialog from '../board/IssueEditDialog';
 import SegmentDialog, { type SegmentDialogState } from '../roadmap/SegmentDialog';
 import UnscheduledList, { issueDragType } from '../roadmap/UnscheduledList';
+
 import { buildResourceModel, type ResourceEventData } from './resource-model';
 
 interface ResourceTimelineViewProps {

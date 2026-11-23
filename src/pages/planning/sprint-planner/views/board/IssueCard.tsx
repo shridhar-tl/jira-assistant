@@ -2,9 +2,9 @@ import { memo, type MouseEvent } from 'react';
 
 import classNames from 'classnames';
 
+import type { EstimateUnit } from '../../../shared/capacity';
 import { getContrastText, getParentColor, statusCategoryClassNames } from '../../../shared/colors';
 import UserAvatar from '../../../shared/components/UserAvatar';
-import type { EstimateUnit } from '../../../shared/capacity';
 import { formatEstimate } from '../../../shared/format';
 import type { PlannerIssue } from '../../../shared/types';
 import type { CardField } from '../../planner-settings';

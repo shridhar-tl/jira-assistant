@@ -33,7 +33,7 @@ const groupTimezones: TimezoneOption[] = [
 
 const userTimezones: TimezoneOption[] = [
     { label: 'My local time zone', value: '' },
-    { label: "Use group's time zone", value: 'GRP_TZ' },
+    { label: 'Use group\'s time zone', value: 'GRP_TZ' },
     ...Intl.supportedValuesOf('timeZone').map((t) => ({ label: t, value: t })),
 ];
 

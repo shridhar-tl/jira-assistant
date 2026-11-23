@@ -44,7 +44,12 @@ export async function fetchEstimateActualData(params: RefreshParams): Promise<Re
 
     const ticketsList = (params.ticketsList || '').trim().replace(/[\s;]/g, ',');
     const chartWidth = userList.length * 250;
-    const custTicketsList = ticketsList ? ticketsList.split(',').filter((t: string) => !!t) : [];
+    const custTicketsList = ticketsList
+        ? ticketsList
+              .split(',')
+              .map((t: string) => t.trim().toUpperCase())
+              .filter((t: string) => !!t)
+        : [];
 
     const fromDateStr = format(subDays(fromDate, 1), 'yyyy-MM-dd');
     const toDateStr = format(addDays(toDate, 1), 'yyyy-MM-dd');
@@ -69,13 +74,11 @@ export async function fetchEstimateActualData(params: RefreshParams): Promise<Re
     }
 
     const getEstimate = (obj: any) => {
-        let estField = obj.fields[estimationField];
+        const value = Number(obj.fields[estimationField]) || 0;
         if (estimationField === 'timeoriginalestimate') {
-            estField = estField / 60 / 60;
-        } else if (storyPointHour) {
-            estField = estField * storyPointHour;
+            return value / 60 / 60;
         }
-        return estField;
+        return storyPointHour ? value * storyPointHour : value;
     };
 
     const issues = await $jira.searchTickets(jql, ['worklog', 'project', 'parent', estimationField]);
@@ -104,41 +107,10 @@ export async function fetchEstimateActualData(params: RefreshParams): Promise<Re
     );
 
     if (estimationField !== 'timeoriginalestimate') {
-        let parentIds: string[] = flatData.distinct((t: FlatWorklogData) => t.parentkey!);
-        parentIds = parentIds.filter((t: string) => t && !flatData.some((ft: FlatWorklogData) => ft.key === t));
-
-        if (parentIds.length) {
-            const parents = await $jira.searchTickets(`key in (${parentIds.join(',')})`, ['project', estimationField]);
-            const flatParents: Record<string, any> = parents
-                .flatten({
-                    key: true,
-                    projectName: 'fields.project.name',
-                    projectKey: 'fields.project.key',
-                    estimate: getEstimate,
-                })
-                .reduce((index: Record<string, any>, ticket: any) => {
-                    index[ticket.key] = ticket;
-                    return index;
-                }, {});
-
-            flatData.forEach((t: FlatWorklogData) => {
-                const { parentkey, key } = t;
-                if (hasTickets && custTicketsList.includes(key)) {
-                    return;
-                }
-                if (parentkey) {
-                    let parentT = flatParents[parentkey];
-                    if (!parentT) {
-                        parentT = flatData.first((tkt: FlatWorklogData) => tkt.key === parentkey);
-                        flatParents[parentkey] = parentT;
-                    }
-                    t.key = parentkey;
-                    delete t.parentkey;
-                    t.estimate = parentT?.estimate;
-                }
-            });
-        }
+        await applyParentEstimates(flatData, estimationField, getEstimate);
     }
+
+    const ticketOf = (t: FlatWorklogData): string | undefined => custTicketsList.find((k: string) => k === t.key || k === t.parentkey);
 
     let selProjects = projects;
     if (!hasProject && !hasTickets) {
@@ -153,89 +125,34 @@ export async function fetchEstimateActualData(params: RefreshParams): Promise<Re
         selProjects.forEach((proj: ProjectItem) => {
             colorIndex++;
             const projData = flatData.filter(
-                (t: FlatWorklogData) =>
-                    t.projectKey.toUpperCase() === proj.key.toUpperCase() && (!hasTickets || !custTicketsList.includes(t.key)),
+                (t: FlatWorklogData) => t.projectKey.toUpperCase() === proj.key.toUpperCase() && (!hasTickets || !ticketOf(t)),
             );
+            const totals = userList.map((u: string) => getUserTotals(projData, u));
 
-            const estimateUserData: (number | null)[] = [];
-            const actUserData: (number | null)[] = [];
-
-            const estimatePrj: ChartDataset = {
-                label: `${proj.name} (estimate)`,
-                data: estimateUserData,
-                ...chartColours[colorIndex],
-            };
-
+            datasets.push({ label: `${proj.name} (estimate)`, data: totals.map((t) => t.estimate), ...chartColours[colorIndex] });
             colorIndex++;
-            const actPrj: ChartDataset = {
-                label: `${proj.name} (spent)`,
-                data: actUserData,
-                ...chartColours[colorIndex],
-            };
-
-            userList.forEach((u: string) => {
-                const usrData = projData.filter((t: FlatWorklogData) => t.author === u);
-                const tktGrp = usrData.groupBy((t: FlatWorklogData) => t.key);
-                const estimate = tktGrp.sum((g: any) => g.values[0].estimate);
-                const actual = tktGrp.sum((g: any) => g.values.sum((t: any) => t.worklog.timespent));
-                estimateUserData.push(estimate);
-                actUserData.push(actual);
-            });
-
-            datasets.push(estimatePrj);
-            datasets.push(actPrj);
+            datasets.push({ label: `${proj.name} (spent)`, data: totals.map((t) => t.actual), ...chartColours[colorIndex] });
         });
     }
 
     if (hasTickets) {
-        const ticketData = flatData.filter(
-            (t: FlatWorklogData) => custTicketsList.includes(t.parentkey!) || custTicketsList.includes(t.key),
-        );
-
-        ticketData.forEach((t: FlatWorklogData) => {
-            if (custTicketsList.includes(t.key)) {
-                return;
-            }
-            t.key = t.parentkey!;
-        });
-
-        ticketData
-            .groupBy((t: FlatWorklogData) => t.key)
-            .forEach((ticket: any) => {
-                const projData = ticket.values;
-                const estimateUserData: (number | null)[] = [];
-                const actUserData: (number | null)[] = [];
-
-                const estimatePrj: ChartDataset = {
+        flatData
+            .filter((t: FlatWorklogData) => !!ticketOf(t))
+            .groupBy((t: FlatWorklogData) => ticketOf(t)!)
+            .forEach((ticket: { key: string; values: FlatWorklogData[] }) => {
+                const totals = userList.map((u: string) => getUserTotals(ticket.values, u));
+                datasets.push({
                     label: `${ticket.key} (estimate)`,
-                    data: estimateUserData,
+                    data: totals.map((t) => t.estimate || null),
                     backgroundColor: '',
                     borderColor: '',
-                };
-                const actPrj: ChartDataset = {
-                    label: `${ticket.key} (spent)`,
-                    data: actUserData,
-                    backgroundColor: '',
-                    borderColor: '',
-                };
-
-                userList.forEach((u: string) => {
-                    const usrData = projData.filter((t: FlatWorklogData) => t.author === u);
-                    const tktGrp = usrData.groupBy((t: FlatWorklogData) => t.key);
-                    let estimate: number | null = tktGrp.sum((g: any) => g.values[0].estimate);
-                    let actual: number | null = tktGrp.sum((g: any) => g.values.sum((t: any) => t.worklog.timespent));
-                    if (!estimate) {
-                        estimate = null;
-                    }
-                    if (!actual) {
-                        actual = null;
-                    }
-                    estimateUserData.push(estimate);
-                    actUserData.push(actual);
                 });
-
-                datasets.push(estimatePrj);
-                datasets.push(actPrj);
+                datasets.push({
+                    label: `${ticket.key} (spent)`,
+                    data: totals.map((t) => t.actual || null),
+                    backgroundColor: '',
+                    borderColor: '',
+                });
             });
     }
 
@@ -243,6 +160,50 @@ export async function fetchEstimateActualData(params: RefreshParams): Promise<Re
         chartData: { labels: chartLabels, datasets },
         chartWidth,
     };
+}
+
+/** Estimate of the distinct issues the user logged time on, and the time the user logged on them. */
+function getUserTotals(rows: FlatWorklogData[], user: string): { estimate: number; actual: number } {
+    const userRows = rows.filter((t) => t.author === user);
+    const estimates = new Map<string, number>();
+    userRows.forEach((t) => {
+        if (!estimates.has(t.key)) {
+            estimates.set(t.key, t.estimate || 0);
+        }
+    });
+    return {
+        estimate: [...estimates.values()].reduce((total, value) => total + value, 0),
+        actual: userRows.reduce((total, t) => total + t.worklog.timespent, 0),
+    };
+}
+
+/** Story points are set on the parent, so the time logged on a sub-task is counted for its parent with the estimate of the parent. */
+async function applyParentEstimates(
+    flatData: FlatWorklogData[],
+    estimationField: string,
+    getEstimate: (obj: any) => number,
+): Promise<void> {
+    const { $jira } = inject('JiraService');
+    const estimates = new Map<string, number>();
+    flatData.forEach((t) => {
+        if (!t.parentkey && !estimates.has(t.key)) {
+            estimates.set(t.key, t.estimate);
+        }
+    });
+
+    const missingParents = [...new Set(flatData.map((t) => t.parentkey).filter((k): k is string => !!k && !estimates.has(k)))];
+    if (missingParents.length) {
+        const parents = await $jira.searchTickets(`key in (${missingParents.join(',')})`, ['project', estimationField]);
+        parents.forEach((parent: any) => estimates.set(parent.key, getEstimate(parent)));
+    }
+
+    flatData.forEach((t) => {
+        if (t.parentkey) {
+            t.key = t.parentkey;
+            delete t.parentkey;
+            t.estimate = estimates.get(t.key) || 0;
+        }
+    });
 }
 
 export async function loadProjects(): Promise<ProjectItem[]> {

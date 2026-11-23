@@ -22,6 +22,10 @@ export default class SessionService {
         this.$settings = $settings;
     }
 
+    setUserSetting(field: string, value: unknown): void {
+        (this.CurrentUser as Record<string, unknown>)[field] = value;
+    }
+
     setPageSettings(value: Record<string, any>) {
         this.pageSettings = value;
     }

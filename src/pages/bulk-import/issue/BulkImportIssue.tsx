@@ -2,10 +2,12 @@ import { useCallback, useMemo, useRef, useState } from 'react';
 
 import { useShallow } from 'zustand/react/shallow';
 
-import { Button, Dropdown, type ComponentEvent } from '@components';
 
 import { Dialog } from '@/dialogs/CommonDialog';
+
 import { inject } from '@services';
+
+import { Button, Dropdown, type ComponentEvent } from '@components';
 
 import ImportGrid from './components/ImportGrid';
 import ImportSummaryBar from './components/ImportSummaryBar';
@@ -47,7 +49,7 @@ const msgConfirmClear = 'All the rows loaded and the changes made in the grid wi
 
 function getImportResultMessage(imported: number, failed: number): string {
     return failed
-        ? `${imported} row(s) imported and ${failed} row(s) failed. Hover over the status of failed rows to see the reason.`
+        ? `${imported} row(s) imported and ${failed} row(s) failed. Hover over the status of failed rows to see the reason. Correct the highlighted cells or select the failed rows to import them again.`
         : `${imported} row(s) imported successfully`;
 }
 
@@ -228,7 +230,7 @@ function BulkImportIssue() {
                             <div className="w-56">
                                 <Dropdown
                                     options={fieldOptions}
-                                    value={undefined}
+                                    value={null}
                                     searchable
                                     size="sm"
                                     placeholder="Add Field"

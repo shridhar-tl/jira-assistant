@@ -7,8 +7,8 @@ import { inject } from '@services';
 import { Button, Dropdown, InputSwitch, Modal, NumericInput, TextArea, TextInput } from '@components';
 
 import Field from '../../shared/components/Field';
-import { getJiraErrorMessage } from '../../shared/jira-api';
 import { formatNumber } from '../../shared/format';
+import { getJiraErrorMessage } from '../../shared/jira-api';
 import { createItemId, syncObjectiveToJira, updatePlan } from '../pi-actions';
 import { usePiStore } from '../pi-store';
 import type { PiDocument, PiObjective } from '../pi-types';

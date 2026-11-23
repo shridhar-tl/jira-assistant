@@ -131,6 +131,7 @@ function markImported(row: ImportRow, resultKey: string | undefined, warnings: s
     return {
         ...row,
         selected: false,
+        blocked: false,
         status: { ...row.status, state: 'imported', resultKey, error: undefined, warnings },
     };
 }
@@ -165,6 +166,7 @@ function markFailed(row: ImportRow, err: unknown, prefix: string, resultKey?: st
             warnings: resultKey ? [...row.status.warnings, `${prefix}: ${error}`] : row.status.warnings,
         },
         selected: false,
+        blocked: !resultKey,
     };
 }
 

@@ -1,8 +1,9 @@
 import { addDays, endOfDay, isAfter, isBefore, max as maxDate, min as minDate, startOfDay, subMilliseconds } from 'date-fns';
 
+import { inject } from '@services';
+
 import type { CalendarInfo, CalendarLeaveEvent } from '@types';
 
-import { inject } from '@services';
 
 import { getCached } from './cache';
 import { createLeaveId, maxLeaveTitleLength } from './leave-records';

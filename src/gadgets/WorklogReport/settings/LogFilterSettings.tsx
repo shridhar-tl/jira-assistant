@@ -1,4 +1,8 @@
+import { NumericInput } from '@components';
+
 import { DateTimePicker } from '../../../controls/DateTimePicker';
+
+import { SettingsRadioGroup } from './Common';
 
 interface LogFilterSettingsProps {
     state: any;
@@ -10,7 +14,7 @@ function LogFilterSettings({ setValue, state }: LogFilterSettingsProps) {
 
     return (
         <div className="space-y-6">
-            <RadioGroup
+            <SettingsRadioGroup
                 label="Filter worklogs by creation/updation"
                 field="logFilterType"
                 value={logFilterType}
@@ -22,7 +26,7 @@ function LogFilterSettings({ setValue, state }: LogFilterSettingsProps) {
                 ]}
             />
 
-            <RadioGroup
+            <SettingsRadioGroup
                 label="Date selection"
                 field="wlDateSelection"
                 value={wlDateSelection}
@@ -33,7 +37,7 @@ function LogFilterSettings({ setValue, state }: LogFilterSettingsProps) {
                 ]}
             />
 
-            <RadioGroup
+            <SettingsRadioGroup
                 label="Threshold type"
                 field="filterThrsType"
                 value={filterThrsType}
@@ -49,13 +53,14 @@ function LogFilterSettings({ setValue, state }: LogFilterSettingsProps) {
                 <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
                     <label className="text-sm font-medium text-primary sm:w-48 shrink-0 pt-1">Threshold days</label>
                     <div className="flex-1">
-                        <input
-                            type="number"
+                        <NumericInput
+                            className="w-24"
                             value={filterDays}
                             min={0}
                             max={999}
-                            onChange={(e) => setValue('filterDays', parseInt(e.target.value) || 0)}
-                            className="w-24 px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-primary focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            maxDecimals={0}
+                            aria-label="Threshold days"
+                            onChange={(e) => setValue('filterDays', e.value ?? 0)}
                         />
                     </div>
                 </div>
@@ -86,34 +91,3 @@ function LogFilterSettings({ setValue, state }: LogFilterSettingsProps) {
 }
 
 export default LogFilterSettings;
-
-interface RadioGroupProps {
-    label: string;
-    field: string;
-    value: string;
-    setValue: (key: string, value: any) => void;
-    options: { value: string; label: string }[];
-}
-
-function RadioGroup({ label, field, value, setValue, options }: RadioGroupProps) {
-    return (
-        <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
-            <label className="text-sm font-medium text-primary sm:w-48 shrink-0 pt-1">{label}</label>
-            <div className="space-y-1.5 flex-1">
-                {options.map((opt) => (
-                    <label key={opt.value} className="flex items-center gap-2 text-sm cursor-pointer">
-                        <input
-                            type="radio"
-                            name={field}
-                            value={opt.value}
-                            checked={value === opt.value}
-                            onChange={() => setValue(field, opt.value)}
-                            className="accent-blue-600"
-                        />
-                        <span>{opt.label}</span>
-                    </label>
-                ))}
-            </div>
-        </div>
-    );
-}

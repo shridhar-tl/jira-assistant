@@ -1,8 +1,9 @@
 import { parseISO, startOfDay } from 'date-fns';
 
+import { inject } from '@services';
+
 import { parseLegacySprint } from '@pages/bulk-import/issue/jira-values';
 
-import { inject } from '@services';
 
 import { featurePropertyKey, segmentsPropertyKey } from './constants';
 import type { RawIssue, RawJiraUser } from './jira-api';

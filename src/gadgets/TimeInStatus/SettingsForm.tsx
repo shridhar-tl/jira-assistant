@@ -16,6 +16,7 @@ import {
     syncBoardSelection,
     toSelectedBoards,
 } from '@components';
+
 import type { RapidView } from '@components/shared/RapidViewList';
 
 import { SHORT_DAY_NAMES } from '@constants/settings';

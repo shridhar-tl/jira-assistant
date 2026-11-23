@@ -287,7 +287,7 @@ export function parseTimespent(value: string | number): number {
     } else if (hourColanParser.test(valueStr)) {
         const parts = valueStr.split(':');
         hours = parseInt(parts[0]) || 0;
-        minutes = parseInt(parts[1]) || 0;
+        minutes = parseInt(parts[1].padEnd(2, '0')) || 0;
     } else if (displayFormatParser.test(valueStr)) {
         const match = displayFormatParser.exec(valueStr);
         if (match) {

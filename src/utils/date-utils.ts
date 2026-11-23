@@ -12,6 +12,7 @@ import {
 } from 'date-fns';
 
 import { FULL_DAY_NAMES, FULL_MONTH_NAMES, SHORT_DAY_NAMES, SHORT_MONTH_NAMES, TINY_DAY_NAMES } from '../constants/settings';
+
 import { getStartOfWeek, parseDateString } from './helpers';
 
 export { addDays, differenceInDays } from 'date-fns';
@@ -462,7 +463,7 @@ function groupConsecutiveWeeks<T extends DateItem>(dates: T[]): T[][] {
 export function getWeekGroup<T extends DateItem>(dates: T[]): WeekGroup<T>[] {
     return groupConsecutiveWeeks(dates).map((values) => {
         const days = values.length;
-        let display = '';
+        let display: string;
 
         const start = values[0];
         const end = values[days - 1];
@@ -509,8 +510,8 @@ const isoWithOffsetRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?(
 const importTimeSuffixes = ['', ' HH:mm:ss', ' HH:mm', ' hh:mm:ss a', ' hh:mm a'];
 const importDateBases = [
     'yyyy-MM-dd',
-    "yyyy-MM-dd'T'HH:mm:ss",
-    "yyyy-MM-dd'T'HH:mm",
+    'yyyy-MM-dd\'T\'HH:mm:ss',
+    'yyyy-MM-dd\'T\'HH:mm',
     'yyyy/MM/dd',
     'dd-MMM-yyyy',
     'dd/MMM/yyyy',
@@ -520,7 +521,7 @@ const importDateBases = [
     'dd MMM yy',
     'MMM dd, yyyy',
 ];
-const importDateFormats = importDateBases.flatMap((base) => (base.includes("'T'") ? [base] : importTimeSuffixes.map((suffix) => base + suffix)));
+const importDateFormats = importDateBases.flatMap((base) => (base.includes('\'T\'') ? [base] : importTimeSuffixes.map((suffix) => base + suffix)));
 
 function buildLocalDate(year: number, month: number, day: number, hours: number, minutes: number, seconds: number): Date | null {
     const date = new Date(year, month - 1, day, hours, minutes, seconds);

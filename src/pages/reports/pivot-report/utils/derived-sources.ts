@@ -1,6 +1,7 @@
+import { inject } from '@services';
+
 import { stringifyComment } from '@utils/worklog-utils';
 
-import { inject } from '@services';
 
 import type { JiraIssueLinkType } from '@types';
 

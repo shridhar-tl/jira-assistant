@@ -1,6 +1,7 @@
 import type { UserGroup } from '@/types';
 
 import { inject } from '@services';
+
 import type { JiraUser } from '@services/jira-service';
 
 const orderByPattern = /\border\s+by\b[\s\S]*$/i;

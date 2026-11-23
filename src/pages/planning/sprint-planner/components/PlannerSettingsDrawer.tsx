@@ -4,8 +4,8 @@ import { Button, Drawer, Dropdown, InputSwitch, Multiselect, NumericInput, Selec
 
 import Field from '../../shared/components/Field';
 import { getDateFieldOptions, getIssueLinkTypes } from '../../shared/jira-api';
-import type { BarColorMode, CardDensity, IssueLinkType, SubtaskMode } from '../../shared/types';
 import { isStorageConsentRequired, useStorageConsent } from '../../shared/storage-consent';
+import type { BarColorMode, CardDensity, IssueLinkType, SubtaskMode } from '../../shared/types';
 import { acceptStorageConsent, changeSettings, withdrawStorageConsent } from '../actions';
 import { allCardFields, type CardField } from '../planner-settings';
 import { usePlannerStore } from '../store';

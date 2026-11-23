@@ -1,6 +1,5 @@
 import classNames from 'classnames';
 import type { ServiceContainer } from 'fluxo-ui/services';
-
 import { PokerApp } from 'planning-poker/ui';
 import 'planning-poker/styles.css';
 import './poker-theme.css';

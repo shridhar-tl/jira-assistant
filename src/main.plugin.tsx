@@ -9,10 +9,10 @@ import { FullContext, view } from '@forge/bridge';
 import { BlockLoading } from '@components';
 
 import { dashboardModuleKeys, type DashboardItemProps, setupDashboardHost } from './jcloud/dashboard-host';
+import { syncJiraTheme } from './jcloud/jira-theme';
 import { applyPokerDeepLink } from './pages/poker/deep-link.plugin';
 import './index.css';
 import './index.plugin.css';
-import { syncJiraTheme } from './jcloud/jira-theme';
 
 const App = lazy(() => import('./App'));
 

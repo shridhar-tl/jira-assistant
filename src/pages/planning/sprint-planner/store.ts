@@ -1,9 +1,10 @@
 import { create } from 'zustand';
 
 import type { BoardData } from '../shared/board-loader';
-import { setStorageConsent } from '../shared/storage-consent';
 import type { RankPosition } from '../shared/jira-api';
+import { setStorageConsent } from '../shared/storage-consent';
 import type { PlannedSegment, PlannerUser, SprintVelocity, StatusCategory } from '../shared/types';
+
 import { getPlannerSettings, type PlannerSettings } from './planner-settings';
 
 export interface IssueEdit {

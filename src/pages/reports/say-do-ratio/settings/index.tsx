@@ -1,8 +1,8 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useState } from 'react';
 
-import { Button, Checkbox, RapidViewList } from '@components';
+import { Button, Checkbox, NumericInput, RapidViewList, type RapidView } from '@components';
 
-import type { ReportSettings } from '../types';
+import type { ReportSettings, SprintBoard } from '../types';
 
 import Sidebar from './Sidebar';
 
@@ -13,26 +13,30 @@ interface ReportSettingsProps {
     onDone: (settings: ReportSettings) => Promise<void>;
 }
 
+function toSprintBoards(value: RapidView | RapidView[] | null): SprintBoard[] {
+    if (!value) {
+        return [];
+    }
+    return Array.isArray(value) ? value : [value];
+}
+
 function ReportSettingsDialog({ settings: actualSettings, show, onHide, onDone }: ReportSettingsProps) {
     const [settings, updateSettings] = useState(actualSettings);
     const [isLoading, setIsLoading] = useState(false);
-    const $this = useRef<any>({});
-    $this.current.settings = settings;
-    $this.current.onDone = onDone;
 
-    const handleChange = useCallback((newSettings: Partial<ReportSettings>) => {
-        const newState = { ...$this.current.settings, ...newSettings };
-        updateSettings(newState);
-    }, []);
+    const handleChange = useCallback((newSettings: Partial<ReportSettings>) => updateSettings((current) => ({ ...current, ...newSettings })), []);
 
-    const setSprintBoards = useCallback((sprintBoards: any) => handleChange({ sprintBoards }), [handleChange]);
-    const setNumeric = useCallback((field: string, value: string) => handleChange({ [field]: parseInt(value) || 0 }), [handleChange]);
+    const setSprintBoards = useCallback(
+        (value: RapidView | RapidView[] | null) => handleChange({ sprintBoards: toSprintBoards(value) }),
+        [handleChange],
+    );
+    const setNumeric = useCallback((field: string, value?: number) => handleChange({ [field]: value ?? 0 }), [handleChange]);
     const setBoolean = useCallback((field: string, value: boolean) => handleChange({ [field]: !!value }), [handleChange]);
 
     const generateReport = useCallback(() => {
         setIsLoading(true);
-        $this.current.onDone($this.current.settings).finally(() => setIsLoading(false));
-    }, []);
+        onDone(settings).finally(() => setIsLoading(false));
+    }, [onDone, settings]);
 
     const allowGeneratingReport =
         settings?.sprintBoards?.length > 0 &&
@@ -54,12 +58,11 @@ function ReportSettingsDialog({ settings: actualSettings, show, onHide, onDone }
 
                 <div>
                     <label className="block font-semibold pb-2 text-gray-800 dark:text-gray-200">Number of Sprints:</label>
-                    <input
-                        type="number"
+                    <NumericInput
+                        className="w-full"
                         value={settings.noOfSprints}
-                        onChange={(e) => setNumeric('noOfSprints', e.target.value)}
-                        maxLength={2}
-                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                        onChange={(e) => setNumeric('noOfSprints', e.value)}
+                        maxDecimals={0}
                     />
                     <span className="block text-sm text-gray-600 dark:text-gray-400 mt-2">
                         Provide the number of sprints to be displayed in chart and table. Minimum value allowed is 3.
@@ -68,12 +71,11 @@ function ReportSettingsDialog({ settings: actualSettings, show, onHide, onDone }
 
                 <div>
                     <label className="block font-semibold pb-2 text-gray-800 dark:text-gray-200">Number of Sprints for velocity:</label>
-                    <input
-                        type="number"
+                    <NumericInput
+                        className="w-full"
                         value={settings.velocitySprints}
-                        onChange={(e) => setNumeric('velocitySprints', e.target.value)}
-                        maxLength={1}
-                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                        onChange={(e) => setNumeric('velocitySprints', e.value)}
+                        maxDecimals={0}
                     />
                     <span className="block text-sm text-gray-600 dark:text-gray-400 mt-2">
                         Provide the number of sprints to be used for velocity calculation. The average completed story points count of all

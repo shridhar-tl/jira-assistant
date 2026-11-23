@@ -1,5 +1,4 @@
 import { invoke } from '@forge/bridge';
-
 import { defaultRetryPolicy, type PokerRetryPolicy } from 'planning-poker/contracts';
 
 import { pokerResolverFunction, pokerTokenResolverFunction } from './forge/constants';

@@ -111,6 +111,13 @@ function isOwnExtensionPage(sender: ExtnMessageSender, ownOrigin: string): boole
     return sender.origin === ownOrigin || !!sender.url?.startsWith(`${ownOrigin}/`);
 }
 
+function getDisallowedRequestReason(message: ExtnMessageRequest, senderOrigin: string, allowLocalOrigin: boolean): string {
+    if (!allowLocalOrigin && isJAWebAppOrigin(senderOrigin, true)) {
+        return `${senderOrigin} is not allowed. Enable "Local development site" in global settings of the extension`;
+    }
+    return `${message.svcName}.${message.action} is not allowed for ${senderOrigin}`;
+}
+
 /**
  * Returns the reason for denying the request, or null when the request is allowed.
  */
@@ -128,10 +135,7 @@ export function getAccessDenialReason(message: ExtnMessageRequest, sender: ExtnM
         if (isAllowedForExternalPage(message, senderOrigin, allowLocalOrigin)) {
             return null;
         }
-        if (!allowLocalOrigin && isJAWebAppOrigin(senderOrigin, true)) {
-            return `${senderOrigin} is not allowed. Enable "Local development site" in global settings of the extension`;
-        }
-        return `${message.svcName}.${message.action} is not allowed for ${senderOrigin}`;
+        return getDisallowedRequestReason(message, senderOrigin, allowLocalOrigin);
     }
 
     if (sender.id !== ownId) {
@@ -143,7 +147,7 @@ export function getAccessDenialReason(message: ExtnMessageRequest, sender: ExtnM
     }
 
     if (isTrustedJAOrigin(senderOrigin)) {
-        return isAllowedByRules(jaSiteRules, message, senderOrigin) ? null : `${message.svcName}.${message.action} is not allowed for ${senderOrigin}`;
+        return isAllowedByRules(jaSiteRules, message, senderOrigin) ? null : getDisallowedRequestReason(message, senderOrigin, allowLocalOrigin);
     }
 
     return isAllowedByRules(contentScriptRules, message, senderOrigin) ? null : `${message.svcName}.${message.action} is not allowed for content script of ${senderOrigin}`;

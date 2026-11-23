@@ -243,6 +243,7 @@ export function createRow(record: RawRecord, line?: number): ImportRow {
         revision: 0,
         line,
         selected: true,
+        blocked: false,
         delete: isDelete,
         clone: hasKey && !isDelete && parseBoolean(record[pseudoFields.clone]),
         cells,

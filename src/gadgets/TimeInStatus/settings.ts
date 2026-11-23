@@ -11,7 +11,6 @@ import {
 import { DefaultWorkingDays } from '@constants';
 
 import { parseTimeToMinutes, timePattern } from './business-time';
-import { allTimeDateRange, defaultDateRange, getDateRangeKey, normalizeDateRange } from './date-range';
 import {
     defaultDcIssueLimit,
     defaultDisplayColumns,
@@ -22,6 +21,7 @@ import {
     optionalIssueColumns,
     timeInStatusPageSettingsKey,
 } from './constants';
+import { allTimeDateRange, defaultDateRange, getDateRangeKey, normalizeDateRange } from './date-range';
 import type { StoredTimeInStatusSettings, TimeInStatusSettings, WorkingTimeSettings } from './types';
 
 const defaultDayStart = '09:00';

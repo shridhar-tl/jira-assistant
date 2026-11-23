@@ -1,3 +1,10 @@
+/* Layered so that a column can set its own width with Tailwind utilities (e.g. w-10 min-w-10). */
+@layer components {
+    .scroll-table-container table thead :where(th, td) {
+        min-width: 150px;
+    }
+}
+
 .scroll-table-container {
     overflow: auto;
     flex: 1;
@@ -24,7 +31,6 @@
         border-bottom: 1px solid var(--border-primary);
         padding: 6px 10px;
         white-space: nowrap;
-        min-width: 150px;
     }
 
     table tbody td {

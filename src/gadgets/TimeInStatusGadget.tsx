@@ -11,8 +11,8 @@ import { GadgetContainer, useBaseGadget, type BaseGadgetProps } from './BaseGadg
 import { GadgetTitle } from './constants';
 import { howItWorks } from './TimeInStatus/constants';
 import PeriodSelector from './TimeInStatus/PeriodSelector';
-import SettingsDialog from './TimeInStatus/SettingsDialog';
 import { getPageSettings, normalizeSettings, savePageSettings } from './TimeInStatus/settings';
+import SettingsDialog from './TimeInStatus/SettingsDialog';
 import TimeInStatusView from './TimeInStatus/TimeInStatusView';
 import type { StoredTimeInStatusSettings, TimeInStatusSettings } from './TimeInStatus/types';
 import useTimeInStatus from './TimeInStatus/useTimeInStatus';

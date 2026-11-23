@@ -19,6 +19,7 @@ import {
     type ParticipantStatus,
 } from '../constants';
 import { BusyError, retryDelayMs } from '../rate-limit';
+
 import { ConditionFailedError, type EntityCondition, type EntityGateway, type TransactionOperation } from './entity-gateway';
 import {
     summarizeVotes,

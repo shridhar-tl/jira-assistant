@@ -1,11 +1,11 @@
 type QueueItem = {
-    callback: () => Promise<any>;
-    promise: Promise<any>;
+    callback: () => Promise<unknown>;
+    promise: Promise<unknown>;
     startTask: () => void;
     completed?: boolean;
 };
 
-type EventListener = (...args: any[]) => void;
+type EventListener = (...args: unknown[]) => void;
 
 class SimpleEventEmitter {
     private events: Map<string, EventListener[]> = new Map();
@@ -17,7 +17,7 @@ class SimpleEventEmitter {
         this.events.get(event)!.push(listener);
     }
 
-    emit(event: string, ...args: any[]): void {
+    emit(event: string, ...args: unknown[]): void {
         const listeners = this.events.get(event);
         if (listeners) {
             listeners.forEach((listener) => listener(...args));
@@ -50,12 +50,16 @@ export default class QueueService {
         this.event.on(event, listener);
     }
 
+    off(event: string, listener: EventListener): void {
+        this.event.removeListener(event, listener);
+    }
+
     reset(): void {
         this.queue = [];
         this.runningItems = [];
     }
 
-    add = (callback: () => Promise<any>): Promise<any> => {
+    add = (callback: () => Promise<unknown>): Promise<unknown> => {
         const obj: Partial<QueueItem> = { callback };
 
         obj.promise = new Promise<void>((resolve) => {
@@ -67,7 +71,7 @@ export default class QueueService {
         return obj.promise;
     };
 
-    addRange(array?: (() => Promise<any>)[]): Promise<any>[] | undefined {
+    addRange(array?: (() => Promise<unknown>)[]): Promise<unknown>[] | undefined {
         if (!array) {
             return;
         }
@@ -82,22 +86,22 @@ export default class QueueService {
     }
 
     private processNextItem(): void {
-        const activeCount = this.runningItems.filter((r: any) => !r.completed).length;
-
-        if (this.queue.length && activeCount < this.concurrentRuns) {
+        while (this.queue.length && this.runningItems.filter((r) => !r.completed).length < this.concurrentRuns) {
             const [running] = this.queue.splice(0, 1);
             this.runningItems.push(running);
 
-            const { startTask, promise } = running;
+            running.startTask();
 
-            startTask();
+            running.promise
+                .catch(() => undefined)
+                .finally(() => {
+                    running.completed = true;
+                    this.clearCompletedItems();
+                    this.processNextItem();
+                });
+        }
 
-            promise.finally(() => {
-                running.completed = true;
-                this.clearCompletedItems();
-                this.processNextItem();
-            });
-        } else if (this.queue.length === 0 && this.runningItems.length === 0) {
+        if (this.queue.length === 0 && this.runningItems.length === 0) {
             this.event.emit('completed');
         }
     }

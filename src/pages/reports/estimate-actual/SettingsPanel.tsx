@@ -2,7 +2,7 @@ import React, { useCallback, useMemo } from 'react';
 
 import { AutocompleteMulti } from 'fluxo-ui';
 
-import { Button, RadioButton, TextInput } from '@components';
+import { Button, DateRangePicker, RadioButton, TextInput, type DateRangeValue, type DateSelectedCallbackArg } from '@components';
 
 import HowToUseSection from './HowToUseSection';
 import type { DateRange, ProjectItem } from './types';
@@ -30,11 +30,6 @@ interface SettingsPanelProps {
     onProjectFilter: (query: string) => void;
 }
 
-function formatDateValue(date?: Date): string {
-    if (!date) return '';
-    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-}
-
 export default function SettingsPanel({
     groups,
     dateRange,
@@ -54,24 +49,15 @@ export default function SettingsPanel({
     onGenerate,
     onProjectFilter,
 }: SettingsPanelProps) {
-    const handleFromDateChange = useCallback(
-        (e: React.ChangeEvent<HTMLInputElement>) => {
-            const value = e.target.value;
-            onDateChange({ ...dateRange, fromDate: value ? new Date(value) : undefined });
-        },
-        [dateRange, onDateChange],
+    const handleDateRangeChange = useCallback(
+        ({ value: [fromDate, toDate] }: DateSelectedCallbackArg) => onDateChange({ fromDate, toDate }),
+        [onDateChange],
     );
 
-    const handleToDateChange = useCallback(
-        (e: React.ChangeEvent<HTMLInputElement>) => {
-            const value = e.target.value;
-            onDateChange({ ...dateRange, toDate: value ? new Date(value) : undefined });
-        },
-        [dateRange, onDateChange],
+    const pickerValue = useMemo<DateRangeValue | undefined>(
+        () => (dateRange.fromDate && dateRange.toDate ? [dateRange.fromDate, dateRange.toDate] : undefined),
+        [dateRange.fromDate, dateRange.toDate],
     );
-
-    const fromDateStr = useMemo(() => formatDateValue(dateRange.fromDate), [dateRange.fromDate]);
-    const toDateStr = useMemo(() => formatDateValue(dateRange.toDate), [dateRange.toDate]);
 
     const isStoryPointSelected = estimationField === storyPointField;
 
@@ -91,18 +77,13 @@ export default function SettingsPanel({
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <FieldGroup label="User List" required>
                         <div className="flex items-center gap-3">
-                            <button
-                                type="button"
-                                className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg
-                                    bg-blue-50 text-blue-700 border border-blue-200
-                                    hover:bg-blue-100 hover:border-blue-300
-                                    dark:bg-blue-950/40 dark:text-blue-300 dark:border-blue-800
-                                    dark:hover:bg-blue-950/60 transition-colors cursor-pointer"
+                            <Button
+                                variant="secondary"
+                                size="sm"
+                                leftIcon={<i className="fa fa-users text-xs" />}
+                                label="Add / remove users"
                                 onClick={onShowGroups}
-                            >
-                                <i className="fa fa-users text-xs" />
-                                Add / remove users
-                            </button>
+                            />
                             {groups.length > 0 && (
                                 <span
                                     className="inline-flex items-center px-2.5 py-1 text-xs font-medium rounded-full
@@ -116,27 +97,14 @@ export default function SettingsPanel({
                     </FieldGroup>
 
                     <FieldGroup label="Date Range" required>
-                        <div className="flex items-center gap-2">
-                            <input
-                                type="date"
-                                value={fromDateStr}
-                                onChange={handleFromDateChange}
-                                className="flex-1 px-3 py-2 text-sm border border-(--border-color) rounded-lg
-                                    bg-(--bg-primary) text-primary
-                                    focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500
-                                    transition-shadow"
-                            />
-                            <span className="text-xs font-medium text-secondary px-1">to</span>
-                            <input
-                                type="date"
-                                value={toDateStr}
-                                onChange={handleToDateChange}
-                                className="flex-1 px-3 py-2 text-sm border border-(--border-color) rounded-lg
-                                    bg-(--bg-primary) text-primary
-                                    focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500
-                                    transition-shadow"
-                            />
-                        </div>
+                        <DateRangePicker
+                            className="w-full"
+                            value={pickerValue}
+                            onChange={handleDateRangeChange}
+                            dateFormat="dd MMM yyyy"
+                            placeholder="Select the dates"
+                            ariaLabel="Date range"
+                        />
                     </FieldGroup>
                 </div>
 

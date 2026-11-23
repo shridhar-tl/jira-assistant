@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 
-import { DefaultWorkingDays, TINY_DAY_NAMES } from '@constants/settings';
+import { DefaultWorkingDays, FULL_DAY_NAMES, TINY_DAY_NAMES } from '@constants/settings';
 
 interface WeekDaysSelectorProps {
     field: string;
@@ -29,6 +29,8 @@ export default function WeekDaysSelector({ field, value: inputValue, onChange }:
                 <button
                     key={day}
                     type="button"
+                    aria-label={FULL_DAY_NAMES[i]}
+                    aria-pressed={value.includes(i)}
                     className={classNames(
                         'w-10 h-10 text-sm font-medium transition-colors cursor-pointer',
                         'border-r border-(--border-primary) last:border-r-0',

@@ -3,9 +3,9 @@ import { isPluginBuild } from '@/constants/build-info';
 import { inject } from '@services';
 
 import { readCache, writeCache } from './cache';
+import { getEstimateUnit } from './capacity';
 import { cacheTtl, maxVelocitySprintCount, sprintStartPropertyKey } from './constants';
 import { getBoardSprints, getVelocityChart, searchIssuePages } from './jira-api';
-import { getEstimateUnit } from './capacity';
 import type { BoardConfig, PlannerFieldIds, PlannerSprint, SprintVelocity, VelocityChoice, VelocitySummary } from './types';
 
 interface CachedSprintVelocity {

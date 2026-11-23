@@ -1,8 +1,9 @@
 import { memo, useEffect } from 'react';
 
+import type MessageService from '@services/message-service';
+
 import { showSnackbar } from '@components';
 
-import type MessageService from '@services/message-service';
 
 interface MessageBoxProps {
     $message: MessageService;

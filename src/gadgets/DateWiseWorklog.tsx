@@ -1,16 +1,19 @@
-import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { isToday } from 'date-fns';
 
-import { inject } from '@services';
+import { useWorklogStore } from '@/stores/worklog-store';
 
-import { useWorklogMerge } from '@hooks';
+import { inject } from '@services';
 
 import { ChangeTracker, showContextMenu } from '@components';
 
+import { useWorklogMerge } from '@hooks';
+
+
 import { GadgetActionType } from '@constants';
 
-import { WorklogContext } from '../common/context';
+
 import { UserDateWiseWorklog, type DateWiseWorklogItem } from '../components/shared';
 import DateRangePicker, { resolveDateRange } from '../controls/DateRangePicker';
 import { formatTs } from '../services/utils-service';
@@ -31,7 +34,8 @@ function DateWiseWorklog(props: BaseGadgetProps) {
     const { setIsLoading, addWorklog, editWorklog, performAction, settingsRef, saveSettings } = gadgetHook;
     const { $worklog, $message } = inject('WorklogService', 'MessageService');
     const { resolveUploadOptions, mergeConfirmation } = useWorklogMerge();
-    const worklogContext = useContext(WorklogContext) as any;
+    const timerKey = useWorklogStore((s) => s.timerEntry?.key);
+    const timerNeedsReload = useWorklogStore((s) => s.needReload);
 
     const refreshData = useCallback(() => {
         setLastUpdated(new Date());
@@ -136,8 +140,8 @@ function DateWiseWorklog(props: BaseGadgetProps) {
                 setLoader={setIsLoading}
             />
             <ChangeTracker
-                key={worklogContext?.timerEntry?.key}
-                enabled={!gadgetHook.isLoading && worklogContext?.needReload}
+                key={timerKey}
+                enabled={!gadgetHook.isLoading && timerNeedsReload}
                 onChange={refreshData}
             />
             {mergeConfirmation}

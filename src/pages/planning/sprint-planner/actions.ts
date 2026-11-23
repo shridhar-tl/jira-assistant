@@ -13,8 +13,8 @@ import {
     resolveTeamMembers,
     type BoardData,
 } from '../shared/board-loader';
-import { getSprintRanges } from '../shared/capacity';
 import { readCache, writeCache } from '../shared/cache';
+import { getSprintRanges } from '../shared/capacity';
 import { cacheTtl, icsImportFutureDays, icsImportPastDays, leaveListFutureDays, leaveListPastDays, segmentsPropertyKey } from '../shared/constants';
 import { getIssueFields, mapPlannerIssue, plannerIssueProperties } from '../shared/issue-mapper';
 import {
@@ -41,6 +41,7 @@ import { isStorageAllowed, setStorageConsent } from '../shared/storage-consent';
 import { isPermissionError, saveTeamDefinition, TeamConflictError } from '../shared/team-store';
 import type { LeaveEntry, PlannedSegment, PlannerIssue, PlannerSprint, PlannerUser, StoredCalendarEvent, TeamDefinition, UnmappedLeave } from '../shared/types';
 import { loadVelocity } from '../shared/velocity';
+
 import { normalizePlannerSettings, savePlannerSettings, type PlannerSettings } from './planner-settings';
 import { usePlannerStore, type DraftChange, type DraftResult, type IssueEdit } from './store';
 

@@ -1,14 +1,16 @@
-import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+
+import { useWorklogStore } from '@/stores/worklog-store';
 
 import { inject } from '@services';
 
-import { Button, Checkbox, showContextMenu } from '@components';
+import { Button, Checkbox, showContextMenu, type ContextMenuItemInput } from '@components';
 
 import { getErrorMessage } from '@utils';
 
 import { GadgetActionType } from '@constants';
 
-import { WorklogContext } from '../common/context';
+
 import { Column, NoDataRow, ScrollableTable, TBody, THead } from '../components/shared/ScrollableTable';
 import { Image } from '../controls';
 import Link from '../controls/Link';
@@ -50,7 +52,11 @@ export default function MyBookmarks(props: BaseGadgetProps) {
     const [showAddPopup, setShowAddPopup] = useState(false);
     const selectedTicketRef = useRef<BookmarkItem | null>(null);
 
-    const worklogContext = useContext(WorklogContext) as any;
+    const getElapsedTimeInSecs = useWorklogStore((s) => s.getElapsedTimeInSecs);
+    const startTimer = useWorklogStore((s) => s.startTimer);
+    const pauseTimer = useWorklogStore((s) => s.pauseTimer);
+    const resumeTimer = useWorklogStore((s) => s.resumeTimer);
+    const stopTimer = useWorklogStore((s) => s.stopTimer);
 
     const gadgetHook = useBaseGadget(props, {
         title: GadgetTitle.Bookmarks,
@@ -147,7 +153,7 @@ export default function MyBookmarks(props: BaseGadgetProps) {
         [performAction],
     );
 
-    const contextMenu = useMemo(
+    const contextMenu = useMemo<ContextMenuItemInput[]>(
         () => [
             {
                 label: 'Select Bookmark',
@@ -174,28 +180,21 @@ export default function MyBookmarks(props: BaseGadgetProps) {
 
             const menus = [...contextMenu];
 
-            try {
-                const result = worklogContext?.getElapsedTimeInSecs?.();
-                const isCurTicket = result?.key === b.ticketNo;
-                const isRunning = result?.isRunning;
-
-                if (!isCurTicket) {
-                    menus.push({ label: 'Start timer', icon: 'fa fa-play', command: () => worklogContext.startTimer(b.ticketNo) });
+            const result = getElapsedTimeInSecs();
+            if (result?.key !== b.ticketNo) {
+                menus.push({ label: 'Start timer', icon: 'fa fa-play', command: () => startTimer(b.ticketNo) });
+            } else {
+                if (result.isRunning) {
+                    menus.push({ label: 'Pause timer', icon: 'fa fa-pause', command: pauseTimer });
                 } else {
-                    if (isRunning) {
-                        menus.push({ label: 'Pause timer', icon: 'fa fa-pause', command: worklogContext.pauseTimer });
-                    } else {
-                        menus.push({ label: 'Resume timer', icon: 'fa fa-play', command: worklogContext.resumeTimer });
-                    }
-                    menus.push({ label: 'Stop timer', icon: 'fa fa-stop', command: worklogContext.stopTimer });
+                    menus.push({ label: 'Resume timer', icon: 'fa fa-play', command: resumeTimer });
                 }
-            } catch {
-                /* Timer context not available */
+                menus.push({ label: 'Stop timer', icon: 'fa fa-stop', command: stopTimer });
             }
 
             showContextMenu(e, menus);
         },
-        [contextMenu, worklogContext],
+        [contextMenu, getElapsedTimeInSecs, startTimer, pauseTimer, resumeTimer, stopTimer],
     );
 
     const hideAddPopup = useCallback(
@@ -234,7 +233,7 @@ export default function MyBookmarks(props: BaseGadgetProps) {
             <ScrollableTable dataset={bookmarksList} exportSheetName="My bookmarks">
                 <THead>
                     <tr>
-                        <Column className="w-10" noExport>
+                        <Column className="w-10 min-w-10" noExport>
                             <Checkbox checked={selAllChk} onChange={selectAll} />
                         </Column>
                         <Column sortBy="ticketNo">Ticket No</Column>

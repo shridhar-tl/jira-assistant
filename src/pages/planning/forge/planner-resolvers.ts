@@ -2,6 +2,7 @@ import { asApp, route } from '@forge/api';
 import type Resolver from '@forge/resolver';
 
 import { getJsonSize, maxPropertyBytes } from '../shared/property-limits';
+
 import { ensureBoardAccess, rejectWith } from './board-access';
 import { registerLeaveResolvers } from './leave-resolvers';
 import { registerPiResolvers } from './pi-resolvers';

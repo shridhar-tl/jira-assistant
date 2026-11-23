@@ -188,7 +188,7 @@ function validate_LikePredicate(likeExpr: any, result: any) {
 
     if (!['*', '.', '%', '_'].some((p) => value.includes(p))) {
         throw new Error(
-            "The string in right hand side of Like predicate doesn't contain any expressions and would never be met. Either use some expression or use other operators",
+            'The string in right hand side of Like predicate doesn\'t contain any expressions and would never be met. Either use some expression or use other operators',
         );
     }
 

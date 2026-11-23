@@ -13,7 +13,9 @@ interface DateRangeOutput {
 }
 
 export function prepareDateRange(dateRange: DateRangeInput): DateRangeOutput {
-    let { fromDate, toDate, ...others } = dateRange;
+    const { fromDate: rawFromDate, toDate: rawToDate, ...others } = dateRange;
+    let fromDate = rawFromDate;
+    let toDate = rawToDate;
 
     if (typeof fromDate === 'string') {
         fromDate = parseISO(fromDate);

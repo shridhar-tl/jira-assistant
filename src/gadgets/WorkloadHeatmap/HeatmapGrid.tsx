@@ -1,5 +1,5 @@
-import { format } from 'date-fns';
 import classNames from 'classnames';
+import { format } from 'date-fns';
 
 import HeatmapCell from './HeatmapCell';
 import SummaryCell from './SummaryCell';

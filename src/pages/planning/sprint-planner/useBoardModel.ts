@@ -5,6 +5,7 @@ import { computeSprintCapacity, type SprintCapacity } from '../shared/capacity';
 import { getBlockingDependencies, getDependencies, type Dependency } from '../shared/dependencies';
 import type { PlannerIssue, PlannerSprint, VelocitySummary } from '../shared/types';
 import { summarizeVelocity } from '../shared/velocity';
+
 import type { PlannerSettings } from './planner-settings';
 import { usePlannerStore, type BoardFilters } from './store';
 

@@ -5,9 +5,9 @@ import { isAfter } from 'date-fns';
 import { KanbanBoard, showContextMenu, type ContextMenuItemInput, type KanbanCardData, type KanbanCardMoveEvent, type KanbanCardReorderEvent, type KanbanColumnData } from '@components';
 
 import { backlogColumnId } from '../../../shared/board-loader';
+import { getIssueHours, getIssuePoints, isIssueEstimated } from '../../../shared/capacity';
 import DependencyOverlay, { type OverlayLink } from '../../../shared/components/DependencyOverlay';
 import ResizablePanels from '../../../shared/components/ResizablePanels';
-import { getIssueHours, getIssuePoints, isIssueEstimated } from '../../../shared/capacity';
 import { getDisplayUnit } from '../../../shared/format';
 import { computeSprintHealth } from '../../../shared/health';
 import type { PlannerSprint } from '../../../shared/types';
@@ -15,6 +15,7 @@ import { findIssueColumn, loadMore, moveIssues, saveTeam, setSelection, toggleCo
 import { usePlannerStore } from '../../store';
 import type { BoardModel } from '../../useBoardModel';
 import DependencyDialog from '../dependencies/DependencyDialog';
+
 import AssigneeBreakdown from './AssigneeBreakdown';
 import CapacityOverrideDialog from './CapacityOverrideDialog';
 import ColumnHeader from './ColumnHeader';

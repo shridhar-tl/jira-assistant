@@ -1,8 +1,9 @@
 import { addDays, format, isSameYear, startOfDay, startOfWeek } from 'date-fns';
 
+import { getBoardSprints, getSprintState, type AgileSprint } from '@components/shared/sprint-selector';
+
 import { getStartOfWeek } from '@utils';
 
-import { getBoardSprints, getSprintState, type AgileSprint } from '@components/shared/sprint-selector';
 
 import { noActiveSprintMessage, openSprintStates, sprintNotPlannedMessage, sprintUnavailableMessage } from './constants';
 import type { HeatmapBoard, HeatmapDateRange, HeatmapRangeMode } from './types';

@@ -3,7 +3,7 @@ import { useEffect, useCallback } from 'react';
 import classNames from 'classnames';
 
 import Link from '@/controls/Link';
-import { useWorklogStore } from '@/stores/worklog-store';
+import { useWorklogStore, type TimerTicket } from '@/stores/worklog-store';
 
 import GadgetMessage from './GadgetMessage';
 
@@ -53,18 +53,10 @@ export default function IssueListTimer() {
     );
 }
 
-interface Ticket {
-    key: string;
-    summary: string;
-    issuetype: { iconUrl?: string; name?: string };
-    priority: { iconUrl?: string; name?: string };
-    url?: string;
-}
-
 interface TicketItemProps {
     isCurrent: boolean;
     isRunning: boolean;
-    ticket: Ticket;
+    ticket: TimerTicket;
     startTimer: (key: string, userId?: number, force?: boolean) => Promise<void>;
     resumeTimer: () => Promise<void>;
     pauseTimer: () => Promise<void>;

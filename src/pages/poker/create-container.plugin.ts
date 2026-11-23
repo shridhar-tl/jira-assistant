@@ -1,6 +1,5 @@
 import { view } from '@forge/bridge';
 import type { ServiceContainer } from 'fluxo-ui/services';
-
 import { createPokerContainer, pokerServices, registerPokerService } from 'planning-poker/ui';
 
 import { createForgeDirectoryService } from './directory-service.plugin';

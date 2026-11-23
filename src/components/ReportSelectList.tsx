@@ -2,9 +2,9 @@ import React from 'react';
 
 import { useNavigate } from 'react-router';
 
+import { ComponentEvent, Dropdown } from 'fluxo-ui';
 import { create } from 'zustand';
 
-import { ComponentEvent, Dropdown } from 'fluxo-ui';
 
 import { inject } from '../services';
 

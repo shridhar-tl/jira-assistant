@@ -3,6 +3,7 @@ import { memo } from 'react';
 import classNames from 'classnames';
 
 import type { PlannerBoard } from '../../types';
+
 import { getBoardIcon, getBoardSubtitle } from './board-switcher-utils';
 
 interface BoardOptionProps {

@@ -3,6 +3,7 @@ import type { UserGroup } from '@/types';
 import { chunk } from '@/utils';
 
 import { inject } from '@services';
+
 import type { JiraUser } from '@services/jira-service';
 
 import { getSprintFilterJql } from '@components/shared/sprint-selector';

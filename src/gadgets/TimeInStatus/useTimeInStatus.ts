@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
+import { inject } from '@services';
+
 import { getErrorMessage } from '@utils/helpers';
 
-import { inject } from '@services';
 
 import { loadErrorMessage } from './constants';
 import { getStatusList, searchReportIssues, type IssueSearchResult } from './data-loader';

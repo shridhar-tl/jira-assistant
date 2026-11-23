@@ -4,9 +4,10 @@ import { subDays } from 'date-fns';
 
 import { inject } from '@services';
 
+import { showContextMenu } from '@components';
+
 import { useWorklogMerge } from '@hooks';
 
-import { showContextMenu } from '@components';
 
 import { GadgetActionType } from '@constants';
 
@@ -163,7 +164,7 @@ export default function TicketWiseWorklog(props: BaseGadgetProps) {
                 </THead>
                 <TBody>
                     {(b: TicketWorklogItem) => (
-                        <tr key={b.ticketNo} onContextMenu={(e) => showContext(e, b)} className={b.rowClass}>
+                        <tr key={b.ticketNo} onContextMenu={(e) => showContext(e, b)} className={b.rowClass} data-test-id={b.ticketNo}>
                             <td>
                                 <Link href={b.ticketUrl} className="link strike">
                                     {b.ticketNo}

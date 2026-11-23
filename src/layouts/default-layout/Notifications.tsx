@@ -3,10 +3,10 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Dialog } from '@dialogs';
 
 import { Icons } from '@/constants/icons';
+import type { UpdateInfo } from '@/services/notification-service';
 
 import { inject } from '@services';
 
-import type { UpdateInfo } from '@/services/notification-service';
 
 import { TextParser } from '@components';
 

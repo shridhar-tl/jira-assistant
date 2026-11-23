@@ -11,6 +11,7 @@ import { getIssuePlanParts, getPersonShares } from '../../../shared/load-distrib
 import { loadLoggedTime, loadScopeChange, type LoggedTime } from '../../../shared/sprint-tracking';
 import type { PlannerIssue } from '../../../shared/types';
 import type { BoardModel } from '../../useBoardModel';
+
 import SprintHealthCard from './SprintHealthCard';
 
 interface HealthViewProps {

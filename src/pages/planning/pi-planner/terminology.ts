@@ -1,4 +1,5 @@
 import type { Terminology } from '../shared/types';
+
 import type { RoamStatus } from './pi-types';
 
 export interface TermSet {

@@ -4,6 +4,8 @@ import classNames from 'classnames';
 
 import { stop } from '@/utils';
 
+import { TextInput } from '@components';
+
 import { GridContext } from './GridContext';
 import { GridCellProps } from './types';
 import { formatDataForDisplay } from './utils';
@@ -93,18 +95,17 @@ function GridCellBase({
         }
 
         return (
-            <input
+            <TextInput
                 ref={setFocus}
-                type="text"
+                size="sm"
                 className="string-editor"
                 value={newValue}
                 onBlur={endEdit}
-                onChange={(e) => setNewValue(e.target.value)}
+                onChange={(e) => setNewValue(e.value)}
                 onKeyDown={(e) => {
-                    const { which, keyCode = which } = e;
-                    if (keyCode === 13) {
+                    if (e.key === 'Enter') {
                         endEdit();
-                    } else if (keyCode === 27) {
+                    } else if (e.key === 'Escape') {
                         cancelEdit();
                     }
                 }}

@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useState } from 'react';
 
+import { Dialog } from '@dialogs';
+
 import { executeService } from '@/common/proxy';
 import { isExtnBuild, isWebBuild } from '@/constants/build-info';
 
-import { Dialog } from '@dialogs';
 
 import { inject } from '@services';
 

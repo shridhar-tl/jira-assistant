@@ -86,7 +86,7 @@ export default class TicketService {
         });
 
         if (toFetch.length > 0) {
-            const jql = `key in ('${toFetch.join("', '")}')`;
+            const jql = `key in ('${toFetch.join('\', \'')}')`;
             try {
                 const list = await this.$jira.searchTickets(jql, fields, undefined, opts);
                 result.push(...list);

@@ -1,16 +1,20 @@
-import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+
+import { useWorklogStore } from '@/stores/worklog-store';
 
 import { inject } from '@services';
-
-import { useWorklogMerge } from '@hooks';
 
 import { Button, ChangeTracker, Checkbox, showContextMenu } from '@components';
 
 import { getErrorMessage } from '@utils';
 
+import { useWorklogMerge } from '@hooks';
+
+
+
 import { GadgetActionType } from '@constants';
 
-import { WorklogContext } from '../common/context';
+
 import { Column, NoDataRow, ScrollableTable, TBody, THead } from '../components/shared/ScrollableTable';
 import Link from '../controls/Link';
 import { Dialog } from '../dialogs/CommonDialog';
@@ -52,7 +56,8 @@ export default function PendingWorklog(props: BaseGadgetProps) {
     const selAllChkRef = useRef(selAllChk);
     selAllChkRef.current = selAllChk;
 
-    const worklogContext = useContext(WorklogContext) as any;
+    const timerKey = useWorklogStore((s) => s.timerEntry?.key);
+    const timerNeedsReload = useWorklogStore((s) => s.needReload);
 
     const gadgetHook = useBaseGadget(props, {
         title: GadgetTitle.PendingWorklog,
@@ -238,7 +243,7 @@ export default function PendingWorklog(props: BaseGadgetProps) {
             <ScrollableTable dataset={worklogs} exportSheetName="Pending worklogs">
                 <THead>
                     <tr>
-                        <Column className="w-10" noExport>
+                        <Column className="w-10 min-w-10" noExport>
                             <Checkbox checked={selAllChk} onChange={selectAll} />
                         </Column>
                         <Column sortBy="ticketNo">Ticket No</Column>
@@ -275,8 +280,8 @@ export default function PendingWorklog(props: BaseGadgetProps) {
                 <NoDataRow span={7}>No worklog pending to be uploaded!</NoDataRow>
             </ScrollableTable>
             <ChangeTracker
-                key={worklogContext?.timerEntry?.key}
-                enabled={!gadgetHook.isLoading && worklogContext?.needReload}
+                key={timerKey}
+                enabled={!gadgetHook.isLoading && timerNeedsReload}
                 onChange={refreshData}
             />
             {mergeConfirmation}

@@ -76,8 +76,13 @@ export function rowHasWarning(row: ImportRow): boolean {
     );
 }
 
+function hasBlockingError(row: ImportRow): boolean {
+    const isValidationError = !!row.status.error && row.status.state !== 'failed';
+    return isValidationError || !!row.status.conflict?.isError || Object.values(row.cells).some((c) => !!c.error);
+}
+
 export function canImportRow(row: ImportRow): boolean {
-    return row.status.state !== 'imported' && row.status.action !== 'none' && !row.status.validating && !rowHasError(row);
+    return row.status.state !== 'imported' && row.status.action !== 'none' && !row.status.validating && !hasBlockingError(row);
 }
 
 function resetCells(cells: Record<string, ImportCell>): Record<string, ImportCell> {
@@ -742,12 +747,12 @@ export async function validateRow(sourceRow: ImportRow, columns: ImportColumn[],
         },
     };
 
-    const hadError = rowHasError(sourceRow);
-    const hasError = rowHasError(row);
-    if (hasError || action === 'none') {
+    if (rowHasError(row) || action === 'none') {
         row.selected = false;
-    } else if (hadError || sourceRow.status.action === 'none') {
+        row.blocked = true;
+    } else if (sourceRow.blocked || sourceRow.status.action === 'none') {
         row.selected = true;
+        row.blocked = false;
     }
 
     return { row, missingRequired: state.missingRequired };
@@ -791,6 +796,7 @@ export function applyCrossRowChecks(rows: ImportRow[]): ImportRow[] {
         const updated = { ...row, status: { ...row.status, conflict } };
         if (conflict?.isError) {
             updated.selected = false;
+            updated.blocked = true;
         }
         return updated;
     });
@@ -820,6 +826,7 @@ export async function validateRows(
                 row: {
                     ...row,
                     selected: false,
+                    blocked: true,
                     status: { ...row.status, validating: false, error: 'Unexpected error while validating. Check console for details.' },
                 },
                 missingRequired: [],

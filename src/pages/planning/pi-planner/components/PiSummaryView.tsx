@@ -4,6 +4,7 @@ import type { PiData } from '../pi-loader';
 import { unplannedIterationId, type ProgramModel } from '../pi-model';
 import type { PiDocument, RoamStatus } from '../pi-types';
 import type { TermSet } from '../terminology';
+
 import { getPredictability } from './ObjectivesView';
 
 interface PiSummaryViewProps {

@@ -69,7 +69,9 @@ const TicketDisplay = forwardRef<TicketDisplayHandle, TicketDisplayProps>(functi
                 }
                 menus.push({ label: 'Stop timer', id: 'stop-timer', command: () => stopTimer() });
             }
-        } catch {}
+        } catch (err) {
+            console.error('Unable to read the state of the timer', err);
+        }
 
         showContextMenu(event, menus);
     };

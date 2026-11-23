@@ -1,6 +1,6 @@
 export { ContextMenuProvider, useContextMenu } from './ContextMenu';
 export { ScrollableTable, THead, TBody, TRow, Column, NoDataRow } from './ScrollableTable';
-export { default as RapidViewList } from './RapidViewList';
+export { default as RapidViewList, type RapidView } from './RapidViewList';
 export { default as SprintList } from './SprintList';
 export * from './sprint-selector';
 export { default as UserDateWiseWorklog } from './UserDateWiseWorklog';

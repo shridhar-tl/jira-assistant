@@ -1,5 +1,5 @@
-import type { PokerSession } from 'planning-poker/shared/types/poker';
 import type { PokerSessionService, StoredSession } from 'planning-poker/contracts';
+import type { PokerSession } from 'planning-poker/shared/types/poker';
 
 import type { RealtimeTokenData } from './forge/protocol';
 

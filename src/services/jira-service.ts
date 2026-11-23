@@ -12,8 +12,6 @@ import {
     waitFor,
 } from '@utils';
 
-import { ApiUrls, defaultJiraFields, defaultSettings, DummyWLId, isPluginBuild } from '@constants';
-
 import type {
     Issue,
     JiraCreateIssueType,
@@ -25,6 +23,9 @@ import type {
     JiraNamedEntity,
     JiraTransition,
 } from '@types';
+
+import { ApiUrls, defaultJiraFields, defaultSettings, DummyWLId, isPluginBuild } from '@constants';
+
 
 import type AjaxService from './ajax-service';
 import type CacheService from './cache-service';
@@ -38,6 +39,7 @@ export interface JiraUser {
     emailAddress?: string;
     avatarUrls?: Record<string, string>;
     active?: boolean;
+    accountType?: 'atlassian' | 'app' | 'customer' | 'unknown';
 }
 
 export interface JiraChangeItem {
@@ -953,18 +955,20 @@ export default class JiraService {
     /**
      * Get removed issues with story points for sprint (internal API)
      */
-    async getRemovedIssuesWithStoryPointForSprint(boardId: number, sprintId: number): Promise<Record<string, { sp: number }>> {
+    async getRemovedIssuesWithStoryPointForSprint(boardId: number, sprintId: number): Promise<Record<string, { sp?: number }>> {
         const details = await this.getRapidSprintDetails(boardId, sprintId);
         const addedLater = details?.contents?.issueKeysAddedDuringSprint || {};
+        const storyPointFieldId = this.$session.CurrentUser.storyPointField?.id;
 
-        const getIssueObject = (issues: any[], issueMap?: Record<string, { sp: number }>) =>
+        // The sprint report gives the board's estimation statistic, which is the story points only when the board estimates with that field
+        const getIssueObject = (issues: any[], issueMap?: Record<string, { sp?: number }>) =>
             issues?.reduce((map, t) => {
                 if (addedLater[t.key]) {
                     return map;
                 }
 
-                const sp = t?.estimateStatistic?.statFieldValue?.value || 0;
-                map[t.key] = { sp };
+                const statistic = t?.estimateStatistic;
+                map[t.key] = storyPointFieldId && statistic?.statFieldId === storyPointFieldId ? { sp: statistic.statFieldValue?.value || 0 } : {};
                 return map;
             }, issueMap || {}) ?? {};
 
@@ -1093,7 +1097,7 @@ export default class JiraService {
     }
 
     async searchUsers(text: string, maxResult = 10, startAt = 0): Promise<any[]> {
-        let result = null;
+        let result;
 
         try {
             result = await this.$ajax.get(ApiUrls.searchUser, text, maxResult, startAt);

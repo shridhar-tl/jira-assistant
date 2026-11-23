@@ -1,6 +1,7 @@
+import { Button, Dropdown } from '@components';
+
 import type { ImportDateOrder } from '@utils';
 
-import { Button, Dropdown } from '@components';
 
 const dateOrderOptions: { value: ImportDateOrder; label: string }[] = [
     { value: 'auto', label: 'Date format: Auto detect' },
@@ -49,7 +50,7 @@ function WorklogPageHeader({ isLoading, dateOrder, onDateOrderChange, onDownload
                         onClick={onUploadClick}
                         disabled={isLoading}
                     />
-                    <input {...fileSelectorProps} type="file" style={{ display: 'none' }} accept=".csv,.json,.xlsx" />
+                    <input {...fileSelectorProps} type="file" style={{ display: 'none' }} accept=".csv,text/csv" />
                 </div>
             </div>
         </div>

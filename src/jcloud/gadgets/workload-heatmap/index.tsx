@@ -1,9 +1,9 @@
 import { lazy, Suspense, useCallback, useState } from 'react';
 
-import useWorkloadHeatmap from '@/gadgets/WorkloadHeatmap/useWorkloadHeatmap';
 import HeatmapPeriodControls from '@/gadgets/WorkloadHeatmap/HeatmapPeriodControls';
 import { normalizeSettings } from '@/gadgets/WorkloadHeatmap/settings';
 import type { WorkloadHeatmapSettings } from '@/gadgets/WorkloadHeatmap/types';
+import useWorkloadHeatmap from '@/gadgets/WorkloadHeatmap/useWorkloadHeatmap';
 import WorkloadHeatmapView from '@/gadgets/WorkloadHeatmap/WorkloadHeatmapView';
 import { withInitParams } from '@/layouts/initialization/index.plugin';
 

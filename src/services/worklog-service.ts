@@ -140,7 +140,7 @@ export default class WorklogService {
         const startDate = getStartOfDay(fromDate);
         const endDate = getEndOfDay(toDate);
 
-        let listForQuery = '';
+        let listForQuery: string;
         let users: string[];
 
         if (!userList || userList.length === 0) {

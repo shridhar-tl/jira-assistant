@@ -1,4 +1,6 @@
-import { useState, useEffect, useCallback, useRef, type KeyboardEvent, type ChangeEvent } from 'react';
+import { useState, useEffect, useCallback, useRef, type KeyboardEvent } from 'react';
+
+import { TextInput, type ComponentEvent } from '@components';
 
 interface InlineTextEditorProps {
     value?: string;
@@ -28,8 +30,8 @@ export default function InlineTextEditor({ value, placeholder, className, altCla
         onChange(valueEdited);
     }, [valueEdited, onChange]);
 
-    const onValueChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
-        setValue(e.currentTarget.value);
+    const onValueChange = useCallback((e: ComponentEvent<string>) => {
+        setValue(e.value);
     }, []);
 
     const keyDown = useCallback(
@@ -46,14 +48,14 @@ export default function InlineTextEditor({ value, placeholder, className, altCla
 
     if (isEdit) {
         return (
-            <input
-                type="text"
+            <TextInput
                 ref={inputRef}
+                size="sm"
+                className="w-full"
                 value={valueEdited}
                 onKeyDown={keyDown}
                 onChange={onValueChange}
                 onBlur={endEdit}
-                className="w-full border-0 border-b-2 border-(--border-secondary) bg-transparent py-0.5 text-sm text-(--text-primary) outline-none focus:border-(--border-focus)"
             />
         );
     }

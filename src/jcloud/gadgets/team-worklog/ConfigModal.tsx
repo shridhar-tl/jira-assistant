@@ -7,7 +7,7 @@ import { FullContext, view } from '@forge/bridge';
 import { DateTimePicker } from '@/controls';
 import { withInitParams } from '@/layouts/initialization/index.plugin';
 
-import { Button } from '@components';
+import { Button, Checkbox, Dropdown, TextArea } from '@components';
 
 import withSimpleAuth from '../../../layouts/authorization/simple-auth';
 
@@ -162,27 +162,21 @@ function ConfigModal({ jiraContext }: ConfigModalProps) {
                             options={rIndicatorOptions}
                             onChange={(v) => setValue('rIndicator', v)}
                         />
-                        <div className="flex items-center gap-2">
-                            <input
-                                type="checkbox"
-                                id="expandUsers"
-                                checked={settings.expandUsers || false}
-                                onChange={(e) => setValue('expandUsers', e.target.checked)}
-                                className="rounded"
-                            />
-                            <label htmlFor="expandUsers" className="text-sm">
-                                Expand users by default
-                            </label>
-                        </div>
+                        <Checkbox
+                            label="Expand users by default"
+                            checked={settings.expandUsers || false}
+                            onChange={(e) => setValue('expandUsers', e.value)}
+                        />
                     </div>
                 </fieldset>
 
                 <fieldset className="border border-(--border-primary) bg-(--bg-secondary) rounded-xl p-4">
                     <legend className="font-semibold px-2">JQL Filter</legend>
-                    <textarea
+                    <TextArea
+                        className="w-full"
+                        rows={4}
                         value={settings.jql || ''}
-                        onChange={(e) => setValue('jql', e.target.value)}
-                        className="w-full h-26 px-3 py-2 border border-(--input-border) rounded-md bg-(--input-bg) text-(--text-primary) focus:outline-none focus:border-(--input-focus-border) focus:ring-2 focus:ring-(--input-focus-ring) resize-y"
+                        onChange={(e) => setValue('jql', e.value)}
                         placeholder="Provide additional JQL filters to be applied while fetching data."
                     />
                     <span className="text-sm text-(--text-secondary)">
@@ -210,18 +204,8 @@ interface SelectFieldProps {
 function SelectField({ label, value, options, onChange }: SelectFieldProps) {
     return (
         <div>
-            <label className="block text-sm font-medium mb-1">{label}</label>
-            <select
-                value={value}
-                onChange={(e) => onChange(e.target.value)}
-                className="w-full px-3 py-2 border border-(--input-border) rounded-md bg-(--input-bg) text-(--text-primary) focus:outline-none focus:border-(--input-focus-border) focus:ring-2 focus:ring-(--input-focus-ring)"
-            >
-                {options.map((opt) => (
-                    <option key={opt.value} value={opt.value}>
-                        {opt.label}
-                    </option>
-                ))}
-            </select>
+            <span className="block text-sm font-medium mb-1">{label}</span>
+            <Dropdown className="w-full" options={options} value={value} ariaLabel={label} onChange={(e) => onChange(e.value as string)} />
         </div>
     );
 }

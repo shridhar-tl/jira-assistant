@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useState } from 'react';
 
 import { GadgetContainer, useBaseGadget } from '@/gadgets/BaseGadget';
 
@@ -15,21 +15,17 @@ import './SayDoRatioReport.css';
 function SayDoRatioReport() {
     const [progress, setProgress] = useState<number>();
     const [editMode, toggleEdit] = useState(true);
-    const [settings, updateSettings] = useState<ReportSettings>(getSettings());
+    const [settings, updateSettings] = useState<ReportSettings>(getSettings);
     const [reportData, setReportData] = useState<BoardData[]>([]);
-    const $this = useRef<any>({});
-    $this.current.settings = settings;
-    $this.current.toggleEdit = () => toggleEdit((prev) => !prev);
-
     const gadgetHook = useBaseGadget({ isGadget: false }, { title: 'Say Do Ratio Report', className: 'say-do-report-gadget' });
     const { setIsLoading } = gadgetHook;
 
-    const loadReportData = useCallback(async () => {
+    const loadReportData = useCallback(async (reportSettings: ReportSettings) => {
         try {
             setProgress(0);
             setReportData([]);
             setIsLoading(true);
-            const reportData = await getSprintWiseSayDoRatio($this.current.settings).progress(({ completed, data }: any) => {
+            const reportData = await getSprintWiseSayDoRatio(reportSettings).progress(({ completed, data }: { completed: number; data?: BoardData[] }) => {
                 setProgress(completed);
                 if (data) {
                     setReportData(data);
@@ -43,14 +39,17 @@ function SayDoRatioReport() {
             setProgress(undefined);
         }
     }, [setIsLoading]);
-    $this.current.loadReportData = loadReportData;
 
-    const applySettings = useCallback(async (newSettings: ReportSettings) => {
-        updateSettings(newSettings);
-        $this.current.settings = newSettings;
-        await $this.current.loadReportData();
-        $this.current.toggleEdit();
-    }, []);
+    const refreshReport = useCallback(() => loadReportData(settings), [loadReportData, settings]);
+
+    const applySettings = useCallback(
+        async (newSettings: ReportSettings) => {
+            updateSettings(newSettings);
+            await loadReportData(newSettings);
+            toggleEdit(false);
+        },
+        [loadReportData],
+    );
 
     const customActions = (
         <Button
@@ -68,7 +67,7 @@ function SayDoRatioReport() {
                 isGadget={false}
                 gadgetHook={gadgetHook}
                 customActions={customActions}
-                refreshData={loadReportData}
+                refreshData={refreshReport}
                 loadingProgress={progress}
             >
                 {!reportData?.length && <ReportInfo />}
