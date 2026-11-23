@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import GroupableGrid from '../../components/GroupableGrid';
 import { Link } from '../../controls';
@@ -6,7 +6,22 @@ import { Link } from '../../controls';
 import { flatGridSettingsChanged, getColumnSettings } from './actions';
 import { connect } from './datastore';
 
-const estimateFieldsToBeHidden = ['-originalestimate', '-totalLogged', '-remainingestimate', '-estVariance'];
+const estimateFields = ['originalestimate', 'totalLogged', 'remainingestimate', 'estVariance'];
+
+function getHiddenColumns(displayColumns: string[] | null | undefined, columnIds: string[]): string[] {
+    if (!displayColumns) {
+        return [];
+    }
+    if (displayColumns.some((c) => c.startsWith('-'))) {
+        return displayColumns.filter((c) => c.startsWith('-')).map((c) => c.substring(1));
+    }
+    return columnIds.filter((id) => !displayColumns.includes(id));
+}
+
+function toDisplayColumns(hiddenColumns: string[]): string[] | null {
+    return hiddenColumns.length ? [...new Set(hiddenColumns)].map((id) => `-${id}`) : null;
+}
+
 const formatTicket = (text: string, url: string) =>
     text && (
         <Link href={url} className="link">
@@ -33,14 +48,30 @@ function FlatGroupableWorklog({
     flatWorklogs,
     hideEstimate,
     flatTableSettings,
-    flatTableSettings: { groupBy, groupFoldable, displayColumns, sortField, isDesc } = {
-        displayColumns: hideEstimate ? estimateFieldsToBeHidden : null,
-    } as any,
     getColumnSettings,
     flatGridSettingsChanged,
     onSettingsChanged,
 }: ConnectedProps) {
     const [columns] = useState(() => getColumnSettings(formatTicket));
+    const columnIds = useMemo<string[]>(() => columns.map((c: any) => c.id || c.field), [columns]);
+    const { groupBy, groupFoldable, sortField, isDesc, displayColumns: savedColumns } = flatTableSettings || {};
+
+    const displayColumns = useMemo(() => {
+        const hidden = getHiddenColumns(savedColumns, columnIds);
+        return toDisplayColumns(hideEstimate ? [...hidden, ...estimateFields] : hidden);
+    }, [savedColumns, columnIds, hideEstimate]);
+
+    const settingsChanged = useCallback(
+        (settings: any) => {
+            let hidden = getHiddenColumns(settings.displayColumns, columnIds);
+            if (hideEstimate) {
+                const savedEstimates = getHiddenColumns(savedColumns, columnIds).filter((id) => estimateFields.includes(id));
+                hidden = [...hidden.filter((id) => !estimateFields.includes(id)), ...savedEstimates];
+            }
+            flatGridSettingsChanged({ ...settings, displayColumns: toDisplayColumns(hidden) });
+        },
+        [columnIds, hideEstimate, savedColumns, flatGridSettingsChanged],
+    );
     const ref = useRef(false);
 
     useEffect(() => {
@@ -61,7 +92,7 @@ function FlatGroupableWorklog({
             exportSheetName={exportSheetName}
             columns={columns}
             allowSorting={true}
-            onChange={flatGridSettingsChanged}
+            onChange={settingsChanged}
             displayColumns={displayColumns}
             groupBy={groupBy}
             groupFoldable={groupFoldable}

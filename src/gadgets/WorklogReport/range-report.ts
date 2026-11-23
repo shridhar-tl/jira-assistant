@@ -102,10 +102,13 @@ async function generateWorklogReportForDateRange(fromDate: moment.Moment, toDate
                         epicDetails,
                         obj.dates,
                     );
+                    if (userListMode === '2') {
+                        groupedInput.userwiseLogArr = withSavedUserSettings(groupedInput.userwiseLogArr, savedGroups);
+                    }
                     const {
                         flatWorklogs: flatData,
                         groupReport: { dates, groupedData: g },
-                    } = formGroupedWorklogs(groupedInput, state, useGroups ? savedGroups : undefined, grpName) as any;
+                    } = formGroupedWorklogs(groupedInput, state, undefined, grpName) as any;
 
                     obj.dates = dates;
 
@@ -234,6 +237,31 @@ function getIssueDayWiseData(input: any, state: any) {
 }
 
 const noGroupName = '';
+
+function isSavedUser(saved: any, user: any): boolean {
+    if (saved.accountId || user.accountId) {
+        return saved.accountId === user.accountId;
+    }
+    return !!saved.name && saved.name === user.name;
+}
+
+/** Users of a group generated per project, issue type or epic keep the cost and time zone they have in the saved user groups. */
+function withSavedUserSettings(users: any[], savedGroups?: any[]) {
+    if (!savedGroups?.length) {
+        return users;
+    }
+
+    return users.map((user) => {
+        for (const group of savedGroups) {
+            const saved = group.users?.find((u: any) => isSavedUser(u, user));
+            if (saved) {
+                const userTimeZone = saved.timeZone && saved.timeZone !== 'GRP_TZ' ? saved.timeZone : group.timeZone;
+                return { ...user, costPerHour: saved.costPerHour, timeZone: userTimeZone, groupTimeZone: group.timeZone };
+            }
+        }
+        return user;
+    });
+}
 function createGroupObjectWithUsers(users: any[], name?: string) {
     const result = users.reduce(
         (obj, u) => {

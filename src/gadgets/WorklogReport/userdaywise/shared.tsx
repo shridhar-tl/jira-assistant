@@ -2,6 +2,8 @@ import { Image, Link } from '../../../controls';
 import { useWorklogStore } from '../datastore';
 import TicketEstimate from '../TicketEstimate';
 
+const noCommentText = '(no comment provided)';
+
 interface WeeksListProps {
     sprint?: any;
 }
@@ -50,7 +52,7 @@ interface IssueDaysProps {
     ticket: any;
     user: any;
     disableAddingWL?: boolean;
-    addNewWorklog?: (ticketNo: string, day: any) => void;
+    addNewWorklog?: (ticketNo: string, day: any, logged?: number) => void;
     convertSecs: (val: number) => any;
     formatTime: (val: Date) => string;
 }
@@ -75,7 +77,7 @@ export function IssueDays({
         return arr
             .map(
                 (a) =>
-                    `${formatTime(a.logTime)} (${convertSecs(a.totalHours)})${showCost ? `, Cost: ${a.totalCost}` : ''} - ${a.comment || '(no comment provided)'}`,
+                    `${formatTime(a.logTime)} (${convertSecs(a.totalHours)})${showCost ? `, Cost: ${a.totalCost}` : ''} - ${a.comment || noCommentText}`,
             )
             .join(';\n');
     };
@@ -112,7 +114,7 @@ export function IssueDays({
                         if (Array.isArray(entries) && entries.length > 0) {
                             const seperator = entries.length > 1 ? ';' : '';
                             return entries.map((d, i) => (
-                                <span key={i} title={`${formatTime(d.logTime)} - ${d.comment}`}>
+                                <span key={i} title={`${formatTime(d.logTime)} - ${d.comment || noCommentText}`}>
                                     {convertSecs(d.totalHours) + seperator}
                                 </span>
                             ));
@@ -130,7 +132,7 @@ export function IssueDays({
                                 <span
                                     className="fa fa-clock add-wl"
                                     title="Click to add worklog"
-                                    onClick={() => addNewWorklog?.(t.ticketNo, day)}
+                                    onClick={() => addNewWorklog?.(t.ticketNo, day, u.total?.[day.prop])}
                                 />
                             )}
                             {breakupMode !== '2' && <span title={getComments(logTime)}>{convertSecs(getTotalTime(logTime))}</span>}

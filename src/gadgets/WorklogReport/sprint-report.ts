@@ -142,23 +142,23 @@ function getCollectiveSprints(sprintsList: any[], newState: any) {
 function formUserGroupToDisplay(sprintsList: any[], newState: any, totalUsersList: any[], { userListMode, userGroups }: any) {
     const sprints = getCollectiveSprints(sprintsList, newState);
 
-    function mapGroup(name: string, totalUsers: any[]) {
-        const { grandTotalHours, grandTotalCost, users, usersMap } = getCollectiveUsers(totalUsers, sprints, newState);
+    function mapGroup(name: string, totalUsers: any[], groupIndex: number) {
+        const { grandTotalHours, grandTotalCost, users, usersMap } = getCollectiveUsers(totalUsers, sprints, newState, groupIndex);
 
         return { name, users, usersMap, grandTotalHours, grandTotalCost, sprints };
     }
 
     if (userListMode === '2') {
-        return userGroups.map((grp: any) => mapGroup(grp.name, grp.users));
+        return userGroups.map((grp: any, index: number) => mapGroup(grp.name, grp.users, index));
     } else {
-        return [mapGroup('Sprint', totalUsersList)];
+        return [mapGroup('Sprint', totalUsersList, 0)];
     }
 }
 
-function getCollectiveUsers(totalUsersList: any[], sprints: any[], newState: any) {
+function getCollectiveUsers(totalUsersList: any[], sprints: any[], newState: any, groupIndex: number) {
     let grandTotalHours = 0,
         grandTotalCost = 0;
-    const users = totalUsersList
+    const users = [...totalUsersList]
         .sort((a, b) => a.displayName.localeCompare(b.displayName))
         .map((u) => {
             const allTickets: any[] = [],
@@ -177,10 +177,8 @@ function getCollectiveUsers(totalUsersList: any[], sprints: any[], newState: any
                     continue;
                 }
 
-                const {
-                    groupedData: [sprintData],
-                } = groupReport;
-                const { tickets, grandTotal, grandTotalCost, isCurrentUser } = sprintData.usersMap[name] || { tickets: [] };
+                const sprintData = groupReport.groupedData[groupIndex];
+                const { tickets, grandTotal, grandTotalCost, isCurrentUser } = sprintData?.usersMap[name] || { tickets: [] };
 
                 if (isCurrentUser) {
                     user.isCurrentUser = true;
@@ -198,20 +196,14 @@ function getCollectiveUsers(totalUsersList: any[], sprints: any[], newState: any
                     const exstTicket = ticketsMap[ticketNo];
 
                     if (exstTicket) {
-                        if (ticket.totalHours) {
-                            exstTicket.grandTotalHours += ticket.totalHours;
-                        }
-
-                        if (ticket.totalCost) {
-                            exstTicket.grandtotalCost += ticket.totalCost;
-                        }
+                        exstTicket.allSprintTotalHours += ticket.totalHours || 0;
+                        exstTicket.allSprintTotalCost += ticket.totalCost || 0;
                         continue;
                     }
 
-                    allTickets.push(ticket);
-                    ticketsMap[ticketNo] = ticket;
-                    ticket.allSprintTotalHours = ticket.totalHours;
-                    ticket.allSprintTotalCost = ticket.totalCost;
+                    const collectiveTicket = { ...ticket, allSprintTotalHours: ticket.totalHours || 0, allSprintTotalCost: ticket.totalCost || 0 };
+                    allTickets.push(collectiveTicket);
+                    ticketsMap[ticketNo] = collectiveTicket;
                 }
             }
 

@@ -207,15 +207,16 @@ export function generateUserDayWiseData(data: any, groups: any[], pageSettings: 
 
         grpInfo.users = grp.users
             .map((usr: any) => {
+                const groupTimeZone = grp.isDummy ? usr.groupTimeZone : grp.timeZone;
                 let curTimeZone = null;
                 if (timezoneSetting === 2) {
-                    curTimeZone = grp.timeZone;
+                    curTimeZone = groupTimeZone;
                 } else if (timezoneSetting === 3) {
-                    curTimeZone = usr.timeZone || grp.timeZone;
+                    curTimeZone = usr.timeZone || groupTimeZone;
                 }
 
                 if (curTimeZone === 'GRP_TZ') {
-                    curTimeZone = grp.timeZone;
+                    curTimeZone = groupTimeZone;
                 }
 
                 const worklogUser = {

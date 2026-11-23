@@ -10,7 +10,6 @@ const addGroupItemPlaceholder = <span>Drag and drop more columns here</span>;
 export default function GroupedColumnList({
     groupBy,
     allColumns,
-    displayColumns,
     foldable,
     showColumns,
     onChange,
@@ -62,9 +61,10 @@ export default function GroupedColumnList({
         onChange(normalized, !!foldable, type);
     };
 
+    const visibleCount = allColumns?.filter((c) => c.visible).length || 0;
     let badgeText: string | number | null = null;
-    if (displayColumns && displayColumns.length < allColumns?.length) {
-        badgeText = `${displayColumns.length} (${allColumns.length})`;
+    if (visibleCount < (allColumns?.length || 0)) {
+        badgeText = `${visibleCount} (${allColumns.length})`;
     } else if (allColumns?.length) {
         badgeText = allColumns.length;
     }

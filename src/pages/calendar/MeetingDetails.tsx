@@ -1,5 +1,9 @@
 import { useState } from 'react';
 
+import SafeHtml from '@/display-controls/SafeHtml';
+
+import { parseHTML } from '@utils/helpers';
+
 import type { MeetingView } from './types';
 
 interface MeetingDetailsProps {
@@ -18,7 +22,9 @@ export default function MeetingDetails({ eventDetails }: MeetingDetailsProps) {
     if (!eventDetails) return null;
 
     const descLimit = eventDetails.descrLimit || 350;
-    const hasLongDescription = eventDetails.description && eventDetails.description.length > descLimit;
+    const descriptionText =
+        eventDetails.description && eventDetails.descriptionFormat === 'html' ? parseHTML(eventDetails.description) : eventDetails.description || '';
+    const hasLongDescription = descriptionText.length > descLimit;
 
     return (
         <div className="event-details">
@@ -98,12 +104,13 @@ export default function MeetingDetails({ eventDetails }: MeetingDetailsProps) {
                         <div className="title">
                             <i className="fa fa-align-justify" />
                         </div>
-                        <div
-                            className="info"
-                            dangerouslySetInnerHTML={{
-                                __html: showFullDesc ? eventDetails.description : cutText(eventDetails.description, descLimit),
-                            }}
-                        />
+                        {eventDetails.descriptionFormat === 'html' ? (
+                            <SafeHtml className="info meeting-description" html={eventDetails.description} maxLength={showFullDesc ? undefined : descLimit} />
+                        ) : (
+                            <div className="info meeting-description whitespace-pre-wrap">
+                                {showFullDesc ? eventDetails.description : cutText(eventDetails.description, descLimit)}
+                            </div>
+                        )}
                         {hasLongDescription && (
                             <div style={{ textAlign: 'center' }}>
                                 <span className="link cursor-pointer" onClick={() => setShowFullDesc(!showFullDesc)}>

@@ -134,7 +134,7 @@ function SprintReport(props: BaseGadgetProps) {
                 return { sprintDetails: result };
             })
             .then((data: SprintReportData) => {
-                const result = data.sprintDetails;
+                const result = data.sprintDetails.map((sprint) => structuredClone(sprint));
                 const getCountWithSP = (issues: any[]) =>
                     issues.filter((issue) => ((issue.currentEstimateStatistic || {}).statFieldValue || {}).value).length;
 

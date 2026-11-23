@@ -68,6 +68,22 @@ export default tseslint.config(
             'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
             quotes: ['error', 'single'],
             'react/jsx-key': 'error',
+            'react/no-danger': 'error',
+            'no-restricted-syntax': [
+                'error',
+                {
+                    selector: "AssignmentExpression > MemberExpression.left[property.name=/^(innerHTML|outerHTML)$/]",
+                    message: 'Do not assign HTML strings to the DOM. Render text, or use the SafeHtml display control for external HTML.',
+                },
+                {
+                    selector: "CallExpression[callee.property.name='insertAdjacentHTML']",
+                    message: 'Do not inject HTML strings into the DOM. Render text, or use the SafeHtml display control for external HTML.',
+                },
+                {
+                    selector: "CallExpression[callee.object.name='document'][callee.property.name=/^(write|writeln)$/]",
+                    message: 'Do not inject HTML strings into the DOM. Render text, or use the SafeHtml display control for external HTML.',
+                },
+            ],
             'no-unused-vars': 'off',
             '@typescript-eslint/no-unused-vars': [
                 'error',

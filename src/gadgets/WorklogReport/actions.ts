@@ -180,7 +180,7 @@ export function getColumnSettings(_: any, getState: any) {
                 format: (value: number) => (value > 0 ? '+' : '') + formatSecs(value),
             },
             { field: 'comment', displayText: 'Comment' },
-            { field: 'fields.project.key', displayText: 'Project Name test', type: 'string' },
+            { field: 'fields.project.key', displayText: 'Project Key', type: 'string' },
             ...addlCols,
         ].filter(Boolean);
     };

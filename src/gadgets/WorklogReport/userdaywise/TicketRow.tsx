@@ -13,7 +13,7 @@ interface TicketRowProps {
     timeExportFormat?: string;
     convertSecs: (val: number) => any;
     formatTime: (val: Date) => string;
-    addNewWorklog: (ticketNo: string, day: any) => void;
+    addNewWorklog: (ticketNo: string, day: any, logged?: number) => void;
     additionalCols?: any[];
 }
 
@@ -86,7 +86,7 @@ interface IssueDaysWrapperProps {
     isSprint: boolean;
     costView?: boolean;
     timeExportFormat?: string;
-    addNewWorklog: (ticketNo: string, day: any) => void;
+    addNewWorklog: (ticketNo: string, day: any, logged?: number) => void;
     convertSecs: (val: number) => any;
     formatTime: (val: Date) => string;
 }

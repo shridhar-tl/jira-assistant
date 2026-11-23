@@ -44,6 +44,7 @@ export interface MeetingView {
     htmlLink?: string;
     location?: string;
     description?: string;
+    descriptionFormat: 'html' | 'text';
     descrLimit: number;
     date: string;
     startTime: string;

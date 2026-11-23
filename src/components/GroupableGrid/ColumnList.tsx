@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { Checkbox, type ComponentEvent } from 'fluxo-ui';
+import { Checkbox, type ComponentEvent } from '@components';
 
 import './GroupableGrid.css';
 import type { ColumnListProps, ColumnSchema } from './types';
@@ -11,14 +11,8 @@ interface ColumnItem {
     selected: boolean;
 }
 
-export default function ColumnList({ columns, displayColumns, onChange }: ColumnListProps) {
-    const [items, setItems] = useState<ColumnItem[]>(() =>
-        columns.map(({ id, displayText }: ColumnSchema) => ({
-            id,
-            displayText,
-            selected: !displayColumns || displayColumns.includes(id),
-        })),
-    );
+export default function ColumnList({ columns, onChange }: ColumnListProps) {
+    const [items, setItems] = useState<ColumnItem[]>(() => columns.map(({ id, displayText, visible }: ColumnSchema) => ({ id, displayText, selected: visible })));
 
     const hideColumns = () => {
         const selected = items.filter((c) => c.selected);

@@ -12,7 +12,7 @@ interface TicketRowProps {
     fields: any;
     convertSecs: (val: number) => any;
     formatTime: (val: Date) => string;
-    addNewWorklog?: (ticketNo: string, day: any) => void;
+    addNewWorklog?: (ticketNo: string, day: any, logged?: number) => void;
     additionalCols?: any[];
 }
 

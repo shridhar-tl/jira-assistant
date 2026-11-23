@@ -1,4 +1,4 @@
-import { Fragment, memo, useEffect, useState } from 'react';
+import { Fragment, memo, useMemo } from 'react';
 
 import { ScrollableTable, THead, TRow, Column, TBody } from '../../../components/shared';
 import { useWorklogStore } from '../datastore';
@@ -26,13 +26,7 @@ export default function UserProjectWiseSummary({ exportSheetName, boardId }: Use
     const { fields } = state;
     const costView = fields?.showCostReport;
 
-    const [localState, setLocalState] = useState<any>(false);
-
-    useEffect(() => {
-        if (groups && flatWorklogs) {
-            setLocalState(getGroupedData(groups, flatWorklogs));
-        }
-    }, [groups, flatWorklogs]);
+    const localState = useMemo(() => (groups && flatWorklogs ? getGroupedData(groups, flatWorklogs) : null), [groups, flatWorklogs]);
 
     const convertSecs = useConvertSecs();
 

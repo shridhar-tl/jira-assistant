@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 
-import { RadioButtonGroup } from '@components';
+import { Button, RadioButtonGroup } from '@components';
 
 interface ShowMoreLinkProps {
     showMore: boolean;
@@ -9,14 +9,14 @@ interface ShowMoreLinkProps {
 
 export function ShowMoreLink({ showMore, setShowMore }: ShowMoreLinkProps) {
     return (
-        <button
-            type="button"
+        <Button
+            layout="plain"
+            size="sm"
+            className="self-start"
+            leftIcon={<i className={showMore ? 'fa fa-caret-down' : 'fa fa-caret-right'} />}
+            label={showMore ? 'Hide options' : 'Show more options'}
             onClick={() => setShowMore(!showMore)}
-            className="flex items-center gap-1.5 text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 cursor-pointer"
-        >
-            <i className={showMore ? 'fa fa-caret-down' : 'fa fa-caret-right'} />
-            <span>{showMore ? 'Hide options' : 'Show more options'}</span>
-        </button>
+        />
     );
 }
 

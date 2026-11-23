@@ -59,9 +59,9 @@ export default function UserRow({ groupIndex, groupUserCount, user: u, colSpan, 
     );
 
     const addNewWorklog = useCallback(
-        (ticketNo: string | null, day: any) => {
+        (ticketNo: string | null, day: any, logged?: number) => {
             const addWl = addWorklog(dispatch);
-            addWl(u, ticketNo || '', day.date, u.total?.[day.prop] || 0);
+            addWl(u, ticketNo || '', day.date, logged || 0);
         },
         [dispatch, u],
     );
@@ -140,7 +140,7 @@ interface UserDatesDisplayProps {
     groupIndex: number;
     costView?: boolean;
     timeExportFormat?: string;
-    addNewWorklog: (ticketNo: string | null, day: any) => void;
+    addNewWorklog: (ticketNo: string | null, day: any, logged?: number) => void;
 }
 
 function UserDatesDisplay({ sprintId, groupIndex, uid, costView, timeExportFormat, addNewWorklog }: UserDatesDisplayProps) {
@@ -179,7 +179,7 @@ function UserDatesDisplay({ sprintId, groupIndex, uid, costView, timeExportForma
                         data-test-id={day.prop}
                     >
                         {u.isCurrentUser && disableAddingWL !== true && (
-                            <span className="fa fa-clock add-wl" title="Click to add worklog" onClick={() => addNewWorklog(null, day)} />
+                            <span className="fa fa-clock add-wl" title="Click to add worklog" onClick={() => addNewWorklog(null, day, u.total?.[day.prop])} />
                         )}
                         {convertSecs(u.total?.[day.prop])}
                         {rIndicator === '1' && <Indicator value={u.total?.[day.prop]} maxHours={maxHours} />}
@@ -201,7 +201,7 @@ interface UserTicketsProps {
     user: any;
     costView?: boolean;
     sprintsList?: any[];
-    addNewWorklog: (ticketNo: string, day: any) => void;
+    addNewWorklog: (ticketNo: string, day: any, logged?: number) => void;
     timeExportFormat?: string;
     additionalCols?: any[];
     convertSecs: (val: number) => any;

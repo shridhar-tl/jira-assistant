@@ -72,7 +72,6 @@ export interface GroupedRow {
     path: string;
     rowSpan: number;
     values: any[];
-    hidden?: boolean;
 }
 
 export interface GroupableGridSettings {
@@ -102,14 +101,12 @@ export interface GroupableGridProps {
 
 export interface ColumnListProps {
     columns: ColumnSchema[];
-    displayColumns?: string[] | null;
     onChange: (displayColumns: string[] | null) => void;
 }
 
 export interface GroupedColumnListProps {
     groupBy: GroupedColumnSchema[];
     allColumns: ColumnSchema[];
-    displayColumns?: string[] | null;
     foldable?: boolean;
     showColumns?: boolean | null;
     onChange: (groupBy: GroupedColumnSchema[], foldable: boolean, type: string) => void;

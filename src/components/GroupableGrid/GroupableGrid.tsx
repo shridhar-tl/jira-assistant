@@ -261,6 +261,8 @@ function renderFoldableGroupRow(
     cols: ColumnSchema[],
     grpBy: GroupedColumnSchema[],
     getCellRenderer: (row: any) => CellRendererFn,
+    collapsedGroups: Set<string>,
+    toggleGroup: (path: string) => void,
     depth = 0,
 ): any {
     const curGroup = grpBy[0];
@@ -268,19 +270,14 @@ function renderFoldableGroupRow(
     const Component = valueType !== 'value' ? null : curGroup?.viewComponent;
 
     const emptyTDs = depth > 0 ? Array.from({ length: depth }, (_, di) => <td key={di} className="group-indent-td" />) : null;
+    const hidden = grpBy.length > 0 && collapsedGroups.has(g.path);
 
     const groupKeyCell =
         grpBy.length > 0 ? (
             <tr key={g.key}>
                 {emptyTDs}
-                <td
-                    className="group-toggler-td"
-                    title={`Click to ${g.hidden ? 'expand' : 'collapse'} group`}
-                    onClick={() => {
-                        /* toggle handled via state in parent */
-                    }}
-                >
-                    <span className={`fa fa-caret-${g.hidden ? 'right' : 'down'}`} />
+                <td className="group-toggler-td cursor-pointer" title={`Click to ${hidden ? 'expand' : 'collapse'} group`} onClick={() => toggleGroup(g.path)}>
+                    <span className={`fa fa-caret-${hidden ? 'right' : 'down'}`} />
                 </td>
                 <td className="group-name-td" colSpan={grpBy.length + cols.length}>
                     {Component ? (
@@ -292,10 +289,14 @@ function renderFoldableGroupRow(
             </tr>
         ) : null;
 
+    if (hidden) {
+        return <Fragment key={i}>{groupKeyCell}</Fragment>;
+    }
+
     let result: any;
     if (grpBy.length > 0) {
         result = (g.values as GroupedRow[]).map((r, j) =>
-            renderFoldableGroupRow(r, j, cols, grpBy.slice(1), getCellRenderer, depth + 1),
+            renderFoldableGroupRow(r, j, cols, grpBy.slice(1), getCellRenderer, collapsedGroups, toggleGroup, depth + 1),
         );
     } else {
         const cells = cols.map(getCellRenderer(g));
@@ -384,6 +385,7 @@ export default function GroupableGrid({
     onChange,
 }: GroupableGridProps) {
     const [showColumns, setShowColumns] = useState<boolean | null>(null);
+    const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(() => new Set());
     // Stores sort-override alongside the base data it was derived from so we can
     // invalidate it purely during render when the base data changes (no effect needed).
     const [sortOverride, setSortOverride] = useState<{ baseData: any[]; sorted: any[] } | null>(null);
@@ -408,6 +410,15 @@ export default function GroupableGrid({
         [dataset, groupBySchema, initialSortField, initialIsDesc],
     );
 
+    const toggleGroup = useCallback((path: string) => {
+        setCollapsedGroups((prev) => {
+            const next = new Set(prev);
+            if (!next.delete(path)) {
+                next.add(path);
+            }
+            return next;
+        });
+    }, []);
 
     const getColGrouping = useCallback((cols: ColumnSchema[]) => {
         const grouping = cols.groupBy('groupText', (c) => c.visible).filter(({ key }) => !!key);
@@ -505,20 +516,20 @@ export default function GroupableGrid({
             }
 
             if (initialGroupFoldable) {
-                return (g: any, i: number) => renderFoldableGroupRow(g, i, cols, grpBy, getCellRenderer);
+                return (g: any, i: number) => renderFoldableGroupRow(g, i, cols, grpBy, getCellRenderer, collapsedGroups, toggleGroup);
             }
 
             return (g: any, i: number) => renderGroupRow(g, i, cols, grpBy, getCellRenderer);
         },
-        [initialGroupFoldable, getCellRenderer],
+        [initialGroupFoldable, getCellRenderer, collapsedGroups, toggleGroup],
     );
 
     const handleSort = useCallback(
         (sortField: string, isDesc: boolean): boolean => {
-            if (!groupBySchema?.length) return false;
-
-            const sorted = sortGroupedData(data as GroupedRow[], groupBySchema, sortField, isDesc);
-            setSortOverride({ baseData: data, sorted });
+            const hasGroups = !!groupBySchema?.length;
+            if (hasGroups) {
+                setSortOverride({ baseData: data, sorted: sortGroupedData(data as GroupedRow[], groupBySchema, sortField, isDesc) });
+            }
 
             onChange?.({
                 groupBy: initialGroupBy as any,
@@ -528,7 +539,7 @@ export default function GroupableGrid({
                 isDesc,
             });
 
-            return true;
+            return hasGroups;
         },
         [groupBySchema, data, onChange, initialGroupBy, initialGroupFoldable, initialDisplayColumns],
     );
@@ -586,11 +597,10 @@ export default function GroupableGrid({
 
     return (
         <div className={classNames('groupable-grid', hideGroups && 'groups-hidden')}>
-            {showColumns && <ColumnList onChange={columnSelectionChanged} columns={allColumns} displayColumns={initialDisplayColumns} />}
+            {showColumns && <ColumnList onChange={columnSelectionChanged} columns={allColumns} />}
             {!hideGroups && (
                 <GroupedColumnList
                     groupBy={groupBySchema || []}
-                    displayColumns={initialDisplayColumns}
                     allColumns={allColumns}
                     foldable={initialGroupFoldable}
                     showColumns={showColumns}
