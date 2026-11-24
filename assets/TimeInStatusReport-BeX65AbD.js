@@ -1,0 +1,1 @@
+import{i as e}from"./gadgets-Bn5XFYL2.js";import{t}from"./vendor-react-o77v2-Bu.js";var n=t();function r(){return(0,n.jsx)(e,{isGadget:!1})}export{r as default};

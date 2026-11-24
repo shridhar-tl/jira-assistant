@@ -1,1 +1,0 @@
-import{Jt as e}from"./index.web-CU_S6Jb_.js";function t(t,n){return+e(t)>+e(n)}function n(t,n){return+e(t)<+e(n)}export{t as n,n as t};
