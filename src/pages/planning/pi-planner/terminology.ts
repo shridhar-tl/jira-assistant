@@ -6,6 +6,7 @@ export interface TermSet {
     plan: string;
     plans: string;
     program: string;
+    programs: string;
     team: string;
     teams: string;
     iteration: string;
@@ -29,6 +30,7 @@ const neutral: TermSet = {
     plan: 'Quarter plan',
     plans: 'Quarter plans',
     program: 'Program',
+    programs: 'Programs',
     team: 'Team',
     teams: 'Teams',
     iteration: 'Iteration',
@@ -52,6 +54,7 @@ const safe: TermSet = {
     plan: 'PI',
     plans: 'Program Increments',
     program: 'ART',
+    programs: 'ARTs',
     team: 'Team',
     teams: 'Teams',
     iteration: 'Iteration',
@@ -73,4 +76,17 @@ const safe: TermSet = {
 
 export function getTerms(terminology: Terminology): TermSet {
     return terminology === 'safe' ? safe : neutral;
+}
+
+/** A term in lower case for use inside a sentence, keeping acronyms such as PI, ART or BV in capitals. */
+export function lowerTerm(term: string): string {
+    return term
+        .split(' ')
+        .map((word) => (word.length > 1 && word === word.toUpperCase() && /[A-Z]/.test(word) ? word : word.toLowerCase()))
+        .join(' ');
+}
+
+/** A term with its indefinite article, e.g. "an ART", "a PI", "a quarter plan". */
+export function articleTerm(term: string): string {
+    return `${/^[aeiou]/i.test(term) ? 'an' : 'a'} ${lowerTerm(term)}`;
 }

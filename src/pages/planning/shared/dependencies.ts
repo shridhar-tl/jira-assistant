@@ -1,4 +1,4 @@
-import type { IssueLinkRef, PlannerIssue } from './types';
+import type { IssueLinkRef, IssueLinkType, PlannerIssue } from './types';
 
 export type DependencyConflict = 'none' | 'sameSprint' | 'laterSprint' | 'unscheduled' | 'outside' | 'dates';
 
@@ -124,4 +124,29 @@ export function getBlockingDependencies(dependencies: Dependency[]): Map<string,
         }
     }
     return map;
+}
+
+const blocksPattern = /\bblock(s|ing)?\b/i;
+const dependsPattern = /\b(depends? on|is blocked by|requires|needs)\b/i;
+
+/**
+ * Link types that express a dependency, found by their names: "blocks / is blocked by" and "depends on / is a dependency of" style types.
+ * The outward side blocks the other issue for "blocks", and is blocked by it for "depends on".
+ */
+export function detectDependencyLinkTypes(types: IssueLinkType[]): DependencyLinkType[] {
+    const result: DependencyLinkType[] = [];
+    for (const type of types) {
+        if (dependsPattern.test(type.outward)) {
+            result.push({ name: type.name, outwardBlocks: false });
+        } else if (dependsPattern.test(type.inward) || (blocksPattern.test(type.outward) && !/blocked by/i.test(type.outward))) {
+            result.push({ name: type.name, outwardBlocks: true });
+        }
+    }
+    return result;
+}
+
+/** The configured link types, plus the detected ones that are not configured. A configured type keeps its configured direction. */
+export function mergeDependencyLinkTypes(configured: DependencyLinkType[], detected: DependencyLinkType[]): DependencyLinkType[] {
+    const names = new Set(configured.map((t) => t.name.toLowerCase()));
+    return [...configured, ...detected.filter((t) => !names.has(t.name.toLowerCase()))];
 }

@@ -13,7 +13,7 @@ import { parseDateKey } from '../../shared/segments';
 import type { PiData } from '../pi-loader';
 import { unplannedIterationId, type PiTeamRow, type ProgramModel } from '../pi-model';
 import type { PiDocument } from '../pi-types';
-import type { TermSet } from '../terminology';
+import { lowerTerm, type TermSet } from '../terminology';
 
 import FeatureCard, { featureDragType, type FeatureDragData } from './FeatureCard';
 import MoveFeatureDialog, { type MoveTarget } from './MoveFeatureDialog';
@@ -141,7 +141,7 @@ export default function ProgramBoard({ doc, data, model, terms, canEdit }: Progr
                 main={
                     <div className="flex h-full min-h-0 min-w-0 flex-col gap-2">
                         <div className="flex items-center gap-3 pr-2 text-xs text-(--text-secondary)">
-                            <span>Drag a {terms.feature.toLowerCase()} to a team and {terms.iteration.toLowerCase()} to move its stories there. Stories not in a sprint are in the last column.</span>
+                            <span>Drag a {lowerTerm(terms.feature)} to a team and {lowerTerm(terms.iteration)} to move its stories there. Stories not in a sprint are in the last column.</span>
                             <span className="flex-1" />
                             <span className="shrink-0 whitespace-nowrap">
                                 <InputSwitch label="Dependency lines" checked={showLines} onChange={(e) => setShowLines(e.value)} />
@@ -228,7 +228,7 @@ export default function ProgramBoard({ doc, data, model, terms, canEdit }: Progr
                                     </div>
                                 );
                             })}
-                            {!model.unplannedFeatures.length && <span className="p-2 text-xs text-(--text-tertiary)">Every open {terms.feature.toLowerCase()} is planned.</span>}
+                            {!model.unplannedFeatures.length && <span className="p-2 text-xs text-(--text-tertiary)">Every open {lowerTerm(terms.feature)} is planned.</span>}
                         </div>
                     </aside>
                 }

@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, type ReactNode } from 'react';
 
 import classNames from 'classnames';
 
@@ -17,6 +17,7 @@ interface DependencyTableProps {
     summaryOf?: (key: string) => string | undefined;
     canRemove: boolean;
     onRemove: (dependency: Dependency) => void;
+    renderActions?: (dependency: Dependency) => ReactNode;
 }
 
 function issueUrl(key: string): string {
@@ -24,7 +25,7 @@ function issueUrl(key: string): string {
     return $userutils.getTicketUrl(key) || '';
 }
 
-export default function DependencyTable({ dependencies, issues, locationOf, teamOf, summaryOf, canRemove, onRemove }: DependencyTableProps) {
+export default function DependencyTable({ dependencies, issues, locationOf, teamOf, summaryOf, canRemove, onRemove, renderActions }: DependencyTableProps) {
     const [conflictsOnly, setConflictsOnly] = useState(false);
     const [crossTeamOnly, setCrossTeamOnly] = useState(false);
 
@@ -88,7 +89,8 @@ export default function DependencyTable({ dependencies, issues, locationOf, team
                                         {dep.blockerDone ? 'Resolved' : conflictLabels[dep.conflict]}
                                         {dep.crossTeam && <span className="ms-1 rounded bg-(--bg-tertiary) px-1 text-(--text-secondary)">cross-team</span>}
                                     </td>
-                                    <td className="px-2 py-1.5 text-right">
+                                    <td className="whitespace-nowrap px-2 py-1.5 text-right">
+                                        {renderActions?.(dep)}
                                         {canRemove && (
                                             <Button size="xs" layout="plain" variant="danger" leftIcon={<i className="fa fa-chain-broken" />} ariaLabel="Remove dependency" confirmText="Remove this issue link from Jira?" onClick={() => onRemove(dep)} />
                                         )}

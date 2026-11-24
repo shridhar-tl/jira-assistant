@@ -2,6 +2,8 @@ import { parseISO, startOfDay } from 'date-fns';
 
 import { inject } from '@services';
 
+import { toSafeUrl } from '@utils/safe-url';
+
 import { parseLegacySprint } from '@pages/bulk-import/issue/jira-values';
 
 
@@ -69,6 +71,10 @@ export const baseIssueFields = [
 
 export const plannerIssueProperties = [segmentsPropertyKey, featurePropertyKey];
 
+function toOptionalSafeUrl(url: string | undefined): string | undefined {
+    return url ? toSafeUrl(url) : undefined;
+}
+
 export function getIssueFields(ctx: IssueMapContext): string[] {
     const { fieldIds, estimationFieldId } = ctx;
     const extra = [
@@ -97,7 +103,7 @@ export function toPlannerUser(user: RawJiraUser | null | undefined): PlannerUser
     return {
         id,
         displayName: user.displayName || id,
-        avatarUrl: user.avatarUrls?.['24x24'] || user.avatarUrls?.['32x32'] || user.avatarUrls?.['48x48'],
+        avatarUrl: toOptionalSafeUrl(user.avatarUrls?.['24x24'] || user.avatarUrls?.['32x32'] || user.avatarUrls?.['48x48']),
         email: user.emailAddress || undefined,
     };
 }
@@ -269,14 +275,14 @@ export function mapPlannerIssue(raw: RawIssue, ctx: IssueMapContext): PlannerIss
         projectId: project?.id || '',
         issueTypeId: issueType?.id || '',
         issueType: issueType?.name || '',
-        issueTypeIconUrl: issueType?.iconUrl,
+        issueTypeIconUrl: toOptionalSafeUrl(issueType?.iconUrl),
         isSubtask,
         hierarchyLevel: typeof issueType?.hierarchyLevel === 'number' ? issueType.hierarchyLevel : isSubtask ? -1 : 0,
         status: status?.name || '',
         statusId: status?.id || '',
         statusCategory: toStatusCategory(status),
         priority: priority?.name,
-        priorityIconUrl: priority?.iconUrl,
+        priorityIconUrl: toOptionalSafeUrl(priority?.iconUrl),
         assignee: toPlannerUser(fields.assignee as RawJiraUser | null),
         parentKey,
         parent: parent

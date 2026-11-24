@@ -6,6 +6,7 @@ import { parseDateKey, toDateKey } from '../shared/segments';
 import type { PlannerIssue, PlannerSprint, StatusCategory } from '../shared/types';
 
 import type { PiData, PiTeamData } from './pi-loader';
+import { getPlanScope, isInPlanScope, type PlanScope } from './pi-progress';
 import type { CadenceMode, PiDocument, PiIteration, PiTeam } from './pi-types';
 
 export const unplannedIterationId = 'unplanned';
@@ -169,6 +170,10 @@ function addToCell(cells: Record<string, PiFeatureCell[]>, columnId: string, fea
     cell.estimate += size;
 }
 
+function isOnProgramBoard(story: PlannerIssue, scope: PlanScope): boolean {
+    return isInPlanScope(story, scope) || story.statusCategory !== 'done';
+}
+
 /**
  * Program board: rows are teams and columns are the plan's iterations (or each team's own sprints).
  * A feature with stories is shown wherever its stories are. A feature without stories is shown where its stored placement is.
@@ -208,9 +213,10 @@ export function buildProgramModel(doc: PiDocument, data: PiData, cadence: Cadenc
     const rowMap = new Map(rows.map((r) => [r.team.boardId, r]));
     const featuresWithStories = new Set<string>();
 
+    const scope = getPlanScope(doc);
     const featureStories = Object.values(data.stories).filter((story) => {
         const featureKey = story.epicKey || story.parentKey;
-        return !!featureKey && !!data.features[featureKey];
+        return !!featureKey && !!data.features[featureKey] && isOnProgramBoard(story, scope);
     });
     const featureTeams = new Map<string, Set<number>>();
     for (const story of featureStories) {

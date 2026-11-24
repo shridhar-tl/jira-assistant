@@ -15,14 +15,15 @@ import {
 import { toDateKey } from '../shared/segments';
 import type { FeaturePlacement, StatusCategory } from '../shared/types';
 
-import { loadPiData, type PiData } from './pi-loader';
-import { deletePlan, getPlan, listPlans, savePlan, saveProgramSettings } from './pi-storage';
+import { toPlanSummary } from './pi-items';
+import { loadPiData, loadTrackedIssues, type PiData } from './pi-loader';
+import { deletePlan, getIncomingItems, getPlan, listPlans, savePlan, saveProgramSettings } from './pi-storage';
 import { usePiStore } from './pi-store';
 import type { PiDocument, PiObjective, PiProgramSettings, PiRisk, PiSummary } from './pi-types';
 
 const conflictMessage = 'Someone else changed this plan. The latest version is loaded. Apply your change again.';
 
-function showError(message: string, title = 'Program planner') {
+export function showError(message: string, title = 'Program planner') {
     const { $message } = inject('MessageService');
     $message.error(message, title);
 }
@@ -43,8 +44,14 @@ export function loadPlans(): Promise<void> {
     }
     usePiStore.setState({ isListLoading: true, listError: null });
     listRequest = listPlans()
-        .then(({ plans, settings, canEdit }) => {
-            usePiStore.setState({ plans: [...plans].sort((a, b) => b.startDate.localeCompare(a.startDate)), settings, canEdit, isListLoading: false });
+        .then(({ arts, plans, settings, canEdit }) => {
+            usePiStore.setState({
+                arts: [...arts].sort((a, b) => a.name.localeCompare(b.name)),
+                plans: [...plans].sort((a, b) => b.startDate.localeCompare(a.startDate)),
+                settings,
+                canEdit,
+                isListLoading: false,
+            });
         })
         .catch((err) => {
             usePiStore.setState({ isListLoading: false, listError: getJiraErrorMessage(err) });
@@ -72,22 +79,74 @@ function clearOutdatedPlacements(doc: PiDocument, data: PiData) {
         .forEach((f) => clearFeaturePlacement(f.key));
 }
 
-export async function openPlan(id: string | null, force?: boolean): Promise<void> {
-    if (!id) {
-        usePiStore.setState({ doc: null, data: null, error: null });
+/** Keys of the issues tracked by objectives, team dependencies and risks of the plan, including those raised on its teams by other plans. */
+function getTrackedKeys(): string[] {
+    const { doc, incoming } = usePiStore.getState();
+    if (!doc) {
+        return [];
+    }
+    return [
+        ...doc.objectives.flatMap((o) => o.issueKeys),
+        ...doc.dependencies.flatMap((d) => [...d.dependantKeys, ...d.providerKeys]),
+        ...doc.risks.flatMap((r) => r.issueKeys),
+        ...(incoming?.dependencies || []).flatMap((d) => [...d.item.dependantKeys, ...d.item.providerKeys]),
+        ...(incoming?.risks || []).flatMap((r) => r.item.issueKeys),
+    ];
+}
+
+/** Loads the tracked issues that are not part of the plan's data yet, with the stories of tracked epics. */
+export async function refreshTrackedIssues(): Promise<void> {
+    const { data, trackedIssues } = usePiStore.getState();
+    if (!data) {
         return;
     }
-    usePiStore.setState({ isLoading: true, error: null, ...(usePiStore.getState().doc?.id !== id ? { doc: null, data: null } : {}) });
+    const missing = [...new Set(getTrackedKeys())].filter((key) => !data.stories[key] && !data.features[key] && !trackedIssues[key]);
+    if (!missing.length) {
+        return;
+    }
+    try {
+        const loaded = await loadTrackedIssues(missing, data);
+        usePiStore.setState((state) => ({ trackedIssues: { ...state.trackedIssues, ...loaded } }));
+    } catch (err) {
+        showError(getJiraErrorMessage(err), 'Unable to load the linked issues');
+    }
+}
+
+export async function loadIncoming(): Promise<void> {
+    const { doc } = usePiStore.getState();
+    if (!doc) {
+        return;
+    }
+    try {
+        const incoming = await getIncomingItems(doc.id);
+        if (usePiStore.getState().doc?.id === doc.id) {
+            usePiStore.setState({ incoming });
+            await refreshTrackedIssues();
+        }
+    } catch (err) {
+        showError(getJiraErrorMessage(err), 'Unable to load the items raised by other plans');
+    }
+}
+
+export async function openPlan(id: string | null, force?: boolean): Promise<void> {
+    if (!id) {
+        usePiStore.setState({ doc: null, data: null, error: null, incoming: null, trackedIssues: {} });
+        return;
+    }
+    const isOther = usePiStore.getState().doc?.id !== id;
+    usePiStore.setState({ isLoading: true, error: null, ...(isOther ? { doc: null, data: null, incoming: null } : {}), ...(isOther || force ? { trackedIssues: {} } : {}) });
     try {
         const doc = await getPlan(id);
         if (!doc) {
-            usePiStore.setState({ isLoading: false, error: 'This plan does not exist any more.' });
+            usePiStore.setState(({ plans }) => ({ isLoading: false, error: 'This plan does not exist any more.', plans: plans.filter((p) => p.id !== id) }));
             return;
         }
         const settings = await getSettings();
         const data = await loadPiData(doc, settings?.featureIssueTypes || [], force);
         usePiStore.setState({ doc, data, isLoading: false });
         clearOutdatedPlacements(doc, data);
+        await refreshTrackedIssues();
+        await loadIncoming();
     } catch (err) {
         usePiStore.setState({ isLoading: false, error: getJiraErrorMessage(err) });
     }
@@ -116,8 +175,11 @@ export async function savePlanDocument(doc: PiDocument): Promise<boolean> {
         const { plans, doc: current } = usePiStore.getState();
         usePiStore.setState({
             doc: current?.id === saved.id || !current ? saved : current,
-            plans: [...plans.filter((p) => p.id !== saved.id), { id: saved.id, name: saved.name, startDate: saved.startDate, endDate: saved.endDate, boardIds: saved.teams.map((t) => t.boardId), version: saved.version }].sort((a, b) => b.startDate.localeCompare(a.startDate)),
+            plans: [...plans.filter((p) => p.id !== saved.id), toPlanSummary(saved)].sort((a, b) => b.startDate.localeCompare(a.startDate)),
         });
+        if (current?.id === saved.id) {
+            await refreshTrackedIssues();
+        }
         return true;
     } catch (err) {
         showError(getJiraErrorMessage(err), 'Unable to save the plan');
@@ -140,7 +202,7 @@ export async function removePlan(id: string, version: number): Promise<boolean> 
             await loadPlans();
             return false;
         }
-        usePiStore.setState(({ plans, doc }) => ({ plans: plans.filter((p) => p.id !== id), ...(doc?.id === id ? { doc: null, data: null } : {}) }));
+        usePiStore.setState(({ plans, doc }) => ({ plans: plans.filter((p) => p.id !== id), ...(doc?.id === id ? { doc: null, data: null, incoming: null } : {}) }));
         return true;
     } catch (err) {
         showError(getJiraErrorMessage(err), 'Unable to delete the plan');
@@ -264,7 +326,8 @@ export async function syncRiskToJira(risk: PiRisk, roamLabel: string): Promise<P
     if (!storage || storage.mode !== 'jira' || !storage.issueTypeId) {
         return risk;
     }
-    const fields: Record<string, unknown> = { summary: risk.title, description: risk.description || undefined };
+    const description = [risk.description.trim(), risk.impact.trim() ? `Impact: ${risk.impact.trim()}` : ''].filter(Boolean).join('\n\n');
+    const fields: Record<string, unknown> = { summary: risk.title, description: description || undefined };
     if (storage.roamField) {
         fields[storage.roamField] = { value: roamLabel };
     }

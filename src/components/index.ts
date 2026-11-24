@@ -5,6 +5,8 @@ import { showContextMenu as _showContextMenu } from 'fluxo-ui';
 export {
     Autocomplete,
     AutocompleteMulti,
+    Avatar,
+    AvatarGroup,
     Button,
     Calendar,
     CalendarNavigation,
@@ -16,6 +18,7 @@ export {
     DateRangePicker,
     Drawer,
     Dropdown,
+    EmptyState,
     FieldLabel,
     GanttChart,
     hideSnackbar,

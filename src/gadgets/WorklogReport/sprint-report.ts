@@ -111,7 +111,7 @@ export function generateSprintReport(setState: any, getState: any) {
                     sprint.settings = settings;
                 }
 
-                newState[`userGroup_${boardId}`] = formUserGroupToDisplay(sprintsList, newState, totalUsersList, curState);
+                newState[`userGroup_${boardId}`] = totalUsersList.length ? formUserGroupToDisplay(sprintsList, newState, totalUsersList, curState) : null;
             }
 
             newState.reportLoaded = true;

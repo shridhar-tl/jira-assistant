@@ -157,6 +157,7 @@ permissions:
     - read:issue.changelog:jira
     - write:jira-work
     - write:sprint:jira-software
+    - write:board-scope:jira-software
     - write:board-scope.admin:jira-software
 app:
   id: ari:cloud:ecosystem::app/3864d3bc-aad3-4650-ac35-e15af61fd92d

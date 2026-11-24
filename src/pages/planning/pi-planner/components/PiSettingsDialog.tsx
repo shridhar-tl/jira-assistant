@@ -31,9 +31,38 @@ const storageItems = [
 ];
 const noField = '';
 
+interface JiraIssueType {
+    id: string;
+    name: string;
+    subtask?: boolean;
+    scope?: { project?: { id: string } };
+}
+
+interface JiraProject {
+    id: string;
+    name: string;
+}
+
+interface IssueTypeOption {
+    label: string;
+    value: string;
+    name: string;
+}
+
+function getIssueTypeOptions(types: JiraIssueType[], projects: JiraProject[]): IssueTypeOption[] {
+    const projectNames = new Map(projects.map((p) => [p.id, p.name]));
+    return types
+        .filter((t) => !t.subtask)
+        .map((t) => {
+            const projectId = t.scope?.project?.id;
+            return { label: projectId ? `${t.name} (${projectNames.get(projectId) || projectId})` : t.name, value: t.id, name: t.name };
+        })
+        .sort((a, b) => a.label.localeCompare(b.label));
+}
+
 export default function PiSettingsDialog({ settings: initial, onHide }: PiSettingsDialogProps) {
     const [settings, setSettings] = useState<PiProgramSettings>(initial);
-    const [issueTypes, setIssueTypes] = useState<{ label: string; value: string }[]>([]);
+    const [issueTypes, setIssueTypes] = useState<IssueTypeOption[]>([]);
     const [fields, setFields] = useState<{ label: string; value: string }[]>([]);
     const [selectFields, setSelectFields] = useState<{ label: string; value: string }[]>([]);
     const [linkTypes, setLinkTypes] = useState<IssueLinkType[]>([]);
@@ -43,9 +72,8 @@ export default function PiSettingsDialog({ settings: initial, onHide }: PiSettin
 
     useEffect(() => {
         const { $jira } = inject('JiraService');
-        $jira
-            .getIssueTypes()
-            .then((types: { id: string; name: string; subtask?: boolean }[]) => setIssueTypes(types.filter((t) => !t.subtask).map((t) => ({ label: t.name, value: t.id }))))
+        Promise.all([$jira.getIssueTypes() as Promise<JiraIssueType[]>, ($jira.getProjects() as Promise<JiraProject[]>).catch(() => [] as JiraProject[])])
+            .then(([types, projects]) => setIssueTypes(getIssueTypeOptions(types, projects)))
             .catch(console.error);
         getNumberFieldOptions().then(setFields).catch(console.error);
         getSelectFieldOptions().then(setSelectFields).catch(console.error);
@@ -80,7 +108,7 @@ export default function PiSettingsDialog({ settings: initial, onHide }: PiSettin
     );
 
     const fieldOptions = [{ label: 'Not stored', value: noField }, ...fields];
-    const featureTypeOptions = [...new Set(issueTypes.map((t) => t.label))].sort().map((name) => ({ label: name, value: name }));
+    const featureTypeOptions = [...new Set(issueTypes.map((t) => t.name))].sort().map((name) => ({ label: name, value: name }));
     const linkType = settings.dependencyLinkTypes[0];
     const linkTypeOptions = (linkTypes.length ? linkTypes : [{ id: '', name: linkType.name, inward: '', outward: '' }]).map((t) => ({
         value: t.name,
@@ -92,10 +120,10 @@ export default function PiSettingsDialog({ settings: initial, onHide }: PiSettin
         <Modal isOpen onClose={onHide} title="Program settings" size="lg" footer={footer}>
             <div className="flex flex-col gap-4">
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                    <Field label="Terminology">
+                    <Field label="Terminology" group>
                         <SelectButton items={terminologyItems} value={settings.terminology} onChange={(e) => setSettings({ ...settings, terminology: e.value as Terminology })} />
                     </Field>
-                    <Field label="Board columns" hint="Teams with different sprint lengths can be aligned to common iterations by date.">
+                    <Field group label="Board columns" hint="Teams with different sprint lengths can be aligned to common iterations by date.">
                         <SelectButton items={cadenceItems} value={settings.cadence} onChange={(e) => setSettings({ ...settings, cadence: e.value as CadenceMode })} />
                     </Field>
                     <InputSwitch label="Last iteration is an innovation and planning iteration by default" checked={settings.ipSprint} onChange={(e) => setSettings({ ...settings, ipSprint: e.value })} />

@@ -579,13 +579,21 @@ export function getAssigneeFieldValue(userId: string | null): Record<string, str
     return isCloud() ? { accountId: userId } : { name: userId };
 }
 
+interface JiraRequestError {
+    status?: number;
+    statusText?: string;
+    response?: string;
+    message?: string;
+    error?: { errorMessages?: string[]; errors?: Record<string, string>; message?: string };
+}
+
 export function getJiraErrorMessage(err: unknown): string {
-    const error = (err as { error?: { errorMessages?: string[]; errors?: Record<string, string> }; response?: string })?.error;
-    const messages = [...(error?.errorMessages || []), ...Object.values(error?.errors || {})];
+    const { status, statusText, response, message, error } = (err || {}) as JiraRequestError;
+    const messages = [...(error?.errorMessages || []), ...Object.values(error?.errors || {}), error?.message].filter((m): m is string => !!m);
     if (messages.length) {
         return messages.join(' ');
     }
-    return (err as { response?: string })?.response || (err as Error)?.message || 'Request failed';
+    return response || message || (status ? `Request failed with status ${status}${statusText ? ` (${statusText})` : ''}` : statusText) || 'Request failed';
 }
 
 export function getRequiredFieldErrors(err: unknown): string[] {

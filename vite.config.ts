@@ -316,6 +316,8 @@ export default defineConfig(({ command }) => ({
     // Forge plugin and Electron app are loaded as static assets from a non-root URL,
     // so emit relative asset paths (./assets/...) instead of absolute ones.
     base: (isPluginBuild && command === 'build') || isAppBuild ? './' : '/',
+    // Each build mode pre-bundles its own dependencies, so dev servers of two modes can run side by side without breaking each other.
+    cacheDir: `node_modules/.vite/${buildMode.toLowerCase() || 'extn'}`,
     plugins: [
         mkcert({
             hosts: ['local.jiraassistant.com'],

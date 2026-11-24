@@ -64,7 +64,7 @@ export default function Carousel<T>({
                         'shrink-0 w-8 h-8 flex items-center justify-center rounded-full',
                         'border border-(--border-color) bg-(--bg-secondary) text-primary',
                         'hover:bg-(--bg-primary) transition-colors',
-                        { 'opacity-30 cursor-not-allowed': !hasPrev },
+                        hasPrev ? 'cursor-pointer' : 'opacity-30 cursor-not-allowed',
                     )}
                     onClick={goPrev}
                     disabled={!hasPrev}
@@ -93,7 +93,7 @@ export default function Carousel<T>({
                         'shrink-0 w-8 h-8 flex items-center justify-center rounded-full',
                         'border border-(--border-color) bg-(--bg-secondary) text-primary',
                         'hover:bg-(--bg-primary) transition-colors',
-                        { 'opacity-30 cursor-not-allowed': !hasNext },
+                        hasNext ? 'cursor-pointer' : 'opacity-30 cursor-not-allowed',
                     )}
                     onClick={goNext}
                     disabled={!hasNext}
@@ -110,11 +110,12 @@ export default function Carousel<T>({
                             key={i}
                             type="button"
                             className={classNames(
-                                'w-2 h-2 rounded-full transition-colors',
+                                'w-2 h-2 cursor-pointer rounded-full transition-colors',
                                 i === activeIndicator ? 'bg-(--text-primary)' : 'bg-(--border-color) hover:bg-(--text-secondary)',
                             )}
                             onClick={() => setCurrentIndex(Math.min(i * numScroll, maxIndex))}
                             aria-label={`Go to page ${i + 1}`}
+                            aria-current={i === activeIndicator ? 'true' : undefined}
                         />
                     ))}
                 </div>

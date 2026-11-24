@@ -139,6 +139,10 @@ const sessionBasedRoute: RouteItem[] = [
         component: ProjectPlannerComponent,
     },
     PiPlannerComponent && {
+        path: '/planning/pi-planner/art/:artId/:artView?',
+        component: PiPlannerComponent,
+    },
+    PiPlannerComponent && {
         path: '/planning/pi-planner/:piId?/:view?',
         component: PiPlannerComponent,
     },

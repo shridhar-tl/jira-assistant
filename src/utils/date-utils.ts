@@ -286,7 +286,7 @@ export function cloneDate(date: Date): Date {
  */
 export function getDateArray(startDate: Date, endDate: Date): Date[] {
     const retVal: Date[] = [];
-    let current = new Date(startDate);
+    let current = startOfDay(startDate);
 
     while (current <= endDate) {
         retVal.push(new Date(current));
