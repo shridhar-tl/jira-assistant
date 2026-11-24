@@ -14,7 +14,7 @@ Want it for your whole organization? Install the Jira Cloud app from the Atlassi
 
 **🎥 Video guides 🎥**
 
-Learn the features of Jira Assistant: [Jira Assistant video playlist](https://www.youtube.com/watch?list=PLxDBQLgpBhsDGppYrDqARYULukk7XFJPV&v=HsWq7cT3Qq0)
+Learn the features of Jira Assistant: [Jira Assistant video playlist](https://www.youtube.com/watch?v=8w3r8wLpmpM&list=PLxDBQLgpBhsDGppYrDqARYULukk7XFJPV&index=3)
 
 **🔍 Key features 🔍**
 

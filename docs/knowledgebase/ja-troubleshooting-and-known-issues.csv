@@ -11,7 +11,7 @@ To avoid this in future, enable automatic upload so worklogs go to Jira on creat
 "Worklogs added earlier are missing in Jira Assistant","If worklogs you added earlier are missing, first confirm they were actually uploaded to Jira; worklogs created in Jira Assistant (JA) must be uploaded, and unuploaded ones can be lost on a cache reset. Enabling automatic upload in General settings prevents this.
 Check directly in Jira (not in JA) and review the ticket's history, which records added or deleted worklogs and their times.
 If worklogs exist in Jira but not in JA, it is likely a Jira indexing issue that re-indexing should fix; if nothing appears in the ticket history, they were likely never uploaded.
-If you are new to Jira Assistant, these videos explain the workflow: Using Calendar https://www.youtube.com/watch?v=hJBM5X24sPQ&list=PLxDBQLgpBhsDGppYrDqARYULukk7XFJPV&index=4 and Using Worklog Report https://www.youtube.com/watch?v=WQOHrPBZZiI&list=PLxDBQLgpBhsDGppYrDqARYULukk7XFJPV&index=6"
+If you are new to Jira Assistant, these videos explain the workflow: Using Calendar https://www.youtube.com/watch?v=v5OZ1KXUJdQ&list=PLxDBQLgpBhsDGppYrDqARYULukk7XFJPV and Using Worklog Report https://www.youtube.com/watch?v=-ywPqpcy5BI&list=PLxDBQLgpBhsDGppYrDqARYULukk7XFJPV"
 "Worklogs visible in Jira but not shown in Jira Assistant","Sometimes worklogs or issues appear in Jira but not in Jira Assistant (JA) reports because Jira's API does not return them when Jira is not properly indexed.
 This is usually resolved by re-indexing Jira or resolves on its own after some time; ask your Jira admin when Jira was last indexed.
 Also confirm the timezone in Jira matches your local timezone so worklogs are not placed on a different date in JA reports.

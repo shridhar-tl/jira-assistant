@@ -2,6 +2,8 @@ import { useCallback, useRef, useState } from 'react';
 
 import { createPortal } from 'react-dom';
 
+import { useLocation } from 'react-router';
+
 import type AnalyticsService from '@/services/analytics-service';
 
 import { inject } from '@services';
@@ -15,28 +17,22 @@ import { JAWebRootUrl } from '../constants/urls';
 interface VideoInfo {
     videoId: string;
     module: string;
-    route: string;
-    startAt?: number;
+    routes: string[];
 }
 
 const videoList: VideoInfo[] = [
-    { videoId: 'xNYNXWUgCeA', module: 'Dashboard', route: 'dashboard' },
-    { videoId: 'Ihz4Dm5oiRk', module: 'Worklog Timer', route: '~' },
-    { videoId: 'hJBM5X24sPQ', module: 'Worklog Calendar', route: 'calendar' },
-    { videoId: 'WQOHrPBZZiI', module: 'Worklog report - Sprint wise', route: 'reports/worklog' },
-    { videoId: 'aqEaEAG0r-w', module: 'Pivot report', route: 'reports/pivot' },
-    { videoId: 'TxNH1HQtiX0', module: 'Worklog report', route: 'userdaywise' },
-    { videoId: '6hAOtUm1lUk', module: 'Worklog import', route: 'import/worklog' },
-    { videoId: 'EFgXFqrGuTI', module: 'Issue import', route: 'import/issue' },
-    { videoId: '_4EmxQeA24I', module: 'Report builder', route: 'reports/builder' },
-    { videoId: '07YnBCD_uW4', module: 'Sprint planner', route: 'planning/sprint-planner' },
-    { videoId: 'rlX667Ns5E0', module: 'Program planner', route: 'planning/pi-planner' },
-];
-
-const oldVideoList: VideoInfo[] = [
-    { startAt: 713, videoId: 'f2aBSXzbYuA', module: 'Custom report', route: 'customgrouped' },
-    { startAt: 1069, videoId: 'f2aBSXzbYuA', module: 'Settings', route: 'settings' },
-    { startAt: 1147, videoId: 'f2aBSXzbYuA', module: 'Feedback', route: 'feedback' },
+    { videoId: '8w3r8wLpmpM', module: 'Quick tour of key features', routes: [] },
+    { videoId: 'SE9V1wbMXfQ', module: 'High level overview', routes: [] },
+    { videoId: 'faKqXtHmMt4', module: 'Dashboard', routes: ['dashboard'] },
+    { videoId: 'v5OZ1KXUJdQ', module: 'Worklog Calendar', routes: ['calendar'] },
+    { videoId: 'Ihz4Dm5oiRk', module: 'Worklog Timer', routes: [] },
+    { videoId: 'vPfnd45vKjM', module: 'Bulk import - Worklogs and Issues', routes: ['import/worklog', 'import/issue'] },
+    { videoId: '-ywPqpcy5BI', module: 'Worklog report', routes: ['reports/worklog'] },
+    { videoId: '7Q2oN5kmKMQ', module: 'Time in status and Workload heatmap', routes: ['reports/time-in-status', 'reports/workload-heatmap'] },
+    { videoId: 'aqEaEAG0r-w', module: 'Pivot report', routes: ['reports/pivot'] },
+    { videoId: '_4EmxQeA24I', module: 'Report builder', routes: ['reports/builder'] },
+    { videoId: '07YnBCD_uW4', module: 'Sprint planner', routes: ['planning/sprint-planner'] },
+    { videoId: 'rlX667Ns5E0', module: 'Program planner', routes: ['planning/pi-planner'] },
 ];
 
 interface YoutubeVideoProps {
@@ -48,57 +44,40 @@ const playerPermissions = 'accelerometer; autoplay; clipboard-write; encrypted-m
 
 function getVideoUrl(video: VideoInfo, analytics: Pick<AnalyticsService, 'trackEvent'>, event?: string): string {
     analytics.trackEvent(event || 'Video help viewed', EventCategory.HeaderActions, `Video Help: ${video.module}`);
-    const startAt = String(video.startAt || 0);
 
     if (useRelayPlayer) {
-        return `${JAWebRootUrl}/video-player.html?${new URLSearchParams({ v: video.videoId, start: startAt }).toString()}`;
+        return `${JAWebRootUrl}/video-player.html?${new URLSearchParams({ v: video.videoId }).toString()}`;
     }
 
-    return `https://www.youtube.com/embed/${video.videoId}?${new URLSearchParams({ rel: '0', autoplay: '1', cc_load_policy: '1', start: startAt }).toString()}`;
+    return `https://www.youtube.com/embed/${video.videoId}?${new URLSearchParams({ rel: '0', autoplay: '1', cc_load_policy: '1' }).toString()}`;
 }
 
-function buildVideoList(): VideoInfo[] {
-    const pathname = window.location.pathname;
-    const route = pathname.substring(2);
-    const list = [...videoList];
-
-    let videoDetails = videoList.find((video) => route.includes(video.route));
-
-    if (!videoDetails) {
-        videoDetails = oldVideoList.find((video) => route.includes(video.route));
-        if (!videoDetails) {
-            videoDetails = oldVideoList[0];
-        }
-        list.push(videoDetails);
-    }
-
-    return list;
+function findVideoIndex(pathname: string): number {
+    const route = pathname.replace(/^\/[^/]+\/?/, '');
+    const found = videoList.findIndex((video) => video.routes.some((r) => route === r || route.startsWith(`${r}/`)));
+    return found >= 0 ? found : 0;
 }
 
 export default function YoutubeVideo({ onHide }: YoutubeVideoProps) {
     const { $analytics } = inject('AnalyticsService');
     const overlayRef = useRef<HTMLDivElement>(null);
 
-    const [activeList] = useState<VideoInfo[]>(() => buildVideoList());
-    const [index, setIndex] = useState<number>(() => {
-        const pathname = window.location.pathname;
-        const route = pathname.substring(2);
-        const found = videoList.findIndex((video) => route.includes(video.route));
-        return found >= 0 ? found : 0;
-    });
-    const [url, setUrl] = useState<string>(() => getVideoUrl(activeList[index], $analytics));
+    const { pathname } = useLocation();
+
+    const [index, setIndex] = useState<number>(() => findVideoIndex(pathname));
+    const [url, setUrl] = useState<string>(() => getVideoUrl(videoList[index], $analytics));
     const [showList, setShowList] = useState(false);
 
     useEscapeLayer(true, onHide);
 
     const playAt = useCallback(
         (newIndex: number, event?: string) => {
-            const newUrl = getVideoUrl(activeList[newIndex], $analytics, event);
+            const newUrl = getVideoUrl(videoList[newIndex], $analytics, event);
             setIndex(newIndex);
             setUrl(newUrl);
             setShowList(false);
         },
-        [activeList, $analytics],
+        [$analytics],
     );
 
     const playPrev = useCallback(() => {
@@ -106,8 +85,8 @@ export default function YoutubeVideo({ onHide }: YoutubeVideoProps) {
     }, [index, playAt]);
 
     const playNext = useCallback(() => {
-        if (index + 1 < activeList.length) playAt(index + 1, 'Video view next');
-    }, [index, activeList.length, playAt]);
+        if (index + 1 < videoList.length) playAt(index + 1, 'Video view next');
+    }, [index, playAt]);
 
     const handleOverlayClick = useCallback(
         (e: React.MouseEvent) => {
@@ -119,8 +98,8 @@ export default function YoutubeVideo({ onHide }: YoutubeVideoProps) {
     );
 
     const hasPrev = index > 0;
-    const hasNext = index + 1 < activeList.length;
-    const currentVideo = activeList[index];
+    const hasNext = index + 1 < videoList.length;
+    const currentVideo = videoList[index];
 
     return createPortal(
         <div
@@ -128,7 +107,12 @@ export default function YoutubeVideo({ onHide }: YoutubeVideoProps) {
             className="fixed inset-0 z-9999 flex items-center justify-center bg-black/85 backdrop-blur-sm"
             onClick={handleOverlayClick}
         >
-            <div className="relative flex flex-col w-[95vw] h-[92vh] max-w-400 rounded-xl overflow-hidden shadow-2xl bg-[#0f0f0f]">
+            <div
+                role="dialog"
+                aria-modal="true"
+                aria-label="Help videos"
+                className="relative flex flex-col w-[95vw] h-[92vh] max-w-400 rounded-xl overflow-hidden shadow-2xl bg-[#0f0f0f]"
+            >
                 {/* Header bar */}
                 <div className="flex items-center justify-between px-4 py-2.5 bg-[#1a1a1a] border-b border-white/10 shrink-0">
                     <div className="flex items-center gap-3 min-w-0">
@@ -137,7 +121,7 @@ export default function YoutubeVideo({ onHide }: YoutubeVideoProps) {
                         </span>
                         <span className="text-white font-medium text-sm truncate">{currentVideo?.module}</span>
                         <span className="text-white/40 text-xs shrink-0">
-                            {index + 1} / {activeList.length}
+                            {index + 1} / {videoList.length}
                         </span>
                     </div>
 
@@ -185,7 +169,7 @@ export default function YoutubeVideo({ onHide }: YoutubeVideoProps) {
                             <button
                                 className="absolute left-3 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-black/60 hover:bg-black/85 text-white flex items-center justify-center transition-all hover:scale-110 shadow-lg border border-white/20 z-10"
                                 onClick={playPrev}
-                                title={`Previous: ${activeList[index - 1]?.module}`}
+                                title={`Previous: ${videoList[index - 1]?.module}`}
                             >
                                 <i className="fa fa-chevron-left text-lg" />
                             </button>
@@ -196,7 +180,7 @@ export default function YoutubeVideo({ onHide }: YoutubeVideoProps) {
                             <button
                                 className="absolute right-3 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-black/60 hover:bg-black/85 text-white flex items-center justify-center transition-all hover:scale-110 shadow-lg border border-white/20 z-10"
                                 onClick={playNext}
-                                title={`Next: ${activeList[index + 1]?.module}`}
+                                title={`Next: ${videoList[index + 1]?.module}`}
                             >
                                 <i className="fa fa-chevron-right text-lg" />
                             </button>
@@ -209,7 +193,7 @@ export default function YoutubeVideo({ onHide }: YoutubeVideoProps) {
                             <div className="p-3 text-xs text-white/50 uppercase tracking-wider font-semibold border-b border-white/10">
                                 Help Videos
                             </div>
-                            {activeList.map((video, i) => (
+                            {videoList.map((video, i) => (
                                 <button
                                     key={`${video.videoId}-${i}`}
                                     className={`w-full text-left px-4 py-3 text-sm transition-colors flex items-center gap-3 border-b border-white/5 ${
@@ -243,19 +227,19 @@ export default function YoutubeVideo({ onHide }: YoutubeVideoProps) {
                         disabled={!hasPrev}
                     >
                         <i className="fa fa-chevron-left text-[11px]" />
-                        <span className="hidden sm:inline">{hasPrev ? activeList[index - 1]?.module : 'No previous'}</span>
+                        <span className="hidden sm:inline">{hasPrev ? videoList[index - 1]?.module : 'No previous'}</span>
                     </button>
 
                     {/* Dot indicators */}
                     <div className="flex items-center gap-1.5">
-                        {activeList.map((_, i) => (
+                        {videoList.map((_, i) => (
                             <button
                                 key={i}
                                 className={`rounded-full transition-all ${
                                     i === index ? 'w-4 h-2 bg-red-500' : 'w-2 h-2 bg-white/20 hover:bg-white/40'
                                 }`}
                                 onClick={() => playAt(i, 'Video dot navigation')}
-                                title={activeList[i]?.module}
+                                title={videoList[i]?.module}
                             />
                         ))}
                     </div>
@@ -267,7 +251,7 @@ export default function YoutubeVideo({ onHide }: YoutubeVideoProps) {
                         onClick={playNext}
                         disabled={!hasNext}
                     >
-                        <span className="hidden sm:inline">{hasNext ? activeList[index + 1]?.module : 'No next'}</span>
+                        <span className="hidden sm:inline">{hasNext ? videoList[index + 1]?.module : 'No next'}</span>
                         <i className="fa fa-chevron-right text-[11px]" />
                     </button>
                 </div>

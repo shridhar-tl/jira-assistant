@@ -65,4 +65,16 @@ Jira Assistant is a free software and anyone is free to use it for personal or c
 
 To know about the list of features available in Jira Assistant refer the [features list](docs/FEATURES.md).
 
-You can also watch the [youtube playlist](https://www.youtube.com/watch?list=PLxDBQLgpBhsDGppYrDqARYULukk7XFJPV&v=HsWq7cT3Qq0) with few videos showing how to use individual features.
+You can also watch the [YouTube playlist](https://www.youtube.com/watch?v=SE9V1wbMXfQ&list=PLxDBQLgpBhsDGppYrDqARYULukk7XFJPV) with around 11 videos showing how to use individual features, or jump to a specific video:
+
+- [Quick tour of key features](https://www.youtube.com/watch?v=8w3r8wLpmpM)
+- [High level overview](https://www.youtube.com/watch?v=SE9V1wbMXfQ)
+- [Dashboard](https://www.youtube.com/watch?v=faKqXtHmMt4)
+- [Worklog Calendar](https://www.youtube.com/watch?v=v5OZ1KXUJdQ)
+- [Bulk import of worklogs and issues](https://www.youtube.com/watch?v=vPfnd45vKjM)
+- [Worklog Report](https://www.youtube.com/watch?v=-ywPqpcy5BI)
+- [Time in Status and Workload Heatmap](https://www.youtube.com/watch?v=7Q2oN5kmKMQ)
+- [Pivot Report](https://www.youtube.com/watch?v=aqEaEAG0r-w)
+- [Report Builder](https://www.youtube.com/watch?v=_4EmxQeA24I)
+- [Sprint Planner](https://www.youtube.com/watch?v=07YnBCD_uW4)
+- [Program Planner](https://www.youtube.com/watch?v=rlX667Ns5E0)

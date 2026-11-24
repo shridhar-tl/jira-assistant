@@ -30,3 +30,5 @@ pnpm-lock.yaml
 !.autoqai/*.md
 !.autoqai/testcases/
 .forge/
+
+scripts/jira-seed/*.local.json
