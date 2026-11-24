@@ -24,11 +24,13 @@ const videoList: VideoInfo[] = [
     { videoId: 'Ihz4Dm5oiRk', module: 'Worklog Timer', route: '~' },
     { videoId: 'hJBM5X24sPQ', module: 'Worklog Calendar', route: 'calendar' },
     { videoId: 'WQOHrPBZZiI', module: 'Worklog report - Sprint wise', route: 'reports/worklog' },
-    { videoId: '4hFigSvXatM', module: 'Pivot report - Worklog sample', route: 'reports/pivot' },
+    { videoId: 'aqEaEAG0r-w', module: 'Pivot report', route: 'reports/pivot' },
     { videoId: 'TxNH1HQtiX0', module: 'Worklog report', route: 'userdaywise' },
     { videoId: '6hAOtUm1lUk', module: 'Worklog import', route: 'import/worklog' },
     { videoId: 'EFgXFqrGuTI', module: 'Issue import', route: 'import/issue' },
-    { videoId: 'HMyBkaZ09Xw', module: 'Report builder', route: 'advanced' },
+    { videoId: '_4EmxQeA24I', module: 'Report builder', route: 'reports/builder' },
+    { videoId: '07YnBCD_uW4', module: 'Sprint planner', route: 'planning/sprint-planner' },
+    { videoId: 'rlX667Ns5E0', module: 'Program planner', route: 'planning/pi-planner' },
 ];
 
 const oldVideoList: VideoInfo[] = [

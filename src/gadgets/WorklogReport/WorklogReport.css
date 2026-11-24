@@ -47,9 +47,11 @@
 
         td.col-holiday,
         tr.col-holiday {
-            background-image:
-                linear-gradient(to top right, transparent calc(50% - 1px), #e4e5e6, transparent calc(50% + 1px)),
-                linear-gradient(to bottom right, transparent calc(50% - 1px), #e4e5e6, transparent calc(50% + 1px));
+            --holiday-tint: color-mix(in srgb, var(--text-primary) 3%, transparent);
+            --holiday-stripe: color-mix(in srgb, var(--text-primary) 6%, transparent);
+
+            background-color: var(--holiday-tint);
+            background-image: repeating-linear-gradient(-45deg, var(--holiday-stripe) 0 1px, transparent 1px 6px);
         }
 
         tr.closed .strike,

@@ -1,6 +1,7 @@
 title,content
 "Jira Assistant high-level overview and complete list of features and modules","Jira Assistant (JA) is a free productivity tool for Jira users that helps with worklog tracking, time tracking and rich reporting. It works as a browser extension, a hosted web app, and an app installed inside Jira Cloud. Jira Assistant supports Jira Cloud, Server and Data Center.
 Main modules in Jira Assistant: Dashboard with gadgets, Worklog Calendar, Worklog Timer (time tracker), Planning Poker, Bulk Import of issues and worklogs, User Groups, and Settings.
+Planning modules: Sprint Planner (capacity, leave, forecast and roadmap for one team's sprints; every build) and Program Planner (PI / quarter planning across teams grouped into programs or ARTs, with objectives, team dependencies, risks and summaries; Jira Cloud app only, not in the browser extension, web app or desktop app).
 Reports available in Jira Assistant: Worklog (Time sheet) Report, Sprint Report, Estimate vs Actual Report, Say-Do-Ratio Report, Pivot Report, and Custom Report.
 Other capabilities: build your own gadgets and reports with Custom Report and Report Builder, export any grid to CSV/Excel/PDF, integrate with Outlook calendar to auto-generate meeting worklogs, group users for reporting, and integrate/switch between multiple Jira instances.
 Jira Assistant is available for Chrome, Firefox, Edge and Opera, plus a web version usable in any browser, and a Jira Cloud app."

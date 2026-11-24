@@ -1,7 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
 
-import { NavLink } from 'react-router';
-
 import { Dialog } from '@dialogs';
 import classNames from 'classnames';
 
@@ -22,22 +20,22 @@ import HeaderRight from './HeaderRight';
 import TimerControl from './TimerControl';
 import UpdatesInfo from './UpdatesInfo';
 
-const contributeEnabled = !!config.modules.contribute;
+const navToggleIcon = <i className="fa fa-bars text-base" />;
 
 interface DefaultHeaderProps {
     onLogout: (e: React.MouseEvent) => void;
     isQuickView?: boolean;
     menus?: MenuSection[];
+    onNavToggle?: () => void;
 }
 
-export default function DefaultHeader({ onLogout, isQuickView, menus }: DefaultHeaderProps) {
+export default function DefaultHeader({ onLogout, isQuickView, menus, onNavToggle }: DefaultHeaderProps) {
     const { $session, $noti, $settings } = inject('SessionService', 'NotificationService', 'SettingsService');
 
     const cUser = $session.CurrentUser;
     const userId = cUser?.userId ?? 0;
     const disableNotification = !config.features?.header?.devUpdates || !!cUser?.disableDevNotification;
     const disableJiraUpdates = config.features?.header?.jiraUpdates === false || !!cUser?.disableJiraUpdates;
-    const showDonateButton = contributeEnabled && !cUser?.hideDonateMenu;
     const versionNumber = isWebBuild ? 'WEB' : `v ${AppVersionNo}`;
 
     const [notifications, setNotifications] = useState<any>(null);
@@ -52,14 +50,10 @@ export default function DefaultHeader({ onLogout, isQuickView, menus }: DefaultH
     }, [disableNotification, $noti]);
 
     useEffect(() => {
-        if (cUser?.hideDonateMenu) {
-            document.body.classList.add('no-donation');
-        }
-
         if (userId) {
             validateTimezone($session, $settings, userId);
         }
-    }, [cUser, $session, $settings, userId]);
+    }, [$session, $settings, userId]);
 
     const showVersionInfo = useCallback(
         (e: React.MouseEvent) => {
@@ -80,22 +74,18 @@ export default function DefaultHeader({ onLogout, isQuickView, menus }: DefaultH
     return (
         <header className="fixed top-0 left-0 right-0 h-12 z-50 flex items-center justify-between px-4 bg-(--header-bg) border-b border-(--header-border) shadow-(--header-shadow)">
             <div className={classNames('flex items-center gap-3', { 'min-w-0 flex-1': !!menus })}>
-                <HeaderBrand showVersionInfo={showVersionInfo} versionNumber={versionNumber} />
-
-                {showDonateButton && (
-                    <NavLink
-                        to={`/${userId}/contribute`}
-                        className="btn-donate hidden md:inline-flex items-center"
-                        title="Would you like to contribute / compensate us for the effort we put in development of this tool? Click to know more"
-                    >
-                        <img
-                            src="/assets/donate.png"
-                            width="130"
-                            className="opacity-90 hover:opacity-100 transition-opacity"
-                            alt="Donate us"
-                        />
-                    </NavLink>
+                {onNavToggle && (
+                    <Button
+                        layout="plain"
+                        size="sm"
+                        leftIcon={navToggleIcon}
+                        onClick={onNavToggle}
+                        ariaLabel="Open navigation menu"
+                        title="Menu"
+                        className="-ml-2 -mr-1 cursor-pointer"
+                    />
                 )}
+                <HeaderBrand showVersionInfo={showVersionInfo} versionNumber={versionNumber} />
 
                 {menus && <HeaderMenu menus={menus} />}
             </div>

@@ -22,3 +22,4 @@ export function useMediaQuery(query: string): boolean {
 }
 
 export const phoneMediaQuery = '(max-width: 639px)';
+export const desktopMediaQuery = '(min-width: 1024px)';

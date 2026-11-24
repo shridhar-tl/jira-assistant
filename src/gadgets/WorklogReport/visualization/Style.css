@@ -3,6 +3,17 @@
     --viz-project: #6250d6;
     --viz-issue-type: #1baf7a;
     --viz-status: #eb6834;
+    --viz-parent: #0e9fb5;
+    --viz-custom: #c0479a;
+    --viz-target: #16a34a;
+    --viz-estimate: #dc2626;
+    --viz-hygiene: #d97706;
+    --viz-delay-advance: #8b5cf6;
+    --viz-delay-good: #16a34a;
+    --viz-delay-ok: #65a30d;
+    --viz-delay-warn: #ca8a04;
+    --viz-delay-late: #ea580c;
+    --viz-delay-bad: #dc2626;
     --viz-others: #94a3b8;
     --viz-track: #e2e8f0;
 }
@@ -12,6 +23,17 @@
     --viz-project: #9085e9;
     --viz-issue-type: #199e70;
     --viz-status: #d95926;
+    --viz-parent: #22b3c9;
+    --viz-custom: #d466b0;
+    --viz-target: #22c55e;
+    --viz-estimate: #f87171;
+    --viz-hygiene: #f59e0b;
+    --viz-delay-advance: #a78bfa;
+    --viz-delay-good: #22c55e;
+    --viz-delay-ok: #84cc16;
+    --viz-delay-warn: #eab308;
+    --viz-delay-late: #f97316;
+    --viz-delay-bad: #f87171;
     --viz-others: #64748b;
     --viz-track: #334155;
 }

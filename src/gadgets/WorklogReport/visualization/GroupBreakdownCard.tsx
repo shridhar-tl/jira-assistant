@@ -4,24 +4,35 @@ import classNames from 'classnames';
 
 import { getDimensionsForGroup, getGroupTotals, pluralize } from './breakdown-utils';
 import BreakdownPanel from './BreakdownPanel';
-import type { VisualizationWorklog } from './types';
+import EstimatePanel from './EstimatePanel';
+import HygienePanel from './HygienePanel';
+import LoggingDelayPanel from './LoggingDelayPanel';
+import TargetPanel from './TargetPanel';
+import type { BreakdownDimension, DailyTarget, GroupTarget, VisualizationWorklog } from './types';
 
 interface GroupBreakdownCardProps {
     title: string;
     worklogs: VisualizationWorklog[];
     reportUserGrp?: string;
+    fieldDimensions: BreakdownDimension[];
+    target?: GroupTarget | null;
+    daily: DailyTarget;
+    showEstimates: boolean;
+    includeEpic: boolean;
     formatTime: (secs: number) => string;
 }
 
-function GroupBreakdownCard({ title, worklogs, reportUserGrp, formatTime }: GroupBreakdownCardProps) {
+function GroupBreakdownCard({ title, worklogs, reportUserGrp, fieldDimensions, target, daily, showEstimates, includeEpic, formatTime }: GroupBreakdownCardProps) {
     const totals = useMemo(() => getGroupTotals(worklogs), [worklogs]);
-    const dimensions = useMemo(() => getDimensionsForGroup(reportUserGrp), [reportUserGrp]);
+    const dimensions = useMemo(() => getDimensionsForGroup(fieldDimensions, reportUserGrp), [fieldDimensions, reportUserGrp]);
 
     const stats = [
         pluralize(totals.issueCount, 'issue'),
         pluralize(totals.worklogCount, 'worklog'),
         pluralize(totals.userCount, 'user'),
     ];
+
+    const showTarget = !!target?.workingDays && target.users.length > 0;
 
     return (
         <article className="group-wise-charts @container rounded-xl border border-(--border-primary) bg-(--bg-primary) p-3 shadow-sm sm:p-5">
@@ -39,9 +50,15 @@ function GroupBreakdownCard({ title, worklogs, reportUserGrp, formatTime }: Grou
                     <span className="group-total text-xl font-semibold text-(--text-primary) tabular-nums">{formatTime(totals.timeSpent)}</span>
                 </div>
             </header>
-            <div className={classNames('grid grid-cols-1 gap-3 @2xl:grid-cols-2', dimensions.length > 3 ? '@7xl:grid-cols-4' : '@5xl:grid-cols-3')}>
+            <div className="group-insights mb-3 grid grid-cols-1 gap-3 @2xl:grid-cols-2">
+                {showTarget && <TargetPanel target={target} daily={daily} formatTime={formatTime} />}
+                {showEstimates && <EstimatePanel worklogs={worklogs} totalTimeSpent={totals.timeSpent} formatTime={formatTime} />}
+                <LoggingDelayPanel worklogs={worklogs} totalTimeSpent={totals.timeSpent} formatTime={formatTime} />
+                <HygienePanel worklogs={worklogs} totalTimeSpent={totals.timeSpent} includeEpic={includeEpic} formatTime={formatTime} />
+            </div>
+            <div className={classNames('group-breakdowns grid grid-cols-1 gap-3 @2xl:grid-cols-2', dimensions.length > 3 ? '@7xl:grid-cols-4' : '@5xl:grid-cols-3')}>
                 {dimensions.map((d) => (
-                    <BreakdownPanel key={d.field} dimension={d} worklogs={worklogs} totalTimeSpent={totals.timeSpent} formatTime={formatTime} />
+                    <BreakdownPanel key={d.key} dimension={d} worklogs={worklogs} totalTimeSpent={totals.timeSpent} formatTime={formatTime} />
                 ))}
             </div>
         </article>

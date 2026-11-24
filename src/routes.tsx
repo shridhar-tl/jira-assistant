@@ -45,7 +45,6 @@ const PokerComponent = hasPokerRoute && config.modules.planningPoker && React.la
 
 // Other
 const FeedbackViewComponent = config.modules.contactUs && React.lazy(() => import('./pages/feedback/FeedbackPage'));
-const ContributeComponent = config.modules.contribute && React.lazy(() => import('./pages/contribute/ContributePage'));
 
 interface RouteItem {
     path: string;
@@ -161,10 +160,6 @@ const sessionBasedRoute: RouteItem[] = [
     GlobalSettings && {
         path: '/settings/global',
         component: GlobalSettings,
-    },
-    ContributeComponent && {
-        path: '/contribute',
-        component: ContributeComponent,
     },
     FeedbackViewComponent && {
         path: '/contact-us',

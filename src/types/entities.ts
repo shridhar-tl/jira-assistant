@@ -30,8 +30,6 @@ export interface SessionUser {
     profileUrl: string;
     feedbackUrl: string;
     isAtlasCloud: boolean;
-    noDonations?: boolean;
-    hideDonateMenu?: boolean;
     allowClosedTickets?: boolean;
     autoUpload?: boolean;
     worklogMergeMode?: WorklogMergeMode;

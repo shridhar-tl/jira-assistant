@@ -20,7 +20,6 @@ export default function GeneralSettings() {
     const { $settings, $session } = inject('SettingsService', 'SessionService');
 
     const userId = $session.userId;
-    const noDonations = ($session.CurrentUser as any)?.noDonations;
     const isAtlasCloud = ($session.CurrentUser as any)?.isAtlasCloud;
     const isExtnConnected = isWebBuild ? localStorage.getItem('authType') === '1' : false;
     const showMenuOptionsTab = (!isWebBuild || isExtnConnected) && !isPluginBuild;
@@ -79,7 +78,7 @@ export default function GeneralSettings() {
                     <TabView activeIndex={activeTab} onTabChange={(e) => setActiveTab(e.index)}>
                         <TabPage header="General">
                             <div className="p-4">
-                                <GeneralTab settings={settings} userId={userId!} noDonations={noDonations} onSave={saveSetting} />
+                                <GeneralTab settings={settings} onSave={saveSetting} />
                             </div>
                         </TabPage>
                         <TabPage header="Time Tracker">

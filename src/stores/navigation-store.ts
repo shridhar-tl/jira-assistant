@@ -1,13 +1,13 @@
 import { create } from 'zustand';
 
 interface NavigationState {
-    isSidebarOpen: boolean;
+    isNavDrawerOpen: boolean;
     isSidebarCollapsed: boolean;
     currentPath: string;
     integrationId?: number;
 
-    toggleSidebar: () => void;
-    setSidebarOpen: (open: boolean) => void;
+    toggleNavDrawer: () => void;
+    setNavDrawerOpen: (open: boolean) => void;
     toggleSidebarCollapse: () => void;
     setSidebarCollapsed: (collapsed: boolean) => void;
     setCurrentPath: (path: string) => void;
@@ -15,13 +15,13 @@ interface NavigationState {
 }
 
 export const useNavigationStore = create<NavigationState>((set) => ({
-    isSidebarOpen: true,
+    isNavDrawerOpen: false,
     isSidebarCollapsed: false,
     currentPath: '/',
     integrationId: undefined,
 
-    toggleSidebar: () => set((state) => ({ isSidebarOpen: !state.isSidebarOpen })),
-    setSidebarOpen: (open) => set({ isSidebarOpen: open }),
+    toggleNavDrawer: () => set((state) => ({ isNavDrawerOpen: !state.isNavDrawerOpen })),
+    setNavDrawerOpen: (open) => set({ isNavDrawerOpen: open }),
     toggleSidebarCollapse: () => set((state) => ({ isSidebarCollapsed: !state.isSidebarCollapsed })),
     setSidebarCollapsed: (collapsed) => set({ isSidebarCollapsed: collapsed }),
     setCurrentPath: (path) => set({ currentPath: path }),

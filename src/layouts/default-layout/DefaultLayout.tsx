@@ -7,6 +7,7 @@ import classNames from 'classnames';
 import defaultNavigation, { getDashboardMenu, type MenuItem, type MenuSection } from '@/_nav';
 import { ContextMenuProvider } from '@/components/shared/ContextMenu';
 import { isPluginBuild, isQuickView, isWebBuild, redirectToRoute } from '@/constants/build-info';
+import { desktopMediaQuery, useMediaQuery } from '@/hooks';
 import { useWorklogStore } from '@/stores/worklog-store';
 
 import { inject } from '@services';
@@ -15,13 +16,15 @@ import { useNavigationStore } from '@stores';
 
 import AppContent from './AppContent';
 import DefaultHeader from './DefaultHeader';
+import MobileNavDrawer from './MobileNavDrawer';
 import NavSideBar from './NavSideBar';
 
 const showHeaderMenu = isPluginBuild;
 
 export default function DefaultLayout() {
     const navigate = useNavigate();
-    const { isSidebarCollapsed } = useNavigationStore();
+    const { isSidebarCollapsed, toggleNavDrawer } = useNavigationStore();
+    const isDesktop = useMediaQuery(desktopMediaQuery);
     const { loadTracker } = useWorklogStore();
     const [, forceUpdate] = useState(0);
 
@@ -96,16 +99,24 @@ export default function DefaultLayout() {
         return items;
     }, [userId, dashboards]);
 
-    const showSidebar = !isQuickView && !showHeaderMenu;
+    const showNavigation = !isQuickView && !showHeaderMenu;
+    const showSidebar = showNavigation && isDesktop;
+    const showNavDrawer = showNavigation && !isDesktop;
     const sidebarWidth = isSidebarCollapsed ? '3.5rem' : '220px';
 
     return (
         <ContextMenuProvider>
             <div className={classNames('app bg-(--bg-secondary)', isQuickView ? 'w-[720px] h-[500px] overflow-hidden' : 'min-h-screen')}>
-                <DefaultHeader onLogout={signOut} isQuickView={isQuickView} menus={showHeaderMenu ? menus : undefined} />
+                <DefaultHeader
+                    onLogout={signOut}
+                    isQuickView={isQuickView}
+                    menus={showHeaderMenu ? menus : undefined}
+                    onNavToggle={showNavDrawer ? toggleNavDrawer : undefined}
+                />
 
                 <div className={classNames('pt-12 flex', isQuickView ? 'h-full' : 'min-h-screen')}>
                     {showSidebar && <NavSideBar menus={menus} userId={userId} />}
+                    {showNavDrawer && <MobileNavDrawer menus={menus} userId={userId} />}
 
                     <main
                         className={classNames('flex-1 min-w-0 transition-all duration-300', !isQuickView && 'min-h-[calc(100vh-3rem)]')}

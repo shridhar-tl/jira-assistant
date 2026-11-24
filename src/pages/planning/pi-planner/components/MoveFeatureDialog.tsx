@@ -34,9 +34,21 @@ interface MoveFeatureDialogProps {
  * Moves the not-done stories of a feature that belong to the target team into the team's sprint of the target column,
  * after a preview where stories can be left out. A feature without stories there is planned with a rough estimate instead (PI-2).
  */
+function defaultBoardId(target: MoveTarget, model: ProgramModel, data: PiData): number | null {
+    if (target.boardId) {
+        return target.boardId;
+    }
+    const openTeams = new Set(
+        Object.values(data.stories)
+            .filter((s) => (s.epicKey || s.parentKey) === target.featureKey && s.statusCategory !== 'done')
+            .map((s) => model.storyTeam.get(s.key)),
+    );
+    return (model.rows.find((r) => openTeams.has(r.team.boardId)) ?? model.rows[0])?.team.boardId ?? null;
+}
+
 export default function MoveFeatureDialog({ target, model, data, terms, onHide }: MoveFeatureDialogProps) {
     const feature = data.features[target.featureKey];
-    const [boardId, setBoardId] = useState<number | null>(target.boardId ?? model.rows[0]?.team.boardId ?? null);
+    const [boardId, setBoardId] = useState<number | null>(() => defaultBoardId(target, model, data));
     const row = model.rows.find((r) => r.team.boardId === boardId);
     const [columnId, setColumnId] = useState<string | null>(target.columnId ?? row?.columns[0]?.id ?? null);
     const columnSprints = row && columnId ? row.loads[columnId]?.sprints || [] : [];

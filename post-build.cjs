@@ -205,7 +205,7 @@ function cleanupForPlugin(printLogs) {
     const assetsDir = resolveBuildPath('assets');
     if (fs.existsSync(assetsDir)) {
         fs.readdirSync(assetsDir).forEach((file) => {
-            if (/^(icon_|donate)/i.test(file)) {
+            if (/^icon_/i.test(file)) {
                 safeUnlink(path.join(assetsDir, file));
             }
         });

@@ -47,11 +47,6 @@ body,
     }
 }
 
-/* Hiding the donate button in General settings takes effect at once, before the header renders again. */
-body.no-donation .btn-donate {
-    display: none !important;
-}
-
 body.quick-view {
     min-width: 400px;
 }
@@ -266,6 +261,24 @@ body:not(.mode-dark) {
 .jira-sidebar-footer {
     border-top: 1px solid var(--sidebar-border);
     color: var(--sidebar-text-muted);
+}
+
+.eui-drawer.jira-nav-drawer {
+    background-color: var(--sidebar-bg);
+    border-right: none;
+}
+
+.jira-nav-drawer .eui-drawer-header {
+    height: 3rem;
+    padding: 0 0.75rem 0 1rem;
+    border-bottom-color: var(--sidebar-border);
+}
+
+.jira-nav-drawer .eui-drawer-body {
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    overflow: hidden;
 }
 
 ::-webkit-scrollbar {

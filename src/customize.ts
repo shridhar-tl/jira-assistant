@@ -25,7 +25,6 @@ const config = {
         advancedSettings: true,
 
         contactUs: !isPluginBuild,
-        contribute: !isPluginBuild,
     },
     features: {
         header: {

@@ -5,7 +5,6 @@ import type { AppSetting } from '@types';
 
 import { SystemUserId } from '../constants/common';
 import { SettingsCategory } from '../constants/settings';
-import config from '../customize';
 
 import type StorageService from './storage-service';
 
@@ -116,15 +115,6 @@ export default class UserService {
 
         if (currentUser.apiUrl) {
             sessionUser.apiUrl = currentUser.apiUrl;
-        }
-
-        const jiraUrlLower = currentUser.jiraUrl.toLowerCase();
-
-        if (jiraUrlLower.indexOf('pearson') >= 0 || jiraUrlLower.indexOf('emoneyadv') >= 0 || config.modules.contribute === false) {
-            sessionUser.noDonations = true;
-            sessionUser.hideDonateMenu = true;
-        } else {
-            delete sessionUser.noDonations;
         }
 
         return sessionUser;

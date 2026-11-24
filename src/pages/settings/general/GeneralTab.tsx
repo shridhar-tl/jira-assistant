@@ -4,11 +4,9 @@ import { WeekDaysSelector } from '@/controls';
 
 import { inject } from '@services';
 
-import { Checkbox, Dropdown, MaskedInput } from '@components';
+import { Dropdown, MaskedInput } from '@components';
 
 import { setStartOfWeek } from '@utils/helpers';
-
-import { isWebBuild } from '@constants';
 
 import { dateFormats, timeFormats } from '@constants/settings';
 
@@ -26,40 +24,26 @@ const weekDaysArray = [
 
 interface GeneralTabProps {
     settings: Record<string, any>;
-    userId: number;
-    noDonations?: boolean;
     onSave: (value: any, field: string) => void;
 }
 
-export default function GeneralTab({ settings, userId, noDonations, onSave }: GeneralTabProps) {
-    const { $utils, $session } = inject('UtilsService', 'SessionService');
+export default function GeneralTab({ settings, onSave }: GeneralTabProps) {
+    const { $utils } = inject('UtilsService');
 
     const dateFormatOptions = useMemo(() => {
         const curDate = new Date();
         return dateFormats.map((f) => ({ format: f, text: $utils.formatDate(curDate, f) }));
-    }, []);
+    }, [$utils]);
 
     const timeFormatOptions = useMemo(() => {
         const curDate = new Date();
         return timeFormats.map((f) => ({ format: f, text: $utils.formatDate(curDate, f) }));
-    }, []);
+    }, [$utils]);
 
     const handleStartOfWeek = (value: number, field: string) => {
         const numValue = parseInt(value as any);
         onSave(numValue, field);
         setStartOfWeek(numValue);
-    };
-
-    const handleDonateMenu = (value: boolean, field: string) => {
-        const cUser = $session.CurrentUser;
-        cUser.hideDonateMenu = noDonations || value;
-        onSave(value, field);
-
-        if (cUser.hideDonateMenu) {
-            document.body.classList.add('no-donation');
-        } else {
-            document.body.classList.remove('no-donation');
-        }
     };
 
     return (
@@ -161,31 +145,6 @@ export default function GeneralTab({ settings, userId, noDonations, onSave }: Ge
                     onChange={(e) => handleStartOfWeek(e.value, 'startOfWeek')}
                 />
             </div>
-
-            {!noDonations && (
-                <div className="pt-5">
-                    <div className="text-sm font-semibold text-(--text-primary) mb-1">Donate / Contribute</div>
-                    <p className="text-xs text-(--text-secondary) mb-3">
-                        Consider supporting the development of this tool before hiding the donate option
-                    </p>
-                    <div className="space-y-3">
-                        <Checkbox
-                            checked={settings.hideDonateMenu}
-                            onChange={(e) => handleDonateMenu(e.value, 'hideDonateMenu')}
-                            label="Hide Donate button in header"
-                        />
-                        <div>
-                            <a
-                                href={isWebBuild ? `/${userId}/contribute` : `/index.html#/${userId}/contribute`}
-                                title="Would you like to contribute / compensate us for the effort we put in development of this tool? Click to know more"
-                                className="inline-block hover:opacity-80 transition-opacity"
-                            >
-                                <img src="/assets/donate.png" width={145} alt="Donate us" />
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            )}
         </div>
     );
 }

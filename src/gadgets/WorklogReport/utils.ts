@@ -13,7 +13,7 @@ function getUserName(user: any, includeEmail?: boolean): string {
 }
 
 export function getFieldsToFetch(state: any, epicNameField?: string, options?: any) {
-    const fieldsToFetch = ['summary', 'worklog', 'issuetype', 'parent', 'project', 'status', 'assignee', 'reporter'];
+    const fieldsToFetch = ['summary', 'worklog', 'issuetype', 'parent', 'project', 'status', 'assignee', 'reporter', 'resolutiondate'];
 
     if (state) {
         const hideEstimate = state.fields.hideEstimate;
