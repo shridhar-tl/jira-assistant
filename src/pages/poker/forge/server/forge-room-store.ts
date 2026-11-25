@@ -93,6 +93,7 @@ interface ParticipantEntity extends Entity {
     votedIssueIds?: string[];
     requestId?: string;
     reason?: string;
+    restrictedIssueKeys?: string[];
     invitedBy?: string;
     ver: number;
 }
@@ -920,6 +921,7 @@ export function createForgePokerAdapter(options: ForgeStoreOptions): ForgePokerA
                     createdAt: request.createdAt,
                     createdMs: Date.parse(request.createdAt),
                     requestId: request.requestId,
+                    restrictedIssueKeys: request.restrictedIssueKeys?.length ? request.restrictedIssueKeys : undefined,
                     ver: (existing?.ver ?? 0) + 1,
                 });
                 try {
@@ -1012,6 +1014,7 @@ export function createForgePokerAdapter(options: ForgeStoreOptions): ForgePokerA
             status: entity.status === participantStatus.requested ? 'pending' : (entity.status as JoinRequestRecord['status']),
             createdAt: entity.createdAt,
             reason: entity.reason,
+            restrictedIssueKeys: entity.restrictedIssueKeys,
         }) as JoinRequestRecord;
     }
 

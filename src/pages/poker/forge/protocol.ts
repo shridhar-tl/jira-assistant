@@ -30,6 +30,7 @@ export interface WireEvent {
     id?: string;
     revision?: number;
     forSid?: string;
+    redacted?: boolean;
     exceptSid?: string;
 }
 

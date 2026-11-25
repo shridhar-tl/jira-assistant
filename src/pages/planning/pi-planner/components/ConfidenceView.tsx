@@ -54,7 +54,7 @@ export default function ConfidenceView({ doc, terms, canEdit }: ConfidenceViewPr
                             <Dropdown options={groups.map((g) => ({ label: g.name, value: g.id ? String(g.id) : programValue }))} value={team} onChange={(e) => setTeam(e.value as string)} />
                         </Field>
                         <Field label="Note" className="min-w-40 flex-1">
-                            <TextInput value={note} onChange={(e) => setNote(e.value)} placeholder="Optional" />
+                            <TextInput value={note} onChange={(e) => setNote(e.value)} maxLength={2000} placeholder="Optional" />
                         </Field>
                         <div className="flex gap-1" role="group" aria-label="Vote">
                             {votes.map((v) => (
@@ -100,7 +100,7 @@ export default function ConfidenceView({ doc, terms, canEdit }: ConfidenceViewPr
                 {canEdit && (
                     <div className="flex flex-wrap items-end gap-2">
                         <Field label="Event" className="min-w-40 flex-1">
-                            <TextInput value={milestoneTitle} onChange={(e) => setMilestoneTitle(e.value)} placeholder="Planning day, demo, code freeze" />
+                            <TextInput value={milestoneTitle} onChange={(e) => setMilestoneTitle(e.value)} maxLength={200} placeholder="Planning day, demo, code freeze" />
                         </Field>
                         <Field label="Date">
                             <DateTimePicker value={milestoneDate} onChange={setMilestoneDate} />

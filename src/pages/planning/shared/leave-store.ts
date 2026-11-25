@@ -5,6 +5,8 @@ import { addDaysToKey, getLeaveRetentionStart, isSameLeaveSet, maxLeaveEntriesPe
 import { ensureStorageAllowed } from './storage-consent';
 import type { LeaveEntry } from './types';
 
+export const leaveNeedsBoardAdmin = true;
+
 export interface LeaveChange {
     upsert: LeaveEntry[];
     remove: LeaveEntry[];

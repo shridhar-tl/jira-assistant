@@ -30,7 +30,7 @@ export async function onSprintAction(event: SprintEvent): Promise<void> {
     const handler = eventsHandlerMap[event.eventType];
 
     if (handler) {
-        handler(event);
+        await handler(event);
     } else {
         console.error('Unhandled event type received:', event.eventType);
     }

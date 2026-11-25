@@ -44,12 +44,14 @@ export function loadPlans(): Promise<void> {
     }
     usePiStore.setState({ isListLoading: true, listError: null });
     listRequest = listPlans()
-        .then(({ arts, plans, settings, canEdit }) => {
+        .then(({ arts, plans, settings, canEdit, hiddenPlans, hiddenArts }) => {
             usePiStore.setState({
                 arts: [...arts].sort((a, b) => a.name.localeCompare(b.name)),
                 plans: [...plans].sort((a, b) => b.startDate.localeCompare(a.startDate)),
                 settings,
                 canEdit,
+                hiddenPlans: hiddenPlans || 0,
+                hiddenArts: hiddenArts || 0,
                 isListLoading: false,
             });
         })

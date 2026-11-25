@@ -17,6 +17,7 @@ import {
     type ResolvedCalendarEntry,
 } from '@components';
 
+import { leaveNeedsBoardAdmin } from '../../../shared/leave-store';
 import { parseDateKey, toDateKey } from '../../../shared/segments';
 import type { LeaveEntry } from '../../../shared/types';
 import { loadLeaveRange, refreshCalendars, removeManualLeave, saveManualLeave } from '../../actions';
@@ -75,7 +76,7 @@ const renderEntry: CalendarEntryRenderer = (entry) => {
 export default function LeaveCalendarView({ model }: LeaveCalendarViewProps) {
     const { data } = model;
     const { members, team, leave } = data;
-    const readOnly = !!usePlannerStore((s) => s.teamReadOnlyReason);
+    const readOnly = !!usePlannerStore((s) => s.teamReadOnlyReason) && leaveNeedsBoardAdmin;
     const isPhone = useMediaQuery(phoneMediaQuery);
     const [range, setRange] = useState<LeaveRange | null>(null);
     const [entries, setEntries] = useState<LeaveEntry[]>([]);

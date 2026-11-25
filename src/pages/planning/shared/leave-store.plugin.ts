@@ -9,6 +9,8 @@ async function call<T>(functionKey: string, payload: Record<string, unknown>): P
     return (await invoke<T>(functionKey, payload)) as T;
 }
 
+export const leaveNeedsBoardAdmin = false;
+
 export interface LeaveChange {
     upsert: LeaveEntry[];
     remove: LeaveEntry[];

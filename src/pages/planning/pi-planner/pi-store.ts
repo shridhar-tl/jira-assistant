@@ -10,6 +10,8 @@ export interface PiState {
     plans: PiSummary[];
     settings: PiProgramSettings | null;
     canEdit: boolean;
+    hiddenPlans: number;
+    hiddenArts: number;
     isListLoading: boolean;
     listError: string | null;
     doc: PiDocument | null;
@@ -26,6 +28,8 @@ export const usePiStore = create<PiState>(() => ({
     plans: [],
     settings: null,
     canEdit: false,
+    hiddenPlans: 0,
+    hiddenArts: 0,
     isListLoading: false,
     listError: null,
     doc: null,

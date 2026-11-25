@@ -10,6 +10,7 @@ import { Dropdown, SelectButton } from '@components';
 import type { SprintCapacity } from '../../../shared/capacity';
 import { getDisplayUnit, getUnitLabel } from '../../../shared/format';
 import { buildPlannerHeatmapModel } from '../../../shared/heatmap-adapter';
+import { leaveNeedsBoardAdmin } from '../../../shared/leave-store';
 import { buildPeriods, computePeriodCapacity, type PeriodMode } from '../../../shared/period-capacity';
 import { computePersonLoads } from '../../../shared/person-load';
 import type { PlannerSprint } from '../../../shared/types';
@@ -116,7 +117,7 @@ export default function CapacityView({ model }: CapacityViewProps) {
 
             <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
                 {!isKanban && <VelocityPanel team={data.team} velocity={velocity} unitLabel={getUnitLabel(data.estimateUnit)} readOnly={teamReadOnly} />}
-                <LeavePanel data={data} readOnly={teamReadOnly} />
+                <LeavePanel data={data} readOnly={teamReadOnly && leaveNeedsBoardAdmin} />
             </div>
         </div>
     );

@@ -8,6 +8,7 @@ import { createForgeEntityGateway } from './entity-gateway';
 import { createForgePokerAdapter } from './forge-room-store';
 import { createPokerHandlers, type PokerCallContext } from './handlers';
 import { createRealtimePublisher, type RealtimeApi } from './realtime-publisher';
+import { createUsageLimiter } from './usage-limits';
 
 const forgeRealtimeApi: RealtimeApi = {
     async publish(channel, payload, options) {
@@ -24,7 +25,7 @@ const forgeRealtimeApi: RealtimeApi = {
 export function registerPokerResolvers(resolver: Resolver): void {
     const adapter = createForgePokerAdapter({ gateway: createForgeEntityGateway() });
     const publisher = createRealtimePublisher({ api: forgeRealtimeApi });
-    const handlers = createPokerHandlers({ adapter, publisher });
+    const handlers = createPokerHandlers({ adapter, publisher, limiter: createUsageLimiter() });
 
     resolver.define(pokerResolverFunction, (req) => handlers.handle(req.payload as PokerRequest, req.context as PokerCallContext));
 

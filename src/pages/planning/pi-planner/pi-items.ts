@@ -19,7 +19,8 @@ const acceptanceStatuses: readonly AcceptanceStatus[] = ['pending', 'accepted', 
 const roamStatuses: readonly RoamStatus[] = ['open', 'resolved', 'owned', 'accepted', 'mitigated'];
 const dateKeyPattern = /^\d{4}-\d{2}-\d{2}$/;
 const issueKeyPattern = /^[A-Z][A-Z0-9_]*-\d+$/;
-const itemIdPattern = /^[A-Za-z0-9-]{1,60}$/;
+export const itemIdPattern = /^[A-Za-z0-9-]{1,60}$/;
+export const maxLinkedIssueKeys = 50;
 
 type StoredRisk = Partial<PiRisk> & Pick<PiRisk, 'id' | 'title'>;
 
@@ -157,7 +158,7 @@ export function applyDependencyResponse(dependency: PiTeamDependency, response: 
         status: response.status,
         committedDate: response.status === 'committed' || response.status === 'delivered' ? response.committedDate : null,
         responseNote: response.responseNote.slice(0, 2000),
-        providerKeys: [...new Set(response.providerKeys)].slice(0, 50),
+        providerKeys: [...new Set(response.providerKeys)].slice(0, maxLinkedIssueKeys),
         respondedBy: by,
         respondedAt: at,
     };

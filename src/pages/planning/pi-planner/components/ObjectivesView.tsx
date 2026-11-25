@@ -95,7 +95,7 @@ function ObjectiveDialog({ objective, doc, terms, issues, progress, onHide }: Ob
         <Modal isOpen onClose={onHide} title={objective ? `Edit ${lowerTerm(terms.objective)}` : `New ${lowerTerm(terms.objective)}`} size="lg" footer={footer}>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <Field label={terms.objective} className="sm:col-span-2">
-                    <TextArea value={text} onChange={(e) => setText(e.value)} rows={3} autoFocus />
+                    <TextArea value={text} onChange={(e) => setText(e.value)} rows={3} maxLength={2000} autoFocus />
                 </Field>
                 <Field label={terms.team}>
                     <Dropdown options={[{ label: terms.program, value: programValue }, ...doc.teams.map((t) => ({ label: t.name, value: String(t.boardId) }))]} value={team} onChange={(e) => setTeam(e.value as string)} />

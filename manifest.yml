@@ -280,6 +280,8 @@ app:
             type: string
           reason:
             type: string
+          restrictedIssueKeys:
+            type: any
           invitedBy:
             type: string
           members:

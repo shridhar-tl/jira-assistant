@@ -50,6 +50,8 @@ export default function PiListView({ plans, terms, teamNames, planUrl, onCreate 
     const canEdit = usePiStore((s) => s.canEdit);
     const isLoading = usePiStore((s) => s.isListLoading);
     const error = usePiStore((s) => s.listError);
+    const hiddenPlans = usePiStore((s) => s.hiddenPlans);
+    const hiddenArts = usePiStore((s) => s.hiddenArts);
 
     return (
         <div className="mx-auto flex w-full max-w-6xl flex-col gap-3 p-4">
@@ -58,6 +60,14 @@ export default function PiListView({ plans, terms, teamNames, planUrl, onCreate 
                 {canEdit && onCreate && <Button size="sm" label={`New ${lowerTerm(terms.plan)}`} leftIcon={<i className="fa fa-plus" />} onClick={onCreate} />}
             </div>
             {error && <GadgetAlert>{error}</GadgetAlert>}
+            {(hiddenPlans > 0 || hiddenArts > 0) && (
+                <GadgetAlert variant="warning" className="m-0">
+                    {[hiddenPlans > 0 && `${hiddenPlans} ${lowerTerm(hiddenPlans === 1 ? terms.plan : terms.plans)}`, hiddenArts > 0 && `${hiddenArts} ${lowerTerm(hiddenArts === 1 ? terms.program : terms.programs)}`]
+                        .filter(Boolean)
+                        .join(' and ')}{' '}
+                    {hiddenPlans + hiddenArts === 1 ? 'is' : 'are'} not shown because you do not have access to the boards of their teams.
+                </GadgetAlert>
+            )}
             {!plans.length && !isLoading && !error && (
                 <EmptyState
                     title={`No ${lowerTerm(terms.plans)} yet`}

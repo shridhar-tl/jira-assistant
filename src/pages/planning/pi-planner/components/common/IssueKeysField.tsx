@@ -3,6 +3,7 @@ import { IssuePicker } from '@/jira-controls';
 import { Button } from '@components';
 
 import type { PlannerIssue } from '../../../shared/types';
+import { maxLinkedIssueKeys } from '../../pi-items';
 
 import IssueLink from './IssueLink';
 import StatusPill from './StatusPill';
@@ -19,7 +20,7 @@ interface IssueKeysFieldProps {
 export default function IssueKeysField({ value, onChange, issues, placeholder = 'Find an issue by key or summary', emptyText }: IssueKeysFieldProps) {
     const add = (picked: unknown) => {
         const key = typeof picked === 'string' ? picked.toUpperCase() : null;
-        if (key && !value.includes(key)) {
+        if (key && !value.includes(key) && value.length < maxLinkedIssueKeys) {
             onChange([...value, key]);
         }
     };
@@ -43,7 +44,11 @@ export default function IssueKeysField({ value, onChange, issues, placeholder = 
             ) : (
                 emptyText && <span className="text-xs text-(--text-tertiary)">{emptyText}</span>
             )}
-            <IssuePicker onPick={add} placeholder={placeholder} />
+            {value.length < maxLinkedIssueKeys ? (
+                <IssuePicker onPick={add} placeholder={placeholder} />
+            ) : (
+                <span className="text-xs text-(--text-tertiary)">At most {maxLinkedIssueKeys} issues can be linked.</span>
+            )}
         </div>
     );
 }

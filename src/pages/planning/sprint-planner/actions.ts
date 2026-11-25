@@ -35,7 +35,7 @@ import {
 } from '../shared/jira-api';
 import { isSameLeaveSet } from '../shared/leave-records';
 import { readIcsLeave } from '../shared/leave-sources';
-import { deleteSourceLeave, loadStoredLeave, replaceSourceLeave, saveLeaveEntries } from '../shared/leave-store';
+import { deleteSourceLeave, leaveNeedsBoardAdmin, loadStoredLeave, replaceSourceLeave, saveLeaveEntries } from '../shared/leave-store';
 import { getSegmentsSpan, serializeSegments, toDateKey } from '../shared/segments';
 import { isStorageAllowed, setStorageConsent } from '../shared/storage-consent';
 import { isPermissionError, saveTeamDefinition, TeamConflictError } from '../shared/team-store';
@@ -50,6 +50,7 @@ export type { IssueEdit };
 export type CompleteSprintTarget = { kind: 'backlog' } | { kind: 'sprint'; sprintId: number } | { kind: 'new'; name: string };
 
 const reloadSettingKeys: (keyof PlannerSettings)[] = ['subtaskMode', 'showClosedSprints', 'startDateField', 'dueDateField', 'backlogLimit'];
+const leavePermissionMessage = 'You can change only your own leave. Ask a board administrator to change the leave of other people or of the whole team.';
 const teamReadOnlyMessage = 'Your Jira permissions do not allow changing the settings stored on this board. Ask a board administrator to make the change.';
 
 let loadSequence = 0;
@@ -880,11 +881,13 @@ async function applyTeam(team: TeamDefinition, forceCalendars?: boolean) {
 }
 
 function handleLeaveError(err: unknown, title: string) {
-    if (isPermissionError(err)) {
+    if (!isPermissionError(err)) {
+        showError(getJiraErrorMessage(err), title);
+    } else if (leaveNeedsBoardAdmin) {
         usePlannerStore.setState({ teamReadOnlyReason: teamReadOnlyMessage });
         showError(teamReadOnlyMessage, title);
     } else {
-        showError(getJiraErrorMessage(err), title);
+        showError(leavePermissionMessage, title);
     }
 }
 

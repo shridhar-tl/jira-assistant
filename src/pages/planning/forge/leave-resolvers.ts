@@ -4,7 +4,7 @@ import type Resolver from '@forge/resolver';
 import { isDateKey, isLeaveId, isSameLeave, maxLeaveEntriesPerRequest, overlapsRange, sanitizeLeaveEntry } from '../shared/leave-records';
 import type { LeaveEntry } from '../shared/types';
 
-import { ensureBoardAccess, rejectWith } from './board-access';
+import { ensureBoardAccess, isBoardAdmin, rejectWith } from './board-access';
 
 export interface LeaveRow {
     boardKey: string;
@@ -19,6 +19,12 @@ const pageSize = 100;
 const maxPages = 30;
 const transactionLimit = 25;
 const manualSourceKey = 'manual';
+const batchGetSize = 25;
+const othersLeaveMessage = 'Only a board administrator can change the leave of other people or of the whole team.';
+
+interface CallContext {
+    accountId?: string;
+}
 
 interface QueryPayload {
     boardId: number;
@@ -108,6 +114,28 @@ export async function applyWrites(operations: WriteOperation[]): Promise<void> {
     }
 }
 
+async function readRows(keys: string[]): Promise<LeaveRow[]> {
+    const rows: LeaveRow[] = [];
+    for (let index = 0; index < keys.length; index += batchGetSize) {
+        const result = await kvs.batchGet<LeaveRow>(keys.slice(index, index + batchGetSize).map((key) => ({ key, entityName: leaveEntityName })));
+        rows.push(...result.successfulKeys.map((r) => r.value));
+    }
+    return rows;
+}
+
+async function ensureLeaveWriter(boardId: number, context: CallContext, affected: LeaveEntry[]): Promise<void> {
+    const accountId = context.accountId;
+    if (!accountId) {
+        return rejectWith(403, othersLeaveMessage);
+    }
+    if (affected.every((e) => e.memberId === accountId && !e.memberIds?.length)) {
+        return;
+    }
+    if (!(await isBoardAdmin(accountId, boardId))) {
+        return rejectWith(403, othersLeaveMessage);
+    }
+}
+
 function validateEntries(values: unknown): LeaveEntry[] | null {
     if (!Array.isArray(values) || values.length > maxLeaveEntriesPerRequest) {
         return null;
@@ -129,13 +157,15 @@ async function queryLeave({ boardId, start, end }: QueryPayload): Promise<LeaveE
     return rows.map((r) => r.value.entry).filter((e) => overlapsRange(e, start, end));
 }
 
-async function saveLeave({ boardId, upsert, remove }: SavePayload): Promise<boolean> {
+async function saveLeave({ boardId, upsert, remove }: SavePayload, context: CallContext): Promise<boolean> {
     const entries = validateEntries(upsert);
     const removeIds = Array.isArray(remove) && remove.length <= maxLeaveEntriesPerRequest && remove.every(isLeaveId) ? (remove as string[]) : null;
     if (!entries || !removeIds || entries.some((e) => e.source !== 'manual')) {
         return rejectWith(400, 'Invalid leave entries');
     }
     const id = await ensureBoardAccess(boardId);
+    const existing = await readRows([...new Set([...removeIds, ...entries.map((e) => e.id)])].map((leaveId) => rowKey(id, leaveId)));
+    await ensureLeaveWriter(id, context, [...entries, ...existing.map((r) => r.entry)]);
     const upsertIds = new Set(entries.map((e) => e.id));
     await applyWrites([
         ...removeIds.filter((removeId) => !upsertIds.has(removeId)).map((removeId) => ({ key: rowKey(id, removeId), row: null })),
@@ -144,7 +174,7 @@ async function saveLeave({ boardId, upsert, remove }: SavePayload): Promise<bool
     return true;
 }
 
-async function replaceSourceLeave({ boardId, sourceId, start, end, entries: values }: ReplacePayload): Promise<{ changed: boolean }> {
+async function replaceSourceLeave({ boardId, sourceId, start, end, entries: values }: ReplacePayload, context: CallContext): Promise<{ changed: boolean }> {
     const entries = validateEntries(values);
     if (!entries || !isLeaveId(sourceId) || !isValidRange(start, end) || entries.some((e) => e.sourceId !== sourceId)) {
         return rejectWith(400, 'Invalid calendar leave');
@@ -163,23 +193,29 @@ async function replaceSourceLeave({ boardId, sourceId, start, end, entries: valu
             })
             .map((entry) => ({ key: rowKey(id, entry.id), row: toRow(id, entry) })),
     ];
+    if (operations.length) {
+        await ensureLeaveWriter(id, context, [...entries, ...existing.map((r) => r.value.entry)]);
+    }
     await applyWrites(operations);
     return { changed: operations.length > 0 };
 }
 
-async function deleteSourceLeave({ boardId, sourceId }: DeleteSourcePayload): Promise<boolean> {
+async function deleteSourceLeave({ boardId, sourceId }: DeleteSourcePayload, context: CallContext): Promise<boolean> {
     if (!isLeaveId(sourceId)) {
         return rejectWith(400, 'Invalid calendar source');
     }
     const id = await ensureBoardAccess(boardId);
     const rows = await queryBySource(id, sourceId, '0000-01-01');
+    if (rows.length) {
+        await ensureLeaveWriter(id, context, rows.map((r) => r.value.entry));
+    }
     await applyWrites(rows.map((r) => ({ key: r.key, row: null })));
     return true;
 }
 
 export function registerLeaveResolvers(resolver: Resolver) {
     resolver.define('PlannerLeaveQuery', (req) => queryLeave(req.payload as unknown as QueryPayload));
-    resolver.define('PlannerLeaveSave', (req) => saveLeave(req.payload as unknown as SavePayload));
-    resolver.define('PlannerLeaveReplace', (req) => replaceSourceLeave(req.payload as unknown as ReplacePayload));
-    resolver.define('PlannerLeaveDeleteSource', (req) => deleteSourceLeave(req.payload as unknown as DeleteSourcePayload));
+    resolver.define('PlannerLeaveSave', (req) => saveLeave(req.payload as unknown as SavePayload, req.context as CallContext));
+    resolver.define('PlannerLeaveReplace', (req) => replaceSourceLeave(req.payload as unknown as ReplacePayload, req.context as CallContext));
+    resolver.define('PlannerLeaveDeleteSource', (req) => deleteSourceLeave(req.payload as unknown as DeleteSourcePayload, req.context as CallContext));
 }

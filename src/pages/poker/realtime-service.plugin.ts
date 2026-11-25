@@ -47,6 +47,8 @@ export function createForgeRealtimeService(session: PokerSessionService): PokerR
     let recovering = false;
     let token: RealtimeTokenData | null = null;
     let resyncing = false;
+    let fetchingTargeted = false;
+    let targetedPending = false;
 
     function setStatus(next: ConnectionStatus) {
         if (status === next) {
@@ -103,9 +105,40 @@ export function createForgeRealtimeService(session: PokerSessionService): PokerR
         return false;
     }
 
+    async function loadTargetedDetails() {
+        if (fetchingTargeted) {
+            targetedPending = true;
+            return;
+        }
+        fetchingTargeted = true;
+        try {
+            do {
+                targetedPending = false;
+                const roomId = activeRoom;
+                if (roomId === null) {
+                    return;
+                }
+                const snapshot = await callPoker<RoomSnapshot>({ operation: 'snapshot', roomId });
+                if (activeRoom !== roomId) {
+                    return;
+                }
+                (snapshot.joinRequests || []).forEach((request) => emit({ action: 'joinRequested', payload: { request } }));
+                emit({ action: 'roomState', payload: snapshot, revision: snapshot.room.revision });
+            } while (targetedPending);
+        } catch (error) {
+            console.error('Poker could not load the room details', error);
+        } finally {
+            fetchingTargeted = false;
+        }
+    }
+
     function deliver(event: WireEvent) {
         const own = session.getSession()?.sid;
         if (event.forSid && event.forSid !== own) {
+            return;
+        }
+        if (event.redacted) {
+            void loadTargetedDetails();
             return;
         }
         if (event.exceptSid && event.exceptSid === own) {

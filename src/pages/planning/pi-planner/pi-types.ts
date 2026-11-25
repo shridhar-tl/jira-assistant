@@ -18,6 +18,7 @@ export interface PiUserRef {
 export interface PiTeamRef {
     boardId: number;
     name: string;
+    restricted?: boolean;
 }
 
 export interface PiArt {
@@ -188,6 +189,8 @@ export interface PiListResult {
     plans: PiSummary[];
     settings: PiProgramSettings;
     canEdit: boolean;
+    hiddenPlans: number;
+    hiddenArts: number;
 }
 
 export interface PiSaveResult<T> {

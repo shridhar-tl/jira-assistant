@@ -1,4 +1,4 @@
-import { asApp, route } from '@forge/api';
+import { asUser, route } from '@forge/api';
 import type Resolver from '@forge/resolver';
 
 import { getJsonSize, maxPropertyBytes } from '../shared/property-limits';
@@ -25,12 +25,15 @@ async function writeBoardProperty({ boardId, propertyKey, value }: BoardProperty
 
     await ensureBoardAccess(boardId);
 
-    const response = await asApp().requestJira(route`/rest/agile/1.0/board/${boardId}/properties/${propertyKey}`, {
+    const response = await asUser().requestJira(route`/rest/agile/1.0/board/${boardId}/properties/${propertyKey}`, {
         method: 'PUT',
         headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
         body: JSON.stringify(value),
     });
 
+    if (response.status === 403 || response.status === 404) {
+        return rejectWith(403, 'Only a board administrator can change the team settings of this board.');
+    }
     if (!response.ok) {
         return rejectWith(response.status, await response.text());
     }
