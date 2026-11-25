@@ -1,6 +1,6 @@
 import moment from 'moment-timezone';
 
-import { type DateItem, getDateRange, getWeekGroup } from '@/utils';
+import { type DateItem, getDateRange, getWeekGroup, isSameJiraUser } from '@/utils';
 
 import { inject } from '../../../services/injector';
 import { getProjectKeys, getUniqueUsersFromGroup } from '../utils';
@@ -9,20 +9,6 @@ function getUserName(user: any, includeEmail?: boolean): string {
     if (!user) return '';
     const name = user.name || user.emailAddress || user.displayName || '';
     return includeEmail && user.emailAddress ? user.emailAddress : name;
-}
-
-interface UserIdentity {
-    accountId?: string;
-    name?: string;
-    emailAddress?: string;
-    displayName?: string;
-}
-
-function isSameUser(user: UserIdentity | undefined, currentJiraUser?: { accountId?: string }, currentUserName?: string): boolean {
-    if (currentJiraUser?.accountId && user?.accountId) {
-        return user.accountId === currentJiraUser.accountId;
-    }
-    return !!currentUserName && getUserName(user, true).toLowerCase() === currentUserName.toLowerCase();
 }
 
 function calcCostPerSecs(secs: number, costPerHour?: number): number {
@@ -88,12 +74,12 @@ export function getUserWiseWorklog(
     issues: any[],
     fromDate: moment.Moment,
     toDate: moment.Moment,
-    currentUser: string | undefined,
     state: any,
     epicDetails: any,
 ) {
     const svc = inject('UserUtilsService', 'SessionService');
-    const epicNameField = svc.$session.CurrentUser.epicNameField?.id;
+    const { epicNameField: epicNameFieldInfo, jiraUser: currentJiraUser } = svc.$session.CurrentUser;
+    const epicNameField = epicNameFieldInfo?.id;
     const options = { epicNameField, epicDetails, ...svc };
 
     const isWorklogInRange = getWorklogFilter(fromDate, toDate, state);
@@ -115,7 +101,7 @@ export function getUserWiseWorklog(
             }
 
             const userName = getUserName(worklog.author, true);
-            const isCurrentUser = userName === currentUser;
+            const isCurrentUser = isSameJiraUser(worklog.author, currentJiraUser);
             let reportUser = report[userName];
             if (!reportUser) {
                 reportUser = {
@@ -177,7 +163,7 @@ export function getWeekHeader(dates: DateItem[]) {
 
 export function generateUserDayWiseData(data: any, groups: any[], pageSettings: any) {
     const { $userutils, $session } = inject('UserUtilsService', 'SessionService');
-    const { maxHours, minHours = maxHours, jiraUser: currentJiraUser, name: currentUserName } = $session.CurrentUser;
+    const { maxHours, minHours = maxHours, jiraUser: currentJiraUser } = $session.CurrentUser;
     const maxSecsPerDay = (maxHours || 8) * 60 * 60;
     const minSecsPerDay = (minHours || 8) * 60 * 60;
 
@@ -241,7 +227,7 @@ export function generateUserDayWiseData(data: any, groups: any[], pageSettings: 
 
                 const usrDta = data[usr.userName || getUserName(usr, true)] || {};
 
-                if (usrDta.isCurrentUser || isSameUser(usr, currentJiraUser, currentUserName)) {
+                if (usrDta.isCurrentUser || isSameJiraUser(usr, currentJiraUser)) {
                     usrInfo.isCurrentUser = true;
                 }
 

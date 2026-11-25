@@ -59,7 +59,7 @@ export function generateRangeReport(setState: any, getState: any) {
 async function generateWorklogReportForDateRange(fromDate: moment.Moment, toDate: moment.Moment, state: any) {
     const {
         $session: {
-            CurrentUser: { name, epicNameField },
+            CurrentUser: { epicNameField },
         },
     } = inject('SessionService');
     const issues = await getIssuesWithWorklogFor(fromDate, toDate, state, epicNameField?.id);
@@ -69,7 +69,7 @@ async function generateWorklogReportForDateRange(fromDate: moment.Moment, toDate
 
     const epicDetails = await getEpicDetails(issues, epicNameField?.id);
 
-    const input = prepareInputForGeneration(issues, fromDate, toDate, (name || '').toLowerCase(), state, epicDetails);
+    const input = prepareInputForGeneration(issues, fromDate, toDate, state, epicDetails);
     const issueDayWise = getIssueDayWiseData(input, state);
 
     const { userListMode, userGroups: savedGroups, reportUserGrp } = state;
@@ -97,7 +97,6 @@ async function generateWorklogReportForDateRange(fromDate: moment.Moment, toDate
                         grpIssues,
                         fromDate,
                         toDate,
-                        (name || '').toLowerCase(),
                         state,
                         epicDetails,
                         obj.dates,
@@ -208,12 +207,11 @@ function prepareInputForGeneration(
     issues: any[],
     fromDate: moment.Moment,
     toDate: moment.Moment,
-    name: string | undefined,
     state: any,
     epicDetails: any,
     dates?: any,
 ) {
-    const { userwiseLog, userwiseLogArr } = getUserWiseWorklog(issues, fromDate, toDate, name, state, epicDetails);
+    const { userwiseLog, userwiseLogArr } = getUserWiseWorklog(issues, fromDate, toDate, state, epicDetails);
 
     const settings = {
         fromDate: fromDate.toDate(),

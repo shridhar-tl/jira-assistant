@@ -80,6 +80,31 @@ export function getUserName(userObj: { name?: string; emailAddress?: string; acc
     return name;
 }
 
+export interface JiraUserIdentity {
+    accountId?: string;
+    key?: string;
+    name?: string;
+    emailAddress?: string;
+}
+
+const userIdentityFields = ['accountId', 'key', 'name', 'emailAddress'] as const;
+
+export function isSameJiraUser(first?: JiraUserIdentity | null, second?: JiraUserIdentity | null): boolean {
+    if (!first || !second) {
+        return false;
+    }
+
+    for (const field of userIdentityFields) {
+        const firstValue = first[field];
+        const secondValue = second[field];
+        if (firstValue && secondValue) {
+            return firstValue.toLowerCase() === secondValue.toLowerCase();
+        }
+    }
+
+    return false;
+}
+
 export function parseIfJson<T>(json: string | T | undefined | null, defaultValue: T): T {
     if (json) {
         if (typeof json === 'string') {

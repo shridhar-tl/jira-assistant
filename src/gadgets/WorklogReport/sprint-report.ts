@@ -27,8 +27,7 @@ export function generateSprintReport(setState: any, getState: any) {
             return;
         }
 
-        const { $jira, $session } = inject('JiraService', 'SessionService');
-        const name = $session.CurrentUser.name;
+        const { $jira } = inject('JiraService');
 
         const newState: any = { loadingData: false, errorTitle: '', errorMessage: '' };
 
@@ -90,7 +89,6 @@ export function generateSprintReport(setState: any, getState: any) {
                         issuesList,
                         moment(settings.fromDate),
                         moment(settings.toDate),
-                        (name || '').toLowerCase(),
                         curState,
                         epicDetails,
                     );
