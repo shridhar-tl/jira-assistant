@@ -14,14 +14,6 @@ on:
         - development
         - staging
         - production
-      forgeEmail:
-        description: 'Atlassian Email id'
-        required: true
-        type: string
-      forgeApiToken:
-        description: 'Atlassian API token'
-        required: true
-        type: string
       approveMajorVersion:
         description: 'Approve Forge major version (required when scopes or egress change; installed sites must re-consent)'
         default: false
@@ -45,13 +37,31 @@ on:
 
 jobs:
   build:
-
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     env:
       CI: ""
+
+    strategy:
+      matrix:
+        node-version: [24.x]
+
+    steps:
+    - uses: actions/checkout@v7
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v7
+      with:
+        node-version: ${{ matrix.node-version }}
+    - run: npm install --force
+    - run: npm run build-plugin
+
+  deploy:
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    environment: ${{ github.event_name == 'workflow_dispatch' && format('forge-{0}', inputs.environment) || startsWith(github.ref, 'refs/heads/master') && 'forge-production' || 'forge-staging' }}
+    env:
+      CI: ""
       FORGE_ENV: staging
-      FORGE_EMAIL: ${{ secrets.FORGE_EMAIL }}
-      FORGE_API_TOKEN: ${{ secrets.FORGE_API_TOKEN }}
       FORGE_APPROVE_MAJOR_VERSION: ${{ vars.FORGE_APPROVE_MAJOR_VERSION == 'true' }}
 
     strategy:
@@ -71,19 +81,23 @@ jobs:
       if: startsWith(github.ref, 'refs/heads/master')
       
     - name: Override env with user inputs
+      env:
+        INPUT_ENVIRONMENT: ${{ inputs.environment }}
+        INPUT_APPROVE_MAJOR_VERSION: ${{ inputs.approveMajorVersion }}
       run: |
-        echo "FORGE_ENV=${{ github.event.inputs.environment }}" >> $GITHUB_ENV
-        echo "FORGE_EMAIL=${{ github.event.inputs.forgeEmail }}" >> $GITHUB_ENV
-        echo "FORGE_API_TOKEN=${{ github.event.inputs.forgeApiToken }}" >> $GITHUB_ENV
-        echo "FORGE_APPROVE_MAJOR_VERSION=${{ inputs.approveMajorVersion }}" >> $GITHUB_ENV
+        echo "FORGE_ENV=$INPUT_ENVIRONMENT" >> $GITHUB_ENV
+        echo "FORGE_APPROVE_MAJOR_VERSION=$INPUT_APPROVE_MAJOR_VERSION" >> $GITHUB_ENV
       if: startsWith(github.event_name, 'workflow_dispatch')
       
-    - run: echo Deploying ${{github.ref}} to ${{env.FORGE_ENV}}
+    - run: echo "Deploying $GITHUB_REF to $FORGE_ENV"
     - run: npm install -g @forge/cli@latest
     - run: npm install --force
     - run: npm run build-plugin
     - run: forge settings set usage-analytics false
     - name: Deploy to Forge
+      env:
+        FORGE_EMAIL: ${{ secrets.FORGE_EMAIL }}
+        FORGE_API_TOKEN: ${{ secrets.FORGE_API_TOKEN }}
       run: |
         if [ "$FORGE_APPROVE_MAJOR_VERSION" = "true" ]; then
           forge deploy -e "$FORGE_ENV" --approve MAJOR_VERSION_RULE
@@ -91,3 +105,6 @@ jobs:
           forge deploy -e "$FORGE_ENV"
         fi
     - run: forge logout
+      env:
+        FORGE_EMAIL: ${{ secrets.FORGE_EMAIL }}
+        FORGE_API_TOKEN: ${{ secrets.FORGE_API_TOKEN }}

@@ -50,10 +50,14 @@ jobs:
     - run: git config --global user.name 'GitHub Web Deploy CI'
     - run: git config --global user.email 'shridhar.tl@gmail.com'
     - run: git remote set-url origin https://shridhar-tl:${{ secrets.COMMIT_KEY }}@github.com/${{ github.repository }}
+      if: github.event_name != 'pull_request'
     - run: npm run deploy-web
+      if: github.event_name != 'pull_request'
     - run: npm run build
     - run: git push origin --delete  ja-extn
+      if: github.event_name != 'pull_request'
     - run: npm run publish-extn
+      if: github.event_name != 'pull_request'
 
     - name: Save build package
       uses: actions/upload-artifact@v7
