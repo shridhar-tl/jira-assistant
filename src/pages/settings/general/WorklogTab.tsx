@@ -32,6 +32,9 @@ const roundingOptions: Array<{ value: string; label: string }> = [
 const roundingHint =
     'Time spent is rounded to the closest selected interval when a worklog is uploaded, and never below one interval. For example, with 15 minutes, 23m is uploaded as 30m and 52m as 45m. Merged worklogs are rounded after merging. Bulk import uploads are not rounded.';
 
+const suggestionHint =
+    'Suggestions fill the time remaining up to your minimum daily hours and are shown only for working days up to today. When a ticket already has a worklog on that day, the remaining time is suggested as an extension of it. Available only for Jira Cloud.';
+
 const mergeModeHints: Record<WorklogMergeMode, string> = {
     none: 'Every worklog is uploaded to Jira as a separate entry.',
     auto: 'Pending worklogs on the same ticket and date are combined into one entry starting at the earliest start time, with their time spent added up and comments joined.',
@@ -114,6 +117,24 @@ export default function WorklogTab({ settings, isAtlasCloud, onSave }: WorklogTa
                     )}
                 </div>
             </div>
+
+            {isAtlasCloud && (
+                <div className="py-5">
+                    <div className="text-sm font-semibold text-(--text-primary) mb-1">Worklog Suggestions</div>
+                    <p className="text-xs text-(--text-secondary) mb-3">
+                        Suggest worklogs in the calendar for the time your tickets were in progress while assigned to you
+                    </p>
+                    <Checkbox
+                        checked={settings.suggestWorklogs !== false}
+                        onChange={(e) => onSave(e.value, 'suggestWorklogs')}
+                        label="Show worklog suggestions in calendar"
+                    />
+                    <p className="flex items-start gap-2 text-xs text-(--text-tertiary) mt-3">
+                        <i className="fa fa-info-circle mt-0.5" />
+                        <span>{suggestionHint}</span>
+                    </p>
+                </div>
+            )}
 
             <div className="py-5">
                 <div className="text-sm font-semibold text-(--text-primary) mb-1">Merge Worklogs</div>

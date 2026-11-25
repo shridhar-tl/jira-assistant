@@ -13,6 +13,8 @@ interface CalendarToolbarProps {
     fullView?: boolean;
     zoomIn?: boolean;
     isGadget: boolean;
+    suggestionsShown?: boolean;
+    onToggleSuggestions?: () => void;
     onToggleDisplayHours: () => void;
     onToggleZoom: () => void;
     onUploadAll: (target: HTMLElement) => void;
@@ -29,6 +31,8 @@ export default function CalendarToolbar({
     fullView,
     zoomIn,
     isGadget,
+    suggestionsShown,
+    onToggleSuggestions,
     onToggleDisplayHours,
     onToggleZoom,
     onUploadAll,
@@ -72,6 +76,19 @@ export default function CalendarToolbar({
             >
                 <i className={zoomIn ? 'fa fa-search-minus' : 'fa fa-search-plus'} />
             </Button>
+
+            {onToggleSuggestions && (
+                <Button
+                    layout="plain"
+                    size="sm"
+                    onClick={onToggleSuggestions}
+                    aria-pressed={suggestionsShown}
+                    title={suggestionsShown ? 'Hide worklog suggestions' : 'Show worklog suggestions'}
+                    className={classNames('cal-suggestions-toggle', suggestionsShown ? 'text-amber-500!' : 'opacity-60')}
+                >
+                    <i className={suggestionsShown ? 'fa fa-lightbulb' : 'fa-regular fa-lightbulb'} />
+                </Button>
+            )}
 
             <PendingUploadButton
                 pendingWorklogCount={pendingWorklogCount}

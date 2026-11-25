@@ -82,6 +82,8 @@ export {
     type GanttTaskClickEvent,
     type GanttTaskCreateEvent,
     type GanttViewMode,
+    type EntryRenderContext,
+    type ColorPickerProps,
     type KanbanCardData,
     type KanbanCardMoveEvent,
     type KanbanCardReorderEvent,

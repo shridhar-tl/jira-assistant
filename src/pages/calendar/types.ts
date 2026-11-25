@@ -12,15 +12,17 @@ export interface CalendarSettings {
     infoColor_valid?: string;
     infoColor_less?: string;
     infoColor_high?: string;
+    suggestionColor?: string;
     rowBanding?: boolean;
     hideWeekends?: boolean;
     readableEvents?: boolean;
+    glassyEntries?: boolean;
     detailsMode?: '1' | '2' | '3';
 }
 
 export interface CalendarEntryData {
-    entryType: 1 | 2 | 3; // 1 = worklog, 2 = meeting, 3 = info
-    sourceObject: Worklog | Meeting | CalendarInfoEvent;
+    entryType: 1 | 2 | 3 | 4 | 5; // 1 = worklog, 2 = meeting, 3 = info, 4 = worklog suggestion, 5 = daily suggestion summary
+    sourceObject: Worklog | Meeting | CalendarInfoEvent | WorklogSuggestion | SuggestionDaySummary;
     source?: string;
     logged?: number;
     diff?: number;
@@ -37,6 +39,32 @@ export interface CalendarInfoEvent {
     key: string;
     logged: number;
     diff: number;
+}
+
+export interface SuggestionReason {
+    activeRanges: { start: Date; end: Date }[];
+    issueLoggedSecs: number;
+    dayLoggedSecs: number;
+    targetSecs: number;
+    ticketCount: number;
+}
+
+export interface WorklogSuggestion {
+    id: string;
+    dismissKey: string;
+    dateKey: string;
+    issueKey: string;
+    summary: string;
+    start: Date;
+    end: Date;
+    timeSpentSecs: number;
+    targetWorklog?: Worklog;
+    reason: SuggestionReason;
+}
+
+export interface SuggestionDaySummary {
+    dateKey: string;
+    suggestions: WorklogSuggestion[];
 }
 
 export interface MeetingView {

@@ -20,38 +20,37 @@ interface WorklogPageHeaderProps {
 
 function WorklogPageHeader({ isLoading, dateOrder, onDateOrderChange, onDownloadTemplate, onUploadClick, fileSelectorProps }: WorklogPageHeaderProps) {
     return (
-        <div className="page-header">
-            <div className="header-content">
-                <div className="header-left">
-                    <h1 className="page-title">
-                        <i className="fa fa-clock" />
-                        Bulk Import - Worklog
-                    </h1>
-                    <p className="page-subtitle">Import multiple worklogs from a CSV file directly into Jira</p>
-                </div>
-                <div className="header-actions">
+        <div className="flex flex-col lg:flex-row lg:items-center gap-3 justify-between p-4 sm:px-6 bg-(--bg-secondary) border-b border-(--border-secondary)">
+            <div className="min-w-0">
+                <h1 className="text-xl sm:text-2xl font-semibold text-(--text-primary) flex items-center gap-2">
+                    <i className="fa fa-clock text-(--color-primary-600)" />
+                    Bulk Import - Worklog
+                </h1>
+                <p className="text-sm text-(--text-secondary)">Import multiple worklogs from a CSV file directly into Jira</p>
+            </div>
+            <div className="header-actions flex flex-wrap items-center gap-2">
+                <div className="w-56">
                     <Dropdown
                         options={dateOrderOptions}
                         value={dateOrder}
                         onChange={(e) => onDateOrderChange(e.value as ImportDateOrder)}
-                        className="w-56"
                         disabled={isLoading}
                     />
-                    <Button
-                        variant="info"
-                        leftIcon={<i className="fa fa-download" />}
-                        label="Download Template"
-                        onClick={onDownloadTemplate}
-                    />
-                    <Button
-                        variant="primary"
-                        leftIcon={<i className="fa fa-upload" />}
-                        label="Upload CSV"
-                        onClick={onUploadClick}
-                        disabled={isLoading}
-                    />
-                    <input {...fileSelectorProps} type="file" style={{ display: 'none' }} accept=".csv,text/csv" />
                 </div>
+                <Button
+                    variant="secondary"
+                    leftIcon={<i className="fa fa-download" />}
+                    label="Download Template"
+                    onClick={onDownloadTemplate}
+                />
+                <Button
+                    variant="primary"
+                    leftIcon={<i className="fa fa-upload" />}
+                    label="Upload CSV"
+                    onClick={onUploadClick}
+                    disabled={isLoading}
+                />
+                <input {...fileSelectorProps} type="file" className="hidden" accept=".csv,text/csv" />
             </div>
         </div>
     );

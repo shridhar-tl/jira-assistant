@@ -53,7 +53,7 @@
     font-size: 16px;
     padding-left: 4px;
     padding-right: 4px;
-    color: #fff;
+    color: inherit;
     cursor: pointer;
 }
 
@@ -223,4 +223,29 @@
 
 .cal-view-dropdown {
     width: 120px;
+}
+
+.cal-suggestion-entry {
+    opacity: 0.75;
+    border-style: dashed !important;
+    border-width: 2px !important;
+    background-image: repeating-linear-gradient(135deg, rgb(255 255 255 / 0.18) 0 6px, transparent 6px 12px);
+    cursor: pointer;
+}
+
+.cal-suggestion-entry:hover {
+    opacity: 1;
+}
+
+.cal-suggestion-summary {
+    cursor: default;
+}
+
+.eui-cal-time-column-entries .eui-cal-entry.cal-suggestion-entry {
+    pointer-events: none;
+    cursor: default;
+}
+
+.eui-cal-entry.cal-project-entry:not(.eui-cal-entry-glass) {
+    border-left-width: 5px;
 }

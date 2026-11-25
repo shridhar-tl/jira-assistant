@@ -1,17 +1,18 @@
 import { useCallback } from 'react';
 
-import { ColorPicker as ColorPickerInput } from '@components';
+import { ColorPicker as ColorPickerInput, type ColorPickerProps as ColorPickerInputProps } from '@components';
 
 interface ColorPickerProps {
     value?: string;
     disabled?: boolean;
+    size?: ColorPickerInputProps['size'];
     onChange: (value: string, fieldName: string) => void;
     fieldName: string;
 }
 
 const hexColorPattern = /^#[0-9a-f]{6}$/i;
 
-function ColorPicker({ value = '', disabled = false, fieldName, onChange }: ColorPickerProps) {
+function ColorPicker({ value = '', disabled = false, size, fieldName, onChange }: ColorPickerProps) {
     const colorChanged = useCallback((color: string) => onChange(color, fieldName), [onChange, fieldName]);
 
     return (
@@ -21,6 +22,7 @@ function ColorPicker({ value = '', disabled = false, fieldName, onChange }: Colo
             showAlpha={false}
             value={hexColorPattern.test(value) ? value : '#000000'}
             disabled={disabled}
+            size={size}
             ariaLabel={fieldName}
             onChange={colorChanged}
         />

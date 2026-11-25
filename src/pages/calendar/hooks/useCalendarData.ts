@@ -71,7 +71,7 @@ export function useCalendarData(settings: CalendarSettings, currentUser: any) {
                 if (results[1]) meetings.push(...results[1]);
                 if (results[2]) meetings.push(...results[2]);
 
-                const worklogEvents = worklogs.map((wl) => createWorklogEvent(wl, settingsToUse));
+                const worklogEvents = worklogs.map((wl) => createWorklogEvent(wl, settingsToUse, currentUser.projectColors));
                 const meetingEvents = meetings.map((m) => createMeetingEvent(m, settingsToUse));
 
                 const groupedWorklogs = groupWorklogsByDate(worklogs);

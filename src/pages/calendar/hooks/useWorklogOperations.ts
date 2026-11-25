@@ -75,7 +75,7 @@ export function useWorklogOperations(setEvents: SetEvents, settings: any, curren
             if (isCopy) {
                 try {
                     const newEntry = await $worklog.copyWorklog(worklog, newStart);
-                    const newEvent = createWorklogEvent(newEntry, settings);
+                    const newEvent = createWorklogEvent(newEntry, settings, currentUser.projectColors);
                     setEvents((prev) => {
                         let updated = [...prev, newEvent];
                         updated = getUpdatedAllDayEvents(new Date(newEntry.start), updated, settings, currentUser);
@@ -98,7 +98,7 @@ export function useWorklogOperations(setEvents: SetEvents, settings: any, curren
                 const durationMs = new Date(entry.end).getTime() - new Date(entry.start).getTime();
 
                 const optimisticEntry = buildWorklogCalendarEntry(entry, worklog, newTime, durationMs);
-                const optimisticEvent = createWorklogEvent(optimisticEntry, settings);
+                const optimisticEvent = createWorklogEvent(optimisticEntry, settings, currentUser.projectColors);
 
                 setEvents((prev) => {
                     let updated = prev.map((e) => (e.id === entry.id && e.data.entryType === 1 ? optimisticEvent : e));
@@ -109,7 +109,7 @@ export function useWorklogOperations(setEvents: SetEvents, settings: any, curren
 
                 try {
                     const updatedEntry = await $worklog.changeWorklogDate(worklog, newTime);
-                    const updatedEvent = createWorklogEvent(updatedEntry, settings);
+                    const updatedEvent = createWorklogEvent(updatedEntry, settings, currentUser.projectColors);
 
                     setEvents((prev) => {
                         let updated = prev.map((e) => (e.id === entry.id && e.data.entryType === 1 ? updatedEvent : e));
@@ -123,7 +123,7 @@ export function useWorklogOperations(setEvents: SetEvents, settings: any, curren
                     $message.error('Failed to move worklog');
 
                     const revertedEntry = buildWorklogCalendarEntry(entry, worklog, oldDate, durationMs);
-                    const revertedEvent = createWorklogEvent(revertedEntry, settings);
+                    const revertedEvent = createWorklogEvent(revertedEntry, settings, currentUser.projectColors);
 
                     setEvents((prev) => {
                         let updated = prev.map((e) => (e.id === entry.id && e.data.entryType === 1 ? revertedEvent : e));
@@ -154,7 +154,7 @@ export function useWorklogOperations(setEvents: SetEvents, settings: any, curren
             const startDate = new Date(newStart);
             const newDurationMs = snappedEnd.getTime() - startDate.getTime();
             const optimisticEntry = buildWorklogCalendarEntry(entry, worklog, startDate, newDurationMs);
-            const optimisticEvent = createWorklogEvent(optimisticEntry, settings);
+            const optimisticEvent = createWorklogEvent(optimisticEntry, settings, currentUser.projectColors);
 
             setEvents((prev) => {
                 let updated = prev.map((e) => (e.id === entry.id && e.data.entryType === 1 ? optimisticEvent : e));
@@ -164,7 +164,7 @@ export function useWorklogOperations(setEvents: SetEvents, settings: any, curren
 
             try {
                 const updatedEntry = await $worklog.changeWorklogTS(worklog, timeSpent);
-                const updatedEvent = createWorklogEvent(updatedEntry, settings);
+                const updatedEvent = createWorklogEvent(updatedEntry, settings, currentUser.projectColors);
 
                 setEvents((prev) => {
                     let updated = prev.map((e) => (e.id === entry.id && e.data.entryType === 1 ? updatedEvent : e));
@@ -179,7 +179,7 @@ export function useWorklogOperations(setEvents: SetEvents, settings: any, curren
                 const originalDurationMs = new Date(entry.end).getTime() - new Date(entry.start).getTime();
                 const originalDate = new Date(entry.start);
                 const revertedEntry = buildWorklogCalendarEntry(entry, worklog, originalDate, originalDurationMs);
-                const revertedEvent = createWorklogEvent(revertedEntry, settings);
+                const revertedEvent = createWorklogEvent(revertedEntry, settings, currentUser.projectColors);
 
                 setEvents((prev) => {
                     let updated = prev.map((e) => (e.id === entry.id && e.data.entryType === 1 ? revertedEvent : e));
@@ -201,7 +201,7 @@ export function useWorklogOperations(setEvents: SetEvents, settings: any, curren
             try {
                 const uploaded = await $worklog.uploadWorklogs([worklogId], true);
                 const uploadedEntry = uploaded[0] as WorklogCalendarEntry;
-                const updatedEvent = createWorklogEvent(uploadedEntry, settings);
+                const updatedEvent = createWorklogEvent(uploadedEntry, settings, currentUser.projectColors);
 
                 setEvents((prev) => {
                     let updated = prev.map((e) => (e.id === entryId && e.data.entryType === 1 ? updatedEvent : e));
@@ -232,7 +232,7 @@ export function useWorklogOperations(setEvents: SetEvents, settings: any, curren
                     const removed = prev.filter(isPendingEvent);
                     let updated = [
                         ...prev.filter((e) => !isPendingEvent(e)),
-                        ...uploaded.map((entry) => createWorklogEvent(entry, settings)),
+                        ...uploaded.map((entry) => createWorklogEvent(entry, settings, currentUser.projectColors)),
                     ];
                     const affectedDays = [...removed.map((e) => new Date(e.start)), ...uploaded.map((entry) => new Date(entry.start))];
                     affectedDays.forEach((day) => {
@@ -278,7 +278,7 @@ export function useWorklogOperations(setEvents: SetEvents, settings: any, curren
         async (worklog: Worklog) => {
             try {
                 const clonedEntry = await $worklog.copyWorklog(worklog);
-                const newEvent = createWorklogEvent(clonedEntry, settings);
+                const newEvent = createWorklogEvent(clonedEntry, settings, currentUser.projectColors);
 
                 setEvents((prev) => {
                     let updated = [...prev, newEvent];
@@ -297,7 +297,7 @@ export function useWorklogOperations(setEvents: SetEvents, settings: any, curren
 
     const addWorklog = useCallback(
         (entry: WorklogCalendarEntry) => {
-            const newEvent = createWorklogEvent(entry, settings);
+            const newEvent = createWorklogEvent(entry, settings, currentUser.projectColors);
             setEvents((prev) => {
                 let updated = [...prev, newEvent];
                 updated = getUpdatedAllDayEvents(new Date(entry.start), updated, settings, currentUser);
@@ -309,7 +309,7 @@ export function useWorklogOperations(setEvents: SetEvents, settings: any, curren
 
     const editWorklog = useCallback(
         (entry: WorklogCalendarEntry, previousTime?: Date) => {
-            const updatedEvent = createWorklogEvent(entry, settings);
+            const updatedEvent = createWorklogEvent(entry, settings, currentUser.projectColors);
 
             setEvents((prev) => {
                 let updated = prev.map((e) => (e.id === entry.id && e.data.entryType === 1 ? updatedEvent : e));

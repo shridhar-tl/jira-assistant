@@ -32,11 +32,12 @@ export const sett_page_calendar = {
     showWorklogs: true,
     showMeetings: true,
     showInfo: true,
-    eventColor: '#51b749',
-    worklogColor: '#9a9cff',
-    infoColor_valid: '#3a87ad',
-    infoColor_less: '#f0d44f',
-    infoColor_high: '#f06262',
+    eventColor: '#478577',
+    worklogColor: '#4f46e5',
+    infoColor_valid: '#4f8a5f',
+    infoColor_less: '#e8c84e',
+    infoColor_high: '#b05a5a',
+    suggestionColor: '#f59e0b',
 };
 
 export const sett_page_reports_UserDayWise = { logFormat: '1', breakupMode: '1', groupMode: '1' };

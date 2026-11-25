@@ -4,6 +4,12 @@ import { inject } from '@services';
 
 import { AutocompleteMulti, Dropdown } from '@components';
 
+import { sett_page_calendar } from '@constants/settings';
+
+import ProjectColorPicker from './ProjectColorPicker';
+
+const projectColorPalette = ['#c0566e', '#4a8fa8', '#c08a3e', '#5a9a68', '#8a62b0', '#c06a9a', '#5a7fc0', '#7f9a4a', '#c4774a', '#4a9a8e'];
+
 interface DefaultValuesTabProps {
     settings: Record<string, any>;
     onSave: (value: any, field: string) => void;
@@ -27,7 +33,7 @@ interface CustomField {
 }
 
 export default function DefaultValuesTab({ settings, onSave }: DefaultValuesTabProps) {
-    const { $jira } = inject('JiraService');
+    const { $jira, $session } = inject('JiraService', 'SessionService');
 
     const [rapidViews, setRapidViews] = useState<RapidView[]>([]);
     const [projects, setProjects] = useState<Project[]>([]);
@@ -118,6 +124,43 @@ export default function DefaultValuesTab({ settings, onSave }: DefaultValuesTabP
         );
     };
 
+    const projectColors: Record<string, string> = settings.projectColors || {};
+
+    const setProjectColor = (projectKey: string, color?: string) => {
+        const colors = { ...projectColors };
+        if (color) {
+            colors[projectKey] = color;
+        } else {
+            delete colors[projectKey];
+        }
+        onSave(colors, 'projectColors');
+    };
+
+    const projectsChanged = (selected: Project[]) => {
+        const previousKeys = new Set((settings.projects || []).map((p: Project) => p.key));
+        const colors = Object.fromEntries(Object.entries(projectColors).filter(([key]) => selected.some((p) => p.key === key)));
+        selected
+            .filter((p) => !previousKeys.has(p.key) && !colors[p.key])
+            .forEach((p) => {
+                const used = new Set(Object.values(colors));
+                colors[p.key] = projectColorPalette.find((c) => !used.has(c)) || projectColorPalette[used.size % projectColorPalette.length];
+            });
+        onSave(selected, 'projects');
+        onSave(colors, 'projectColors');
+    };
+
+    const defaultProjectColor = $session.pageSettings?.calendar?.worklogColor || sett_page_calendar.worklogColor;
+
+    const renderProjectColor = ({ value: { key, name } }: { value: Project }) => (
+        <ProjectColorPicker
+            projectKey={key}
+            projectName={name}
+            color={projectColors[key]}
+            defaultColor={defaultProjectColor}
+            onChange={setProjectColor}
+        />
+    );
+
     const filterProjects = (query: string) => {
         const lowerQuery = (query || '').toLowerCase();
         const selected: Project[] = settings.projects || [];
@@ -136,12 +179,17 @@ export default function DefaultValuesTab({ settings, onSave }: DefaultValuesTabP
         <div className="divide-y divide-(--border-primary)">
             <div className="pb-5">
                 <div className="text-sm font-semibold text-(--text-primary) mb-1">Projects</div>
-                <p className="text-xs text-(--text-secondary) mb-3">Select the Jira projects you work with most frequently</p>
+                <p className="text-xs text-(--text-secondary) mb-3">
+                    Select the Jira projects you work with most frequently. Click the color box of a project to highlight its worklogs in
+                    the worklog calendar.
+                </p>
                 <AutocompleteMulti
                     value={settings.projects || []}
                     items={filteredProjects.map((p) => ({ value: p, label: p.name }))}
                     onFilter={filterProjects}
-                    onChange={(e) => onSave(e.value, 'projects')}
+                    onChange={(e) => projectsChanged(e.value)}
+                    renderTagPrefix={renderProjectColor}
+                    compareFn={(a: Project, b: Project) => a?.id === b?.id}
                     placeholder="Start typing a project name..."
                     className="w-full max-w-sm"
                     disabled={projects.length === 0}

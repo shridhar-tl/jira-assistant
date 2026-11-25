@@ -34,6 +34,7 @@ export interface SessionUser {
     autoUpload?: boolean;
     worklogMergeMode?: WorklogMergeMode;
     worklogRoundingMins?: WorklogRoundingInterval;
+    suggestWorklogs?: boolean;
     defaultTimeSpent?: string;
     minHours?: number;
     maxHours?: number;
@@ -58,6 +59,7 @@ export interface SessionUser {
     hasGoogleCredentials?: boolean;
     hasOutlookCredentials?: boolean;
     projects?: any[];
+    projectColors?: Record<string, string>;
     epicNameField?: { id: string; name?: string };
     storyPointField?: { id: string; name?: string };
     rapidViews?: any[];

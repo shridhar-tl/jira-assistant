@@ -1,9 +1,11 @@
-import { endOfDay, format, formatDistanceToNow, isAfter, isBefore, isSameDay, startOfDay } from 'date-fns';
+import { endOfDay, format, formatDistanceToNow, isAfter, isBefore, isSameDay, parseISO, startOfDay } from 'date-fns';
 import type { CalendarViewMode, ResolvedCalendarEntry } from 'fluxo-ui';
 
 import type { MeetingCalendarEntry, Worklog, WorklogCalendarEntry } from '@types';
 
-import type { CalendarEvent, CalendarInfoEvent } from './types';
+import { sett_page_calendar } from '@constants/settings';
+
+import type { CalendarEntryData, CalendarEvent, CalendarInfoEvent, CalendarSettings, WorklogSuggestion } from './types';
 
 export const viewModes: Array<{ value: CalendarViewMode; label: string }> = [
     { value: 'dayGridMonth', label: 'Month' },
@@ -89,7 +91,14 @@ export function getEventDuration(entry: Pick<CalendarEvent, 'start' | 'end'>): s
     return '00:00';
 }
 
-export function createWorklogEvent(entry: WorklogCalendarEntry, settings: any): CalendarEvent {
+export function getProjectColor(ticketNo: string | undefined, projectColors?: Record<string, string>): string | undefined {
+    if (!ticketNo || !projectColors) return undefined;
+    return projectColors[ticketNo.substring(0, ticketNo.lastIndexOf('-')).toUpperCase()];
+}
+
+export function createWorklogEvent(entry: WorklogCalendarEntry, settings: CalendarSettings, projectColors?: Record<string, string>): CalendarEvent {
+    const color = settings.worklogColor || sett_page_calendar.worklogColor;
+    const projectColor = getProjectColor(entry.sourceObject?.ticketNo, projectColors);
     return {
         id: entry.id,
         title: entry.title,
@@ -101,15 +110,17 @@ export function createWorklogEvent(entry: WorklogCalendarEntry, settings: any): 
             sourceObject: entry.sourceObject,
             source: 'worklog',
         },
-        color: settings.worklogColor || '#9a9cff',
-        borderColor: settings.worklogColor || '#9a9cff',
+        color,
+        borderColor: projectColor || color,
+        className: projectColor ? 'cal-project-entry' : undefined,
         editable: entry.editable,
         resizable: entry.editable,
         parentId: entry.parentId,
     };
 }
 
-export function createMeetingEvent(meeting: MeetingCalendarEntry, settings: any): CalendarEvent {
+export function createMeetingEvent(meeting: MeetingCalendarEntry, settings: CalendarSettings): CalendarEvent {
+    const color = settings.eventColor || sett_page_calendar.eventColor;
     return {
         id: meeting.id,
         title: meeting.title || 'Meeting',
@@ -122,14 +133,50 @@ export function createMeetingEvent(meeting: MeetingCalendarEntry, settings: any)
             sourceObject: meeting.sourceObject,
             source: meeting.source,
         },
-        color: settings.eventColor || '#51b749',
-        borderColor: settings.eventColor || '#51b749',
+        color,
+        borderColor: color,
         editable: false,
         resizable: false,
     };
 }
 
-export function createInfoEvent(date: Date, worklogs: Worklog[], maxHours: number, minHours: number, settings: any): CalendarEvent {
+export function createSuggestionEvent(suggestion: WorklogSuggestion, settings: CalendarSettings): CalendarEvent {
+    const color = settings.suggestionColor || sett_page_calendar.suggestionColor;
+    return {
+        id: `suggestion:${suggestion.id}`,
+        title: suggestion.targetWorklog ? `+ ${suggestion.issueKey}` : suggestion.issueKey,
+        start: suggestion.start,
+        end: suggestion.end,
+        entryType: 4,
+        data: { entryType: 4, sourceObject: suggestion },
+        color,
+        borderColor: color,
+        className: 'cal-suggestion-entry',
+        editable: false,
+        resizable: false,
+    };
+}
+
+export function createSuggestionSummaryEvent(dateKey: string, suggestions: WorklogSuggestion[], settings: CalendarSettings): CalendarEvent {
+    const color = settings.suggestionColor || sett_page_calendar.suggestionColor;
+    const date = parseISO(dateKey);
+    return {
+        id: `suggestions:${dateKey}`,
+        title: `${suggestions.length} suggested`,
+        start: startOfDay(date),
+        end: endOfDay(date),
+        allDay: true,
+        entryType: 5,
+        data: { entryType: 5, sourceObject: { dateKey, suggestions } },
+        color,
+        borderColor: color,
+        className: 'cal-suggestion-entry cal-suggestion-summary',
+        editable: false,
+        resizable: false,
+    };
+}
+
+export function createInfoEvent(date: Date, worklogs: Worklog[], maxHours: number, minHours: number, settings: CalendarSettings): CalendarEvent {
     const timeSpent = worklogs.reduce((sum, wl) => sum + getTimeSpentInSeconds(wl.timeSpent || ''), 0);
     const maxSeconds = maxHours ? maxHours * 3600 : Number.MAX_VALUE;
     const minSeconds = minHours ? minHours * 3600 : 0;
@@ -169,13 +216,13 @@ export function createInfoEvent(date: Date, worklogs: Worklog[], maxHours: numbe
     };
 }
 
-export function getDiffColor(diff: number, settings: any): string {
+export function getDiffColor(diff: number, settings: CalendarSettings): string {
     if (diff > 0) {
-        return settings.infoColor_high || '#ff6b6b';
+        return settings.infoColor_high || sett_page_calendar.infoColor_high;
     } else if (diff < 0) {
-        return settings.infoColor_less || '#ffd43b';
+        return settings.infoColor_less || sett_page_calendar.infoColor_less;
     }
-    return settings.infoColor_valid || '#51cf66';
+    return settings.infoColor_valid || sett_page_calendar.infoColor_valid;
 }
 
 export function formatMeetingTime(dateTime: string | Date | undefined): string {
@@ -212,7 +259,7 @@ export function filterEvents(events: CalendarEvent[], showMeetings: boolean, sho
         return [];
     }
 
-    const types: (1 | 2 | 3)[] = [];
+    const types: CalendarEntryData['entryType'][] = [];
     if (showWorklogs) types.push(1);
     if (showMeetings) types.push(2);
     if (showInfo) types.push(3);

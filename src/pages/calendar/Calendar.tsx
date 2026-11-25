@@ -36,9 +36,10 @@ import './Calendar.css';
 import CalendarEventContent from './CalendarEventContent';
 import CalendarSettingsDialog from './CalendarSettings';
 import CalendarToolbar from './CalendarToolbar';
-import { useCalendarContextMenu, useCalendarData, useMeetingDetails, useWorklogOperations } from './hooks';
+import { useCalendarContextMenu, useCalendarData, useMeetingDetails, useWorklogOperations, useWorklogSuggestions } from './hooks';
 import MeetingDetails from './MeetingDetails';
-import type { CalendarEntryData, CalendarEvent, CalendarSettings } from './types';
+import SuggestionEntryContent from './SuggestionEntryContent';
+import type { CalendarEntryData, CalendarEvent, CalendarSettings, WorklogSuggestion } from './types';
 
 interface CalendarProps {
     isGadget?: boolean;
@@ -106,6 +107,33 @@ export default function Calendar({
 
     const { resolveUploadOptions, mergeConfirmation } = useWorklogMerge();
 
+    const openWorklogDialog = useCallback((worklog: Partial<Worklog>) => {
+        setWorklogItem(worklog);
+        setShowAddWorklogPopup(true);
+    }, []);
+
+    const notifyWorklogModified = useCallback(() => onWorklogChange?.(GadgetActionType.WorklogModified), [onWorklogChange]);
+
+    const suggestionsEnabled = !isGadget && !!currentUser.isAtlasCloud && currentUser.suggestWorklogs !== false;
+    const { suggestionEvents, busyIds, loadRange, dismiss, acceptSuggestion, reviewSuggestion, acceptAll } = useWorklogSuggestions(
+        suggestionsEnabled,
+        events,
+        settings,
+        { addWorklog, editWorklog, openWorklogDialog, onWorklogChanged: notifyWorklogModified },
+    );
+
+    const [suggestionsShown, setSuggestionsShown] = useState(true);
+    const toggleSuggestions = useCallback(() => setSuggestionsShown((shown) => !shown), []);
+    const canToggleSuggestions = suggestionsEnabled && !!settings.showWorklogs;
+
+    const calendarEntries = useMemo(() => {
+        if (!suggestionsShown || !suggestionEvents.length) {
+            return events;
+        }
+        const visible = currentViewMode === 'dayGridMonth' ? suggestionEvents.filter((e) => e.data.entryType === 5) : suggestionEvents;
+        return [...events, ...visible];
+    }, [events, suggestionEvents, suggestionsShown, currentViewMode]);
+
     const { showMeetingDetails, currentMeetingItem, showMeetingDetailsPopup, hideMeetingDetails } = useMeetingDetails();
 
     const refreshEvents = useCallback(() => {
@@ -113,6 +141,13 @@ export default function Calendar({
             fetchEvents(dateRangeRef.current.start, dateRangeRef.current.end);
         }
     }, [fetchEvents]);
+
+    const reloadCalendar = useCallback(() => {
+        refreshEvents();
+        if (dateRangeRef.current) {
+            loadRange(dateRangeRef.current.start, dateRangeRef.current.end, 'reload');
+        }
+    }, [refreshEvents, loadRange]);
 
     useEffect(() => {
         if (refreshKey) {
@@ -273,9 +308,11 @@ export default function Calendar({
                 setShowAddWorklogPopup(true);
             } else if (data.entryType === 2) {
                 showMeetingDetailsPopup(data.sourceObject as Meeting);
+            } else if (data.entryType === 4) {
+                reviewSuggestion(data.sourceObject as WorklogSuggestion);
             }
         },
-        [showMeetingDetailsPopup],
+        [showMeetingDetailsPopup, reviewSuggestion],
     );
 
     const handleEntryContextMenu = useCallback(
@@ -329,9 +366,10 @@ export default function Calendar({
             if (datesChanged) {
                 dateRangeRef.current = range;
                 fetchEvents(range.start, range.end);
+                loadRange(range.start, range.end, 'navigate');
             }
         },
-        [fetchEvents],
+        [fetchEvents, loadRange],
     );
 
     const handleVisibleRangeChange = useCallback(
@@ -340,15 +378,17 @@ export default function Calendar({
             if (!navRange) {
                 dateRangeRef.current = range;
                 fetchEvents(range.start, range.end);
+                loadRange(range.start, range.end, 'navigate');
                 return;
             }
             const expandsStart = range.start.getTime() < navRange.start.getTime();
             const expandsEnd = range.end.getTime() > navRange.end.getTime();
             if (expandsStart || expandsEnd) {
                 fetchEvents(range.start, range.end, 'merge');
+                loadRange(range.start, range.end, 'expand');
             }
         },
-        [fetchEvents],
+        [fetchEvents, loadRange],
     );
 
     const handleViewChange = useCallback(
@@ -413,6 +453,21 @@ export default function Calendar({
     // Custom entry renderer
     const renderEntry = useCallback(
         (entry: ResolvedCalendarEntry, context: EntryRenderContext) => {
+            const data = (entry.data || entry.originalEntry?.data) as unknown as CalendarEntryData;
+            if (data.entryType === 4 || data.entryType === 5) {
+                return (
+                    <SuggestionEntryContent
+                        data={data}
+                        context={context}
+                        color={entry.color || sett_page_calendar.suggestionColor}
+                        busyIds={busyIds}
+                        onAccept={acceptSuggestion}
+                        onAcceptAll={acceptAll}
+                        onDismiss={dismiss}
+                    />
+                );
+            }
+
             return (
                 <CalendarEventContent
                     entry={entry}
@@ -448,6 +503,10 @@ export default function Calendar({
             cloneWorklog,
             createWorklogFromMeeting,
             onWorklogChange,
+            busyIds,
+            acceptSuggestion,
+            acceptAll,
+            dismiss,
         ],
     );
 
@@ -463,15 +522,30 @@ export default function Calendar({
                 fullView={fullView}
                 zoomIn={zoomIn}
                 isGadget={isGadget}
+                suggestionsShown={suggestionsShown}
+                onToggleSuggestions={canToggleSuggestions ? toggleSuggestions : undefined}
                 onToggleDisplayHours={() => setFullView(!fullView)}
                 onToggleZoom={() => setZoomIn(!zoomIn)}
                 onUploadAll={handleUploadAll}
-                onRefresh={refreshEvents}
+                onRefresh={reloadCalendar}
                 onSettings={() => setShowSettingsPopup(true)}
                 injectedComponents={!isGadget && components}
             />
         ),
-        [currentViewMode, pendingWorklogCount, isLoading, uploading, fullView, zoomIn, isGadget, handleUploadAll, refreshEvents],
+        [
+            currentViewMode,
+            pendingWorklogCount,
+            isLoading,
+            uploading,
+            fullView,
+            zoomIn,
+            isGadget,
+            handleUploadAll,
+            reloadCalendar,
+            suggestionsShown,
+            canToggleSuggestions,
+            toggleSuggestions,
+        ],
     );
 
     const goToPrevPeriod = useCallback(() => apiRef.current?.prev(), []);
@@ -535,6 +609,7 @@ export default function Calendar({
             snapDuration: zoomIn ? 5 : 15,
             minEntryHeight: settings.readableEvents ? 40 : 20,
             rowBanding: settings.rowBanding || false,
+            entryAppearance: settings.glassyEntries ? ('glass' as const) : ('solid' as const),
             fixedWeekCount: false,
             dayMaxEntries: true,
             entryOrder: compareCalendarEntries,
@@ -553,7 +628,7 @@ export default function Calendar({
             <div className="calendar-container flex-1">
                 <FluxoCalendar
                     apiRef={apiRef}
-                    entries={events}
+                    entries={calendarEntries}
                     initialView={currentViewMode}
                     height="100%"
                     editable
@@ -563,6 +638,7 @@ export default function Calendar({
                     navLinks
                     showNavigationPicker={!isGadget}
                     navigationPickerIconOnly
+                    compact
                     hideToolbar={useEmbeddedHeader}
                     hideToolbarViewSwitcher={isGadget}
                     navigationLayout="today-between"
@@ -596,6 +672,7 @@ export default function Calendar({
             {showSettingsPopup && (
                 <CalendarSettingsDialog
                     settings={settings}
+                    showSuggestionColor={suggestionsEnabled}
                     onDone={(newSettings: CalendarSettings) => {
                         saveSettings(newSettings);
                         setShowSettingsPopup(false);
