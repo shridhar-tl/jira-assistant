@@ -1,5 +1,6 @@
 import { Filter, FilterConditions, kvs, MetadataField, Sort } from '@forge/kvs';
 
+import { isConditionFailure, storageFailureText } from '../../../../common/kvs-condition';
 import { batchGetChunkSize, roomLifetimeHours, serverRetry } from '../constants';
 import { isRateLimitError, withRateLimitRetry } from '../rate-limit';
 
@@ -40,16 +41,6 @@ export interface EntityGateway {
     query<T extends Record<string, unknown>>(query: IndexQuery): Promise<T[]>;
 }
 
-const conditionFailurePattern = /condition|check.*fail|precondition|already exists/i;
-
-function failureText(error: unknown): string {
-    if (typeof error !== 'object' || error === null) {
-        return String(error);
-    }
-    const record = error as Record<string, unknown>;
-    return `${String(record.code ?? '')} ${String(record.message ?? '')}`;
-}
-
 function buildFilter(conditions: EntityCondition[]) {
     const clause = (condition: EntityCondition) => {
         switch (condition.operator) {
@@ -78,8 +69,8 @@ function wrapFailure(error: unknown): never {
     if (isRateLimitError(error)) {
         throw error;
     }
-    if (conditionFailurePattern.test(failureText(error))) {
-        throw new ConditionFailedError(failureText(error));
+    if (isConditionFailure(error)) {
+        throw new ConditionFailedError(storageFailureText(error));
     }
     throw error;
 }

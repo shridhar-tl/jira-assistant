@@ -19,6 +19,14 @@ interface SprintIssue {
     fields: Record<string, unknown>;
 }
 
+interface SprintIssuePage {
+    issues?: SprintIssue[];
+    total?: number;
+}
+
+const sprintIssuePageSize = 100;
+const maxSprintIssuePages = 50;
+
 type EventHandler = (event: SprintEvent) => Promise<void>;
 
 const eventsHandlerMap: Record<string, EventHandler> = {
@@ -36,6 +44,24 @@ export async function onSprintAction(event: SprintEvent): Promise<void> {
     }
 }
 
+async function readSprintIssues(sprintId: number, fields: string[]): Promise<SprintIssue[] | null> {
+    const issues: SprintIssue[] = [];
+    for (let page = 0; page < maxSprintIssuePages; page++) {
+        const query = new URLSearchParams({ startAt: String(issues.length), maxResults: String(sprintIssuePageSize), fields: fields.join(','), jql: 'issuetype not in subTaskIssueTypes()' });
+        const response = await asApp().requestJira(route`/rest/agile/1.0/sprint/${sprintId}/issue?${query}`, { headers: { Accept: 'application/json' } });
+        if (!response.ok) {
+            console.error('Unable to read the issues of sprint', sprintId, response.status, await response.text());
+            return null;
+        }
+        const { issues: pageIssues = [], total = 0 }: SprintIssuePage = await response.json();
+        issues.push(...pageIssues);
+        if (!pageIssues.length || issues.length >= total) {
+            break;
+        }
+    }
+    return issues;
+}
+
 async function onSprintStarted(event: SprintEvent): Promise<void> {
     const sprintId = event.sprint.id;
 
@@ -45,29 +71,17 @@ async function onSprintStarted(event: SprintEvent): Promise<void> {
     }
 
     const customFieldsResponse = await asApp().requestJira(route`/rest/api/3/field`);
-    const customFields: JiraField[] = await customFieldsResponse.json();
+    const customFields: JiraField[] = customFieldsResponse.ok ? await customFieldsResponse.json() : [];
     const storyPointFieldId = customFields.find((field) => field.name.toLowerCase() === 'story points')?.id;
 
     if (!storyPointFieldId) {
         console.error('onSprintStarted: Story points field not found');
     }
 
-    const fieldsParam = storyPointFieldId ? `key,${storyPointFieldId}` : 'key';
-    const jqlParam = encodeURIComponent('issuetype not in subTaskIssueTypes()');
-
-    const response = await asApp().requestJira(
-        route`/rest/agile/1.0/sprint/${sprintId}/issue?maxResults=1000&fields=${fieldsParam}&jql=${jqlParam}`,
-        {
-            headers: {
-                Accept: 'application/json',
-            },
-        },
-    );
-
-    const { issues }: { issues?: SprintIssue[] } = await response.json();
+    const issues = await readSprintIssues(sprintId, storyPointFieldId ? ['key', storyPointFieldId] : ['key']);
 
     if (!issues?.length) {
-        console.error('No issues found in sprint', sprintId, issues);
+        console.error('No issues found in sprint', sprintId);
         return;
     }
 

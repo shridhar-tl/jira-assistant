@@ -1,9 +1,10 @@
 import { asUser, route } from '@forge/api';
 import type Resolver from '@forge/resolver';
 
+import { defineResolver, rejectWith } from '../../../common/resolver-result';
 import { getJsonSize, maxPropertyBytes } from '../shared/property-limits';
 
-import { ensureBoardAccess, rejectWith } from './board-access';
+import { ensureBoardAccess } from './board-access';
 import { registerLeaveResolvers } from './leave-resolvers';
 import { registerPiResolvers } from './pi-resolvers';
 
@@ -42,7 +43,7 @@ async function writeBoardProperty({ boardId, propertyKey, value }: BoardProperty
 }
 
 export function registerPlannerResolvers(resolver: Resolver) {
-    resolver.define('PlannerBoardProperty', (req) => writeBoardProperty(req.payload as unknown as BoardPropertyPayload));
+    defineResolver(resolver, 'PlannerBoardProperty', (req) => writeBoardProperty(req.payload as unknown as BoardPropertyPayload));
     registerLeaveResolvers(resolver);
     registerPiResolvers(resolver);
 }

@@ -1,11 +1,7 @@
 import { asUser, route } from '@forge/api';
 import { kvs } from '@forge/kvs';
 
-export interface ResolverError {
-    status: number;
-    statusText: string;
-    text: string;
-}
+import { rejectWith } from '../../../common/resolver-result';
 
 interface BoardListPage {
     values?: { id?: unknown }[];
@@ -34,21 +30,6 @@ const memoryCacheLimit = 500;
 
 const memoryCache = new Map<string, AccessCache>();
 const adminCache = new Map<string, { at: number; isAdmin: boolean }>();
-
-export class AccessError extends Error {
-    constructor(
-        readonly status: number,
-        message: string,
-    ) {
-        super(message);
-        this.name = 'AccessError';
-    }
-}
-
-export function rejectWith(status: number, text: string): Promise<never> {
-    const error: ResolverError = { status, statusText: text, text };
-    return Promise.reject(error);
-}
 
 export function isBoardId(value: unknown): value is number {
     return typeof value === 'number' && Number.isInteger(value) && value > 0;

@@ -232,11 +232,19 @@ app:
               - listed
             range:
               - lastActivity
+      - name: pi-version
+        attributes:
+          version:
+            type: integer
       - name: poker-counter
         attributes:
           roomId:
             type: string
           revision:
+            type: integer
+      - name: poker-usage
+        attributes:
+          count:
             type: integer
       - name: poker-participant
         attributes:

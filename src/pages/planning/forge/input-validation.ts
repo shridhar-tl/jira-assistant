@@ -1,6 +1,8 @@
-export class InvalidInputError extends Error {
+import { ResolverError } from '../../../common/resolver-result';
+
+export class InvalidInputError extends ResolverError {
     constructor(message: string) {
-        super(message);
+        super(400, message);
         this.name = 'InvalidInputError';
     }
 }

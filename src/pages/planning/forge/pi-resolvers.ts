@@ -2,11 +2,11 @@ import { asUser, route } from '@forge/api';
 import { kvs, WhereConditions } from '@forge/kvs';
 import type Resolver from '@forge/resolver';
 
+import { defineResolver, rejectWith, ResolverError } from '../../../common/resolver-result';
 import { applyDependencyResponse, applyRiskResponse, isValidItemResponse, normalizeDocument, normalizeSummary, rangesOverlap, toPlanSummary } from '../pi-planner/pi-items';
 import type { PiArt, PiDocument, PiIncomingResult, PiItemResponse, PiListResult, PiProgramSettings, PiSummary, PiUserRef } from '../pi-planner/pi-types';
 
-import { AccessError, getVisibleBoards } from './board-access';
-import { InvalidInputError } from './input-validation';
+import { getVisibleBoards } from './board-access';
 import {
     answerNotAllowedMessage,
     applyAttribution,
@@ -22,6 +22,7 @@ import {
     restrictedTeamName,
 } from './pi-access';
 import { piIdPattern, validateArt, validateDocument, validateSettings } from './pi-validation';
+import { deleteVersioned, type Transaction, writeVersioned } from './version-guard';
 
 interface CallContext {
     accountId?: string;
@@ -56,6 +57,7 @@ const settingsKey = 'pi-settings';
 const docKeyPrefix = 'pi-doc-';
 const maxDocSize = 230000;
 const maxIncomingPlans = 20;
+const respondAttempts = 3;
 const otherPlanName = 'Another plan';
 const deleteHiddenMessage = 'This plan has teams whose boards you cannot see, so only someone who can see all of them can delete it.';
 const deleteArtHiddenMessage = 'This program has teams whose boards you cannot see, so only someone who can see all of them can delete it.';
@@ -71,24 +73,6 @@ const defaultSettings: PiProgramSettings = {
     featureIssueTypes: [],
     dependencyLinkTypes: [{ name: 'Blocks', outwardBlocks: true }],
 };
-
-function reject(status: number, message: string) {
-    return Promise.reject({ status, statusText: message, text: message });
-}
-
-async function guarded<T>(run: () => Promise<T>): Promise<T> {
-    try {
-        return await run();
-    } catch (err) {
-        if (err instanceof InvalidInputError) {
-            return reject(400, err.message);
-        }
-        if (err instanceof AccessError) {
-            return reject(err.status, err.message);
-        }
-        throw err;
-    }
-}
 
 function isPiId(value: unknown): value is string {
     return typeof value === 'string' && piIdPattern.test(value);
@@ -148,7 +132,7 @@ async function canEdit(accountId: string | undefined, settings: PiProgramSetting
 async function ensureEditor(context: CallContext) {
     const settings = await getSettings();
     if (!(await canEdit(context.accountId, settings))) {
-        return reject(403, 'You are not allowed to change program plans. Ask an editor listed in the plan settings.');
+        return rejectWith(403, 'You are not allowed to change program plans. Ask an editor listed in the plan settings.');
     }
     return settings;
 }
@@ -180,12 +164,37 @@ async function readDocument(id: string): Promise<PiDocument | null> {
     return stored ? normalizeDocument(stored) : null;
 }
 
-async function writeDocument(doc: PiDocument) {
+async function writeDocument(doc: PiDocument, readVersion: number | null): Promise<boolean> {
     if (JSON.stringify(doc).length > maxDocSize) {
-        return reject(413, 'The plan is too large to be saved.');
+        return rejectWith(413, 'The plan is too large to be saved.');
     }
-    await kvs.transact().set(docKeyPrefix + doc.id, doc).set(summaryKeyPrefix + doc.id, toPlanSummary(doc)).execute();
-    return doc;
+    return writeVersioned(docKeyPrefix + doc.id, readVersion, doc.version, (transaction) =>
+        transaction.set(docKeyPrefix + doc.id, doc).set(summaryKeyPrefix + doc.id, toPlanSummary(doc)),
+    );
+}
+
+async function planConflict(id: string, context: CallContext) {
+    const latest = await readDocument(id);
+    if (!latest) {
+        return rejectWith(404, 'This plan does not exist any more.');
+    }
+    const visible = await getVisibleBoards(context.accountId, boardsOfDocument(latest));
+    if (!isVisiblePlan(teamBoards(latest.teams), visible)) {
+        return rejectWith(404, 'This plan does not exist any more.');
+    }
+    return { ok: false, conflict: true, latest: redactDocument(latest, visible) };
+}
+
+async function artConflict(id: string, context: CallContext) {
+    const latest = (await kvs.get(artKeyPrefix + id)) as PiArt | undefined;
+    if (!latest) {
+        return rejectWith(404, 'This program does not exist any more.');
+    }
+    const visible = await getVisibleBoards(context.accountId, teamBoards(latest.teams));
+    if (!isVisiblePlan(teamBoards(latest.teams), visible)) {
+        return rejectWith(404, 'This program does not exist any more.');
+    }
+    return { ok: false, conflict: true, latest: redactArt(latest, visible) };
 }
 
 const teamBoards = (teams: { boardId: number }[] | undefined) => (teams || []).map((t) => t.boardId);
@@ -208,7 +217,7 @@ async function listPlans(context: CallContext): Promise<PiListResult> {
 
 async function getPlan(payload: { id?: unknown }, context: CallContext) {
     if (!isPiId(payload?.id)) {
-        return reject(400, 'Invalid plan');
+        return rejectWith(400, 'Invalid plan');
     }
     const doc = await readDocument(payload.id);
     if (!doc) {
@@ -225,7 +234,7 @@ async function savePi(payload: SavePayload, context: CallContext) {
     const existing = await readDocument(incoming.id);
     const visible = await getVisibleBoards(context.accountId, [...boardsOfDocument(incoming), ...(existing ? boardsOfDocument(existing) : [])]);
     if (existing && !isVisiblePlan(teamBoards(existing.teams), visible)) {
-        return reject(404, 'This plan does not exist any more.');
+        return rejectWith(404, 'This plan does not exist any more.');
     }
     if (existing && existing.version !== incoming.version) {
         return { ok: false, conflict: true, latest: redactDocument(existing, visible) };
@@ -243,30 +252,31 @@ async function savePi(payload: SavePayload, context: CallContext) {
         updatedBy: context.accountId || '',
         updatedByUser: caller,
     };
-    await writeDocument(toSave);
+    if (!(await writeDocument(toSave, existing ? existing.version : null))) {
+        return planConflict(incoming.id, context);
+    }
     return { ok: true, doc: redactDocument(toSave, visible) };
 }
 
 async function deletePi(payload: DeletePayload, context: CallContext) {
     if (!isPiId(payload?.id) || !isVersion(payload.version)) {
-        return reject(400, 'Invalid plan');
+        return rejectWith(400, 'Invalid plan');
     }
     await ensureEditor(context);
 
-    const existing = await readDocument(payload.id);
-    if (existing) {
-        const visible = await getVisibleBoards(context.accountId, boardsOfDocument(existing));
-        await ensureAllVisible(teamBoards(existing.teams), visible, deleteHiddenMessage);
-        if (existing.version !== payload.version) {
-            return { ok: false, conflict: true, latest: redactDocument(existing, visible) };
-        }
+    const { id } = payload;
+    const remove = (transaction: Transaction) => transaction.delete(docKeyPrefix + id).delete(summaryKeyPrefix + id);
+    const existing = await readDocument(id);
+    if (!existing) {
+        await remove(kvs.transact()).execute();
+        return { ok: true };
     }
-    await kvs
-        .transact()
-        .delete(docKeyPrefix + payload.id)
-        .delete(summaryKeyPrefix + payload.id)
-        .execute();
-    return { ok: true };
+    const visible = await getVisibleBoards(context.accountId, boardsOfDocument(existing));
+    await ensureAllVisible(teamBoards(existing.teams), visible, deleteHiddenMessage);
+    if (existing.version !== payload.version) {
+        return { ok: false, conflict: true, latest: redactDocument(existing, visible) };
+    }
+    return (await deleteVersioned(docKeyPrefix + id, existing.version, remove)) ? { ok: true } : planConflict(id, context);
 }
 
 async function saveArt(payload: { art: unknown }, context: CallContext) {
@@ -276,6 +286,9 @@ async function saveArt(payload: { art: unknown }, context: CallContext) {
     const key = artKeyPrefix + art.id;
     const existing = (await kvs.get(key)) as PiArt | undefined;
     const visible = await getVisibleBoards(context.accountId, [...teamBoards(art.teams), ...teamBoards(existing?.teams)]);
+    if (existing && !isVisiblePlan(teamBoards(existing.teams), visible)) {
+        return rejectWith(404, 'This program does not exist any more.');
+    }
     if (existing && existing.version !== art.version) {
         return { ok: false, conflict: true, latest: redactArt(existing, visible) };
     }
@@ -286,7 +299,7 @@ async function saveArt(payload: { art: unknown }, context: CallContext) {
         }
         const stored = storedTeams.get(t.boardId);
         if (!stored) {
-            throw new AccessError(403, noAccessToBoardMessage);
+            throw new ResolverError(403, noAccessToBoardMessage);
         }
         return { boardId: stored.boardId, name: stored.name };
     });
@@ -306,17 +319,20 @@ async function saveArt(payload: { art: unknown }, context: CallContext) {
         updated: now,
         updatedBy: caller,
     };
-    await kvs.set(key, toSave);
+    if (!(await writeVersioned(key, existing ? existing.version : null, toSave.version, (transaction) => transaction.set(key, toSave)))) {
+        return artConflict(art.id, context);
+    }
     return { ok: true, art: redactArt(toSave, visible) };
 }
 
 async function deleteArt(payload: DeletePayload, context: CallContext) {
     if (!isPiId(payload?.id) || !isVersion(payload.version)) {
-        return reject(400, 'Invalid ART');
+        return rejectWith(400, 'Invalid ART');
     }
     await ensureEditor(context);
 
-    const key = artKeyPrefix + payload.id;
+    const { id } = payload;
+    const key = artKeyPrefix + id;
     const existing = (await kvs.get(key)) as PiArt | undefined;
     if (existing) {
         const visible = await getVisibleBoards(context.accountId, teamBoards(existing.teams));
@@ -325,17 +341,20 @@ async function deleteArt(payload: DeletePayload, context: CallContext) {
             return { ok: false, conflict: true, latest: redactArt(existing, visible) };
         }
     }
-    if ((await readSummaries()).some((s) => s.artId === payload.id)) {
-        return reject(409, 'This ART still has plans. Delete them or move them to another ART first.');
+    if ((await readSummaries()).some((s) => s.artId === id)) {
+        return rejectWith(409, 'This ART still has plans. Delete them or move them to another ART first.');
     }
-    await kvs.delete(key);
-    return { ok: true };
+    if (!existing) {
+        await kvs.delete(key);
+        return { ok: true };
+    }
+    return (await deleteVersioned(key, existing.version, (transaction) => transaction.delete(key))) ? { ok: true } : artConflict(id, context);
 }
 
 /** Dependencies and risks raised in other plans on the teams of this plan, e.g. by a team of another ART. */
 async function getIncoming(payload: { id?: unknown }, context: CallContext): Promise<PiIncomingResult> {
     if (!isPiId(payload?.id)) {
-        return reject(400, 'Invalid plan');
+        return rejectWith(400, 'Invalid plan');
     }
     const doc = await readDocument(payload.id);
     if (!doc) {
@@ -374,35 +393,43 @@ function answeringBoard(doc: PiDocument, response: PiItemResponse): number | nul
 /** The team a dependency or risk is raised on answers it. Only the answer fields are changed in the plan that owns the item. */
 async function respond(payload: RespondPayload, context: CallContext) {
     if (!payload || !isPiId(payload.piId) || !isValidItemResponse(payload.response)) {
-        return reject(400, 'Invalid response');
+        return rejectWith(400, 'Invalid response');
     }
     await ensureEditor(context);
 
-    const doc = await readDocument(payload.piId);
-    if (!doc) {
-        return reject(404, 'The plan of this item does not exist any more.');
-    }
-    const { response } = payload;
-    const boardId = answeringBoard(doc, response);
-    if (typeof boardId === 'number' && !(await getVisibleBoards(context.accountId, [boardId])).has(boardId)) {
-        return reject(403, answerNotAllowedMessage);
-    }
     const caller = await getCaller(context);
+    for (let attempt = 1; attempt <= respondAttempts; attempt++) {
+        const doc = await readDocument(payload.piId);
+        if (!doc) {
+            return rejectWith(404, 'The plan of this item does not exist any more.');
+        }
+        if (await writeDocument(await answeredDocument(doc, payload.response, context, caller), doc.version)) {
+            return { ok: true };
+        }
+    }
+    return rejectWith(409, 'The plan is being changed by someone else. Please try again.');
+}
+
+async function answeredDocument(doc: PiDocument, response: PiItemResponse, context: CallContext, caller: PiUserRef | null): Promise<PiDocument> {
+    const boardId = answeringBoard(doc, response);
+    const visible = await getVisibleBoards(context.accountId, typeof boardId === 'number' ? [boardId] : teamBoards(doc.teams));
+    if (typeof boardId === 'number' ? !visible.has(boardId) : !isVisiblePlan(teamBoards(doc.teams), visible)) {
+        return rejectWith(403, answerNotAllowedMessage);
+    }
     const now = new Date().toISOString();
     let next: PiDocument;
     if (response.kind === 'dependency') {
         if (!doc.dependencies.some((d) => d.id === response.itemId)) {
-            return reject(404, 'This dependency does not exist any more.');
+            return rejectWith(404, 'This dependency does not exist any more.');
         }
         next = { ...doc, dependencies: doc.dependencies.map((d) => (d.id === response.itemId ? applyDependencyResponse(d, response.response, caller, now) : d)) };
     } else {
         if (!doc.risks.some((r) => r.id === response.itemId)) {
-            return reject(404, 'This risk does not exist any more.');
+            return rejectWith(404, 'This risk does not exist any more.');
         }
         next = { ...doc, risks: doc.risks.map((r) => (r.id === response.itemId ? applyRiskResponse(r, response.response, caller, now) : r)) };
     }
-    await writeDocument({ ...next, version: doc.version + 1, updated: now, updatedBy: context.accountId || '', updatedByUser: caller });
-    return { ok: true };
+    return { ...next, version: doc.version + 1, updated: now, updatedBy: context.accountId || '', updatedByUser: caller };
 }
 
 async function saveSettings(payload: { settings: unknown }, context: CallContext) {
@@ -421,19 +448,21 @@ async function saveSettings(payload: { settings: unknown }, context: CallContext
             names: { ...toSave.editors.names, [context.accountId]: caller?.displayName || context.accountId },
         };
     }
-    await kvs.set(settingsKey, toSave);
+    if (!(await writeVersioned(settingsKey, current.version, toSave.version, (transaction) => transaction.set(settingsKey, toSave)))) {
+        return { ok: false, conflict: true, latest: await getSettings() };
+    }
     return { ok: true, settings: toSave };
 }
 
 export function registerPiResolvers(resolver: Resolver) {
     const contextOf = (req: { context: unknown }) => req.context as CallContext;
-    resolver.define('PiList', (req) => guarded(() => listPlans(contextOf(req))));
-    resolver.define('PiGet', (req) => guarded(() => getPlan(req.payload as { id?: unknown }, contextOf(req))));
-    resolver.define('PiSave', (req) => guarded(() => savePi(req.payload as unknown as SavePayload, contextOf(req))));
-    resolver.define('PiDelete', (req) => guarded(() => deletePi(req.payload as unknown as DeletePayload, contextOf(req))));
-    resolver.define('PiArtSave', (req) => guarded(() => saveArt(req.payload as { art: unknown }, contextOf(req))));
-    resolver.define('PiArtDelete', (req) => guarded(() => deleteArt(req.payload as unknown as DeletePayload, contextOf(req))));
-    resolver.define('PiIncoming', (req) => guarded(() => getIncoming(req.payload as { id?: unknown }, contextOf(req))));
-    resolver.define('PiRespond', (req) => guarded(() => respond(req.payload as unknown as RespondPayload, contextOf(req))));
-    resolver.define('PiSettingsSave', (req) => guarded(() => saveSettings(req.payload as { settings: unknown }, contextOf(req))));
+    defineResolver(resolver, 'PiList', (req) => listPlans(contextOf(req)));
+    defineResolver(resolver, 'PiGet', (req) => getPlan(req.payload as { id?: unknown }, contextOf(req)));
+    defineResolver(resolver, 'PiSave', (req) => savePi(req.payload as unknown as SavePayload, contextOf(req)));
+    defineResolver(resolver, 'PiDelete', (req) => deletePi(req.payload as unknown as DeletePayload, contextOf(req)));
+    defineResolver(resolver, 'PiArtSave', (req) => saveArt(req.payload as { art: unknown }, contextOf(req)));
+    defineResolver(resolver, 'PiArtDelete', (req) => deleteArt(req.payload as unknown as DeletePayload, contextOf(req)));
+    defineResolver(resolver, 'PiIncoming', (req) => getIncoming(req.payload as { id?: unknown }, contextOf(req)));
+    defineResolver(resolver, 'PiRespond', (req) => respond(req.payload as unknown as RespondPayload, contextOf(req)));
+    defineResolver(resolver, 'PiSettingsSave', (req) => saveSettings(req.payload as { settings: unknown }, contextOf(req)));
 }

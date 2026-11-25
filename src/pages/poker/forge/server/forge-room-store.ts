@@ -587,10 +587,7 @@ export function createForgePokerAdapter(options: ForgeStoreOptions): ForgePokerA
                 }
                 operations.push({ kind: 'delete', entity: pokerEntities.vote, key: voteKeyOf(roomId, header.issueId) });
             }
-            for (const memberKey of Object.values(roster?.members ?? {})) {
-                operations.push({ kind: 'delete', entity: pokerEntities.participant, key: participantKeyOf(roomId, memberKey) });
-            }
-
+            const memberKeys = new Set(Object.values(roster?.members ?? {}));
             for (const group of [participantGroups.invite, participantGroups.request]) {
                 const entities = await gateway.query<ParticipantEntity>({
                     entity: pokerEntities.participant,
@@ -599,8 +596,11 @@ export function createForgePokerAdapter(options: ForgeStoreOptions): ForgePokerA
                     limit: directoryLimit,
                 });
                 for (const entity of entities) {
-                    operations.push({ kind: 'delete', entity: pokerEntities.participant, key: participantKeyOf(roomId, entity.memberKey) });
+                    memberKeys.add(entity.memberKey);
                 }
+            }
+            for (const memberKey of memberKeys) {
+                operations.push({ kind: 'delete', entity: pokerEntities.participant, key: participantKeyOf(roomId, memberKey) });
             }
 
             operations.push({ kind: 'delete', entity: pokerEntities.counter, key: counterKeyOf(roomId) });
@@ -628,9 +628,12 @@ export function createForgePokerAdapter(options: ForgeStoreOptions): ForgePokerA
         },
 
         async putMember(roomId, member) {
-            await changeRoster(
+            const result = await changeRoster(
                 roomId,
                 (members) => {
+                    if (Object.entries(members).some(([sid, memberKey]) => memberKey === member.memberKey && sid !== member.sid)) {
+                        return false;
+                    }
                     members[member.sid] = member.memberKey;
                     return true;
                 },
@@ -640,6 +643,7 @@ export function createForgePokerAdapter(options: ForgeStoreOptions): ForgePokerA
                     return [{ kind: 'set', entity: pokerEntities.participant, key: participantKeyOf(roomId, member.memberKey), value: entity, when: conditionOn(existing) }];
                 },
             );
+            return result?.changed === true;
         },
 
         async updateMember(roomId, sid, patch: MemberPatch) {

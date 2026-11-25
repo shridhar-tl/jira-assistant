@@ -48,6 +48,10 @@ function hostingMessage(roomName: string): string {
     return `You are hosting the room "${roomName}". Close it before you create or join another room.`;
 }
 
+const otherHostMessage = 'This member is hosting another room, so they cannot host this one as well.';
+
+const byCreation = (a: { roomId: string; created: string }, b: { roomId: string; created: string }) => a.created.localeCompare(b.created) || a.roomId.localeCompare(b.roomId);
+
 function payloadOf(request: PokerRequest): Payload {
     return typeof request.payload === 'object' && request.payload !== null ? request.payload : {};
 }
@@ -140,11 +144,31 @@ export function createPokerHandlers({ adapter, publisher, limiter, now }: PokerH
         return sid;
     }
 
-    async function ensureNotHosting(accountId: string, exceptRoomId?: string): Promise<void> {
-        const rooms = await adapter.directory.listRoomsOfMember(accountId, directoryLimit);
-        const hosted = rooms.find((room) => room.moderatorKey === accountId && room.roomId !== exceptRoomId);
+    async function hostedRooms(accountId: string) {
+        return (await adapter.directory.listRoomsOfMember(accountId, directoryLimit)).filter((room) => room.moderatorKey === accountId);
+    }
+
+    async function ensureNotHosting(accountId: string, exceptRoomId?: string, message?: string): Promise<void> {
+        const hosted = (await hostedRooms(accountId)).find((room) => room.roomId !== exceptRoomId);
         if (hosted) {
-            throw new EngineError('CONFLICT', hostingMessage(hosted.roomName));
+            throw new EngineError('CONFLICT', message ?? hostingMessage(hosted.roomName));
+        }
+    }
+
+    /** Two rooms created at the same moment both pass the first check, so the later one is removed again and only the first is kept. */
+    async function keepOnlyFirstHosted(accountId: string, roomId: string): Promise<void> {
+        const hosted = (await hostedRooms(accountId)).sort(byCreation);
+        if (hosted[0] && hosted[0].roomId !== roomId && hosted.some((room) => room.roomId === roomId)) {
+            await adapter.store.removeRoom(roomId);
+            throw new EngineError('CONFLICT', hostingMessage(hosted[0].roomName));
+        }
+    }
+
+    /** A host cannot join other rooms, so the requests to join them that are still waiting are withdrawn when the room is created. */
+    async function withdrawJoinRequests(accountId: string, hostedRoomId: string): Promise<void> {
+        const pending = (await adapter.directory.listJoinRequestsBy(accountId, directoryLimit)).filter((request) => request.status === 'pending' && request.roomId !== hostedRoomId);
+        for (const request of pending) {
+            await publishEvents(request.roomId, await engine.rooms.cancelJoinRequest(request.roomId, accountId), null);
         }
     }
 
@@ -254,6 +278,8 @@ export function createPokerHandlers({ adapter, publisher, limiter, now }: PokerH
             listed: typeof payload.listed === 'boolean' ? payload.listed : undefined,
             invitees,
         });
+        await keepOnlyFirstHosted(accountId, room.roomId);
+        await withdrawJoinRequests(accountId, room.roomId);
         return await sessionFor(room, member.sid);
     }
 
@@ -282,6 +308,15 @@ export function createPokerHandlers({ adapter, publisher, limiter, now }: PokerH
     async function actionPayload(accountId: string, sid: string, roomId: string, action: string, payload: Payload, siteUrl: string | undefined): Promise<Payload> {
         if (issueActions.has(action)) {
             return sanitizeIssuePayload(action, payload, siteUrl);
+        }
+        if (action === 'claimModerator') {
+            await ensureNotHosting(accountId, roomId);
+        }
+        if (action === 'transferModerator') {
+            const target = typeof payload.sid === 'string' ? await adapter.store.getMember(roomId, payload.sid) : null;
+            if (target) {
+                await ensureNotHosting(target.memberKey, roomId, otherHostMessage);
+            }
         }
         if (action === 'inviteMembers') {
             const room = await engine.rooms.requireRoom(roomId);

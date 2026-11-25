@@ -1,5 +1,5 @@
-import { invoke } from '@forge/bridge';
+import { invokeResolver } from '../../../common/invoke-resolver.plugin';
 
 export function writeTeamProperty<T>(boardId: number, propertyKey: string, value: T): Promise<unknown> {
-    return invoke('PlannerBoardProperty', { boardId, propertyKey, value });
+    return invokeResolver('PlannerBoardProperty', { boardId, propertyKey, value });
 }

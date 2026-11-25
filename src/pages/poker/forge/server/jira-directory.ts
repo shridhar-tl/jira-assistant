@@ -92,9 +92,9 @@ export async function resolveJiraUsers(raw: unknown[], limit: number): Promise<P
         if (!response.ok) {
             throw new EngineError('SERVER_ERROR', 'The people to invite could not be looked up in Jira. Please try again.');
         }
-        const body = (await response.json()) as { values?: RawUser[] };
+        const body = (await response.json()) as { values?: (RawUser | null)[] };
         (body.values || [])
-            .filter((user) => user.accountId && user.active !== false)
+            .filter((user): user is RawUser => !!user && typeof user.accountId === 'string' && user.active !== false)
             .forEach((user) => {
                 const ref: PokerUserRef = { id: user.accountId as string, name: cleanName(user.displayName) };
                 if (typeof user.emailAddress === 'string' && user.emailAddress.length <= 254) {
@@ -122,8 +122,8 @@ export async function findRestrictedIssues(keys: string[]): Promise<string[]> {
         if (!response.ok) {
             throw new EngineError('SERVER_ERROR', 'Your access to the issues of this room could not be checked. Please try again.');
         }
-        const body = (await response.json()) as { issues?: { key?: string }[] };
-        (body.issues || []).forEach((issue) => issue.key && visible.add(issue.key));
+        const body = (await response.json()) as { issues?: ({ key?: string } | null)[] };
+        (body.issues || []).forEach((issue) => issue?.key && visible.add(issue.key));
     }
     return wanted.filter((key) => !visible.has(key));
 }

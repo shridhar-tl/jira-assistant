@@ -1,4 +1,8 @@
-import { kvs } from '@forge/kvs';
+import { Filter, FilterConditions, kvs } from '@forge/kvs';
+
+import { isConditionFailure } from '../../../../common/kvs-condition';
+import { casRetry } from '../constants';
+import { BusyError, retryDelayMs } from '../rate-limit';
 
 import { EngineError, type RateLimiterPort } from './poker-engine';
 
@@ -8,26 +12,35 @@ export interface UsageLimiter extends RateLimiterPort {
 
 const windowMinutes = 60;
 const windowMs = windowMinutes * 60000;
-const keyPrefix = 'poker-usage-';
+const usageEntity = 'poker-usage';
 const unsafeKeyChars = /[^A-Za-z0-9:._#-]/g;
+const windowOptions = { ttl: { value: windowMinutes * 2, unit: 'MINUTES' as const } };
 
 interface UsageWindow {
     count: number;
 }
 
-/**
- * Hourly counters per user in app storage. They are not transactional, so a burst of parallel calls can pass the limit by a few,
- * which is fine for keeping one user from using up the storage and invocation quota of the whole site.
- */
+/** Hourly counters per user. Each increment is conditional on the count that was read, so parallel calls cannot pass the limit. */
 export function createUsageLimiter(now: () => number = () => Date.now()): UsageLimiter {
     async function consume(bucketKey: string, amount: number, limit: number, message: string): Promise<void> {
-        const windowStart = Math.floor(now() / windowMs);
-        const key = `${keyPrefix}${bucketKey.replace(unsafeKeyChars, '_')}-${windowStart}`;
-        const current = ((await kvs.get(key)) as UsageWindow | undefined)?.count ?? 0;
-        if (current + amount > limit) {
-            throw new EngineError('CONFLICT', message);
+        const key = `${bucketKey.replace(unsafeKeyChars, '_')}-${Math.floor(now() / windowMs)}`;
+        for (let attempt = 1; attempt <= casRetry.maxAttempts; attempt += 1) {
+            const count = (await kvs.entity<UsageWindow>(usageEntity).get(key))?.count;
+            if ((count ?? 0) + amount > limit) {
+                throw new EngineError('CONFLICT', message);
+            }
+            const conditions = new Filter<UsageWindow>().and('count', count === undefined ? FilterConditions.notExists() : FilterConditions.equalTo(count));
+            try {
+                await kvs.transact().set<UsageWindow>(key, { count: (count ?? 0) + amount }, { entityName: usageEntity, conditions }, windowOptions).execute();
+                return;
+            } catch (error) {
+                if (!isConditionFailure(error)) {
+                    throw error;
+                }
+                await new Promise((resolve) => setTimeout(resolve, retryDelayMs(attempt, casRetry)));
+            }
         }
-        await kvs.set(key, { count: current + amount }, { ttl: { value: windowMinutes * 2, unit: 'MINUTES' } });
+        throw new BusyError('The room is busy. Please retry.');
     }
 
     return {

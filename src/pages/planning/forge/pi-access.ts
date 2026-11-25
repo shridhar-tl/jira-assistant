@@ -1,6 +1,5 @@
+import { rejectWith, ResolverError } from '../../../common/resolver-result';
 import type { PiAcceptance, PiArt, PiDocument, PiRisk, PiSummary, PiTeamDependency, PiTeamRef, PiUserRef } from '../pi-planner/pi-types';
-
-import { AccessError, rejectWith } from './board-access';
 
 export const restrictedTeamName = 'Restricted team';
 
@@ -80,7 +79,7 @@ function restoreRef(ref: PiTeamRef, visible: Set<number>, names: Map<number, str
     }
     const name = names.get(ref.boardId);
     if (!name) {
-        throw new AccessError(403, noAccessToBoardMessage);
+        throw new ResolverError(403, noAccessToBoardMessage);
     }
     return { boardId: ref.boardId, name };
 }
@@ -98,7 +97,7 @@ export function mergeHiddenParts(incoming: ValidDocument, existing: ValidDocumen
         }
         const stored = existingTeams.get(t.boardId);
         if (!stored) {
-            throw new AccessError(403, noAccessToBoardMessage);
+            throw new ResolverError(403, noAccessToBoardMessage);
         }
         return stored;
     });
@@ -138,7 +137,7 @@ function acceptanceChanged(a: PiAcceptance | null, b: PiAcceptance | null): bool
 
 function answerAllowed(boardId: number | null | undefined, visible: Set<number>): void {
     if (typeof boardId !== 'number' || !visible.has(boardId)) {
-        throw new AccessError(403, answerNotAllowedMessage);
+        throw new ResolverError(403, answerNotAllowedMessage);
     }
 }
 

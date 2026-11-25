@@ -1,13 +1,9 @@
-import { invoke } from '@forge/bridge';
+import { invokeResolver } from '../../../common/invoke-resolver.plugin';
 
 import { clearPlannerCache, getCached } from './cache';
 import { cacheTtl } from './constants';
 import { maxLeaveEntriesPerRequest, sanitizeLeaveEntry } from './leave-records';
 import type { LeaveEntry } from './types';
-
-async function call<T>(functionKey: string, payload: Record<string, unknown>): Promise<T> {
-    return (await invoke<T>(functionKey, payload)) as T;
-}
 
 export const leaveNeedsBoardAdmin = false;
 
@@ -30,17 +26,17 @@ function sanitizeAll(entries: LeaveEntry[]): LeaveEntry[] {
 }
 
 export async function loadStoredLeave(boardId: number, start: string, end: string, force?: boolean): Promise<LeaveEntry[]> {
-    const entries = await getCached(`leave_${boardId}_${start}_${end}`, cacheTtl.leave, () => call<LeaveEntry[]>('PlannerLeaveQuery', { boardId, start, end }), force);
+    const entries = await getCached(`leave_${boardId}_${start}_${end}`, cacheTtl.leave, () => invokeResolver<LeaveEntry[]>('PlannerLeaveQuery', { boardId, start, end }), force);
     return (entries || []).map(sanitizeLeaveEntry).filter((e): e is LeaveEntry => !!e);
 }
 
 export async function saveLeaveEntries(boardId: number, change: LeaveChange): Promise<void> {
-    await call<boolean>('PlannerLeaveSave', { boardId, upsert: sanitizeAll(change.upsert), remove: change.remove.map((e) => e.id) });
+    await invokeResolver<boolean>('PlannerLeaveSave', { boardId, upsert: sanitizeAll(change.upsert), remove: change.remove.map((e) => e.id) });
     clearLeaveCache(boardId);
 }
 
 export async function replaceSourceLeave(boardId: number, sourceId: string, start: string, end: string, entries: LeaveEntry[]): Promise<boolean> {
-    const result = await call<{ changed: boolean }>('PlannerLeaveReplace', { boardId, sourceId, start, end, entries: sanitizeAll(entries) });
+    const result = await invokeResolver<{ changed: boolean }>('PlannerLeaveReplace', { boardId, sourceId, start, end, entries: sanitizeAll(entries) });
     if (result?.changed) {
         clearLeaveCache(boardId);
     }
@@ -48,7 +44,7 @@ export async function replaceSourceLeave(boardId: number, sourceId: string, star
 }
 
 export async function deleteSourceLeave(boardId: number, sourceId: string): Promise<void> {
-    await call<boolean>('PlannerLeaveDeleteSource', { boardId, sourceId });
+    await invokeResolver<boolean>('PlannerLeaveDeleteSource', { boardId, sourceId });
     clearLeaveCache(boardId);
 }
 

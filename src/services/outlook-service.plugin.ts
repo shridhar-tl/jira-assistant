@@ -1,4 +1,4 @@
-import { invoke } from '@forge/bridge';
+import { invokeResolver } from '../common/invoke-resolver.plugin';
 
 import type AnalyticsService from './analytics-service';
 import type MessageService from './message-service';
@@ -19,7 +19,7 @@ export default class OutlookCalendar extends OutlookCalendarBase {
     }
 
     async authenticate(): Promise<any> {
-        const result = await invoke('AuthenticateMSO', {});
+        const result = await invokeResolver<boolean>('AuthenticateMSO', {});
 
         if (result) {
             await this.$settings.saveGeneralSetting(this.userId, 'OLBT', true);
@@ -29,6 +29,6 @@ export default class OutlookCalendar extends OutlookCalendarBase {
     }
 
     fetchEvents(eventsUrl: string): Promise<any> {
-        return invoke('GetMSOEvents', { eventsUrl });
+        return invokeResolver('GetMSOEvents', { eventsUrl });
     }
 }

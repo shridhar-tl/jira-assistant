@@ -1,10 +1,11 @@
 import { kvs, WhereConditions, type ListResult } from '@forge/kvs';
 import type Resolver from '@forge/resolver';
 
+import { defineResolver, rejectWith } from '../../../common/resolver-result';
 import { isDateKey, isLeaveId, isSameLeave, maxLeaveEntriesPerRequest, overlapsRange, sanitizeLeaveEntry } from '../shared/leave-records';
 import type { LeaveEntry } from '../shared/types';
 
-import { ensureBoardAccess, isBoardAdmin, rejectWith } from './board-access';
+import { ensureBoardAccess, isBoardAdmin } from './board-access';
 
 export interface LeaveRow {
     boardKey: string;
@@ -183,6 +184,10 @@ async function replaceSourceLeave({ boardId, sourceId, start, end, entries: valu
     const existing = (await queryBySource(id, sourceId, start)).filter((r) => overlapsRange(r.value.entry, start, end));
     const incoming = new Map(entries.filter((e) => overlapsRange(e, start, end)).map((e) => [e.id, e]));
     const existingById = new Map(existing.map((r) => [r.value.entry.id, r.value.entry]));
+    const taken = await readRows([...incoming.keys()].filter((leaveId) => !existingById.has(leaveId)).map((leaveId) => rowKey(id, leaveId)));
+    if (taken.some((row) => row.entry.sourceId !== sourceId)) {
+        return rejectWith(400, 'Invalid calendar leave');
+    }
 
     const operations: WriteOperation[] = [
         ...existing.filter((r) => !incoming.has(r.value.entry.id)).map((r) => ({ key: r.key, row: null })),
@@ -194,7 +199,7 @@ async function replaceSourceLeave({ boardId, sourceId, start, end, entries: valu
             .map((entry) => ({ key: rowKey(id, entry.id), row: toRow(id, entry) })),
     ];
     if (operations.length) {
-        await ensureLeaveWriter(id, context, [...entries, ...existing.map((r) => r.value.entry)]);
+        await ensureLeaveWriter(id, context, [...entries, ...existing.map((r) => r.value.entry), ...taken.map((row) => row.entry)]);
     }
     await applyWrites(operations);
     return { changed: operations.length > 0 };
@@ -214,8 +219,8 @@ async function deleteSourceLeave({ boardId, sourceId }: DeleteSourcePayload, con
 }
 
 export function registerLeaveResolvers(resolver: Resolver) {
-    resolver.define('PlannerLeaveQuery', (req) => queryLeave(req.payload as unknown as QueryPayload));
-    resolver.define('PlannerLeaveSave', (req) => saveLeave(req.payload as unknown as SavePayload, req.context as CallContext));
-    resolver.define('PlannerLeaveReplace', (req) => replaceSourceLeave(req.payload as unknown as ReplacePayload, req.context as CallContext));
-    resolver.define('PlannerLeaveDeleteSource', (req) => deleteSourceLeave(req.payload as unknown as DeleteSourcePayload, req.context as CallContext));
+    defineResolver(resolver, 'PlannerLeaveQuery', (req) => queryLeave(req.payload as unknown as QueryPayload));
+    defineResolver(resolver, 'PlannerLeaveSave', (req) => saveLeave(req.payload as unknown as SavePayload, req.context as CallContext));
+    defineResolver(resolver, 'PlannerLeaveReplace', (req) => replaceSourceLeave(req.payload as unknown as ReplacePayload, req.context as CallContext));
+    defineResolver(resolver, 'PlannerLeaveDeleteSource', (req) => deleteSourceLeave(req.payload as unknown as DeleteSourcePayload, req.context as CallContext));
 }

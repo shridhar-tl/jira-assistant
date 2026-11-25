@@ -13,7 +13,8 @@ const maxMemberIds = 200;
 const sourceTypes = new Set<LeaveSourceType>(['manual', 'outlook', 'google', 'ics', 'confluence']);
 
 export function isDateKey(value: unknown): value is string {
-    return typeof value === 'string' && datePattern.test(value) && !Number.isNaN(Date.parse(`${value}T00:00:00Z`));
+    const time = typeof value === 'string' && datePattern.test(value) ? Date.parse(`${value}T00:00:00Z`) : NaN;
+    return !Number.isNaN(time) && new Date(time).toISOString().startsWith(value as string);
 }
 
 export function isLeaveId(value: unknown): value is string {
