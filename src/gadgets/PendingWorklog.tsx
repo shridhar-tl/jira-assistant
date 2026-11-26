@@ -4,7 +4,7 @@ import { useWorklogStore } from '@/stores/worklog-store';
 
 import { inject } from '@services';
 
-import { Button, ChangeTracker, Checkbox, showContextMenu } from '@components';
+import { Button, ChangeTracker, Checkbox, ProjectColorDot, showContextMenu } from '@components';
 
 import { getErrorMessage } from '@utils';
 
@@ -265,6 +265,7 @@ export default function PendingWorklog(props: BaseGadgetProps) {
                                 )}
                             </td>
                             <td>
+                                <ProjectColorDot ticketNo={b.ticketNo} className="mr-1.5" />
                                 <Link href={b.ticketUrl} className="link strike">
                                     {b.ticketNo}
                                 </Link>

@@ -32,6 +32,7 @@ import { isSprintsParameterValue, useReportParameters } from './report-parameter
 interface ReportDataState {
     showParameters: boolean;
     isFetching: boolean;
+    isLoadingReport?: boolean;
     reportData?: ReportData;
     reportErrors?: string[];
 }

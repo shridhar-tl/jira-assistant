@@ -1,21 +1,8 @@
-import { SettingsCategory } from '@/constants';
+import { DASHBOARD_ICONS, SettingsCategory } from '@/constants';
 
 import type CacheService from './cache-service';
 import type SessionService from './session-service';
 import type SettingsService from './settings-service';
-
-const DASHBOARD_ICONS = [
-    'fa fa-dashboard',
-    'fa fa-tachometer',
-    'fa fa-chart-line',
-    'fa fa-chart-bar',
-    'fa fa-chart-pie',
-    'fa fa-trophy',
-    'fa fa-star',
-    'fa fa-rocket',
-    'fa fa-fire',
-    'fa fa-bolt',
-];
 
 export default class DashboardService {
     static dependencies = ['SessionService', 'SettingsService', 'CacheService'];
@@ -88,7 +75,7 @@ export default class DashboardService {
 
         const iconIdx = this.rand(0, DASHBOARD_ICONS.length - 1);
         const dashboard = {
-            icon: DASHBOARD_ICONS[iconIdx],
+            icon: DASHBOARD_ICONS[iconIdx].icon,
             layout: 1,
             name: `New Dashboard ${count + 1}`,
             widgets: [],

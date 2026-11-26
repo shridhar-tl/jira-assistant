@@ -7,6 +7,7 @@ export {
     AutocompleteMulti,
     Avatar,
     AvatarGroup,
+    Badge,
     Button,
     Calendar,
     CalendarNavigation,

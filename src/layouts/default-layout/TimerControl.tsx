@@ -7,6 +7,8 @@ import { useWorklogStore } from '@/stores/worklog-store';
 
 import { inject } from '@services';
 
+import { ProjectColorDot } from '@components';
+
 export default function TimerControl() {
     const [showEditor, setShowEditor] = useState(false);
     const { getElapsedTimeInSecs, loadTracker, resumeTimer, pauseTimer, stopTimer } = useWorklogStore();
@@ -25,6 +27,7 @@ export default function TimerControl() {
 
     return (
         <div data-testid="header-timer" className="flex items-center gap-2 px-3 py-1 bg-blue-50 dark:bg-blue-900 rounded border border-blue-200 dark:border-blue-700">
+            <ProjectColorDot ticketNo={curTime.key} />
             <Link className="font-semibold text-blue-600 dark:text-blue-300 no-underline hover:underline" href={ticketUrl}>
                 {curTime.key}
             </Link>

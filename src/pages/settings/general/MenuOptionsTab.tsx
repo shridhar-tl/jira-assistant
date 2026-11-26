@@ -4,6 +4,7 @@ import { inject } from '@services';
 
 import { Checkbox, Dropdown, ListBox, RadioButton } from '@components';
 
+import { dashboardIconClass } from '@constants';
 import { navigation } from '@constants/navigation';
 
 interface MenuOption {
@@ -54,8 +55,9 @@ export default function MenuOptionsTab({ settings, onSave }: MenuOptionsTabProps
         dashboards.forEach((d: any, i: number) => {
             const id = `D-${i}`;
             const url = `/dashboard/${i}`;
-            menusList.push({ id, name: d.name, icon: d.icon, url, selected: selMenus.indexOf(id) > -1 });
-            dashboardMenusList.push({ value: id, label: d.name, icon: d.icon });
+            const icon = dashboardIconClass(d.icon);
+            menusList.push({ id, name: d.name, icon, url, selected: selMenus.indexOf(id) > -1 });
+            dashboardMenusList.push({ value: id, label: d.name, icon });
         });
 
         const launchMenusList: LaunchMenuGroup[] = navigation.map((group: any) => {

@@ -4,7 +4,7 @@ import { useWorklogStore } from '@/stores/worklog-store';
 
 import { inject } from '@services';
 
-import { Button, Checkbox, showContextMenu, type ContextMenuItemInput } from '@components';
+import { Button, Checkbox, ProjectColorDot, showContextMenu, type ContextMenuItemInput } from '@components';
 
 import { getErrorMessage } from '@utils';
 
@@ -259,6 +259,7 @@ export default function MyBookmarks(props: BaseGadgetProps) {
                                 )}
                             </td>
                             <td>
+                                <ProjectColorDot ticketNo={b.ticketNo} className="mr-1.5" />
                                 <Link href={b.ticketUrl} className="link strike">
                                     {b.ticketNo}
                                 </Link>

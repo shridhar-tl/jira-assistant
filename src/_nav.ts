@@ -1,4 +1,5 @@
 import { isAppBuild, isExtnBuild } from './constants/build-info';
+import { dashboardIconClass } from './constants/dashboard-icons';
 import { JAWebPokerLaunchUrl } from './constants/urls';
 import config from './customize';
 
@@ -20,14 +21,6 @@ export interface MenuSection {
     title?: boolean;
     isDashboard?: boolean;
     items: MenuItem[];
-}
-
-/** Dashboard icons are saved as the bare Font Awesome name (fa-pie-chart), except the default board which has the full class. */
-function dashboardIconClass(icon?: string): string {
-    if (!icon) {
-        return 'fa fa-tachometer';
-    }
-    return icon.startsWith('fa ') ? icon : `fa ${icon}`;
 }
 
 export function getDashboardMenu(d: any, idx: number, userId: number): MenuItem {

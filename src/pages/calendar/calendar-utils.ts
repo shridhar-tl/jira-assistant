@@ -1,6 +1,8 @@
 import { endOfDay, format, formatDistanceToNow, isAfter, isBefore, isSameDay, parseISO, startOfDay } from 'date-fns';
 import type { CalendarViewMode, ResolvedCalendarEntry } from 'fluxo-ui';
 
+import { getProjectColor } from '@utils';
+
 import type { MeetingCalendarEntry, Worklog, WorklogCalendarEntry } from '@types';
 
 import { sett_page_calendar } from '@constants/settings';
@@ -89,11 +91,6 @@ export function getEventDuration(entry: Pick<CalendarEvent, 'start' | 'end'>): s
         return formatTimeSpent(diff);
     }
     return '00:00';
-}
-
-export function getProjectColor(ticketNo: string | undefined, projectColors?: Record<string, string>): string | undefined {
-    if (!ticketNo || !projectColors) return undefined;
-    return projectColors[ticketNo.substring(0, ticketNo.lastIndexOf('-')).toUpperCase()];
 }
 
 export function createWorklogEvent(entry: WorklogCalendarEntry, settings: CalendarSettings, projectColors?: Record<string, string>): CalendarEvent {

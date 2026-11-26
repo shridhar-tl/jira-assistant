@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useLayoutEffect, useState } from 'react';
 
 import { useLocation, useNavigate, useParams } from 'react-router';
 
@@ -35,7 +35,7 @@ export default function PivotReport() {
         }
     }
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         loadReport({ reportId, sampleId });
     }, [reportId, sampleId]);
 

@@ -20,7 +20,7 @@ To build the package, follow these steps:
 
 **Steps to Download GitHub Automated Build Package:**
 
-1. In your web browser, visit the following URL: [GitHub Actions - Build and Deploy JA](https://github.com/shridhar-tl/jira-assistant/actions/workflows/build-ja.yml).
+1. In your web browser, visit the following URL: [GitHub Actions - Build & Publish Extension](https://github.com/shridhar-tl/jira-assistant/actions/workflows/build-extn.yml).
 2. Navigate to the "Artifacts" section of the latest completed build.
 3. Download the ZIP file containing the build package.
 4. Extract the downloaded ZIP file to access the build package.

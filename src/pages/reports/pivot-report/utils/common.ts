@@ -93,20 +93,29 @@ let latestLoadId = 0;
 export async function loadReport({ reportId, sampleId }: ReportSource) {
     const loadId = ++latestLoadId;
     cancelReportGeneration();
-    useReportData.setState({ showParameters: false, isFetching: false, reportData: undefined, reportErrors: undefined }, true);
+    const isSavedReport = !!(reportId || sampleId);
+    useReportData.setState({ showParameters: false, isFetching: false, isLoadingReport: isSavedReport }, true);
+    if (isSavedReport) {
+        usePivotConfig.setState({ queryName: '' });
+    }
     useSelectedItemConfig.getState().selectItem();
     resetReportParameters();
 
-    if (sampleId) {
-        await loadSampleReport(sampleId, loadId);
-        return;
-    }
-
-    if (!reportId) {
+    if (!isSavedReport) {
         usePivotConfig.setState(getBlankReportDefinition(), true);
         return;
     }
 
+    try {
+        await (sampleId ? loadSampleReport(sampleId, loadId) : loadSavedReport(reportId!, loadId));
+    } finally {
+        if (loadId === latestLoadId) {
+            useReportData.setState({ isLoadingReport: false });
+        }
+    }
+}
+
+async function loadSavedReport(reportId: string, loadId: number) {
     const { $report, $message } = inject('ReportService', 'MessageService');
     const [report, customFields] = await Promise.all([$report.getReportDefinition(parseInt(reportId)), fillFieldsList()]);
     if (loadId !== latestLoadId) {
@@ -127,7 +136,7 @@ export async function loadReport({ reportId, sampleId }: ReportSource) {
 
     const definition = normalizeReportDefinition(report);
     usePivotConfig.setState({ ...definition, fields: resolveFieldReferences(definition.fields, customFields) }, true);
-    generateReport();
+    await generateReport();
 }
 
 async function loadSampleReport(sampleId: string, loadId: number) {
@@ -160,5 +169,5 @@ async function loadSampleReport(sampleId: string, loadId: number) {
     });
 
     usePivotConfig.setState({ ...definition, fields: resolveFieldReferences(definition.fields, customFields) }, true);
-    generateReport();
+    await generateReport();
 }

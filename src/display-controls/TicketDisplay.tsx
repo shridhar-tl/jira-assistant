@@ -5,7 +5,7 @@ import { useWorklogStore } from '@/stores/worklog-store';
 
 import { inject } from '@services';
 
-import { showContextMenu } from '@components';
+import { ProjectColorDot, showContextMenu } from '@components';
 
 import BaseControl from './BaseControl';
 
@@ -83,6 +83,7 @@ const TicketDisplay = forwardRef<TicketDisplayHandle, TicketDisplayProps>(functi
     return (
         <BaseControl tag={tag} className={className} {...rest}>
             {!hideContext && <i className="fa fa-ellipsis-v mr-2 cursor-pointer" onClick={showContext}></i>}
+            <ProjectColorDot ticketNo={value} className="mr-1.5" />
             <Link href={ticketUrl} className="text-blue-600 hover:underline">
                 {value}
             </Link>

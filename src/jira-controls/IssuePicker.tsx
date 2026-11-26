@@ -190,11 +190,10 @@ export const IssuePicker: React.FC<IssuePickerProps> = React.memo(
 
         useEffect(() => {
             if (useDisplay && value && (!issueObj || value !== (typeof value === 'string' ? (issueObj as IssueObject).key : value.key))) {
-                (async function () {
-                    const key = typeof value === 'string' ? value : value.key;
-                    const issue = await getIssueObject($jira, $session, key);
-                    updateIssue(issue);
-                })();
+                const key = typeof value === 'string' ? value : value.key;
+                setIssue({ key } as IssueObject);
+                setLoader(true);
+                getIssueObject($jira, $session, key).then(updateIssue);
             }
         }, [value]); // eslint-disable-line react-hooks/exhaustive-deps
 

@@ -4,7 +4,7 @@ import classNames from 'classnames';
 
 import { Button, TextInput, type ComponentEvent } from '@components';
 
-import { DASHBOARD_ICONS } from '@constants';
+import { DASHBOARD_ICONS, dashboardIconClass, defaultDashboardIcon } from '@constants';
 
 interface DashboardNameProps {
     value?: string;
@@ -14,14 +14,14 @@ interface DashboardNameProps {
 
 export function DashboardName({ value: propValue, icon: propIcon, onChange }: DashboardNameProps) {
     const [value, setValue] = useState(propValue || 'Default');
-    const [icon, setIcon] = useState(propIcon || 'fa-tachometer');
+    const [icon, setIcon] = useState(propIcon || defaultDashboardIcon);
     const [isEditMode, setIsEditMode] = useState(false);
     const [showIconPicker, setShowIconPicker] = useState(false);
     const iconPickerRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         setValue(propValue || 'Default');
-        setIcon(propIcon || 'fa-tachometer');
+        setIcon(propIcon || defaultDashboardIcon);
     }, [propValue, propIcon]);
 
     useEffect(() => {
@@ -50,7 +50,7 @@ export function DashboardName({ value: propValue, icon: propIcon, onChange }: Da
         setIsEditMode(false);
         setShowIconPicker(false);
         setValue(propValue || 'Default');
-        setIcon(propIcon || 'fa-tachometer');
+        setIcon(propIcon || defaultDashboardIcon);
     };
 
     const handleIconClick = (selectedIcon: string) => {
@@ -63,7 +63,7 @@ export function DashboardName({ value: propValue, icon: propIcon, onChange }: Da
             <div className="relative flex items-center gap-1.5">
                 <div className="relative">
                     <Button
-                        leftIcon={<i className={`fa ${icon}`} />}
+                        leftIcon={<i className={dashboardIconClass(icon)} />}
                         layout="outlined"
                         title="Change icon"
                         onClick={() => setShowIconPicker(!showIconPicker)}
@@ -76,21 +76,20 @@ export function DashboardName({ value: propValue, icon: propIcon, onChange }: Da
                         >
                             <p className="text-xs text-(--text-secondary) px-1 pb-1.5 font-medium">Choose icon</p>
                             <div className="grid grid-cols-6 gap-0.5 max-h-48 overflow-y-auto overflow-x-hidden">
-                                {DASHBOARD_ICONS.map((dashIcon: string, i: number) => (
-                                    <button
-                                        key={i}
-                                        type="button"
-                                        className={classNames(
-                                            'flex items-center justify-center w-8 h-8 cursor-pointer rounded transition-colors',
-                                            dashIcon === icon
-                                                ? 'bg-(--bg-active) text-(--text-link)'
-                                                : 'hover:bg-(--bg-hover) text-(--text-primary)',
-                                        )}
+                                {DASHBOARD_ICONS.map(({ icon: dashIcon, label }) => (
+                                    <Button
+                                        key={dashIcon}
+                                        layout="plain"
+                                        size="sm"
+                                        leftIcon={<i className={classNames(dashIcon, 'text-base')} />}
+                                        className={classNames('w-8 h-8', {
+                                            'bg-(--bg-active)! text-(--text-link)!': dashIcon === icon,
+                                        })}
+                                        title={label}
+                                        ariaLabel={label}
+                                        aria-pressed={dashIcon === icon}
                                         onClick={() => handleIconClick(dashIcon)}
-                                        title={dashIcon.replace('fa-', '')}
-                                    >
-                                        <span className={classNames('fa', dashIcon, 'text-base')} />
-                                    </button>
+                                    />
                                 ))}
                             </div>
                         </div>
@@ -118,7 +117,7 @@ export function DashboardName({ value: propValue, icon: propIcon, onChange }: Da
             title="Click to rename or change the icon"
             onClick={() => setIsEditMode(true)}
         >
-            <span className={classNames('fa', icon, 'text-base text-(--text-link)')} />
+            <span className={classNames(dashboardIconClass(icon), 'text-base text-(--text-link)')} />
             <span className="text-sm font-medium text-(--text-secondary)">Dashboards</span>
             <i className="fa fa-chevron-right text-[10px] text-(--text-muted)" />
             <span className="text-sm font-semibold text-(--text-primary)">{value}</span>

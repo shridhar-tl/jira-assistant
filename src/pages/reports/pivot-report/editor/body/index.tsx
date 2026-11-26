@@ -9,6 +9,7 @@ export default function EditorBody() {
     const hasNoRows = useReportData(({ reportData }) => !!reportData && !reportData.body.length);
     const reportErrors = useReportData(({ reportErrors }) => reportErrors);
     const isFetching = useReportData(({ isFetching }) => isFetching);
+    const isLoadingReport = useReportData(({ isLoadingReport }) => !!isLoadingReport);
     const showParameters = useReportData(({ showParameters }) => showParameters);
 
     if (isFetching) {
@@ -21,6 +22,14 @@ export default function EditorBody() {
                         This may take a while depending on the number of issues being pulled.
                     </span>
                 </div>
+            </div>
+        );
+    }
+
+    if (isLoadingReport) {
+        return (
+            <div className="flex h-full items-center justify-center p-6">
+                <span className="fa fa-spinner fa-spin text-2xl text-(--primary-color)" title="Loading the report..." />
             </div>
         );
     }

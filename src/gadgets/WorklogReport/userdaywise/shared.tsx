@@ -1,3 +1,5 @@
+import { ProjectColorDot } from '@components';
+
 import { Image, Link } from '../../../controls';
 import { useWorklogStore } from '../datastore';
 import TicketEstimate from '../TicketEstimate';
@@ -174,6 +176,7 @@ export function IssueInfo({ issue: t, showParentSummary, hideEstimate, convertSe
                         {t.parent} -{' '}
                     </Link>
                 )}
+                <ProjectColorDot ticketNo={t.ticketNo} className="mr-1" />
                 <Link href={t.url} className="link">
                     {t.ticketNo}
                 </Link>{' '}

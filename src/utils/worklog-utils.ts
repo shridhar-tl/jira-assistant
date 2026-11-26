@@ -105,3 +105,8 @@ export function roundTimeSpentSecs(totalSecs: number, intervalMins?: WorklogRoun
     const intervalSecs = intervalMins * 60;
     return Math.max(Math.round(totalSecs / intervalSecs), 1) * intervalSecs;
 }
+
+export function getProjectColor(ticketNo: string | undefined, projectColors?: Record<string, string>): string | undefined {
+    if (!ticketNo || !projectColors) return undefined;
+    return projectColors[ticketNo.substring(0, ticketNo.lastIndexOf('-')).toUpperCase()];
+}

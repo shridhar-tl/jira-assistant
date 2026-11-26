@@ -143,7 +143,7 @@ export default function MeetingsTab({ settings, userId, removedIntg, onSave, onC
             {showOutlookCalendar && (
                 <div className="border border-(--border-primary) rounded-lg p-4">
                     <div className="flex items-center gap-2 mb-4">
-                        <span className="fa fa-microsoft text-blue-500" />
+                        <span className="fa-brands fa-microsoft text-blue-500" />
                         <h4 className="text-base font-semibold text-(--text-primary)">Outlook Calendar</h4>
                     </div>
 
@@ -190,7 +190,7 @@ export default function MeetingsTab({ settings, userId, removedIntg, onSave, onC
             {showGoogleCalendar && (
                 <div className="border border-(--border-primary) rounded-lg p-4">
                     <div className="flex items-center gap-2 mb-4">
-                        <span className="fa fa-google text-red-500" />
+                        <span className="fa-brands fa-google text-red-500" />
                         <h4 className="text-base font-semibold text-(--text-primary)">Google Calendar</h4>
                     </div>
 

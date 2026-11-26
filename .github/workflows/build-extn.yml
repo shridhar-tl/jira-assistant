@@ -1,27 +1,16 @@
-name: Build & Deploy JA
+name: Build & Publish Extension
 
 on:
   workflow_dispatch:
-  push:
-    branches: [ package ]
-    paths-ignore:
-      - '**/package-lock.json'
-      - '**/npm-shrinkwrap.json'
-      - '**/pnpm-lock.yaml'
-      - 'docs/**'
-      - 'scripts/**'
-  pull_request:
-    branches: [ package ]
-    paths-ignore:
-      - '**/package-lock.json'
-      - '**/npm-shrinkwrap.json'
-      - '**/pnpm-lock.yaml'
-      - 'docs/**'
-      - 'scripts/**'
+    inputs:
+      branch:
+        description: 'Branch to build (store publish, tag and lock-file commit happen only for package)'
+        default: 'package'
+        required: true
+        type: string
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
     env:
       CI: ""
@@ -29,16 +18,14 @@ jobs:
       version: ${{ steps.extract_version.outputs.version }}
       src_name: ${{ steps.prepare_source.outputs.src_name }}
 
-    strategy:
-      matrix:
-        node-version: [24.x]
-
     steps:
     - uses: actions/checkout@v7
-    - name: Use Node.js ${{ matrix.node-version }}
+      with:
+        ref: ${{ inputs.branch }}
+    - name: Use Node.js 24.x
       uses: actions/setup-node@v7
       with:
-        node-version: ${{ matrix.node-version }}
+        node-version: 24.x
     - name: Install packages
       run: |
         rm -f package-lock.json
@@ -46,18 +33,12 @@ jobs:
     - name: Extract version
       id: extract_version
       uses: Saionaro/extract-package-version@v1.4.0
-    - run: npm run build-web
+    - run: npm run build
     - run: git config --global user.name 'GitHub Web Deploy CI'
     - run: git config --global user.email 'shridhar.tl@gmail.com'
     - run: git remote set-url origin https://shridhar-tl:${{ secrets.COMMIT_KEY }}@github.com/${{ github.repository }}
-      if: github.event_name != 'pull_request'
-    - run: npm run deploy-web
-      if: github.event_name != 'pull_request'
-    - run: npm run build
-    - run: git push origin --delete  ja-extn
-      if: github.event_name != 'pull_request'
+    - run: git push origin --delete ja-extn
     - run: npm run publish-extn
-      if: github.event_name != 'pull_request'
 
     - name: Save build package
       uses: actions/upload-artifact@v7
@@ -84,7 +65,7 @@ jobs:
         path: ${{ env.PKG_DIR }}
 
     - name: Commit lock file
-      if: github.ref == 'refs/heads/package'
+      if: inputs.branch == 'package'
       env:
         JA_VERSION: ${{ steps.extract_version.outputs.version }}
       run: |
@@ -97,7 +78,7 @@ jobs:
         fi
 
     - name: Tag build
-      if: github.ref == 'refs/heads/package'
+      if: inputs.branch == 'package'
       env:
         TZ: Asia/Kolkata
         JA_VERSION: ${{ steps.extract_version.outputs.version }}
@@ -133,7 +114,7 @@ jobs:
 
   publish-chrome:
     needs: build
-    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/package'
+    if: inputs.branch == 'package'
     runs-on: ubuntu-latest
     environment: store-release
     steps:
@@ -168,6 +149,7 @@ jobs:
       if: steps.creds.outputs.configured == 'true'
       uses: actions/checkout@v7
       with:
+        ref: ${{ inputs.branch }}
         sparse-checkout: scripts/store-publish
         path: repo
 
@@ -190,7 +172,7 @@ jobs:
 
   publish-edge:
     needs: build
-    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/package'
+    if: inputs.branch == 'package'
     runs-on: ubuntu-latest
     environment: store-release
     steps:
@@ -223,6 +205,7 @@ jobs:
       if: steps.creds.outputs.configured == 'true'
       uses: actions/checkout@v7
       with:
+        ref: ${{ inputs.branch }}
         sparse-checkout: scripts/store-publish
         path: repo
 
@@ -243,7 +226,7 @@ jobs:
 
   publish-firefox:
     needs: build
-    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/package'
+    if: inputs.branch == 'package'
     runs-on: ubuntu-latest
     environment: store-release
     steps:
@@ -287,6 +270,7 @@ jobs:
       if: steps.creds.outputs.configured == 'true'
       uses: actions/checkout@v7
       with:
+        ref: ${{ inputs.branch }}
         sparse-checkout: scripts/store-publish
         path: repo
 

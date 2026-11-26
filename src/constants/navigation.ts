@@ -20,20 +20,6 @@ export interface MenuSection {
     items: MenuItem[];
 }
 
-export function getDashboardMenu(d: any, idx: number, userId: number): MenuItem {
-    if (!d) return null as any;
-
-    const { icon, name } = d;
-
-    return {
-        name,
-        id: `D-${idx}`,
-        url: `/${userId}/dashboard/${idx}`,
-        icon: icon || 'fa fa-tachometer',
-        isDashboard: true,
-    };
-}
-
 export const navigation: MenuSection[] = [
     {
         name: 'Dashboards',

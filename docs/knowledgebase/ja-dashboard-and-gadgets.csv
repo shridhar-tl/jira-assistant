@@ -1,7 +1,7 @@
 title,content
 "Dashboard module in Jira Assistant","Jira Assistant (JA) provides a customizable dashboard where you can add gadgets to gather key data insights.
 You can create dashboards beyond the default one by clicking the icon at the top right corner of the dashboard page and selecting 'Create Dashboard', which creates a new dashboard with a default name.
-You can rename a dashboard by clicking the name header label near the top left and saving the change, and you can also change its icon from there.
+You can rename a dashboard by clicking the name header label near the top left and saving the change, and you can also change its icon from there, choosing from icons such as charts, a gauge, a calendar, a team, tickets, bugs, a rocket or a trophy. The chosen icon is shown before the dashboard name and in the menu.
 To delete a dashboard, click the wrench (settings) icon at the top right corner and choose 'Delete Dashboard'; deletion is irreversible and does not prompt for confirmation."
 "Inbuilt gadgets available in Jira Assistant","Jira Assistant (JA) ships with several inbuilt dashboard gadgets:
 My Open Tickets - tickets assigned to you, with quick worklog add and bookmarking.

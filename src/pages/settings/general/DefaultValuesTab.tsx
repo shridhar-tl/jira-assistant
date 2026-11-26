@@ -151,15 +151,16 @@ export default function DefaultValuesTab({ settings, onSave }: DefaultValuesTabP
 
     const defaultProjectColor = $session.pageSettings?.calendar?.worklogColor || sett_page_calendar.worklogColor;
 
-    const renderProjectColor = ({ value: { key, name } }: { value: Project }) => (
-        <ProjectColorPicker
-            projectKey={key}
-            projectName={name}
-            color={projectColors[key]}
-            defaultColor={defaultProjectColor}
-            onChange={setProjectColor}
-        />
-    );
+    const renderProjectColor = ({ value }: { value?: Project }) =>
+        value && (
+            <ProjectColorPicker
+                projectKey={value.key}
+                projectName={value.name}
+                color={projectColors[value.key]}
+                defaultColor={defaultProjectColor}
+                onChange={setProjectColor}
+            />
+        );
 
     const filterProjects = (query: string) => {
         const lowerQuery = (query || '').toLowerCase();
