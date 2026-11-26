@@ -1,0 +1,1 @@
+var e=new Set([`http:`,`https:`]);function t(t,n=e){try{let e=new URL(t);return n.has(e.protocol)?e.href:void 0}catch{return}}export{t};

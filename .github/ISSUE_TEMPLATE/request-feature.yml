@@ -1,0 +1,100 @@
+name: Request an enhancement
+description: Suggest an idea / improvement item for Jira Assistant
+body:
+  - type: markdown
+    id: screenshot
+    attributes:
+      value: >
+        **Notes before you being:**
+        - Jira Assistant is expected to work well only with Jira's inbuilt functionality. It may not support any functionalities / fields added to Jira by other Plugins installed by you.
+        - Publishing updates to extension is a time consuming process. So latest version with fixes and new features are always first published to Web version. If you encountered an issue with extension, which is already resolved and is waiting for publish, you can try to use [Web version](https://app.jiraassistant.com) temporarily until the fixes are published to extension.
+
+
+  - type: checkboxes
+    id: checklist-pre
+    attributes:
+      label: Checklist before you being
+      options:
+        - label: I am sure that I am already using latest version of Jira Assistant
+          required: true
+        - label: I had verified that there are no existing requests with similar suggestion in [issue tracker](https://github.com/shridhar-tl/jira-assistant/issues)
+          required: true
+        - label: I had verified that, my query is not answered in [FAQ section of website](https://www.jiraassistant.com/faq)
+          required: true
+
+
+  - type: dropdown
+    id: mode-of-use
+    attributes:
+      label: How do you use Jira Assistant?
+      options:
+        - Browser extension
+        - Jira cloud App
+        - Web version
+        - Desktop App
+    validations:
+      required: true
+
+  - type: dropdown
+    id: jira-type
+    attributes:
+      label: Are you using cloud version of Jira or self hosted (data center / server) of Jira.
+      options:
+        - Cloud Jira
+        - Self hosted (datacenter)
+        - Not sure
+    validations:
+      required: true
+
+  - type: input
+    id: ja-version
+    attributes:
+      label: Version of Jira Assistant
+      description: >
+        Version number of Jira Assistant. If you are using Web, then it is always latest and you can just mention Web
+      placeholder: (example, v2.44)
+    validations:
+      required: true
+
+  - type: dropdown
+    id: browser-type
+    attributes:
+      label: What browser are you using?
+      options:
+        - Chrome
+        - Edge
+        - Firefox
+        - Opera
+        - Vivaldi
+        - Other chromium based
+        - Others
+        - Not applicable
+    validations:
+      required: true
+      
+  - type: textarea
+    id: description
+    attributes:
+      label: Feature Suggestion
+      description: >
+        A clear and concise description of what your suggestion is about
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: checklist-post
+    attributes:
+      label: Checklist before you submit
+      options:
+        - label: I have ensured not to paste any confidential information like Jira url, Mail id, etc.
+          required: true
+        - label: I have added required screenshots (as necessary)
+          required: true
+
+  - type: markdown
+    id: screenshot
+    attributes:
+      value: >
+        **Notes:**
+        Please expect a delayed response as their is no dedicated support team and this tool
+        is developed and maintained by a single developer.

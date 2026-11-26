@@ -1,0 +1,1 @@
+import{t as e}from"./Calendar-CbtW51tL.js";import{t}from"./vendor-react-CsGBVqbk.js";var n=t();function r(){return(0,n.jsx)(`div`,{className:`calendar-page h-full flex flex-col`,children:(0,n.jsx)(e,{isGadget:!1})})}export{r as default};

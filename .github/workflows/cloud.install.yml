@@ -1,0 +1,84 @@
+# This workflow can be used to install Jira Assistant plugin to specific environment of Jira Cloud
+
+name: Install Jira Cloud App
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Choose environment to install'
+        default: 'staging'
+        required: true
+        type: choice
+        options:
+        - development
+        - staging
+        - production
+      jiraSiteUrl:
+        description: 'Jira cloud host name'
+        default: 'jira-ja.atlassian.net'
+        required: true
+        type: string
+      firstInstall:
+        description: 'First time install'
+        type: boolean
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    environment: forge-${{ inputs.environment }}
+    env:
+      CI: ""
+      JIRA_SITE_URL: jira-ja.atlassian.net
+      FORGE_ENV: staging
+      FIRST_INSTALL: "false"
+
+    strategy:
+      matrix:
+        node-version: [24.x]
+
+    steps:
+    - uses: actions/checkout@v7
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v7
+      with:
+        node-version: ${{ matrix.node-version }}
+        
+    - name: Set env based on branch
+      run: |
+        echo "FORGE_ENV=production" >> $GITHUB_ENV
+      if: startsWith(github.ref, 'refs/heads/master')
+      
+    - name: Override env with user inputs
+      env:
+        INPUT_ENVIRONMENT: ${{ inputs.environment }}
+        INPUT_JIRA_SITE_URL: ${{ inputs.jiraSiteUrl }}
+        INPUT_FIRST_INSTALL: ${{ inputs.firstInstall }}
+      run: |
+        if ! printf '%s' "$INPUT_JIRA_SITE_URL" | grep -Eq '^[A-Za-z0-9][A-Za-z0-9.-]*\.atlassian\.net$'; then
+          echo "::error::Jira cloud host name must be like your-site.atlassian.net"
+          exit 1
+        fi
+        echo "FORGE_ENV=$INPUT_ENVIRONMENT" >> $GITHUB_ENV
+        echo "JIRA_SITE_URL=$INPUT_JIRA_SITE_URL" >> $GITHUB_ENV
+        echo "FIRST_INSTALL=$INPUT_FIRST_INSTALL" >> $GITHUB_ENV
+      if: startsWith(github.event_name, 'workflow_dispatch')
+      
+    - run: echo "Installing $GITHUB_REF to $FORGE_ENV of $JIRA_SITE_URL"
+    - run: npm install -g @forge/cli@latest
+    - run: forge settings set usage-analytics false
+    - run: forge install -e "$FORGE_ENV" -s "$JIRA_SITE_URL" -p Jira --upgrade --confirm-scopes --non-interactive
+      if: ${{ env.FIRST_INSTALL != 'true' }}
+      env:
+        FORGE_EMAIL: ${{ secrets.FORGE_EMAIL }}
+        FORGE_API_TOKEN: ${{ secrets.FORGE_API_TOKEN }}
+    - run: forge install -e "$FORGE_ENV" -s "$JIRA_SITE_URL" -p Jira --confirm-scopes --non-interactive
+      if: ${{ env.FIRST_INSTALL == 'true' }}
+      env:
+        FORGE_EMAIL: ${{ secrets.FORGE_EMAIL }}
+        FORGE_API_TOKEN: ${{ secrets.FORGE_API_TOKEN }}
+    - run: forge logout
+      env:
+        FORGE_EMAIL: ${{ secrets.FORGE_EMAIL }}
+        FORGE_API_TOKEN: ${{ secrets.FORGE_API_TOKEN }}
