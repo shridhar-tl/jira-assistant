@@ -1,1 +1,0 @@
-import"./rolldown-runtime-BCiCTKAo.js";import{m as e,t}from"./vendor-react-o77v2-Bu.js";e();var n=t(),r=e=>(0,n.jsx)(`svg`,{width:`24px`,height:`24px`,viewBox:`0 0 24 24`,fill:`none`,stroke:`currentColor`,strokeWidth:2,strokeLinecap:`round`,strokeLinejoin:`round`,...e,children:(0,n.jsx)(`polyline`,{points:`20,6 9,17 4,12`})});export{r as t};

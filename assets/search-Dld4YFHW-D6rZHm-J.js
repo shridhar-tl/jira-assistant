@@ -1,0 +1,1 @@
+import"./rolldown-runtime-BCiCTKAo.js";import{m as e,t}from"./vendor-react-BQMOVZOw.js";e();var n=t(),r=e=>(0,n.jsx)(`svg`,{fill:`none`,stroke:`currentColor`,viewBox:`0 0 24 24`,...e,children:(0,n.jsx)(`path`,{strokeLinecap:`round`,strokeLinejoin:`round`,strokeWidth:2,d:`M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z`})});export{r as t};

@@ -1,1 +1,0 @@
-import{$ as e}from"./components-VfvM1n0A.js";function t(t,n,r){return e(t,n*12,r)}export{t};
