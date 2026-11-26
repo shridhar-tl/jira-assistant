@@ -2,7 +2,7 @@ title,content
 "Worklog Calendar module in Jira Assistant","Jira Assistant (JA) includes an integrated worklog calendar that makes managing worklogs easy. It can be viewed in Month, Week and Day modes, with navigation between modes using the navigation keys.
 The calendar shows daily meeting entries and lets you generate a worklog for a meeting by clicking an icon next to it; you can set ticket numbers in the 'Default meeting tickets' setting to automate this.
 Worklogs can be created, edited and deleted directly on the calendar page, whether they are uploaded or still pending.
-A daily summary of logged hours is shown, color-highlighted to indicate over- or under-logging based on your thresholds, and you can customize entry colors from the configuration icon at the top right corner of the calendar."
+A daily summary of logged hours is shown as the first entry of each day (the top line of the total row in the Week and Day views, above all-day meetings), color-highlighted to indicate over- or under-logging based on your thresholds, and you can customize entry colors from the configuration icon at the top right corner of the calendar."
 "Copying worklogs in the Jira Assistant calendar","In Jira Assistant (JA) you can copy worklogs in the calendar two ways. Right-click a worklog entry and choose the copy menu, which opens the worklog popup where you can set the target date, time and details before saving.
 The quicker way is to hold the Alt key and drag-and-drop the worklog to the date or time where you want the copy.
 You can also move a worklog simply by dragging and dropping it to a different date or time on the calendar."

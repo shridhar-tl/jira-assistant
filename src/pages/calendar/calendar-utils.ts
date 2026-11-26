@@ -122,7 +122,8 @@ export function createMeetingEvent(meeting: MeetingCalendarEntry, settings: Cale
         id: meeting.id,
         title: meeting.title || 'Meeting',
         start: meeting.start,
-        end: meeting.end,
+        // Outlook and Google give all-day events an exclusive end (next midnight); the calendar treats the end day as included.
+        end: meeting.allDay && meeting.end > meeting.start ? new Date(meeting.end.getTime() - 1) : meeting.end,
         allDay: meeting.allDay,
         entryType: 2,
         data: {

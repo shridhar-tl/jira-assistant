@@ -124,10 +124,12 @@ export default function CalendarEventContent({
             <div className="cal-entry-content pt-1" title={title} data-jira-key={wl?.ticketNo} data-jira-wl-id={wl?.worklogId}>
                 {entryType === 1 && wl && <WorklogOptions worklog={wl} onUpload={onUploadWorklog} onClone={onCloneWorklog} />}
                 {leftIcon}
-                <div className="cal-entry-time">
-                    <span>{timeText}</span>
-                    <span className="cal-entry-hour"> {hourDiff}</span>
-                </div>
+                {!entry.allDay && (
+                    <div className="cal-entry-time">
+                        <span>{timeText}</span>
+                        <span className="cal-entry-hour"> {hourDiff}</span>
+                    </div>
+                )}
                 <div className={`cal-entry-title${clsName}`}>{evTitle}</div>
                 {!!subTitle && (
                     <div className={`cal-entry-subtitle${clsName}`} title={subTitle}>
