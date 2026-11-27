@@ -1,0 +1,1 @@
+import{et as e}from"./components-A5K72i2p.js";function t(t,n,r){return e(t,n*12,r)}export{t};

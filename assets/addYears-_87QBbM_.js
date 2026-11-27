@@ -1,1 +1,0 @@
-import{et as e}from"./components-Ut2pOMJH.js";function t(t,n,r){return e(t,n*12,r)}export{t};
