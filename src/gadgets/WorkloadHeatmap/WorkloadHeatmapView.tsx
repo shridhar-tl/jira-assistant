@@ -3,7 +3,7 @@ import CapacityBar from '@/pages/planning/shared/components/CapacityBar';
 
 import { Button } from '@components';
 
-import { GadgetAlert } from '../shared';
+import { GadgetAlert, HostText } from '../shared';
 
 import FilterSummary from './FilterSummary';
 import HeatmapGrid from './HeatmapGrid';
@@ -24,8 +24,15 @@ interface WorkloadHeatmapViewProps {
 const clearedFilters: Partial<WorkloadHeatmapSettings> = { projects: [], issueTypes: [], includeSubtasks: true };
 
 const notConfiguredMessage = 'Provide the JQL to select the issues to be included in the heatmap.';
-const noGroupsMessage =
-    'None of the selected user groups have members. Add members to the groups under Settings → User groups or choose different groups.';
+const noGroupsMessage = (
+    <>
+        None of the selected user groups have members.{' '}
+        <HostText
+            app="Add members to the groups under Settings → User groups or choose different groups."
+            widget="Edit the widget and click Manage under Users and groups to add the groups and their members."
+        />
+    </>
+);
 const noIssuesMessage = 'No unresolved issues assigned to the selected people were found.';
 
 export default function WorkloadHeatmapView({ settings, state, onSettingsChange }: WorkloadHeatmapViewProps) {

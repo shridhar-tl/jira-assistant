@@ -36,6 +36,11 @@ The Quick View always uses a tabbed layout and shows all the dashboard's gadgets
 "Rearranging gadgets on a Jira Assistant dashboard","Jira Assistant (JA) allows you to rearrange gadgets on a dashboard. In grid layout, drag and drop a gadget by its header to change its position.
 You can also resize and restyle gadgets, and add or remove gadgets from the add-gadget popup.
 This lets you arrange your Jira Assistant dashboard to match how you work."
-"Gadgets that Jira Assistant Cloud app adds to the Jira dashboard","The Jira Assistant (JA) Cloud app can add dedicated gadgets directly to the native Jira dashboard: 'Team Daywise Worklog', 'Worklog Barchart', and 'Date wise worklog'.
-When the JA Cloud app is installed, these gadgets appear in the Gadgets list on your Jira Cloud dashboard.
+"Gadgets that Jira Assistant Cloud app adds to the Jira dashboard","The Jira Assistant (JA) Cloud app adds gadgets and widgets directly to the native Jira dashboard.
+On the classic Jira dashboards they appear in the Gadgets list: 'Date wise worklog', 'Worklog timer', 'Worklog Bar Chart' and 'Team Daywise Worklog'.
+On the new Jira dashboards they appear under Add widget: 'Date wise worklog', 'Worklog Bar Chart', 'Team Daywise Worklog', 'Worklog timer', 'Time in Status', 'Workload Heatmap' and 'Sprint Capacity'.
+'Date wise worklog' shows the same table as the JA dashboard gadget: logged date, total hours, uploaded and pending hours, and the worklogged tickets as links to the Jira worklog. 'Worklog Bar Chart' shows the hours logged per day, stacked by ticket.
+For both, the date range is set in the widget or gadget settings. A quick range such as 'Last 7 days' or 'This month' keeps moving with the current date; custom dates stay fixed. Without a saved range, Date wise worklog shows the last 7 days and Worklog Bar Chart the last month.
+'Team Daywise Worklog' shows the full JA Worklog Report for the configured user groups. In its settings choose the date range (or the sprints of boards), the user groups via 'User Groups', and the datasource, formatting, fields and filters via 'Settings', the same options as the Worklog Report gadget. Adding worklogs from the report is disabled in this widget.
+'Worklog timer' needs no settings.
 This capability is available only with the Jira Assistant Cloud app and not with the JA extension or JA Web versions."

@@ -48,7 +48,7 @@ export default function Report({ isLoading, onSettingsChanged }: ReportProps) {
 
         if (boards.length > 1) {
             reportData = (
-                <TabView className="no-padding multi-view">
+                <TabView className="no-padding multi-view" scrollable>
                     {boards.map((boardId) => (
                         <TabPage key={boardId} header={selSprints[boardId].name} className="no-padding">
                             <ReportData boardId={boardId} onSettingsChanged={onSettingsChanged} />
@@ -88,7 +88,7 @@ function ReportData({ boardId, onSettingsChanged }: ReportDataProps) {
     }
 
     return (
-        <TabView className="no-padding" preMount>
+        <TabView className="no-padding" preMount scrollable>
             <TabPage header="Grouped - [User daywise]" className="no-padding">
                 <GroupedDataGrid exportSheetName="Grouped - [User daywise]" boardId={boardId} />
             </TabPage>

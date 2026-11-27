@@ -3,6 +3,7 @@ import { createElement } from 'react';
 import { showContextMenu as _showContextMenu } from 'fluxo-ui';
 
 export {
+    Alert,
     Autocomplete,
     AutocompleteMulti,
     Avatar,

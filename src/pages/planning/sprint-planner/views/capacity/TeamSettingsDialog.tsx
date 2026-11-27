@@ -45,7 +45,7 @@ export default function TeamSettingsDialog({ model, onHide }: TeamSettingsDialog
 
     return (
         <Modal isOpen onClose={onHide} title={`Team · ${data.board.name}`} size="lg" footer={footer}>
-            <TabView>
+            <TabView scrollable>
                 <TabPage header="Members">
                     <div className="pt-3">
                         <MembersTab team={team} data={data} onChange={setTeam} />

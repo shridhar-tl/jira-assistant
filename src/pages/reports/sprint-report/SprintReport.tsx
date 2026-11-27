@@ -275,7 +275,7 @@ function SprintReport(props: BaseGadgetProps) {
             refreshData={refreshData}
         >
             <div className="flex flex-col h-full">
-                <TabView activeIndex={selectedTab} onTabChange={(e) => setSelectedTab(e.index)} preMount>
+                <TabView scrollable activeIndex={selectedTab} onTabChange={(e) => setSelectedTab(e.index)} preMount>
                     <TabPage header="Settings">
                         <SettingsTab
                             isReportDataReady={!!isReportDataReady}

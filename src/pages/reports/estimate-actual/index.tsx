@@ -100,7 +100,7 @@ export default function EstimateActualReport() {
                     gadgetHook={gadgetHook}
                     refreshData={refreshData}
                 >
-                    <TabView activeIndex={selectedTab} onTabChange={handleTabChange}>
+                    <TabView scrollable activeIndex={selectedTab} onTabChange={handleTabChange}>
                         <TabPage header="Settings">
                             <SettingsPanel
                                 groups={groups}

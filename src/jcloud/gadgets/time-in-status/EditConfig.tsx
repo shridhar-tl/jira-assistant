@@ -7,7 +7,7 @@ import SettingsForm from '@/gadgets/TimeInStatus/SettingsForm';
 import type { TimeInStatusSettings } from '@/gadgets/TimeInStatus/types';
 import type { UserGroup } from '@/types';
 
-import GadgetMessage from '../../components/GadgetMessage';
+import ConfigPanel from '../../components/ConfigPanel';
 import useDashboardItemConfig from '../../useDashboardItemConfig';
 
 interface EditConfigProps {
@@ -40,9 +40,8 @@ export default function EditConfig({ settings: initialSettings }: EditConfigProp
     }, [settings.userGroups, update]);
 
     return (
-        <div className="p-4">
-            {saveError && <GadgetMessage icon="fa-exclamation-triangle" variant="error" title="Unable to save" text={saveError} />}
+        <ConfigPanel saveError={saveError}>
             <SettingsForm settings={settings} onChange={update} onManageGroups={manageGroups} />
-        </div>
+        </ConfigPanel>
     );
 }

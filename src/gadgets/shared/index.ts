@@ -9,3 +9,4 @@ export { default as ReportInfoNote } from './ReportInfoNote';
 export { default as ReportInfoSection } from './ReportInfoSection';
 export { default as GadgetAlert } from './GadgetAlert';
 export { default as GadgetLoadingText } from './GadgetLoadingText';
+export { default as HostText } from './HostText';
