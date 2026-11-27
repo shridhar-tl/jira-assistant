@@ -1,7 +1,11 @@
 import { useCallback, useEffect, useState } from 'react';
 
+import classNames from 'classnames';
+
 import { withInitParams } from '@/layouts/initialization/index.plugin';
 import { useWorklogStore } from '@/stores/worklog-store';
+
+import { Button } from '@components';
 
 import withSimpleAuth from '../../../layouts/authorization/simple-auth';
 import IssueListTimer from '../../components/IssueListTimer';
@@ -36,14 +40,14 @@ function WorklogTimer() {
         <div className="min-h-75 px-2 pb-2 sm:px-3 widget:flex widget:h-full widget:min-h-0 widget:flex-col widget:overflow-y-auto widget:p-0">
             {isTimerStarted && <TimerControl />}
             {isTimerStarted && (
-                <button
-                    type="button"
-                    className="mx-auto flex w-full max-w-125 shrink-0 items-center widget:max-w-none justify-center gap-1.5 rounded-lg border border-(--border-primary) bg-(--bg-secondary) py-1.5 text-xs font-semibold text-(--text-secondary) cursor-pointer transition-colors hover:bg-(--bg-hover) hover:text-(--primary-color)"
+                <Button
+                    layout="outlined"
+                    size="sm"
+                    className="mx-auto w-full max-w-125 shrink-0 justify-center widget:max-w-none"
+                    leftIcon={<span className={classNames('fa text-[10px]', ticketsVisible ? 'fa-chevron-up' : 'fa-chevron-down')} />}
+                    label={ticketsVisible ? 'Hide tickets list' : 'Load tickets list'}
                     onClick={toggleTickets}
-                >
-                    <span className={`fa ${ticketsVisible ? 'fa-chevron-up' : 'fa-chevron-down'} text-[10px]`} />
-                    {ticketsVisible ? 'Hide tickets list' : 'Load tickets list'}
-                </button>
+                />
             )}
             {ticketsVisible && <IssueListTimer />}
         </div>

@@ -84,7 +84,7 @@ Learn the features of Jira Assistant: [Jira Assistant video playlist](https://ww
 
 **🎥 Setup help 🎥**
 
-Watch the setup video: [Jira Assistant Setup](https://youtu.be/HsWq7cT3Qq0)
+Watch the setup video: [Jira Assistant Setup](https://www.youtube.com/watch?v=HsWq7cT3Qq0&list=PLxDBQLgpBhsDGppYrDqARYULukk7XFJPV)
 
 **🙌 Support us 🙌**
 

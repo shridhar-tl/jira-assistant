@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 
-import { ReportInfoNote, ReportInfoSection } from '../shared';
+import { HostText, ReportInfoNote, ReportInfoSection } from '../shared';
 
 import { howItWorks } from './constants';
 
@@ -9,12 +9,24 @@ interface WorkloadHeatmapInfoProps {
 }
 
 const howToUseItems = [
-    <>
-        Click the <i className="fa fa-users" /> icon to choose the users and groups whose workload should be shown.
-    </>,
-    <>
-        Click the <i className="fa fa-cogs" /> settings icon to use a custom JQL instead, change the date range or the work week.
-    </>,
+    <HostText
+        key="groups"
+        app={
+            <>
+                Click the <i className="fa fa-users" /> icon to choose the users and groups whose workload should be shown.
+            </>
+        }
+        widget="Edit the widget and click Manage under Users and groups to choose the users and groups whose workload should be shown."
+    />,
+    <HostText
+        key="settings"
+        app={
+            <>
+                Click the <i className="fa fa-cogs" /> settings icon to use a custom JQL instead, change the date range or the work week.
+            </>
+        }
+        widget="Edit the widget to use a custom JQL instead or to change the work week. Change the date range from the controls at the top."
+    />,
     'Hover on any cell to see the issues planned for that person on that day.',
     ...howItWorks,
 ];

@@ -24,19 +24,20 @@ function TeamCapacity({ item, showMembers }: { item: ActiveSprintCapacity; showM
     const unit = getDisplayUnit(item.team.planningUnit, item.estimateUnit);
     if (!item.sprint || !item.capacity) {
         return (
-            <div className="rounded border border-(--border-primary) p-2 text-sm">
-                <div className="font-semibold">{item.board.name}</div>
-                <div className="text-xs text-(--text-secondary)">No active sprint</div>
+            <div className="flex items-center justify-between gap-2 rounded-xl border border-(--border-primary) bg-(--bg-secondary) px-3 py-2.5 text-sm">
+                <span className="truncate font-semibold text-(--text-primary)">{item.board.name}</span>
+                <span className="shrink-0 rounded-full bg-(--bg-tertiary) px-2 py-0.5 text-xs text-(--text-secondary)">No active sprint</span>
             </div>
         );
     }
     const committed = unit === 'hours' ? item.capacity.committedHours : item.capacity.committedPoints;
     const capacity = unit === 'hours' ? item.capacity.capacityHours : item.capacity.capacityPoints;
     return (
-        <div className="flex flex-col gap-1.5 rounded border border-(--border-primary) p-2 text-sm">
-            <div className="flex items-baseline gap-2">
-                <span className="truncate font-semibold">{item.board.name}</span>
+        <div className="flex flex-col gap-2 rounded-xl border border-(--border-primary) bg-(--bg-secondary) p-3 text-sm">
+            <div className="flex min-w-0 flex-col">
+                <span className="truncate font-semibold text-(--text-primary)">{item.board.name}</span>
                 <span className="truncate text-xs text-(--text-secondary)">
+                    <span className="fa fa-running mr-1" />
                     {item.sprint.name} · {formatDateRange(item.capacity.range?.start, item.capacity.range?.end)}
                 </span>
             </div>
@@ -74,7 +75,7 @@ function SprintCapacityDisplay({ settings }: { settings: SprintCapacitySettings 
         );
     }
     return (
-        <div className="flex h-full flex-col gap-2 overflow-auto p-2">
+        <div className="flex h-full flex-col gap-2 overflow-auto p-2 widget:p-0">
             {items.map((item) => (
                 <TeamCapacity key={item.board.id} item={item} showMembers={settings.showMembers} />
             ))}

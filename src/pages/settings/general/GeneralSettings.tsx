@@ -75,7 +75,7 @@ export default function GeneralSettings() {
                             <i className="fa fa-spinner fa-spin" /> Loading settings...
                         </div>
                     ) : (
-                    <TabView activeIndex={activeTab} onTabChange={(e) => setActiveTab(e.index)}>
+                    <TabView scrollable activeIndex={activeTab} onTabChange={(e) => setActiveTab(e.index)}>
                         <TabPage header="General">
                             <div className="p-4">
                                 <GeneralTab settings={settings} onSave={saveSetting} />

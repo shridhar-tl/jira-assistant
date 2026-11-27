@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import { BarElement, CategoryScale, Chart as ChartJS, Legend, LinearScale, Title, Tooltip, type ChartOptions } from 'chart.js';
-import { format } from 'date-fns';
+import { differenceInCalendarDays, format } from 'date-fns';
 import { Bar } from 'react-chartjs-2';
 
 import { getRandomColor, prepareDateRange } from '../../../jcloud/utils';
@@ -190,7 +190,6 @@ async function getWorklogDataset(range: { fromDate: Date; toDate: Date }): Promi
     }
 
     const { fromDate } = range;
-    const startTime = fromDate.getTime();
 
     const grouped = groupBy(worklogs, (w) => w.ticketNo);
 
@@ -198,8 +197,7 @@ async function getWorklogDataset(range: { fromDate: Date; toDate: Date }): Promi
         const dataArr: number[] = [];
         values.forEach((cur) => {
             const dateStarted = cur.dateStarted instanceof Date ? cur.dateStarted : new Date(cur.dateStarted);
-            const msPerDay = 24 * 60 * 60 * 1000;
-            const days = Math.round(Math.abs(dateStarted.getTime() - startTime) / msPerDay);
+            const days = differenceInCalendarDays(dateStarted, fromDate);
             dataArr[days] = (dataArr[days] || 0) + cur.totalMins;
         });
 

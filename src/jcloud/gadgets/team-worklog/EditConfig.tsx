@@ -1,94 +1,93 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 
 import { Modal } from '@forge/bridge';
 
+import { groupsChanged } from '@/gadgets/WorklogReport/actions';
+import {
+    getSettingsObj,
+    getSprintsList,
+    useWorklogDispatch,
+    useWorklogGetState,
+    useWorklogStore,
+    type WorklogReportState,
+} from '@/gadgets/WorklogReport/datastore';
+import CustomActions from '@/gadgets/WorklogReport/settings/CustomActions';
+import type { UserGroup } from '@/types';
+
 import { Button } from '@components';
 
-import GadgetMessage from '../../components/GadgetMessage';
+import ConfigPanel from '../../components/ConfigPanel';
+import ConfigSection from '../../components/ConfigSection';
 import type { DashboardHostType } from '../../dashboard-host';
 import useDashboardItemConfig from '../../useDashboardItemConfig';
 
-export interface TeamWorklogSettings {
-    userListMode?: string;
-    timeframeType?: string;
-    userGroups?: unknown[];
-    dateRange?: {
-        fromDate: string | Date;
-        toDate: string | Date;
-    };
-    logFormat?: string;
-    breakupMode?: string;
-    reportLoaded?: boolean;
-    loadingData?: boolean;
-    errorTitle?: string;
-    errorMessage?: string;
-    disableAddingWL?: boolean;
-    [key: string]: unknown;
-}
-
 interface EditConfigProps {
     hostType: DashboardHostType;
-    settings: TeamWorklogSettings;
 }
 
-export default function EditConfig({ hostType, settings: initialSettings }: EditConfigProps) {
-    const { settings, saveError, isWidget, update, submit } = useDashboardItemConfig({ hostType, initialSettings });
+const noop = () => undefined;
+
+export default function EditConfig({ hostType }: EditConfigProps) {
+    const state = useWorklogStore();
+    const dispatch = useWorklogDispatch();
+    const getState = useWorklogGetState();
+    const config = useMemo(() => getSettingsObj(state, { incUserGroups: true }), [state]);
+    const { saveError, isWidget, update, submit } = useDashboardItemConfig({ hostType, initialSettings: config });
+
+    useEffect(() => update(config), [config, update]);
 
     const showReportSettings = useCallback(() => {
-        const modal = new Modal({
-            onClose: (result?: TeamWorklogSettings) => {
-                if (result) {
-                    update(result);
+        new Modal({
+            onClose: (modifiedSettings?: Partial<WorklogReportState>) => {
+                if (modifiedSettings) {
+                    dispatch(modifiedSettings);
+                    dispatch(getSprintsList(getState()));
                 }
             },
             size: 'large',
-            context: { modalId: 'ja-dlg-wl-report-config', settings },
-        });
-        modal.open();
-    }, [settings, update]);
+            context: { modalId: 'ja-dlg-wl-report-config', settings: getSettingsObj(getState(), { incUserGroups: true }) },
+        }).open();
+    }, [dispatch, getState]);
 
     const showUserGroups = useCallback(() => {
-        const modal = new Modal({
-            onClose: (result?: { userGroups?: unknown[] }) => {
+        new Modal({
+            onClose: (result?: { userGroups?: UserGroup[] }) => {
                 if (result?.userGroups) {
-                    update({ userGroups: result.userGroups });
+                    groupsChanged(dispatch)(result.userGroups);
                 }
             },
             size: 'max',
-            context: { modalId: 'ja-dlg-user-groups', groups: settings.userGroups },
-        });
-        modal.open();
-    }, [settings.userGroups, update]);
+            context: { modalId: 'ja-dlg-user-groups', groups: getState().userGroups },
+        }).open();
+    }, [dispatch, getState]);
+
+    const groupCount = state.userGroups?.length || 0;
 
     return (
-        <div className="h-112.5 p-4">
-            {saveError && <GadgetMessage icon="fa-exclamation-triangle" variant="error" title="Unable to save" text={saveError} />}
-            <div className="rounded-xl border border-(--border-primary) bg-(--bg-secondary) p-4">
-                <div className="mb-1 flex items-center gap-2 text-sm font-semibold text-(--text-primary)">
-                    <span className="fa fa-sliders-h text-(--primary-color)" />
-                    Team worklog configuration
+        <ConfigPanel saveError={saveError} onSubmit={isWidget ? undefined : submit}>
+            <ConfigSection
+                icon="fa-calendar-alt"
+                title="Report period"
+                description={state.timeframeType === '1' ? 'Choose the boards and sprints to report on.' : 'Choose the date range to report on.'}
+            >
+                <div className="flex flex-wrap items-center gap-2">
+                    <CustomActions onInputChanged={noop} showGroupsPopup={showUserGroups} />
                 </div>
-                <p className="mb-4 text-xs text-(--text-secondary)">
-                    {isWidget
-                        ? 'Configure the user groups and report settings, then save the widget.'
-                        : 'Configure the user groups and report settings, then click Done to save the gadget.'}
-                </p>
+            </ConfigSection>
+            <ConfigSection
+                icon="fa-users"
+                title="Users and report settings"
+                description={`${groupCount} user group${groupCount === 1 ? '' : 's'} configured. Use Settings for the data source, formatting, fields and filters.`}
+            >
                 <div className="flex flex-wrap items-center gap-3">
-                    <Button layout="plain" leftIcon={<i className="fa fa-users" />} onClick={showUserGroups}>
+                    <Button layout="outlined" leftIcon={<i className="fa fa-users" />} onClick={showUserGroups}>
                         User Groups
                     </Button>
-                    <Button layout="plain" leftIcon={<i className="fa fa-cogs" />} onClick={showReportSettings}>
+                    <Button layout="outlined" leftIcon={<i className="fa fa-cogs" />} onClick={showReportSettings}>
                         Settings
                     </Button>
                 </div>
-                {!isWidget && (
-                    <div className="mt-6 flex justify-end">
-                        <Button leftIcon={<i className="fa fa-save" />} onClick={submit}>
-                            Done
-                        </Button>
-                    </div>
-                )}
-            </div>
-        </div>
+            </ConfigSection>
+        </ConfigPanel>
     );
 }

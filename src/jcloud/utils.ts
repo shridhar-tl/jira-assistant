@@ -1,5 +1,7 @@
 import { parseISO } from 'date-fns';
 
+import { resolveDateRange, type DateRangeValue } from '@/controls/DateRangePicker';
+
 interface DateRangeInput {
     fromDate: string | Date;
     toDate: string | Date;
@@ -10,6 +12,12 @@ interface DateRangeOutput {
     fromDate: Date;
     toDate: Date;
     [key: string]: unknown;
+}
+
+export interface StoredDateRange {
+    fromDate?: string | Date;
+    toDate?: string | Date;
+    quickDate?: string | number;
 }
 
 export function prepareDateRange(dateRange: DateRangeInput): DateRangeOutput {
@@ -27,18 +35,16 @@ export function prepareDateRange(dateRange: DateRangeInput): DateRangeOutput {
     return { fromDate, toDate, ...others };
 }
 
-export function getRandomColor(): string {
-    const bg = Math.floor(Math.random() * 16777215).toString(16);
-    return `#${bg}`;
+export function resolveStoredDateRange(dateRange: StoredDateRange | undefined, defaultQuickDate: string): DateRangeValue {
+    const { fromDate, toDate, quickDate } = dateRange || {};
+    if (fromDate && toDate) {
+        return resolveDateRange({ ...prepareDateRange({ fromDate, toDate }), quickDate });
+    }
+    return resolveDateRange({ fromDate: new Date(), toDate: new Date(), quickDate: quickDate ?? defaultQuickDate });
 }
 
-export function formatSeconds(totalSeconds: number): string {
-    const hours = Math.floor(totalSeconds / 3600);
-    const mins = Math.floor((totalSeconds % 3600) / 60);
-
-    if (!hours) {
-        return `${mins}m`;
-    }
-
-    return mins > 0 ? `${hours}h ${mins}m` : `${hours}h`;
+export function getRandomColor(): string {
+    return `#${Math.floor(Math.random() * 0x1000000)
+        .toString(16)
+        .padStart(6, '0')}`;
 }

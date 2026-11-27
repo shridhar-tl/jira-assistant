@@ -27,15 +27,16 @@ export default class UserGroupService {
 
         await this.fillJiraGroupMembers(jiraGroups);
 
-        return (
-            groups || [
-                {
-                    name: 'Default group: No name set',
-                    timeZone: '',
-                    users: getUserName(currentUser.jiraUser) ? [currentUser.jiraUser] : [],
-                },
-            ]
-        );
+        if (groups) {
+            return groups;
+        }
+
+        // Dashboard widgets authenticate without loading the Jira profile, so the current user is fetched here
+        if (!getUserName(currentUser.jiraUser)) {
+            currentUser.jiraUser = await this.$jira.getCurrentUser();
+        }
+        const { jiraUser } = currentUser;
+        return [{ name: 'Default group: No name set', timeZone: '', users: getUserName(jiraUser) ? [jiraUser] : [] }];
     };
 
     async fillJiraGroupMembers(jiraGroups: any[]): Promise<void> {

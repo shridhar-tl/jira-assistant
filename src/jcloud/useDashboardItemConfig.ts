@@ -33,6 +33,7 @@ export default function useDashboardItemConfig<T extends object>({
     const [settings, setSettings] = useState(initialSettings);
     const [saveError, setSaveError] = useState<string | null>(null);
     const settingsRef = useRef(initialSettings);
+    const validationErrorRef = useRef<string | null>(null);
     const isWidget = hostType === 'widget';
 
     const finalize = useCallback(() => {
@@ -48,6 +49,7 @@ export default function useDashboardItemConfig<T extends object>({
         widgetEdit
             .onProductSave(async () => {
                 const { current, error } = finalize();
+                validationErrorRef.current = error;
                 if (error) {
                     throw new Error(error);
                 }
@@ -55,8 +57,9 @@ export default function useDashboardItemConfig<T extends object>({
             })
             .catch((err: unknown) => console.error('Failed to register widget save handler:', err));
 
+        // Jira replaces the message of the error thrown on save with a generic one, so the validation message is kept separately
         widgetEdit
-            .onSaveError((error) => setSaveError(error.message))
+            .onSaveError((error) => setSaveError(validationErrorRef.current ?? error.message))
             .catch((err: unknown) => console.error('Failed to register widget save error handler:', err));
     }, [isWidget, finalize]);
 

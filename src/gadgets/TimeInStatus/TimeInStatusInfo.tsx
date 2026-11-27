@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 
-import { ReportInfoNote, ReportInfoSection } from '../shared';
+import { HostText, ReportInfoNote, ReportInfoSection } from '../shared';
 
 interface TimeInStatusInfoProps {
     note?: ReactNode;
@@ -9,11 +9,12 @@ interface TimeInStatusInfoProps {
 
 const howToUseItems = [
     <>
-        Click the <i className="fa fa-cogs" /> settings icon to choose the issues using a <strong>custom JQL</strong> or the members of
-        your <strong>user groups</strong>.
+        <HostText app={<>Click the <i className="fa fa-cogs" /> settings icon</>} widget="Edit the widget" /> to choose the issues using a{' '}
+        <strong>custom JQL</strong> or the members of your <strong>user groups</strong>.
     </>,
     <>
-        Choose the <strong>period</strong> from the date range in the toolbar. Issues that were open at any time within it are included.
+        Choose the <strong>period</strong> from the date range <HostText app="in the toolbar" widget="at the top" />. Issues that were open at
+        any time within it are included.
     </>,
     <>
         The <strong>Bottlenecks</strong> view lists the average, median and maximum time spent in each status. Click a status to see its
@@ -24,7 +25,7 @@ const howToUseItems = [
     </>,
     'Group the bottlenecks by project, issue type, assignee, user group or any other field.',
     <>
-        Turn on <strong>Count only working hours</strong> in settings to use the working days and hours from{' '}
+        Turn on <strong>Count only working hours</strong> in <HostText app="settings" widget="the widget settings" /> to use the working days and hours from{' '}
         <strong>Settings &rarr; General</strong>.
     </>,
 ];
