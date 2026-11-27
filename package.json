@@ -12,7 +12,7 @@
         "url": "https://jiraassistant.com/contact-us"
     },
     "private": true,
-    "license": "MIT",
+    "license": "SEE LICENSE IN LICENSE",
     "scripts": {
         "start": "cross-env VITE_BUILD_MODE=WEB vite --host --force",
         "start-extn": "cross-env VITE_BUILD_MODE=EXTN vite",

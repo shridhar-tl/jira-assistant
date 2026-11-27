@@ -145,7 +145,7 @@ function getUrls(): ShareUrls {
     const storeUrlRaw = $jaBrowserExtn.getStoreUrl();
     const subj = encodeURIComponent('Check out "Jira Assistant" in web store');
     const body = encodeURIComponent(
-        'Check out "Jira Assistant", a open source extension / add-on for your browser from below url:' +
+        'Check out "Jira Assistant", a free extension / add-on for your browser from below url:' +
             `\n\nChrome users: ${CHROME_WS_URL}?utm_source%3Dgmail#` +
             `\n\nFirefox users: ${FF_STORE_URL}` +
             `\n\nEdge users: ${EDGE_STORE_URL}` +

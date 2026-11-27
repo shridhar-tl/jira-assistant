@@ -35,7 +35,7 @@ Link to Atlassian Marketplace: https://marketplace.atlassian.com/apps/1221570/ja
 
 ## Would like to contribute in development and maintainence?
 
-You are very much welcome if you would wish to contribute in the development of Jira Assistant and keep it free and open source for ever. Your contributions would encourage me to actively enhance the features in Jira Assistant.
+You are very much welcome if you would wish to contribute in the development of Jira Assistant and keep it free for ever. Your contributions would encourage me to actively enhance the features in Jira Assistant.
 
 You can contribute to Jira Assistant by donating a small sum through following a link: https://paypal.me/shridhartl
 
@@ -59,7 +59,7 @@ Please read our [Privacy policy](docs/PRIVACY_POLICY.md) to know about it.
 
 ## Licence Aggrement
 
-Jira Assistant is a free software and anyone is free to use it for personal or commercial purpose. But you are authorized only to use this software. Any kind of changes or distribution of this software is not allowed. This software is provided as is without any warrenty and developer of this software is not responsible for any kind of loss incurred while using or mis-using this software.
+Jira Assistant is free software and anyone is free to use it for personal or commercial purpose. You may modify the source code for your own use or for internal use within your organization, but you may not distribute, publish or sell this software or any modified version of it. This software is provided as is without any warranty and you use it at your own risk. The developer of this software is not responsible for any loss of data, damage or other loss of any kind caused by using or misusing this software. See the [LICENSE](LICENSE) file for the full terms.
 
 ## Features available in "Jira Assist"
 

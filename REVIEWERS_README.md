@@ -1,6 +1,6 @@
 # Jira Assistant
 
-Jira Assistant is an open source project. The latest source code is available on GitHub:
+The source code of Jira Assistant is publicly available on GitHub:
 https://github.com/shridhar-tl/jira-assistant/tree/package
 
 ## Build environment
